@@ -1764,3 +1764,4 @@ import sounds_rarity_burst  # noqa: E402,F401
 import sounds_collapse  # noqa: E402,F401
 import sounds_victory  # noqa: E402,F401
 import sounds_combat  # noqa: E402,F401
+import sounds_damage  # noqa: E402,F401

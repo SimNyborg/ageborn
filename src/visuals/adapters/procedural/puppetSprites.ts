@@ -124,6 +124,21 @@ export class PuppetSprites {
     }
   }
 
+  /**
+   * A tint on the puppet's own art, never on its team layers (queue item 40: a damage stage's tint; a vertex colour, so
+   * no batch break). White clears it.
+   */
+  setTint(color: number): void {
+    if (color === this.tintColor) return;
+    this.tintColor = color;
+    for (const s of this.slots) {
+      s.main.tint = color;
+      if (s.over) s.over.tint = color;
+    }
+  }
+
+  private tintColor = 0xffffff;
+
   slotsTagged(tag: SlotDef['tag']): SlotSprites[] {
     return this.slots.filter((s) => s.def.tag === tag);
   }

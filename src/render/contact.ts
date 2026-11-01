@@ -44,6 +44,20 @@ export interface Reach {
   /** The impact frame's front extent (painted bursts included) and where `tipLu` came from. */
   impactFrontLu?: number;
   tipFrom?: string;
+  /**
+   * Item 38 B0: the head's centre on the impact frame (x and height) from the art pipeline's per-frame trackers (for
+   * riders and mounts the leading head, the mount's); with them a mirror exchange keeps the heads apart as drawn
+   * instead of by the `mirrorLead` estimate. The torso fields above then come from the tracked torso box too.
+   */
+  headLu?: number;
+  headYLu?: number;
+  /** Item 38 B0: the tracked torso's front on the impact frame (it leans into a swing), against `torsoFrontLu` at idle. */
+  torsoImpactLu?: number;
+  /** Item 38 B0: the tracked torso's bottom and top and the head's centre at idle (the view's `reach()` adds them). */
+  torsoBottomLu?: number;
+  torsoTopLu?: number;
+  headIdleLu?: number;
+  headIdleYLu?: number;
 }
 
 export interface StageUnit {
@@ -82,6 +96,15 @@ export interface StageBody {
    * held out in front (a greatsword, a pike): only then does a large body's surface reach toward its frame's front.
    */
   headLead?: boolean;
+  /**
+   * Item 38 B0, from the tracked torso box and head point at idle (when the art pipeline measured them): the torso's
+   * bottom and top (a head at these heights meets the torso) and the head's centre. A large body's surface then reaches
+   * toward its head, not past it to the frame's front (which may be a lance, a banner or a pennant).
+   */
+  torsoBottom?: number;
+  torsoTop?: number;
+  headX?: number;
+  headY?: number;
 }
 
 export interface ContactTuning {
@@ -114,6 +137,11 @@ export interface ContactTuning {
    */
   mirrorLead: number;
   mirrorMaxBackLu: number;
+  /**
+   * B0: with tracked heads a mirror exchange keeps its heads apart up to this far (lu) past where both weapons still
+   * reach: two faces pressed into each other read worse than a blow that lands a little short.
+   */
+  mirrorHeadSlackLu: number;
   /** The total offset of a unit never exceeds this (lu). */
   maxTotalLu: number;
   /**
@@ -148,6 +176,7 @@ export const CONTACT_DEFAULTS: ContactTuning = {
   clearLu: 4,
   mirrorLead: 0.8,
   mirrorMaxBackLu: 26,
+  mirrorHeadSlackLu: 6,
   maxTotalLu: 34,
   bulkMax: 2.5,
   headShare: 0.5,
@@ -243,7 +272,41 @@ function surfaceOf(u: StageUnit, t: ContactTuning): number {
   const v = torso !== undefined && torso > 0 ? torso : u.sizeLu * 0.6;
   const s = clamp(v, least, Math.max(least, frame));
   // a large biped's frame front is the weapon it holds out (a greatsword knight's blade): its surface stays the torso
-  return u.sizeLu >= LARGE_SIZE_LU && !u.fort && u.body?.headLead === true ? s + t.headShare * Math.max(0, frame - s) : s;
+  if (u.sizeLu < LARGE_SIZE_LU || u.fort || u.body?.headLead !== true) return s;
+  // B0: a tracked head bounds the reach (a lancer's frame front is its lance, not its horse's head)
+  const hx = u.body.headX;
+  const out = hx !== undefined ? Math.min(frame, Math.max(s, hx + headRadiusOf(u))) : frame;
+  return s + t.headShare * Math.max(0, out - s);
+}
+
+/** A head's half size (lu) from the collision width: about 5 for infantry, 8 for a horse's, 12 at most. */
+function headRadiusOf(u: StageUnit): number {
+  return clamp(0.12 * u.sizeLu + 2, 4, 12);
+}
+
+/**
+ * Item 38 B0: the separation a mirror exchange needs for its heads, from the tracked head points of both impact frames
+ * (less the lunge compensation drawn back): heads at one height clear each other, and a head at the height of the other
+ * body's torso clears that torso's front at the impact frame. Null unless both attack clips have a tracked head (the
+ * `mirrorLead` estimate applies).
+ */
+function headRoom(a: StageUnit, b: StageUnit, compA: number, compB: number, t: ContactTuning): number | null {
+  const ra = a.reach;
+  const rb = b.reach;
+  if (ra?.headLu === undefined || rb?.headLu === undefined) return null;
+  const rA = headRadiusOf(a);
+  const rB = headRadiusOf(b);
+  const hA = ra.headLu - compA * Math.max(0, ra.lungeLu) + rA;
+  const hB = rb.headLu - compB * Math.max(0, rb.lungeLu) + rB;
+  const yA = ra.headYLu ?? 0;
+  const yB = rb.headYLu ?? 0;
+  let need = 0;
+  if (Math.abs(yA - yB) < rA + rB) need = hA + hB + t.clearLu;
+  const torsoAt = (u: StageUnit, c: number): number => surfaceOf(u, t) + travelOf(u, c);
+  const meets = (y: number, r: number, v: StageUnit): boolean => v.body?.torsoBottom !== undefined && v.body.torsoTop !== undefined && y + r > v.body.torsoBottom && y - r < v.body.torsoTop;
+  if (meets(yA, rA, b)) need = Math.max(need, hA + torsoAt(b, compB) + t.clearLu);
+  if (meets(yB, rB, a)) need = Math.max(need, hB + torsoAt(a, compA) + t.clearLu);
+  return need;
 }
 
 /**
@@ -258,10 +321,12 @@ interface Window {
   out: number;
 }
 
-function window(a: StageUnit, v: StageUnit, comp: number, t: ContactTuning): Window {
+function window(a: StageUnit, v: StageUnit, comp: number, t: ContactTuning, vComp?: number): Window {
   const r = a.reach as Reach;
   const tip = r.tipLu - comp * Math.max(0, r.lungeLu);
-  const front = surfaceOf(v, t);
+  // B0: in a mirror exchange (`vComp`: the victim swings on the same tick) the blow meets the victim's body as it leans
+  // into its own swing on that frame, when the trackers say how far (the estimate keeps the idle surface)
+  const front = surfaceOf(v, t) + (vComp !== undefined && v.reach?.torsoImpactLu !== undefined ? travelOf(v, vComp) : 0);
   const back = v.body?.torsoBack ?? v.reach?.torsoBackLu ?? front;
   // the tip lands `depth` of the way from the victim's front surface (separation tip + front) to its centre (tip)
   const at = (k: number): number => tip + (1 - k) * front;
@@ -276,8 +341,21 @@ const INSIDE_LU = 2;
  * the lunges (plus `lead` x lunge for heads that lead the torso, in a mirror exchange) and a little air.
  */
 function bodyGap(a: StageUnit, v: StageUnit, compA: number, compV: number, mutual: boolean, t: ContactTuning, lead = 0): number {
-  const res = (u: StageUnit, c: number): number => (u.reach ? Math.max(0, u.reach.lungeLu) * (1 - c + lead) : 0);
-  return surfaceOf(a, t) + surfaceOf(v, t) + res(a, compA) + (mutual ? res(v, compV) : 0) + t.clearLu;
+  return surfaceOf(a, t) + surfaceOf(v, t) + travelOf(a, compA, lead) + (mutual ? travelOf(v, compV, lead) : 0) + t.clearLu;
+}
+
+/**
+ * How far a swinging body's front comes forward of its idle surface on the impact frame, after the lunge compensation
+ * `c`: B0, the tracked torso's own travel (its front on the impact frame against its idle front) when the art pipeline
+ * measured it (a crouching swing's torso also leans forward), else the lunge; plus `lead` x lunge for heads that lead
+ * the torso (the mirror exchange's estimate).
+ */
+function travelOf(u: StageUnit, c: number, lead = 0): number {
+  const r = u.reach;
+  if (!r) return 0;
+  const lunge = Math.max(0, r.lungeLu);
+  const own = r.torsoImpactLu !== undefined && r.torsoFrontLu !== undefined ? Math.max(0, r.torsoImpactLu - r.torsoFrontLu - c * lunge) : lunge * (1 - c);
+  return own + lead * lunge;
 }
 
 /** Two duelists whose swings land within a tick of each other: both lunge at once (DIAGNOSIS P3). */
@@ -293,7 +371,7 @@ function mirrored(a: StageUnit, b: StageUnit): boolean {
  * touching: the art's limit). `lead` is the bodies' room with the heads of a mirror exchange (at least `body`):
  * it applies only as far as both weapons still reach.
  */
-function jointSeparation(wa: Window, wb: Window, body: number, lead = body): number {
+function jointSeparation(wa: Window, wb: Window, body: number, lead = body, leadSlack = 0): number {
   const lo = Math.max(wa.lo, wb.lo);
   const hi = Math.min(wa.hi, wb.hi);
   let s: number;
@@ -301,7 +379,7 @@ function jointSeparation(wa: Window, wb: Window, body: number, lead = body): num
   else s = Math.max(Math.min((lo + hi) / 2, Math.min(wa.in0, wb.in0) - INSIDE_LU), Math.max(wa.out, wb.out));
   const reachMax = Math.max(wa.hi, wb.hi);
   const reachBoth = Math.min(wa.hi, wb.hi);
-  return Math.max(s, Math.min(body, reachMax), Math.min(lead, reachBoth));
+  return Math.max(s, Math.min(body, reachMax), Math.min(lead, reachBoth + leadSlack));
 }
 
 /** Moves a unit `back` lu away from its foe (negative: toward it), within the contact clamp. */
@@ -509,14 +587,17 @@ export function stage(units: readonly StageUnit[], prevRows: ReadonlyMap<number,
     s.done[bi] = 1;
     pairs.push({ a: Math.min(a.id, b.id), b: Math.max(a.id, b.id) });
     const sep = (b.x - a.x) * facing(a.side);
-    const wa = window(a, b, t.compMutual, t);
-    const wb = window(b, a, t.compMutual, t);
     const mirror = mirrored(a, b);
+    const wa = window(a, b, t.compMutual, t, mirror ? t.compMutual : undefined);
+    const wb = window(b, a, t.compMutual, t, mirror ? t.compMutual : undefined);
     const body = bodyGap(a, b, t.compMutual, t.compMutual, true, t);
-    const lead = mirror ? bodyGap(a, b, t.compMutual, t.compMutual, true, t, t.mirrorLead) : body;
+    // B0: tracked heads give the room the heads need; else `mirrorLead` x lunge beyond each torso
+    const heads = mirror ? headRoom(a, b, t.compMutual, t.compMutual, t) : null;
+    const lead = mirror ? (heads !== null ? Math.max(body, heads) : bodyGap(a, b, t.compMutual, t.compMutual, true, t, t.mirrorLead)) : body;
     // inside both windows already (and the bodies clear): no correction
-    const fine = sep >= wa.lo && sep <= wa.hi && sep >= wb.lo && sep <= wb.hi && sep >= Math.max(body, Math.min(lead, Math.min(wa.hi, wb.hi)));
-    const need = fine ? 0 : jointSeparation(wa, wb, body, lead) - sep;
+    const slack = heads !== null ? t.mirrorHeadSlackLu : 0;
+    const fine = sep >= wa.lo && sep <= wa.hi && sep >= wb.lo && sep <= wb.hi && sep >= Math.max(body, Math.min(lead, Math.min(wa.hi, wb.hi) + slack));
+    const need = fine ? 0 : jointSeparation(wa, wb, body, lead, slack) - sep;
     // each takes half within its own clamp (a big body's is larger, S6); what one cannot take, the other may
     const maxBack = mirror ? Math.max(t.maxBackLu, t.mirrorMaxBackLu) : t.maxBackLu;
     const [ha, hb] = splitNeed(need, bulkOf(a, t), bulkOf(b, t), maxBack, t.maxForwardLu);

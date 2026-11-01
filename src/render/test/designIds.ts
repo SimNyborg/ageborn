@@ -54,6 +54,9 @@ export const A14_EFFECT_IDS = new Set([
   'fx.contact_spark', 'fx.land_dust', 'fx.clash_dust', 'fx.bits', 'fx.stuck', 'fx.ground_glow',
   // review A, S4: the clash's rings in the ground layer
   'fx.clash_ring',
+  // Queue item 40 (visible battle damage, 2026-11-01): a step's burst, the emitters' particles, the fire catching, a mend
+  'fx.dmg_burst', 'fx.dmg_smoke', 'fx.dmg_smoke_dark', 'fx.dmg_steam', 'fx.dmg_fire', 'fx.dmg_spark', 'fx.dmg_breath', 'fx.dmg_motes',
+  'fx.dmg_ignite', 'fx.dmg_mend',
 ]);
 
 const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
@@ -121,8 +124,12 @@ const COMBAT38_SOUND_IDS = [
   'kill_accent', 'mat_armour', 'mat_wood', 'body_fall_s', 'body_fall_m', 'body_fall_l', 'die_bio_l', 'die_mech_l', 'clash_crash', 'leap_land', 'ambience_battle',
 ];
 
+/** Queue item 40 (visible battle damage, 2026-11-01): a damage step's quiet material layers and the fire catching. */
+const DAMAGE40_SOUND_IDS = ['dmg_rip', 'dmg_clank', 'dmg_splinter', 'dmg_crunch', 'dmg_zap', 'dmg_ignite'];
+
 export const A13_SOUND_IDS = new Set([
   ...COMBAT38_SOUND_IDS,
+  ...DAMAGE40_SOUND_IDS,
   ...COSMIC_WAVE_SOUND_IDS,
   ...A17_SOUND_IDS,
   ...BRONZE_WAVE_SOUND_IDS,

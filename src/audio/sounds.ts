@@ -2062,6 +2062,49 @@ const COMBAT_SOUNDS: Record<SoundId, SoundDef> = {
 export const COMBAT_SOUND_IDS: readonly SoundId[] = Object.keys(COMBAT_SOUNDS);
 
 /**
+ * Visible battle damage (queue item 40, design 3.4): the quiet material layer of a damage step, 4 dB under the hit
+ * (the feel rules play them at -4 dB, one per material per 200 ms, at low priority; small bodies only at their last
+ * step). Designs for the recorded sheet in `tools/audio/sfx/sounds_damage.py`; until the next render these ZzFX
+ * versions play (`lazy`: never in the boot render).
+ */
+const DAMAGE_SOUNDS: Record<SoundId, SoundDef> = {
+  // Cloth or hide tearing: a short ripping noise that rises.
+  dmg_rip: mix('battle', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.32, freq: 2400 * (1 + 0.06 * v), attack: 0.004, sustain: 0.06, release: 0.05, tremolo: 0.7, repeat: 0.012, highpass: 1400 }),
+    noiseBurst(40, { vol: 0.18, freq: 3400, sustain: 0.03, release: 0.04, tremolo: 0.6, repeat: 0.009, highpass: 2200 }),
+  ]), { ...LAZY, maxVoices: 2 }),
+  // A dent or a plate coming off: a dull metal clank with a short ring.
+  dmg_clank: mix('battle', mixVariants(3, (v) => [
+    at(0, { vol: 0.24, freq: 640 * (1 + 0.05 * v), attack: 0.001, release: 0.16, shape: 'tri', curve: 2, mod: 5 }),
+    at(0, { vol: 0.1, freq: 1720 * (1 + 0.05 * v), attack: 0.001, release: 0.1, shape: 'sin' }),
+    noiseBurst(0, { vol: 0.16, freq: 1800, release: 0.03, highpass: 900 }),
+  ]), { ...LAZY, maxVoices: 2 }),
+  // Wood splitting: a crack and a short dry crackle.
+  dmg_splinter: mix('battle', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 1500 * (1 + 0.06 * v), release: 0.03, highpass: 700 }),
+    noiseBurst(25, { vol: 0.16, freq: 2600, sustain: 0.05, release: 0.04, tremolo: 0.7, repeat: 0.014, lowpass: 7000 }),
+  ]), { ...LAZY, maxVoices: 2 }),
+  // Stone, crystal or bone chipping: a hard tick and a gritty crunch.
+  dmg_crunch: mix('battle', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 900 * (1 + 0.06 * v), attack: 0.001, release: 0.04, lowpass: 4200 }),
+    noiseBurst(20, { vol: 0.16, freq: 1800, sustain: 0.04, release: 0.05, tremolo: 0.6, repeat: 0.02, lowpass: 5000 }),
+  ]), { ...LAZY, maxVoices: 2 }),
+  // Energy and electrics: a short crackling zap.
+  dmg_zap: mix('battle', mixVariants(3, (v) => [
+    at(0, { vol: 0.18, freq: 1400 * (1 + 0.05 * v), attack: 0.001, sustain: 0.04, release: 0.05, shape: 'square', curve: 0.4, slide: -6, crush: 0.2, lowpass: 6000 }),
+    noiseBurst(0, { vol: 0.14, freq: 3000, sustain: 0.05, release: 0.03, tremolo: 0.8, repeat: 0.008, highpass: 1800 }),
+  ]), { ...LAZY, maxVoices: 2 }),
+  // A machine's fire catching at its last stage: a soft low whump and a breath of flame.
+  dmg_ignite: mix('battle', mixVariants(3, (v) => [
+    thump(0, 90 * (1 + 0.05 * v), 0.42, 0.22, -0.6),
+    noiseBurst(10, { vol: 0.22, freq: 600, attack: 0.02, sustain: 0.12, release: 0.22, lowpass: 2200 }),
+  ]), { ...LAZY, maxVoices: 1, gapMs: 250 }),
+};
+
+/** The damage steps' ids (queue item 40), for the DESIGN A13 row and the tests. */
+export const DAMAGE_SOUND_IDS: readonly SoundId[] = Object.keys(DAMAGE_SOUNDS);
+
+/**
  * Content-wave sounds in the boot groups (the Stone and Bronze waves' attacks, turrets and powers) that skip
  * the boot ZzFX render (`docs/requests/done/audio-boot-budget.md`): the boot set was at 299.6 of its 300 ms
  * before the waves. The recorded sheets carry them; the ZzFX fallback renders on first use or when idle.
@@ -2084,7 +2127,7 @@ function withLazy(all: Record<SoundId, SoundDef>, ids: readonly SoundId[]): Reco
   return out;
 }
 
-export const sounds: Readonly<Record<SoundId, SoundDef>> = withLazy({ ...BASE_SOUNDS, ...MVP_SOUNDS, ...MOMENT_SOUNDS, ...COMBAT_SOUNDS }, LAZY_BOOT_SOUNDS);
+export const sounds: Readonly<Record<SoundId, SoundDef>> = withLazy({ ...BASE_SOUNDS, ...MVP_SOUNDS, ...MOMENT_SOUNDS, ...COMBAT_SOUNDS, ...DAMAGE_SOUNDS }, LAZY_BOOT_SOUNDS);
 
 /** Every sound id in the manifest, in declaration order. */
 export const SOUND_IDS: readonly SoundId[] = Object.keys(sounds);

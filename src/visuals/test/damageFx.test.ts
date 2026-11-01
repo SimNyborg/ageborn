@@ -1,0 +1,151 @@
+/**
+ * The damage kit and effects (queue item 40, design 4a and 3.3-3.4): every part and recipe follows the A11 colour rule
+ * (no saturated colour in the team hues: marks are neutral, flames pale, energy pale mint), the step's burst throws a
+ * few pieces that land, lie 2 s and fade, capped across the lane, and draws the same for the same seed.
+ */
+import { Container, Sprite } from 'pixi.js';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { EffectView } from '@/contracts/art';
+import type { PartBaker } from '../bake';
+import { effectColorRule } from '../checks';
+import { DAMAGE_FX_IDS, liveDamagePieces, MAX_PIECES, PIECE_FADE_MS, PIECE_LIE_MS } from '../damage/fx';
+import { DAMAGE_FX_PARTS, DAMAGE_STRIP_PARTS } from '../damage/kit';
+import { markParts } from '../damage/marks';
+import { warmDamageKit } from '../damage/unitDamage';
+import { damageFxVariants } from '../effects/recipes';
+import { MANIFEST } from '../manifest';
+import { getPart } from '../parts/registry';
+import { createArtProvider } from '../provider';
+
+const art = createArtProvider({ warn: () => {}, dpr: 1 });
+const open: EffectView[] = [];
+
+function play(id: string, o: Record<string, number> = {}): EffectView {
+  const e = art.createEffect(id, o);
+  e.playAt({ x: 0, y: 0 }, o);
+  open.push(e);
+  return e;
+}
+
+afterEach(() => {
+  for (const e of open.splice(0)) e.destroy();
+});
+
+function sprites(c: Container): Sprite[] {
+  const out: Sprite[] = [];
+  for (const ch of c.children) {
+    if (ch instanceof Sprite) out.push(ch);
+    if (ch instanceof Container) out.push(...sprites(ch));
+  }
+  return out;
+}
+
+const partRule = (p: string): number => effectColorRule({ id: p, durationMs: 1, sprites: [{ sprite: p, life: 1, keys: [{ t: 0 }] }] }, getPart).share;
+
+describe('the damage kit follows the colour rule (A11)', () => {
+  it.each([...markParts(), ...DAMAGE_STRIP_PARTS, ...DAMAGE_FX_PARTS].map((p) => [p] as const))('part %s', (p) => {
+    expect(getPart(p), p).toBeDefined();
+    expect(partRule(p)).toBeLessThanOrEqual(0.1);
+  });
+
+  it('registers every damage effect id in the manifest', () => {
+    for (const id of DAMAGE_FX_IDS) expect(MANIFEST[id], id).toBeDefined();
+  });
+
+  it.each(damageFxVariants().map((r) => [r.id, r] as const))('%s', (_id, r) => {
+    expect(effectColorRule(r, getPart).share).toBeLessThanOrEqual(0.1);
+  });
+});
+
+describe("the emitters' particles", () => {
+  it('each plays and ends on its own (smoke under 2 s, sparks under 250 ms)', () => {
+    const life: Record<string, number> = {};
+    for (const id of ['fx.dmg_smoke', 'fx.dmg_smoke_dark', 'fx.dmg_steam', 'fx.dmg_fire', 'fx.dmg_spark', 'fx.dmg_breath', 'fx.dmg_motes', 'fx.dmg_ignite', 'fx.dmg_mend']) {
+      const e = play(id, { dir: 1, scale: 1 });
+      let t = 0;
+      e.update(16);
+      expect(sprites(e.root).length, id).toBeGreaterThan(0);
+      while (!e.done && t < 5000) {
+        e.update(20);
+        t += 20;
+      }
+      expect(e.done, id).toBe(true);
+      life[id] = t;
+    }
+    expect(life['fx.dmg_spark']).toBeLessThan(260);
+    expect(life['fx.dmg_smoke_dark']).toBeLessThan(2100);
+  });
+});
+
+describe('fx.dmg_burst (design 3.4)', () => {
+  const run = (e: EffectView, ms: number): void => {
+    for (let t = 0; t < ms; t += 20) e.update(20);
+  };
+
+  it('throws pieces along the blow that land, lie about 2 s and fade', () => {
+    const before = liveDamagePieces();
+    const e = play('fx.dmg_burst', { mat: 3, stage: 3, dir: 1, size: 1, groundLu: 30, seed: 5 });
+    expect(liveDamagePieces() - before).toBeGreaterThanOrEqual(2);
+    run(e, 1200);
+    expect(e.done).toBe(false);
+    run(e, PIECE_LIE_MS + PIECE_FADE_MS + 600);
+    expect(e.done).toBe(true);
+    expect(liveDamagePieces()).toBe(before);
+  });
+
+  it('Reduce motion plays only the puff (no flying pieces); Lite throws one piece', () => {
+    const before = liveDamagePieces();
+    const r = play('fx.dmg_burst', { mat: 2, stage: 3, dir: -1, size: 2, groundLu: 40, reduce: 1, seed: 1 });
+    expect(liveDamagePieces()).toBe(before);
+    run(r, 1500);
+    expect(r.done).toBe(true);
+    play('fx.dmg_burst', { mat: 2, stage: 3, dir: -1, size: 2, groundLu: 40, lite: 1, seed: 1 });
+    expect(liveDamagePieces() - before).toBe(1);
+  });
+
+  it('holds at most MAX_PIECES on the field (the oldest fade early) and frees them when the view goes', () => {
+    const views = Array.from({ length: 20 }, (_, i) => play('fx.dmg_burst', { mat: 0, stage: 3, dir: 1, size: 2, groundLu: 30, side: 1, seed: i + 1 }));
+    expect(liveDamagePieces()).toBeGreaterThan(MAX_PIECES);
+    for (const v of views) run(v, 300);
+    expect(liveDamagePieces()).toBeLessThanOrEqual(MAX_PIECES);
+    for (const v of open.splice(0)) v.destroy();
+    expect(liveDamagePieces()).toBe(0);
+  });
+
+  it("throws the same pieces for the same seed (the pool passes a seed from the battle view's seeded RNG: a replay matches)", () => {
+    const pos = (seed: number): string => {
+      const e = play('fx.dmg_burst', { mat: 4, stage: 3, dir: 1, size: 2, groundLu: 25, seed });
+      run(e, 200);
+      // the pieces are the burst layer's own sprites (the puff is a nested effect)
+      const layer = e.root.children[0] as Container;
+      return layer.children
+        .filter((c): c is Sprite => c instanceof Sprite)
+        .map((s) => `${s.x.toFixed(2)},${s.y.toFixed(2)}`)
+        .join('|');
+    };
+    expect(pos(9).length).toBeGreaterThan(0);
+    expect(pos(9)).toBe(pos(9));
+    expect(pos(9)).not.toBe(pos(10));
+  });
+});
+
+describe('the kit bakes ahead of the first step', () => {
+  it('warmDamageKit bakes every mark and strip once per baker, one part per idle moment', () => {
+    vi.useFakeTimers();
+    try {
+      const got: string[] = [];
+      let flushed = 0;
+      const baker = { enabled: true, has: () => false, get: (p: { id?: string }) => void got.push(p.id ?? '?'), flush: () => void flushed++ } as unknown as PartBaker;
+      warmDamageKit(baker);
+      warmDamageKit(baker);
+      expect(got).toEqual([]);
+      vi.advanceTimersByTime(60);
+      expect(got.length).toBe(1);
+      vi.advanceTimersByTime(60 * 100);
+      expect(got.length).toBe(markParts().length + DAMAGE_STRIP_PARTS.length);
+      expect(flushed).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});

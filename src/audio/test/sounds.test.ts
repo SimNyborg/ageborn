@@ -139,6 +139,8 @@ const A13: Record<string, string[]> = {
     'kill_accent', 'mat_armour', 'mat_wood', 'body_fall_s', 'body_fall_m', 'body_fall_l', 'die_bio_l', 'die_mech_l',
     'clash_crash', 'leap_land', 'ambience_battle',
   ],
+  /** Visible battle damage (queue item 40): the quiet material layers of a damage step and the fire catching. */
+  damage: ['dmg_rip', 'dmg_clank', 'dmg_splinter', 'dmg_crunch', 'dmg_zap', 'dmg_ignite'],
 };
 const A13_IDS = Object.values(A13).flat();
 
@@ -157,7 +159,8 @@ describe('sound manifest (A13)', () => {
     // + the 19 of the Future wave + the 18 of the Cosmic wave
     // + the 4 of the rarity burst (2026-10-07) + the 10 of the base collapse (2026-10-08)
     // + the 17 of the Result's victory moments (2026-10-08) + the 11 of the combat sound pass (2026-10-18)
-    expect(A13_IDS).toHaveLength(405);
+    // + the 6 of visible battle damage (queue item 40, 2026-11-01)
+    expect(A13_IDS).toHaveLength(411);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

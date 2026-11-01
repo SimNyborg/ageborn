@@ -48,6 +48,13 @@ describe('generated audio assets', () => {
     // Ids added after the last `tools/audio` render play their ZzFX definition until the next render.
     // The power rework (A2.9, A5.7): the 32 new power sounds play ZzFX until WP6 renders them (P3/P4).
     const zzfxOnly = new Set<string>([
+      // queue item 40 (2026-11-01): the damage steps' layers play ZzFX until the next render of `sounds_damage.py`
+      'dmg_rip',
+      'dmg_clank',
+      'dmg_splinter',
+      'dmg_crunch',
+      'dmg_zap',
+      'dmg_ignite',
       'pw_rockslide',
       'pw_tar',
       'pw_huntcry',

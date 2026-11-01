@@ -49,12 +49,13 @@ import { aimWantDeg } from './aim';
 import { CAMERA, Camera, type CameraHold } from './camera';
 import { bodySizeOf, LEAP_DEFAULTS, leapLift, SIZE_CODE, type BodySize, type HitTier } from './combatFeel';
 import { CONTACT_DEFAULTS, springOffset, stage, type OffsetState, type Reach, type StageBody, type StageUnit } from './contact';
+import { DAMAGE_TUNING_DEFAULTS, DamageFeel, type DamageStepInfo, type DamageTuning, type DamageView } from './damageFeel';
 import { depthZ, easeToward } from './depth';
 import { EventMapper, crumbleStage, decodeTurretSource, type UnitInfo } from './eventMapper';
 import { newGait, stepGait, tickVelocity, walkDurationForSpeed, type GaitState } from './gait';
 import { FeelDirector } from './feel/director';
 import { SlowMotion } from './feel/hitstop';
-import { FloatingNumbers, type LabelFactory } from './feel/numbers';
+import { FloatingNumbers, warmNumberFont, type LabelFactory } from './feel/numbers';
 import { ParticlePool, type ParticleHandle } from './feel/particlePool';
 import { clashRules, cloneFeelConfig, combatTuning, defaultFeelConfig, type RenderFeelConfig } from './feelConfig';
 import { HealthBars, barWidthLu, newBar, stepBar, type BarDraw, type BarState } from './healthbars';
@@ -201,6 +202,11 @@ interface UnitEntry {
    * and the gaps between them); null when not aiming.
    */
   aim?: { targetId: number; kind: ShotKind; maxLean: number } | null;
+  /** Queue item 40: the world direction of the last blow (a step's pieces fly along it) and its emitters' spawn debt. */
+  hitDir?: 1 | -1;
+  dmgAcc?: number[];
+  /** Item 38 B0: the view's `contactRevision` the reach and body were read at (they are read again when it changes). */
+  contactRev?: number;
 }
 
 interface TurretEntry {
@@ -437,6 +443,18 @@ export class BattleView {
    * at the start instead of on the first base hit or, worse, on the frame a base breaks.
    */
   private filterWarmup: { s: Sprite; frames: number } | null = null;
+  /**
+   * The first-contact warm-up (W0, item 38 Phase A's open hot spot): one-time set-ups that used to land on the battle's
+   * first hit and first kill, done one step per frame from a few frames after the battle starts (`stepWarmup`).
+   * `frame` counts the battle's frames, `step` the next step; null once done (once per view; the font once per page).
+   */
+  private warmup: { frame: number; step: number; fx: EffectView[] } | null = { frame: 0, step: 0, fx: [] };
+  /** The warm-up's invisible health bar is drawn this frame (`drawBars`). */
+  private barWarm = false;
+  private readonly labelFactory: LabelFactory | undefined;
+  /** Queue item 40: damage steps' bursts and sounds, and the emitters of damaged units (`damageFeel.ts`). */
+  private readonly damage: DamageFeel;
+  private damageTuning: DamageTuning = DAMAGE_TUNING_DEFAULTS;
   private readonly onPresetChange: ((p: GraphicsPreset) => void) | undefined;
   private feel: RenderFeelConfig;
   private settings: ViewSettings;
@@ -510,6 +528,20 @@ export class BattleView {
     this.autoPreset = new AutoPresetMonitor(this.settings.graphics, this.isMobile);
     this.particles = new ParticlePool(o.art, this.layers.vfx, 0, this.rng, { layer: this.layers.ground, ids: GROUND_FX });
     this.numbers = new FloatingNumbers(this.layers.text, this.feel.tuning, this.rng, o.labelFactory);
+    this.labelFactory = o.labelFactory;
+    this.damageTuning = { ...DAMAGE_TUNING_DEFAULTS, ...(this.feel.tuning.damage ?? {}) };
+    this.damage = new DamageFeel({
+      particles: this.particles,
+      rule: (key, t, out) => this.mapper.rule(key, t, out),
+      exec: (a) => this.exec(a),
+      nearView: (x) => this.nearView(x),
+      viewMid: () => (this.viewL + this.viewR) / 2,
+      lite: () => this.preset === 'lite',
+      reduce: () => this.settings.reduceMotion,
+      mobile: () => this.isMobile,
+      tuning: () => this.damageTuning,
+      teamOf: (side) => teamColor(this.settings.teamPreset, side),
+    });
     this.markers = new MountMarkers(o.labelFactory ?? textLabelFactory, o.mountLabel);
 
     const st = this.sim.state;
@@ -879,6 +911,7 @@ export class BattleView {
     this.director.setFeel(feel);
     this.numbers.setTuning(feel.tuning);
     this.camera.setTuning(feel.tuning.maxZoom);
+    this.damageTuning = { ...DAMAGE_TUNING_DEFAULTS, ...(feel.tuning.damage ?? {}) };
     this.applySettings(this.settings);
   }
 
@@ -1496,6 +1529,7 @@ export class BattleView {
     if (!this.paused && !frozen) this.simSlow.update(realDt);
 
     this.syncUnits(alpha, gameDt);
+    this.damage.update(gameDt, this.units.values());
     this.trapViews.sync(this.sim.state, gameDt, (x) => this.nearView(x));
     this.updateFollowers();
     this.syncBases(gameDt);
@@ -1506,6 +1540,7 @@ export class BattleView {
       this.filterWarmup.s.destroy();
       this.filterWarmup = null;
     }
+    if (this.warmup && !catchUp) this.stepWarmup();
     this.updateProjectiles(gameDt);
     this.particles.update(gameDt);
     for (const fx of this.screenFx) {
@@ -1893,6 +1928,7 @@ export class BattleView {
   }
 
   destroy(): void {
+    this.endWarmup();
     this.gone = true;
     // the battle ambience goes quiet with the battle (A7)
     if (this.ambienceSent > 0 || this.ambienceAt > -Infinity) (this.audio as AudioService & { setBattleAmbience?: (level: number) => void }).setBattleAmbience?.(0);
@@ -1961,6 +1997,65 @@ export class BattleView {
 
   private viewMotion(): ViewMotion {
     return { reduce: this.settings.reduceMotion, lite: this.preset === 'lite' };
+  }
+
+  /**
+   * The first-contact warm-up (W0 DAMAGE step 1; item 38 Phase A's open hot spot, profiled at CPU 4x: the first kill's
+   * frame paid for the number font's install (its glyphs drawn on a canvas), the first label's layout and GPU set-up,
+   * the font page's upload and the first `toLocaleString`; the first hit's frame for the health bars' first Graphics
+   * context and the first combat effects). Each is one-time, so it moves to the battle's quiet opening: from
+   * `WARMUP_AFTER_FRAMES` frames after the battle starts (never the first frame or the VS hand-off), one step a frame,
+   * each drawn invisibly (alpha 0.004 or 0.012 and a speck in size, below the ground line) for one frame. The font and
+   * the label only with the bitmap number font (tests pass their own labels). Idempotent; a second battle on the page
+   * finds the font installed.
+   */
+  private stepWarmup(): void {
+    const w = this.warmup;
+    if (!w) return;
+    if (!this.started || this.paused || this.gone) return;
+    if (++w.frame < WARMUP_AFTER_FRAMES) return;
+    const bitmap = this.labelFactory === undefined;
+    const at = { x: (this.viewL + this.viewR) / 2, y: WARMUP_Y_LU };
+    switch (w.step) {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+        // the number font, a glyph group a frame (each a few ms at CPU 4x instead of one long install)
+        if (bitmap && !warmNumberFont(1) && w.step < 4) break;
+        w.step = 4;
+        break;
+      case 5: {
+        // one label, the health bars' Graphics and the first combat effects, drawn invisibly for a frame
+        if (bitmap) this.numbers.warmLabel(at);
+        this.barWarm = true;
+        for (const id of WARMUP_FX) {
+          const fx = this.art.createEffect(id, WARMUP_FX_OPTS);
+          fx.playAt(at, WARMUP_FX_OPTS);
+          fx.root.alpha = 0.004;
+          fx.root.scale.set(0.1);
+          fx.update(16);
+          this.layers.vfx.addChild(fx.root);
+          w.fx.push(fx);
+        }
+        break;
+      }
+      default:
+        this.endWarmup();
+        return;
+    }
+    w.step++;
+  }
+
+  /** Ends the warm-up draws (the label goes to the numbers' free list; the effect views go). */
+  private endWarmup(): void {
+    const w = this.warmup;
+    if (!w) return;
+    this.warmup = null;
+    this.barWarm = false;
+    this.numbers.endWarmLabel();
+    for (const fx of w.fx) fx.destroy();
   }
 
   // ------------------------------------------------------------------------------------------
@@ -2078,10 +2173,13 @@ export class BattleView {
           // A2: every hit shows on the victim: an additive reaction on top of whatever plays (attack, walk, idle),
           // scaled by its tier; the view decides whether to insert a hit pose or play the hit clip
           const cv = e.view as CombatView;
+          e.hitDir = a.dir ?? (e.side === 0 ? -1 : 1);
           if (a.tier && typeof cv.react === 'function') {
-            cv.react(a.tier, a.dir ?? (e.side === 0 ? -1 : 1));
+            // queue item 40: the blow's kind keys the damage mark of a step it crosses
+            cv.react(a.tier, e.hitDir, a.kind, a.effective === true);
             return;
           }
+          if (a.kind) (e.view as DamageView).noteDamageBlow?.(a.kind, a.effective === true);
           if (e.oneShotLeftMs > 0) return; // views without `react`: never cut an attack or spawn short
         }
         if (a.clip === 'attack' && (a.attackIndex ?? 0) >= 1) {
@@ -2716,6 +2814,8 @@ export class BattleView {
       this.layers.units.addChild(aura.root);
     }
     this.units.set(id, e);
+    // queue item 40: a damage step plays its burst and sound here (views without damage have no hook)
+    if (!fort) (view as DamageView).onDamageStep?.((ev: DamageStepInfo) => this.damage.step(e, ev));
     this.writePose(e);
     return e;
   }
@@ -2942,6 +3042,14 @@ export class BattleView {
   /** Asks a view for its reach and body until its sheet answers (every `REACH_RETRY_FRAMES` while it loads). */
   private refreshReach(e: UnitEntry): void {
     if (e.fort) return;
+    // item 38 B0: the view's contact data changed (its tracked torso and head came in): read the reach and body again
+    const rev = (e.view as { contactRevision?: number }).contactRevision;
+    if (rev !== undefined && rev !== e.contactRev) {
+      e.contactRev = rev;
+      if (e.body) e.body = undefined;
+      if (e.reach) e.reach = null;
+      e.reachRetry = 0;
+    }
     const wantBody = e.body === undefined || e.body === null;
     const wantReach = e.melee && e.reach === null;
     if (!wantBody && !wantReach) return;
@@ -3039,6 +3147,9 @@ export class BattleView {
         alpha: 1,
       });
     }
+    // the first-contact warm-up: one bar a speck wide, nearly transparent, below the ground line, for one frame, so the
+    // bars' Graphics sets up its GPU data before the first hit instead of on it
+    if (this.barWarm) draws.push({ x: (this.viewL + this.viewR) / 2, y: WARMUP_Y_LU, widthLu: 1, bar: WARM_BAR, color: teamColor(this.settings.teamPreset, this.mySide), alpha: 0.012 });
     this.bars.draw(draws, scale);
   }
 
@@ -3669,8 +3780,11 @@ export interface CombatView {
   setOffsetX?(lu: number): void;
   /** A1: the share 0..1 of the clip's authored lunge taken back during each impact window. */
   setLungeComp?(share: number): void;
-  /** A2: an additive hit reaction on top of whatever plays; `dir` is the world direction of the push. */
-  react?(tier: HitTier, dir: 1 | -1): void;
+  /**
+   * A2: an additive hit reaction on top of whatever plays; `dir` is the world direction of the push. Queue item 40: `kind`
+   * (the damage type) and `effective` key the damage mark of a step the blow crosses.
+   */
+  react?(tier: HitTier, dir: 1 | -1, kind?: string, effective?: boolean): void;
   /** A2/A8: a lift arc of the body over `ms` (x is the battle view's); `onLand` fires on touch-down. */
   airborne?(o: { ms: number; liftLu: number; kind: 'knockback' | 'pounce' | 'leap'; tumble: boolean; onLand?: () => void }): void;
   /** A4: a death with weight: the fall along `dir`, a landing beat, then the body lies `lieMs` and fades over `fadeMs`. */
@@ -3712,6 +3826,9 @@ function readBody(view: UnitView): StageBody | null {
       ...(r.torsoFrontLu !== undefined ? { torsoFront: r.torsoFrontLu } : {}),
       ...(r.torsoBackLu !== undefined ? { torsoBack: r.torsoBackLu } : {}),
       ...(headLead ? { headLead } : {}),
+      // item 38 B0: the tracked torso's height and head at idle, where the art pipeline measured them
+      ...(r.torsoBottomLu !== undefined && r.torsoTopLu !== undefined ? { torsoBottom: r.torsoBottomLu, torsoTop: r.torsoTopLu } : {}),
+      ...(r.headIdleLu !== undefined && r.headIdleYLu !== undefined ? { headX: r.headIdleLu, headY: r.headIdleYLu } : {}),
     };
   }
   const ext = v.extentLu?.({ clips: ['idle'] });
@@ -3758,6 +3875,17 @@ export function stageModeOf(prev: UnitEntry['stageMode'], engaged: boolean, appr
 const REACH_RETRY_FRAMES = 10;
 /** Effects that lie on the ground (A4, A5): drawn under the units, in the ground decals. */
 const GROUND_FX: ReadonlySet<string> = new Set(['fx.bits', 'fx.ground_glow', 'fx.clash_ring']);
+/**
+ * The first-contact warm-up (`stepWarmup`): it starts this many frames after the battle starts, draws below the ground
+ * line (lu, y down) and plays one of each of these effects there, invisibly, for a frame: the contact spark, the dust
+ * of a heavy hit and a death, the glow under a heavy hit.
+ */
+const WARMUP_AFTER_FRAMES = 12;
+const WARMUP_Y_LU = 26;
+const WARMUP_FX: readonly string[] = ['fx.contact_spark', 'fx.dust_poof', 'fx.ground_glow'];
+const WARMUP_FX_OPTS: Record<string, number> = { kind: 0, tier: 1, dir: 1, size: 0 };
+/** The warm-up's health bar: hit a moment ago, so every part of a bar (frame, ghost, fill) is drawn. */
+const WARM_BAR: BarState = { hpBp: 5000, ghostBp: 8000, holdMs: 0, shieldBp: 0, shown: true };
 /** A knockback the R2 frame lock lets go of at once (its `FRAME_LOCK_MAX_LU`, lu): views without `airborne`. */
 const KNOCK_LOCK_LU = 16;
 /** A6: a clash plays its screen part when it is this close to the view (lu); engaged units this near it hold a moment. */
