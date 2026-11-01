@@ -2128,7 +2128,15 @@
      "muzzle": [
       21.5,
       25.8
-     ]
+     ],
+     "omni": true,
+     "release": {
+      "frame": 5,
+      "atLu": [
+       21.5,
+       25.8
+      ]
+     }
     },
     "hit": {
      "frames": 5,

@@ -7,7 +7,113 @@
  * again never rocks. An attack that starts from upright opens with a small counter-lean (anticipation); when the aim
  * ends the body stands up, where the spring's slight overshoot gives the follow-through. Angles are degrees above the
  * facing direction (aim up is positive).
+ *
+ * The art round's aim data (contract C2): a sheet writes, per shot clip, the drawn weapon's angle (`aimDeg`) and
+ * where the shot leaves (`release: { frame, atLu }`), `omni: true` on clips that emit rather than aim, and aimed
+ * variants (`<clip>_up45`, `<clip>_up70`, `<clip>_down`, `aimOf: "<clip>"`, with exactly the base clip's timing) in
+ * its extras sheet. The sheet's data wins over item 44's measured table (`unitAim.ts`), which stays the fallback.
  */
+import { DEFAULT_CLIP_AIM, type ClipAim } from '../unitAim';
+
+/** Where a shot leaves, as a sheet writes it: `{ frame, atLu }` (contract C2), or the bare point of item 44's first data. */
+export type ClipRelease = readonly [number, number] | { readonly frame: number; readonly atLu: readonly [number, number] };
+
+/** What the aim reads of a clip's meta (contract C2). */
+export interface ClipAimMeta {
+  aimDeg?: number;
+  release?: ClipRelease;
+  omni?: boolean;
+  aimOf?: string;
+}
+
+/** The aimed variants' suffixes (contract C2): about 45 and 70 degrees up, and down. */
+export const AIM_LEVELS = ['up45', 'up70', 'down'] as const;
+/** An aimed variant's level, or '' for the base clip. */
+export type AimLevel = (typeof AIM_LEVELS)[number] | '';
+/** The shot clips that may have aimed variants (the attack variants and the second attacker's clip). */
+const AIMED_BASES: readonly string[] = ['attack', 'attack_b', 'attack_c', 'attack_alt'];
+/** Each base's aimed variants in level order, and every aimed variant's base and level (no allocation per lookup). */
+const AIMED_NAMES = new Map<string, readonly string[]>(AIMED_BASES.map((b) => [b, AIM_LEVELS.map((l) => `${b}_${l}`)]));
+const AIMED_OF = new Map<string, { base: string; level: Exclude<AimLevel, ''> }>(AIMED_BASES.flatMap((b) => AIM_LEVELS.map((l) => [`${b}_${l}`, { base: b, level: l }] as const)));
+const NO_NAMES: readonly string[] = [];
+
+/** The shot clip an aimed variant aims (`attack_b_up45` → `attack_b`), or null for any other clip. */
+export function aimedBaseOf(anim: string): string | null {
+  return AIMED_OF.get(anim)?.base ?? null;
+}
+
+/** A clip's aim level: an aimed variant's suffix, '' for any other clip. */
+export function aimLevelOf(anim: string): AimLevel {
+  return AIMED_OF.get(anim)?.level ?? '';
+}
+
+/** The aimed variants a sheet may have for a shot clip, in level order (none for other clips). */
+export function aimedNamesOf(base: string): readonly string[] {
+  return AIMED_NAMES.get(base) ?? NO_NAMES;
+}
+
+/** A clip a shot may play and the angle its weapon is drawn at (degrees above the facing direction). */
+export interface AimCandidate {
+  anim: string;
+  deg: number;
+}
+
+/**
+ * The aim level the last shot played keeps its place while it fits within this many degrees of the best (so a target
+ * hovering near the midpoint of two levels does not switch the pose, and the lean with it, at every shot).
+ */
+export const AIMED_SLACK_DEG = 5;
+
+/**
+ * The clip a shot plays within its attack variant (contract C2): of the base clip and its loaded aimed variants
+ * (`candidates`, the base first), the one drawn closest to `wantDeg`, the launch angle `render/aim.ts` asks for
+ * (`aimWantDeg`); the lean then covers the rest. A tie goes to the pose nearer the base clip's; the level the last shot
+ * played (`prevLevel`; null: no shot yet) stays while it is within `AIMED_SLACK_DEG` of the best. Returns the
+ * candidate's index (0: the base clip, also for no candidates or no angle). Angles are relative to the facing direction,
+ * so facing left or right chooses alike.
+ */
+export function pickAimedClip(candidates: readonly AimCandidate[], wantDeg: number, prevLevel: AimLevel | null = null): number {
+  const base = candidates[0];
+  if (!base || candidates.length < 2 || !Number.isFinite(wantDeg)) return 0;
+  let best = 0;
+  let bestErr = Math.abs(wantDeg - base.deg);
+  for (let i = 1; i < candidates.length; i++) {
+    const c = candidates[i]!;
+    const err = Math.abs(wantDeg - c.deg);
+    const tie = Math.abs(err - bestErr) < 1e-9;
+    if (err < bestErr - 1e-9 || (tie && Math.abs(c.deg - base.deg) < Math.abs(candidates[best]!.deg - base.deg))) {
+      best = i;
+      bestErr = err;
+    }
+  }
+  for (let i = 0; prevLevel !== null && i < candidates.length; i++) {
+    if (i === best || aimLevelOf(candidates[i]!.anim) !== prevLevel) continue;
+    if (Math.abs(wantDeg - candidates[i]!.deg) <= bestErr + AIMED_SLACK_DEG) return i;
+  }
+  return best;
+}
+
+/** A release as the point it names (lu from the feet, x forward, y up), or undefined. */
+export function releasePoint(r: ClipRelease | undefined): readonly [number, number] | undefined {
+  if (!r) return undefined;
+  const p = Array.isArray(r) ? (r as readonly [number, number]) : (r as { atLu?: readonly [number, number] }).atLu;
+  return p && Number.isFinite(p[0]) && Number.isFinite(p[1]) ? p : undefined;
+}
+
+/**
+ * An attack clip's drawn aim: the sheet's own data where it writes any (`aimDeg`, `release`, `omni`), with the
+ * measured table's entry (`own`) filling what it leaves out; else the table's entry; else level. A clip with its own
+ * `aimDeg` has a real axis, so only the sheet's `omni` makes it an emitter then.
+ */
+export function clipAimOf(meta: ClipAimMeta | undefined, own: ClipAim | undefined): ClipAim {
+  const release = releasePoint(meta?.release);
+  if (meta && (meta.aimDeg !== undefined || release !== undefined || meta.omni === true)) {
+    const rel = release ?? own?.release;
+    const omni = meta.omni === true || (meta.aimDeg === undefined && own?.omni === true);
+    return { deg: meta.aimDeg ?? own?.deg ?? 0, ...(rel ? { release: rel } : {}), ...(omni ? { omni: true } : {}) };
+  }
+  return own ?? DEFAULT_CLIP_AIM;
+}
 
 /** The anticipation: this share of the lean, the other way, for this share of the wind-up (at most `ANTICIPATION_MS`). */
 export const ANTICIPATION_LEAN_SHARE = 0.2;

@@ -45,6 +45,7 @@ import { mulberry32, xmur3, type CosmeticRng } from '@/core';
 import { reachAreaMax, type PowerReachRules } from '@/core/powerReach';
 import { ColorMatrixFilter, Graphics, Sprite, Texture, type Container } from 'pixi.js';
 import { aimedPath, attackAt, firesVisual, leanFor, lineDeg, lineDegXY, pickAimVariant, shotKindOf, type ShotKind, type ShotPath } from './aim';
+import { aimWantDeg } from './aim';
 import { CAMERA, Camera, type CameraHold } from './camera';
 import { bodySizeOf, LEAP_DEFAULTS, leapLift, SIZE_CODE, type BodySize, type HitTier } from './combatFeel';
 import { CONTACT_DEFAULTS, springOffset, stage, type OffsetState, type Reach, type StageBody, type StageUnit } from './contact';
@@ -2182,17 +2183,21 @@ export class BattleView {
           if (e.oneShotLeftMs > 0) return; // views without `react`: never cut an attack or spawn short
         }
         if (a.clip === 'attack' && (a.attackIndex ?? 0) >= 1) {
-          // R3: a second attacker never restarts the body clip; the view plays `attack_alt` or an accent
-          (e.view as GaitView).playAlt?.(a.impactAtMs !== undefined ? { impactAtMs: a.impactAtMs } : {});
+          // R3: a second attacker never restarts the body clip; the view plays `attack_alt` (aimed, C2) or an accent
+          const altAim = this.shotAim(e, a.targetId ?? 0, a.attackIndex ?? 1);
+          (e.view as GaitView).playAlt?.({ ...(a.impactAtMs !== undefined ? { impactAtMs: a.impactAtMs } : {}), ...(altAim !== null ? { aimAt: altAim } : {}) });
           return;
         }
         if (a.clip === 'attack') {
           // item 44: a ranged shooter aims at its target: the variant that can start its shot, then the lean toward it
           // (held from shot to shot while the target stays the same)
           const variant = this.startAim(e, a.targetId ?? 0);
-          const opts: { impactAtMs?: number; variant?: string } = {};
+          const opts: { impactAtMs?: number; variant?: string; aimAt?: number } = {};
           if (a.impactAtMs !== undefined) opts.impactAtMs = a.impactAtMs;
           if (variant) opts.variant = variant;
+          // art round W0 (contract C2): the variant's aimed clip drawn closest to the shot's launch angle
+          const aimAt = this.shotAim(e, a.targetId ?? 0, 0);
+          if (aimAt !== null) opts.aimAt = aimAt;
           e.view.play('attack', opts);
           this.updateAim(e);
           e.oneShotLeftMs = (a.impactAtMs ?? 0) + ONE_SHOT_MS.attackRecover;
@@ -3249,6 +3254,23 @@ export class BattleView {
     (e.view as AimView).aimLean?.(0);
   }
 
+  /**
+   * Art round W0 (contract C2): the launch angle a shot of `attackIndex` at `targetId` asks of the shooter's weapon
+   * (`aim.ts` `aimWantDeg`, degrees above the facing direction), from where the weapon is drawn now to where the shot is
+   * aimed. The view plays the aimed clip of its attack variant drawn closest to it, and the lean covers the rest. Null
+   * (the base clip, as before) for a view without the aim hooks, a fort, a melee or emitting attack, or a target not in
+   * front. Called once per attack, never per frame.
+   */
+  private shotAim(e: UnitEntry, targetId: number, attackIndex: number): number | null {
+    if (e.fort || targetId === 0) return null;
+    const kind = shotKindOf(attackAt(e.def, attackIndex));
+    const now = kind ? (e.view as AimView).aimNow?.(attackIndex) : null;
+    const to = now && !now.omni ? this.aimPoint(targetId, e.side) : null;
+    if (!kind || !now || !to) return null;
+    const lineAt = lineDeg({ x: e.view.root.x + now.x, y: e.view.root.y + now.y }, to, facingOf(e.side));
+    return lineAt === null ? null : aimWantDeg(kind, lineAt);
+  }
+
   /** Where a shot at `targetId` is aimed as drawn: a unit's hit centre, the base's aim point (-1); null when gone. */
   private aimPoint(targetId: number, side: Side): Pt | null {
     if (targetId > 0) {
@@ -3702,7 +3724,7 @@ export class BattleView {
 interface GaitView {
   setGait?(o: { speedLuPerS: number }): void;
   setIdentity?(o: { id: number; seed: number }): void;
-  playAlt?(o: { impactAtMs?: number }): void;
+  playAlt?(o: { impactAtMs?: number; aimAt?: number }): void;
   muzzleNow?(attackIndex?: number): Pt | null;
   drainFootfalls?(): number;
 }

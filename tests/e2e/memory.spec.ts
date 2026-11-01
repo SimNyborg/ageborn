@@ -36,7 +36,8 @@ interface Mem {
   total: number;
   cpu: number;
   gpu: number;
-  sheets: { loaded: number; sd?: number } | null;
+  /** Unit sheets held: the battle's set and the governor's 1x copies (`sources`, `sdSources`: their files). */
+  sheets: { loaded: number; sd?: number; sources?: string[]; sdSources?: string[] } | null;
   /**
    * Views drawn by their stand-ins as they were made: units (and the last one), turrets, bases and forts (and the
    * last one); `turretsNow` and `basesNow`: the turret and base stand-ins alive now.
@@ -77,9 +78,11 @@ const mb = (n: number): number => Math.round(n / 1e6);
 /**
  * Plays the Standard War on screen and returns its memory peak: the opening at real speed (no unit may
  * appear without its art), the rest fast-forwarded five seconds of play a step while the sheets load,
- * upload and unload in between. Checks the budget, the evolves it covered and the page's errors.
+ * upload and unload in between. Checks the budget, the evolves it covered and the page's errors. Returns the
+ * troop skins' sheets (`<slug>@<skinId>.json`, queue item 46) the war held at some point.
  */
-async function warPeak(page: Page, problems: { errors: string[] }, label: string): Promise<void> {
+async function warPeak(page: Page, problems: { errors: string[] }, label: string): Promise<{ skinSheets: string[] }> {
+  const skinSheets = new Set<string>();
   await expect(page.getByTestId('battle')).toBeVisible({ timeout: 60_000 });
   // The opening at real speed: the troops both sides train first draw from their sheets (a slow
   // software-rendered engine plays a few game seconds a minute, hence the long wait).
@@ -102,6 +105,7 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
       if (!s.battle) break;
       seen = s;
       last = s.mem;
+      for (const src of [...(s.mem.sheets?.sources ?? []), ...(s.mem.sheets?.sdSources ?? [])]) if (src.includes('@')) skinSheets.add(src);
       top = Math.max(top, ...s.battle.ages);
       if (!peak || s.mem.total > peak.total) peak = s.mem;
       if (s.battle.phase === 'ended') break;
@@ -117,7 +121,8 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
   const fb = last?.fallbacks;
   const fallbacks = fb ? `; stand-ins: units ${fb.units}, turrets ${fb.turrets ?? 0} (${fb.turretsNow ?? 0} at the end), bases ${fb.bases ?? 0} (${fb.basesNow ?? 0} at the end), forts ${fb.forts ?? 0}` : '';
   const loads = last?.plan?.loads ? `; copy changes ${last.plan.moves ?? 0}, loads ${last.plan.loads.hd} HD + ${last.plan.loads.sd} 1x` : '';
-  const note = `${label}: peak ${mb(peak?.total ?? 0)} MB (cpu ${mb(peak?.cpu ?? 0)}, gpu ${mb(peak?.gpu ?? 0)}), ${peak?.sheets?.loaded ?? 0} unit sheets${peak?.sheets?.sd ? ` + ${peak.sheets.sd} 1x` : ''}, last age index ${top}${kinds}${plan}${fallbacks}${loads}`;
+  const skins = skinSheets.size > 0 ? `; skin sheets ${[...skinSheets].sort().join(', ')}` : '';
+  const note = `${label}: peak ${mb(peak?.total ?? 0)} MB (cpu ${mb(peak?.cpu ?? 0)}, gpu ${mb(peak?.gpu ?? 0)}), ${peak?.sheets?.loaded ?? 0} unit sheets${peak?.sheets?.sd ? ` + ${peak.sheets.sd} 1x` : ''}, last age index ${top}${kinds}${plan}${fallbacks}${loads}${skins}`;
   test.info().annotations.push({ type: 'memory', description: note });
   console.log(`[memory] ${test.info().project.name}: ${note}`);
   // the match went through several evolves (Gunpowder or later), so the budget covers them
@@ -128,9 +133,10 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
   const still = { turrets: fb?.turretsNow ?? 0, bases: fb?.basesNow ?? 0 };
   expect({ ...still, last: still.turrets + still.bases > 0 ? fb?.lastWorld : '' }).toEqual({ turrets: 0, bases: 0, last: '' });
   expect(problems.errors).toEqual([]);
+  return { skinSheets: [...skinSheets].sort() };
 }
 
-test('G7: a long Standard War at DPR 2 keeps decoded images under the budget, and no unit appears without its art', async ({ page }) => {
+test('G7: a long Standard War at DPR 2 (a skinned and a plain copy of the same cards) keeps decoded images under the budget, and no unit appears without its art', async ({ page }) => {
   // About 3 minutes in Chromium here (the mirror war below runs to tick 13,091, longer than the war it replaced); CI's
   // machines and its software-rendered WebKit take two to four times as long, so it has the other wars' 20 minutes.
   test.setTimeout(1_200_000);
@@ -143,31 +149,45 @@ test('G7: a long Standard War at DPR 2 keeps decoded images under the budget, an
   // war reaches Industrial (tick 8,050) and ends at tick 13,091; mirrors on five other seeds all reached Industrial too.
   // The e2e specs that replay a fixed battle and must be re-checked after any sim change: memory (both wars), camera,
   // flows, modes and onboarding.
+  // Art round W0 (queue item 46): your side wears every troop skin its decks have and the mirror none, so the war holds
+  // a skinned and a plain copy of the same cards: a skin rendered as a sheet loads next to its unit's sheet (the sim
+  // ignores skins, so the war runs as before).
   const started = await page.evaluate(() => {
-    type Side = { loadouts: unknown; levels: Record<string, number> };
+    type Side = { loadouts: Record<string, { units: (string | null)[] } | undefined>; levels: Record<string, number>; skins: Record<string, string> };
     type Setup = { config: { seed: number; sides: Side[] }; opponent: { tier: number; seed: number }; brain: unknown };
     type Ctl = {
       quickBattle(f: string): { setup: Setup };
       startSetup(s: Setup): unknown;
-      services: { content: { generals?: { list?: Record<string, { weights?: Record<string, number> }> } } };
+      services: { content: { generals?: { list?: Record<string, { weights?: Record<string, number> }> }; skins: Record<string, { id: string; target: string }>; units: Record<string, { age: string }> } };
     };
     const c = (window as unknown as { __agebornDev: { controller: Ctl } }).__agebornDev.controller;
     const weights = c.services.content.generals?.list?.['echo']?.weights;
-    if (!weights) return 'no Balanced General';
+    if (!weights) return { error: 'no Balanced General', skins: [] as string[] };
     const setup = c.quickBattle('standard').setup;
     const [me, foe] = setup.config.sides as [Side, Side];
+    const skins: Record<string, string> = {};
+    for (const k of Object.values(c.services.content.skins)) if (Object.values(me.loadouts).some((lo) => lo?.units.includes(k.target))) skins[k.target] = k.id;
     const seed = 7936;
     c.startSetup({
       ...setup,
-      config: { ...setup.config, seed, sides: [me, { ...foe, loadouts: me.loadouts, levels: me.levels }] },
+      config: { ...setup.config, seed, sides: [{ ...me, skins }, { ...foe, loadouts: me.loadouts, levels: me.levels, skins: {} }] },
       opponent: { ...setup.opponent, tier: 5, seed },
       // the autopilot's profile (`botProfile(content, { generalId: 'echo', tier: 5 })`; no openings: its personality's)
       brain: { kind: 'general', profile: { generalId: 'echo', tier: 5, mistakeBonusBp: 0, weights: { ...weights }, openings: [] } },
     });
-    return 'ok';
+    // where each worn skin's sheet would be (contract C3)
+    return { error: '', skins: Object.entries(skins).map(([card, id]) => `art/units/${c.services.content.units[card]?.age ?? ''}/${card}@${id}.json`) };
   });
-  expect(started).toBe('ok');
-  await warPeak(page, problems, 'Standard War (mirror)');
+  expect(started.error).toBe('');
+  expect(started.skins.length).toBeGreaterThan(0);
+  const { skinSheets } = await warPeak(page, problems, 'Standard War (mirror, your side skinned)');
+  // every worn skin that is rendered as a sheet was held (next to its unit's sheet, which the mirror's plain copies hold)
+  // (a missing file may come back as the app's index.html: only a JSON answer is a sheet)
+  const installed = await page.evaluate(
+    (paths) => Promise.all(paths.map((p) => fetch(p, { method: 'HEAD' }).then((r) => (r.ok && (r.headers.get('content-type') ?? '').includes('json') ? p : null), () => null))),
+    started.skins,
+  );
+  for (const p of installed) if (p) expect(skinSheets, p).toContain(p);
 });
 
 test('round 3: the test profile (every card owned) plays a Standard War at DPR 2 under the budget', async ({ browser, baseURL }) => {

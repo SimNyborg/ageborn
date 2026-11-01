@@ -202,7 +202,9 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
   const { c, card } = p;
   const { m, t } = c;
   const def = card.card ? c.config.content.units[card.card] : undefined;
-  const url = usePortrait(c.portrait, card.card, card.foil, c.compact ? 72 : 88);
+  // queue item 46: the equipped skin's still where it has one (the provider gives the card's own portrait otherwise)
+  const skin = card.card ? (c.config.sides[c.side]?.skins?.[card.card] ?? null) : null;
+  const url = usePortrait(c.portrait, card.card, card.foil, c.compact ? 72 : 88, true, skin);
   const press = useRef<Press | null>(null);
   const [pressed, setPressed] = useState(false);
   // The tip: pinned by a long-press (touch) until a tap elsewhere; hover shows it through CSS.

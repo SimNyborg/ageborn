@@ -677,7 +677,15 @@
      "muzzle": [
       1.7,
       8.9
-     ]
+     ],
+     "aimDeg": -6.7,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       1.7,
+       8.9
+      ]
+     }
     },
     "attack_alt": {
      "frames": 4,
@@ -722,7 +730,15 @@
      "muzzle": [
       -14.6,
       25.8
-     ]
+     ],
+     "aimDeg": -1.8,
+     "release": {
+      "frame": 1,
+      "atLu": [
+       -14.6,
+       25.8
+      ]
+     }
     }
    },
    "team": {

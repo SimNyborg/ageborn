@@ -195,6 +195,15 @@ def build(rig):
     CLAWS = {"fr": [(fx_, -7.0, fz_ + 2.2), (fx_ + 0.8, -7.0, fz_), (fx_, -7.0, fz_ - 2.2)]}
     fl = q.legs["fl"][1][0] + 3.0 + 6.5
     CLAWS["fl"] = [(fl, 7.0, fz_ + 2.2), (fl + 0.8, 7.0, fz_), (fl, 7.0, fz_ - 2.2)]
+    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
+    # the team blanket, scuffs on the near legs' hide below it, a crack in a sabre fang; a strip torn from the
+    # blanket's fringe; breath puffs from the nose at the last stage
+    rig.damage_spot_at("blanket", "trunk", 0.0, 34.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("haunch", "leg_br", -18.0, 22.0, 5.5, "hide")
+    rig.damage_spot_at("foreleg", "leg_fr", 14.0, 15.0, 5.0, "hide")
+    rig.damage_spot_at("fang", "head", 39.0, 30.0, 5.0, "stone", fill="#F1E9D2")
+    rig.damage_spot_at("fringe", "trunk", -2.0, 20.0, 8.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("breath", "head", (41.0, -1.0, 44.0), 4.0, "breath", kind="emit", normal=(1, 0, 0))
 
 
 CLAWS = None

@@ -2,8 +2,8 @@
  "frames": {
   "javelineer_attack_b_01": {
    "frame": {
-    "x": 757,
-    "y": 2,
+    "x": 2,
+    "y": 275,
     "w": 133,
     "h": 177
    },
@@ -26,9 +26,9 @@
   },
   "javelineer_attack_b_01_team": {
    "frame": {
-    "x": 655,
-    "y": 275,
-    "w": 109,
+    "x": 454,
+    "y": 269,
+    "w": 108,
     "h": 131
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 207,
     "y": 219,
-    "w": 109,
+    "w": 108,
     "h": 131
    },
    "sourceSize": {
@@ -50,7 +50,7 @@
   },
   "javelineer_attack_b_02": {
    "frame": {
-    "x": 435,
+    "x": 640,
     "y": 2,
     "w": 118,
     "h": 244
@@ -74,18 +74,18 @@
   },
   "javelineer_attack_b_02_team": {
    "frame": {
-    "x": 338,
-    "y": 275,
+    "x": 354,
+    "y": 269,
     "w": 96,
-    "h": 149
+    "h": 148
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 200,
+    "y": 201,
     "w": 96,
-    "h": 149
+    "h": 148
    },
    "sourceSize": {
     "w": 496,
@@ -98,7 +98,7 @@
   },
   "javelineer_attack_b_03": {
    "frame": {
-    "x": 193,
+    "x": 520,
     "y": 2,
     "w": 116,
     "h": 263
@@ -122,18 +122,18 @@
   },
   "javelineer_attack_b_03_team": {
    "frame": {
-    "x": 233,
-    "y": 275,
+    "x": 762,
+    "y": 174,
     "w": 101,
-    "h": 155
+    "h": 154
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 198,
-    "y": 194,
+    "y": 195,
     "w": 101,
-    "h": 155
+    "h": 154
    },
    "sourceSize": {
     "w": 496,
@@ -146,7 +146,7 @@
   },
   "javelineer_attack_b_04": {
    "frame": {
-    "x": 313,
+    "x": 398,
     "y": 2,
     "w": 118,
     "h": 260
@@ -170,7 +170,7 @@
   },
   "javelineer_attack_b_04_team": {
    "frame": {
-    "x": 124,
+    "x": 139,
     "y": 275,
     "w": 105,
     "h": 157
@@ -218,8 +218,8 @@
   },
   "javelineer_attack_b_05_team": {
    "frame": {
-    "x": 438,
-    "y": 275,
+    "x": 248,
+    "y": 247,
     "w": 102,
     "h": 142
    },
@@ -242,17 +242,17 @@
   },
   "javelineer_attack_b_06": {
    "frame": {
-    "x": 557,
+    "x": 193,
     "y": 2,
-    "w": 196,
+    "w": 201,
     "h": 241
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 233,
+    "x": 228,
     "y": 127,
-    "w": 196,
+    "w": 201,
     "h": 241
    },
    "sourceSize": {
@@ -266,9 +266,9 @@
   },
   "javelineer_attack_b_06_team": {
    "frame": {
-    "x": 544,
-    "y": 275,
-    "w": 107,
+    "x": 640,
+    "y": 250,
+    "w": 106,
     "h": 139
    },
    "rotated": false,
@@ -276,7 +276,7 @@
    "spriteSourceSize": {
     "x": 229,
     "y": 209,
-    "w": 107,
+    "w": 106,
     "h": 139
    },
    "sourceSize": {
@@ -290,17 +290,17 @@
   },
   "javelineer_attack_b_07": {
    "frame": {
-    "x": 2,
-    "y": 275,
-    "w": 118,
+    "x": 762,
+    "y": 2,
+    "w": 123,
     "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 237,
+    "x": 232,
     "y": 202,
-    "w": 118,
+    "w": 123,
     "h": 168
    },
    "sourceSize": {
@@ -314,9 +314,9 @@
   },
   "javelineer_attack_b_07_team": {
    "frame": {
-    "x": 768,
-    "y": 275,
-    "w": 117,
+    "x": 750,
+    "y": 332,
+    "w": 116,
     "h": 126
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 234,
     "y": 226,
-    "w": 117,
+    "w": 116,
     "h": 126
    },
    "sourceSize": {
@@ -374,7 +374,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 896,
-   "h": 448
+   "h": 460
   },
   "scale": "3",
   "ageborn": {
@@ -497,7 +497,15 @@
      "muzzle": [
       54.5,
       18.8
-     ]
+     ],
+     "aimDeg": 5.1,
+     "release": {
+      "frame": 6,
+      "atLu": [
+       46.4,
+       34.2
+      ]
+     }
     }
    },
    "team": {

@@ -265,6 +265,197 @@ pulse their thrust cones / tractor ring on a 2-frame beat; the bob stays in code
 loop in the same 1020 ms and 2D accents. `node art/blender/check_timing.mjs [ref]` fails if any
 clip duration or attack `impactAt` in `src/visuals/unitSheets.gen.ts` differs from the git ref.
 
+## Data the pipeline writes besides pixels (art round W0)
+
+Each model is opened once per art round, so every render writes what the game needs about its frames in the
+same run, and `anchors_only.py` writes the same data for units nobody re-renders (no Cycles, no Blender slot,
+about 3 s a unit; the whole roster in about 8 minutes).
+
+**Damage spots** (queue item 40). In `build()`, after the parts:
+
+```python
+rig.damage_spot_at("shield", "shield", 21.0, 30.0, 7.5, "metal")          # side-view (x, z) on the joint's parts
+rig.damage_spot_at("tunic", "torso", 4.0, 34.0, 6.5, "cloth", team=True)  # on a team surface
+rig.damage_spot_at("hem", "hips", 6.0, 17.0, 9.0, "cloth", kind="strip")  # a torn strip hangs from here
+rig.damage_spot("exhaust", "hull", (-30.0, 4.0, 28.0), 6.0, "smoke", kind="emit", normal=(-1, 0, 0))
+```
+
+`damage_spot_at` casts a camera ray at the joint's own parts at rest (as the face kit lays its decals), so the
+spot sits on the surface the viewer sees, with that surface's normal; the part it sees must be a team part for
+`team=True` and not one otherwise, and have the palette colour `fill="#RRGGBB"` when given (pin it for marks next
+to skin), or it raises. `damage_spot` takes a character-space point and normal like `rig.track`. A mark's radius
+is its surface patch (at least 5 lu; the runtime draws 6-9 lu marks within about 70% of it), a strip's its longest
+hanging length, an emitter's its puff size. Materials:
+cloth, hide (hide and fur), metal, wood, stone (stone, crystal, bone), glass (glass and visors), energy; an
+emitter's medium: smoke, steam, spark, breath, motes. **Never on faces or skin** (no blood: damage shows on
+clothes, armour, shields and machines). Item 40 section 3.3 says what each family shows; 4-5 marks, a strip
+where the unit wears cloth, emitters where they fit. `on=` names other joints whose parts count as the spot's
+surface for its visibility rays (a mark on a cape that hangs from the torso). Place marks where the camera sees
+them through the unit's own motion, not only at rest: a belly band under a held spear, a tabard behind a shield
+arm or a boiler behind a swinging fist reads as hidden most of the time; check the visibility numbers in the
+preview (below) over idle, walk and attack and move the spot until they stay high. The eight representative
+units (Spear Hunter, Hoplite, Sabertooth, Destrier Knight, Armoured Car, Gyrocopter, Steam Golem, Holo
+Projector) are worked examples, one per family.
+
+**Body trackers** (item 38 B0): every unit gets a per-frame torso box and head point. The probe takes the joints
+`torso` (plus `hips`), `trunk`, `chest`, `horse`, `hull`, `plane`, `pod` or `orb` for the torso and `hhead`,
+`head`, `nh`, `c_head`, `p_head`, `crew_head`, `cmdr`, `pilot`, `driver` or `eyes` for the head (a rider's is its
+mount's), the first with parts; odd rigs call `rig.body_trackers(torso, head)` with a joint, a joint list,
+`(joint, (x0, z0, x1, z1))` or `(joint, (x, z))`, or get an entry in `probe.BODY`.
+
+**What is written** (`ageborn_art/probe.py`, the same code on both paths): per unique frame of every clip
+(extras clips too) each spot's `[x, y, rotDeg, scalePct, visPct]` (screen lu from the feet; the turn since rest;
+the size against rest, foreshortening and squash together, so `r` is the size at rest; for a mark the share of
+five camera rays that reach it, 0 when its part is hidden or turned away; a strip without the facing test, and a
+ray that meets nothing past its hem counts, as the strip hangs there; an emitter 100 unless hidden; a strip's and
+an emitter's turn and size follow a patch on its joint that faces the camera at rest), the torso box
+`[x0, y0, x1, y1]` and the head point `[x, y]`. A render writes `<out>/<slug>.damage.json`; `render_all.py
+--install` (and `units/render_industrial.py`) merge it into `public/art/damage/<age>.json`
+(`ageborn_art/damage.py`: one unit per line, sorted, the same data gives the same bytes; families from item 40
+appendix A, `DAMAGE_FAMILY` overrides).
+
+```sh
+# every unit's bundle entry without Cycles, after a self-check against the shipped sheets
+.venv-blender/bin/python art/blender/anchors_only.py --units all --bundles --report /tmp/anchors.json
+# draw a unit's spots, torso boxes and head points over its shipped frames (visibility per spot under each frame)
+.venv-blender/bin/python art/blender/spot_preview.py hoplite --clips idle,attack,die --out /tmp/hoplite_spots.png
+.venv-blender/bin/python art/blender/spot_preview.py hoplite --frames idle.0,walk.3,attack.6 --crop --scale 1.5 \
+    --out /tmp/hoplite_zoom.png
+```
+
+The **self-check** runs before anything is written: the script must give the sheet's clips, frame counts,
+sequences, step durations and impact frames, its `feetPx` and canvas, every tracker within 0.3 lu and every
+frame's silhouette box (parts and interior-line hulls, the outline's width, the smear ribbon and the 2D accents,
+cut to the canvas) within 2 lu of the packed frame. A unit that fails is listed and keeps its old bundle entry
+(or none), so a script that no longer reproduces its sheet never writes wrong spots.
+
+**Aim data** (queue item 44; `ageborn_art/aimdata.py`, COMMON C2). Every attack clip that launches a shot gets,
+after its other meta keys, `aimDeg` (the drawn weapon's angle at the release frame, degrees above the facing
+direction on screen, measured on the rig: the weapon joint's axis seen by the sprite camera, yaw and tilt included)
+and `release: {"frame", "atLu"}` (the unique frame and the point where the shot leaves); clips that emit rather than
+aim (drums, songs, breath, spells) get `omni: true` instead of `aimDeg`. The weapon is the joint carrying the clip's
+muzzle tracker and its +X (weapons are authored pointing forward); `aimdata.SPEC` overrides it per unit: another
+joint or axis (`"muzzle"`: from the joint's pivot to the tracker, for props authored upright), the release on the
+frame before the impact when the projectile has left the hand there, an authored angle for axis-less throws (and
+where the drawn effect, not the prop, shows the shot's direction), `omni`, or no shot at all. Renders write the keys
+(`pipeline.run_unit` calls `aimdata.annotate_clips` after the clip meta, which also checks every aimed variant's
+timing against its base); for sheets nobody re-renders, `anchors_only.py --units all --aim` writes them as a
+JSON-only rewrite of the installed sheet JSONs (PNGs untouched; removing the keys gives back the old bytes;
+rerunnable; `--aim-dry <json>` only lists them). `check_timing.mjs` checks the keys' shape and
+`tests/integrity/aimData.test.ts` checks that every clip the content says launches something carries them.
+
+```sh
+# list the aim keys every shot clip would get (sheets untouched), then write them into the installed sheets
+.venv-blender/bin/python art/blender/anchors_only.py --units all --check-only --aim-dry /tmp/aim.json
+.venv-blender/bin/python art/blender/anchors_only.py --units all --aim
+```
+
+**Aimed attack clips** (`ageborn_art/aimed.py`, COMMON C2). A unit that hits flyers overhead (or shoots down from a
+height) adds variants of its shot clips aimed up about 45 and 70 degrees (and down) at the end of `clips()`:
+
+```python
+from ageborn_art import aimed as AIMED
+
+AIM_W = [0, 0.45, 0.85, 1, 1, 1, 0.85, 0.4, 0, 0, 0, 0]   # per unique frame: how much of the turn it takes
+
+def _attack_pose(f, turn=0.0):    # frame f with the weapon turned `turn` degrees up (negative: down): the weapon's
+    ...                           # angle, a lean into the shot, the head with it; arms by IK; feet where they were
+
+def clips():
+    attack = _attack_clip()
+    aimed = AIMED.variants(RIG, attack, lambda f, t: _attack_pose(f, turn=t), AIM_W, aims=("up45", "up70"))
+    return [..., attack, ...] + aimed
+```
+
+`variants(rig, clip, pose, weights, aims=("up45", "up70", "down"))` solves the turn on the rig so the drawn weapon
+(the clip's `aimdata` axis through the sprite camera) points at 45, 70 or -35 degrees at the release frame within
+0.25 degrees (`targets=` overrides them), and builds `<clip>_up45`, `<clip>_up70`, `<clip>_down` with the base clip's
+exact timing (frames, sequence, step durations, impact and smear frames, `holdStep`, `holdLoop` and every other
+extra) plus `aimOf`. A frame whose weight is 0 reuses the base clip's frame (no new pixels); between 0 and 1 it takes
+that share of the turn, so the wind-up rises into the aim and the recovery falls out of it and the animation
+standard's holds and follow-through stay as they were; the release frame must be 1. Bursts and rings painted on the
+weapon joint turn with it. It raises when a planted foot moves more than 1 lu or no turn reaches a target. The
+variants go to the extras sheet (`pipeline.EXTRA_CLIPS` takes every `_up45`, `_up70` and `_down` attack clip), get
+their aim keys like any shot clip, and `aimdata.annotate_clips` checks their timing against the base again when the
+meta is written. The Crossbowman is the worked example.
+
+## Detail standard (art round, queue items 47, 46, 40, 44; wave W0 2026-11-01)
+
+The art round opens every model once and brings it to the detail standard of the art audit
+(`docs/design-history/item47-art-audit.md`, sections 5 and 6). Numbers are at game scale: 1.83 device px per
+lu (the HD sheet, 2.46 px/lu, drawn at 0.74x on a DPR 2 phone).
+
+**The standard, for every class** (audit 5.1; the per-class table and floors are in audit 5.2):
+
+1. *Size.* A secondary shape that must read as a shape is at least **2.5 lu** on its short side; 1.2-2.5 lu
+   reads only as texture (use it for breakup, never to carry meaning). Lines inside the silhouette 1.0-1.2 lu.
+2. *Value.* A secondary shape differs from its surroundings by at least **15 levels** of luminance or is
+   separated by a line. Each material: light, mid, core shadow and at most one highlight.
+3. *Silhouette.* 2-4 breakers (headgear, weapon, shoulder piece, cape, pack, tail, mane) of at least 4 lu; the
+   weapon keeps its full length and is at least 2.5 lu thick at its business end.
+4. *Materials.* Every colour gets a kind (`MATERIAL_KINDS`), see the lifts below. Metal: a hot spec and edge
+   wear; wood: grain along its length; stone: chips; hide and fur: clumps in two tones; dirt on the lower third.
+5. *Team zone.* 20-40% of the silhouette (never under 18% before the outline) in two tones: a trim, stripe,
+   panel or emblem of at least 2.5 lu in a team-dark or neutral tone. Detail over a team zone counts against it.
+6. *Shading and rim.* Cavity darkening, an edge highlight on raised edges, a top rim that survives the outline.
+7. *Outline v4* (thinner and darker than v3; see L5). Do not thin it further without growing the parts.
+8. *Normals.* Hard edges only where a crease is meant: flat-shaded slabs for plates, blades and planks (the
+   edge highlight lights their edges), smooth blobs and lathes elsewhere.
+9. *Motion.* The animation standard above, unchanged. New straps, pouches, tassels, manes and tails are
+   secondary joints (`rig.secondary`) that follow through a frame or two late; no new part may jitter.
+10. *Data with every render* (each model is opened once): damage spots and trackers (item 40), `aimDeg` and
+    `release` per shot clip (item 44), the skin variants (item 46).
+11. *Pixel size is fixed* (HD 2.46 px/lu, 1x 1.23; Legendaries 2.05 and 1.03): HD sheet pixels within +2%.
+
+**Opt-in** (`ageborn_art/look.py`). A unit script sets `DETAIL_STANDARD = True` and
+`MATERIAL_KINDS = {hex: kind, ..., "team": kind}`. Without the flag every hook is a no-op and a re-render is
+byte for byte the shipped sheet (checked on the Pebbler and the Hoplite), so units outside a wave never change.
+Kinds: cloth, leather, hide, fur, wood, stone (stone, crystal, bone-like rock), bone, bronze, iron, gold,
+ceramic, polymer, glass, energy, skin. A colour without a kind still gets L2, L3 and L5. Decals and other
+`highlight=False` parts (eyes, mouths, emblems drawn as decals) and glows are never lifted. Two optional knobs per
+unit: `LOOK_HIGHLIGHT` (default 1.0) scales the finish highlight's strength (capped; the Bonker uses 1.35 for the
+highlight-share floor of 5.2), and `LOOK_RIM = {...}` overrides `look2d.RIM` (the top rim's widths and lift).
+
+| Lift | What (all deterministic; no randomness) |
+|---|---|
+| L1 | per-kind breakup in object space (`look_rest` / `look_grain` point attributes written after the build: rest-pose coordinates and the part's own principal axes, so patterns never crawl): hide blotches, fur clumps along the part, cloth folds, leather mottle, wood grain along the length, stone chips and cracks (Voronoi), bone pores, brushed metal; posterized to three value tones at 3-8% of value; value only (a gain), so hue never moves; non-team colours in the A11 team hue bands keep HSV saturation <= 0.38 unless their kind is an accent (polished bronze, gold); dirt darkens the lower 20% / 34% of the height in two steps |
+| L2 | cavity: a 1.2 lu ambient occlusion posterized into a crisp crease (strength 0.4); a convex edge highlight on the lit side from the Bevel node (0.7 lu; masked off any occluded crease, so it never draws a line where two blobs of one mesh meet); a hot spec on metal kinds |
+| L3 | a 2D top rim (`look2d.top_rim`): a band just inside the silhouette where it faces up (from the blurred silhouette's gradient), 0.35 + 0.5 lu at full strength then fading, in the part's own lit colour with its value raised (hue and saturation kept); on team surfaces the lit team grey plus a white overlay in the base frame |
+| L4 | supersampling, **off** (owner decision): `AGEBORN_SUPERSAMPLE=1` renders at 2x, outlines at 2x, downsamples 2:1 (premultiplied) and sharpens luminance only (`look2d.sharpen_luma`: RGB x Y'/Y, so hue and saturation, and with them the colour rule, cannot change) |
+| L5 | outline v4 (`look.UNIT_OUTLINE_V4`): fill x 0.46, HSV value cap 0.42, 2.8 lu wide, inner cover 0.35 lu |
+| pack | an opt-in MaxRects packer (`look2d.maxrects`: three sort orders, the narrowest heights per width) that keeps the shelf packer's sheet when that is not larger, so packing never grows a sheet |
+
+**Checks** (in `<slug>.stats.json` under `look`; a failure raises `LookCheckError`, so `render_all.py` does
+not install): the colour rule <= 10% on the RGBA frames and on the shipped PNG8 sheets (core and extras, HD and
+1x); team fill >= 18% on every frame before the outline; planted-foot drift <= 1 lu; and against the reference
+sheet (`AGEBORN_LOOK_REF`: a tree or git ref, default `HEAD`): silhouette area per frame (reported) and HD
+sheet pixels, core plus extras as the sheet governor counts them (more than +2% fails; a skin is measured
+against its unit's sheet).
+`look_check.py <sheet>.hd.json --ref main` prints the audit's game-scale metrics (`look2d.game_metrics`:
+flat share, micro, edge density, highlight share, reconstructed from the audit's baselines) next to the
+reference's, plus the encoded colour rule.
+
+**Two-tone team zones.** `look.team_part(rig, joint, geo)` makes a team part in the team-dark tone (grey 0.62
+in the team pass: blue 2F7DF6 becomes 1D4E98): spots, stripes, belts and trims inside a team zone keep their
+team area and still give the zone a second tone (rule 5). A unit that has not opted in gets a plain team part.
+
+**Skin variants** (item 46, `ageborn_art/skins.py`). A unit script lists `SKINS = {"<skin>": {"kinds":
+{...}, "palette": {unit hex: skin hex}}}` and reads `getattr(rig, "skin", None)` in `build()`: same joints,
+trackers, poses and clips; skin materials (the palette recolours every part, interior line and glow through
+`look.remap`), patterns and replacement parts. `render_all.py --units bonker --skins` (or `--units
+bonker@pumpkin_head`) renders the unit and its skins: `<slug>@<skin>[.x][.hd].{png,json}` with
+`visualId unit.<slug>@<skin>`, `skinOf`, `skin`, frame names `<slug>@<skin>_...` and `extrasOf
+<slug>@<skin>`, installed next to the unit's sheets; `gen_portraits.py <out> <slug>@<skin>` writes its card
+stills. After a skin render `look2d.parity` (also `skin_parity.py`) checks DESIGN A5.8 clarity parity
+against the unit's sheet: the same clip timing and anchors, silhouette IoU >= 0.85 on every frame, the same
+IoU inside 12 lu of every weapon anchor (outside the death, where weapons are thrown away), team zones on
+every frame (>= 18%); a skin that fails is not installed.
+
+**Palette encoding.** The shipped PNG8 (Pillow's octree, 256 colours, no dither) merges part of the breakup's
+subtle tones: on the detailed Bonker the game-scale flat share is 0.146 on the RGBA sheet and 0.173 on the PNG8.
+A k-means palette (numpy) cut the colour error from 3.4 to 2.4 levels but moved flat only to 0.170 for 16% more
+bytes, so the octree stays. Judge the lifts on the shipped encoding (`look_check.py` reads it).
+
 ## Install
 
 Blender's Python module needs **Python 3.11** (bpy 5.0.1 wheels exist only for 3.11).

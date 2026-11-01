@@ -68,8 +68,10 @@ ALL_UNITS = [u for us in AGE_OF.values() for u in us]
 
 
 def install(slug, out):
+    """Copies <slug>[.x][.hd].{json,png} to public/art/units/<age>/ (a skin `<unit>@<skin>` goes next to its
+    unit's sheets)."""
     import shutil
-    age = next(a for a, us in AGE_OF.items() if slug in us)
+    age = next(a for a, us in AGE_OF.items() if slug.split("@")[0] in us)
     dst = os.path.join(HERE, "..", "..", "public", "art", "units", age)
     os.makedirs(dst, exist_ok=True)
     for f in (f"{slug}.json", f"{slug}.png", f"{slug}.hd.json", f"{slug}.hd.png"):
@@ -83,6 +85,8 @@ def install(slug, out):
         elif os.path.exists(d):
             os.remove(d)
     print(f"  installed {age}/{slug}", flush=True)
+    from ageborn_art import damage
+    damage.install_entry(slug, out, age)   # the render's damage spots and body trackers into the age bundle
 
 
 def main():
@@ -99,8 +103,10 @@ def main():
     ap.add_argument("--no-previews", action="store_true", help="skip GIFs and contact sheets")
     ap.add_argument("--install", action="store_true",
                     help="with --v3: copy the sheets to public/art/units/<age>/ (age from the unit module)")
+    ap.add_argument("--skins", action="store_true",
+                    help="also render every skin a listed unit declares (SKINS); `<unit>@<skin>` renders one skin")
     args = ap.parse_args()
-    from ageborn_art import config, pipeline  # imports bpy
+    from ageborn_art import config, pipeline, skins  # imports bpy
     config.set_render_scale(args.scale)
 
     out = os.path.abspath(args.out)
@@ -109,14 +115,27 @@ def main():
     t0 = time.time()
     all_stats = []
     units = ALL_UNITS if args.units == "all" else args.units.split(",")
+    if args.skins:
+        units = [s for u in units for s in [u] + ([f"{u}@{k}" for k in skins.skin_ids(skins.load(u))]
+                                                   if "@" not in u else [])]
     todo = ([] if args.no_fx else FX) + units
+    failed = []
     for slug in todo:
         print(f"[{slug}]", flush=True)
-        mod = importlib.import_module(f"units.{slug}")
+        mod = skins.load(slug) if slug not in FX else importlib.import_module(f"units.{slug}")
         is_fx = slug in FX
         st = pipeline.run_unit(mod, out, frames, previews=not args.no_previews,
                                v3=args.v3 and not is_fx)
         all_stats.append(st)
+        if "@" in slug and args.v3:
+            # DESIGN A5.8 clarity parity against the unit's sheet (rendered in --out, else the installed one)
+            par = skin_parity(slug, out)
+            st["parity"] = par
+            print(json.dumps({"parity": par}), flush=True)
+            if not par["ok"]:
+                failed.append(slug)
+                print(f"  PARITY FAILED, not installed: {par['problems'][:8]}", flush=True)
+                continue
         if args.install and args.v3 and not is_fx:
             install(slug, out)
     if not args.no_mockup:
@@ -130,6 +149,33 @@ def main():
     with open(os.path.join(out, "stats.json"), "w") as fh:
         json.dump({"units": all_stats, "seconds": round(time.time() - t0, 1)}, fh, indent=1)
     print(f"done in {time.time() - t0:.1f} s -> {out}")
+    if failed:
+        sys.exit(f"skin parity failed: {failed}")
+
+
+def skin_parity(slug, out):
+    """look2d.parity of the skin sheet `<out>/<unit>@<skin>.hd.json` (core and extras) against the unit's
+    sheet in `out` (if it was rendered there) or the installed one."""
+    from ageborn_art import look2d
+    unit = slug.split("@")[0]
+    age = next(a for a, us in AGE_OF.items() if unit in us)
+    res = {"ok": True, "problems": []}
+    for suffix in (".hd", ".x.hd"):
+        mine = os.path.join(out, f"{slug}{suffix}.json")
+        ref = os.path.join(out, f"{unit}{suffix}.json")
+        if not os.path.exists(ref):
+            ref = os.path.join(HERE, "..", "..", "public", "art", "units", age, f"{unit}{suffix}.json")
+        if not os.path.exists(mine) and not os.path.exists(ref):
+            continue
+        if os.path.exists(mine) != os.path.exists(ref):
+            res["ok"] = False
+            res["problems"].append(f"{suffix}: only one of {mine} / {ref} exists")
+            continue
+        r = look2d.parity(ref, mine)
+        res[suffix.lstrip(".")] = {k: v for k, v in r.items() if k not in ("ok", "problems")}
+        res["ok"] &= r["ok"]
+        res["problems"] += [f"{suffix}: {p}" for p in r["problems"]]
+    return res
 
 
 if __name__ == "__main__":

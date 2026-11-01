@@ -2035,7 +2035,15 @@
      "muzzle": [
       3.3,
       9.2
-     ]
+     ],
+     "aimDeg": -4.7,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       3.3,
+       9.2
+      ]
+     }
     },
     "hit": {
      "frames": 5,

@@ -2149,7 +2149,15 @@
        ]
       ]
      },
-     "holdStep": 3
+     "holdStep": 3,
+     "omni": true,
+     "release": {
+      "frame": 6,
+      "atLu": [
+       191.8,
+       5.5
+      ]
+     }
     },
     "hit": {
      "frames": 5,

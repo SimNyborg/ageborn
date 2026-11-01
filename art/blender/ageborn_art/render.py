@@ -152,12 +152,48 @@ def smear_for(rig, clip, poses, idx, spec):
     return _smear(rig, spec, poses[prev], poses[idx])
 
 
+class ProbeOnly(Exception):
+    """Raised by render_clips under PROBE_ONLY once every frame is measured (anchors_only.py): the unit's
+    whole setup ran as for a render, nothing was rendered. Carries the rig (and its probe), the clips and
+    the trackers."""
+
+    def __init__(self, rig, clips, tracks):
+        super().__init__(rig.name)
+        self.rig, self.clips, self.tracks = rig, clips, tracks
+
+
+# anchors_only.py sets this: pose and measure every frame (probe.py), render nothing, raise ProbeOnly
+PROBE_ONLY = False
+
+
+def _probe_extras(probe, rig, clip, poses, i, smear, frame_dir, feet_px):
+    """PROBE_ONLY: what widens a frame's silhouette besides the rig (the smear ribbon under it, the 2D
+    accents over it), for the anchors-only self-check's boxes."""
+    if smear is not None:
+        probe.add_box(clip, i, probe.object_box(smear))
+        bpy.data.objects.remove(smear, do_unlink=True)
+    from . import smear2
+    path = smear2.paint_frame(rig, clip, poses, i, os.path.join(frame_dir, f"{clip.name}_{i:02d}_smear2.png"))
+    if path:
+        import numpy as np
+        from PIL import Image
+        a = np.asarray(Image.open(path))[..., 3]
+        ys, xs = np.nonzero(a > 0)
+        if len(xs):
+            k = C.PX_PER_LU
+            probe.add_box(clip, i, [(xs.min() - feet_px[0]) / k, (feet_px[1] - ys.max() - 1) / k,
+                                    (xs.max() + 1 - feet_px[0]) / k, (feet_px[1] - ys.min()) / k])
+        os.remove(path)
+
+
 def render_clips(rig, clips, frame_dir, feet_px, smear_spec=None, team=True, log=print):
     """Writes <clip>_<nn>.png (base), <clip>_<nn>_team.png (team layer) and, on smear
     frames, <clip>_<nn>_smear.png into frame_dir. Returns ({clip: [(base, team|None,
     smear|None), ...]}, {clip: {tracker: [[x, y] lu, ...]}}, seconds)."""
     os.makedirs(frame_dir, exist_ok=True)
     out, tracks, t0 = {}, {}, time.time()
+    from . import probe as _probe
+    probe = _probe.for_clips(rig, clips, feet_px, boxes=PROBE_ONLY)
     for clip in clips:
         poses = clip_poses(rig, clip)
         frames, tr = [], {name: [] for name in rig.trackers}
@@ -169,12 +205,18 @@ def render_clips(rig, clips, frame_dir, feet_px, smear_spec=None, team=True, log
                 frames.append(out[src][k])
                 for name in rig.trackers:
                     tr[name].append(tracks[src][name][k] if src in tracks else [0.0, 0.0])
+                probe.copy(clip, i, src, k)
                 continue
             smear = smear_for(rig, clip, poses, i, smear_spec)
             rig.apply(poses[i])
             _update()
             for name, e in rig.trackers.items():
                 tr[name].append(_screen_lu(e.matrix_world.translation, feet_px))
+            probe.measure(clip, i)
+            if PROBE_ONLY:
+                frames.append(None)
+                _probe_extras(probe, rig, clip, poses, i, smear, frame_dir, feet_px)
+                continue
             base = os.path.join(frame_dir, f"{clip.name}_{i:02d}.png")
             frames.append(render_frame(rig, poses[i], base, team, smear))
             # smear v2 and attacker accents (smear2.py), painted over the finished frame later
@@ -184,4 +226,7 @@ def render_clips(rig, clips, frame_dir, feet_px, smear_spec=None, team=True, log
         if rig.trackers:
             tracks[clip.name] = tr
         log(f"  {clip.name}: {clip.frames} frames")
+    rig.__dict__["_probe"] = probe   # the damage entry and the aim data read it (damage.py, aimdata.py)
+    if PROBE_ONLY:
+        raise ProbeOnly(rig, clips, tracks)
     return out, tracks, time.time() - t0

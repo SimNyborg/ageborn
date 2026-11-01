@@ -27,6 +27,7 @@ from PIL import Image
 from .colors import hex_to_rgb
 
 PAD = 2  # transparent gutter around each packed frame (linear filtering, mipmaps)
+PACKER = None  # look.py sets its MaxRects packer for units that opt into the detail standard
 
 
 def load(path):
@@ -320,7 +321,7 @@ def build_atlas(slug, clip_frames, clip_meta, extra_meta, out_dir, scale, file_s
         names.append(f"{slug}_{file_slug}_empty")
         images.append(Image.new("RGBA", (1, 1), (0, 0, 0, 0)))
         trims.append((0, 0, 1, 1))
-    sheet, pos = pack(images)
+    sheet, pos = (PACKER or pack)(images)
     feet = extra_meta["feetPx"]
     frames = {}
     for name, im, box, p in zip(names, images, trims, pos):

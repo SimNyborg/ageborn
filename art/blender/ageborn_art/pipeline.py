@@ -22,12 +22,21 @@ import time
 import numpy as np
 
 from . import config as C
-from . import render, retime, scene, sheet
+from . import look, render, retime, scene, sheet
+from . import aimdata, damage  # W0: aim data (C2) and damage spots and body trackers (C1)
 from .rig import Rig
 
 
+class _ExtraClips(tuple):
+    """W0: the extras sheet also takes every aimed variant (`<clip>_up45`, `_up70`, `_down`; aimed.py, C2)."""
+
+    def __contains__(self, name):
+        base, _, aim = name.rpartition("_") if isinstance(name, str) else ("", "", "")
+        return tuple.__contains__(self, name) or (aim in ("up45", "up70", "down") and base in ("attack",) + self)
+
+
 # attack variants and second attackers go into the lazily loaded extras sheet (ANIM_SPEC P4)
-EXTRA_CLIPS = ("attack_b", "attack_c", "attack_alt")
+EXTRA_CLIPS = _ExtraClips(("attack_b", "attack_c", "attack_alt"))   # and every aimed variant (W0)
 
 
 def walk_metrics(tracks, clip, planted_tol=1.0):
@@ -105,11 +114,13 @@ def finish_frame(base_path, team_path, smear_path, spec):
         if under is not None:
             base = sheet.over(base, under)
         return base, team
-    width_1x, factor, max_v = spec
+    width_1x, factor, max_v = spec[:3]
+    inner_1x = spec[3] if len(spec) > 3 else C.OUTER_OUTLINE_INNER_PX_1X   # outline v4 (look.py) names its cover
+    base, team = look.pre_outline(base, team)                              # L3 top rim (opted-in units only)
     inset = max(2, round(C.OUTLINE_LU * C.PX_PER_LU) + 1)
     return sheet.outline(base, team, width_1x * C.RENDER_SCALE, factor, max_v,
                          seed_inset_px=inset, team_grey=C.OUTER_OUTLINE_FACTOR,
-                         inner_px=C.OUTER_OUTLINE_INNER_PX_1X * C.RENDER_SCALE, under=under)
+                         inner_px=inner_1x * C.RENDER_SCALE, under=under)
 
 
 def default_outline(mod):
@@ -192,6 +203,7 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
     colour-matched outline, and two sheets per unit: `<slug>.hd.json` at 2.46 px/lu and
     `<slug>.json` at 1.23 px/lu, downsampled from the same frames."""
     t0 = time.time()
+    look.begin(mod)     # the detail standard's lifts for units with DETAIL_STANDARD = True; a no-op otherwise
     if v3:
         # Legendaries (170-220 lu) render at 2.05 px/lu (HD) / 1.03 (1x): still above the densest
         # common screen (about 1.65 device px/lu) and their HD sheet fits one 4096 px texture
@@ -207,10 +219,12 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
         ml, mt, mb = _even(int(canvas[0] * 0.14)), _even(int(canvas[1] * 0.08)), _even(int(canvas[1] * 0.04))
         canvas = (_even(canvas[0]) + ml, _even(canvas[1]) + mt + mb)
         feet = (_even(feet[0]) + ml, _even(feet[1]) + mt)
+    canvas, feet = look.supersample_begin(canvas, feet)    # L4, AGEBORN_SUPERSAMPLE=1 only
     scene.camera(*canvas, feet)
     rig = Rig(mod.SLUG, yaw=getattr(mod, "YAW_DEG",
                                     C.CHARACTER_YAW_V3 if v3 else C.CHARACTER_YAW_DEG))
     mod.build(rig)
+    look.after_build(rig)
     clips = mod.clips()
     if v3:
         clips = retime.retime(mod, clips)
@@ -227,11 +241,13 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
     spec = default_outline(mod)
     if v3 and spec is not None and not hasattr(mod, "OUTER_OUTLINE"):
         spec = C.UNIT_OUTLINE_V3
+    spec = look.outline_spec(spec)      # outline v4 for opted-in units
     frames = _outline_frames(raw, os.path.join(raw_dir, "final"), spec)
     t_outline = time.time() - t1
 
     first = clips[0].name
     width_lu = sheet.silhouette_width_lu(*raw[first][0][:2], C.PX_PER_LU)
+    frames, feet = look.supersample_end(frames, raw_dir, feet)   # L4: back to the sheet's density
     clip_meta = {}
     for c in clips:
         m = c.meta()
@@ -257,6 +273,8 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
         for fx in m.get("fx", []):
             fx["scale"] = round((width_lu / C.FX_REF_WIDTH_LU) ** fx.pop("scalePow", 1.0), 3)
         clip_meta[c.name] = m
+    aimdata.annotate_clips(mod, clips, clip_meta, rig, tracks)   # W0: aimDeg, release, omni; aimed variants' timing
+    damage.write_entry(mod, rig, clips, out_dir, file_slug)   # merged into the age bundle on install
     extra = {
         "visualId": getattr(mod, "VISUAL_ID", f"unit.{mod.SLUG}"),
         "name": mod.NAME,
@@ -341,7 +359,10 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
                 "webp_lossless": kb(f"{file_slug}.webp"),
                 "webp_q90": kb(f"{file_slug}.q90.webp"), "json": kb(f"{file_slug}.json")}),
     }
+    look.checks(mod, out_dir, file_slug, stats, clip_meta, log, ref_slug=getattr(mod, "SKIN_OF", None))
     with open(os.path.join(out_dir, f"{file_slug}.stats.json"), "w") as fh:
         json.dump(stats, fh, indent=1)
     log(json.dumps(stats))
+    look.end()
+    look.raise_on_failure(stats)
     return stats
