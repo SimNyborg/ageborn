@@ -174,5 +174,5 @@ export const UNIT_SHEET_PIXELS: Readonly<Record<string, readonly [number, number
   'stone/training_dummy': [1425408, 200704, 378880, 53760],
   'stone/tuskback': [5308416, 1376256, 1359872, 353280],
   'stone/tuskback@woolly_tuskback': [5548032, 1520640, 1425408, 374784],
-  'stone/woolly_rhino': [6010880, 1859584, 1530880, 473088],
+  'stone/woolly_rhino': [6062080, 1806336, 1546240, 457728],
 };
