@@ -10,7 +10,7 @@
  * Without spot data (no bundle yet, or none for this unit) the unit shows the effects-only fallback: tint, emitters and
  * bursts at points of its torso box and head (bundle trackers), or of its static anchors.
  */
-import { Container, Sprite, Texture } from 'pixi.js';
+import { Sprite, Texture, type Container } from 'pixi.js';
 import type { Anchors } from '@/contracts/art';
 import type { PartBaker } from '../bake';
 import { FX_ZONES } from '../effects/sprites';
@@ -35,14 +35,15 @@ export interface DamageXform {
   sy: number;
 }
 
-/** A kit part drawn about its own origin. */
+/**
+ * A kit part drawn about its own origin: one sprite anchored at the part's origin (one display object per mark, not a
+ * container and a sprite: a brawl's marks are many).
+ */
 class PartNode {
-  readonly root = new Container();
-  private readonly s = new Sprite(Texture.EMPTY);
+  readonly root = new Sprite(Texture.EMPTY);
   private id = '';
 
   constructor(private readonly baker: PartBaker) {
-    this.root.addChild(this.s);
     this.root.visible = false;
   }
 
@@ -51,17 +52,20 @@ class PartNode {
     this.id = id;
     const p = getPart(id);
     if (!p) {
-      this.s.texture = Texture.EMPTY;
+      this.root.texture = Texture.EMPTY;
       return;
     }
     const b = this.baker.get(p, FX_ZONES);
-    this.s.texture = b.main;
-    this.s.position.set(b.origin.x, b.origin.y);
+    this.root.texture = b.main;
+    // the baked frame sits at `origin` from the part's origin: that point is the anchor (rotation and scale turn about it)
+    const w = b.main.width || 1;
+    const h = b.main.height || 1;
+    this.root.anchor.set(-b.origin.x / w, -b.origin.y / h);
     this.baker.flush();
   }
 
   set tint(c: number) {
-    this.s.tint = c;
+    this.root.tint = c;
   }
 }
 
@@ -252,6 +256,10 @@ export class UnitDamage {
   /** Lays the marks and the strip out for the frame on screen (cheap when nothing changed). */
   layout(luPerUnit: number): void {
     const m = this.model;
+    // nothing to place: no marks or strip yet (most units: unhurt, or no spot data), none drawn before
+    if (m.marks.length === 0 && m.strip === null && this.marks.length === 0 && this.strip === null) return;
+    // culled far off view (the battle view hides the unit; its state still runs): laid out again once it is shown
+    if (this.o.body.parent?.visible === false) return;
     if (m.revision === this.laidRev && this.anim === this.laidAnim && this.frame === this.laidFrame && !this.animating) {
       // nothing moved but the hanging strip's sway: turn the strip only (most frames of a damaged unit)
       if (this.strip?.root.visible) this.strip.root.rotation = this.swayAngle();
