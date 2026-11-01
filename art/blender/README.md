@@ -460,7 +460,10 @@ where the camera ray meets the rest pose as drawn: a joint's rest offset counts 
 depth (the -10 degree yaw and the camera's 16 degree elevation). Each spot was kept only where the camera sees
 it through the motion (median visibility over idle, walk and attack at least 60%). The Javelineer throws at
 flyers with attack and attack B aimed up 45 and 70 degrees (`aimed.variants`: 7 and 4 new frames per angle;
-B's hold already points the javelin straight up, so only its flick turns). Opted-in materials are named
+B's hold already points the javelin straight up, so only its flick turns). The War Chariot's melee reach comes
+from its scythed pole blade (item 38 B1'): a lance on its own `lance` joint (so the tracked body, the cart, leaves
+it out) with a `poleTip` tracker, the furthest-forward melee tip of every attack, 85 lu ahead of the feet on the
+impact frame (the khopesh reached 17, so mirror duels drew the two horses inside each other). Opted-in materials are named
 `toon_<fill>_<finish>_look_<kind>`, so the probe's `fill` check reads their palette colour like any toon
 material's.
 

@@ -54,6 +54,7 @@ NO_RETIME = True
 
 COAT = "#7C604B"          # chestnut, held at ~39% saturation (the A11 colour rule)
 COAT_DK = "#634D3C"
+COAT_LT = "#96765D"       # the lit planes of shoulder, haunch and neck crest, and dapples (saturation 0.38)
 MANE = "#2A211D"
 HOOF = "#4A4038"
 MARK = "#E9E1D2"          # the white blaze and socks (markings of 3 lu and more)
@@ -61,7 +62,8 @@ MANE_LT = "#4A3B33"       # lighter strands in the mane and tail (two tones)
 
 # the detail standard (art round W0, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2
 DETAIL_STANDARD = True
-MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", MANE: "fur", MANE_LT: "fur", HOOF: "bone", MARK: "hide",
+LOOK_HIGHLIGHT = 1.25        # the glossy coat and the bronze: the highlight share floor (0.06)
+MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", COAT_LT: "hide", MANE: "fur", MANE_LT: "fur", HOOF: "bone", MARK: "hide",
                   B.VERD: "cloth", B.LEATHER_DK: "leather", B.LEATHER: "leather", B.BRONZE_HI: "bronze",
                   B.BRONZE: "bronze", B.AGED: "bronze", B.WOOD_DK: "wood", B.WOOD: "wood", B.PLUM: "wood",
                   B.SAND: "wood", B.SAND_LT: "cloth", B.LINEN: "cloth", B.HAIR: "fur", B.SKIN: "skin", "team": "cloth"}
@@ -71,9 +73,9 @@ SUN_LT = "#F2D892"
 SKINS = {"sun_chariot": {
     # big metal (the helmet, the scythes, the wheels) in a pale gold under the colour rule's 0.38; only the
     # small sun discs keep the rich gold (SUN)
-    "palette": {COAT: "#EFEAE0", COAT_DK: "#D8D0C1", MANE: "#E2CFA0", MANE_LT: "#F0E2BC", HOOF: "#B39B68",
+    "palette": {COAT: "#EFEAE0", COAT_DK: "#D8D0C1", COAT_LT: "#FAF7F0", MANE: "#E2CFA0", MANE_LT: "#F0E2BC", HOOF: "#7A654C",
                 MARK: "#FBF7EE", B.PLUM: "#DDCB9A", B.SAND: "#F0E6CC", B.WOOD: "#D9C79A", B.WOOD_DK: "#B39A68",
-                B.AGED: "#D2C08F", B.BRONZE: "#E3C88E", B.BRONZE_HI: "#F0DCA0", B.LEATHER_DK: "#8A6E48",
+                B.AGED: "#D2C08F", B.BRONZE: "#E3C88E", B.BRONZE_HI: "#F0DCA0", B.LEATHER_DK: "#5E4B3A",
                 B.VERD: "#D9BE86", B.VERD_DK: "#BFA36E"},
     # a clean white coat (the hide blotches read as dirt on white); dirt stays on the lower legs
     "kinds": {SUN: "gold", SUN_LT: "gold", "#EFEAE0": "skin", "#D8D0C1": "skin", "#FBF7EE": "skin"}}}
@@ -105,6 +107,9 @@ def _leg(rig, name, x, y, z_top, front):
     rig.part(f"{name}2", g, COAT)
     g = Geo().capsule((fx_ + 0.1, y, 6.8), (kx * 0.35 + fx_ * 0.65, y, 11.6), 3.2, 3.3)   # a white sock
     rig.part(f"{name}2", g, MARK if y < 0 else C_scale(MARK, 0.86), outline=0.6)
+    if getattr(rig, "skin", None) == "sun_chariot":       # dark leather bands: the white legs read on pale sand
+        g = Geo().capsule((fx_ + 0.15, y, 7.4), (fx_ + 0.3, y, 9.6), 3.55, 3.55)
+        rig.part(f"{name}2", g, B.LEATHER_DK, outline=0.6)
     g = Geo().blob((fx_ + 0.4, y, 5.6), (3.3, 3.1, 2.8), p=2.2)                 # fetlock tuft
     g.lathe([(2.4, 0), (0, 3.0)], (fx_ - 0.6, y, 5.0), (fx_ - 3.0, y, 3.4), segs=8)
     rig.part(f"{name}2", g, MANE, finish="hair", outline=0.8)
@@ -125,7 +130,23 @@ def _horse(rig):
     g = Geo().blob((HX, 0, 39.5), (21, 10.2, 9.6), p=2.3)
     g.blob((HX + 12.5, 0, 38.0), (11.5, 10.8, 12.8), p=2.3)                   # chest
     g.blob((HX - 12.5, 0, 40.5), (12.5, 11.0, 11.8), p=2.3)                   # haunch
-    rig.part("horse", g, COAT)
+    bf = F.Face(rig, "horse", [g])        # before rig.part: the part's mesh frees the geometry
+    rig.part("horse", g, COAT, finish="gloss")
+    # muscle planes as value steps: the lit tops of the shoulder and the haunch (thin shells on the surface), a
+    # darker belly; dapples on the haunch and the shoulder (3-3.6 lu)
+    g = Geo()
+    for (x, z), (rx, rz), rot in (((HX + 17.5, 45.5), (6.4, 5.8), -20), ((HX - 19.0, 46.5), (7.4, 6.0), 15)):
+        h = bf.hit(x, z)
+        g.blob((h.x, h.y + 0.5, h.z), (rx, 1.4, rz), p=2.4, rot=(0, rot, 0))
+    rig.part("horse", g, COAT_LT, finish="gloss", outline=0)
+    g = Geo().blob((HX + 1.0, -3.5, 31.0), (16.0, 5.0, 2.2), p=2.6)
+    rig.part("horse", g, COAT_DK, outline=0)
+    g = Geo()
+    for x, z, r in ((HX - 22.6, 41.4, 2.1), (HX - 17.4, 39.4, 1.9), (HX - 20.4, 35.4, 1.8), (HX - 24.8, 46.0, 1.8),
+                    (HX - 16.4, 45.2, 1.7), (HX - 25.6, 36.8, 1.6), (HX + 19.8, 39.2, 1.9), (HX + 15.6, 36.0, 1.7),
+                    (HX + 21.6, 43.8, 1.6)):
+        bf.decal(g, bf.hit(x, z), F.ellipse(0, 0, r, r * 0.92, 12), 0.35)
+    rig.part("horse", g, COAT_LT, outline=0, highlight=False)
     g = Geo().blob((HX - 1, 0, 46.5), (13.5, 11.6, 6.0), p=2.8)        # team saddle cloth over the back
     g.clip((0, 0, 40.0), (0, 0, -1))
     rig.part("horse", g, team=True, outline=0.8)
@@ -169,17 +190,26 @@ def _horse(rig):
     g.blob((HX + 27, 0, 68.5), (3.4, 2.6, 4.2), p=2.2)                  # forelock tuft
     rig.part("neck", g, MANE, finish="hair")
     g = Geo()
-    for i in (1, 3, 5):                                                  # lighter strands (two tones)
+    for i in (0, 1.5, 3, 4.5):                                           # lighter clumps (two tones, 3 lu)
         t = i / 5
-        g.blob((HX + 14.6 + 11 * t, -2.6, 53.6 + 13 * t), (3.2, 0.9, 1.5), p=2.2, rot=(0, -40, 0))
+        g.blob((HX + 14.0 + 11 * t, -2.8, 53.2 + 13 * t), (4.0, 1.1, 1.75), p=2.2, rot=(0, -40, 0))
     rig.part("neck", g, MANE_LT, finish="hair", outline=0)
-    g = Geo().capsule((HX + 17, -9.0, 48.0), (HX + 27, 0.0, 41.0), 2.8)
-    g.capsule((HX + 27, 0.0, 41.0), (HX + 17, 9.0, 48.0), 2.8)
+    g = Geo().capsule((HX + 21.0, -7.4, 52.0), (HX + 26.5, -5.6, 60.4), 2.4, 1.8)      # the lit crest of the neck
+    rig.part("neck", g, COAT_LT, finish="gloss", outline=0)
+    g = Geo().capsule((HX + 17, -9.0, 48.0), (HX + 27, 0.0, 41.0), 3.3)          # team breast collar (6.6 lu)
+    g.capsule((HX + 27, 0.0, 41.0), (HX + 17, 9.0, 48.0), 3.3)
     rig.part("neck", g, team=True, outline=0.8)
     g = Geo()
     for i in range(3):
         g.sphere((HX + 20 + 2.8 * i, -8.2 + 2.8 * i, 46.2 - 1.6 * i), 1.1, cuts=2)
     rig.part("neck", g, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
+    # harness plates: two bronze phalerae (4.6 lu) on the breast collar, a darker leather bib behind them
+    g = Geo().blob((HX + 23.2, -9.4, 43.0), (4.4, 1.2, 5.2), p=2.4)
+    rig.part("neck", g, B.LEATHER_DK, outline=0.5)
+    g = Geo()
+    for x, z in ((HX + 21.4, 45.6), (HX + 25.0, 40.6)):
+        g.blob((x, -10.8, z), (2.3, 0.9, 2.3), p=2.0)
+    rig.part("neck", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     g = Geo().blob((HX + 35, 0, 59), (11.5, 6.0, 6.8), p=2.4, rot=(0, 40, 0))
     g.blob((HX + 42.4, 0, 51.6), (6.2, 5.6, 5.4), p=2.2)
     g.blob((HX + 33.0, 0, 55.2), (5.4, 5.8, 4.8), p=2.2)                      # cheek
@@ -198,16 +228,18 @@ def _horse(rig):
     rig.part("hhead", g, B.PUPIL, outline=0)
     g = Geo().capsule((HX + 30.4, -5.6, 64.6), (HX + 33.6, -5.8, 63.8), 0.8)   # brow over the eye
     rig.part("hhead", g, COAT_DK, outline=0.3)
-    g = Geo().capsule((HX + 28.0, -5.6, 64.0), (HX + 43.6, -5.0, 53.0), 0.9)   # bridle
-    g.capsule((HX + 36.0, -5.8, 63.0), (HX + 33.0, -6.0, 52.0), 0.9)
+    g = Geo().capsule((HX + 28.0, -5.6, 64.0), (HX + 43.6, -5.0, 53.0), 1.15)   # bridle (2.3 lu)
+    g.capsule((HX + 36.0, -5.8, 63.0), (HX + 33.0, -6.0, 52.0), 1.15)
     rig.part("hhead", g, B.LEATHER_DK, outline=0.4)
+    g = Geo().blob((HX + 34.8, -6.9, 57.6), (1.9, 0.8, 1.9), p=2.0)           # cheek disc (3.8 lu)
+    rig.part("hhead", g, B.BRONZE, finish=B.POLISH, outline=0.4)
     rig.secondary("hplume", "hhead", (HX + 27.0, 0, 70.0), (HX + 18.0, 0, 79.0), max_deg=14, gain=1.1)
     g = Geo()
     for x, z, r in ((HX + 27.0, 72.0, 2.6), (HX + 24.5, 75.0, 3.0), (HX + 21.5, 77.0, 2.8), (HX + 18.5, 77.6, 2.2)):
         g.blob((x, 0, z), (r * 1.1, r * 0.8, r), p=2.1)
     rig.part("hplume", g, team=True)
     if getattr(rig, "skin", None) == "sun_chariot":       # a sun disc crest on the brow, behind the plume
-        _sun_disc(rig, "hhead", (HX + 29.6, 2.0, 70.2), 2.9)
+        _sun_disc(rig, "hhead", (HX + 29.6, 2.0, 71.0), 3.8)
     rig.secondary("tail", "horse", (HX - 23, 0, 45), (HX - 29, 0, 30), max_deg=15, gain=1.0)
     g = Geo().capsule((HX - 23, 0, 45), (HX - 28, 0, 39), 2.4, 2.8).capsule((HX - 28, 0, 39), (HX - 29, 0, 30), 2.8, 1.2)
     # three clumps that flare from the dock (audit 5.2: the tail in 3-5 clumps of at least 3 lu, two tones)
@@ -292,6 +324,19 @@ def _car(rig):
     rig.part("cart", g, B.WOOD_DK, outline=0.6)
     g = Geo().capsule((HX - 4, -12.0, 49.5), (HX - 4, 12.0, 49.5), 1.4)     # yoke
     rig.part("cart", g, B.WOOD, outline=0.6)
+    # a scythed chariot's pole blade: a lance from the car's front, under the horse's belly and between its legs, its
+    # bronze blade ahead of the horse's chest at knee height. It is the strike that reaches the foe at the staged
+    # contact distance (item 38 B1': the khopesh alone landed 23 lu ahead of the feet, behind its own horse's head);
+    # its tip is the `poleTip` tracker, the furthest-forward melee tip of every attack
+    rig.joint("lance", "cart", (AX + 17.0, -1.5, 22.0))     # its own joint: the tracked body (the cart) leaves it out
+    g = Geo().capsule((AX + 17.0, -1.5, 22.0), (HX + 38.6, -1.5, 25.6), 1.05, 0.95)
+    rig.part("lance", g, B.WOOD_DK, outline=0.6)
+    g = Geo().lathe([(0, 0), (1.4, 0.9), (2.2, 3.2), (1.3, 6.2), (0, 8.4)], (HX + 38.2, -1.5, 25.58),
+                    (HX + 46.6, -1.5, 25.9), segs=12, squash=(1.0, 0.55))
+    rig.part("lance", g, B.BRONZE, finish=B.POLISH, outline=0.5)
+    g = Geo().capsule((HX + 36.2, -1.5, 25.5), (HX + 38.3, -1.5, 25.6), 1.4)
+    rig.part("lance", g, B.LEATHER_DK, outline=0.4)                   # the binding behind the blade
+    rig.track("poleTip", "lance", (HX + 46.6, -1.5, 25.9))
     # the car: floor, plum wicker body, team side panel, sandstone rails and bronze studs
     g = Geo().blob((AX + 1, 0, FLOOR_Z), (17, 12, 2.0), p=4.0)
     rig.part("cart", g, B.WOOD_DK)
@@ -305,7 +350,7 @@ def _car(rig):
     rig.part("cart", g, team=True, outline=0.8)
     ex, ez = AX + 3.0, FLOOR_Z + 9.0
     if getattr(rig, "skin", None) == "sun_chariot":
-        _sun_disc(rig, "cart", (ex, -13.6, ez), 3.4)
+        _sun_disc(rig, "cart", (ex, -13.6, ez), 4.5)
     else:
         g = Geo()                              # a sandstone rosette, 7 lu (the team zone in two tones)
         for i in range(8):
@@ -334,7 +379,7 @@ def _car(rig):
     g = Geo().capsule((px, py, FLOOR_Z), (px - 1.0, py, 106.0), 1.1)
     rig.part("cart", g, B.WOOD_DK, outline=0.6)
     if getattr(rig, "skin", None) == "sun_chariot":
-        _sun_disc(rig, "cart", (px - 1.0, py - 1.2, 109.0), 3.6)
+        _sun_disc(rig, "cart", (px - 1.0, py - 1.2, 109.0), 3.6)      # its rays stay inside the frame
     else:
         g = Geo().sphere((px - 1.0, py, 107.6), 1.8, cuts=3)
         rig.part("cart", g, B.BRONZE, finish=B.POLISH, outline=0.5)
@@ -424,11 +469,11 @@ def _damage_spots(rig):
     spot_preview.py): never on the driver's face or skin. The team car panel (the largest camera-facing part)
     twice, the caparison and the horse's haunch; a strip torn from the caparison; smoke from the car at the
     last stage (scorched, burning wood)."""
-    rig.damage_spot_at("panel", "cart", AX + 10.0, FLOOR_Z + 14.0, 6.0, "wood", team=True)
+    rig.damage_spot_at("panel", "cart", AX + 10.0, FLOOR_Z + 14.0, 7.0, "wood", team=True)
     rig.damage_spot_at("panel_rear", "cart", AX - 6.0, FLOOR_Z + 12.0, 5.0, "wood", team=True)
     rig.damage_spot_at("caparison", "horse", HX - 6.0, 38.0, 6.0, "cloth", team=True)
-    rig.damage_spot_at("haunch", "horse", HX - 20.0, 40.0, 5.0, "hide", fill=COAT)
-    rig.damage_spot_at("hem", "horse", HX + 6.0, 37.0, 9.0, "cloth", kind="strip", team=True)
+    rig.damage_spot_at("haunch", "horse", HX - 20.0, 40.0, 5.0, "hide")
+    rig.damage_spot_at("hem", "horse", HX + 6.0, 37.0, 11.0, "cloth", kind="strip", team=True)
     rig.damage_spot("smoke", "cart", (AX - 6.0, 0.0, FLOOR_Z + 20.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
@@ -574,6 +619,7 @@ def _attack(f):
 
 BLADE_IN = (HR[0] + 3.0, HR[1] - 1.0, HR[2] + 12.0)
 BLADE_OUT = (HR[0] + 12.0, HR[1] - 1.0, HR[2] + 24.0)
+POLE_TIP = (HX + 46.6, -1.5, 25.9)
 
 
 def _attack_clip():
@@ -587,6 +633,8 @@ def _attack_clip():
         6: [dict(ring, **{"from": 5, "t1": 1.0}),
             {"kind": "burst", "joint": "khopesh", "point": BLADE_OUT, "r0_lu": 7.0, "r1_lu": 14.0, "n": 5,
              "a0": -80.0, "arc": 140.0},
+            {"kind": "burst", "joint": "lance", "point": POLE_TIP, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
+             "a0": -60.0, "arc": 120.0},
             {"kind": "dust", "ground": (AX - 6.0, 0.0), "size_lu": 9.0, "puffs": 5, "seed": 3, "spread": 1.1},
             {"kind": "dust", "ground": (HX + 18.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 6, "spread": 0.9}],
         7: [dict(ring, **{"from": 6, "t1": 1.0, "lines": 1})],

@@ -459,7 +459,7 @@
   "bonker@pumpkin_head_walk_03_team": {
    "frame": {
     "x": 71,
-    "y": 313,
+    "y": 314,
     "w": 50,
     "h": 53
    },
@@ -1541,7 +1541,7 @@
     "x": 2,
     "y": 2,
     "w": 67,
-    "h": 154
+    "h": 155
    },
    "rotated": false,
    "trimmed": true,
@@ -1549,7 +1549,7 @@
     "x": 73,
     "y": 13,
     "w": 67,
-    "h": 154
+    "h": 155
    },
    "sourceSize": {
     "w": 239,
@@ -1635,7 +1635,7 @@
   "bonker@pumpkin_head_die_04": {
    "frame": {
     "x": 2,
-    "y": 160,
+    "y": 161,
     "w": 119,
     "h": 149
    },
@@ -1755,7 +1755,7 @@
   "bonker@pumpkin_head_die_06_team": {
    "frame": {
     "x": 2,
-    "y": 313,
+    "y": 314,
     "w": 65,
     "h": 62
    },

@@ -48,7 +48,7 @@ _FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darke
 MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", B.WOOD: "wood", B.LEATHER: "leather",
                   _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather", _FAR(B.LEATHER_DK): "leather",
                   B.BRONZE: "bronze", B.BRONZE_HI: "bronze", B.AGED: "bronze", B.VERD: "bronze", B.SAND: "cloth", B.SAND_LT: "cloth",
-                  B.LINEN: "cloth", B.VERD_DK: "cloth", "team": "cloth"}
+                  B.LINEN: "cloth", B.VERD_DK: "cloth", B.VERD_LT: "bronze", "team": "cloth"}
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
 JAV_F, JAV_B = 44.0, 9.0          # javelin tip ahead of / butt behind the fist (modelled along +X)
@@ -117,7 +117,7 @@ def build(rig):
     tf = F.Face(rig, "torso", [tunic])
     rig.part("torso", tunic, team=True)
     g = Geo()                       # a clavus: a team-dark stripe from the shoulder to the belt (2.6 lu)
-    tf.stroke(g, tf.hit(3.0, 29.0), [(0.6, 6.4), (-0.4, -6.0)], 2.6, 0.35)
+    tf.stroke(g, tf.hit(3.0, 29.0), [(0.6, 6.4), (-0.4, -6.0)], 3.6, 0.35)
     look.team_part(rig, "torso", g, outline=0)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 1.4)        # hem >= 9 lu above the soles
@@ -125,25 +125,27 @@ def build(rig):
     rig.part("hem", g, team=True)
     g = Geo().blob((0.6, 0, 10.0), (11.8, 10.8, 1.2), p=3.0)
     rig.part("hem", g, B.LINEN, outline=0.6)
+    g = Geo().blob((0.6, 0, 12.9), (12.15, 11.15, 1.6), p=3.0)       # a team-dark band over the hem (3.2 lu)
+    look.team_part(rig, "hem", g, outline=0)
     g = Geo().blob((0.4, 0, 20.4), (11.0, 10.1, 1.9), p=3.2)
     rig.part("torso", g, B.LEATHER)
     g = Geo().blob((10.8, -2.4, 20.4), (1.9, 2.8, 2.4), p=2.4)          # belt buckle, polished
     rig.part("torso", g, B.BRONZE, finish=B.POLISH, outline=0.4)
     # a dagger in a leather sheath on the near hip, a bronze pommel and chape; it swings a frame late
     rig.secondary("sheath", "torso", (-5.8, -11.0, 21.0), (-9.6, -11.4, 12.6), max_deg=12, gain=1.2)
-    g = Geo().capsule((-6.4, -11.0, 20.6), (-9.6, -11.4, 12.8), 1.75, 1.15)
+    g = Geo().capsule((-6.4, -11.4, 20.6), (-10.4, -11.8, 10.4), 2.3, 1.5)
     rig.part("sheath", g, B.LEATHER_DK, outline=0.6)
-    g = Geo().sphere((-9.9, -11.5, 12.2), 1.35, cuts=3)
-    g.capsule((-6.0, -10.9, 21.4), (-5.2, -10.8, 25.0), 0.95)
+    g = Geo().sphere((-10.7, -11.9, 9.7), 1.8, cuts=3)
+    g.capsule((-6.0, -11.2, 21.6), (-5.0, -11.1, 26.0), 1.25)
     rig.part("sheath", g, B.WOOD, outline=0.5)
-    g = Geo().sphere((-4.9, -10.8, 25.8), 1.45, cuts=3)
-    g.blob((-6.1, -10.9, 21.6), (2.4, 1.0, 0.7), p=2.4, rot=(0, 30, 0))
+    g = Geo().sphere((-4.7, -11.1, 26.9), 2.0, cuts=3)
+    g.blob((-6.1, -11.3, 21.8), (3.2, 1.3, 0.9), p=2.4, rot=(0, 30, 0))
     rig.part("sheath", g, B.AGED, finish="metal", outline=0.5)
     # rolled sandstone cloak over the far shoulder, a tail that flicks behind
     g = Geo().capsule((-4.0, 10.0, 38.0), (8.0, 8.0, 34.0), 3.6).capsule((8.0, 8.0, 34.0), (10.0, 4.0, 26.0), 3.0)
     rig.part("torso", g, B.SAND)
-    g = Geo().blob((10.4, 1.2, 30.6), (1.4, 2.2, 2.2), p=2.2)           # a verdigris brooch (4.4 lu)
-    g.sphere((11.4, 0.8, 30.6), 0.9, cuts=2)
+    g = Geo().blob((10.4, 1.2, 30.6), (1.8, 3.0, 3.0), p=2.2)           # a verdigris brooch (6 lu)
+    g.sphere((11.8, 0.8, 30.6), 1.2, cuts=2)
     rig.part("torso", g, B.VERD, finish="metal", outline=0.5)
     rig.secondary("cloak", "torso", (-6.0, 8.0, 37.0), (-15.0, 8.0, 22.0), max_deg=18, gain=1.3)
     g = Geo().slab([(-4.0, 39.0), (-9.0, 38.0), (-15.5, 26.0), (-12.0, 22.0), (-9.5, 25.5), (-6.0, 23.0),
@@ -165,8 +167,8 @@ def build(rig):
     g = Geo()                                                                        # laurel sprig
     for k in range(3):
         x, z = 8.4 - 3.0 * k, 56.6 + 0.8 * k
-        g.blob((x, -11.6, z + 1.4), (2.3, 0.9, 1.25), p=2.2, rot=(0, -30, 0))
-        g.blob((x - 0.8, -11.6, z - 1.4), (2.3, 0.9, 1.25), p=2.2, rot=(0, 30, 0))
+        g.blob((x, -11.8, z + 1.6), (2.9, 1.0, 1.55), p=2.2, rot=(0, -30, 0))
+        g.blob((x - 0.8, -11.8, z - 1.6), (2.9, 1.0, 1.55), p=2.2, rot=(0, 30, 0))
     rig.part("head", g, B.VERD, outline=0.4)
     rig.secondary("ties", "head", (-10.0, 0, 55.0), (-19.0, 0, 50.0), max_deg=16, gain=1.3)
     g = Geo().slab([(-10.0, 56.6), (-19.5, 53.0), (-20.5, 49.0), (-17.0, 51.6), (-10.0, 53.4)], 0.0, 1.4)
@@ -183,6 +185,18 @@ def build(rig):
     rig.part("fore_r", g, B.LEATHER_DK, outline=0, highlight=False)
     g = Geo().blob((0.3, B.ARM_Y["l"], 33.0), (4.6, 4.4, 1.5), p=2.8)             # arm ring
     rig.part("arm_l", g, B.VERD, finish="metal", outline=0.5)
+    y = B.ARM_Y["r"]
+    # a dyed leather shoulder guard (11 x 9 lu) in the team-dark tone (it keeps the team budget), a verdigris rivet
+    # rim and an aged bronze boss
+    g = Geo().blob((0.6, y - 3.4, 36.2), (5.6, 2.4, 4.6), p=2.4, rot=(0, -14, 0))
+    look.team_part(rig, "arm_r", g, outline=0.7)
+    g = Geo()
+    for a in range(0, 360, 45):
+        r = math.radians(a)
+        g.sphere((0.6 + 4.5 * math.cos(r), y - 4.9, 36.2 + 3.6 * math.sin(r)), 0.8, cuts=2)
+    rig.part("arm_r", g, B.VERD_LT, finish="metal", outline=0)
+    g = Geo().blob((0.9, y - 5.9, 36.6), (1.9, 0.8, 1.9), p=2.2)
+    rig.part("arm_r", g, B.AGED, finish="metal", outline=0.4)
 
     # the javelin in the near fist, modelled level along +X; hidden once thrown
     hx, hy, hz = HR
@@ -202,11 +216,11 @@ def _damage_spots(rig):
     the back (the torn chiton of stage 2). The javelin case stays clean: the idle's arm and the tunic hide it.
     Positions are where the camera ray meets the rest pose (the upper body sits V3_LIFT higher, the hem 1.4 lu
     more; near-side surfaces read about 1.5 lu back and 2.5 lu lower from the yaw and the camera's elevation)."""
-    rig.damage_spot_at("tunic", "torso", 6.5, 28.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("tunic", "torso", 6.5, 28.0, 7.0, "cloth", team=True)
     rig.damage_spot_at("tunic_back", "torso", -7.0, 25.5, 5.0, "cloth", team=True)
     rig.damage_spot_at("skirt", "hem", 5.5, 17.0, 5.0, "cloth", team=True)
     rig.damage_spot_at("wrap", "shin_r", 1.0, 9.0, 5.0, "cloth", team=True)
-    rig.damage_spot_at("hem", "hem", -3.0, 15.0, 8.0, "cloth", kind="strip", team=True)
+    rig.damage_spot_at("hem", "hem", -3.0, 15.0, 10.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

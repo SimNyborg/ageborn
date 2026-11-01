@@ -26,18 +26,18 @@
   },
   "bonker@pumpkin_head_idle_00_team": {
    "frame": {
-    "x": 2168,
+    "x": 2167,
     "y": 460,
     "w": 112,
-    "h": 104
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 175,
-    "y": 220,
+    "y": 221,
     "w": 112,
-    "h": 104
+    "h": 103
    },
    "sourceSize": {
     "w": 478,
@@ -74,8 +74,8 @@
   },
   "bonker@pumpkin_head_idle_01_team": {
    "frame": {
-    "x": 2284,
-    "y": 333,
+    "x": 2283,
+    "y": 334,
     "w": 109,
     "h": 105
    },
@@ -122,8 +122,8 @@
   },
   "bonker@pumpkin_head_idle_02_team": {
    "frame": {
-    "x": 2284,
-    "y": 442,
+    "x": 2283,
+    "y": 443,
     "w": 108,
     "h": 108
    },
@@ -146,7 +146,7 @@
   },
   "bonker@pumpkin_head_idle_03": {
    "frame": {
-    "x": 1329,
+    "x": 1328,
     "y": 413,
     "w": 189,
     "h": 199
@@ -173,15 +173,15 @@
     "x": 2345,
     "y": 222,
     "w": 113,
-    "h": 107
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 177,
-    "y": 214,
+    "y": 213,
     "w": 113,
-    "h": 107
+    "h": 108
    },
    "sourceSize": {
     "w": 478,
@@ -218,7 +218,7 @@
   },
   "bonker@pumpkin_head_idle_04_team": {
    "frame": {
-    "x": 2168,
+    "x": 2167,
     "y": 347,
     "w": 112,
     "h": 109
@@ -315,7 +315,7 @@
   "bonker@pumpkin_head_walk_00_team": {
    "frame": {
     "x": 2208,
-    "y": 769,
+    "y": 770,
     "w": 102,
     "h": 98
    },
@@ -362,8 +362,8 @@
   },
   "bonker@pumpkin_head_walk_01_team": {
    "frame": {
-    "x": 2420,
-    "y": 769,
+    "x": 2416,
+    "y": 770,
     "w": 95,
     "h": 90
    },
@@ -459,7 +459,7 @@
   "bonker@pumpkin_head_walk_03_team": {
    "frame": {
     "x": 2289,
-    "y": 554,
+    "y": 555,
     "w": 99,
     "h": 106
    },
@@ -506,8 +506,8 @@
   },
   "bonker@pumpkin_head_walk_04_team": {
    "frame": {
-    "x": 2314,
-    "y": 769,
+    "x": 2208,
+    "y": 667,
     "w": 102,
     "h": 98
    },
@@ -530,7 +530,7 @@
   },
   "bonker@pumpkin_head_walk_05": {
    "frame": {
-    "x": 2003,
+    "x": 2002,
     "y": 395,
     "w": 161,
     "h": 173
@@ -578,7 +578,7 @@
   },
   "bonker@pumpkin_head_walk_06": {
    "frame": {
-    "x": 1838,
+    "x": 1837,
     "y": 395,
     "w": 161,
     "h": 186
@@ -602,8 +602,8 @@
   },
   "bonker@pumpkin_head_walk_06_team": {
    "frame": {
-    "x": 2208,
-    "y": 668,
+    "x": 2314,
+    "y": 770,
     "w": 98,
     "h": 97
    },
@@ -651,7 +651,7 @@
   "bonker@pumpkin_head_walk_07_team": {
    "frame": {
     "x": 2392,
-    "y": 661,
+    "y": 662,
     "w": 103,
     "h": 104
    },
@@ -698,8 +698,8 @@
   },
   "bonker@pumpkin_head_attack_00_team": {
    "frame": {
-    "x": 2396,
-    "y": 442,
+    "x": 2395,
+    "y": 443,
     "w": 106,
     "h": 107
    },
@@ -747,7 +747,7 @@
   "bonker@pumpkin_head_attack_01_team": {
    "frame": {
     "x": 2174,
-    "y": 568,
+    "y": 567,
     "w": 111,
     "h": 96
    },
@@ -818,7 +818,7 @@
   },
   "bonker@pumpkin_head_attack_03": {
    "frame": {
-    "x": 745,
+    "x": 744,
     "y": 460,
     "w": 189,
     "h": 233
@@ -867,7 +867,7 @@
   "bonker@pumpkin_head_attack_04": {
    "frame": {
     "x": 2,
-    "y": 615,
+    "y": 617,
     "w": 241,
     "h": 292
    },
@@ -1106,7 +1106,7 @@
   },
   "bonker@pumpkin_head_attack_09": {
    "frame": {
-    "x": 1122,
+    "x": 1121,
     "y": 433,
     "w": 203,
     "h": 198
@@ -1202,7 +1202,7 @@
   },
   "bonker@pumpkin_head_hit_00": {
    "frame": {
-    "x": 938,
+    "x": 937,
     "y": 457,
     "w": 180,
     "h": 214
@@ -1226,8 +1226,8 @@
   },
   "bonker@pumpkin_head_hit_00_team": {
    "frame": {
-    "x": 2396,
-    "y": 553,
+    "x": 2395,
+    "y": 554,
     "w": 106,
     "h": 104
    },
@@ -1346,7 +1346,7 @@
   },
   "bonker@pumpkin_head_hit_03": {
    "frame": {
-    "x": 1522,
+    "x": 1521,
     "y": 410,
     "w": 196,
     "h": 196
@@ -1418,8 +1418,8 @@
   },
   "bonker@pumpkin_head_hit_04_team": {
    "frame": {
-    "x": 2397,
-    "y": 333,
+    "x": 2396,
+    "y": 334,
     "w": 108,
     "h": 105
    },
@@ -1541,7 +1541,7 @@
     "x": 2,
     "y": 2,
     "w": 134,
-    "h": 306
+    "h": 308
    },
    "rotated": false,
    "trimmed": true,
@@ -1549,7 +1549,7 @@
     "x": 146,
     "y": 27,
     "w": 134,
-    "h": 306
+    "h": 308
    },
    "sourceSize": {
     "w": 478,
@@ -1610,7 +1610,7 @@
   },
   "bonker@pumpkin_head_die_03_team": {
    "frame": {
-    "x": 1722,
+    "x": 1721,
     "y": 401,
     "w": 112,
     "h": 193
@@ -1635,7 +1635,7 @@
   "bonker@pumpkin_head_die_04": {
    "frame": {
     "x": 2,
-    "y": 312,
+    "y": 314,
     "w": 237,
     "h": 299
    },
@@ -1660,15 +1660,15 @@
    "frame": {
     "x": 562,
     "y": 460,
-    "w": 179,
+    "w": 178,
     "h": 239
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 142,
+    "x": 143,
     "y": 129,
-    "w": 179,
+    "w": 178,
     "h": 239
    },
    "sourceSize": {

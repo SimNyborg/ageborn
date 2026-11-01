@@ -315,7 +315,7 @@
   "bonker@pumpkin_head_attack_c_00_team": {
    "frame": {
     "x": 1279,
-    "y": 110,
+    "y": 109,
     "w": 107,
     "h": 115
    },
@@ -365,15 +365,15 @@
     "x": 1265,
     "y": 2,
     "w": 121,
-    "h": 104
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 182,
-    "y": 218,
+    "y": 219,
     "w": 121,
-    "h": 104
+    "h": 103
    },
    "sourceSize": {
     "w": 478,
