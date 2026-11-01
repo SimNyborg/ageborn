@@ -140,7 +140,62 @@ async function rankedBattle(page: Page): Promise<void> {
   await expect(page.getByTestId('battle')).toBeVisible({ timeout: 60_000 });
   await expect.poll(() => onBattle<string>(page, 'return b ? b.session.status.peek() : "none"'), { timeout: 60_000 }).toBe('running');
   await onBattle(page, 'b.live && b.live.dev.ownProposals(false)');
+  await startPace(page);
 }
+
+/**
+ * W0 WebKit diagnostic (2026-11-01, temporary; revert once settled): CI's WebKit missed live waits from the damage
+ * merge on. A page sampler records every frame's interval and the sim's tick; `pace` logs the frames and the tick
+ * rate since the last call, so a missed wait's log shows how fast the battle ran in that browser.
+ */
+async function startPace(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    type W = { __pace?: { t: number[]; ticks: number[] }; __agebornDev: Dev };
+    const w = window as unknown as W;
+    if (w.__pace) return;
+    const pace = { t: [] as number[], ticks: [] as number[] };
+    w.__pace = pace;
+    const loop = (t: number): void => {
+      pace.t.push(t);
+      let tick = -1;
+      try {
+        tick = w.__agebornDev.controller.route.peek().battle?.session.sim.state.tick ?? -1;
+      } catch {
+        // no battle on screen
+      }
+      pace.ticks.push(tick);
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  });
+}
+
+async function pace(page: Page, label: string): Promise<void> {
+  const p = await page
+    .evaluate(() => {
+      const w = window as unknown as { __pace?: { t: number[]; ticks: number[] } };
+      if (!w.__pace) return null;
+      const { t, ticks } = w.__pace;
+      const out = { t: t.slice(), ticks: ticks.slice() };
+      w.__pace.t = t.slice(-1);
+      w.__pace.ticks = ticks.slice(-1);
+      return out;
+    })
+    .catch(() => null);
+  if (!p || p.t.length < 2) {
+    console.log(`[pace] ${test.info().project.name} ${label}: no frames`);
+    return;
+  }
+  const dt = p.t.slice(1).map((v, i) => v - (p.t[i] as number)).sort((a, b) => a - b);
+  const q = (f: number): number => Math.round(dt[Math.min(dt.length - 1, Math.floor(dt.length * f))] as number);
+  const secs = ((p.t.at(-1) as number) - (p.t[0] as number)) / 1000;
+  const ticks = (p.ticks.at(-1) as number) - (p.ticks[0] as number);
+  console.log(`[pace] ${test.info().project.name} ${label}: ${dt.length} frames in ${secs.toFixed(1)} s, frame ms p50 ${q(0.5)} p95 ${q(0.95)} max ${q(1)}; ${(ticks / Math.max(secs, 0.001)).toFixed(1)} ticks/s (tick ${p.ticks.at(-1)})`);
+}
+
+test.afterEach(async ({ page }, info) => {
+  await pace(page, `${info.title.slice(0, 48)} (end, ${info.status})`);
+});
 
 /** Two frames and a task in the page: what a screen just drawn set up after paint (its effects) has run. */
 function afterPaint(page: Page): Promise<unknown> {
@@ -170,6 +225,7 @@ test.describe('live matches (queue item 34)', () => {
 
     // propose 2x: it waits for the opponent (the "2x?" ring and "Waiting for <name>"), who says yes after 6 s, inside
     // the 8 s window; then "2x agreed" shows for 2.4 s. Both are caught in the page as they render.
+    await pace(page, 'accept test, before the proposal');
     await onBattle(page, 'b.live.dev.answers({ answer: "accept", delayMs: 6000 })');
     await page.getByTestId('hud-tempo').click();
     await expect(page.getByTestId('hud-tempo-menu')).toBeVisible();
@@ -190,12 +246,14 @@ test.describe('live matches (queue item 34)', () => {
     const problems = watchPage(page);
     await veteranHome(page);
     await rankedBattle(page);
+    await pace(page, 'decline test, before the proposal');
     await onBattle(page, 'b.live.dev.answers({ answer: "decline", delayMs: 3000 })');
     await page.getByTestId('hud-tempo').click();
     // "<name> said no" shows for 2.4 s: caught in the page as it renders
     const said = watchFor(page, ['[data-testid="hud-tempo-tag"][data-tone="bad"]'], 30_000);
     await page.getByTestId('hud-tempo-1.5').click();
     await said;
+    await pace(page, 'decline test, after "said no"');
     await expect(page.getByTestId('hud-tempo')).toHaveAttribute('data-speed', '1');
 
     // their proposal: a card with Accept and Decline (its buttons wake 400 ms after it lands); Decline keeps the speed
