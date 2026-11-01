@@ -2,8 +2,8 @@
  "frames": {
   "bonker_attack_b_02": {
    "frame": {
-    "x": 170,
-    "y": 2,
+    "x": 114,
+    "y": 316,
     "w": 70,
     "h": 115
    },
@@ -26,17 +26,17 @@
   },
   "bonker_attack_b_02_team": {
    "frame": {
-    "x": 360,
-    "y": 257,
-    "w": 53,
+    "x": 275,
+    "y": 265,
+    "w": 57,
     "h": 59
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
+    "x": 80,
     "y": 102,
-    "w": 53,
+    "w": 57,
     "h": 59
    },
    "sourceSize": {
@@ -50,18 +50,18 @@
   },
   "bonker_attack_b_03": {
    "frame": {
-    "x": 337,
+    "x": 242,
     "y": 2,
     "w": 101,
-    "h": 104
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 38,
-    "y": 66,
+    "y": 60,
     "w": 101,
-    "h": 104
+    "h": 110
    },
    "sourceSize": {
     "w": 239,
@@ -74,17 +74,17 @@
   },
   "bonker_attack_b_03_team": {
    "frame": {
-    "x": 183,
-    "y": 257,
-    "w": 60,
+    "x": 2,
+    "y": 355,
+    "w": 62,
     "h": 61
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 71,
+    "x": 70,
     "y": 99,
-    "w": 60,
+    "w": 62,
     "h": 61
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "bonker_attack_b_04": {
    "frame": {
-    "x": 2,
-    "y": 150,
+    "x": 108,
+    "y": 93,
     "w": 102,
-    "h": 103
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 44,
-    "y": 69,
+    "y": 66,
     "w": 102,
-    "h": 103
+    "h": 106
    },
    "sourceSize": {
     "w": 239,
@@ -122,17 +122,17 @@
   },
   "bonker_attack_b_04_team": {
    "frame": {
-    "x": 309,
-    "y": 257,
-    "w": 47,
+    "x": 332,
+    "y": 345,
+    "w": 49,
     "h": 60
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 93,
+    "x": 91,
     "y": 102,
-    "w": 47,
+    "w": 49,
     "h": 60
    },
    "sourceSize": {
@@ -146,17 +146,17 @@
   },
   "bonker_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 257,
-    "w": 129,
+    "x": 108,
+    "y": 2,
+    "w": 130,
     "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
+    "x": 101,
     "y": 82,
-    "w": 129,
+    "w": 130,
     "h": 87
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "bonker_attack_b_05_team": {
    "frame": {
-    "x": 251,
-    "y": 348,
+    "x": 188,
+    "y": 345,
     "w": 73,
     "h": 44
    },
@@ -194,8 +194,8 @@
   },
   "bonker_attack_b_06": {
    "frame": {
-    "x": 108,
-    "y": 150,
+    "x": 2,
+    "y": 148,
     "w": 102,
     "h": 103
    },
@@ -218,8 +218,8 @@
   },
   "bonker_attack_b_06_team": {
    "frame": {
-    "x": 58,
-    "y": 348,
+    "x": 210,
+    "y": 287,
     "w": 60,
     "h": 54
    },
@@ -242,17 +242,17 @@
   },
   "bonker_attack_b_07": {
    "frame": {
-    "x": 320,
-    "y": 150,
-    "w": 105,
+    "x": 2,
+    "y": 255,
+    "w": 108,
     "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 98,
+    "x": 95,
     "y": 74,
-    "w": 105,
+    "w": 108,
     "h": 96
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "bonker_attack_b_07_team": {
    "frame": {
-    "x": 122,
-    "y": 348,
+    "x": 188,
+    "y": 393,
     "w": 61,
     "h": 50
    },
@@ -290,17 +290,17 @@
   },
   "bonker_attack_c_00": {
    "frame": {
-    "x": 244,
-    "y": 2,
-    "w": 89,
+    "x": 114,
+    "y": 203,
+    "w": 92,
     "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 89,
     "y": 61,
-    "w": 89,
+    "w": 92,
     "h": 109
    },
    "sourceSize": {
@@ -314,17 +314,17 @@
   },
   "bonker_attack_c_00_team": {
    "frame": {
-    "x": 2,
-    "y": 348,
-    "w": 52,
+    "x": 274,
+    "y": 328,
+    "w": 54,
     "h": 58
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 89,
     "y": 103,
-    "w": 52,
+    "w": 54,
     "h": 58
    },
    "sourceSize": {
@@ -339,8 +339,8 @@
   "bonker_attack_c_01": {
    "frame": {
     "x": 214,
-    "y": 150,
-    "w": 102,
+    "y": 116,
+    "w": 103,
     "h": 102
    },
    "rotated": false,
@@ -348,7 +348,7 @@
    "spriteSourceSize": {
     "x": 96,
     "y": 77,
-    "w": 102,
+    "w": 103,
     "h": 102
    },
    "sourceSize": {
@@ -362,18 +362,18 @@
   },
   "bonker_attack_c_01_team": {
    "frame": {
-    "x": 187,
-    "y": 348,
-    "w": 60,
-    "h": 49
+    "x": 253,
+    "y": 393,
+    "w": 61,
+    "h": 50
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 91,
-    "y": 112,
-    "w": 60,
-    "h": 49
+    "y": 111,
+    "w": 61,
+    "h": 50
    },
    "sourceSize": {
     "w": 239,
@@ -386,18 +386,18 @@
   },
   "bonker_attack_c_02": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 321,
+    "y": 116,
     "w": 59,
-    "h": 144
+    "h": 145
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 81,
-    "y": 26,
+    "y": 25,
     "w": 59,
-    "h": 144
+    "h": 145
    },
    "sourceSize": {
     "w": 239,
@@ -410,8 +410,8 @@
   },
   "bonker_attack_c_02_team": {
    "frame": {
-    "x": 135,
-    "y": 257,
+    "x": 336,
+    "y": 265,
     "w": 44,
     "h": 76
    },
@@ -434,9 +434,9 @@
   },
   "bonker_attack_c_03": {
    "frame": {
-    "x": 65,
+    "x": 2,
     "y": 2,
-    "w": 101,
+    "w": 102,
     "h": 142
    },
    "rotated": false,
@@ -444,7 +444,7 @@
    "spriteSourceSize": {
     "x": 96,
     "y": 27,
-    "w": 101,
+    "w": 102,
     "h": 142
    },
    "sourceSize": {
@@ -458,17 +458,17 @@
   },
   "bonker_attack_c_03_team": {
    "frame": {
-    "x": 247,
-    "y": 257,
-    "w": 58,
+    "x": 210,
+    "y": 222,
+    "w": 61,
     "h": 61
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 96,
+    "x": 93,
     "y": 98,
-    "w": 58,
+    "w": 61,
     "h": 61
    },
    "sourceSize": {
@@ -541,15 +541,15 @@
   "image": "bonker.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 448,
-   "h": 408
+   "w": 384,
+   "h": 448
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.bonker",
    "name": "Bonker",
    "heightLu": 68,
-   "widthLu": 72.0,
+   "widthLu": 74.0,
    "pxPerLu": 1.23,
    "feetPx": [
     113.0,

@@ -24,7 +24,9 @@ Animation (cartoon kit v2; a viewer expects a javelin man to skip, lean back and
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -39,6 +41,14 @@ FEET = (136, 216)
 ANCHORS = {"head": (2, 64), "hitCenter": (0, 32)}
 NO_RETIME = True
 
+# the detail standard (art round W0, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2
+DETAIL_STANDARD = True
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", B.WOOD: "wood", B.LEATHER: "leather",
+                  _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather", _FAR(B.LEATHER_DK): "leather",
+                  B.BRONZE: "bronze", B.BRONZE_HI: "bronze", B.AGED: "bronze", B.VERD: "bronze", B.SAND: "cloth", B.SAND_LT: "cloth",
+                  B.LINEN: "cloth", B.VERD_DK: "cloth", "team": "cloth"}
+
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
 JAV_F, JAV_B = 44.0, 9.0          # javelin tip ahead of / butt behind the fist (modelled along +X)
 
@@ -49,9 +59,11 @@ def _javelin(rig, joint, base):
     rig.part(joint, g, B.WOOD, outline=0.6)
     g = Geo().capsule((hx - 2.4, hy - 0.3, hz), (hx + 2.8, hy - 0.3, hz), 1.45)       # thong grip
     rig.part(joint, g, B.LEATHER_DK, outline=0.4)
-    g = Geo().lathe([(0, 0), (1.3, 0.6), (2.2, 2.6), (1.3, 5.6), (0, 8.4)], (hx + JAV_F - 8.2, hy, hz),
-                    (hx + JAV_F, hy, hz), segs=10, squash=(1.0, 0.5))
+    g = Geo().lathe([(0, 0), (1.5, 0.7), (2.7, 2.9), (1.6, 6.4), (0, 9.6)], (hx + JAV_F - 9.4, hy, hz),
+                    (hx + JAV_F, hy, hz), segs=12, squash=(1.0, 0.55))
     rig.part(joint, g, B.BRONZE, finish=B.POLISH, outline=0.5)
+    g = Geo().capsule((hx - JAV_B + 5.4, hy, hz), (hx - JAV_B + 7.6, hy, hz), 1.35)           # butt binding
+    rig.part(joint, g, B.LEATHER_DK, outline=0.4)
     g = Geo()                                                                        # sandstone flights
     for dz in (1.0, -1.0):
         g.slab([(hx - JAV_B + 0.5, hz), (hx - JAV_B + 5.5, hz), (hx - JAV_B + 1.0, hz + 3.2 * dz)], hy - 0.4, 0.7)
@@ -71,6 +83,19 @@ def build(rig):
     g = Geo().blob((-12.6, 6.0, 40.4), (5.1, 5.2, 1.5), p=2.6, rot=(0, 12, 0))
     g.blob((-10.2, 6.0, 30.0), (5.0, 5.2, 1.2), p=2.6, rot=(0, 12, 0))
     rig.part("case", g, B.LEATHER_DK, outline=0.6)
+    ax = (-4.5, 0.0, 20.0)
+    L = math.hypot(ax[0], ax[2])
+    g = Geo()
+    for t in (0.2, 0.74):
+        c = (-8.0 + ax[0] * t, 6.0, 20.0 + ax[2] * t)
+        g.lathe([(4.7, 0), (5.15, 0.4), (5.15, 1.5), (4.7, 1.9)], c,
+                (c[0] + ax[0] / L, 6.0, c[2] + ax[2] / L), segs=18)
+    rig.part("case", g, B.AGED, finish="metal", outline=0.5)      # aged bronze (the colour rule's budget)
+    cf = F.Face(rig, "case", [Geo().capsule((-8.0, 6.0, 20.0), (-12.5, 6.0, 40.0), 4.4, 4.8)])
+    g = Geo()
+    cf.stroke(g, cf.hit(-9.1, 26.5), [(-0.6, -2.4), (0.6, 2.4)], 2.6, 0.35)
+    cf.stroke(g, cf.hit(-11.0, 34.5), [(-0.5, -2.2), (0.5, 2.2)], 2.6, 0.35)
+    look.team_part(rig, "case", g, outline=0)
     g = Geo()
     for dx, dy, top in ((-1.5, 4.0, 60.0), (1.2, 7.0, 57.0), (-4.0, 8.0, 55.0)):
         g.capsule((-11.0 + dx, dy, 38.0), (-14.5 + dx * 1.3, dy, top), 1.0)
@@ -83,12 +108,16 @@ def build(rig):
     rig.part("case", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     g = Geo().capsule((9.5, -6.5, 36.0), (-8.5, 6.5, 24.0), 1.3)       # strap
     rig.part("torso", g, B.LEATHER_DK, outline=0.6)
-    g = Geo().sphere((5.2, -8.2, 32.4), 1.5, cuts=2)                  # strap buckle
-    rig.part("torso", g, B.SAND_LT, finish="metal", outline=0.4)
+    g = Geo().blob((5.2, -8.6, 32.4), (1.9, 1.0, 1.9), p=2.2)          # strap buckle: a verdigris disc
+    rig.part("torso", g, B.VERD, finish="metal", outline=0.4)
 
     # team tunic with a flared skirt (follow-through hem), leather belt, linen hem band
-    g = Geo().blob((0.2, 0, 28.0), (10.2, 9.4, 11.4), p=2.4, taper=(1.1, 0.92))
-    rig.part("torso", g, team=True)
+    tunic = Geo().blob((0.2, 0, 28.0), (10.2, 9.4, 11.4), p=2.4, taper=(1.1, 0.92))
+    tf = F.Face(rig, "torso", [tunic])
+    rig.part("torso", tunic, team=True)
+    g = Geo()                       # a clavus: a team-dark stripe from the shoulder to the belt (2.6 lu)
+    tf.stroke(g, tf.hit(3.0, 29.0), [(0.6, 6.4), (-0.4, -6.0)], 2.6, 0.35)
+    look.team_part(rig, "torso", g, outline=0)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 1.4)        # hem >= 9 lu above the soles
     g = Geo().blob((0.6, 0, 14.6), (11.6, 10.6, 5.6), p=2.4, taper=(1.16, 0.92))
@@ -97,11 +126,24 @@ def build(rig):
     rig.part("hem", g, B.LINEN, outline=0.6)
     g = Geo().blob((0.4, 0, 20.4), (11.0, 10.1, 1.9), p=3.2)
     rig.part("torso", g, B.LEATHER)
-    g = Geo().blob((10.6, -2.0, 20.4), (1.8, 2.4, 2.2), p=2.4)          # belt buckle
-    rig.part("torso", g, B.SAND_LT, finish="metal", outline=0.4)
+    g = Geo().blob((10.8, -2.4, 20.4), (1.9, 2.8, 2.4), p=2.4)          # belt buckle, polished
+    rig.part("torso", g, B.BRONZE, finish=B.POLISH, outline=0.4)
+    # a dagger in a leather sheath on the near hip, a bronze pommel and chape; it swings a frame late
+    rig.secondary("sheath", "torso", (-5.8, -11.0, 21.0), (-9.6, -11.4, 12.6), max_deg=12, gain=1.2)
+    g = Geo().capsule((-6.4, -11.0, 20.6), (-9.6, -11.4, 12.8), 1.75, 1.15)
+    rig.part("sheath", g, B.LEATHER_DK, outline=0.6)
+    g = Geo().sphere((-9.9, -11.5, 12.2), 1.35, cuts=3)
+    g.capsule((-6.0, -10.9, 21.4), (-5.2, -10.8, 25.0), 0.95)
+    rig.part("sheath", g, B.WOOD, outline=0.5)
+    g = Geo().sphere((-4.9, -10.8, 25.8), 1.45, cuts=3)
+    g.blob((-6.1, -10.9, 21.6), (2.4, 1.0, 0.7), p=2.4, rot=(0, 30, 0))
+    rig.part("sheath", g, B.AGED, finish="metal", outline=0.5)
     # rolled sandstone cloak over the far shoulder, a tail that flicks behind
     g = Geo().capsule((-4.0, 10.0, 38.0), (8.0, 8.0, 34.0), 3.6).capsule((8.0, 8.0, 34.0), (10.0, 4.0, 26.0), 3.0)
     rig.part("torso", g, B.SAND)
+    g = Geo().blob((10.4, 1.2, 30.6), (1.4, 2.2, 2.2), p=2.2)           # a verdigris brooch (4.4 lu)
+    g.sphere((11.4, 0.8, 30.6), 0.9, cuts=2)
+    rig.part("torso", g, B.VERD, finish="metal", outline=0.5)
     rig.secondary("cloak", "torso", (-6.0, 8.0, 37.0), (-15.0, 8.0, 22.0), max_deg=18, gain=1.3)
     g = Geo().slab([(-4.0, 39.0), (-9.0, 38.0), (-15.5, 26.0), (-12.0, 22.0), (-9.5, 25.5), (-6.0, 23.0),
                     (-3.0, 33.0)], 9.0, 2.0)
@@ -122,8 +164,8 @@ def build(rig):
     g = Geo()                                                                        # laurel sprig
     for k in range(3):
         x, z = 8.4 - 3.0 * k, 56.6 + 0.8 * k
-        g.blob((x, -11.4, z + 1.1), (1.7, 0.8, 0.85), p=2.2, rot=(0, -30, 0))
-        g.blob((x - 0.7, -11.4, z - 1.2), (1.7, 0.8, 0.85), p=2.2, rot=(0, 30, 0))
+        g.blob((x, -11.6, z + 1.4), (2.3, 0.9, 1.25), p=2.2, rot=(0, -30, 0))
+        g.blob((x - 0.8, -11.6, z - 1.4), (2.3, 0.9, 1.25), p=2.2, rot=(0, 30, 0))
     rig.part("head", g, B.VERD, outline=0.4)
     rig.secondary("ties", "head", (-10.0, 0, 55.0), (-19.0, 0, 50.0), max_deg=16, gain=1.3)
     g = Geo().slab([(-10.0, 56.6), (-19.5, 53.0), (-20.5, 49.0), (-17.0, 51.6), (-10.0, 53.4)], 0.0, 1.4)
@@ -132,8 +174,12 @@ def build(rig):
 
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.0, r1=3.6)
-    g = Geo().blob((0, B.ARM_Y["r"], B.HAND_Z + 3.4), (4.4, 4.4, 1.8), p=2.6)
+    g = Geo().blob((0, B.ARM_Y["r"], B.HAND_Z + 4.0), (4.5, 4.5, 2.9), p=2.6)
     rig.part("fore_r", g, B.LEATHER, outline=0.7)
+    g = Geo()
+    for z in (B.HAND_Z + 2.6, B.HAND_Z + 5.0):
+        g.capsule((-2.0, B.ARM_Y["r"] - 4.35, z + 0.7), (2.0, B.ARM_Y["r"] - 4.35, z - 0.7), 0.5, segs=8, rings=2)
+    rig.part("fore_r", g, B.LEATHER_DK, outline=0, highlight=False)
     g = Geo().blob((0.3, B.ARM_Y["l"], 33.0), (4.6, 4.4, 1.5), p=2.8)             # arm ring
     rig.part("arm_l", g, B.VERD, finish="metal", outline=0.5)
 

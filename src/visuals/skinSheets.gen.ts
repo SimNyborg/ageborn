@@ -2,4 +2,7 @@
 import type { SkinSheetSummary } from './manifest.units';
 
 /** Troop skins rendered as sheets (contract C3): each draws in place of its unit's sheet. */
-export const SKIN_SHEETS: readonly SkinSheetSummary[] = [];
+export const SKIN_SHEETS: readonly SkinSheetSummary[] = [
+  {"age":"stone","slug":"bonker@pumpkin_head","visualId":"unit.bonker@pumpkin_head","heightLu":68,"pxPerLu":1.23,"anchorsLu":{"head":[2,66],"hitCenter":[0,32],"muzzle":[10,37.4]},"clips":{"idle":{"durationMs":920,"loop":true},"walk":{"durationMs":616,"loop":true},"attack":{"durationMs":680,"loop":false,"impactAt":0.4265},"hit":{"durationMs":310,"loop":false},"die":{"durationMs":695,"loop":false},"attack_b":{"durationMs":680,"loop":false,"impactAt":0.4265},"attack_c":{"durationMs":680,"loop":false,"impactAt":0.4265}},"gait":"biped","skinOf":"unit.bonker","skin":"pumpkin_head","still":true},
+  {"age":"bronze","slug":"war_chariot@sun_chariot","visualId":"unit.war_chariot@sun_chariot","heightLu":110,"pxPerLu":1.23,"anchorsLu":{"head":[-10,104],"hitCenter":[0,42],"muzzle":[10,60.5]},"clips":{"idle":{"durationMs":900,"loop":true},"walk":{"durationMs":576,"loop":true},"attack":{"durationMs":1230,"loop":false,"impactAt":0.4634},"hit":{"durationMs":310,"loop":false},"die":{"durationMs":970,"loop":false},"attack_b":{"durationMs":1230,"loop":false,"impactAt":0.4634},"attack_c":{"durationMs":1230,"loop":false,"impactAt":0.4634}},"gait":"rider","skinOf":"unit.war_chariot","skin":"sun_chariot","still":true},
+];

@@ -32,10 +32,12 @@ import math
 
 from ageborn_art import face as F
 from ageborn_art import gait as GT
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art import rigs_gunpowder as G
 from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art.colors import scale as C_scale
 from ageborn_art.geometry import Geo
 
 SLUG = "war_chariot"
@@ -54,6 +56,27 @@ COAT = "#7C604B"          # chestnut, held at ~39% saturation (the A11 colour ru
 COAT_DK = "#634D3C"
 MANE = "#2A211D"
 HOOF = "#4A4038"
+MARK = "#E9E1D2"          # the white blaze and socks (markings of 3 lu and more)
+MANE_LT = "#4A3B33"       # lighter strands in the mane and tail (two tones)
+
+# the detail standard (art round W0, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2
+DETAIL_STANDARD = True
+MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", MANE: "fur", MANE_LT: "fur", HOOF: "bone", MARK: "hide",
+                  B.VERD: "cloth", B.LEATHER_DK: "leather", B.LEATHER: "leather", B.BRONZE_HI: "bronze",
+                  B.BRONZE: "bronze", B.AGED: "bronze", B.WOOD_DK: "wood", B.WOOD: "wood", B.PLUM: "wood",
+                  B.SAND: "wood", B.SAND_LT: "cloth", B.LINEN: "cloth", B.HAIR: "fur", B.SKIN: "skin", "team": "cloth"}
+# Sun Chariot (DESIGN A5.8, epic): white horses, a pale gold car, sunburst wheels and sun discs; the same model
+SUN = "#E0B65A"           # bright gold for the small sun accents (an accent kind: keeps its saturation)
+SUN_LT = "#F2D892"
+SKINS = {"sun_chariot": {
+    # big metal (the helmet, the scythes, the wheels) in a pale gold under the colour rule's 0.38; only the
+    # small sun discs keep the rich gold (SUN)
+    "palette": {COAT: "#EFEAE0", COAT_DK: "#D8D0C1", MANE: "#E2CFA0", MANE_LT: "#F0E2BC", HOOF: "#B39B68",
+                MARK: "#FBF7EE", B.PLUM: "#DDCB9A", B.SAND: "#F0E6CC", B.WOOD: "#D9C79A", B.WOOD_DK: "#B39A68",
+                B.AGED: "#D2C08F", B.BRONZE: "#E3C88E", B.BRONZE_HI: "#F0DCA0", B.LEATHER_DK: "#8A6E48",
+                B.VERD: "#D9BE86", B.VERD_DK: "#BFA36E"},
+    # a clean white coat (the hide blotches read as dirt on white); dirt stays on the lower legs
+    "kinds": {SUN: "gold", SUN_LT: "gold", "#EFEAE0": "skin", "#D8D0C1": "skin", "#FBF7EE": "skin"}}}
 
 HX = 26.0                    # the horse is this far ahead of the unit origin
 AX = -32.0                   # the chariot axle
@@ -80,6 +103,8 @@ def _leg(rig, name, x, y, z_top, front):
     g = Geo().blob((kx, y, kz), (3.8, 3.4, 3.4), p=2.2)                          # knee / hock
     g.capsule((kx, y, kz), (fx_, y, 6.2), 3.0, 2.7)
     rig.part(f"{name}2", g, COAT)
+    g = Geo().capsule((fx_ + 0.1, y, 6.8), (kx * 0.35 + fx_ * 0.65, y, 11.6), 3.2, 3.3)   # a white sock
+    rig.part(f"{name}2", g, MARK if y < 0 else C_scale(MARK, 0.86), outline=0.6)
     g = Geo().blob((fx_ + 0.4, y, 5.6), (3.3, 3.1, 2.8), p=2.2)                 # fetlock tuft
     g.lathe([(2.4, 0), (0, 3.0)], (fx_ - 0.6, y, 5.0), (fx_ - 3.0, y, 3.4), segs=8)
     rig.part(f"{name}2", g, MANE, finish="hair", outline=0.8)
@@ -117,6 +142,21 @@ def _horse(rig):
     rig.part("horse", g, B.VERD, outline=0.4)
     g = Geo().capsule((HX + 3, -10.8, 49.0), (HX + 3, -11.4, 33.0), 1.0)     # girth strap
     rig.part("horse", g, B.LEATHER_DK, outline=0.4)
+    # a crupper strap from the cloth over the haunch to the tail, with bronze studs
+    g = Geo().capsule((HX - 13.6, -10.4, 45.4), (HX - 20.6, -7.6, 45.8), 1.2)
+    g.capsule((HX - 20.6, -7.6, 45.8), (HX - 23.4, -2.6, 45.4), 1.2)
+    rig.part("horse", g, B.LEATHER_DK, outline=0.4)
+    g = Geo()
+    for x, y in ((HX - 15.8, -10.5), (HX - 19.4, -8.6)):
+        g.sphere((x, y - 0.9, 46.0), 1.25, cuts=2)
+    rig.part("horse", g, B.BRONZE_HI, finish=B.POLISH, outline=0.4)
+    # a team-dark chevron band across the caparison (the team zone in two tones)
+    g = Geo()
+    for k in range(4):
+        x0 = HX - 9.5 + 5.0 * k
+        g.slab([(x0, 41.6), (x0 + 2.5, 39.0), (x0 + 5.0, 41.6), (x0 + 5.0, 43.4), (x0 + 2.5, 40.8), (x0, 43.4)],
+               -12.05, 0.5)
+    look.team_part(rig, "horse", g, outline=0)
     # neck, head (1.2x), mane, team breast collar
     rig.joint("neck", "horse", (HX + 19, 0, 46))
     rig.joint("hhead", "neck", (HX + 29, 0, 62), scale=1.2)
@@ -128,6 +168,11 @@ def _horse(rig):
         g.blob((HX + 14 + 11 * t, 0, 53 + 13 * t), (4.6, 3.0, 4.6), p=2.2, rot=(0, -35, 0))
     g.blob((HX + 27, 0, 68.5), (3.4, 2.6, 4.2), p=2.2)                  # forelock tuft
     rig.part("neck", g, MANE, finish="hair")
+    g = Geo()
+    for i in (1, 3, 5):                                                  # lighter strands (two tones)
+        t = i / 5
+        g.blob((HX + 14.6 + 11 * t, -2.6, 53.6 + 13 * t), (3.2, 0.9, 1.5), p=2.2, rot=(0, -40, 0))
+    rig.part("neck", g, MANE_LT, finish="hair", outline=0)
     g = Geo().capsule((HX + 17, -9.0, 48.0), (HX + 27, 0.0, 41.0), 2.8)
     g.capsule((HX + 27, 0.0, 41.0), (HX + 17, 9.0, 48.0), 2.8)
     rig.part("neck", g, team=True, outline=0.8)
@@ -140,7 +185,11 @@ def _horse(rig):
     g.blob((HX + 33.0, 0, 55.2), (5.4, 5.8, 4.8), p=2.2)                      # cheek
     for y in (-3.2, 3.2):
         g.lathe([(2.0, 0), (1.5, 2.8), (0, 6.0)], (HX + 27.5, y, 66), (HX + 26.5, y * 1.3, 73), segs=10)
+    hf = F.Face(rig, "hhead", [g])        # before rig.part: the part's mesh frees the geometry
     rig.part("hhead", g, COAT)
+    g2 = Geo()
+    hf.stroke(g2, hf.hit(HX + 37.8, 60.6), [(-4.6, 4.2), (0.2, 0.4), (5.6, -4.6)], 2.6, 0.35)   # the blaze
+    rig.part("hhead", g2, MARK, outline=0, highlight=False)
     g = Geo().blob((HX + 31.8, -4.9, 61.8), (1.9, 1.3, 2.2))
     rig.part("hhead", g, B.EYE, highlight=False, outline=0.8)
     g = Geo().sphere((HX + 32.6, -5.9, 61.6), 1.2, cuts=3)
@@ -157,9 +206,68 @@ def _horse(rig):
     for x, z, r in ((HX + 27.0, 72.0, 2.6), (HX + 24.5, 75.0, 3.0), (HX + 21.5, 77.0, 2.8), (HX + 18.5, 77.6, 2.2)):
         g.blob((x, 0, z), (r * 1.1, r * 0.8, r), p=2.1)
     rig.part("hplume", g, team=True)
+    if getattr(rig, "skin", None) == "sun_chariot":       # a sun disc crest on the brow, behind the plume
+        _sun_disc(rig, "hhead", (HX + 29.6, 2.0, 70.2), 2.9)
     rig.secondary("tail", "horse", (HX - 23, 0, 45), (HX - 29, 0, 30), max_deg=15, gain=1.0)
     g = Geo().capsule((HX - 23, 0, 45), (HX - 28, 0, 39), 2.4, 2.8).capsule((HX - 28, 0, 39), (HX - 29, 0, 30), 2.8, 1.2)
+    # three clumps that flare from the dock (audit 5.2: the tail in 3-5 clumps of at least 3 lu, two tones)
+    for (x0, z0), (x1, z1), r in ((((HX - 27.0, 40.0), (HX - 31.6, 30.6), 1.9)), (((HX - 27.4, 38.0), (HX - 27.0, 27.6), 1.7)),
+                                  (((HX - 26.0, 41.0), (HX - 33.0, 34.0), 1.6))):
+        g.capsule((x0, -0.6, z0), (x1, -0.6, z1), r, 0.7)
     rig.part("tail", g, MANE, finish="hair")
+    g = Geo()
+    for (x0, z0), (x1, z1) in (((HX - 26.4, 41.6), (HX - 30.4, 33.0)), ((HX - 28.0, 37.6), (HX - 28.4, 29.6))):
+        g.capsule((x0, -2.2, z0), (x1, -2.2, z1), 0.9, 0.4)
+    rig.part("tail", g, MANE_LT, finish="hair", outline=0)      # lighter strands (two tones)
+
+
+def _wheel_detail(rig, joint, y):
+    """Bronze nail heads round the felloe (texture that turns with the wheel); on the Sun Chariot, sunburst
+    rays between the spokes and a sun-disc hub."""
+    cx, cz = AX, WHEEL_R
+    near = -1 if y < 0 else 1
+    g = Geo()
+    for i in range(8):
+        a = 2 * math.pi * (i + 0.5) / 8
+        g.sphere((cx + (WHEEL_R - 3.3) * math.cos(a), y + near * 1.6, cz + (WHEEL_R - 3.3) * math.sin(a)), 0.75,
+                 cuts=2)
+    rig.part(joint, g, B.BRONZE_HI, finish=B.POLISH, outline=0)
+    if getattr(rig, "skin", None) != "sun_chariot":
+        return
+    g = Geo()
+    for i in range(4):                       # four rays between the spokes (2 spoke spacings a cycle stay)
+        a = 2 * math.pi * (i + 0.5) / 4
+        u, w = math.cos(a), math.sin(a)
+        t = (-w, u)
+        r0, r1 = 4.8, WHEEL_R - 4.4
+        g.slab([(cx + u * r0 + t[0] * 2.0, cz + w * r0 + t[1] * 2.0), (cx + u * r1, cz + w * r1),
+                (cx + u * r0 - t[0] * 2.0, cz + w * r0 - t[1] * 2.0)], y + near * 0.4, 1.0)
+    rig.part(joint, g, SUN, finish="metal", outline=0.5)
+    g = Geo().lathe([(0, -0.6), (5.4, -0.6), (5.4, 0.6), (4.2, 1.6), (0, 1.9)], (cx, y + near * 1.4, cz),
+                    (cx, y + near * 6.0, cz), segs=24)
+    rig.part(joint, g, SUN_LT, finish="metal", outline=0.6)
+    g = Geo()
+    for i in range(8):
+        a = 2 * math.pi * i / 8
+        g.lathe([(0.9, 0), (0, 2.2)], (cx + 5.0 * math.cos(a), y + near * 2.8, cz + 5.0 * math.sin(a)),
+                (cx + 7.2 * math.cos(a), y + near * 2.8, cz + 7.2 * math.sin(a)), segs=6)
+    rig.part(joint, g, SUN, finish="metal", outline=0.4)
+
+
+def _sun_disc(rig, joint, c, r, y_face=-1.0):
+    """A gold sun disc with eight rays, facing the camera."""
+    x, y, z = c
+    g = Geo().blob((x, y, z), (r, 0.9, r), p=2.0)
+    g2 = Geo()
+    for i in range(8):
+        a = 2 * math.pi * i / 8 + math.pi / 8
+        u, w = math.cos(a), math.sin(a)
+        g2.lathe([(r * 0.32, 0), (0, r * 0.75)], (x + u * r * 0.8, y, z + w * r * 0.8),
+                 (x + u * r * 1.55, y, z + w * r * 1.55), segs=6, squash=(1.0, 0.5))
+    rig.part(joint, g2, SUN, finish="metal", outline=0.5)
+    rig.part(joint, g, SUN_LT, finish="metal", outline=0.6)
+    g = Geo().blob((x, y + y_face * 0.9, z), (r * 0.55, 0.4, r * 0.55), p=2.0)
+    rig.part(joint, g, SUN, finish="metal", outline=0)
 
 
 def _marker(rig, joint, y):
@@ -178,6 +286,7 @@ def _car(rig):
     G.wheel(rig, "wheel_l", (AX, 12.0, WHEEL_R), WHEEL_R, 3.0, rim=B.WOOD_DK, spokes=B.WOOD, hub=B.AGED,
             team_felloe=False, n_spokes=4)
     _marker(rig, "wheel_l", 12.0)
+    _wheel_detail(rig, "wheel_l", 12.0)
     # draught pole from the car floor up to the yoke on the horse, and the traces
     g = Geo().capsule((AX + 14, 0, FLOOR_Z), (HX - 6, 0, 36.0), 1.6).capsule((HX - 6, 0, 36.0), (HX + 2, 0, 49.0), 1.6)
     rig.part("cart", g, B.WOOD_DK, outline=0.6)
@@ -194,6 +303,20 @@ def _car(rig):
     g = Geo().slab([(AX - 9, FLOOR_Z + 1.5), (AX + 13, FLOOR_Z + 1.5), (AX + 18, FLOOR_Z + 18.0),
                     (AX + 10, FLOOR_Z + 20.0), (AX - 9, FLOOR_Z + 15.0)], -12.4, 1.4)
     rig.part("cart", g, team=True, outline=0.8)
+    ex, ez = AX + 3.0, FLOOR_Z + 9.0
+    if getattr(rig, "skin", None) == "sun_chariot":
+        _sun_disc(rig, "cart", (ex, -13.6, ez), 3.4)
+    else:
+        g = Geo()                              # a sandstone rosette, 7 lu (the team zone in two tones)
+        for i in range(8):
+            a = 2 * math.pi * i / 8
+            g.blob((ex + 2.4 * math.cos(a), -13.35, ez + 2.4 * math.sin(a)), (1.35, 0.5, 1.35), p=2.0)
+        g.blob((ex, -13.5, ez), (1.5, 0.6, 1.5), p=2.0)
+        rig.part("cart", g, B.SAND_LT, outline=0.5)
+    g = Geo()
+    for x, z in ((AX - 7.5, FLOOR_Z + 3.4), (AX + 11.5, FLOOR_Z + 3.4), (AX - 7.5, FLOOR_Z + 13.4)):
+        g.sphere((x, -13.4, z), 1.0, cuts=2)
+    rig.part("cart", g, B.BRONZE_HI, finish=B.POLISH, outline=0.4)
     g = Geo().capsule((AX - 11, -12.8, FLOOR_Z + 16.2), (AX + 10, -12.8, FLOOR_Z + 21.2), 1.3)
     g.capsule((AX + 10, -12.8, FLOOR_Z + 21.2), (AX + 18.5, -4.0, FLOOR_Z + 19.0), 1.3)
     g.capsule((AX + 18.5, -4.0, FLOOR_Z + 19.0), (AX + 18.5, 8.0, FLOOR_Z + 19.0), 1.3)
@@ -202,22 +325,31 @@ def _car(rig):
     g = Geo()
     for x, z in ((AX - 5, FLOOR_Z + 8), (AX + 3, FLOOR_Z + 8), (AX + 11, FLOOR_Z + 9)):
         g.sphere((x, -13.4, z), 1.2, cuts=2)
+    for k in range(5):                              # a stud row along the top rail
+        t = (k + 0.5) / 5
+        g.sphere((AX - 11 + 21 * t, -14.0, FLOOR_Z + 16.2 + 5.0 * t), 0.9, cuts=2)
     rig.part("cart", g, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
     # team pennant on a tall pole at the back of the car
     px, py = AX - 11.0, 6.0
     g = Geo().capsule((px, py, FLOOR_Z), (px - 1.0, py, 106.0), 1.1)
     rig.part("cart", g, B.WOOD_DK, outline=0.6)
-    g = Geo().sphere((px - 1.0, py, 107.6), 1.8, cuts=3)
-    rig.part("cart", g, B.BRONZE, finish=B.POLISH, outline=0.5)
+    if getattr(rig, "skin", None) == "sun_chariot":
+        _sun_disc(rig, "cart", (px - 1.0, py - 1.2, 109.0), 3.6)
+    else:
+        g = Geo().sphere((px - 1.0, py, 107.6), 1.8, cuts=3)
+        rig.part("cart", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     rig.secondary("pennant", "cart", (px - 1.0, py - 0.6, 104.0), (px - 22.0, py - 0.6, 99.0), max_deg=14,
                   gain=1.2)
     pts = [(0.0, 0.0), (-22.0, -1.8), (-15.5, -6.0), (-22.0, -10.6), (0.0, -11.4)]
     g = Geo().slab([(px - 1.0 + x, 104.5 + z) for x, z in pts], py - 0.6, 1.4)
     rig.part("pennant", g, team=True, outline=0.8)
+    g = Geo().slab([(px - 3.0, 104.2), (px - 6.0, 104.0), (px - 6.0, 93.4), (px - 3.0, 93.3)], py - 1.5, 0.4)
+    look.team_part(rig, "pennant", g, outline=0)       # a team-dark stripe at the hoist
     # near wheel and the scythe blades on the hubs
     G.wheel(rig, "wheel_r", (AX, -12.0, WHEEL_R), WHEEL_R, 3.0, rim=B.WOOD_DK, spokes=B.WOOD, hub=B.AGED,
             team_felloe=False, n_spokes=4)
     _marker(rig, "wheel_r", -12.0)
+    _wheel_detail(rig, "wheel_r", -12.0)
     # the scythed hubs: curved polished-bronze blades on the axle ends; they spin with the wheels
     for jn, y in (("scy_r", -19.5), ("scy_l", 17.5)):
         rig.joint(jn, "cart", (AX, y, WHEEL_R))
