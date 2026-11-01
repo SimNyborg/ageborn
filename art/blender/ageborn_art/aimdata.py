@@ -95,7 +95,10 @@ SPEC = {
     "bolas_thrower": _thrown(5, 10),
     "bomb_bowler": _thrown(50, 45),
     "boulder_hurler": _thrown(5, 0),
-    "discus_thrower": _thrown(5, 5),
+    # W1: the discus and the sling stone aimed up at flyers (hand-posed variants, kit_bronze_detail.aimed_hand) leave
+    # the hand at the variant's angle on the impact frame, where the throwing arm and the cord point it
+    "discus_thrower": dict(_thrown(5, 5), **{c + s: {"deg": d, "release": "impact"} for c in ("attack", "attack_b")
+                                             for s, d in (("_up45", 45), ("_up70", 70))}),
     "friar": _thrown(0, 0),
     "grenadier": _thrown(50, 55),
     "herbalist": _thrown(15, 10),
@@ -103,7 +106,8 @@ SPEC = {
     "moonlings": _thrown(0, 0, release="impact"),
     "nova_thrower": _thrown(45, 50, release="impact"),
     "pebbler": _thrown(20, 5),
-    "rhodian_slingers": _thrown(10, 0),
+    "rhodian_slingers": dict(_thrown(10, 0), **{c + s: {"deg": d, "release": "impact"} for c in ("attack", "attack_b")
+                                                for s, d in (("_up45", 45), ("_up70", 70))}),
     "swarm_matron": _thrown(0, 0),
     "mammoth_matriarch": {"attack_alt": {"deg": -20, "release": "before"}},
     # the dive bomber's bomb leaves along the diving plane, from where it hung

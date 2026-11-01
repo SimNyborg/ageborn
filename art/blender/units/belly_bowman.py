@@ -25,8 +25,11 @@ Animation (cartoon kit v2):
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -44,6 +47,63 @@ NO_RETIME = True
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
 HELM_C = (1.5, 0, 56.0)
 
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2. The team tunic, skirt and shoulder caps in two tones (a team-dark clavus down the back, a
+# team-dark band over the skirt's linen hem, team-dark edges on the caps), the belly pad quilted in diamonds, a
+# belt buckle, punched dots and an incised scroll on the pilos with a team-dark base on its tuft, aged bronze
+# bands round the stock of the gastraphetes.
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+HORN = "#E2D6BC"              # the prod's horn (kit_bronze.gastraphetes)
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", B.LINEN: "cloth", B.SAND: "cloth",
+                  B.SAND_DK: "cloth", B.LEATHER: "leather", _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather",
+                  _FAR(B.LEATHER_DK): "leather", B.BRONZE: "bronze", _FAR(B.BRONZE): "bronze", B.AGED: "bronze",
+                  B.AGED_DK: "bronze", B.VERD: "bronze", B.VERD_DK: "cloth", _FAR(B.VERD_DK): "cloth",
+                  B.WOOD: "wood", B.WOOD_DK: "wood", HORN: "bone",
+                  "team": "cloth"}
+TUNIC = ((0.8, 0, 26.0), (11.6, 10.4, 12.4))
+TUNIC_KW = {"p": 2.2, "taper": (1.12, 0.9)}
+PAD = ((7.6, -2.0, 24.0), (5.2, 7.6, 6.4))
+
+
+def _pad_quilting(rig):
+    """The belly pad quilted in diamonds: stitched lines drawn on its camera side (two each way)."""
+    ref = Geo().blob(*PAD, p=2.4)
+    for line in (((3.4, 26.4), (8.6, 20.0)), ((5.2, 29.6), (11.6, 21.6)), ((3.4, 21.6), (8.8, 28.6)),
+                 ((6.2, 18.8), (11.6, 25.8))):
+        (x0, z0), (x1, z1) = line
+        pts = [(x0 + (x1 - x0) * t / 6, z0 + (z1 - z0) * t / 6) for t in range(7)]
+        KD.surface_line(rig, "torso", ref, pts, 0.75, B.SAND_DK)
+        ref = Geo().blob(*PAD, p=2.4)
+
+
+def _pilos_detail(rig, joint, c=HELM_C, cone=13.0):
+    """Punched dots above the verdigris band and an incised scroll on `kit_bronze.pilos`'s polished dome (its
+    biggest flat field), and a team-dark base on its tuft."""
+    cx, cy, cz = c
+    prof = [(12.0, -1.2), (12.2, 0.6), (10.8, 4.6), (7.6, 8.6), (3.6, cone - 1.0), (0, cone)]
+    g = Geo()
+    for pt in KD.lathe_points((cx, cy, cz - 1.0), (cx, cy, cz + 1.0), 11.55, 2.7, 20, squash=(1.0, 0.96)):
+        g.sphere(pt, 0.55, cuts=2)
+    rig.part(joint, g, B.AGED_DK, finish="metal", outline=0)
+    ref = Geo().lathe(prof, (cx, cy, cz - 1.0), segs=20, squash=(1.0, 0.96))
+    KD.surface_line(rig, joint, ref, KD.volute((cx + 3.6, cz + 5.6), 0.8, 2.6, a0=200.0, tail=(1.0, -1.4)), 1.1,
+                    B.AGED_DK)
+    top = cz - 1.0 + cone
+    KD.plume_base(rig, "plume", [(cx + dx, cy, top + dz, r) for dx, dz, r in
+                                 ((0.0, 1.0, 3.0), (-3.0, 3.2, 3.4), (-6.4, 4.4, 3.0), (-9.0, 4.0, 2.4))])
+
+
+def _bow_fittings(rig, joint, grip):
+    """Two aged bronze bands round the stock of `kit_bronze.gastraphetes` (length 34, y_off -2.2)."""
+    gx, gy, gz = grip
+    g = Geo()
+    for dx in (6.5, 24.0):
+        g.blob((gx + dx, gy - 2.2, gz + 1.5), (0.8, 1.9, 2.1), p=3.0)
+    rig.part(joint, g, B.AGED, finish="metal", outline=0.4)
+
 
 def build(rig):
     global RIG
@@ -52,25 +112,34 @@ def build(rig):
     B.sandal_legs_v3(rig)
 
     # a round belly: team tunic over a pot belly, a quilted belly pad
-    g = Geo().blob((0.8, 0, 26.0), (11.6, 10.4, 12.4), p=2.2, taper=(1.12, 0.9))
+    g = Geo().blob(*TUNIC, **TUNIC_KW)
     rig.part("torso", g, team=True)
-    g = Geo().blob((7.6, -2.0, 24.0), (5.2, 7.6, 6.4), p=2.4)
+    g = KD.stripe_x(*TUNIC, -7.6, -4.4, z0=18.0, z1=38.0, **TUNIC_KW)     # a team-dark clavus down the back
+    look.team_part(rig, "torso", g, outline=0)
+    g = Geo().blob(*PAD, p=2.4)
     rig.part("torso", g, B.SAND)
     g = Geo()
     for z in (21.0, 24.0, 27.0):
         g.capsule((12.2, -6.0, z), (12.8, 2.0, z), 0.5)
     rig.part("torso", g, B.SAND_DK, outline=0)
+    _pad_quilting(rig)
     rig.secondary("hem", "hips", (0.5, 0, 17.0), (0.5, 0, 9.0), max_deg=10, gain=0.9)
     rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 3.0)        # hem >= 9 lu above the soles
     g = Geo().blob((0.8, 0, 13.8), (12.4, 11.0, 4.4), p=2.4, taper=(1.12, 0.94))
     rig.part("hem", g, team=True)
+    g = KD.band_z((0.8, 0, 13.8), (12.4, 11.0, 4.4), 11.0, 13.8, taper=(1.12, 0.94))   # a team-dark band (2.8 lu)
+    look.team_part(rig, "hem", g, outline=0)
     g = Geo().blob((0.8, 0, 10.0), (12.6, 11.2, 1.1), p=3.0)
     rig.part("hem", g, B.LINEN, outline=0.5)
     g = Geo().blob((0.5, 0, 17.4), (12.2, 10.8, 1.7), p=3.2)
     rig.part("torso", g, B.LEATHER_DK, outline=0.6)
-    for s, y in (("r", -12.5), ("l", 12.0)):                          # team shoulder caps
+    g = Geo().blob((5.0, -10.9, 17.4), (1.7, 0.9, 1.9), p=2.4)          # an aged bronze belt buckle
+    rig.part("torso", g, B.AGED, finish="metal", outline=0.4)
+    for s, y in (("r", -12.5), ("l", 12.0)):                          # team shoulder caps, team-dark edges
         g = Geo().blob((0.4, y, 37.0), (6.4, 5.8, 4.8), p=2.6)
         rig.part(f"arm_{s}", g, team=True)
+        g = KD.band_z((0.4, y, 37.0), (6.4, 5.8, 4.8), 32.0, 34.4, p=2.6)
+        look.team_part(rig, f"arm_{s}", g, outline=0)
 
     beard = Geo()
     for x, y, z, r in ((11.0, -3.6, 41.4, 3.2), (12.4, 0.0, 40.0, 3.4), (11.0, 3.6, 41.4, 3.0),
@@ -85,6 +154,7 @@ def build(rig):
     rig.part("cheeks", g, B.SKIN, outline=0.6)
     rig.joint("helm", "head", HELM_C)
     K.pilos(rig, "helm", c=HELM_C)
+    _pilos_detail(rig, "helm")
 
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.4, r1=3.9)
@@ -93,9 +163,23 @@ def build(rig):
 
     rig.joint("bow", "hand_r", HR)
     muzzle, _ = K.gastraphetes(rig, "bow", HR, length=34.0, prod=15.5)
+    _bow_fittings(rig, "bow", HR)
     rig.track("muzzle", "bow", muzzle)
     rig.joint("bow_loose", "root", (0, 0, 0), hidden=True)
     K.gastraphetes(rig, "bow_loose", (-8.0, -4.0, 0.0), strings=("rest",), length=34.0, prod=15.5)
+    _bow_fittings(rig, "bow_loose", (-8.0, -4.0, 0.0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Bronze soldier; never on the face or skin): the team tunic
+    behind the arms, the quilted belly pad, the pilos, the team skirt; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("tunic", "torso", -6.0, 27.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("pad", "torso", 6.0, 23.0, 5.0, "cloth", fill=B.SAND)
+    rig.damage_spot_at("helmet", "helm", -3.0, 61.0, 5.0, "metal", fill=B.BRONZE)
+    rig.damage_spot_at("skirt", "hem", -2.0, 16.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hem", -6.0, 15.0, 9.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

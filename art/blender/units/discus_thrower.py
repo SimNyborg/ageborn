@@ -25,8 +25,12 @@ Animation (cartoon kit v2):
 """
 import math
 
+from ageborn_art import aimed as AIMED
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -43,6 +47,21 @@ NO_RETIME = True
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
 DISC_C = (HR[0] + 1.5, HR[1] - 3.2, HR[2] - 1.0)
+
+# the detail standard (art round W1, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# The athlete's team exomis gets a team-dark clavus and a team-dark band over the hem (two tones), the belt an
+# aged bronze buckle, and the athlete's kit hangs from it on a follow-through joint: a round oil flask
+# (aryballos, black-figure band) on a cord and a curved bronze strigil; a leather wrap on the throwing wrist.
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+FLASK = "#B49478"          # the aryballos's clay (saturation 0.33, under the colour rule)
+FLASK_DK = "#4A3A33"       # its black-figure band and neck
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", B.LEATHER: "leather", _FAR(B.LEATHER): "leather",
+                  B.LEATHER_DK: "leather", _FAR(B.LEATHER_DK): "leather", B.SAND_LT: "cloth", B.SAND_DK: "stone",
+                  B.BRONZE: "bronze", B.BRONZE_HI: "bronze", B.AGED: "bronze", B.VERD: "bronze",
+                  FLASK: "ceramic", FLASK_DK: "ceramic", "team": "cloth"}
 
 
 def _disc(rig, joint, c):
@@ -69,6 +88,29 @@ def build(rig):
     rig.part("torso", g, team=True, outline=0.6)
     g = Geo().blob((7.0, -9.0, 15.4), (3.6, 2.4, 3.0), p=2.6)          # belt pouch
     rig.part("torso", g, B.LEATHER, outline=0.6)
+    # two tones on the team exomis (shells that follow the tunic and the skirt): a team-dark clavus (3.4 lu) down
+    # the near side of the chest and a team-dark band (3.4 lu) over the linen hem
+    g = KD.stripe_x((0.2, 0, 28.0), (10.2 * 1.06, 9.4 * 1.06, 11.4), 1.4, 4.8, z0=19.0, z1=39.0, taper=(1.1, 0.92))
+    look.team_part(rig, "torso", g, outline=0)
+    g = KD.band_z((0.6, 0, 14.6), (11.6 * 1.06, 10.6 * 1.06, 5.6), 11.0, 14.4, taper=(1.16, 0.92))
+    look.team_part(rig, "hem", g, outline=0)
+    g = Geo().blob((11.2, -2.6, 20.4), (1.9, 2.8, 2.4), p=2.4)          # an aged bronze belt buckle
+    rig.part("torso", g, B.AGED, finish="metal", outline=0.4)
+    # the athlete's kit on a cord from the belt behind the near hip: a round oil flask and a curved strigil,
+    # swinging a frame late
+    rig.secondary("kit", "torso", (-5.0, -11.4, 20.0), (-6.0, -12.0, 9.0), max_deg=16, gain=1.3)
+    g = Geo().capsule((-4.6, -11.6, 20.2), (-5.6, -12.2, 15.4), 0.6)
+    rig.part("kit", g, B.LEATHER_DK, outline=0.4)
+    g = Geo().sphere((-5.8, -12.4, 12.6), 2.9, cuts=4)
+    rig.part("kit", g, FLASK, finish="gloss", outline=0.6)
+    g = Geo().blob((-5.8, -12.4, 12.8), (3.05, 3.05, 0.9), p=2.4)     # black-figure band round the belly
+    g.capsule((-5.7, -12.3, 15.0), (-5.6, -12.3, 16.2), 1.2)           # the neck and lip
+    rig.part("kit", g, FLASK_DK, outline=0.4)
+    g = Geo()                                                          # the strigil: a curved bronze scraper
+    pts = [(-3.6, 19.0), (-2.4, 16.0), (-2.2, 13.0), (-3.0, 10.4), (-4.4, 9.2)]
+    for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+        g.capsule((x0, -13.2, z0), (x1, -13.2, z1), 0.9)
+    rig.part("kit", g, B.AGED, finish="metal", outline=0.5)
     # bare far shoulder (exomis): a skin cap over the tunic on the far side
     g = Geo().blob((0.4, 9.6, 35.4), (7.0, 4.6, 5.2), p=2.4)
     rig.part("torso", g, B.SKIN)
@@ -85,12 +127,27 @@ def build(rig):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.4, r1=3.9)
     g = Geo().blob((0.3, B.ARM_Y["l"], 33.0), (4.8, 4.6, 1.4), p=2.8)
     rig.part("arm_l", g, B.VERD, finish="metal", outline=0.5)
+    g = Geo().blob((0, B.ARM_Y["r"], B.HAND_Z + 3.6), (4.5, 4.5, 2.6), p=2.6)    # a leather wrist wrap
+    rig.part("fore_r", g, B.LEATHER, outline=0.7)
 
     rig.joint("disc", "hand_r", HR)
     _disc(rig, "disc", DISC_C)
     rig.track("muzzle", "disc", DISC_C)
     rig.joint("disc_loose", "root", (0, 0, 0), hidden=True)
     _disc(rig, "disc_loose", (0.0, -12.0, 6.0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Bronze soldier; never on the face or skin): the team exomis in
+    front below the throwing arm, the team stripe on the back (it faces the camera through the spin), the
+    team skirt, the leather pouch; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("tunic", "torso", 2.0, 27.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("back", "torso", -9.6, 30.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("skirt", "hem", 3.0, 17.5, 6.0, "cloth", team=True)
+    rig.damage_spot_at("pouch", "torso", 7.0, 15.0, 5.0, "hide", fill=B.LEATHER)
+    rig.damage_spot_at("hem", "hem", -4.0, 15.0, 10.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -157,10 +214,37 @@ A_FL = [-2.0, -4.0, -7.0, -8.0, -8.0, -5.0, -4.0, -3.0, -3.0, -2.5, -2.0, -2.0]
 A_LL = [0, 0, 0, 0, 0, 3.0, 2.0, 0, 4.0, 0, 0, 0]
 
 
-def _attack_pose(f):
-    t = A_T[f]
-    pose = merge(throw(D_A[f] - t, D_F[f] - t, D_W[f] - t), other(O_A[f] - t, O_F[f] - t), {
-        "torso": {"r": t}, "head": {"r": A_H[f]},
+# aimed throws at flyers (queue item 44; kit_bronze_detail.aimed_hand, the discus has no measured axis): a turn of
+# `turn` degrees up raises the throwing arm and the disc with it, leans him back into the throw, tips the head and
+# the eyes up and lifts the free arm toward the target; the feet stay planted. The coil and the spin's first half
+# stay the base clip's frames; the throw rises into the aim through the second half of the spin and falls out of
+# it in the follow-through.
+AIM_LEAN = 0.22           # torso r per degree of turn (positive leans back)
+AIM_ARM = (0.6, 0.8)      # upper arm and forearm: their share of the turn (world degrees); the hand takes it all
+AIM_HEAD = 0.35           # head r per degree, on top of the lean (the face tips up, out of the arm's way)
+AIM_OFF = 0.5             # the free arm
+AIM_EYES = 0.010          # pupils z per degree
+#         read dip coil HOLD rock spin1 spin2 REL follow recov hand settle
+AIM_W = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 0.6, 0.25, 0.0, 0.0]
+#         read dip turn HOLD rock smear lead REL follow recov hand settle
+AIM_W_B = [0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.8, 1.0, 0.6, 0.25, 0.0, 0.0]
+
+
+def _aimed(pose, turn):
+    """The eyes follow the aim."""
+    if not turn:
+        return pose
+    p = dict(pose.get("pupils", {}))
+    p["z"] = p.get("z", 0.0) + AIM_EYES * turn
+    return merge(pose, {"pupils": p})
+
+
+def _attack_pose(f, turn=0.0):
+    t = A_T[f] + AIM_LEAN * turn
+    ka, kf = AIM_ARM
+    pose = merge(throw(D_A[f] + ka * turn - t, D_F[f] + kf * turn - t, D_W[f] + turn - t),
+                 other(O_A[f] + AIM_OFF * turn - t, O_F[f] + AIM_OFF * turn - t), {
+        "torso": {"r": t}, "head": {"r": A_H[f] + AIM_HEAD * turn},
         "disc": {"hide": f in (7, 8, 9)},
     }, M.body_about((0, 0, 24), x=A_X[f], z=A_Z[f], q=A_Q[f], rz=A_RZ[f]))
     pose = _feet(pose, A_FR[f], A_FL[f], ll=A_LL[f])
@@ -170,7 +254,7 @@ def _attack_pose(f):
         pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8}})
     elif f in (5, 6, 7, 8):
         pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
-    return pose
+    return _aimed(pose, turn)
 
 
 def _attack_clip():
@@ -211,17 +295,19 @@ B_FL = [-4.0, -6.0, -6.0, -5.0, -4.0, -3.0]
 B_LR = [0, 0, 0, 2.0, 1.0, 0]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i in (0, 1) or i >= 8:
-        return _attack_pose(i)
+        return _attack_pose(i, turn)
     k = i - 2
-    t = B_T[k]
-    pose = merge(throw(B_A[k] - t, B_F[k] - t, B_W[k] - t), other(B_OA[k] - t, B_OF[k] - t), {
-        "torso": {"r": t, "rz": B_RZ[k]}, "head": {"r": B_H[k]}, "disc": {"hide": i == 7},
+    t = B_T[k] + AIM_LEAN * turn
+    ka, kf = AIM_ARM
+    pose = merge(throw(B_A[k] + ka * turn - t, B_F[k] + kf * turn - t, B_W[k] + turn - t),
+                 other(B_OA[k] + AIM_OFF * turn - t, B_OF[k] + AIM_OFF * turn - t), {
+        "torso": {"r": t, "rz": B_RZ[k]}, "head": {"r": B_H[k] + AIM_HEAD * turn}, "disc": {"hide": i == 7},
     }, M.body_about((0, 0, 24), x=B_X[k], z=B_Z[k], q=B_Q[k]))
     pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k])
     pose = merge(pose, F.expr("grit") if i in (2, 3, 4) else F.expr("yell"), {"brow": {"z": -1.0}})
-    return pose
+    return _aimed(pose, turn)
 
 
 def _attack_b():
@@ -277,13 +363,23 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (they go to the extras sheet); the disc has no axis, so the turn
+    # is solved on the throwing hand (its +X is the disc's heading, kit_bronze_detail.aimed_hand) at the release
+    # (the impact frame: the arm thrown out, the disc just gone); aimdata.SPEC gives the variants their aimDeg
+    aimed_a = KD.aimed_hand(RIG, attack, _attack_pose, AIM_W, "hand_r", (1.0, 0.0, 0.0))
+    aimed_b = KD.aimed_hand(RIG, attack_b, _b_pose, AIM_W_B, "hand_r", (1.0, 0.0, 0.0))
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
     return M.check_variants(M.check_contract(cl))

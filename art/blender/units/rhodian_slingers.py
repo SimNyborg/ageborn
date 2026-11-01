@@ -26,8 +26,12 @@ Animation (cartoon kit v2):
 """
 import math
 
+from ageborn_art import aimed as AIMED
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -44,15 +48,44 @@ NO_RETIME = True
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
 HAT_C = (1.0, 0, 57.0)
+HAT_BRIM = 16.5            # kit_bronze.petasos's brim radius
+
+# the detail standard (art round W1, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# A team-dark clavus and a team-dark band over the tunic's linen hem and a team-dark outer edge on the team brim
+# (the team zones in two tones), a dark trim and an aged bronze toggle on the satchel's team flap, a leather bracer on the sling arm and
+# leather leg wraps; the straw crown takes the wood grain (straws along the crown).
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+LEAD = "#C9C3B4"           # the lead glans (kit_bronze.sling)
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", B.LEATHER: "leather", _FAR(B.LEATHER): "leather",
+                  B.LEATHER_DK: "leather", _FAR(B.LEATHER_DK): "leather", B.LINEN: "cloth", B.SAND: "wood",
+                  B.VERD_DK: "cloth", B.VERD: "bronze", B.SAND_LT: "cloth", LEAD: "iron", B.AGED: "bronze",
+                  "team": "cloth"}
+
+
+def _brim_edge(rig, joint, c=HAT_C, brim=HAT_BRIM):
+    """A team-dark band over the outer 3 lu of the petasos's team brim (the brim in two tones)."""
+    cx, cy, cz = c
+    g = Geo().lathe([(brim - 3.2, 0.8), (brim - 0.9, 0.42), (brim + 0.18, -0.6), (brim - 0.3, -1.6),
+                     (brim - 3.2, -0.95)], (cx - 1.5, cy, cz - 0.6), segs=26, squash=(1.0, 0.94))
+    look.team_part(rig, joint, g, outline=0)
 
 
 def build(rig):
     global RIG
     RIG = rig
     B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
-    B.sandal_legs_v3(rig, greaves=False)
+    B.sandal_legs_v3(rig, greaves=False, wraps=B.LEATHER)
     K.tunic(rig, team=True)
     rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 1.0)        # hem >= 9 lu above the soles
+    # two tones on the team tunic (shells that follow it): a team-dark clavus (3.4 lu) down the near side of the
+    # chest and a team-dark band (3.2 lu) over the linen hem
+    g = KD.stripe_x((0.2, 0, 28.0), (10.2, 9.4, 11.4), 1.6, 5.0, z0=19.0, z1=39.0, taper=(1.1, 0.92))
+    look.team_part(rig, "torso", g, outline=0)
+    g = KD.band_z((0.6, 0, 14.6), (11.6, 10.6, 5.6), 11.0, 14.2, taper=(1.16, 0.92))
+    look.team_part(rig, "hem", g, outline=0)
     # satchel of lead shot on the near hip, strap over the far shoulder
     rig.secondary("satchel", "hips", (5.0, -11.0, 17.0), (5.0, -11.5, 9.0), max_deg=12, gain=1.1)
     rig.rest_offset["satchel"] = (0, 0, B.V3_LIFT + 2.5)    # its bottom >= 9 lu above the soles
@@ -60,24 +93,46 @@ def build(rig):
     rig.part("satchel", g, B.LEATHER)
     g = Geo().blob((5.5, -13.2, 14.4), (5.6, 1.8, 2.8), p=2.6)              # team flap
     rig.part("satchel", g, team=True, outline=0.5)
+    g = Geo().blob((5.5, -13.5, 12.3), (5.75, 1.6, 0.95), p=2.8)            # its team-dark edge
+    look.team_part(rig, "satchel", g, outline=0)
+    g = Geo().blob((5.6, -15.0, 13.2), (1.5, 0.8, 1.5), p=2.2)              # an aged bronze toggle
+    rig.part("satchel", g, B.AGED, finish="metal", outline=0.4)
     g = Geo().capsule((8.0, -8.5, 20.0), (-7.0, 7.5, 37.5), 1.2)
     rig.part("torso", g, B.LEATHER_DK, outline=0.5)
+    g = Geo().blob((10.8, -2.4, 20.4), (1.8, 2.6, 2.3), p=2.4)          # an aged bronze belt buckle
+    rig.part("torso", g, B.AGED, finish="metal", outline=0.4)
 
     B.face_kit(rig, cx=13.4, cz=50.0, eye_r=(3.9, 3.5, 4.6), brow_tilt=0.6, mouth_z=43.8)
     K.curly_hair(rig, z=-2.0)
     rig.joint("hat", "head", HAT_C)
     K.petasos(rig, "hat", c=HAT_C, team_brim=True, band=B.VERD_DK)
+    _brim_edge(rig, "hat")
     rig.joint("hat_loose", "root", HAT_C, hidden=True)
     K.petasos(rig, "hat_loose", c=HAT_C, team_brim=True, band=B.VERD_DK)
+    _brim_edge(rig, "hat_loose")
 
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=3.9, r1=3.5)
     g = Geo().blob((0.3, B.ARM_Y["l"], 33.0), (4.5, 4.3, 1.4), p=2.8)
     rig.part("arm_l", g, B.VERD, finish="metal", outline=0.5)
+    g = Geo().blob((0, B.ARM_Y["r"], B.HAND_Z + 3.8), (4.2, 4.2, 2.7), p=2.6)    # a leather bracer (sling arm)
+    rig.part("fore_r", g, B.LEATHER_DK, outline=0.7)
 
     rig.joint("sling", "hand_r", HR)
     pouch = K.sling(rig, "sling", HR, cord=13.0)
     rig.track("muzzle", "sling", pouch)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Bronze soldier; never on the face or skin): the team tunic
+    below the strap, the team skirt, the team brim, the leather satchel; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("tunic", "torso", 1.0, 27.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("skirt", "hem", -2.0, 17.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("brim", "hat", -11.0, 56.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("satchel", "satchel", 3.0, 11.0, 5.0, "hide", fill=B.LEATHER)
+    rig.damage_spot_at("hem", "hem", -5.0, 14.5, 9.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -145,10 +200,35 @@ A_FL = [-2.0, -2.5, -4.0, -6.0, -6.0, -5.0, -4.0, -3.0, -3.0, -2.5, -2.0, -2.0]
 A_LR = [0, 0, 0, 0, 0, 2.0, 1.5, 0, 0, 0, 0, 0]
 
 
-def _attack_pose(f):
-    t = A_T[f]
-    pose = merge(swing(S_A[f] - t, S_F[f] - t, S_W[f] - t), other(O_A[f] - t, O_F[f] - t), {
-        "torso": {"r": t}, "head": {"r": A_H[f]},
+# aimed shots at flyers (queue item 44; kit_bronze_detail.aimed_hand, a sling has no measured axis): a turn of
+# `turn` degrees up swings the sling and the arm higher through the release (the cord flies up at the target),
+# leans him back, tips the head and the eyes up and lifts the free arm; the feet stay planted. The windmill's
+# loop stays the base clip's frames; the release rises into the aim and falls out of it in the flick.
+AIM_LEAN = 0.18           # torso r per degree of turn (positive leans back)
+AIM_ARM = (0.55, 0.75)    # upper arm and forearm: their share of the turn (world degrees); the sling takes it all
+AIM_HEAD = 0.35           # head r per degree, on top of the lean
+AIM_OFF = 0.5             # the free arm
+AIM_EYES = 0.010          # pupils z per degree
+#         read fwd  up  HOLD jigl smear lead  REL flick recoil load settle
+AIM_W = [0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.7, 1.0, 0.7, 0.3, 0.0, 0.0]
+AIM_W_B = [0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.8, 1.0, 0.6, 0.25, 0.0, 0.0]
+
+
+def _aimed(pose, turn):
+    """The eyes follow the aim."""
+    if not turn:
+        return pose
+    p = dict(pose.get("pupils", {}))
+    p["z"] = p.get("z", 0.0) + AIM_EYES * turn
+    return merge(pose, {"pupils": p})
+
+
+def _attack_pose(f, turn=0.0):
+    t = A_T[f] + AIM_LEAN * turn
+    ka, kf = AIM_ARM
+    pose = merge(swing(S_A[f] + ka * turn - t, S_F[f] + kf * turn - t, S_W[f] + turn - t),
+                 other(O_A[f] + AIM_OFF * turn - t, O_F[f] + AIM_OFF * turn - t), {
+        "torso": {"r": t}, "head": {"r": A_H[f] + AIM_HEAD * turn},
         "pouch_stone": {"hide": f in (7, 8, 9)},
     }, M.body_about((0, 0, 22), x=A_X[f], z=A_Z[f], q=A_Q[f]))
     pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f])
@@ -160,7 +240,7 @@ def _attack_pose(f):
         pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.1}})
     elif f == 10:
         pose = merge(pose, {"pupils": {"x": -0.4, "z": -0.6}})
-    return pose
+    return _aimed(pose, turn)
 
 
 POUCH = (HR[0], HR[1] - 1.2, HR[2] - 13.0)
@@ -201,19 +281,21 @@ B_FL = [-4.0, -7.0, -7.0, -6.0, -4.0, -3.0]
 B_LR = [0, 0, 0, 2.5, 1.5, 0]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i in (0, 1) or i >= 8:
-        return _attack_pose(i)
+        return _attack_pose(i, turn)
     k = i - 2
-    t = B_T[k]
-    pose = merge(swing(B_A[k] - t, B_F[k] - t, B_W[k] - t), other(B_OA[k] - t, B_OF[k] - t), {
-        "torso": {"r": t}, "head": {"r": B_H[k]}, "pouch_stone": {"hide": i == 7},
+    t = B_T[k] + AIM_LEAN * turn
+    ka, kf = AIM_ARM
+    pose = merge(swing(B_A[k] + ka * turn - t, B_F[k] + kf * turn - t, B_W[k] + turn - t),
+                 other(B_OA[k] + AIM_OFF * turn - t, B_OF[k] + AIM_OFF * turn - t), {
+        "torso": {"r": t}, "head": {"r": B_H[k] + AIM_HEAD * turn}, "pouch_stone": {"hide": i == 7},
     }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
     pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k])
     if i in (5, 6):
         pose.setdefault("sling", {})["sz"] = 1.15
     pose = merge(pose, F.expr("grit") if i in (2, 3, 4) else F.expr("yell"), {"brow": {"z": -1.0}})
-    return pose
+    return _aimed(pose, turn)
 
 
 def _attack_b():
@@ -269,13 +351,23 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (they go to the extras sheet); a sling has no axis, so the turn is
+    # solved on the sling's cord (the sling joint's -Z, kit_bronze_detail.aimed_hand) at the release (the impact
+    # frame: the cord streaming at the target, the stone just gone); aimdata.SPEC gives the variants their aimDeg
+    aimed_a = KD.aimed_hand(RIG, attack, _attack_pose, AIM_W, "sling", (0.0, 0.0, -1.0))
+    aimed_b = KD.aimed_hand(RIG, attack_b, _b_pose, AIM_W_B, "sling", (0.0, 0.0, -1.0))
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
     return M.check_variants(M.check_contract(cl))

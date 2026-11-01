@@ -27,8 +27,11 @@ shove with the shield and stab over it):
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import gait as G
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -43,11 +46,92 @@ FEET = (132, 216)
 ANCHORS = {"head": (2, 66), "hitCenter": (0, 32)}
 NO_RETIME = True
 
+# the detail standard (art round W1, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# Most of the Hoplite a player sees is the aspis, the helmet and crest and the greaved legs, so the detail goes
+# there: a team-dark ring band under the rivets (the team zone in two tones), a team-dark base on the crest, a
+# tooled band and an incised scroll on the dome, team-dark tips on the pteruges, a socket binding on the spear
+# and a xiphos scabbard that hangs below the shield and swings a frame late.
+DETAIL_STANDARD = True
+# a clearer light-to-shadow structure on skin, hair, linen and the shield (look.SHADE), as the pilot's soldiers
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", B.PLUM: "cloth", B.LINEN: "cloth",
+                  B.VERD: "bronze", B.VERD_DK: "cloth", _FAR(B.VERD_DK): "cloth", B.LEATHER: "leather",
+                  _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather", _FAR(B.LEATHER_DK): "leather",
+                  B.BRONZE: "bronze", _FAR(B.BRONZE): "bronze", B.BRONZE_HI: "bronze", B.AGED: "bronze",
+                  B.AGED_DK: "bronze", B.PLUM_DK: "wood", B.SAND_LT: "ceramic", B.WOOD: "wood", B.WOOD_DK: "wood",
+                  "team": "cloth"}
+
+# Marble Hoplite (DESIGN A5.8, rare): a living marble statue with gilded trim, the same model. Marble for skin,
+# hair, linen, leather and the spear (the "stone" kind: chips and fine cracks), pale gold for the bronze (under
+# the colour rule's 0.38), a gilded lambda, and a gilded laurel wreath round the helmet in place of the tooled
+# band; the crest, the shield face and the pteruges stay team.
+WREATH = "#D9C690"        # gilded laurel (saturation 0.34)
+MARBLE = {B.SKIN: "#E8E4DC", _FAR(B.SKIN): "#BAB6B0", B.HAIR: "#9A948A", B.LINEN: "#F2F0EA", B.PLUM: "#B3ADA4",
+          B.PLUM_DK: "#958E85", B.LEATHER: "#A39B8E", _FAR(B.LEATHER): "#827C72", B.LEATHER_DK: "#857D71",
+          _FAR(B.LEATHER_DK): "#6A645A", B.WOOD: "#C2BAAD"}
+GILT = {B.VERD: "#CDBB86", B.VERD_DK: "#B09F70", _FAR(B.VERD_DK): "#8D7F5A", B.BRONZE: "#DCC793",
+        _FAR(B.BRONZE): "#B09F76", B.BRONZE_HI: "#EADBB0", B.AGED: "#C8B88E", B.AGED_DK: "#9C8D69",
+        B.SAND_LT: "#E6D5A2"}
+SKINS = {"marble_hoplite": {
+    "palette": dict(MARBLE, **GILT, **{B.PUPIL: "#3B3733"}),
+    "kinds": dict({v: "stone" for v in MARBLE.values()}, **{v: "gold" for v in GILT.values()}, **{WREATH: "gold"})}}
+
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand (shield)
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)   # far hand (spear), spear modelled pointing up (+Z)
 FWD, BACK = 42.0, 18.0
 HELM_C = (1.5, 0, 55.0)
 TIP = (HL[0], HL[1] - 0.4, HL[2] + FWD)
+SHIELD_C = (HR[0] + 1.0, HR[1] - 6.0, HR[2] + 3.0)
+SHIELD_R, SHIELD_D, SHIELD_RIM = 13.4, 2.6, 1.3
+
+
+def _aspis_band(rig, joint, c, r, depth, rim_w, r0, r1, lift=0.25):
+    """A team-dark ring band on the aspis face between radii r0 and r1: a thin lathed shell that follows the
+    face's bow (the face is an ellipsoid of radius r - rim_w bulging depth x 0.95 toward the camera, -Y)."""
+    cx, cy, cz = c
+    R, bulge = r - rim_w, depth * 0.95
+    prof = []
+    n = 6
+    for i in range(n + 1):
+        rho = r0 + (r1 - r0) * i / n
+        d = bulge * math.sqrt(max(0.0, 1.0 - (rho / R) ** 2)) + lift
+        prof.append((rho, d))
+    # the edges tuck 0.6 lu back into the face; the end caps sit inside the face's volume
+    prof = [(r0, prof[0][1] - 0.6)] + prof + [(r1, prof[-1][1] - 0.6)]
+    g = Geo().lathe(prof, (cx, cy + 0.2, cz), (cx, cy - 0.8, cz), segs=36)
+    look.team_part(rig, joint, g, outline=0)
+
+
+def _helmet_detail(rig, joint, crest_joint, c=HELM_C):
+    """A tooled band round the polished dome (a dark aged-bronze line 1.2 lu above the verdigris rim), an
+    incised scroll on the near temple (the Chalcidian helmets' embossed volutes) and the crest's team-dark
+    base."""
+    cx, cy, cz = c
+    if getattr(rig, "skin", None) == "marble_hoplite":
+        _wreath(rig, joint, c)
+    else:
+        g = Geo().blob((cx + 0.1, cy, cz + 2.4), (12.55, 11.95, 0.6), p=2.8)
+        rig.part(joint, g, B.AGED_DK, finish="metal", outline=0)
+    dome = Geo().blob((cx, cy, cz), (12.4, 11.8, 10.2), p=2.4)
+    KD.surface_line(rig, joint, dome, KD.volute((cx + 5.0, cz + 5.6), 0.9, 3.2, a0=200.0, tail=(1.2, -2.2)), 1.2,
+                    B.AGED_DK)
+    KD.crest_base(rig, crest_joint, c, crest_len=22.0, crest_h=10.0)
+
+
+def _wreath(rig, joint, c=HELM_C):
+    """The Marble Hoplite's gilded laurel wreath round the dome (16 leaf pairs of 4 x 2.2 lu, tilted up and down
+    like a herringbone)."""
+    cx, cy, cz = c
+    g = Geo()
+    n = 16
+    for k in range(n):
+        a = 2 * math.pi * (k + 0.5) / n
+        x, y = cx + 0.1 + 12.75 * math.cos(a), cy + 12.15 * math.sin(a)
+        for dz, tilt in ((1.1, -24.0), (-0.9, 24.0)):
+            g.blob((x, y, cz + 2.4 + dz), (2.0, 0.75, 1.1), p=2.2, rot=(0, tilt, math.degrees(a) + 90))
+    rig.part(joint, g, WREATH, finish="metal", outline=0.4)
 
 
 def build(rig):
@@ -63,8 +147,28 @@ def build(rig):
     rig.secondary("hem", "hips", (0.5, 0, 17.0), (0.5, 0, 9.0), max_deg=10, gain=0.9)
     rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 0.6)        # hem >= 9 lu above the soles (the knees show)
     B.pteruges(rig, "hem", 17.2, None, team=True, n=8, radius=(11.2, 10.4), length=7.4)
+    # team-dark tips on the pteruges (2.8 lu): the strips that show under the aspis read as a fringed skirt
+    g = Geo()
+    for k in range(8):
+        a = math.pi * (0.55 + 1.9 * k / 7)
+        g.blob((11.2 * math.cos(a) * 0.98, 10.4 * math.sin(a), 17.2 - 7.4 + 1.3), (2.95, 2.6, 1.45), p=3.0,
+               rot=(0, 0, math.degrees(a) + 90))
+    look.team_part(rig, "hem", g, outline=0.5)
     g = Geo().blob((0.5, 0, 20.2), (11.4, 10.6, 1.6), p=3.2)          # leather belt
     rig.part("torso", g, B.LEATHER_DK, outline=0.6)
+    # a xiphos in a dark leather scabbard on the near hip (an aged bronze locket and a ball chape, a bone grip
+    # and pommel); it hangs back below the aspis and swings a frame late
+    rig.secondary("xiphos", "torso", (-3.4, -13.0, 20.6), (-9.0, -13.4, 9.6), max_deg=12, gain=1.2)
+    g = Geo().capsule((-3.6, -13.0, 20.0), (-8.6, -13.4, 10.4), 2.1, 1.5)
+    rig.part("xiphos", g, B.LEATHER_DK, outline=0.6)
+    g = Geo().capsule((-3.3, -13.0, 20.8), (-4.1, -13.1, 18.8), 2.45)
+    g.sphere((-9.1, -13.5, 9.5), 1.9, cuts=3)
+    rig.part("xiphos", g, B.AGED, finish="metal", outline=0.5)
+    g = Geo().capsule((-2.9, -12.9, 21.6), (-1.4, -12.8, 25.0), 1.15)
+    rig.part("xiphos", g, B.LINEN, outline=0.5)
+    g = Geo().capsule((-4.3, -13.0, 22.4), (-1.5, -13.0, 21.0), 1.0)
+    g.sphere((-1.1, -12.8, 25.8), 1.5, cuts=3)
+    rig.part("xiphos", g, B.AGED, finish="metal", outline=0.5)
     for s, y in (("r", -12.0), ("l", 11.5)):                          # linen shoulder guards
         g = Geo().blob((0.4, y, 37.0), (6.4, 5.6, 4.8), p=2.6)
         rig.part(f"arm_{s}", g, B.LINEN)
@@ -80,9 +184,11 @@ def build(rig):
     rig.part("head", beard, B.HAIR, finish="hair")
     rig.joint("helm", "head", HELM_C)
     B.helmet(rig, joint="helm", crest_len=22.0, crest_h=10.0)
+    _helmet_detail(rig, "helm", "crest")
     # the loose copy that pops off in the death (no follow-through: it tumbles as a whole)
     rig.joint("helm_loose", "root", HELM_C, hidden=True)
     B.helmet(rig, joint="helm_loose", crest_len=22.0, crest_h=10.0, crest_secondary=False)
+    _helmet_detail(rig, "helm_loose", "helm_loose")
 
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.1, r1=3.7)
@@ -96,20 +202,28 @@ def build(rig):
     tip = B.spear(rig, "spear", (HL[0], HL[1] - 0.4, HL[2]), fwd=FWD, back=BACK, r=1.25, head_len=11.0,
                   head=B.BRONZE_HI)
     g = Geo().capsule((HL[0], HL[1] - 0.4, HL[2] - 4.0), (HL[0], HL[1] - 0.4, HL[2] + 4.0), 1.75)
+    # a leather binding at the head's socket (a dark band under the polished leaf)
+    g.capsule((HL[0], HL[1] - 0.4, HL[2] + FWD - 13.4), (HL[0], HL[1] - 0.4, HL[2] + FWD - 10.8), 1.7)
     rig.part("spear", g, B.LEATHER_DK, outline=0.5)
     rig.track("spearTip", "spear", tip)
 
-    # the aspis on the near hand: a big round team shield with a riveted rim
-    sx, sy, sz = HR[0] + 1.0, HR[1] - 6.0, HR[2] + 3.0
-    B.aspis(rig, "hand_r", (sx, sy, sz), r=13.4, depth=2.6, rim=B.BRONZE, rim_w=1.3, rivets=12)
-    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
-    # the aspis face (the largest camera-facing part) twice, the bronze helmet, the team crest (the linen
-    # corslet stays behind the raised aspis in every pose); a torn strip from the team hem
-    # W0 milestone 7 (review A-S2): one big spot inside the lambda below the boss (the aspis is the largest surface
-    # the spear never covers) and a second on the face's upper right
+    # the aspis on the near hand: a big round team shield with a riveted rim, a team-dark ring band under the
+    # rivets (the face in two tones; the lambda stays on the light centre)
+    B.aspis(rig, "hand_r", SHIELD_C, r=SHIELD_R, depth=SHIELD_D, rim=B.BRONZE, rim_w=SHIELD_RIM, rivets=12)
+    _aspis_band(rig, "hand_r", SHIELD_C, SHIELD_R, SHIELD_D, SHIELD_RIM, 8.4, 11.1)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin. The aspis
+    face (the largest camera-facing part) twice, the bronze helmet, the team crest (the linen corslet stays
+    behind the raised aspis in every pose); a torn strip from the team hem. W0 milestone 7 (review A-S2): one
+    big spot inside the lambda below the boss (the aspis is the largest surface the spear never covers) and a
+    second on the face's upper right. W1: the helmet's dent moved back off the new scroll."""
     rig.damage_spot_at("shield", "hand_r", -3.0, 17.0, 9.0, "wood", team=True)
     rig.damage_spot_at("shield_high", "hand_r", 6.5, 25.0, 5.0, "wood", team=True)
-    rig.damage_spot_at("helmet", "helm", 2.0, 61.0, 6.0, "metal", fill="#B8863B")
+    rig.damage_spot_at("helmet", "helm", -3.5, 60.5, 6.0, "metal", fill="#B8863B")
     rig.damage_spot_at("crest", "crest", -6.0, 77.0, 6.0, "hide", team=True)
     rig.damage_spot_at("hem", "hem", -10.0, 14.0, 8.0, "cloth", kind="strip", team=True)
 

@@ -26,8 +26,11 @@ Animation (cartoon kit v2):
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -42,10 +45,50 @@ FEET = (132, 216)
 ANCHORS = {"head": (2, 66), "hitCenter": (0, 32)}
 NO_RETIME = True
 
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2. A player sees the thureos, the Boeotian helmet, the team shoulder guard, the legs and the
+# kopis: the shield face gets a team-dark band with pale studs inside its rim (two tones), the plume a team-dark
+# base, the dome an incised zigzag, the shoulder guards team-dark edging, the near hip a dagger that swings a
+# frame late.
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+EDGE = "#F4ECD6"          # the kopis's honed edge (kit_bronze.kopis)
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", B.PLUM: "cloth", B.LINEN: "cloth",
+                  B.VERD: "cloth", _FAR(B.VERD): "cloth", B.VERD_DK: "cloth", B.LEATHER: "leather",
+                  _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather", _FAR(B.LEATHER_DK): "leather",
+                  B.BRONZE: "bronze", B.BRONZE_HI: "bronze", B.AGED: "bronze", B.AGED_DK: "bronze", EDGE: "bronze",
+                  B.PLUM_DK: "wood", B.SAND: "wood", B.SAND_LT: "ceramic", "team": "cloth"}
+
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand (shield)
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)   # far hand (kopis), modelled pointing up (+Z)
 HELM_C = (1.5, 0, 57.5)
 SH_C = (HR[0] + 2.0, HR[1] - 6.5, HR[2] + 5.0)
+SH_RX, SH_RZ, SH_D = 11.2, 19.5, 2.8
+
+
+def _thureos_detail(rig, joint, c):
+    """The thureos face in two tones: a team-dark band (2.6 lu) inside the rim with 16 pale studs on it."""
+    KD.face_band(rig, joint, c, SH_RX, SH_RZ, SH_D, 1.3, 1.0, 3.6)
+    cx, cy, cz = c
+    A, C = SH_RX - 1.3 - 2.3, SH_RZ - 1.3 - 2.3
+    g = Geo()
+    for k in range(16):
+        t = 2 * math.pi * (k + 0.5) / 16
+        x, z = A * math.cos(t), C * math.sin(t)
+        u = (x / (SH_RX - 1.3)) ** 2 + (z / (SH_RZ - 1.3)) ** 2
+        y = cy + 0.2 - SH_D * 0.95 * math.sqrt(max(0.0, 1.0 - u)) - 0.6
+        g.sphere((cx + x, y, cz + z), 1.0, cuts=2)
+    rig.part(joint, g, B.SAND_LT, finish="metal", outline=0.4)
+
+
+def _helmet_detail(rig, joint, c=HELM_C):
+    """An incised zigzag round the near side of the Boeotian dome (aged bronze, 1.2 lu), above its band."""
+    cx, cy, cz = c
+    dome = Geo().blob((cx - 0.5, cy, cz + 2.0), (11.6, 11.2, 10.4), p=2.3)
+    pts = [(cx - 9.6 + 2.4 * i, cz + 4.6 + (1.3 if i % 2 else -1.3)) for i in range(9)]
+    KD.surface_line(rig, joint, dome, pts, 1.2, B.AGED_DK)
 
 
 def build(rig):
@@ -68,6 +111,10 @@ def build(rig):
     for s, y in (("r", -12.0), ("l", 11.5)):                          # team shoulder guards
         g = Geo().blob((0.4, y, 37.0), (6.6, 5.8, 5.0), p=2.6)
         rig.part(f"arm_{s}", g, team=True)
+        g = Geo().blob((0.4, y, 33.7), (6.9, 6.1, 1.35), p=2.8)        # team-dark edging (2.7 lu)
+        look.team_part(rig, f"arm_{s}", g, outline=0.4)
+    # a dagger in a dark sheath on the near hip (an aged bronze locket, chape and pommel), swinging a frame late
+    KD.scabbard(rig, "dagger", "torso", (-3.4, -12.8, 20.6), (-7.8, -13.2, 12.4), r=(1.9, 1.35), hilt=3.6)
 
     # head: face kit, short beard, pilos on its own joint (clanks down, pops off)
     beard = Geo()
@@ -77,8 +124,13 @@ def build(rig):
     rig.part("head", beard, B.HAIR, finish="hair")
     rig.joint("helm", "head", HELM_C)
     K.boeotian(rig, "helm", c=HELM_C)
+    _helmet_detail(rig, "helm")
+    cx, cy, top = HELM_C[0], HELM_C[1], HELM_C[2] + 12.0                # the plume's tufts (kit_bronze.boeotian)
+    KD.plume_base(rig, "plume", [(cx + dx, cy, top + dz, r) for dx, dz, r in
+                                 ((1.0, 0.6, 3.2), (-2.6, 2.6, 3.8), (-6.6, 3.8, 3.4), (-10.0, 3.0, 2.6))])
     rig.joint("helm_loose", "root", HELM_C, hidden=True)
     K.boeotian(rig, "helm_loose", c=HELM_C, plume=False)
+    _helmet_detail(rig, "helm_loose")
 
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.2, r1=3.8)
@@ -93,11 +145,29 @@ def build(rig):
 
     # the thureos on the near hand
     rig.joint("shield", "hand_r", HR)
-    K.oval_shield(rig, "shield", SH_C, rx=11.2, rz=19.5, depth=2.8, rim=B.AGED)
+    K.oval_shield(rig, "shield", SH_C, rx=SH_RX, rz=SH_RZ, depth=SH_D, rim=B.AGED)
+    _thureos_detail(rig, "shield", SH_C)
 
     # the loose shield for the death (falls flat on him)
     rig.joint("sh_loose", "root", (0, 0, 0), hidden=True)
-    K.oval_shield(rig, "sh_loose", (0.0, -14.0, 0.0), rx=11.2, rz=19.5, depth=2.8, rim=B.AGED)
+    K.oval_shield(rig, "sh_loose", (0.0, -14.0, 0.0), rx=SH_RX, rz=SH_RZ, depth=SH_D, rim=B.AGED)
+    _thureos_detail(rig, "sh_loose", (0.0, -14.0, 0.0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, armoured: dents, then cracks, the shield nearly split; never on
+    the face or skin). The thureos is the largest surface the kopis never covers: one big mark low on its face
+    (left of the spine) and one high on the right; the polished dome; the team shoulder guard; a torn strip
+    from the back of the team cuirass band."""
+    # screen positions: the shield face sits about 21.7 lu nearer the camera than the body, so it shows about
+    # 3.9 lu further back and 6.3 lu lower than its character-space centre (the yaw and the camera's elevation)
+    rig.damage_spot_at("shield", "shield", -7.5, 12.0, 9.0, "wood", team=True)
+    rig.damage_spot_at("shield_high", "shield", 3.5, 33.0, 5.5, "wood", team=True)
+    rig.damage_spot_at("helmet", "helm", -3.0, 68.5, 5.5, "metal", fill=B.BRONZE)
+    rig.damage_spot_at("guard", "arm_r", -2.0, 36.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "torso", -10.0, 22.5, 9.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

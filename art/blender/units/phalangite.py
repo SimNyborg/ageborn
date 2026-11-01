@@ -25,7 +25,10 @@ Animation (cartoon kit v2; a viewer expects a pike to be thrust straight and har
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -40,6 +43,23 @@ FEET = (112, 228)
 ANCHORS = {"head": (2, 70), "hitCenter": (0, 33)}
 NO_RETIME = True
 
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2. The shipped sheet broke the A11 colour rule on its encoding (10.1%: polished helmet,
+# greaves, pelte rim and sarissa head together), so the greaves and the pelte's rim are aged bronze now and the
+# polish stays on the helmet and the sarissa's head. Detail: a team-dark ring on the pelte under its rivets, a
+# team-dark base on the crest, a tooled band and an incised scroll on the tall dome, team-dark edges on the team
+# sleeves and team-dark tips on the linen pteruges (the team zones in two tones), leather bindings along the
+# sarissa and a team-dark tail on its pennon.
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", B.LINEN: "cloth", B.LEATHER: "leather",
+                  _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather", _FAR(B.LEATHER_DK): "leather",
+                  B.BRONZE: "bronze", B.BRONZE_HI: "bronze", B.AGED: "bronze", _FAR(B.AGED): "bronze",
+                  B.AGED_DK: "bronze", B.VERD: "bronze", B.VERD_DK: "cloth", _FAR(B.VERD_DK): "cloth",
+                  B.PLUM_DK: "wood", B.SAND_LT: "ceramic", B.WOOD: "wood", "team": "cloth"}
+
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # rear (near) hand holds the sarissa
 BUTT, TIP = -28.0, 98.0
 PY = HR[1] - 1.5
@@ -52,7 +72,7 @@ def build(rig):
     global RIG
     RIG = rig
     B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
-    B.sandal_legs_v3(rig, thigh_r=4.7)
+    B.sandal_legs_v3(rig, thigh_r=4.7, greave=B.AGED)   # aged-bronze greaves (the colour rule)
 
     # team chiton, linen cuirass, team pteruges
     g = Geo().blob((0, 0, 27.0), (10.6, 9.8, 12.0), p=2.3, taper=(1.1, 0.92))
@@ -73,6 +93,12 @@ def build(rig):
     rig.secondary("hem", "hips", (0.5, 0, 17.0), (0.5, 0, 9.0), max_deg=8, gain=0.7)
     rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 0.6)        # hem >= 9 lu above the soles
     B.pteruges(rig, "hem", 17.6, B.LINEN, n=8, radius=(11.4, 10.6), length=7.0)
+    g = Geo()                                   # team-dark tips on the linen strips (2.6 lu)
+    for k in range(8):
+        a = math.pi * (0.55 + 1.9 * k / 7)
+        g.blob((11.4 * math.cos(a) * 0.98, 10.6 * math.sin(a), 17.6 - 7.0 + 1.2), (2.95, 2.6, 1.35), p=3.0,
+               rot=(0, 0, math.degrees(a) + 90))
+    look.team_part(rig, "hem", g, outline=0.5)
     g = Geo().blob((0.6, 0, 16.0), (11.0, 10.2, 3.6), p=2.6)
     rig.part("hem", g, team=True)
 
@@ -85,8 +111,10 @@ def build(rig):
     rig.part("head", beard, B.HAIR, finish="hair")
     rig.joint("helm", "head", HELM_C)
     B.helmet(rig, joint="helm", tall=6.0, crest_len=18.0, crest_h=11.0)
+    _helmet_detail(rig, "helm", "crest")
     rig.joint("helm_loose", "root", HELM_C, hidden=True)
     B.helmet(rig, joint="helm_loose", tall=6.0, crest_len=18.0, crest_h=11.0, crest_secondary=False)
+    _helmet_detail(rig, "helm_loose", "helm_loose")
 
     # arms: team sleeves, bare forearms, leather bracers
     for s in ("r", "l"):
@@ -94,12 +122,15 @@ def build(rig):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.1, r1=3.7)
         g = Geo().blob((0.3, y * 1.02, 33.4), (5.8, 5.4, 5.6), p=2.3)
         rig.part(f"arm_{s}", g, team=True)
+        g = KD.band_z((0.3, y * 1.02, 33.4), (5.8, 5.4, 5.6), 27.6, 30.4, p=2.3)   # its team-dark edge
+        look.team_part(rig, f"arm_{s}", g, outline=0)
         g = Geo().blob((0, y, B.HAND_Z + 3.4), (4.5, 4.5, 1.8), p=2.6)
         rig.part(f"fore_{s}", g, B.LEATHER, outline=0.7)
 
     # small round shield slung on the near shoulder
     rig.joint("pelte", "torso", (2.0, -14.0, 32.0))
-    B.aspis(rig, "pelte", (3.0, -17.5, 29.0), r=9.4, depth=1.8, rim=B.BRONZE, rim_w=1.4, rivets=8)
+    B.aspis(rig, "pelte", (3.0, -17.5, 29.0), r=9.4, depth=1.8, rim=B.AGED, rim_w=1.4, rivets=8)
+    KD.face_band(rig, "pelte", (3.0, -17.5, 29.0), 9.4, 9.4, 1.8, 1.4, 0.8, 3.4)
 
     # the sarissa on the rear hand, modelled along +X (rest direction 0)
     hx, hy, hz = HR
@@ -113,6 +144,9 @@ def build(rig):
     g.lathe([(0, 34.0), (1.9, 34.2), (1.9, 36.6), (0, 36.8)], (hx, PY, hz), (hx + 1, PY, hz), segs=10)  # joint sleeve
     rig.part("hand_r", g, B.AGED_DK, finish="metal", outline=0.6)
     g = Geo().lathe([(0, -3.5), (2.0, -3.4), (2.0, 3.4), (0, 3.5)], (hx, PY, hz), (hx + 1, PY, hz), segs=10)
+    for d in (52.0, 68.0):                      # leather bindings along the shaft (2.6 lu)
+        g.lathe([(0, d - 1.3), (1.75, d - 1.2), (1.75, d + 1.2), (0, d + 1.3)], (hx, PY, hz), (hx + 1, PY, hz),
+                segs=10)
     rig.part("hand_r", g, B.LEATHER_DK, outline=0.4)
     # team ribbon tied under the head (follow-through)
     px0 = hx + TIP - 16.0
@@ -121,7 +155,35 @@ def build(rig):
     pts = [(0.0, 0.0), (-12.0, -2.0), (-9.0, -4.6), (-12.5, -7.4), (0.0, -6.8)]
     g = Geo().slab([(px0 + x, hz - 0.8 + z) for x, z in pts], PY, 1.2)
     rig.part("pennon", g, team=True, outline=0.8)
+    tail = [(-7.0, -1.2), (-12.0, -2.0), (-9.0, -4.6), (-12.5, -7.4), (-7.0, -7.0)]      # a team-dark tail
+    g = Geo().slab([(px0 + x, hz - 0.8 + z) for x, z in tail], PY, 1.5)
+    look.team_part(rig, "pennon", g, outline=0)
     rig.track("sarissaTip", "hand_r", (hx + TIP, PY, hz))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _helmet_detail(rig, joint, crest_joint, c=HELM_C, tall=6.0):
+    """A tooled band round the tall polished dome (a dark aged-bronze line above the verdigris rim), an incised
+    scroll on the near temple and the crest's team-dark base (the Hoplite's helmet detail, on the tall dome)."""
+    cx, cy, cz = c
+    g = Geo().blob((cx + 0.1, cy, cz + 2.4), (12.55, 11.95, 0.6), p=2.8)
+    rig.part(joint, g, B.AGED_DK, finish="metal", outline=0)
+    dome = Geo().blob((cx, cy, cz + tall * 0.4), (12.4, 11.8, 10.2 + tall), p=2.4)
+    KD.surface_line(rig, joint, dome, KD.volute((cx + 5.0, cz + 7.6), 0.9, 3.4, a0=200.0, tail=(1.2, -2.4)), 1.2,
+                    B.AGED_DK)
+    KD.crest_base(rig, crest_joint, c, crest_len=18.0, crest_h=11.0, tall=tall)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, armoured: dents, cracks, plates off; never on the face or skin):
+    the pelte (the team face on the near shoulder), the linen cuirass below it, the polished dome, the team
+    crest; a strip torn from the team skirt between the pteruges."""
+    rig.damage_spot_at("pelte", "pelte", -5.5, 26.0, 7.0, "wood", team=True)
+    rig.damage_spot_at("cuirass", "torso", -6.0, 36.5, 6.0, "cloth", fill=B.LINEN)
+    rig.damage_spot_at("helmet", "helm", -4.0, 64.0, 6.0, "metal", fill=B.BRONZE)
+    rig.damage_spot_at("crest", "crest", -6.0, 79.0, 6.0, "hide", team=True)
+    rig.damage_spot_at("hem", "hem", -6.0, 18.0, 9.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
