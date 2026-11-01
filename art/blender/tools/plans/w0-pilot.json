@@ -1,0 +1,22 @@
+{
+ "about": "The W0 pilot's before/after video for the owner (art round W0, 2026-11-01). Frames: tools/art/scenarios/w0-pilot.json captured with tools/art/battleCapture.mjs (before = a git archive of origin/main, after = the working tree); see art/blender/README.md, 'Evidence for a wave'.",
+ "crf": 23,
+ "segments": [
+  {"kind": "card", "name": "Titel", "sec": 2.5, "key": 10, "lines": ["Ageborn: kunstrunde W0", "Piloten: Bonker, Javelineer og War Chariot", "Samme kamp og samme seed, før og efter"]},
+  {"kind": "seq", "name": "Før: Bonker", "dir": "stone_phone_before", "start": 0, "n": 110, "key": 60, "title": "Før", "sub": "Bonker, stenalderen. Telefon 844 x 390"},
+  {"kind": "seq", "name": "Efter: Bonker", "dir": "stone_phone_after", "start": 0, "n": 110, "key": 60, "title": "Efter", "sub": "Bonker, stenalderen. Telefon 844 x 390"},
+  {"kind": "seq", "name": "Før: bronzealderen", "dir": "bronze_phone_before", "start": 0, "n": 110, "key": 70, "title": "Før", "sub": "Javelineer og War Chariot, bronzealderen"},
+  {"kind": "seq", "name": "Efter: bronzealderen", "dir": "bronze_phone_after", "start": 0, "n": 110, "key": 70, "title": "Efter", "sub": "Javelineer og War Chariot, bronzealderen"},
+  {"kind": "pair", "name": "Zoom Bonker", "left": "stone_phone_before", "right": "stone_phone_after", "start": 30, "n": 60, "key": 30, "boxL": [665, 380, 1025, 714], "boxR": [665, 380, 1025, 714], "title": "Zoom x2,3", "sub": "Bonker", "left_label": "Før", "right_label": "Efter"},
+  {"kind": "pair", "name": "Zoom Javelineer", "left": "bronze_phone_before", "right": "bronze_phone_after", "start": 30, "n": 60, "key": 30, "boxL": [400, 380, 700, 658], "boxR": [400, 380, 700, 658], "title": "Zoom x2,8", "sub": "Javelineer", "left_label": "Før", "right_label": "Efter"},
+  {"kind": "pair", "name": "Zoom War Chariot", "left": "bronze_phone_before", "right": "bronze_phone_after", "start": 20, "n": 60, "key": 30, "boxL": [650, 360, 1040, 722], "boxR": [650, 360, 1040, 722], "title": "Zoom x2,2", "sub": "War Chariot", "left_label": "Før", "right_label": "Efter"},
+  {"kind": "sheetpair", "name": "Skin: Pumpkin Head", "left": "public/art/units/stone/bonker.hd.json", "right": "public/art/units/stone/bonker@pumpkin_head.hd.json", "labels": ["Bonker", "Pumpkin Head"], "clips": [["walk", 2], ["attack", 1], ["idle", 1]], "zoom": 3.0, "key": 20, "title": "Skins ved siden af deres enhed", "sub": "Samme figur, samme bevægelser"},
+  {"kind": "sheetpair", "name": "Skin: Sun Chariot", "left": "public/art/units/bronze/war_chariot.hd.json", "right": "public/art/units/bronze/war_chariot@sun_chariot.hd.json", "labels": ["War Chariot", "Sun Chariot"], "clips": [["walk", 2], ["attack", 1], ["idle", 1]], "zoom": 1.55, "key": 20, "title": "Skins ved siden af deres enhed", "sub": "Samme figur, samme bevægelser"},
+  {"kind": "damage", "name": "Skader: Bonker", "dir": "dmg_soldier_phone_after", "start": 0, "n": 52, "step": 1, "hold": 0.7, "key": 0, "title": "Skader i tre trin", "sub": "Soldat: Bonker mod slyngekastere", "box": [400, 200, 1390, 657]},
+  {"kind": "damage", "name": "Skader: War Chariot", "dir": "dmg_chariot_phone_after", "start": 0, "n": 93, "step": 1, "key": 0, "title": "Skader i tre trin", "sub": "War Chariot"},
+  {"kind": "damage", "name": "Skader: Armoured Car", "dir": "dmg_machine_phone_after", "start": 0, "n": 72, "step": 1, "box": [300, 160, 1380, 660], "key": 0, "title": "Skader i tre trin", "sub": "Maskine: Armoured Car"},
+  {"kind": "pair", "name": "Sigter op", "left": "air_phone_before", "right": "air_phone_after", "start": 0, "n": 120, "key": 60, "boxL": [430, 150, 1013, 690], "boxR": [430, 150, 1013, 690], "title": "Sigter op mod flyvere", "sub": "Javelineer mod luftballon og drone", "left_label": "Før", "right_label": "Efter"},
+  {"kind": "seq", "name": "Computer", "dir": "bronze_desktop_after", "start": 0, "n": 96, "key": 40, "title": "Efter", "sub": "Computer 1280 x 720"},
+  {"kind": "card", "name": "Slut", "sec": 2.0, "key": 10, "lines": ["W0-piloten", "Før: spillet i dag. Efter: nye modeller, skader, sigte og skins"]}
+ ]
+}

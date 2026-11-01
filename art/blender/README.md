@@ -472,6 +472,49 @@ subtle tones: on the detailed Bonker the game-scale flat share is 0.146 on the R
 A k-means palette (numpy) cut the colour error from 3.4 to 2.4 levels but moved flat only to 0.170 for 16% more
 bytes, so the octree stays. Judge the lifts on the shipped encoding (`look_check.py` reads it).
 
+## Evidence for a wave (before/after captures, strips, metrics, the owner's video)
+
+Every wave shows its models at game scale against the live game, on the same seeds (audit 7.3), and the owner
+gets a short before/after video (audit 7.4). Dev tools, not part of the build or the tests:
+
+| Tool | What |
+|---|---|
+| `tools/art/serveTree.mjs` | a Vite dev server for one tree: its own `vite.config.ts`, a fixed port, a private dependency cache (two trees share one `node_modules`), no HMR and no file watching |
+| `tools/art/battleCapture.mjs` | plays scenarios (`tools/art/scenarios/<wave>.json`: seed, spawns with levels, the frames to keep, viewport, a tracked unit) on the dev capture page and snaps every (n-th) sim step at DPR 2 at game scale (the battle camera's 923 lu on the phone, 1,400 lu on the desktop; a tracked unit closer, HP bars on); `units.json` holds the tracked unit's HP per frame |
+| `art/blender/tools/pair_boards.py` | before above after: full frames and x3 crops of the fight |
+| `art/blender/tools/strip.py` | every clip's frames of a sheet at game scale in one board (aimed throws with their aimDeg) |
+| `art/blender/look_check.py` | the audit's metrics; `--all-frames --ref origin/main` is the art gate's measure |
+| `art/blender/tools/compose_video.py` | the owner's video from a plan (`art/blender/tools/plans/<wave>.json`): captions in Danish, before then after, zooms side by side, skins beside their units (played from their sheets), damage stage by stage (each new stage held once the hit flash fades); an H.264 MP4 (yuv420p, 24 fps, so a capture plays at 0.8x) and a contact sheet |
+
+The flow (`T` is any folder outside the repository; the after side is the working tree, the before side a
+`git archive` export of `origin/main` that shares this tree's `node_modules`):
+
+```sh
+mkdir -p $T/before && git archive origin/main | tar -x -C $T/before && ln -s "$PWD/node_modules" $T/before/node_modules
+node tools/art/serveTree.mjs --root $T/before --port 8132 &     # note both PIDs; stop them by PID at the end
+node tools/art/serveTree.mjs --port 8131 &
+W=tools/art/scenarios/w0-pilot.json
+node tools/art/battleCapture.mjs --scenarios $W --all --tag before --base http://127.0.0.1:8132/ --out $T/frames
+node tools/art/battleCapture.mjs --scenarios $W --all --tag after --base http://127.0.0.1:8131/ --out $T/frames
+PY=.venv-blender/bin/python
+$PY art/blender/tools/pair_boards.py $T/frames/stone_desktop_stills_before $T/frames/stone_desktop_stills_after \
+  $T/evidence --frames 0,1
+$PY art/blender/tools/strip.py public/art/units/stone/bonker.hd.json $T/strips/bonker.png
+$PY art/blender/look_check.py public/art/units/stone/bonker.hd.json --all-frames --ref origin/main
+$PY art/blender/tools/compose_video.py art/blender/tools/plans/w0-pilot.json --frames $T/frames \
+  --out $T/w0-pilot.mp4 --contact $T/w0-pilot-contact.png    # about 2 minutes
+```
+
+- Both sides run the same simulation, so file i is the same moment on both (the staging may place a unit a few
+  lu apart). A scenario keeps only the frames its plan uses (`range`, `every`): a phone frame is about 1.1 MB,
+  a desktop frame 2.5 MB.
+- A new wave copies the W0 scenario file and plan, changes the cards, seeds and captions, and sets the zoom
+  boxes (`box`, `boxL`, `boxR`: device px of the 1688 x 780 phone frame) on a first capture.
+- During a round pass `--locks <lock folder> --track <TRACK>`: a capture then waits while another track holds
+  `quiet` or `e2e`. A capture page or an encode inside another track's frame-time take spoils it; agree on a gap.
+- Chromium: Playwright's own, or the binary in `CHROMIUM` (or `PW_CHROMIUM_PATH`). ffmpeg: the PATH, `$FFMPEG`
+  or `--ffmpeg`.
+
 ## Install
 
 Blender's Python module needs **Python 3.11** (bpy 5.0.1 wheels exist only for 3.11).
