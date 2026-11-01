@@ -46,7 +46,7 @@ import { partSprite, PuffList, tintPartSprite } from './procedural/shared';
 import { aimedBulge, classicBulge } from '../effects/flight';
 import { leanPolicyOf, unitAimFor, type ClipAim, type LeanPolicy, type UnitAim } from '../unitAim';
 import { aimLeanGoal, angleThroughBody, clampLean, LEAN_REDUCED_SHARE, stepLeanSpring, throughBody, type BodyXform, type LeanTiming, type SpringState } from './atlasAim';
-import { clipAimOf, type ClipRelease } from './atlasAim';
+import { aimedBaseOf, aimedNamesOf, aimLevelOf, clipAimOf, pickAimedClip, type AimCandidate, type ClipRelease } from './atlasAim';
 import { AtlasBaseView } from './world/atlasBaseView';
 import { AtlasTurretView } from './world/atlasTurretView';
 import { isWorldSource, WorldAtlas, worldSourceAge } from './worldAtlas';
@@ -818,7 +818,8 @@ export class AtlasAdapter implements VisualAdapter {
   private loadExtras(set: SheetSet, source: string, core: AtlasData, coreUrl: string): void {
     const def = this.o.entries().find((d) => d.kind === 'atlas' && d.source === source);
     if (!def) return;
-    const missing = EXTRA_CLIPS.filter((c) => def.clips[c] && !core.animations[def.clips[c]?.ref ?? c]);
+    // (aimed variants, contract C2, live in the extras sheet too: the manifest lists them)
+    const missing = Object.keys(def.clips).filter((c) => (EXTRA_CLIPS.includes(c) || aimedBaseOf(c) !== null) && !core.animations[def.clips[c]?.ref ?? c]);
     if (missing.length === 0) return;
     const xUrl = extrasSheetUrl(coreUrl);
     const plainX = extrasSheetUrl(this.url(source));
@@ -1250,7 +1251,8 @@ interface Track {
 }
 
 function isAttackAnim(anim: string): boolean {
-  return (ATTACK_VARIANTS as readonly string[]).includes(anim) || anim === ALT_ATTACK;
+  // (an aimed variant, contract C2, is its shot clip with the weapon turned: the same timing and the same rules)
+  return (ATTACK_VARIANTS as readonly string[]).includes(anim) || anim === ALT_ATTACK || aimedBaseOf(anim) !== null;
 }
 
 function track(sheet: AtlasData, def: VisualDef, name: string, o: { durationMs?: number; impactAtMs?: number; loop?: boolean } = {}, animOverride?: string): Track | null {
@@ -1707,13 +1709,15 @@ class AtlasUnitView implements UnitView {
    * direction; `omni` for an emitter without a direction), the variant the next attack will play, and the most this
    * unit leans toward a target now (its body type's policy, halved under Reduce motion). Null without an attack clip.
    */
-  aimInfo(): { variants: { anim: string; deg: number; omni: boolean }[]; next: string | null; maxLeanDeg: number } | null {
+  aimInfo(): { variants: { anim: string; deg: number; omni: boolean; aimed?: number[] }[]; next: string | null; maxLeanDeg: number } | null {
     if (this.destroyed) return null;
-    const variants: { anim: string; deg: number; omni: boolean }[] = [];
+    const variants: { anim: string; deg: number; omni: boolean; aimed?: number[] }[] = [];
     for (const anim of ATTACK_VARIANTS) {
       if ((this.sheet.animations[anim]?.length ?? 0) === 0) continue;
       const c = this.clipAim(anim);
-      variants.push({ anim, deg: c.deg, omni: c.omni === true });
+      // the drawn angles of its loaded aimed clips (contract C2): the variant can start a shot with any of them
+      const aimed = c.omni ? [] : this.aimedOf(anim).map((x) => x.deg);
+      variants.push({ anim, deg: c.deg, omni: c.omni === true, ...(aimed.length > 0 ? { aimed } : {}) });
     }
     if (variants.length === 0) return null;
     return { variants, next: this.nextVariant(), maxLeanDeg: this.leanPolicy.maxDeg * (this.reduceMotion ? LEAN_REDUCED_SHARE : 1) };
@@ -1741,7 +1745,8 @@ class AtlasUnitView implements UnitView {
     // between attacks the weapon counts as aimed and held as in the last shot, so a held lean stays still until the next one
     const attacking = this.action !== null && this.action.name === 'attack';
     const m = this.muzzleNow(attackIndex) ?? (attackIndex <= 0 && !attacking ? this.lastAttackMuzzle : null) ?? this.anchors.muzzle;
-    const anim = attackIndex >= 1 ? ALT_ATTACK : attacking && this.action ? this.action.anim : (this.lastAttackAnim ?? this.nextVariant());
+    const alt = this.action !== null && this.action.name === ALT_ATTACK ? this.action.anim : ALT_ATTACK;
+    const anim = attackIndex >= 1 ? alt : attacking && this.action ? this.action.anim : (this.lastAttackAnim ?? this.nextVariant());
     const c = this.clipAim(anim);
     const b = this.bodyXform();
     const out = throughBody(b, m, this.aimOut);
@@ -1755,6 +1760,36 @@ class AtlasUnitView implements UnitView {
   /** An attack clip's drawn aim: the sheet's own meta (contract C2), else the `unitAim.ts` table, else level (`clipAimOf`). */
   private clipAim(anim: string): ClipAim {
     return clipAimOf(this.sheet.clips[anim], this.aim?.clips[anim]);
+  }
+
+  /**
+   * The aimed variants of a shot clip that can play now (contract C2): loaded (an extras sheet still on its way adds
+   * none), with their own drawn angle, and not emitters. In level order (up45, up70, down).
+   */
+  private aimedOf(base: string): AimCandidate[] {
+    const out: AimCandidate[] = [];
+    for (const name of aimedNamesOf(base)) {
+      const meta = this.sheet.clips[name];
+      if ((this.sheet.animations[name]?.length ?? 0) === 0 || meta?.aimDeg === undefined || meta.omni === true) continue;
+      out.push({ anim: name, deg: meta.aimDeg });
+    }
+    return out;
+  }
+
+  /**
+   * The clip a shot of the attack variant `base` plays (contract C2): the aimed variant drawn closest to the launch angle
+   * the battle view asks for (`aimAt`, degrees above the facing direction; `atlasAim.ts` `pickAimedClip`), with the same
+   * timing; the base clip when nothing is asked, the clip emits rather than aims, or no aimed variant has loaded (a first
+   * shot before the extras sheet). `prev`: the clip the last such shot played (its level holds near a midpoint).
+   */
+  private aimedFor(base: string, aimAt: number | undefined, prev: string | null): string {
+    if (aimAt === undefined || !Number.isFinite(aimAt)) return base;
+    const own = this.clipAim(base);
+    if (own.omni) return base;
+    const aimed = this.aimedOf(base);
+    if (aimed.length === 0) return base;
+    const candidates = [{ anim: base, deg: own.deg }, ...aimed];
+    return candidates[pickAimedClip(candidates, aimAt, prev === null ? null : aimLevelOf(prev))]?.anim ?? base;
   }
 
   /** The body's transform as last placed: offset in the root's space, rotation, and scale per lu (x carries the facing). */
@@ -1784,11 +1819,12 @@ class AtlasUnitView implements UnitView {
    * plays (warped to its own wind-up); otherwise a small accent shows at the rider or MG anchor on
    * the impact beat and the gait keeps running.
    */
-  playAlt(o: { impactAtMs?: number } = {}): void {
+  playAlt(o: { impactAtMs?: number; aimAt?: number } = {}): void {
     if (this.destroyed || this.dead) return;
     const busy = this.action !== null && (this.action.name === 'attack' || this.action.name === 'ability' || this.action.name === 'spawn' || this.action.hold);
     if (!busy && !this.stunned && !this.isMoving() && (this.sheet.animations[ALT_ATTACK]?.length ?? 0) > 0) {
-      const t = track(this.sheet, this.def, ALT_ATTACK, o.impactAtMs !== undefined ? { impactAtMs: o.impactAtMs } : {}, ALT_ATTACK);
+      // contract C2: the second attacker's aimed variant drawn closest to its shot (`aimAt`), else attack_alt itself
+      const t = track(this.sheet, this.def, ALT_ATTACK, o.impactAtMs !== undefined ? { impactAtMs: o.impactAtMs } : {}, this.aimedFor(ALT_ATTACK, o.aimAt, null));
       if (t) {
         this.action = t;
         this.actionMuzzle = this.muzzleOf(t);
@@ -2122,12 +2158,13 @@ class AtlasUnitView implements UnitView {
 
   /**
    * `variant` (duck-typed, the card detail showcase): plays that attack variant instead of the next one
-   * of the per-unit cycle (R4), when it has loaded.
+   * of the per-unit cycle (R4), when it has loaded. `aimAt` (duck-typed, the battle view; contract C2): the launch
+   * angle the shot asks for, which picks the variant's aimed clip drawn closest to it (`aimedFor`).
    */
-  play(clip: ClipName | string, o?: { durationMs?: number; impactAtMs?: number; loop?: boolean; variant?: string }): void {
+  play(clip: ClipName | string, o?: { durationMs?: number; impactAtMs?: number; loop?: boolean; variant?: string; aimAt?: number }): void {
     if (this.destroyed || this.dead) return;
     if (clip === ALT_ATTACK) {
-      this.playAlt(o?.impactAtMs !== undefined ? { impactAtMs: o.impactAtMs } : {});
+      this.playAlt({ ...(o?.impactAtMs !== undefined ? { impactAtMs: o.impactAtMs } : {}), ...(o?.aimAt !== undefined ? { aimAt: o.aimAt } : {}) });
       return;
     }
     if (clip === 'idle' || clip === 'walk' || clip === 'victory') this.requested = clip;
@@ -2156,8 +2193,8 @@ class AtlasUnitView implements UnitView {
         if (this.gaitV !== null) this.walkDir = this.dirNow();
       }
     }
-    // R4: the attack variant comes from a fixed per-unit cycle over the variants that have loaded
-    const anim = clip === 'attack' ? this.variantFor(o?.variant) : undefined;
+    // R4: the attack variant comes from a fixed per-unit cycle over the variants that have loaded; C2: its aimed clip
+    const anim = clip === 'attack' ? this.aimedFor(this.variantFor(o?.variant), o?.aimAt, this.lastAttackAnim) : undefined;
     // a one-shot never loops, whatever the clip it falls back to (review B1)
     const t = track(this.sheet, this.def, clip, loops ? { loop: true, ...opts } : { ...opts, loop: false }, anim);
     if (!t) return;

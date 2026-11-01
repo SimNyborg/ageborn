@@ -26,6 +26,73 @@ export interface ClipAimMeta {
   aimOf?: string;
 }
 
+/** The aimed variants' suffixes (contract C2): about 45 and 70 degrees up, and down. */
+export const AIM_LEVELS = ['up45', 'up70', 'down'] as const;
+/** An aimed variant's level, or '' for the base clip. */
+export type AimLevel = (typeof AIM_LEVELS)[number] | '';
+/** The shot clips that may have aimed variants (the attack variants and the second attacker's clip). */
+const AIMED_BASES: readonly string[] = ['attack', 'attack_b', 'attack_c', 'attack_alt'];
+/** Each base's aimed variants in level order, and every aimed variant's base and level (no allocation per lookup). */
+const AIMED_NAMES = new Map<string, readonly string[]>(AIMED_BASES.map((b) => [b, AIM_LEVELS.map((l) => `${b}_${l}`)]));
+const AIMED_OF = new Map<string, { base: string; level: Exclude<AimLevel, ''> }>(AIMED_BASES.flatMap((b) => AIM_LEVELS.map((l) => [`${b}_${l}`, { base: b, level: l }] as const)));
+const NO_NAMES: readonly string[] = [];
+
+/** The shot clip an aimed variant aims (`attack_b_up45` → `attack_b`), or null for any other clip. */
+export function aimedBaseOf(anim: string): string | null {
+  return AIMED_OF.get(anim)?.base ?? null;
+}
+
+/** A clip's aim level: an aimed variant's suffix, '' for any other clip. */
+export function aimLevelOf(anim: string): AimLevel {
+  return AIMED_OF.get(anim)?.level ?? '';
+}
+
+/** The aimed variants a sheet may have for a shot clip, in level order (none for other clips). */
+export function aimedNamesOf(base: string): readonly string[] {
+  return AIMED_NAMES.get(base) ?? NO_NAMES;
+}
+
+/** A clip a shot may play and the angle its weapon is drawn at (degrees above the facing direction). */
+export interface AimCandidate {
+  anim: string;
+  deg: number;
+}
+
+/**
+ * The aim level the last shot played keeps its place while it fits within this many degrees of the best (so a target
+ * hovering near the midpoint of two levels does not switch the pose, and the lean with it, at every shot).
+ */
+export const AIMED_SLACK_DEG = 5;
+
+/**
+ * The clip a shot plays within its attack variant (contract C2): of the base clip and its loaded aimed variants
+ * (`candidates`, the base first), the one drawn closest to `wantDeg`, the launch angle `render/aim.ts` asks for
+ * (`aimWantDeg`); the lean then covers the rest. A tie goes to the pose nearer the base clip's; the level the last shot
+ * played (`prevLevel`; null: no shot yet) stays while it is within `AIMED_SLACK_DEG` of the best. Returns the
+ * candidate's index (0: the base clip, also for no candidates or no angle). Angles are relative to the facing direction,
+ * so facing left or right chooses alike.
+ */
+export function pickAimedClip(candidates: readonly AimCandidate[], wantDeg: number, prevLevel: AimLevel | null = null): number {
+  const base = candidates[0];
+  if (!base || candidates.length < 2 || !Number.isFinite(wantDeg)) return 0;
+  let best = 0;
+  let bestErr = Math.abs(wantDeg - base.deg);
+  for (let i = 1; i < candidates.length; i++) {
+    const c = candidates[i]!;
+    const err = Math.abs(wantDeg - c.deg);
+    const tie = Math.abs(err - bestErr) < 1e-9;
+    if (err < bestErr - 1e-9 || (tie && Math.abs(c.deg - base.deg) < Math.abs(candidates[best]!.deg - base.deg))) {
+      best = i;
+      bestErr = err;
+    }
+  }
+  for (let i = 0; prevLevel !== null && i < candidates.length; i++) {
+    if (i === best || aimLevelOf(candidates[i]!.anim) !== prevLevel) continue;
+    if (Math.abs(wantDeg - candidates[i]!.deg) <= bestErr + AIMED_SLACK_DEG) return i;
+  }
+  return best;
+}
+
 /** A release as the point it names (lu from the feet, x forward, y up), or undefined. */
 export function releasePoint(r: ClipRelease | undefined): readonly [number, number] | undefined {
   if (!r) return undefined;
