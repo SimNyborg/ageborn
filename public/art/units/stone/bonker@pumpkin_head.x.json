@@ -1,0 +1,737 @@
+{
+ "frames": {
+  "bonker@pumpkin_head_attack_b_02": {
+   "frame": {
+    "x": 435,
+    "y": 151,
+    "w": 70,
+    "h": 115
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 55,
+    "w": 70,
+    "h": 115
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_02_team": {
+   "frame": {
+    "x": 546,
+    "y": 67,
+    "w": 56,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 102,
+    "w": 56,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_03": {
+   "frame": {
+    "x": 108,
+    "y": 2,
+    "w": 101,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 38,
+    "y": 66,
+    "w": 101,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_03_team": {
+   "frame": {
+    "x": 509,
+    "y": 2,
+    "w": 61,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 99,
+    "w": 61,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_04": {
+   "frame": {
+    "x": 135,
+    "y": 110,
+    "w": 101,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 44,
+    "y": 69,
+    "w": 101,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_04_team": {
+   "frame": {
+    "x": 567,
+    "y": 189,
+    "w": 49,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 102,
+    "w": 49,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 148,
+    "w": 129,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 82,
+    "w": 129,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_05_team": {
+   "frame": {
+    "x": 135,
+    "y": 217,
+    "w": 73,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 113,
+    "w": 73,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_06": {
+   "frame": {
+    "x": 240,
+    "y": 107,
+    "w": 99,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 70,
+    "w": 99,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_06_team": {
+   "frame": {
+    "x": 546,
+    "y": 130,
+    "w": 60,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 107,
+    "w": 60,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_07": {
+   "frame": {
+    "x": 320,
+    "y": 2,
+    "w": 102,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 75,
+    "w": 102,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_b_07_team": {
+   "frame": {
+    "x": 305,
+    "y": 214,
+    "w": 61,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 110,
+    "w": 61,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_c_00": {
+   "frame": {
+    "x": 343,
+    "y": 101,
+    "w": 88,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 61,
+    "w": 88,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_c_00_team": {
+   "frame": {
+    "x": 509,
+    "y": 189,
+    "w": 54,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 103,
+    "w": 54,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_c_01": {
+   "frame": {
+    "x": 213,
+    "y": 2,
+    "w": 103,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 78,
+    "w": 103,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_c_01_team": {
+   "frame": {
+    "x": 240,
+    "y": 214,
+    "w": 61,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 109,
+    "w": 61,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_c_02": {
+   "frame": {
+    "x": 435,
+    "y": 2,
+    "w": 59,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 25,
+    "w": 59,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_c_02_team": {
+   "frame": {
+    "x": 498,
+    "y": 67,
+    "w": 44,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 84,
+    "w": 44,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_c_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 102,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 27,
+    "w": 102,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  },
+  "bonker@pumpkin_head_attack_c_03_team": {
+   "frame": {
+    "x": 574,
+    "y": 2,
+    "w": 61,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 98,
+    "w": 61,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.8617
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "bonker@pumpkin_head_attack_00",
+   "bonker@pumpkin_head_attack_01",
+   "bonker@pumpkin_head_attack_b_02",
+   "bonker@pumpkin_head_attack_b_03",
+   "bonker@pumpkin_head_attack_b_04",
+   "bonker@pumpkin_head_attack_b_04",
+   "bonker@pumpkin_head_attack_b_05",
+   "bonker@pumpkin_head_attack_b_06",
+   "bonker@pumpkin_head_attack_b_07",
+   "bonker@pumpkin_head_attack_09",
+   "bonker@pumpkin_head_attack_10"
+  ],
+  "attack_b_team": [
+   "bonker@pumpkin_head_attack_00_team",
+   "bonker@pumpkin_head_attack_01_team",
+   "bonker@pumpkin_head_attack_b_02_team",
+   "bonker@pumpkin_head_attack_b_03_team",
+   "bonker@pumpkin_head_attack_b_04_team",
+   "bonker@pumpkin_head_attack_b_04_team",
+   "bonker@pumpkin_head_attack_b_05_team",
+   "bonker@pumpkin_head_attack_b_06_team",
+   "bonker@pumpkin_head_attack_b_07_team",
+   "bonker@pumpkin_head_attack_09_team",
+   "bonker@pumpkin_head_attack_10_team"
+  ],
+  "attack_c": [
+   "bonker@pumpkin_head_attack_c_00",
+   "bonker@pumpkin_head_attack_c_01",
+   "bonker@pumpkin_head_attack_c_00",
+   "bonker@pumpkin_head_attack_c_01",
+   "bonker@pumpkin_head_attack_c_02",
+   "bonker@pumpkin_head_attack_c_03",
+   "bonker@pumpkin_head_attack_06",
+   "bonker@pumpkin_head_attack_07",
+   "bonker@pumpkin_head_attack_08",
+   "bonker@pumpkin_head_attack_09",
+   "bonker@pumpkin_head_attack_10"
+  ],
+  "attack_c_team": [
+   "bonker@pumpkin_head_attack_c_00_team",
+   "bonker@pumpkin_head_attack_c_01_team",
+   "bonker@pumpkin_head_attack_c_00_team",
+   "bonker@pumpkin_head_attack_c_01_team",
+   "bonker@pumpkin_head_attack_c_02_team",
+   "bonker@pumpkin_head_attack_c_03_team",
+   "bonker@pumpkin_head_attack_06_team",
+   "bonker@pumpkin_head_attack_07_team",
+   "bonker@pumpkin_head_attack_08_team",
+   "bonker@pumpkin_head_attack_09_team",
+   "bonker@pumpkin_head_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "bonker@pumpkin_head.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 268
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.bonker@pumpkin_head",
+   "name": "Bonker",
+   "heightLu": 68,
+   "widthLu": 73.2,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    113.0,
+    162.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "skinOf": "unit.bonker",
+   "skin": "pumpkin_head",
+   "extrasOf": "bonker@pumpkin_head",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 5,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        31.8,
+        64.0
+       ],
+       [
+        25.1,
+        55.7
+       ],
+       [
+        -12.6,
+        69.2
+       ],
+       [
+        -46.3,
+        50.5
+       ],
+       [
+        -0.7,
+        56.9
+       ],
+       [
+        72.9,
+        31.7
+       ],
+       [
+        56.9,
+        45.6
+       ],
+       [
+        54.8,
+        44.6
+       ],
+       [
+        53.8,
+        35.2
+       ],
+       [
+        42.5,
+        54.9
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      40,
+      45,
+      35,
+      40,
+      102,
+      28,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 4,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        34.2,
+        66.5
+       ],
+       [
+        51.4,
+        8.7
+       ],
+       [
+        -10.4,
+        90.2
+       ],
+       [
+        50.9,
+        58.3
+       ],
+       [
+        67.2,
+        4.1
+       ],
+       [
+        59.4,
+        32.8
+       ],
+       [
+        62.9,
+        10.3
+       ],
+       [
+        53.8,
+        35.2
+       ],
+       [
+        42.5,
+        54.9
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

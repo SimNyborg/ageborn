@@ -317,16 +317,26 @@ sheet (`AGEBORN_LOOK_REF`: a tree or git ref, default `HEAD`): silhouette area p
 flat share, micro, edge density, highlight share, reconstructed from the audit's baselines) next to the
 reference's, plus the encoded colour rule.
 
+**Two-tone team zones.** `look.team_part(rig, joint, geo)` makes a team part in the team-dark tone (grey 0.62
+in the team pass: blue 2F7DF6 becomes 1D4E98): spots, stripes, belts and trims inside a team zone keep their
+team area and still give the zone a second tone (rule 5). A unit that has not opted in gets a plain team part.
+
 **Skin variants** (item 46, `ageborn_art/skins.py`). A unit script lists `SKINS = {"<skin>": {"kinds":
-{...}}}` and reads `getattr(rig, "skin", None)` in `build()`: same joints, trackers, poses and clips; skin
-materials, patterns and replacement parts. `render_all.py --units bonker --skins` (or `--units
+{...}, "palette": {unit hex: skin hex}}}` and reads `getattr(rig, "skin", None)` in `build()`: same joints,
+trackers, poses and clips; skin materials (the palette recolours every part, interior line and glow through
+`look.remap`), patterns and replacement parts. `render_all.py --units bonker --skins` (or `--units
 bonker@pumpkin_head`) renders the unit and its skins: `<slug>@<skin>[.x][.hd].{png,json}` with
 `visualId unit.<slug>@<skin>`, `skinOf`, `skin`, frame names `<slug>@<skin>_...` and `extrasOf
 <slug>@<skin>`, installed next to the unit's sheets; `gen_portraits.py <out> <slug>@<skin>` writes its card
 stills. After a skin render `look2d.parity` (also `skin_parity.py`) checks DESIGN A5.8 clarity parity
 against the unit's sheet: the same clip timing and anchors, silhouette IoU >= 0.85 on every frame, the same
-IoU inside 12 lu of every weapon anchor, team zones on every frame (>= 18%); a skin that fails is not
-installed.
+IoU inside 12 lu of every weapon anchor (outside the death, where weapons are thrown away), team zones on
+every frame (>= 18%); a skin that fails is not installed.
+
+**Palette encoding.** The shipped PNG8 (Pillow's octree, 256 colours, no dither) merges part of the breakup's
+subtle tones: on the detailed Bonker the game-scale flat share is 0.146 on the RGBA sheet and 0.173 on the PNG8.
+A k-means palette (numpy) cut the colour error from 3.4 to 2.4 levels but moved flat only to 0.170 for 16% more
+bytes, so the octree stays. Judge the lifts on the shipped encoding (`look_check.py` reads it).
 
 ## Install
 

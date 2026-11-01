@@ -86,11 +86,20 @@ def begin(mod):
     for k, v in kinds.items():
         if v not in KINDS:
             raise ValueError(f"{mod.SLUG}: unknown material kind {v!r} for {k}")
+    palette = {k.upper(): v.upper() for k, v in getattr(mod, "SKIN_PALETTE", {}).items()}
     STATE = {"slug": mod.SLUG, "kinds": kinds, "height": float(mod.HEIGHT_LU),
              "supersample": os.environ.get("AGEBORN_SUPERSAMPLE") == "1",
-             "rim": getattr(mod, "LOOK_RIM", None)}
+             "rim": getattr(mod, "LOOK_RIM", None), "palette": palette}
     sheet.PACKER = look2d.maxrects
     return STATE
+
+
+def remap(hex_):
+    """A skin's palette (skins.py `palette`: {unit hex: skin hex}) applied to every colour the unit's parts
+    ask for, so a skin recolours the model without touching its geometry."""
+    if STATE is None or not hex_ or not STATE["palette"]:
+        return hex_
+    return STATE["palette"].get(hex_.upper(), hex_)
 
 
 def end():
@@ -307,6 +316,8 @@ def toon(fill_hex, finish="matte"):
     """The lifted counterpart of materials.toon (highlight=True parts of an opted-in unit)."""
     M = _M()
     kind = STATE["kinds"].get(fill_hex.upper())
+    if kind is None:            # a skin colour takes the kind of the unit colour it replaces
+        kind = next((STATE["kinds"].get(k) for k, v in STATE["palette"].items() if v == fill_hex.upper()), None)
     key = ("look", fill_hex, finish, kind)
     if key not in M._cache:
         import bpy
@@ -318,18 +329,21 @@ def toon(fill_hex, finish="matte"):
     return M._cache[key]
 
 
-def team():
+def team(tone=1.0):
     """The lifted team material: the team pass gets the team kind's breakup, dirt and cavity on its grey; the
-    base pass keeps the faint white highlight and rim over the tinted layer and adds the edge highlight."""
+    base pass keeps the faint white highlight and rim over the tinted layer and adds the edge highlight.
+    `tone` < 1 is the team-dark variant (rule 5's two-tone team zone): its grey is `tone` x the lit grey, so the
+    tint gives a darker team colour and the area still counts as team."""
     M = _M()
     kind = STATE["kinds"].get("team")
-    key = ("look_team", kind)
+    key = ("look_team", kind, tone)
     if key not in M._cache:
         import bpy
-        mat = bpy.data.materials.new(f"look_team_{kind}")
+        mat = bpy.data.materials.new(f"look_team_{kind}_{tone:g}")
         nt, nodes, links = M._nodes(mat)
         switch = M._team_switch(nodes)
-        col, masks = _lifted(nodes, links, "#FFFFFF", "matte", kind, team=True)
+        grey = rgb_to_hex((tone, tone, tone))
+        col, masks = _lifted(nodes, links, grey, "matte", kind, team=True)
         team_shader = M._emission(nodes, links, col)
         a = M._math(nodes, links, "MULTIPLY", masks["hl"], C.TEAM_HIGHLIGHT_ALPHA)
         b = M._math(nodes, links, "MULTIPLY", masks["rim"], C.TEAM_RIM_ALPHA)
@@ -342,6 +356,18 @@ def team():
         M._cache[key] = mat
         M.TEAM_MATERIALS.append(mat)
     return M._cache[key]
+
+
+TEAM_DARK = 0.62    # the team-dark tone: blue 2F7DF6 becomes 1D4E98, orange F28A1E becomes 965613
+
+
+def team_part(rig, joint, geo, tone=TEAM_DARK, **kw):
+    """A team part in the team-dark tone (spots, stripes, trims inside a team zone). For a unit that has not
+    opted into the standard it is a plain team part."""
+    obj = rig.part(joint, geo, team=True, **kw)
+    if STATE is not None and tone != 1.0:
+        obj.data.materials[0] = team(tone)
+    return obj
 
 
 # -- geometry -----------------------------------------------------------------------------------------

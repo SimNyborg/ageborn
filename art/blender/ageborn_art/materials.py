@@ -186,8 +186,10 @@ def _look():
 
 def toon(fill_hex, highlight=True, finish="matte"):
     """Opaque cel-shaded material in a fixed palette colour. finish: matte, gloss or metal."""
-    if highlight and _look():
-        return _look().toon(fill_hex, finish)
+    if _look():
+        fill_hex = _look().remap(fill_hex)      # a skin's palette (look.remap); unchanged otherwise
+        if highlight:
+            return _look().toon(fill_hex, finish)
     key = ("toon", fill_hex, highlight, finish)
     if key not in _cache:
         mat = bpy.data.materials.new(f"toon_{fill_hex}_{finish}")
@@ -200,6 +202,8 @@ def toon(fill_hex, highlight=True, finish="matte"):
 
 def glow(hex_):
     """Unshaded emissive colour for lights, visors and energy (no toon bands)."""
+    if _look():
+        hex_ = _look().remap(hex_)
     key = ("glow", hex_)
     if key not in _cache:
         mat = bpy.data.materials.new(f"glow_{hex_}")
@@ -236,6 +240,8 @@ def team():
 def outline(fill_hex=None, team_part=False):
     """Back-face-only hull material for interior lines: fill x OUTLINE_FACTOR (0.60).
     The dark outer silhouette line is added after rendering (sheet.outline)."""
+    if _look() and fill_hex:
+        fill_hex = _look().remap(fill_hex)
     key = ("outline", fill_hex, team_part)
     if key not in _cache:
         mat = bpy.data.materials.new(f"outline_{'team' if team_part else fill_hex}")

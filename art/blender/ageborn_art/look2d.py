@@ -527,7 +527,9 @@ def parity(base_json, skin_json, min_iou=0.85, weapon_lu=12.0, min_team_pct=18.0
                     cx = ba["feetPx"][0] + pts[i][0] * ppl
                     cy = ba["feetPx"][1] - pts[i][1] * ppl
                     W |= (xx - cx) ** 2 + (yy - cy) ** 2 <= (weapon_lu * ppl) ** 2
-            if W.any():
+            # not in the death (the weapon is thrown away and its tracker follows the hidden copy) and only where
+            # the unit draws something
+            if clip != "die" and (A & W).sum() >= 0.5 * (ppl * 3) ** 2:
                 wi = (A & B & W).sum() / max(1, ((A | B) & W).sum())
                 w_ious.append((wi, f"{clip}_{i:02d}"))
             bt = team_share(bf[bn], bf.get(bn + "_team"))

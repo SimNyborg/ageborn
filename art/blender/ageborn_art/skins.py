@@ -3,7 +3,8 @@ own model, with the same armature, actions and anchors, so every clip matches th
 
 A unit script lists its skins and reads the skin while it builds:
 
-    SKINS = {"pumpkin_head": {"kinds": {"#C9925E": "ceramic", ...}}}   # extra MATERIAL_KINDS per skin
+    SKINS = {"pumpkin_head": {"kinds": {"#C9925E": "ceramic", ...},    # extra MATERIAL_KINDS per skin
+                              "palette": {"#7C604B": "#EEE8DC", ...}}}  # optional recolouring (look.remap)
 
     def build(rig):
         skin = getattr(rig, "skin", None)        # None for the unit itself, else the skin id
@@ -42,6 +43,7 @@ def variant(mod, skin_id):
     kinds = dict(getattr(mod, "MATERIAL_KINDS", {}))
     kinds.update(spec.get("kinds", {}))
     v.MATERIAL_KINDS = kinds
+    v.SKIN_PALETTE = dict(spec.get("palette", {}))   # {unit hex: skin hex}, applied by look.remap
 
     def build(rig):
         rig.skin = skin_id
