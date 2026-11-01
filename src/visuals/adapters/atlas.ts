@@ -50,6 +50,7 @@ import { damageBundles } from '../damage/bundle';
 import { damageSlug } from '../damage/families';
 import type { BlowKind, DamageEmitter, DamageStepEvent } from '../damage/types';
 import { UnitDamage } from '../damage/unitDamage';
+import { trackerReach } from '../damage/trackers';
 import { AtlasBaseView } from './world/atlasBaseView';
 import { AtlasTurretView } from './world/atlasTurretView';
 import { isWorldSource, WorldAtlas, worldSourceAge } from './worldAtlas';
@@ -1504,6 +1505,8 @@ class AtlasUnitView implements UnitView {
    * have the same geometry in texture units (`meta.scale` follows the density), so a swap keeps them.
    */
   private reachCache = new Map<string, Reach | null>();
+  /** The damage trackers' revision the cached reaches were taken with (item 38 B0). */
+  private reachRev = 0;
   private lungeCache = new Map<string, { curve: number[]; from: number }>();
   /** A2: once `react()` has run, `flash()` only flashes (the reaction owns the recoil; views without it keep the flinch). */
   private reacted = false;
@@ -1867,11 +1870,38 @@ class AtlasUnitView implements UnitView {
     let anim = want === undefined || want === 'attack' ? main : want;
     if (!(this.sheet.animations[anim]?.length ?? 0)) anim = main;
     if (!(this.sheet.animations[anim]?.length ?? 0)) return null;
+    // item 38 B0: the bundle's trackers arrived after a reach was taken: take it again
+    if (this.reachRev !== this.dmg.trackersRev) {
+      this.reachRev = this.dmg.trackersRev;
+      this.reachCache.clear();
+    }
     const hit = this.reachCache.get(anim);
     if (hit !== undefined) return hit;
     const r = computeReach(this.sheet, anim, this.def.clips['idle']?.ref ?? 'idle', this.impactAtOf(anim), this.k, this.hk);
-    this.reachCache.set(anim, r);
-    return r;
+    const out = r ? this.withTrackers(r, anim) : r;
+    this.reachCache.set(anim, out);
+    return out;
+  }
+
+  /**
+   * Item 38 B0 (duck-typed): changes when the view's contact data does (its damage bundle's torso and head trackers
+   * arrived after the battle view took its reach and body), so the battle view asks again.
+   */
+  get contactRevision(): number {
+    return this.dmg.trackersRev;
+  }
+
+  /**
+   * Item 38 B0: the torso from the bundle's tracked torso box instead of the team-colour layer's (which spans barding,
+   * pennants, shields and capes), and the head on the impact frame and at idle; the estimate stays where the unit has
+   * no trackers.
+   */
+  private withTrackers(r: Reach, anim: string): Reach {
+    const meta = this.sheet.clips[anim];
+    const step = clipImpactStep(meta, this.sheet.animations[anim]?.length ?? 0, this.impactAtOf(anim));
+    const frame = step === null ? null : (meta?.sequence?.[step] ?? step);
+    const t = trackerReach(this.dmg.data, anim, this.def.clips['idle']?.ref ?? 'idle', frame, this.hk);
+    return t ? { ...r, ...t } : r;
   }
 
   /** A1 (duck-typed): a presentation offset along world x (lu) on top of the pose, outside the R2 frame lock. */

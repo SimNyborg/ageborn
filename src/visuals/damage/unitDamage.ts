@@ -422,6 +422,12 @@ export class UnitDamage {
     return { family: e.family };
   }
 
+  /**
+   * Counts arrivals of tracker data (item 38 B0): the view's reach and body change with it, so the battle view asks
+   * again (`contactRevision`).
+   */
+  trackersRev = 0;
+
   /** The bundle came in after the unit spawned: its marks are laid again on its spots, silently. */
   private refreshEntry(): void {
     if (this.bundleVersion === this.bundles.version) return;
@@ -431,6 +437,7 @@ export class UnitDamage {
     this.lastRaw = raw;
     const e = this.usable(raw);
     if (!e) return;
+    if (e.torso !== this.entry?.torso || e.head !== this.entry?.head) this.trackersRev++;
     this.entry = e;
     this.specsStage = 0;
     if (e.family !== this.family && this.model.stage === 0) {

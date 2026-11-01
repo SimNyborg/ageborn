@@ -204,6 +204,8 @@ interface UnitEntry {
   /** Queue item 40: the world direction of the last blow (a step's pieces fly along it) and its emitters' spawn debt. */
   hitDir?: 1 | -1;
   dmgAcc?: number[];
+  /** Item 38 B0: the view's `contactRevision` the reach and body were read at (they are read again when it changes). */
+  contactRev?: number;
 }
 
 interface TurretEntry {
@@ -3035,6 +3037,14 @@ export class BattleView {
   /** Asks a view for its reach and body until its sheet answers (every `REACH_RETRY_FRAMES` while it loads). */
   private refreshReach(e: UnitEntry): void {
     if (e.fort) return;
+    // item 38 B0: the view's contact data changed (its tracked torso and head came in): read the reach and body again
+    const rev = (e.view as { contactRevision?: number }).contactRevision;
+    if (rev !== undefined && rev !== e.contactRev) {
+      e.contactRev = rev;
+      if (e.body) e.body = undefined;
+      if (e.reach) e.reach = null;
+      e.reachRetry = 0;
+    }
     const wantBody = e.body === undefined || e.body === null;
     const wantReach = e.melee && e.reach === null;
     if (!wantBody && !wantReach) return;
@@ -3794,6 +3804,9 @@ function readBody(view: UnitView): StageBody | null {
       ...(r.torsoFrontLu !== undefined ? { torsoFront: r.torsoFrontLu } : {}),
       ...(r.torsoBackLu !== undefined ? { torsoBack: r.torsoBackLu } : {}),
       ...(headLead ? { headLead } : {}),
+      // item 38 B0: the tracked torso's height and head at idle, where the art pipeline measured them
+      ...(r.torsoBottomLu !== undefined && r.torsoTopLu !== undefined ? { torsoBottom: r.torsoBottomLu, torsoTop: r.torsoTopLu } : {}),
+      ...(r.headIdleLu !== undefined && r.headIdleYLu !== undefined ? { headX: r.headIdleLu, headY: r.headIdleYLu } : {}),
     };
   }
   const ext = v.extentLu?.({ clips: ['idle'] });
