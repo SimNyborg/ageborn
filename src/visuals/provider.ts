@@ -14,7 +14,7 @@ import { isBaseSkinSource, isWorldSource, WorldAtlas, worldSourceAge } from './a
 import { forgetWorldSheets, renderWorldPortrait } from './adapters/worldPortrait';
 import { BASE_SKINS } from './cosmetics/baseSkins';
 import { spriteStripArt, stripInfoUrl, stripRequest, type StripSource } from './adapters/spriteStrip';
-import { forgetPortraitStills } from './adapters/atlasPortrait';
+import { forgetPortraitStills, portraitStillBase } from './adapters/atlasPortrait';
 import { AtlasFortView } from './fortViews/atlasFortView';
 import { fortSource, type FortKindId } from './forts';
 import type { BakeStats } from './bake';
@@ -751,7 +751,7 @@ export class VisualsArtProvider implements ArtProvider {
    * when `showcaseLease` loaded one (a large stage on a screen whose battle draws the 1x sheets).
    */
   createUnit(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset; hd?: boolean }): UnitView {
-    const r = this.resolve(o.visualId, o.skin);
+    const r = this.forcedPuppet(this.resolve(o.visualId, o.skin));
     const def = r?.def ?? this.missing(o.visualId);
     const key = r?.key ?? o.visualId;
     if (o.hd && r && !this.force && this.atlas.canDrawHd(r.def)) return this.atlas.createUnit({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, hd: true });
@@ -806,6 +806,28 @@ export class VisualsArtProvider implements ArtProvider {
         for (const l of leases) l.release();
       },
     };
+  }
+
+  /**
+   * `?art=procedural` draws every unit from its puppet, whatever tier its entry uses: a sheet unit (or a skin drawn
+   * from its own sheet, queue item 46) resolves to its procedural entry, so the comparison tier never throws for
+   * want of a puppet named by a sheet's path. Any other force, or an entry without a puppet, is left as it is.
+   */
+  private forcedPuppet(r: { key: string; def: VisualDef } | undefined): { key: string; def: VisualDef } | undefined {
+    if (this.force !== 'procedural' || !r || r.def.kind === 'procedural') return r;
+    const proc = PROCEDURAL_MANIFEST[r.key];
+    return proc && proc.kind === 'procedural' ? { key: r.key, def: proc } : r;
+  }
+
+  /**
+   * `?art=procedural` for a base: its puppet, as `forcedPuppet` does for units (a world-sheet base forced to the
+   * procedural tier threw "No base visual"); a skin model without a puppet draws its age's plain puppet.
+   */
+  private forcedPuppetBase(age: AgeId, r: { key: string; def: VisualDef } | undefined): { key: string; def: VisualDef } | undefined {
+    const own = this.forcedPuppet(r);
+    if (this.force !== 'procedural' || !own || own.def.kind === 'procedural') return own;
+    const plain = PROCEDURAL_MANIFEST[`base.${age}`];
+    return plain && plain.kind === 'procedural' ? { key: `base.${age}`, def: plain } : own;
   }
 
   /**
@@ -907,8 +929,8 @@ export class VisualsArtProvider implements ArtProvider {
       const own = skinOf(age);
       const skinned = own ? skinnedVisualId(`base.${age}`, own) : null;
       const def = skinned ? this.manifest[skinned] : undefined;
-      if (skinned && def) return { key: skinned, def };
-      return this.resolve(`base.${age}`);
+      if (skinned && def) return this.forcedPuppetBase(age, { key: skinned, def });
+      return this.forcedPuppetBase(age, this.resolve(`base.${age}`));
     };
     if (skin && !AGES.some((a) => this.manifest[skinnedVisualId(`base.${a}`, skin)])) {
       this.once(`skin:base@${skin}`, `[visuals] no base has the skin "${skin}", drawing plain bases`);
@@ -1228,11 +1250,14 @@ export class VisualsArtProvider implements ArtProvider {
    * background transparent so the UI can draw silhouettes of unowned cards. Team areas use the
    * current colourblind preset (`setTeamPreset`), like the lane.
    */
-  portrait(o: { card: CardId; skin?: SkinId; foil?: Foil; size: number; side?: Side; plate?: boolean }): Promise<string> {
+  portrait(o: { card: CardId; skin?: SkinId; foil?: Foil; size: number; side?: Side; plate?: boolean; skinStill?: boolean }): Promise<string> {
     // `strip:<clip>:<card>`: a unit clip as a CSS sprite strip for the menus, `stripinfo:` its layout (adapters/spriteStrip.ts)
     const strip = stripRequest(o.card);
     if (strip) return this.spriteStrip(strip.card, strip.clip, o.size, o.side ?? 0, o.skin, strip.part);
     const visualId = this.visualIdForCard(o.card);
+    // `skinStill` (duck-typed, the battle HUD's training card, queue item 46): the skin's rendered still when it has
+    // one, else the card's own portrait (never a skin's puppet drawing next to the lane's sheets)
+    if (o.skin && o.skinStill === true && !this.hasSkinStill(visualId, o.skin)) o = { ...o, skin: undefined };
     const cacheKey = `${skinnedVisualId(visualId, o.skin)}|${o.foil ?? 'none'}|${o.size}|${o.side ?? 0}|${o.plate === false ? 'bare' : 'plate'}|${this.preset}`;
     const hit = this.portraits.get(cacheKey);
     if (hit) return hit;
@@ -1249,7 +1274,7 @@ export class VisualsArtProvider implements ArtProvider {
         return p;
       }
     }
-    const r = this.resolve(visualId, tint !== null ? undefined : o.skin);
+    const r = this.forcedPuppet(this.resolve(visualId, tint !== null ? undefined : o.skin));
     const def = r?.def ?? this.missing(visualId);
     const key = r?.key ?? visualId;
     const req = { key, def, size: o.size, foil: o.foil ?? 'none', side: o.side ?? 0, plate: o.plate !== false, teamPreset: this.preset } as const;
@@ -1258,6 +1283,16 @@ export class VisualsArtProvider implements ArtProvider {
       .catch(() => '');
     this.portraits.set(cacheKey, p);
     return p;
+  }
+
+  /**
+   * True when a troop skin is drawn from its own sheet and that sheet's card still is installed (queue item 46): the
+   * still a card shows for it. False under a forced tier (the comparison tiers draw no stills).
+   */
+  hasSkinStill(visualId: VisualId, skin: SkinId): boolean {
+    if (this.force !== null && this.force !== 'atlas') return false;
+    const def = this.manifest[skinnedVisualId(visualId, skin)];
+    return def !== undefined && def.kind === 'atlas' && portraitStillBase(def.source) !== null;
   }
 
   /** The body tint of a base skin that has no model entry yet (`base.<age>` with a tint skin), else null. */

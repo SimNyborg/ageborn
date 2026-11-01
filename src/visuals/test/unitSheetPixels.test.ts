@@ -21,7 +21,10 @@ interface SheetMeta {
 /** Every unit sheet JSON (core, extras, HD and 1x), read at test time (never bundled into the game). */
 const JSONS = import.meta.glob<SheetMeta>('/public/art/units/*/*.json', { eager: true, import: 'default' });
 
-/** `<age>/<slug>` → [HD core, HD extras, 1x core, 1x extras] in pixels (0 for an image that is not installed). */
+/**
+ * `<age>/<slug>` → [HD core, HD extras, 1x core, 1x extras] in pixels (0 for an image that is not installed). Troop
+ * skins rendered as sheets (queue item 46) have rows of their own, `<age>/<slug>@<skinId>`: the governor counts them.
+ */
 function installed(): Record<string, [number, number, number, number]> {
   const px = (path: string): number => {
     const s = JSONS[path]?.meta.size;
@@ -29,7 +32,7 @@ function installed(): Record<string, [number, number, number, number]> {
   };
   const out: Record<string, [number, number, number, number]> = {};
   for (const path of Object.keys(JSONS).sort()) {
-    const m = /^\/public\/art\/units\/([a-z]+)\/([a-z0-9_]+)\.json$/.exec(path);
+    const m = /^\/public\/art\/units\/([a-z]+)\/([a-z0-9_]+(?:@[a-z0-9_]+)?)\.json$/.exec(path);
     if (!m) continue;
     const dir = `/public/art/units/${m[1]}/${m[2]}`;
     out[`${m[1]}/${m[2]}`] = [px(`${dir}.hd.json`), px(`${dir}.x.hd.json`), px(`${dir}.json`), px(`${dir}.x.json`)];
@@ -67,6 +70,17 @@ describe('unit sheet sizes (memory governor)', () => {
       // packing differs a little between the two densities; the governor plans with the real numbers
       expect((hd + hdx) / (sd + sdx), k).toBeGreaterThan(2.5);
       expect((hd + hdx) / (sd + sdx), k).toBeLessThan(6);
+    }
+  });
+
+  it("a skin's sheet (queue item 46) is about its unit's size: the same frames at the same density", () => {
+    for (const [k, px] of Object.entries(UNIT_SHEET_PIXELS)) {
+      if (!k.includes('@')) continue;
+      const unit = UNIT_SHEET_PIXELS[k.slice(0, k.indexOf('@'))];
+      expect(unit, `${k}: its unit's sheet`).toBeDefined();
+      const ratio = (px[0] + px[1]) / ((unit?.[0] ?? 0) + (unit?.[1] ?? 0));
+      expect(ratio, k).toBeGreaterThan(0.5);
+      expect(ratio, k).toBeLessThan(2);
     }
   });
 });

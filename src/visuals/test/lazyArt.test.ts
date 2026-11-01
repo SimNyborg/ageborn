@@ -22,7 +22,9 @@ import { createArtProvider } from '../provider';
 import { SKIN_PUPPETS } from '../skins';
 import { memoryKind } from '../textureMemory';
 
-const skinId = 'unit.bonker@pumpkin_head';
+/** A Stone troop skin still drawn by its puppet (skins rendered as sheets, queue item 46, draw from those instead). */
+const skinId = SKIN_PUPPETS.find((p) => p.age === 'stone' && p.id.startsWith('unit.') && MANIFEST[p.id]?.kind === 'procedural')?.id ?? '';
+const [skinUnit = '', skinName = ''] = skinId.split('@');
 
 describe('skins bake when held (the game)', () => {
   it("an age's preload bakes no skin in the game; the gallery's provider still does", () => {
@@ -38,9 +40,9 @@ describe('skins bake when held (the game)', () => {
     const art = createArtProvider({ warn: () => {}, unitSheets: 'match' });
     const baked = vi.spyOn(art.procedural, 'prebake');
     expect(MANIFEST[skinId]?.kind).toBe('procedural');
-    await art.holdArt().set([{ visualId: 'unit.bonker', skin: 'pumpkin_head' }, { visualId: 'unit.pebbler' }]);
+    await art.holdArt().set([{ visualId: skinUnit, skin: skinName }, { visualId: 'unit.pebbler' }]);
     expect(baked).toHaveBeenCalledWith([MANIFEST[skinId]!.source]);
-    const lease = art.showcaseLease({ visuals: [{ visualId: 'unit.bonker', skin: 'pumpkin_head' }] });
+    const lease = art.showcaseLease({ visuals: [{ visualId: skinUnit, skin: skinName }] });
     await lease.ready;
     lease.release();
     expect(baked).toHaveBeenCalledTimes(2);

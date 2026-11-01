@@ -34,3 +34,12 @@ Smaller, optional: `ProceduralUnitView` could offer `extentLu({ clips })` as the
 reach over the clip, without the ground marks and a skin's aura). Home measures a puppet-drawn troop by its
 view's drawn bounds meanwhile (`render/showcase/home.ts` `drawnBox`, as the card showcase does), which an
 aura's glow widens.
+
+## Done
+
+Closed by art round W0, Track RUNTIME (queue item 46, 2026-11-01). The provider's strips draw a troop's skin
+(`spriteStrip` resolves `visualId@skin`; a skin with its own sheet draws that sheet's strip, a puppet skin its
+skinned puppet as the lane draws it), and `STRIPS_DRAW_SKINS` in `Diorama.tsx` is on. Since W0 a skin rendered as a
+sheet (`<slug>@<skinId>.json`, contract C3) has an atlas manifest entry of its own, so Home's still island, its live
+layer and the battle all draw it from that sheet: checked at 844 x 390 and 1280 x 720 at DPR 2 with a test-only skin
+sheet (the still and the live troop wear the same outfit, no change at the hand-over).

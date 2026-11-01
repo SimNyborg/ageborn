@@ -155,9 +155,13 @@ export const UNIT_AIM: Readonly<Record<string, UnitAim>> = {
   'cosmic/void_whisperer': { clips: { attack: { deg: 0, omni: true }, attack_b: { deg: 0, omni: true } } },
 };
 
-/** `art/units/<age>/<slug>.json` (or its `.hd` / `.x` copies) to the table key `<age>/<slug>`, else null. */
+/**
+ * `art/units/<age>/<slug>.json` (or its `.hd` / `.x` copies) to the table key `<age>/<slug>`, else null. A troop
+ * skin's sheet (`<slug>@<skinId>.json`, queue item 46) is a variant of its unit's model (the same armature, actions
+ * and poses, contract C3), so it takes its unit's entry.
+ */
 export function unitAimKey(source: string): string | null {
-  const m = /art\/units\/([a-z]+)\/([a-z0-9_]+?)(?:\.x)?(?:\.hd)?\.json(?:$|[?#])/.exec(source);
+  const m = /art\/units\/([a-z]+)\/([a-z0-9_]+?)(?:@[a-z0-9_]+)?(?:\.x)?(?:\.hd)?\.json(?:$|[?#])/.exec(source);
   return m ? `${m[1]}/${m[2]}` : null;
 }
 
