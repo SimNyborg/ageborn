@@ -22,6 +22,7 @@ import { planSheetDensities, SHEET_RANK, unitSheetBytes } from '../sheetBudget';
 import { skinStillBase, skinUnitSource } from '../skinSheets';
 import { SKIN_SHEETS } from '../skinSheets.gen';
 import { memoryKind } from '../textureMemory';
+import { UNIT_SHEET_PIXELS } from '../unitSheetPixels.gen';
 import { unitAimFor, unitAimKey, UNIT_AIM } from '../unitAim';
 import { UNIT_SHEETS } from '../unitSheets.gen';
 
@@ -127,7 +128,11 @@ describe('a match holds the sheets it shows (skins in place of their units)', ()
   it('the governor counts skin sheets: their own size, or their unit\'s until the table lists them', () => {
     const unit = unitSheetBytes(BONKER);
     expect(unit).not.toBeNull();
-    expect(unitSheetBytes(PUMPKIN)).toEqual(unit);
+    // a skin sheet the pixel table lists counts its own images
+    const own = UNIT_SHEET_PIXELS['stone/bonker@pumpkin_head'];
+    expect(unitSheetBytes(PUMPKIN)).toEqual(own ? { hd: (own[0] + own[1]) * 4, sd: (own[2] + own[3]) * 4 } : unit);
+    // one the table does not list yet (installed before it was regenerated) counts as its unit's sheet
+    expect(unitSheetBytes('art/units/stone/bonker@not_in_the_table.json')).toEqual(unit);
     expect(unitSheetBytes('art/units/stone/nobody@ghost.json')).toBeNull();
     const b = unit!;
     // a skinned and a plain copy are two sheets: both fit in HD only with room for both
