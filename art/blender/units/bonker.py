@@ -60,6 +60,9 @@ EYE = "#FAF6EE"
 PUPIL = "#221C19"
 MOUTH = "#4A2424"
 TOOTH = "#F4EEDC"
+HAIR_LT = "#5E4A3C"       # lighter locks in the hair (two tones)
+PAINT = "#5A4239"         # ochre-brown war paint (hue 15, saturation 0.37: under the colour rule)
+CHEEK = "#D9A889"         # a ruddy cheek and ear (saturation 0.37, 16 levels under the skin)
 
 # club geometry along +Z from the fist; the head is centred CLUB_HEAD lu up the club
 FIST = (4.0, -13.0, 21.0)
@@ -141,7 +144,7 @@ LEATHER_FAR = C.scale(LEATHER, 0.80)
 MATERIAL_KINDS = {SKIN: "skin", SKIN_FAR: "skin", HAIR: "fur", WOOD: "wood", WOOD_DK: "wood", STUD: "stone",
                   FLINT: "stone", FUR: "fur", FUR_FAR: "fur", LEATHER: "leather", LEATHER_FAR: "leather",
                   BONE: "bone", LEATHER_DK: "leather", C.scale(LEATHER_DK, 0.8): "leather", STUD_LT: "stone",
-                  FLINT_LT: "stone", "team": "hide"}
+                  FLINT_LT: "stone", HAIR_LT: "fur", CHEEK: "skin", "team": "hide"}
 
 
 def build(rig):
@@ -261,6 +264,11 @@ def build(rig):
     rig.part("torso", g, BONE, finish="gloss", outline=0.6)
     g = Geo().lathe([(9.2, 0), (9.8, 0.3), (9.8, 1.4), (9.2, 1.7)], (1.2, 0, 37.0), (2.6, 0, 38.4), segs=22)
     rig.part("torso", g, LEATHER_DK, outline=0.5)
+    # a dark chest tuft above the pelt (a shape on the bare chest, 3 lu)
+    g = Geo()
+    for (x, z), (x1, z1) in (((9.6, 35.0), (11.6, 31.8)), ((8.4, 34.2), (9.2, 30.6)), ((10.8, 35.6), (13.0, 33.2))):
+        g.capsule((x, -6.6, z), (x1, -7.4, z1), 1.25, 0.6)
+    rig.part("torso", g, HAIR, finish="hair", outline=0)
 
     if getattr(rig, "skin", None) == "pumpkin_head":
         _pumpkin_head(rig)
@@ -276,12 +284,12 @@ def _damage_spots(rig):
     the face or skin. The team pelt in front of the belly, the hip pouch, the cape, the near shin wrap and the
     club head (a cracked club at stage 2); a strip torn from the cape's hem. Positions are the rest pose as
     drawn (the upper body sits LIFT higher)."""
-    rig.damage_spot_at("pelt", "torso", 10.5, 25.0, 6.0, "hide", team=True)
+    rig.damage_spot_at("pelt", "torso", 10.5, 25.0, 7.0, "hide", team=True)
     rig.damage_spot_at("pouch", "pouch", -6.1, 14.7, 5.0, "hide", team=True)
-    rig.damage_spot_at("cape", "cape", -12.0, 30.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("cape", "cape", -12.0, 30.0, 6.0, "hide", team=True)
     rig.damage_spot_at("wrap", "shin_r", 1.0, 9.0, 5.0, "hide", team=True)
     rig.damage_spot_at("club", "club", 8.0, 53.0, 5.0, "wood", fill=WOOD)
-    rig.damage_spot_at("hem", "cape", -12.5, 23.0, 9.0, "hide", kind="strip", team=True)
+    rig.damage_spot_at("hem", "cape", -12.5, 23.0, 11.0, "hide", kind="strip", team=True)
 
 
 def _head(rig):
@@ -310,6 +318,16 @@ def _head(rig):
                                   ((-8, 58), (-14, 63.5), 3.4), ((8, 57), (12.5, 61.5), 2.8)):
         g.capsule((x0, 0, z0), (x1, -1, z1), r, 1.2)
     rig.part("hair", g, HAIR, finish="hair")
+    # lighter locks (two-tone hair, 2.6-3 lu wide), on the cap and down the back, so the hair is not one dark mass
+    g = Geo()
+    for (x0, z0), (x1, z1), r in (((-6.0, 61.0), (-12.0, 56.0), 1.45), ((0.5, 63.2), (-4.5, 60.8), 1.35),
+                                  ((-11.0, 54.0), (-13.4, 47.0), 1.4), ((6.0, 61.6), (2.0, 63.6), 1.3)):
+        g.capsule((x0, -10.4, z0), (x1, -10.6, z1), r, r * 0.75)
+    rig.part("head", g, HAIR_LT, finish="hair", outline=0)
+    g = Geo()
+    for (x0, z0), (x1, z1) in (((-1.5, 64.0), (-3.5, 68.0)), ((-9.0, 59.5), (-13.0, 62.0))):
+        g.capsule((x0, -2.6, z0), (x1, -2.8, z1), 1.3, 0.9)
+    rig.part("hair", g, HAIR_LT, finish="hair", outline=0)
     # a bone pushed through the topknot, knobs out at both ends (a silhouette breaker, cream on dark hair)
     g = Geo().capsule((-16.4, -3.0, 59.4), (8.2, -3.0, 71.0), 1.1, 1.1)
     g.sphere((-16.9, -3.0, 59.0), 1.8, cuts=3).sphere((-16.5, -3.0, 60.8), 1.5, cuts=3)
@@ -332,6 +350,15 @@ def _head(rig):
     rig.part("mouth", g, TOOTH, outline=0, highlight=False)
     face.eye_marks([(14.2, 51.6)], 4.2, SKIN)
     face.mouths((13.6, 44.2), 6.4)
+    # a ruddy cheek and ear: a warmer, darker skin patch (16 levels under the skin) so the big face is not one field
+    g = Geo()
+    face.decal(g, face.hit(7.4, 47.6), F.ellipse(0, 0, 3.0, 2.2, 14), 0.35)
+    rig.part("head", g, CHEEK, outline=0, highlight=False)
+    g = Geo().blob((-1.6, -10.6, 50.2), (2.4, 1.6, 3.2), p=2.2)          # the ear, its rim catching the light
+    rig.part("head", g, SKIN, outline=0.6)
+    g = Geo()
+    face.decal(g, face.hit(-1.4, 50.2), F.ellipse(0, 0, 1.1, 1.8, 10), 0.3)
+    rig.part("head", g, CHEEK, outline=0, highlight=False)
 
 
 # -- skin: Pumpkin Head (DESIGN A5.8, rare): a carved jack-o'-lantern gourd for a head -----------------------
@@ -339,13 +366,14 @@ def _head(rig):
 # carved face sits on the face kit's joints (pupils, brow, mouth, lids, squeeze, ko_x, grit, yell2, ...), so
 # every expression still plays: the eyes blink shut, the grin opens in a yell, the eyes go X on the KO. The
 # leaf and the curly vine hang on the `hair` follow-through joint.
-GOURD = "#D4AB8A"       # pale pumpkin, HSV saturation 0.35 (the A11 colour rule: orange is a team hue)
-GOURD_DK = "#A07A5C"    # the grooves between the lobes
+GOURD = "#CC9F7F"       # pumpkin, HSV saturation 0.38 (the A11 colour rule: orange is a team hue); it reads as
+                        # a pumpkin by its lobes, deep grooves and glossy skin rather than by saturation
+GOURD_DK = "#8C6C55"    # the grooves between the lobes (dark, saturation 0.39)
 CARVE = "#3A2620"       # the carved holes
-CANDLE = "#F8E6AE"      # the candle glow inside (an unshaded glow)
+CANDLE = "#FCDE9C"      # the candle glow inside (an unshaded glow, saturation 0.38)
 STEM = "#667A4E"        # green-grey (hue 87: outside the team hue bands)
 LEAF = "#748C55"
-GOURD_C, GOURD_R, GOURD_H, GOURD_LOBES, GOURD_DEPTH = (2.6, 0.0, 51.4), 14.2, 25.5, 8, 0.10
+GOURD_C, GOURD_R, GOURD_H, GOURD_LOBES, GOURD_DEPTH = (2.6, 0.0, 51.4), 14.2, 25.5, 8, 0.14
 # skin variants of this script (ageborn_art/skins.py; DESIGN A5.8): extra material kinds per skin
 SKINS = {"pumpkin_head": {"kinds": {GOURD: "cloth", GOURD_DK: "cloth", STEM: "wood", LEAF: "cloth"}}}
 
@@ -375,7 +403,7 @@ def _pumpkin_head(rig):
     c, r, h, sy = GOURD_C, GOURD_R, GOURD_H, 0.94
     gourd = _gourd()
     face = F.Face(rig, "head", [gourd])
-    rig.part("head", gourd, GOURD)
+    rig.part("head", gourd, GOURD, finish="gloss")       # a glossy rind: the highlight reads as pumpkin
     # the grooves between the lobes: dark lines down the visible valleys (1.1 lu)
     g = Geo()
     prof = _gourd_profile(r, h)
@@ -388,39 +416,48 @@ def _pumpkin_head(rig):
             rad = rr * (1.0 - GOURD_DEPTH) + 0.25
             pts.append((c[0] + rad * math.cos(phi), c[1] + rad * math.sin(phi) * sy, c[2] + zz))
         for a, b in zip(pts, pts[1:]):
-            g.capsule(a, b, 0.55, segs=8, rings=2)
+            g.capsule(a, b, 0.8, segs=8, rings=2)
     rig.part("head", g, GOURD_DK, outline=0, highlight=False)
     # a rigid stem in the top dimple
     top = c[2] + h * 0.44
     g = Geo().capsule((c[0] - 0.6, 0.0, top - 1.5), (c[0] - 1.6, 0.0, top + 3.2), 2.5, 2.0)
     g.capsule((c[0] - 1.6, 0.0, top + 3.2), (c[0] - 4.2, -0.3, top + 5.6), 2.0, 1.5)
     rig.part("head", g, STEM)
-    # the carved face: a triangle eye with a candle glow inside, an angry carved brow, a jagged grin
-    rig.joint("pupils", "head", (11.0, 0, 54.0))
-    ce = face.hit(10.6, 53.8)        # big enough to read at game scale (the eye 6.5 lu, the grin 10.5 lu)
+    # the carved face, turned to the viewer so both eyes show (a jack-o'-lantern reads by its face at 62 px):
+    # two triangle eyes of 7 lu and a nose with the candle glow inside, angry carved brows, a 17 lu jagged grin
+    rig.joint("pupils", "head", (6.4, 0, 55.2))
+    eyes = [(1.6, 55.6), (10.6, 55.0)]
+    for ex, ez in eyes:
+        ce = face.hit(ex, ez)
+        g = Geo()
+        face.decal(g, ce, [(-3.6, -2.6), (3.4, -2.9), (0.4, 3.9)], 0.4)
+        rig.part("pupils", g, CARVE, outline=0, highlight=False)
+        g = Geo()
+        face.decal(g, ce - face.view * 0.25, [(-2.2, -1.7), (2.1, -1.9), (0.3, 2.3)], 0.4)
+        rig.part("pupils", g, glow=CANDLE, outline=0)
+    cn = face.hit(6.2, 50.6)
     g = Geo()
-    face.decal(g, ce, [(-3.4, -2.7), (3.2, -2.9), (0.6, 3.7)], 0.4)
+    face.decal(g, cn, [(-1.7, -1.3), (1.7, -1.4), (0.0, 1.9)], 0.4)
     rig.part("pupils", g, CARVE, outline=0, highlight=False)
+    rig.joint("brow", "head", (6.4, 0, 60.4))
     g = Geo()
-    face.decal(g, ce - face.view * 0.25, [(-2.0, -1.8), (2.0, -2.0), (0.4, 2.1)], 0.4)
-    rig.part("pupils", g, glow=CANDLE, outline=0)
-    rig.joint("brow", "head", (10.6, 0, 59.6))
-    g = Geo()
-    face.stroke(g, face.hit(10.2, 59.9), [(-3.4, 1.3), (3.0, -0.8)], 1.9, 0.4)
+    face.stroke(g, face.hit(1.4, 60.4), [(-3.2, 1.1), (3.0, -0.7)], 1.9, 0.4)
+    face.stroke(g, face.hit(10.8, 59.8), [(-3.0, -0.7), (3.0, 1.0)], 1.9, 0.4)
     rig.part("brow", g, CARVE, outline=0, highlight=False)
-    rig.joint("mouth", "head", (9.6, 0, 45.6))
-    cm = face.hit(9.6, 45.6)         # the gourd's front edge is at x 15.5 here: the grin stays inside it
+    rig.joint("mouth", "head", (6.0, 0, 45.4))
+    cm = face.hit(6.0, 45.4)
     g = Geo()
-    grin = [(-5.3, 1.7), (-3.4, 0.5), (-2.3, 2.0), (-0.6, 0.6), (0.6, 2.2), (2.1, 0.6), (3.6, 2.3), (5.2, 1.2),
-            (4.2, -2.0), (1.3, -3.4), (-1.7, -3.1), (-4.4, -1.4)]
+    grin = [(-8.4, 2.4), (-6.0, 0.6), (-4.6, 2.6), (-2.4, 0.7), (-0.8, 2.8), (1.0, 0.8), (2.8, 2.8), (4.8, 0.6),
+            (6.4, 2.6), (8.4, 1.8), (6.9, -2.0), (3.4, -3.8), (-0.6, -4.2), (-4.4, -3.6), (-7.4, -1.6)]
     face.decal(g, cm, grin, 0.4)
     rig.part("mouth", g, CARVE, outline=0, highlight=False)
     g = Geo()
-    face.decal(g, cm - face.view * 0.25, [(-3.6, -0.3), (3.4, -0.1), (2.7, -1.7), (0.6, -2.5), (-2.6, -1.7)], 0.4)
+    face.decal(g, cm - face.view * 0.25, [(-6.2, -0.5), (6.0, -0.2), (4.8, -2.2), (1.4, -3.2), (-2.6, -3.0),
+                                          (-5.4, -1.8)], 0.4)
     rig.part("mouth", g, glow=CANDLE, outline=0)
-    # the face kit on the gourd: lids and squeeze close the carved eye, KO carves X eyes, the grin opens
-    face.eye_marks([(10.6, 53.8)], 3.9, GOURD, lash=CARVE, white=GOURD)
-    face.mouths((9.6, 45.3), 9.0, dark=CARVE, tooth=GOURD, tongue=CANDLE)
+    # the face kit on the gourd: lids and squeeze close the carved eyes, KO carves X eyes, the grin opens
+    face.eye_marks(eyes, 4.0, GOURD, lash=CARVE, white=GOURD)
+    face.mouths((6.0, 45.0), 13.0, dark=CARVE, tooth=GOURD, tongue=CANDLE)
     # a leaf and a curly vine on the follow-through joint (they flop when he moves)
     rig.secondary("hair", "head", (c[0] - 1.8, 0, top + 2.0), (c[0] - 12.0, 0, top + 4.0), max_deg=16, gain=1.3)
     lx, lz = c[0] - 2.4, top + 2.4
@@ -457,6 +494,16 @@ def _arms_and_club(rig):
         # team wrist wraps on both arms (the club arm's crosses the chest in the walk carry; the far arm's pumps
         # in the walk, where the belt, pouch and bone take team area: the 18% rule)
         rig.part(f"fore_{side}", g, team=True, outline=0.7)
+    # a leather armband (3 lu) with a bone bead below the pauldron, two war-paint bands on the near forearm
+    g = Geo().lathe([(4.55, 0), (5.0, 0.4), (5.0, 2.6), (4.55, 3.0)], (0.55, -12.6, 30.6), (0.95, -12.55, 33.6), segs=18)
+    rig.part("arm_r", g, LEATHER_DK, outline=0.6)
+    g = Geo().blob((1.9, -17.4, 32.0), (1.5, 1.0, 1.7), p=2.2)
+    rig.part("arm_r", g, BONE, finish="gloss", outline=0.5)
+    fa = F.Face(rig, "fore_r", [Geo().capsule((1.5, -13.0, 28.5), (4.0, -13.0, 22.0), 4.0, 3.9)])
+    g = Geo()
+    for z in (27.4, 24.6):
+        fa.stroke(g, fa.hit(2.6, z), [(-3.0, 0.5), (3.0, -0.5)], 1.6, 0.3)
+    rig.part("fore_r", g, PAINT, outline=0, highlight=False)
     g = Geo().blob((0.5, -12.6, 37.6), (7.4, 6.4, 5.6), p=2.4)
     rig.part("arm_r", g, team=True)
     g = Geo()

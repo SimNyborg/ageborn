@@ -2,7 +2,7 @@
  "frames": {
   "war_chariot@sun_chariot_idle_00": {
    "frame": {
-    "x": 957,
+    "x": 924,
     "y": 161,
     "w": 181,
     "h": 154
@@ -26,9 +26,9 @@
   },
   "war_chariot@sun_chariot_idle_00_team": {
    "frame": {
-    "x": 2145,
-    "y": 2,
-    "w": 159,
+    "x": 2006,
+    "y": 392,
+    "w": 157,
     "h": 121
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 153,
     "y": 92,
-    "w": 159,
+    "w": 157,
     "h": 121
    },
    "sourceSize": {
@@ -50,7 +50,7 @@
   },
   "war_chariot@sun_chariot_idle_01": {
    "frame": {
-    "x": 1114,
+    "x": 935,
     "y": 2,
     "w": 181,
     "h": 154
@@ -74,8 +74,8 @@
   },
   "war_chariot@sun_chariot_idle_01_team": {
    "frame": {
-    "x": 2037,
-    "y": 257,
+    "x": 2006,
+    "y": 517,
     "w": 157,
     "h": 121
    },
@@ -98,8 +98,8 @@
   },
   "war_chariot@sun_chariot_idle_02": {
    "frame": {
-    "x": 967,
-    "y": 319,
+    "x": 1109,
+    "y": 160,
     "w": 179,
     "h": 154
    },
@@ -122,9 +122,9 @@
   },
   "war_chariot@sun_chariot_idle_02_team": {
    "frame": {
-    "x": 2308,
-    "y": 2,
-    "w": 156,
+    "x": 2047,
+    "y": 257,
+    "w": 157,
     "h": 121
    },
    "rotated": false,
@@ -132,7 +132,7 @@
    "spriteSourceSize": {
     "x": 154,
     "y": 92,
-    "w": 156,
+    "w": 157,
     "h": 121
    },
    "sourceSize": {
@@ -170,9 +170,9 @@
   },
   "war_chariot@sun_chariot_idle_03_team": {
    "frame": {
-    "x": 2034,
-    "y": 518,
-    "w": 156,
+    "x": 2187,
+    "y": 127,
+    "w": 157,
     "h": 121
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 154,
     "y": 92,
-    "w": 156,
+    "w": 157,
     "h": 121
    },
    "sourceSize": {
@@ -194,8 +194,8 @@
   },
   "war_chariot@sun_chariot_idle_04": {
    "frame": {
-    "x": 392,
-    "y": 488,
+    "x": 555,
+    "y": 163,
     "w": 179,
     "h": 156
    },
@@ -218,9 +218,9 @@
   },
   "war_chariot@sun_chariot_idle_04_team": {
    "frame": {
-    "x": 2194,
-    "y": 518,
-    "w": 156,
+    "x": 2334,
+    "y": 2,
+    "w": 157,
     "h": 121
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 154,
     "y": 92,
-    "w": 156,
+    "w": 157,
     "h": 121
    },
    "sourceSize": {
@@ -242,7 +242,7 @@
   },
   "war_chariot@sun_chariot_idle_05": {
    "frame": {
-    "x": 929,
+    "x": 750,
     "y": 2,
     "w": 181,
     "h": 155
@@ -266,8 +266,8 @@
   },
   "war_chariot@sun_chariot_idle_05_team": {
    "frame": {
-    "x": 2189,
-    "y": 127,
+    "x": 2167,
+    "y": 382,
     "w": 157,
     "h": 121
    },
@@ -290,8 +290,8 @@
   },
   "war_chariot@sun_chariot_walk_00": {
    "frame": {
-    "x": 945,
-    "y": 480,
+    "x": 1004,
+    "y": 319,
     "w": 180,
     "h": 154
    },
@@ -314,9 +314,9 @@
   },
   "war_chariot@sun_chariot_walk_00_team": {
    "frame": {
-    "x": 2034,
-    "y": 393,
-    "w": 159,
+    "x": 2172,
+    "y": 2,
+    "w": 158,
     "h": 121
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 152,
     "y": 91,
-    "w": 159,
+    "w": 158,
     "h": 121
    },
    "sourceSize": {
@@ -362,9 +362,9 @@
   },
   "war_chariot@sun_chariot_walk_01_team": {
    "frame": {
-    "x": 1716,
+    "x": 1729,
     "y": 274,
-    "w": 165,
+    "w": 162,
     "h": 126
    },
    "rotated": false,
@@ -372,7 +372,7 @@
    "spriteSourceSize": {
     "x": 151,
     "y": 90,
-    "w": 165,
+    "w": 162,
     "h": 126
    },
    "sourceSize": {
@@ -386,8 +386,8 @@
   },
   "war_chariot@sun_chariot_walk_02": {
    "frame": {
-    "x": 575,
-    "y": 484,
+    "x": 753,
+    "y": 482,
     "w": 181,
     "h": 155
    },
@@ -410,8 +410,8 @@
   },
   "war_chariot@sun_chariot_walk_02_team": {
    "frame": {
-    "x": 1703,
-    "y": 139,
+    "x": 1566,
+    "y": 296,
     "w": 159,
     "h": 131
    },
@@ -458,7 +458,7 @@
   },
   "war_chariot@sun_chariot_walk_03_team": {
    "frame": {
-    "x": 1677,
+    "x": 1692,
     "y": 2,
     "w": 154,
     "h": 133
@@ -506,9 +506,9 @@
   },
   "war_chariot@sun_chariot_walk_04_team": {
    "frame": {
-    "x": 1540,
-    "y": 149,
-    "w": 159,
+    "x": 1530,
+    "y": 2,
+    "w": 158,
     "h": 133
    },
    "rotated": false,
@@ -516,7 +516,7 @@
    "spriteSourceSize": {
     "x": 152,
     "y": 91,
-    "w": 159,
+    "w": 158,
     "h": 133
    },
    "sourceSize": {
@@ -554,9 +554,9 @@
   },
   "war_chariot@sun_chariot_walk_05_team": {
    "frame": {
-    "x": 1549,
-    "y": 286,
-    "w": 163,
+    "x": 1521,
+    "y": 461,
+    "w": 162,
     "h": 132
    },
    "rotated": false,
@@ -564,7 +564,7 @@
    "spriteSourceSize": {
     "x": 151,
     "y": 90,
-    "w": 163,
+    "w": 162,
     "h": 132
    },
    "sourceSize": {
@@ -578,7 +578,7 @@
   },
   "war_chariot@sun_chariot_walk_06": {
    "frame": {
-    "x": 379,
+    "x": 382,
     "y": 2,
     "w": 181,
     "h": 157
@@ -602,9 +602,9 @@
   },
   "war_chariot@sun_chariot_walk_06_team": {
    "frame": {
-    "x": 1549,
-    "y": 422,
-    "w": 161,
+    "x": 1850,
+    "y": 2,
+    "w": 158,
     "h": 130
    },
    "rotated": false,
@@ -612,7 +612,7 @@
    "spriteSourceSize": {
     "x": 154,
     "y": 92,
-    "w": 161,
+    "w": 158,
     "h": 130
    },
    "sourceSize": {
@@ -626,8 +626,8 @@
   },
   "war_chariot@sun_chariot_walk_07": {
    "frame": {
-    "x": 1299,
-    "y": 2,
+    "x": 1188,
+    "y": 318,
     "w": 177,
     "h": 152
    },
@@ -650,9 +650,9 @@
   },
   "war_chariot@sun_chariot_walk_07_team": {
    "frame": {
-    "x": 1985,
-    "y": 2,
-    "w": 156,
+    "x": 1847,
+    "y": 404,
+    "w": 155,
     "h": 125
    },
    "rotated": false,
@@ -660,7 +660,7 @@
    "spriteSourceSize": {
     "x": 156,
     "y": 93,
-    "w": 156,
+    "w": 155,
     "h": 125
    },
    "sourceSize": {
@@ -674,8 +674,8 @@
   },
   "war_chariot@sun_chariot_attack_00": {
    "frame": {
-    "x": 1129,
-    "y": 477,
+    "x": 1292,
+    "y": 159,
     "w": 183,
     "h": 151
    },
@@ -698,8 +698,8 @@
   },
   "war_chariot@sun_chariot_attack_00_team": {
    "frame": {
-    "x": 2350,
-    "y": 127,
+    "x": 2495,
+    "y": 2,
     "w": 160,
     "h": 119
    },
@@ -722,8 +722,8 @@
   },
   "war_chariot@sun_chariot_attack_01": {
    "frame": {
-    "x": 2,
-    "y": 504,
+    "x": 190,
+    "y": 497,
     "w": 183,
     "h": 145
    },
@@ -746,9 +746,9 @@
   },
   "war_chariot@sun_chariot_attack_01_team": {
    "frame": {
-    "x": 2367,
-    "y": 250,
-    "w": 161,
+    "x": 2518,
+    "y": 125,
+    "w": 162,
     "h": 115
    },
    "rotated": false,
@@ -756,7 +756,7 @@
    "spriteSourceSize": {
     "x": 148,
     "y": 98,
-    "w": 161,
+    "w": 162,
     "h": 115
    },
    "sourceSize": {
@@ -770,8 +770,8 @@
   },
   "war_chariot@sun_chariot_attack_02": {
    "frame": {
-    "x": 575,
-    "y": 324,
+    "x": 567,
+    "y": 2,
     "w": 179,
     "h": 156
    },
@@ -794,8 +794,8 @@
   },
   "war_chariot@sun_chariot_attack_02_team": {
    "frame": {
-    "x": 1885,
-    "y": 266,
+    "x": 1895,
+    "y": 265,
     "w": 148,
     "h": 123
    },
@@ -820,7 +820,7 @@
    "frame": {
     "x": 196,
     "y": 2,
-    "w": 179,
+    "w": 182,
     "h": 160
    },
    "rotated": false,
@@ -828,7 +828,7 @@
    "spriteSourceSize": {
     "x": 136,
     "y": 73,
-    "w": 179,
+    "w": 182,
     "h": 160
    },
    "sourceSize": {
@@ -842,9 +842,9 @@
   },
   "war_chariot@sun_chariot_attack_03_team": {
    "frame": {
-    "x": 1835,
-    "y": 2,
-    "w": 146,
+    "x": 1712,
+    "y": 139,
+    "w": 147,
     "h": 131
    },
    "rotated": false,
@@ -852,7 +852,7 @@
    "spriteSourceSize": {
     "x": 151,
     "y": 79,
-    "w": 146,
+    "w": 147,
     "h": 131
    },
    "sourceSize": {
@@ -890,8 +890,8 @@
   },
   "war_chariot@sun_chariot_attack_04_team": {
    "frame": {
-    "x": 1714,
-    "y": 422,
+    "x": 1687,
+    "y": 431,
     "w": 156,
     "h": 130
    },
@@ -938,9 +938,9 @@
   },
   "war_chariot@sun_chariot_attack_05_team": {
    "frame": {
-    "x": 1373,
-    "y": 312,
-    "w": 172,
+    "x": 2,
+    "y": 504,
+    "w": 171,
     "h": 135
    },
    "rotated": false,
@@ -948,7 +948,7 @@
    "spriteSourceSize": {
     "x": 154,
     "y": 90,
-    "w": 172,
+    "w": 171,
     "h": 135
    },
    "sourceSize": {
@@ -962,8 +962,8 @@
   },
   "war_chariot@sun_chariot_attack_06": {
    "frame": {
-    "x": 1150,
-    "y": 316,
+    "x": 1307,
+    "y": 2,
     "w": 219,
     "h": 150
    },
@@ -986,9 +986,9 @@
   },
   "war_chariot@sun_chariot_attack_06_team": {
    "frame": {
-    "x": 2532,
-    "y": 240,
-    "w": 193,
+    "x": 2495,
+    "y": 369,
+    "w": 194,
     "h": 107
    },
    "rotated": false,
@@ -996,7 +996,7 @@
    "spriteSourceSize": {
     "x": 153,
     "y": 107,
-    "w": 193,
+    "w": 194,
     "h": 107
    },
    "sourceSize": {
@@ -1010,8 +1010,8 @@
   },
   "war_chariot@sun_chariot_attack_07": {
    "frame": {
-    "x": 737,
-    "y": 163,
+    "x": 575,
+    "y": 323,
     "w": 216,
     "h": 155
    },
@@ -1034,9 +1034,9 @@
   },
   "war_chariot@sun_chariot_attack_07_team": {
    "frame": {
-    "x": 2639,
-    "y": 2,
-    "w": 180,
+    "x": 2339,
+    "y": 497,
+    "w": 179,
     "h": 110
    },
    "rotated": false,
@@ -1044,7 +1044,7 @@
    "spriteSourceSize": {
     "x": 159,
     "y": 101,
-    "w": 180,
+    "w": 179,
     "h": 110
    },
    "sourceSize": {
@@ -1058,8 +1058,8 @@
   },
   "war_chariot@sun_chariot_attack_08": {
    "frame": {
-    "x": 758,
-    "y": 322,
+    "x": 795,
+    "y": 321,
     "w": 205,
     "h": 154
    },
@@ -1082,9 +1082,9 @@
   },
   "war_chariot@sun_chariot_attack_08_team": {
    "frame": {
-    "x": 2354,
-    "y": 506,
-    "w": 167,
+    "x": 2328,
+    "y": 376,
+    "w": 163,
     "h": 117
    },
    "rotated": false,
@@ -1092,7 +1092,7 @@
    "spriteSourceSize": {
     "x": 158,
     "y": 94,
-    "w": 167,
+    "w": 163,
     "h": 117
    },
    "sourceSize": {
@@ -1106,8 +1106,8 @@
   },
   "war_chariot@sun_chariot_attack_09": {
    "frame": {
-    "x": 760,
-    "y": 480,
+    "x": 938,
+    "y": 479,
     "w": 181,
     "h": 154
    },
@@ -1130,9 +1130,9 @@
   },
   "war_chariot@sun_chariot_attack_09_team": {
    "frame": {
-    "x": 2197,
-    "y": 382,
-    "w": 160,
+    "x": 2208,
+    "y": 252,
+    "w": 158,
     "h": 120
    },
    "rotated": false,
@@ -1140,7 +1140,7 @@
    "spriteSourceSize": {
     "x": 155,
     "y": 92,
-    "w": 160,
+    "w": 158,
     "h": 120
    },
    "sourceSize": {
@@ -1154,8 +1154,8 @@
   },
   "war_chariot@sun_chariot_hit_00": {
    "frame": {
-    "x": 1480,
-    "y": 2,
+    "x": 1369,
+    "y": 314,
     "w": 193,
     "h": 143
    },
@@ -1178,9 +1178,9 @@
   },
   "war_chariot@sun_chariot_hit_00_team": {
    "frame": {
-    "x": 2514,
-    "y": 124,
-    "w": 171,
+    "x": 2659,
+    "y": 2,
+    "w": 172,
     "h": 112
    },
    "rotated": false,
@@ -1188,7 +1188,7 @@
    "spriteSourceSize": {
     "x": 141,
     "y": 102,
-    "w": 171,
+    "w": 172,
     "h": 112
    },
    "sourceSize": {
@@ -1202,8 +1202,8 @@
   },
   "war_chariot@sun_chariot_hit_01": {
    "frame": {
-    "x": 564,
-    "y": 2,
+    "x": 574,
+    "y": 488,
     "w": 175,
     "h": 157
    },
@@ -1226,9 +1226,9 @@
   },
   "war_chariot@sun_chariot_hit_01_team": {
    "frame": {
-    "x": 1866,
-    "y": 137,
-    "w": 157,
+    "x": 1863,
+    "y": 136,
+    "w": 158,
     "h": 125
    },
    "rotated": false,
@@ -1236,7 +1236,7 @@
    "spriteSourceSize": {
     "x": 147,
     "y": 89,
-    "w": 157,
+    "w": 158,
     "h": 125
    },
    "sourceSize": {
@@ -1250,8 +1250,8 @@
   },
   "war_chariot@sun_chariot_hit_02": {
    "frame": {
-    "x": 1142,
-    "y": 160,
+    "x": 1123,
+    "y": 477,
     "w": 187,
     "h": 152
    },
@@ -1274,9 +1274,9 @@
   },
   "war_chariot@sun_chariot_hit_02_team": {
    "frame": {
-    "x": 2198,
-    "y": 252,
-    "w": 165,
+    "x": 2348,
+    "y": 127,
+    "w": 166,
     "h": 119
    },
    "rotated": false,
@@ -1284,7 +1284,7 @@
    "spriteSourceSize": {
     "x": 145,
     "y": 93,
-    "w": 165,
+    "w": 166,
     "h": 119
    },
    "sourceSize": {
@@ -1298,8 +1298,8 @@
   },
   "war_chariot@sun_chariot_hit_03": {
    "frame": {
-    "x": 555,
-    "y": 163,
+    "x": 392,
+    "y": 488,
     "w": 178,
     "h": 157
    },
@@ -1322,8 +1322,8 @@
   },
   "war_chariot@sun_chariot_hit_03_team": {
    "frame": {
-    "x": 1874,
-    "y": 404,
+    "x": 2012,
+    "y": 2,
     "w": 156,
     "h": 125
    },
@@ -1346,8 +1346,8 @@
   },
   "war_chariot@sun_chariot_hit_04": {
    "frame": {
-    "x": 743,
-    "y": 2,
+    "x": 738,
+    "y": 162,
     "w": 182,
     "h": 155
    },
@@ -1370,7 +1370,7 @@
   },
   "war_chariot@sun_chariot_hit_04_team": {
    "frame": {
-    "x": 2027,
+    "x": 2025,
     "y": 131,
     "w": 158,
     "h": 122
@@ -1394,8 +1394,8 @@
   },
   "war_chariot@sun_chariot_die_00": {
    "frame": {
-    "x": 190,
-    "y": 497,
+    "x": 1120,
+    "y": 2,
     "w": 183,
     "h": 153
    },
@@ -1418,9 +1418,9 @@
   },
   "war_chariot@sun_chariot_die_00_team": {
    "frame": {
-    "x": 2468,
-    "y": 2,
-    "w": 167,
+    "x": 2167,
+    "y": 507,
+    "w": 168,
     "h": 118
    },
    "rotated": false,
@@ -1428,7 +1428,7 @@
    "spriteSourceSize": {
     "x": 139,
     "y": 92,
-    "w": 167,
+    "w": 168,
     "h": 118
    },
    "sourceSize": {
@@ -1442,8 +1442,8 @@
   },
   "war_chariot@sun_chariot_die_01": {
    "frame": {
-    "x": 1333,
-    "y": 158,
+    "x": 1314,
+    "y": 474,
     "w": 203,
     "h": 150
    },
@@ -1466,9 +1466,9 @@
   },
   "war_chariot@sun_chariot_die_01_team": {
    "frame": {
-    "x": 2361,
-    "y": 375,
-    "w": 182,
+    "x": 2370,
+    "y": 250,
+    "w": 181,
     "h": 115
    },
    "rotated": false,
@@ -1476,7 +1476,7 @@
    "spriteSourceSize": {
     "x": 124,
     "y": 93,
-    "w": 182,
+    "w": 181,
     "h": 115
    },
    "sourceSize": {
@@ -1490,8 +1490,8 @@
   },
   "war_chariot@sun_chariot_die_02": {
    "frame": {
-    "x": 1316,
-    "y": 470,
+    "x": 1479,
+    "y": 156,
     "w": 229,
     "h": 136
    },
@@ -1514,18 +1514,18 @@
   },
   "war_chariot@sun_chariot_die_02_team": {
    "frame": {
-    "x": 2525,
-    "y": 494,
-    "w": 212,
-    "h": 101
+    "x": 2555,
+    "y": 244,
+    "w": 213,
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
     "y": 108,
-    "w": 212,
-    "h": 101
+    "w": 213,
+    "h": 102
    },
    "sourceSize": {
     "w": 402,
@@ -1538,8 +1538,8 @@
   },
   "war_chariot@sun_chariot_die_03": {
    "frame": {
-    "x": 2689,
-    "y": 116,
+    "x": 2835,
+    "y": 115,
     "w": 232,
     "h": 105
    },
@@ -1562,9 +1562,9 @@
   },
   "war_chariot@sun_chariot_die_03_team": {
    "frame": {
-    "x": 2783,
-    "y": 386,
-    "w": 225,
+    "x": 2744,
+    "y": 422,
+    "w": 223,
     "h": 72
    },
    "rotated": false,
@@ -1572,7 +1572,7 @@
    "spriteSourceSize": {
     "x": 98,
     "y": 149,
-    "w": 225,
+    "w": 223,
     "h": 72
    },
    "sourceSize": {
@@ -1586,7 +1586,7 @@
   },
   "war_chariot@sun_chariot_die_04": {
    "frame": {
-    "x": 2823,
+    "x": 2835,
     "y": 2,
     "w": 235,
     "h": 109
@@ -1610,8 +1610,8 @@
   },
   "war_chariot@sun_chariot_die_04_team": {
    "frame": {
-    "x": 2729,
-    "y": 225,
+    "x": 1687,
+    "y": 565,
     "w": 217,
     "h": 80
    },
@@ -1634,8 +1634,8 @@
   },
   "war_chariot@sun_chariot_die_05": {
    "frame": {
-    "x": 2547,
-    "y": 351,
+    "x": 2772,
+    "y": 224,
     "w": 232,
     "h": 97
    },
@@ -1658,8 +1658,8 @@
   },
   "war_chariot@sun_chariot_die_05_team": {
    "frame": {
-    "x": 2783,
-    "y": 309,
+    "x": 2522,
+    "y": 572,
     "w": 221,
     "h": 73
    },
@@ -1682,8 +1682,8 @@
   },
   "war_chariot@sun_chariot_die_06": {
    "frame": {
-    "x": 1549,
-    "y": 556,
+    "x": 2772,
+    "y": 325,
     "w": 231,
     "h": 93
    },
@@ -1706,9 +1706,9 @@
   },
   "war_chariot@sun_chariot_die_06_team": {
    "frame": {
-    "x": 2741,
-    "y": 462,
-    "w": 229,
+    "x": 2744,
+    "y": 498,
+    "w": 227,
     "h": 69
    },
    "rotated": false,
@@ -1716,7 +1716,7 @@
    "spriteSourceSize": {
     "x": 96,
     "y": 154,
-    "w": 229,
+    "w": 227,
     "h": 69
    },
    "sourceSize": {
@@ -1730,8 +1730,8 @@
   },
   "war_chariot@sun_chariot_die_07": {
    "frame": {
-    "x": 1784,
-    "y": 556,
+    "x": 2522,
+    "y": 480,
     "w": 218,
     "h": 88
    },
@@ -1754,8 +1754,8 @@
   },
   "war_chariot@sun_chariot_die_07_team": {
    "frame": {
-    "x": 2741,
-    "y": 535,
+    "x": 2747,
+    "y": 571,
     "w": 211,
     "h": 65
    },
@@ -1892,7 +1892,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 3072,
-   "h": 652
+   "h": 648
   },
   "scale": "1.5",
   "ageborn": {
@@ -1942,6 +1942,32 @@
      ],
      "durationMs": 900,
      "anchorsLu": {
+      "poleTip": [
+       [
+        71.2,
+        21.5
+       ],
+       [
+        71.2,
+        21.3
+       ],
+       [
+        71.3,
+        20.8
+       ],
+       [
+        71.3,
+        20.5
+       ],
+       [
+        71.3,
+        20.8
+       ],
+       [
+        71.2,
+        21.3
+       ]
+      ],
       "bladeTip": [
        [
         1.2,
@@ -1998,6 +2024,40 @@
      "gaitSpeedLuPerS": 81.2,
      "cycleMs": 576,
      "anchorsLu": {
+      "poleTip": [
+       [
+        71.1,
+        23.2
+       ],
+       [
+        70.9,
+        25.0
+       ],
+       [
+        71.4,
+        18.8
+       ],
+       [
+        71.5,
+        17.0
+       ],
+       [
+        71.1,
+        23.2
+       ],
+       [
+        70.9,
+        25.0
+       ],
+       [
+        71.4,
+        18.8
+       ],
+       [
+        71.5,
+        17.0
+       ]
+      ],
       "bladeTip": [
        [
         1.4,
@@ -2108,6 +2168,48 @@
      "impactAt": 0.4634,
      "smearFrame": 4,
      "anchorsLu": {
+      "poleTip": [
+       [
+        71.5,
+        20.5
+       ],
+       [
+        72.2,
+        17.8
+       ],
+       [
+        64.8,
+        18.5
+       ],
+       [
+        62.2,
+        17.4
+       ],
+       [
+        71.2,
+        27.6
+       ],
+       [
+        78.4,
+        32.3
+       ],
+       [
+        91.6,
+        28.6
+       ],
+       [
+        87.4,
+        24.7
+       ],
+       [
+        78.6,
+        20.8
+       ],
+       [
+        73.2,
+        20.9
+       ]
+      ],
       "bladeTip": [
        [
         -14.4,
@@ -2172,6 +2274,28 @@
      ],
      "durationMs": 310,
      "anchorsLu": {
+      "poleTip": [
+       [
+        72.2,
+        21.4
+       ],
+       [
+        63.4,
+        24.5
+       ],
+       [
+        70.7,
+        22.7
+       ],
+       [
+        70.5,
+        20.3
+       ],
+       [
+        71.0,
+        21.2
+       ]
+      ],
       "bladeTip": [
        [
         0.7,
@@ -2251,6 +2375,40 @@
      ],
      "hideUnitAtMs": 970,
      "anchorsLu": {
+      "poleTip": [
+       [
+        64.3,
+        29.3
+       ],
+       [
+        58.8,
+        38.0
+       ],
+       [
+        55.0,
+        45.2
+       ],
+       [
+        55.0,
+        25.0
+       ],
+       [
+        54.7,
+        30.7
+       ],
+       [
+        55.3,
+        22.3
+       ],
+       [
+        55.2,
+        21.4
+       ],
+       [
+        51.5,
+        20.2
+       ]
+      ],
       "bladeTip": [
        [
         -56.9,
