@@ -2,8 +2,8 @@
  "frames": {
   "war_elephant_attack_b_01": {
    "frame": {
-    "x": 465,
-    "y": 155,
+    "x": 327,
+    "y": 151,
     "w": 124,
     "h": 145
    },
@@ -26,9 +26,9 @@
   },
   "war_elephant_attack_b_01_team": {
    "frame": {
-    "x": 348,
-    "y": 452,
-    "w": 79,
+    "x": 555,
+    "y": 368,
+    "w": 80,
     "h": 62
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 124,
     "y": 101,
-    "w": 79,
+    "w": 80,
     "h": 62
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "war_elephant_attack_b_02": {
    "frame": {
-    "x": 385,
-    "y": 304,
+    "x": 265,
+    "y": 452,
     "w": 122,
     "h": 141
    },
@@ -74,8 +74,8 @@
   },
   "war_elephant_attack_b_02_team": {
    "frame": {
-    "x": 176,
-    "y": 452,
+    "x": 472,
+    "y": 300,
     "w": 82,
     "h": 62
    },
@@ -98,8 +98,8 @@
   },
   "war_elephant_attack_b_03": {
    "frame": {
-    "x": 511,
-    "y": 304,
+    "x": 134,
+    "y": 453,
     "w": 127,
     "h": 137
    },
@@ -122,8 +122,8 @@
   },
   "war_elephant_attack_b_03_team": {
    "frame": {
-    "x": 88,
-    "y": 452,
+    "x": 384,
+    "y": 300,
     "w": 84,
     "h": 62
    },
@@ -146,9 +146,9 @@
   },
   "war_elephant_attack_b_04": {
    "frame": {
-    "x": 130,
+    "x": 260,
     "y": 304,
-    "w": 119,
+    "w": 120,
     "h": 144
    },
    "rotated": false,
@@ -156,7 +156,7 @@
    "spriteSourceSize": {
     "x": 116,
     "y": 84,
-    "w": 119,
+    "w": 120,
     "h": 144
    },
    "sourceSize": {
@@ -170,17 +170,17 @@
   },
   "war_elephant_attack_b_04_team": {
    "frame": {
-    "x": 2,
-    "y": 452,
-    "w": 82,
+    "x": 384,
+    "y": 366,
+    "w": 81,
     "h": 63
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 125,
+    "x": 126,
     "y": 100,
-    "w": 82,
+    "w": 81,
     "h": 63
    },
    "sourceSize": {
@@ -194,8 +194,8 @@
   },
   "war_elephant_attack_b_05": {
    "frame": {
-    "x": 253,
-    "y": 304,
+    "x": 2,
+    "y": 451,
     "w": 128,
     "h": 143
    },
@@ -218,17 +218,17 @@
   },
   "war_elephant_attack_b_05_team": {
    "frame": {
-    "x": 513,
-    "y": 452,
-    "w": 81,
+    "x": 469,
+    "y": 432,
+    "w": 80,
     "h": 61
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 125,
+    "x": 126,
     "y": 103,
-    "w": 81,
+    "w": 80,
     "h": 61
    },
    "sourceSize": {
@@ -242,8 +242,8 @@
   },
   "war_elephant_attack_b_06": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 168,
+    "y": 151,
     "w": 155,
     "h": 149
    },
@@ -266,8 +266,8 @@
   },
   "war_elephant_attack_b_06_team": {
    "frame": {
-    "x": 642,
-    "y": 304,
+    "x": 558,
+    "y": 300,
     "w": 78,
     "h": 64
    },
@@ -290,8 +290,8 @@
   },
   "war_elephant_attack_b_07": {
    "frame": {
-    "x": 168,
-    "y": 155,
+    "x": 334,
+    "y": 2,
     "w": 161,
     "h": 145
    },
@@ -314,8 +314,8 @@
   },
   "war_elephant_attack_b_07_team": {
    "frame": {
-    "x": 2,
-    "y": 519,
+    "x": 473,
+    "y": 564,
     "w": 79,
     "h": 61
    },
@@ -338,7 +338,7 @@
   },
   "war_elephant_attack_c_01": {
    "frame": {
-    "x": 161,
+    "x": 2,
     "y": 2,
     "w": 162,
     "h": 146
@@ -362,8 +362,8 @@
   },
   "war_elephant_attack_c_01_team": {
    "frame": {
-    "x": 168,
-    "y": 519,
+    "x": 556,
+    "y": 564,
     "w": 78,
     "h": 61
    },
@@ -386,8 +386,8 @@
   },
   "war_elephant_attack_c_02": {
    "frame": {
-    "x": 327,
-    "y": 2,
+    "x": 2,
+    "y": 152,
     "w": 151,
     "h": 146
    },
@@ -410,8 +410,8 @@
   },
   "war_elephant_attack_c_02_team": {
    "frame": {
-    "x": 250,
-    "y": 519,
+    "x": 558,
+    "y": 499,
     "w": 78,
     "h": 61
    },
@@ -434,9 +434,9 @@
   },
   "war_elephant_attack_c_03": {
    "frame": {
-    "x": 482,
+    "x": 499,
     "y": 2,
-    "w": 140,
+    "w": 139,
     "h": 146
    },
    "rotated": false,
@@ -444,7 +444,7 @@
    "spriteSourceSize": {
     "x": 106,
     "y": 80,
-    "w": 140,
+    "w": 139,
     "h": 146
    },
    "sourceSize": {
@@ -458,8 +458,8 @@
   },
   "war_elephant_attack_c_03_team": {
    "frame": {
-    "x": 431,
-    "y": 452,
+    "x": 391,
+    "y": 564,
     "w": 78,
     "h": 62
    },
@@ -482,8 +482,8 @@
   },
   "war_elephant_attack_c_04": {
    "frame": {
-    "x": 2,
-    "y": 155,
+    "x": 168,
+    "y": 2,
     "w": 162,
     "h": 145
    },
@@ -506,8 +506,8 @@
   },
   "war_elephant_attack_c_04_team": {
    "frame": {
-    "x": 85,
-    "y": 519,
+    "x": 475,
+    "y": 499,
     "w": 79,
     "h": 61
    },
@@ -530,8 +530,8 @@
   },
   "war_elephant_attack_c_05": {
    "frame": {
-    "x": 333,
-    "y": 155,
+    "x": 2,
+    "y": 302,
     "w": 128,
     "h": 145
    },
@@ -554,8 +554,8 @@
   },
   "war_elephant_attack_c_05_team": {
    "frame": {
-    "x": 683,
-    "y": 452,
+    "x": 553,
+    "y": 434,
     "w": 80,
     "h": 61
    },
@@ -578,8 +578,8 @@
   },
   "war_elephant_attack_c_06": {
    "frame": {
-    "x": 2,
-    "y": 304,
+    "x": 455,
+    "y": 152,
     "w": 124,
     "h": 144
    },
@@ -602,8 +602,8 @@
   },
   "war_elephant_attack_c_06_team": {
    "frame": {
-    "x": 262,
-    "y": 452,
+    "x": 469,
+    "y": 366,
     "w": 82,
     "h": 62
    },
@@ -626,8 +626,8 @@
   },
   "war_elephant_attack_c_07": {
    "frame": {
-    "x": 593,
-    "y": 155,
+    "x": 134,
+    "y": 304,
     "w": 122,
     "h": 145
    },
@@ -650,17 +650,17 @@
   },
   "war_elephant_attack_c_07_team": {
    "frame": {
-    "x": 598,
-    "y": 452,
-    "w": 81,
+    "x": 391,
+    "y": 499,
+    "w": 80,
     "h": 61
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 126,
+    "x": 127,
     "y": 102,
-    "w": 81,
+    "w": 80,
     "h": 61
    },
    "sourceSize": {
@@ -737,8 +737,8 @@
   "image": "war_elephant.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 584
+   "w": 640,
+   "h": 628
   },
   "scale": "1.5",
   "ageborn": {

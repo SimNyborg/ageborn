@@ -2,8 +2,8 @@
  "frames": {
   "tragic_chorus_attack_b_02": {
    "frame": {
-    "x": 2,
-    "y": 223,
+    "x": 311,
+    "y": 2,
     "w": 128,
     "h": 192
    },
@@ -26,18 +26,18 @@
   },
   "tragic_chorus_attack_b_02_team": {
    "frame": {
-    "x": 344,
-    "y": 419,
-    "w": 90,
-    "h": 98
+    "x": 183,
+    "y": 382,
+    "w": 88,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 213,
     "y": 258,
-    "w": 90,
-    "h": 98
+    "w": 88,
+    "h": 97
    },
    "sourceSize": {
     "w": 496,
@@ -50,8 +50,8 @@
   },
   "tragic_chorus_attack_b_03": {
    "frame": {
-    "x": 287,
-    "y": 223,
+    "x": 2,
+    "y": 204,
     "w": 155,
     "h": 163
    },
@@ -74,18 +74,18 @@
   },
   "tragic_chorus_attack_b_03_team": {
    "frame": {
-    "x": 251,
-    "y": 419,
-    "w": 89,
-    "h": 100
+    "x": 91,
+    "y": 382,
+    "w": 88,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 217,
-    "y": 259,
-    "w": 89,
-    "h": 100
+    "x": 218,
+    "y": 260,
+    "w": 88,
+    "h": 98
    },
    "sourceSize": {
     "w": 496,
@@ -98,8 +98,8 @@
   },
   "tragic_chorus_attack_b_04": {
    "frame": {
-    "x": 134,
-    "y": 223,
+    "x": 158,
+    "y": 2,
     "w": 149,
     "h": 166
    },
@@ -123,17 +123,17 @@
   "tragic_chorus_attack_b_04_team": {
    "frame": {
     "x": 2,
-    "y": 419,
-    "w": 82,
-    "h": 104
+    "y": 382,
+    "w": 85,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 224,
     "y": 261,
-    "w": 82,
-    "h": 104
+    "w": 85,
+    "h": 105
    },
    "sourceSize": {
     "w": 496,
@@ -146,8 +146,8 @@
   },
   "tragic_chorus_attack_b_05": {
    "frame": {
-    "x": 112,
-    "y": 2,
+    "x": 161,
+    "y": 172,
     "w": 112,
     "h": 206
    },
@@ -170,17 +170,17 @@
   },
   "tragic_chorus_attack_b_05_team": {
    "frame": {
-    "x": 88,
-    "y": 419,
-    "w": 79,
+    "x": 387,
+    "y": 296,
+    "w": 78,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 226,
+    "x": 227,
     "y": 254,
-    "w": 79,
+    "w": 78,
     "h": 102
    },
    "sourceSize": {
@@ -194,8 +194,8 @@
   },
   "tragic_chorus_attack_b_06": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 277,
+    "y": 198,
     "w": 106,
     "h": 217
    },
@@ -218,10 +218,10 @@
   },
   "tragic_chorus_attack_b_06_team": {
    "frame": {
-    "x": 171,
-    "y": 419,
+    "x": 387,
+    "y": 402,
     "w": 76,
-    "h": 101
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 228,
     "y": 252,
     "w": 76,
-    "h": 101
+    "h": 100
    },
    "sourceSize": {
     "w": 496,
@@ -242,7 +242,7 @@
   },
   "tragic_chorus_attack_b_07": {
    "frame": {
-    "x": 228,
+    "x": 2,
     "y": 2,
     "w": 152,
     "h": 198
@@ -266,18 +266,18 @@
   },
   "tragic_chorus_attack_b_07_team": {
    "frame": {
-    "x": 2,
-    "y": 527,
+    "x": 387,
+    "y": 198,
     "w": 85,
-    "h": 95
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 261,
+    "y": 262,
     "w": 85,
-    "h": 95
+    "h": 94
    },
    "sourceSize": {
     "w": 496,
@@ -325,8 +325,8 @@
   "image": "tragic_chorus.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 448,
-   "h": 624
+   "w": 512,
+   "h": 504
   },
   "scale": "3",
   "ageborn": {

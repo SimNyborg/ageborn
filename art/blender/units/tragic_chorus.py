@@ -25,8 +25,11 @@ Animation (cartoon kit v2):
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -44,6 +47,50 @@ NO_RETIME = True
 MASK = "#F1EBDD"
 MASK_DK = "#CFC6B2"
 WIG = "#463A33"
+MOUTH_HOLE = "#3C2626"
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2. The team himation and the drape hang in folds (they were flat slabs: one flat value each)
+# with a team-dark border along the himation's lower edge (the big team zone in two tones), two folds down the
+# plum robe's back, pale dots along the team hem band (a woven border).
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", MASK: "ceramic", MASK_DK: "ceramic", WIG: "fur", B.PLUM: "cloth",
+                  B.PLUM_DK: "cloth", _FAR(B.PLUM_DK): "cloth", B.LINEN: "cloth", _FAR(B.LINEN): "cloth",
+                  B.LEATHER: "leather", _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather",
+                  _FAR(B.LEATHER_DK): "leather", B.SAND: "cloth", B.SAND_LT: "cloth", "team": "cloth"}
+
+
+def _pw(pts):
+    """A piecewise-linear function of x through the points [(x, z)] (x increasing)."""
+    def f(x):
+        for (xa, za), (xb, zb) in zip(pts, pts[1:]):
+            if x <= xb + 1e-6:
+                return za + (zb - za) * (x - xa) / (xb - xa)
+        return pts[-1][1]
+    return f
+
+
+# the himation over the near shoulder (the shipped slab's outline, x-monotone) and its diagonal folds, which
+# run along the drape from the near shoulder down to the far hip
+HIM_TOP = _pw([(-10.0, 40.0), (6.0, 40.0), (12.0, 22.0)])
+HIM_BOTTOM = _pw([(-10.0, 40.0), (-4.0, 22.0), (2.0, 8.0), (10.0, 10.0), (12.0, 22.0)])
+
+
+def _him_front(x, z):
+    u = 2 * math.pi * (0.832 * x + 0.555 * z)
+    return -10.8 + 0.55 * (0.75 * math.sin(u / 5.6 + 0.4) + 0.25 * math.sin(u / 3.1 + 1.7))
+
+
+DRAPE_TOP = _pw([(-15.0, 14.0), (-11.0, 39.0), (-6.0, 40.0)])
+DRAPE_BOTTOM = _pw([(-15.0, 14.0), (-10.0, 12.0), (-7.0, 24.0), (-6.0, 40.0)])
+
+
+def _drape_front(x, z):
+    u = 2 * math.pi * (x + 0.12 * z)
+    return 4.9 + 0.5 * math.sin(u / 4.4 + 0.9)
 
 
 def build(rig):
@@ -53,18 +100,33 @@ def build(rig):
     B.sandal_legs_v3(rig, greaves=False, skin=B.LINEN, wraps=B.PLUM_DK)
     # plum robe, shortened to the knee for walk v3 (the hem 11 lu above the soles, ANIM_SPEC G2), a team
     # himation over the near shoulder, a team hem band; the skirt kicks with the knees
-    g = Geo().blob((0.3, 0, 28.0), (10.4, 9.6, 11.6), p=2.4, taper=(1.1, 0.92))
+    robe, robe_kw = ((0.3, 0, 28.0), (10.4, 9.6, 11.6)), {"p": 2.4, "taper": (1.1, 0.92)}
+    g = Geo().blob(*robe, **robe_kw)
     rig.part("torso", g, B.PLUM)
+    g = KD.ridge(*robe, [(-8.2, 36.5), (-8.8, 30.0), (-9.0, 23.5)], [0.7, 1.0, 1.1], **robe_kw)   # a back fold
+    rig.part("torso", g, B.PLUM, outline=0)
     rig.secondary("hem", "hips", (0.5, 0, 16.5), (0.5, 0, 8.0), max_deg=14, gain=1.2)
     rig.rest_offset["hem"] = (0, 0, B.V3_LIFT)
-    g = Geo().blob((0.6, 0, 14.0), (12.4, 11.4, 5.4), p=2.4, taper=(1.3, 0.94))
+    skirt, skirt_kw = ((0.6, 0, 14.0), (12.4, 11.4, 5.4)), {"p": 2.4, "taper": (1.3, 0.94)}
+    g = Geo().blob(*skirt, **skirt_kw)
     rig.part("hem", g, B.PLUM)
+    g = KD.ridge(*skirt, [(-7.4, 18.6), (-8.4, 15.4), (-9.2, 12.9)], [0.9, 1.15, 1.2], **skirt_kw)  # folds
+    KD.ridge(*skirt, [(-3.4, 18.4), (-3.8, 15.4), (-4.2, 12.9)], [0.85, 1.1, 1.15], geo=g, **skirt_kw)
+    rig.part("hem", g, B.PLUM, outline=0)
     g = Geo().blob((0.6, 0, 10.0), (13.4, 12.3, 2.2), p=3.0)
     rig.part("hem", g, team=True, outline=0.6)
-    g = Geo().slab([(-10.0, 40.0), (6.0, 40.0), (12.0, 22.0), (10.0, 10.0), (2.0, 8.0), (-4.0, 22.0)], -9.6, 2.4)
+    g = Geo()                                   # pale dots woven along the team hem band
+    for k in range(13):
+        a = math.pi * (0.5 + 1.9 * k / 12)
+        g.blob((0.6 + 13.45 * math.cos(a), 12.35 * math.sin(a), 10.0), (0.85, 0.85, 0.85), p=3.0)
+    rig.part("hem", g, B.SAND_LT, outline=0.4)
+    g = KD.sheet(-9.9, 11.9, HIM_TOP, HIM_BOTTOM, _him_front, 2.4)     # the himation in folds
     rig.part("torso", g, team=True, outline=0.8)
+    g = KD.sheet(-9.9, 11.9, lambda x: min(HIM_TOP(x), HIM_BOTTOM(x) + 2.8), HIM_BOTTOM,
+                 lambda x, z: _him_front(x, z) - 0.25, 0.5, ny=3)        # its team-dark border (2.8 lu)
+    look.team_part(rig, "torso", g, outline=0)
     rig.secondary("drape", "torso", (-8.0, 2.0, 38.0), (-14.0, 4.0, 14.0), max_deg=16, gain=1.2)
-    g = Geo().slab([(-6.0, 40.0), (-11.0, 39.0), (-15.0, 14.0), (-10.0, 12.0), (-7.0, 24.0)], 6.0, 2.2)
+    g = KD.sheet(-14.9, -6.1, DRAPE_TOP, DRAPE_BOTTOM, _drape_front, 2.2, nx=24)
     rig.part("drape", g, team=True, outline=0.8)
     g = Geo().blob((0.4, 0, 21.0), (11.0, 10.1, 1.6), p=3.2)
     rig.part("torso", g, B.SAND, outline=0.5)
@@ -93,6 +155,18 @@ def build(rig):
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.LINEN, hand=B.SKIN, r0=4.2, r1=3.8)
     rig.track("muzzle", "head", (16.0, -2.0, 43.0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Bronze soldier; never on the face, the mask or skin): the team
+    himation (the largest team surface), the plum skirt, the team drape behind; a strip torn from the team hem
+    band."""
+    rig.damage_spot_at("himation", "torso", 4.0, 18.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("robe", "hem", -7.0, 17.0, 5.5, "cloth", fill=B.PLUM)
+    rig.damage_spot_at("drape", "drape", -11.5, 30.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hem", -6.0, 9.0, 9.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
