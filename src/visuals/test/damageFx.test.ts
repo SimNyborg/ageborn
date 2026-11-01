@@ -6,13 +6,14 @@
 import { Container, Sprite } from 'pixi.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EffectView } from '@/contracts/art';
-import type { PartBaker } from '../bake';
+import { PartBaker } from '../bake';
 import { effectColorRule } from '../checks';
 import { DAMAGE_FX_IDS, liveDamagePieces, MAX_PIECES, PIECE_FADE_MS, PIECE_LIE_MS } from '../damage/fx';
 import { DAMAGE_FX_PARTS, DAMAGE_STRIP_PARTS } from '../damage/kit';
 import { markParts } from '../damage/marks';
-import { warmDamageKit } from '../damage/unitDamage';
+import { bakeDamageKit, damageKitParts } from '../damage/unitDamage';
 import { damageFxVariants } from '../effects/recipes';
+import { FX_ZONES } from '../effects/sprites';
 import { MANIFEST } from '../manifest';
 import { getPart } from '../parts/registry';
 import { createArtProvider } from '../provider';
@@ -129,23 +130,100 @@ describe('fx.dmg_burst (design 3.4)', () => {
   });
 });
 
-describe('the kit bakes ahead of the first step', () => {
-  it('warmDamageKit bakes every mark and strip once per baker, one part per idle moment', () => {
+describe('the kit bakes ahead of the battle (W0: no part bakes and no page uploads mid-battle)', () => {
+  it('bakeDamageKit bakes every mark, strip and step piece once per baker in idle slices, ahead of use, and uploads once at the end', async () => {
     vi.useFakeTimers();
     try {
       const got: string[] = [];
-      let flushed = 0;
-      const baker = { enabled: true, has: () => false, get: (p: { id?: string }) => void got.push(p.id ?? '?'), flush: () => void flushed++ } as unknown as PartBaker;
-      warmDamageKit(baker);
-      warmDamageKit(baker);
+      const ahead: boolean[] = [];
+      let uploads = 0;
+      // each bake takes 2 ms of the slice's time (the slice bakes while it has time left)
+      const bake = (p: { id?: string }, _z: unknown, _t: unknown, o?: { ahead?: boolean }): void => {
+        got.push(p.id ?? '?');
+        ahead.push(o?.ahead === true);
+        vi.setSystemTime(Date.now() + 2);
+      };
+      const baker = { enabled: true, has: (p: { id?: string }) => got.includes(p.id ?? '?'), get: bake, flushAll: () => void uploads++ } as unknown as PartBaker;
+      const first = bakeDamageKit(baker);
+      expect(first).not.toBeNull();
+      // asked again while it bakes: the same promise, nothing baked twice
+      expect(bakeDamageKit(baker)).toBe(first);
       expect(got).toEqual([]);
-      vi.advanceTimersByTime(60);
-      expect(got.length).toBe(1);
-      vi.advanceTimersByTime(60 * 100);
-      expect(got.length).toBe(markParts().length + DAMAGE_STRIP_PARTS.length);
-      expect(flushed).toBe(1);
+      await vi.advanceTimersByTimeAsync(20);
+      // a few parts in the first slice, not the whole kit, and no upload yet
+      expect(got.length).toBeGreaterThan(0);
+      expect(got.length).toBeLessThan(damageKitParts().length);
+      expect(uploads).toBe(0);
+      await vi.advanceTimersByTimeAsync(16 * 200);
+      await first;
+      expect(got.sort()).toEqual(damageKitParts().sort());
+      expect(new Set(got).size).toBe(got.length);
+      expect(ahead.every((a) => a)).toBe(true);
+      expect(damageKitParts()).toEqual(expect.arrayContaining([...markParts(), ...DAMAGE_STRIP_PARTS, 'fx.p.dmgFlame', 'fx.p.dmgThread']));
+      // one upload, at the end; once baked, nothing more to wait for
+      expect(uploads).toBe(1);
+      expect(bakeDamageKit(baker)).toBeNull();
     } finally {
       vi.useRealTimers();
+    }
+  });
+
+  it("the baker: parts baked ahead leave their page to the batch's last upload, and a view that gets one has it uploaded", () => {
+    vi.stubGlobal('Path2D', class {
+      addPath(): void {}
+    });
+    try {
+      // a canvas stand-in for Node: any 2D call is a no-op
+      const ctx = new Proxy({}, { get: () => () => undefined, set: () => true });
+      const canvasFactory = (w: number, h: number): HTMLCanvasElement => ({ width: w, height: h, getContext: () => ctx }) as unknown as HTMLCanvasElement;
+      const baker = new PartBaker({ pxPerLu: 1, canvasFactory });
+      baker.seal();
+      const [m1, m2, m3, m4] = markParts().map((id) => getPart(id)!);
+      const plain = getPart('fx.p.dust')!;
+      expect(m1 && m2 && m3 && m4 && plain).toBeTruthy();
+      let uploads = 0;
+      const a = baker.get(m1!, FX_ZONES, 0, { ahead: true });
+      const page = a.main.source;
+      const up = page.update.bind(page);
+      page.update = () => {
+        uploads++;
+        up();
+      };
+      // the views' flushes while the batch bakes upload nothing of it
+      baker.flush();
+      baker.get(m2!, FX_ZONES, 0, { ahead: true });
+      baker.flush();
+      expect(uploads).toBe(0);
+      // a part the view already has (on the GPU) does not upload the page either
+      expect(baker.get(m1!, FX_ZONES, 0, { ahead: true })).toBe(a);
+      baker.flush();
+      expect(uploads).toBe(0);
+      // the end of the batch: one upload; nothing left to upload after it
+      baker.flushAll();
+      expect(uploads).toBe(1);
+      baker.get(m1!, FX_ZONES);
+      baker.flush();
+      expect(uploads).toBe(1);
+      // a plain bake (a view waiting for it) uploads at the view's flush, as before
+      expect(baker.get(plain, FX_ZONES).main.source).toBe(page);
+      baker.flush();
+      expect(uploads).toBe(2);
+      // a view that gets a part baked ahead before the batch's end has its page uploaded by its flush
+      baker.get(m3!, FX_ZONES, 0, { ahead: true });
+      baker.flush();
+      expect(uploads).toBe(2);
+      baker.get(m3!, FX_ZONES);
+      baker.flush();
+      expect(uploads).toBe(3);
+      // a view getting a part that is on the GPU already does not upload the page for later parts baked ahead
+      baker.get(m4!, FX_ZONES, 0, { ahead: true });
+      baker.get(m1!, FX_ZONES);
+      baker.flush();
+      expect(uploads).toBe(3);
+      baker.flushAll();
+      expect(uploads).toBe(4);
+    } finally {
+      vi.unstubAllGlobals();
     }
   });
 });

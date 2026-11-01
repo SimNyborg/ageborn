@@ -215,7 +215,8 @@ describe('fx.bits (A4)', () => {
     try {
       const baked: string[] = [];
       let flushes = 0;
-      const fake = { enabled: true, has: () => false, get: (p: { id: string }) => baked.push(p.id), flush: () => flushes++ } as unknown as PartBaker;
+      // baked ahead of use and uploaded once, at the end (the battle's flushes between the steps leave the page alone)
+      const fake = { enabled: true, has: () => false, get: (p: { id: string }, _z: unknown, _t: unknown, o?: { ahead?: boolean }) => o?.ahead === true && baked.push(p.id), flushAll: () => flushes++ } as unknown as PartBaker;
       warmBits(fake, 2);
       warmBits(fake, 2);
       expect(baked).toEqual([]);

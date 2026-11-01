@@ -22,7 +22,7 @@ import { markSizeLu } from './marks';
 import { DamageModel, defaultMat, MARK_FADE_IN_MS, MARK_POP_MS, MEND_FADE_MS, type DamageStep, type PlacedMark } from './model';
 import { WearyClock, type WearyPose } from './motion';
 import { burns, LITE_MAX_MARKS, mixRgb, smallBody, stageTint, STRIP_DULL, STRIP_DUST, STRIP_SMALL_SCALE } from './stage';
-import { DAMAGE_STRIP_PARTS } from './kit';
+import { DAMAGE_FX_PARTS, DAMAGE_STRIP_PARTS } from './kit';
 import { markParts } from './marks';
 import type { BlowKind, DamageEmitter, DamageFamily, DamageStage, DamageStepEvent, DamageUnitData, EmitKind, SpotFrame } from './types';
 
@@ -79,33 +79,65 @@ class PartNode {
   }
 }
 
-/** Bakers whose kit is baked or queued. */
-const KIT_WARMED = new WeakSet<PartBaker>();
+/** The damage kit's bake per baker: pending while it bakes, then done (`KIT_DONE`). */
+const KIT_BAKES = new WeakMap<PartBaker, Promise<void>>();
+const KIT_DONE = new WeakSet<PartBaker>();
 
-/** Runs `fn` when the browser is idle (a frame has time left), else soon. */
-function whenIdle(fn: () => void): void {
-  const ric = (globalThis as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
-  if (ric) ric(fn, { timeout: 2000 });
-  else setTimeout(fn, 50);
+/** The browser's idle callback with the time left in it (ms), else a timer with a fixed slice. */
+function whenIdle(fn: (left: () => number) => void): void {
+  const ric = (globalThis as { requestIdleCallback?: (cb: (d: { timeRemaining(): number }) => void, o?: { timeout: number }) => number }).requestIdleCallback;
+  if (ric) ric((d) => fn(() => d.timeRemaining()), { timeout: 500 });
+  else {
+    setTimeout(() => {
+      const t0 = Date.now();
+      fn(() => KIT_SLICE_MS - (Date.now() - t0));
+    }, 16);
+  }
+}
+
+/** At most this long of baking in one idle slice (ms). */
+const KIT_SLICE_MS = 8;
+
+/** Every part of the damage kit: the marks and strips the units wear, and the step's pieces and flames. */
+export function damageKitParts(): string[] {
+  return [...markParts(), ...DAMAGE_STRIP_PARTS, ...DAMAGE_FX_PARTS];
 }
 
 /**
- * Bakes the damage kit's marks and strips ahead of the battle's first step, one part per idle callback (a unit view
- * with marks calls it on its first blow, as `warmBits` does for the death bits), so no step's frame bakes a part.
- * Once per baker.
+ * Bakes the whole damage kit once per baker before a battle (VS, the battle's loading: the provider's
+ * `damageKitReady`), with `extra` (the sprites of the damage effects' recipes), a few parts per idle slice, ahead of use
+ * (the views' flushes in between leave its pages alone), and uploads its pages once, at the end: no part bakes and no
+ * page uploads in the battle for damage (W0: every part baked on first use uploads its whole 512 px page again, and the
+ * damage effects' flushes doubled a war's page uploads; repeated canvas uploads are also a known WebKit GPU-memory
+ * risk). Resolves when baked; null once it has been. A part a view asks for before (a battle that could not wait) bakes
+ * on the spot, as before; a kit part a view gets while the kit bakes has its page uploaded by that view's flush.
  */
-export function warmDamageKit(baker: PartBaker): void {
-  if (!baker.enabled || KIT_WARMED.has(baker)) return;
-  KIT_WARMED.add(baker);
-  const todo = [...markParts(), ...DAMAGE_STRIP_PARTS];
-  const step = (): void => {
-    const id = todo.shift();
-    const p = id !== undefined ? getPart(id) : undefined;
-    if (p && !baker.has(p, FX_ZONES)) baker.get(p, FX_ZONES);
-    if (todo.length > 0) whenIdle(step);
-    else baker.flush();
-  };
-  whenIdle(step);
+export function bakeDamageKit(baker: PartBaker, extra: readonly string[] = []): Promise<void> | null {
+  if (!baker.enabled || KIT_DONE.has(baker)) return null;
+  const had = KIT_BAKES.get(baker);
+  if (had) return had;
+  const todo = [...new Set([...damageKitParts(), ...extra])];
+  const p = new Promise<void>((resolve) => {
+    const step = (left: () => number): void => {
+      // at least one part a slice, then while the slice has time
+      do {
+        const id = todo.shift();
+        const part = id !== undefined ? getPart(id) : undefined;
+        if (part && !baker.has(part, FX_ZONES)) baker.get(part, FX_ZONES, 0, { ahead: true });
+      } while (todo.length > 0 && left() > 1);
+      if (todo.length > 0) {
+        whenIdle(step);
+        return;
+      }
+      KIT_DONE.add(baker);
+      // the one upload of the kit's pages
+      baker.flushAll();
+      resolve();
+    };
+    whenIdle(step);
+  });
+  KIT_BAKES.set(baker, p);
+  return p;
 }
 
 
@@ -209,8 +241,8 @@ export class UnitDamage {
 
   noteBlow(kind: BlowKind | null, effective = false): void {
     this.model.noteBlow(kind, effective);
-    // the battle's first blow on a unit with marks bakes the kit in idle time (units without spots never need it)
-    if (this.o.after && !this.o.noSpots && (this.entry?.spots?.length ?? 0) > 0) warmDamageKit(this.o.baker);
+    // a battle that did not bake the kit up front (no VS, no wait): it bakes now in idle time, once
+    if (this.o.after && !this.o.noSpots && (this.entry?.spots?.length ?? 0) > 0) void bakeDamageKit(this.o.baker);
   }
 
   onStep(cb: (e: DamageStepEvent) => void): void {

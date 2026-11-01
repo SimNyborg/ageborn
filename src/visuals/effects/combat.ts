@@ -413,9 +413,10 @@ export function warmBits(baker: PartBaker, age: number): void {
   const step = (): void => {
     const id = todo.shift();
     const p = id !== undefined ? getPart(id) : undefined;
-    if (p && !baker.has(p, FX_ZONES)) baker.get(p, FX_ZONES);
+    // ahead of use: the battle's flushes between the steps leave the page alone; it uploads once, at the end (W0)
+    if (p && !baker.has(p, FX_ZONES)) baker.get(p, FX_ZONES, 0, { ahead: true });
     if (todo.length > 0) whenIdle(step);
-    else baker.flush();
+    else baker.flushAll();
   };
   whenIdle(step);
 }

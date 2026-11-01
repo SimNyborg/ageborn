@@ -600,8 +600,11 @@ export class BattleView {
     this.evolveReady = canEvolve(st, this.config, this.mySide);
     this.syncHold(true);
     this.preloadAhead();
-    // item 40 / item 38 B0: the opening ages' damage bundles; the art readiness waits for them briefly (W0 review S2)
-    const dmg = [0, 1].map((s) => this.askDamage(this.ages[st.sides[s]?.ageIndex ?? 0])).filter((w): w is Promise<void> => w !== null);
+    // item 40 / item 38 B0: the opening ages' damage bundles and the damage kit's bake (one upload, none mid-battle; VS
+    // has usually baked it); the art readiness waits for them briefly (W0 review S2)
+    const kitArt = this.art as ArtProvider & { damageKitReady?: () => Promise<void> | null };
+    const kit = typeof kitArt.damageKitReady === 'function' ? kitArt.damageKitReady() : null;
+    const dmg = [...[0, 1].map((s) => this.askDamage(this.ages[st.sides[s]?.ageIndex ?? 0])), kit].filter((w): w is Promise<void> => w !== null);
     if (dmg.length > 0) {
       const wait: Promise<void> = Promise.race([Promise.all(dmg), new Promise<void>((r) => setTimeout(r, DAMAGE_BUNDLE_WAIT_MS))]).then(() => {
         if (this.damageWait === wait) this.damageWait = null;
