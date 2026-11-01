@@ -44,6 +44,8 @@ def install(slug, out):
         elif os.path.exists(d):
             os.remove(d)
     print(f"  installed {AGE}/{slug}", flush=True)
+    from ageborn_art import damage
+    damage.install_entry(slug, out, AGE)   # the render's damage spots and body trackers into the age bundle
 
 
 def main():

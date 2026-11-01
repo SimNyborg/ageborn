@@ -265,6 +265,59 @@ pulse their thrust cones / tractor ring on a 2-frame beat; the bob stays in code
 loop in the same 1020 ms and 2D accents. `node art/blender/check_timing.mjs [ref]` fails if any
 clip duration or attack `impactAt` in `src/visuals/unitSheets.gen.ts` differs from the git ref.
 
+## Data the pipeline writes besides pixels (art round W0)
+
+Each model is opened once per art round, so every render writes what the game needs about its frames in the
+same run, and `anchors_only.py` writes the same data for units nobody re-renders (no Cycles, no Blender slot,
+about 3 s a unit; the whole roster in about 8 minutes).
+
+**Damage spots** (queue item 40). In `build()`, after the parts:
+
+```python
+rig.damage_spot_at("shield", "shield", 21.0, 30.0, 7.5, "metal")          # side-view (x, z) on the joint's parts
+rig.damage_spot_at("tunic", "torso", 4.0, 34.0, 6.5, "cloth", team=True)  # on a team surface
+rig.damage_spot_at("hem", "hips", 6.0, 17.0, 9.0, "cloth", kind="strip")  # a torn strip hangs from here
+rig.damage_spot("exhaust", "hull", (-30.0, 4.0, 28.0), 6.0, "smoke", kind="emit", normal=(-1, 0, 0))
+```
+
+`damage_spot_at` casts a camera ray at the joint's own parts at rest (as the face kit lays its decals), so the
+spot sits on the surface the viewer sees, with that surface's normal; the part it sees must be a team part for
+`team=True` and not one otherwise, and have the palette colour `fill="#RRGGBB"` when given (pin it for marks next
+to skin), or it raises. `damage_spot` takes a character-space point and normal like `rig.track`. A mark's radius is its surface patch (at least 5 lu; the runtime draws 6-9 lu
+marks within about 70% of it), a strip's its longest hanging length, an emitter's its puff size. Materials:
+cloth, hide (hide and fur), metal, wood, stone (stone, crystal, bone), glass (glass and visors), energy; an
+emitter's medium: smoke, steam, spark, breath, motes. **Never on faces or skin** (no blood: damage shows on
+clothes, armour, shields and machines). Item 40 section 3.3 says what each family shows; 4-5 marks, a strip
+where the unit wears cloth, emitters where they fit. `on=` names other joints whose parts count as the spot's
+surface for its visibility rays (a mark on a cape that hangs from the torso).
+
+**Body trackers** (item 38 B0): every unit gets a per-frame torso box and head point. The probe takes the joints
+`torso` (plus `hips`), `trunk`, `chest`, `horse`, `hull`, `plane`, `pod` or `orb` for the torso and `hhead`,
+`head`, `nh`, `c_head`, `p_head`, `crew_head`, `cmdr`, `pilot`, `driver` or `eyes` for the head (a rider's is its
+mount's), the first with parts; odd rigs call `rig.body_trackers(torso, head)` with a joint, a joint list,
+`(joint, (x0, z0, x1, z1))` or `(joint, (x, z))`, or get an entry in `probe.BODY`.
+
+**What is written** (`ageborn_art/probe.py`, the same code on both paths): per unique frame of every clip
+(extras clips too) each spot's `[x, y, rotDeg, scalePct, visPct]` (screen lu from the feet; the turn since rest;
+the size against rest, foreshortening and squash together, so `r` is the size at rest; for a mark the share of
+five camera rays that reach it, 0 when its part is hidden or turned away; a strip without the facing test; an
+emitter 100 unless hidden), the torso box `[x0, y0, x1, y1]` and the head point `[x, y]`. A render writes `<out>/<slug>.damage.json`; `render_all.py --install` (and
+`units/render_industrial.py`) merge it into `public/art/damage/<age>.json` (`ageborn_art/damage.py`: one unit per
+line, sorted, the same data gives the same bytes; families from item 40 appendix A, `DAMAGE_FAMILY` overrides).
+
+```sh
+# every unit's bundle entry without Cycles, after a self-check against the shipped sheets
+.venv-blender/bin/python art/blender/anchors_only.py --units all --bundles --report /tmp/anchors.json
+# draw a unit's spots, torso boxes and head points over its shipped frames
+.venv-blender/bin/python art/blender/spot_preview.py hoplite --clips idle,attack,die --out /tmp/hoplite_spots.png
+```
+
+The **self-check** runs before anything is written: the script must give the sheet's clips, frame counts,
+sequences, step durations and impact frames, its `feetPx` and canvas, every tracker within 0.3 lu and every
+frame's silhouette box (parts and interior-line hulls, the outline's width, the smear ribbon and the 2D accents,
+cut to the canvas) within 2 lu of the packed frame. A unit that fails is listed and keeps its old bundle entry
+(or none), so a script that no longer reproduces its sheet never writes wrong spots.
+
 ## Install
 
 Blender's Python module needs **Python 3.11** (bpy 5.0.1 wheels exist only for 3.11).
