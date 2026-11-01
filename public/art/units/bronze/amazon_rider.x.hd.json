@@ -2,8 +2,8 @@
  "frames": {
   "amazon_rider_attack_b_02": {
    "frame": {
-    "x": 283,
-    "y": 2,
+    "x": 2,
+    "y": 370,
     "w": 311,
     "h": 299
    },
@@ -26,9 +26,9 @@
   },
   "amazon_rider_attack_b_02_team": {
    "frame": {
-    "x": 556,
-    "y": 631,
-    "w": 150,
+    "x": 1365,
+    "y": 2,
+    "w": 165,
     "h": 218
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 335,
     "y": 238,
-    "w": 150,
+    "w": 165,
     "h": 218
    },
    "sourceSize": {
@@ -50,18 +50,18 @@
   },
   "amazon_rider_attack_b_03": {
    "frame": {
-    "x": 1217,
-    "y": 2,
+    "x": 347,
+    "y": 559,
     "w": 283,
-    "h": 261
+    "h": 264
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 275,
-    "y": 257,
+    "y": 254,
     "w": 283,
-    "h": 261
+    "h": 264
    },
    "sourceSize": {
     "w": 820,
@@ -74,17 +74,17 @@
   },
   "amazon_rider_attack_b_03_team": {
    "frame": {
-    "x": 710,
-    "y": 631,
-    "w": 176,
+    "x": 925,
+    "y": 495,
+    "w": 187,
     "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 303,
+    "x": 304,
     "y": 247,
-    "w": 176,
+    "w": 187,
     "h": 217
    },
    "sourceSize": {
@@ -100,7 +100,7 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 277,
+    "w": 272,
     "h": 364
    },
    "rotated": false,
@@ -108,7 +108,7 @@
    "spriteSourceSize": {
     "x": 325,
     "y": 165,
-    "w": 277,
+    "w": 272,
     "h": 364
    },
    "sourceSize": {
@@ -122,17 +122,17 @@
   },
   "amazon_rider_attack_b_04_team": {
    "frame": {
-    "x": 244,
-    "y": 370,
-    "w": 143,
+    "x": 1200,
+    "y": 2,
+    "w": 161,
     "h": 252
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 360,
+    "x": 357,
     "y": 191,
-    "w": 143,
+    "w": 161,
     "h": 252
    },
    "sourceSize": {
@@ -146,16 +146,16 @@
   },
   "amazon_rider_attack_b_05": {
    "frame": {
-    "x": 598,
-    "y": 2,
+    "x": 317,
+    "y": 260,
     "w": 265,
     "h": 295
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 365,
-    "y": 210,
+    "x": 353,
+    "y": 209,
     "w": 265,
     "h": 295
    },
@@ -170,17 +170,17 @@
   },
   "amazon_rider_attack_b_05_team": {
    "frame": {
-    "x": 1052,
-    "y": 370,
-    "w": 133,
+    "x": 1171,
+    "y": 258,
+    "w": 139,
     "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 402,
+    "x": 389,
     "y": 207,
-    "w": 133,
+    "w": 139,
     "h": 224
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "amazon_rider_attack_b_06": {
    "frame": {
-    "x": 2,
-    "y": 631,
+    "x": 634,
+    "y": 494,
     "w": 287,
-    "h": 223
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 362,
-    "y": 307,
+    "x": 345,
+    "y": 303,
     "w": 287,
-    "h": 223
+    "h": 226
    },
    "sourceSize": {
     "w": 820,
@@ -218,18 +218,18 @@
   },
   "amazon_rider_attack_b_06_team": {
    "frame": {
-    "x": 492,
-    "y": 858,
-    "w": 215,
-    "h": 153
+    "x": 1116,
+    "y": 495,
+    "w": 214,
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 407,
+    "x": 391,
     "y": 296,
-    "w": 215,
-    "h": 153
+    "w": 214,
+    "h": 152
    },
    "sourceSize": {
     "w": 820,
@@ -242,18 +242,18 @@
   },
   "amazon_rider_attack_b_07": {
    "frame": {
-    "x": 2,
-    "y": 370,
-    "w": 238,
-    "h": 257
+    "x": 925,
+    "y": 231,
+    "w": 242,
+    "h": 260
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 390,
-    "y": 281,
-    "w": 238,
-    "h": 257
+    "x": 371,
+    "y": 277,
+    "w": 242,
+    "h": 260
    },
    "sourceSize": {
     "w": 820,
@@ -266,16 +266,16 @@
   },
   "amazon_rider_attack_b_07_team": {
    "frame": {
-    "x": 2,
-    "y": 858,
+    "x": 971,
+    "y": 716,
     "w": 186,
     "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 411,
-    "y": 271,
+    "x": 396,
+    "y": 270,
     "w": 186,
     "h": 181
    },
@@ -290,18 +290,18 @@
   },
   "amazon_rider_attack_c_02": {
    "frame": {
-    "x": 391,
-    "y": 370,
+    "x": 278,
+    "y": 2,
     "w": 321,
-    "h": 251
+    "h": 254
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 265,
-    "y": 273,
+    "y": 270,
     "w": 321,
-    "h": 251
+    "h": 254
    },
    "sourceSize": {
     "w": 820,
@@ -314,9 +314,9 @@
   },
   "amazon_rider_attack_c_02_team": {
    "frame": {
-    "x": 1351,
-    "y": 631,
-    "w": 123,
+    "x": 1334,
+    "y": 577,
+    "w": 137,
     "h": 190
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 363,
     "y": 262,
-    "w": 123,
+    "w": 137,
     "h": 190
    },
    "sourceSize": {
@@ -338,18 +338,18 @@
   },
   "amazon_rider_attack_c_03": {
    "frame": {
-    "x": 1189,
-    "y": 370,
+    "x": 603,
+    "y": 2,
     "w": 327,
-    "h": 223
+    "h": 225
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 253,
-    "y": 300,
+    "y": 298,
     "w": 327,
-    "h": 223
+    "h": 225
    },
    "sourceSize": {
     "w": 820,
@@ -362,9 +362,9 @@
   },
   "amazon_rider_attack_c_03_team": {
    "frame": {
-    "x": 366,
-    "y": 858,
-    "w": 122,
+    "x": 1301,
+    "y": 771,
+    "w": 136,
     "h": 164
    },
    "rotated": false,
@@ -372,7 +372,7 @@
    "spriteSourceSize": {
     "x": 359,
     "y": 290,
-    "w": 122,
+    "w": 136,
     "h": 164
    },
    "sourceSize": {
@@ -386,18 +386,18 @@
   },
   "amazon_rider_attack_c_04": {
    "frame": {
-    "x": 867,
-    "y": 2,
-    "w": 346,
-    "h": 261
+    "x": 2,
+    "y": 673,
+    "w": 341,
+    "h": 264
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 264,
-    "y": 256,
-    "w": 346,
-    "h": 261
+    "y": 253,
+    "w": 341,
+    "h": 264
    },
    "sourceSize": {
     "w": 820,
@@ -410,18 +410,18 @@
   },
   "amazon_rider_attack_c_04_team": {
    "frame": {
-    "x": 1228,
-    "y": 631,
-    "w": 119,
-    "h": 192
+    "x": 1161,
+    "y": 651,
+    "w": 136,
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 385,
+    "x": 380,
     "y": 245,
-    "w": 119,
-    "h": 192
+    "w": 136,
+    "h": 191
    },
    "sourceSize": {
     "w": 820,
@@ -434,18 +434,18 @@
   },
   "amazon_rider_attack_c_05": {
    "frame": {
-    "x": 716,
-    "y": 370,
-    "w": 332,
-    "h": 226
+    "x": 586,
+    "y": 260,
+    "w": 321,
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 300,
-    "y": 275,
-    "w": 332,
-    "h": 226
+    "x": 297,
+    "y": 271,
+    "w": 321,
+    "h": 230
    },
    "sourceSize": {
     "w": 820,
@@ -458,18 +458,18 @@
   },
   "amazon_rider_attack_c_05_team": {
    "frame": {
-    "x": 192,
-    "y": 858,
-    "w": 170,
-    "h": 166
+    "x": 1334,
+    "y": 406,
+    "w": 169,
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 401,
-    "y": 264,
-    "w": 170,
-    "h": 166
+    "x": 387,
+    "y": 263,
+    "w": 169,
+    "h": 167
    },
    "sourceSize": {
     "w": 820,
@@ -482,17 +482,17 @@
   },
   "amazon_rider_attack_c_06": {
    "frame": {
-    "x": 890,
-    "y": 631,
-    "w": 334,
+    "x": 634,
+    "y": 724,
+    "w": 333,
     "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 359,
-    "y": 339,
-    "w": 334,
+    "x": 338,
+    "y": 338,
+    "w": 333,
     "h": 192
    },
    "sourceSize": {
@@ -506,18 +506,18 @@
   },
   "amazon_rider_attack_c_06_team": {
    "frame": {
-    "x": 911,
-    "y": 858,
+    "x": 347,
+    "y": 827,
     "w": 221,
-    "h": 118
+    "h": 119
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 408,
-    "y": 331,
+    "x": 386,
+    "y": 330,
     "w": 221,
-    "h": 118
+    "h": 119
    },
    "sourceSize": {
     "w": 820,
@@ -530,18 +530,18 @@
   },
   "amazon_rider_attack_c_07": {
    "frame": {
-    "x": 293,
-    "y": 631,
-    "w": 259,
-    "h": 220
+    "x": 934,
+    "y": 2,
+    "w": 262,
+    "h": 223
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 391,
-    "y": 319,
-    "w": 259,
-    "h": 220
+    "x": 373,
+    "y": 315,
+    "w": 262,
+    "h": 223
    },
    "sourceSize": {
     "w": 820,
@@ -554,15 +554,15 @@
   },
   "amazon_rider_attack_c_07_team": {
    "frame": {
-    "x": 711,
-    "y": 858,
+    "x": 1334,
+    "y": 258,
     "w": 196,
     "h": 144
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 411,
+    "x": 396,
     "y": 308,
     "w": 196,
     "h": 144
@@ -642,7 +642,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 1536,
-   "h": 1044
+   "h": 948
   },
   "scale": "3",
   "ageborn": {
@@ -724,20 +724,20 @@
         93.7
        ],
        [
-        2.7,
-        126.1
+        0.8,
+        126.2
        ],
        [
-        57.0,
-        86.9
+        52.1,
+        87.1
        ],
        [
-        64.1,
-        29.7
+        57.2,
+        30.0
        ],
        [
-        54.7,
-        28.1
+        48.8,
+        28.4
        ],
        [
         58.5,
@@ -805,20 +805,20 @@
         36.7
        ],
        [
-        -15.2,
-        66.6
+        -17.1,
+        66.7
        ],
        [
-        59.6,
-        83.2
+        53.7,
+        83.5
        ],
        [
-        82.4,
-        19.6
-       ],
-       [
-        71.2,
+        73.5,
         20.0
+       ],
+       [
+        65.3,
+        20.3
        ],
        [
         58.5,

@@ -2,8 +2,8 @@
  "frames": {
   "amazon_rider_idle_00": {
    "frame": {
-    "x": 897,
-    "y": 2,
+    "x": 2,
+    "y": 714,
     "w": 247,
     "h": 316
    },
@@ -26,9 +26,9 @@
   },
   "amazon_rider_idle_00_team": {
    "frame": {
-    "x": 1906,
-    "y": 971,
-    "w": 116,
+    "x": 2654,
+    "y": 283,
+    "w": 135,
     "h": 225
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 382,
     "y": 216,
-    "w": 116,
+    "w": 135,
     "h": 225
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "amazon_rider_idle_01": {
    "frame": {
-    "x": 1148,
-    "y": 2,
+    "x": 253,
+    "y": 714,
     "w": 248,
     "h": 315
    },
@@ -74,9 +74,9 @@
   },
   "amazon_rider_idle_01_team": {
    "frame": {
-    "x": 2149,
-    "y": 971,
-    "w": 117,
+    "x": 2704,
+    "y": 2,
+    "w": 136,
     "h": 224
    },
    "rotated": false,
@@ -84,7 +84,7 @@
    "spriteSourceSize": {
     "x": 381,
     "y": 219,
-    "w": 117,
+    "w": 136,
     "h": 224
    },
    "sourceSize": {
@@ -98,8 +98,8 @@
   },
   "amazon_rider_idle_02": {
    "frame": {
-    "x": 511,
-    "y": 365,
+    "x": 850,
+    "y": 313,
     "w": 250,
     "h": 306
    },
@@ -122,9 +122,9 @@
   },
   "amazon_rider_idle_02_team": {
    "frame": {
-    "x": 367,
-    "y": 1250,
-    "w": 119,
+    "x": 2933,
+    "y": 227,
+    "w": 139,
     "h": 219
    },
    "rotated": false,
@@ -132,7 +132,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 228,
-    "w": 119,
+    "w": 139,
     "h": 219
    },
    "sourceSize": {
@@ -146,8 +146,8 @@
   },
   "amazon_rider_idle_03": {
    "frame": {
-    "x": 1804,
-    "y": 365,
+    "x": 1269,
+    "y": 618,
     "w": 255,
     "h": 297
    },
@@ -170,9 +170,9 @@
   },
   "amazon_rider_idle_03_team": {
    "frame": {
-    "x": 1716,
-    "y": 1250,
-    "w": 121,
+    "x": 3212,
+    "y": 223,
+    "w": 140,
     "h": 215
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 379,
     "y": 234,
-    "w": 121,
+    "w": 140,
     "h": 215
    },
    "sourceSize": {
@@ -194,8 +194,8 @@
   },
   "amazon_rider_idle_04": {
    "frame": {
-    "x": 1543,
-    "y": 365,
+    "x": 1341,
+    "y": 2,
     "w": 257,
     "h": 301
    },
@@ -218,9 +218,9 @@
   },
   "amazon_rider_idle_04_team": {
    "frame": {
-    "x": 1470,
-    "y": 1250,
-    "w": 119,
+    "x": 2897,
+    "y": 901,
+    "w": 139,
     "h": 216
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 231,
-    "w": 119,
+    "w": 139,
     "h": 216
    },
    "sourceSize": {
@@ -242,8 +242,8 @@
   },
   "amazon_rider_idle_05": {
    "frame": {
-    "x": 1922,
-    "y": 2,
+    "x": 505,
+    "y": 641,
     "w": 250,
     "h": 309
    },
@@ -266,9 +266,9 @@
   },
   "amazon_rider_idle_05_team": {
    "frame": {
-    "x": 2,
-    "y": 1250,
-    "w": 117,
+    "x": 2793,
+    "y": 230,
+    "w": 136,
     "h": 221
    },
    "rotated": false,
@@ -276,7 +276,7 @@
    "spriteSourceSize": {
     "x": 381,
     "y": 222,
-    "w": 117,
+    "w": 136,
     "h": 221
    },
    "sourceSize": {
@@ -290,8 +290,8 @@
   },
   "amazon_rider_walk_00": {
    "frame": {
-    "x": 2206,
-    "y": 676,
+    "x": 2175,
+    "y": 570,
     "w": 260,
     "h": 275
    },
@@ -314,9 +314,9 @@
   },
   "amazon_rider_walk_00_team": {
    "frame": {
-    "x": 1841,
-    "y": 1250,
-    "w": 120,
+    "x": 3040,
+    "y": 892,
+    "w": 132,
     "h": 215
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 247,
-    "w": 120,
+    "w": 132,
     "h": 215
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "amazon_rider_walk_01": {
    "frame": {
-    "x": 575,
-    "y": 971,
+    "x": 2175,
+    "y": 849,
     "w": 256,
     "h": 274
    },
@@ -362,9 +362,9 @@
   },
   "amazon_rider_walk_01_team": {
    "frame": {
-    "x": 2093,
-    "y": 1250,
-    "w": 119,
+    "x": 3178,
+    "y": 667,
+    "w": 132,
     "h": 214
    },
    "rotated": false,
@@ -372,7 +372,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 250,
-    "w": 119,
+    "w": 132,
     "h": 214
    },
    "sourceSize": {
@@ -386,8 +386,8 @@
   },
   "amazon_rider_walk_02": {
    "frame": {
-    "x": 2,
-    "y": 971,
+    "x": 2394,
+    "y": 283,
     "w": 256,
     "h": 275
    },
@@ -410,9 +410,9 @@
   },
   "amazon_rider_walk_02_team": {
    "frame": {
-    "x": 1593,
-    "y": 1250,
-    "w": 119,
+    "x": 3168,
+    "y": 447,
+    "w": 133,
     "h": 216
    },
    "rotated": false,
@@ -420,7 +420,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 247,
-    "w": 119,
+    "w": 133,
     "h": 216
    },
    "sourceSize": {
@@ -434,8 +434,8 @@
   },
   "amazon_rider_walk_03": {
    "frame": {
-    "x": 1945,
-    "y": 676,
+    "x": 2133,
+    "y": 288,
     "w": 257,
     "h": 278
    },
@@ -458,9 +458,9 @@
   },
   "amazon_rider_walk_03_team": {
    "frame": {
-    "x": 123,
-    "y": 1250,
-    "w": 118,
+    "x": 2891,
+    "y": 455,
+    "w": 132,
     "h": 220
    },
    "rotated": false,
@@ -468,7 +468,7 @@
    "spriteSourceSize": {
     "x": 381,
     "y": 239,
-    "w": 118,
+    "w": 132,
     "h": 220
    },
    "sourceSize": {
@@ -482,18 +482,18 @@
   },
   "amazon_rider_walk_04": {
    "frame": {
-    "x": 1684,
-    "y": 676,
+    "x": 2130,
+    "y": 2,
     "w": 257,
-    "h": 280
+    "h": 282
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 343,
-    "y": 240,
+    "y": 238,
     "w": 257,
-    "h": 280
+    "h": 282
    },
    "sourceSize": {
     "w": 820,
@@ -506,9 +506,9 @@
   },
   "amazon_rider_walk_04_team": {
    "frame": {
-    "x": 2270,
-    "y": 971,
-    "w": 119,
+    "x": 1269,
+    "y": 919,
+    "w": 133,
     "h": 223
    },
    "rotated": false,
@@ -516,7 +516,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 230,
-    "w": 119,
+    "w": 133,
     "h": 223
    },
    "sourceSize": {
@@ -530,18 +530,18 @@
   },
   "amazon_rider_walk_05": {
    "frame": {
-    "x": 268,
-    "y": 676,
+    "x": 1528,
+    "y": 606,
     "w": 261,
-    "h": 291
+    "h": 294
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 339,
-    "y": 237,
+    "y": 234,
     "w": 261,
-    "h": 291
+    "h": 294
    },
    "sourceSize": {
     "w": 820,
@@ -554,9 +554,9 @@
   },
   "amazon_rider_walk_05_team": {
    "frame": {
-    "x": 2026,
-    "y": 971,
-    "w": 119,
+    "x": 2754,
+    "y": 512,
+    "w": 133,
     "h": 224
    },
    "rotated": false,
@@ -564,7 +564,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 226,
-    "w": 119,
+    "w": 133,
     "h": 224
    },
    "sourceSize": {
@@ -578,18 +578,18 @@
   },
   "amazon_rider_walk_06": {
    "frame": {
-    "x": 2,
-    "y": 676,
+    "x": 1602,
+    "y": 2,
     "w": 262,
-    "h": 291
+    "h": 294
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 341,
-    "y": 240,
+    "y": 237,
     "w": 262,
-    "h": 291
+    "h": 294
    },
    "sourceSize": {
     "w": 820,
@@ -602,9 +602,9 @@
   },
   "amazon_rider_walk_06_team": {
    "frame": {
-    "x": 2393,
-    "y": 971,
-    "w": 122,
+    "x": 2844,
+    "y": 2,
+    "w": 132,
     "h": 221
    },
    "rotated": false,
@@ -612,7 +612,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 230,
-    "w": 122,
+    "w": 132,
     "h": 221
    },
    "sourceSize": {
@@ -626,18 +626,18 @@
   },
   "amazon_rider_walk_07": {
    "frame": {
-    "x": 787,
-    "y": 676,
+    "x": 1868,
+    "y": 2,
     "w": 258,
-    "h": 287
+    "h": 288
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 247,
+    "y": 246,
     "w": 258,
-    "h": 287
+    "h": 288
    },
    "sourceSize": {
     "w": 820,
@@ -650,9 +650,9 @@
   },
   "amazon_rider_walk_07_team": {
    "frame": {
-    "x": 612,
-    "y": 1250,
-    "w": 125,
+    "x": 3076,
+    "y": 225,
+    "w": 132,
     "h": 218
    },
    "rotated": false,
@@ -660,7 +660,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 238,
-    "w": 125,
+    "w": 132,
     "h": 218
    },
    "sourceSize": {
@@ -674,8 +674,8 @@
   },
   "amazon_rider_attack_00": {
    "frame": {
-    "x": 1400,
-    "y": 2,
+    "x": 338,
+    "y": 324,
     "w": 253,
     "h": 313
    },
@@ -698,9 +698,9 @@
   },
   "amazon_rider_attack_00_team": {
    "frame": {
-    "x": 128,
-    "y": 1475,
-    "w": 120,
+    "x": 1013,
+    "y": 932,
+    "w": 139,
     "h": 210
    },
    "rotated": false,
@@ -708,7 +708,7 @@
    "spriteSourceSize": {
     "x": 377,
     "y": 235,
-    "w": 120,
+    "w": 139,
     "h": 210
    },
    "sourceSize": {
@@ -722,7 +722,7 @@
   },
   "amazon_rider_attack_01": {
    "frame": {
-    "x": 1657,
+    "x": 561,
     "y": 2,
     "w": 261,
     "h": 310
@@ -746,9 +746,9 @@
   },
   "amazon_rider_attack_01_team": {
    "frame": {
-    "x": 1965,
-    "y": 1250,
-    "w": 124,
+    "x": 3176,
+    "y": 892,
+    "w": 144,
     "h": 214
    },
    "rotated": false,
@@ -756,7 +756,7 @@
    "spriteSourceSize": {
     "x": 370,
     "y": 234,
-    "w": 124,
+    "w": 144,
     "h": 214
    },
    "sourceSize": {
@@ -770,18 +770,18 @@
   },
   "amazon_rider_attack_02": {
    "frame": {
-    "x": 262,
-    "y": 971,
+    "x": 2391,
+    "y": 2,
     "w": 309,
-    "h": 274
+    "h": 277
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 277,
-    "y": 250,
+    "y": 247,
     "w": 309,
-    "h": 274
+    "h": 277
    },
    "sourceSize": {
     "w": 820,
@@ -794,9 +794,9 @@
   },
   "amazon_rider_attack_02_team": {
    "frame": {
-    "x": 2359,
-    "y": 1250,
-    "w": 126,
+    "x": 3356,
+    "y": 223,
+    "w": 140,
     "h": 213
    },
    "rotated": false,
@@ -804,7 +804,7 @@
    "spriteSourceSize": {
     "x": 360,
     "y": 239,
-    "w": 126,
+    "w": 140,
     "h": 213
    },
    "sourceSize": {
@@ -818,18 +818,18 @@
   },
   "amazon_rider_attack_03": {
    "frame": {
-    "x": 835,
-    "y": 971,
+    "x": 2435,
+    "y": 849,
     "w": 317,
-    "h": 268
+    "h": 271
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 259,
-    "y": 253,
+    "y": 250,
     "w": 317,
-    "h": 268
+    "h": 271
    },
    "sourceSize": {
     "w": 820,
@@ -842,9 +842,9 @@
   },
   "amazon_rider_attack_03_team": {
    "frame": {
-    "x": 2216,
-    "y": 1250,
-    "w": 139,
+    "x": 3305,
+    "y": 442,
+    "w": 153,
     "h": 213
    },
    "rotated": false,
@@ -852,7 +852,7 @@
    "spriteSourceSize": {
     "x": 342,
     "y": 243,
-    "w": 139,
+    "w": 153,
     "h": 213
    },
    "sourceSize": {
@@ -866,8 +866,8 @@
   },
   "amazon_rider_attack_04": {
    "frame": {
-    "x": 246,
-    "y": 2,
+    "x": 2,
+    "y": 365,
     "w": 332,
     "h": 345
    },
@@ -890,9 +890,9 @@
   },
   "amazon_rider_attack_04_team": {
    "frame": {
-    "x": 1471,
-    "y": 971,
-    "w": 132,
+    "x": 1793,
+    "y": 886,
+    "w": 150,
     "h": 240
    },
    "rotated": false,
@@ -900,7 +900,7 @@
    "spriteSourceSize": {
     "x": 372,
     "y": 198,
-    "w": 132,
+    "w": 150,
     "h": 240
    },
    "sourceSize": {
@@ -914,7 +914,7 @@
   },
   "amazon_rider_attack_05": {
    "frame": {
-    "x": 582,
+    "x": 246,
     "y": 2,
     "w": 311,
     "h": 318
@@ -938,9 +938,9 @@
   },
   "amazon_rider_attack_05_team": {
    "frame": {
-    "x": 1607,
-    "y": 971,
-    "w": 120,
+    "x": 1528,
+    "y": 904,
+    "w": 139,
     "h": 228
    },
    "rotated": false,
@@ -948,7 +948,7 @@
    "spriteSourceSize": {
     "x": 401,
     "y": 203,
-    "w": 120,
+    "w": 139,
     "h": 228
    },
    "sourceSize": {
@@ -962,18 +962,18 @@
   },
   "amazon_rider_attack_06": {
    "frame": {
-    "x": 1156,
-    "y": 971,
+    "x": 2439,
+    "y": 562,
     "w": 311,
-    "h": 254
+    "h": 257
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 370,
-    "y": 270,
+    "y": 267,
     "w": 311,
-    "h": 254
+    "h": 257
    },
    "sourceSize": {
     "w": 820,
@@ -986,8 +986,8 @@
   },
   "amazon_rider_attack_06_team": {
    "frame": {
-    "x": 667,
-    "y": 1475,
+    "x": 505,
+    "y": 954,
     "w": 171,
     "h": 187
    },
@@ -1010,18 +1010,18 @@
   },
   "amazon_rider_attack_07": {
    "frame": {
-    "x": 1431,
-    "y": 676,
+    "x": 1880,
+    "y": 294,
     "w": 249,
-    "h": 281
+    "h": 284
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 390,
-    "y": 251,
+    "y": 248,
     "w": 249,
-    "h": 281
+    "h": 284
    },
    "sourceSize": {
     "w": 820,
@@ -1034,8 +1034,8 @@
   },
   "amazon_rider_attack_07_team": {
    "frame": {
-    "x": 252,
-    "y": 1475,
+    "x": 3314,
+    "y": 659,
     "w": 149,
     "h": 209
    },
@@ -1058,18 +1058,18 @@
   },
   "amazon_rider_attack_08": {
    "frame": {
-    "x": 533,
-    "y": 676,
+    "x": 1366,
+    "y": 307,
     "w": 250,
-    "h": 291
+    "h": 295
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 369,
-    "y": 239,
+    "y": 235,
     "w": 250,
-    "h": 291
+    "h": 295
    },
    "sourceSize": {
     "w": 820,
@@ -1082,9 +1082,9 @@
   },
   "amazon_rider_attack_08_team": {
    "frame": {
-    "x": 741,
-    "y": 1250,
-    "w": 120,
+    "x": 2897,
+    "y": 679,
+    "w": 137,
     "h": 218
    },
    "rotated": false,
@@ -1092,7 +1092,7 @@
    "spriteSourceSize": {
     "x": 395,
     "y": 228,
-    "w": 120,
+    "w": 137,
     "h": 218
    },
    "sourceSize": {
@@ -1106,8 +1106,8 @@
   },
   "amazon_rider_attack_09": {
    "frame": {
-    "x": 2176,
-    "y": 2,
+    "x": 595,
+    "y": 316,
     "w": 251,
     "h": 308
    },
@@ -1130,9 +1130,9 @@
   },
   "amazon_rider_attack_09_team": {
    "frame": {
-    "x": 245,
-    "y": 1250,
-    "w": 118,
+    "x": 2756,
+    "y": 740,
+    "w": 137,
     "h": 220
    },
    "rotated": false,
@@ -1140,7 +1140,7 @@
    "spriteSourceSize": {
     "x": 383,
     "y": 225,
-    "w": 118,
+    "w": 137,
     "h": 220
    },
    "sourceSize": {
@@ -1154,8 +1154,8 @@
   },
   "amazon_rider_hit_00": {
    "frame": {
-    "x": 1025,
-    "y": 365,
+    "x": 1013,
+    "y": 623,
     "w": 252,
     "h": 305
    },
@@ -1178,9 +1178,9 @@
   },
   "amazon_rider_hit_00_team": {
    "frame": {
-    "x": 2,
-    "y": 1475,
-    "w": 122,
+    "x": 3478,
+    "y": 2,
+    "w": 137,
     "h": 211
    },
    "rotated": false,
@@ -1188,7 +1188,7 @@
    "spriteSourceSize": {
     "x": 371,
     "y": 237,
-    "w": 122,
+    "w": 137,
     "h": 211
    },
    "sourceSize": {
@@ -1202,8 +1202,8 @@
   },
   "amazon_rider_hit_01": {
    "frame": {
-    "x": 1281,
-    "y": 365,
+    "x": 1104,
+    "y": 311,
     "w": 258,
     "h": 303
    },
@@ -1226,9 +1226,9 @@
   },
   "amazon_rider_hit_01_team": {
    "frame": {
-    "x": 405,
-    "y": 1475,
-    "w": 127,
+    "x": 3462,
+    "y": 440,
+    "w": 142,
     "h": 206
    },
    "rotated": false,
@@ -1236,7 +1236,7 @@
    "spriteSourceSize": {
     "x": 365,
     "y": 244,
-    "w": 127,
+    "w": 142,
     "h": 206
    },
    "sourceSize": {
@@ -1250,8 +1250,8 @@
   },
   "amazon_rider_hit_02": {
    "frame": {
-    "x": 257,
-    "y": 365,
+    "x": 759,
+    "y": 628,
     "w": 250,
     "h": 307
    },
@@ -1274,9 +1274,9 @@
   },
   "amazon_rider_hit_02_team": {
    "frame": {
-    "x": 1344,
-    "y": 1250,
-    "w": 122,
+    "x": 3038,
+    "y": 672,
+    "w": 136,
     "h": 216
    },
    "rotated": false,
@@ -1284,7 +1284,7 @@
    "spriteSourceSize": {
     "x": 374,
     "y": 231,
-    "w": 122,
+    "w": 136,
     "h": 216
    },
    "sourceSize": {
@@ -1298,8 +1298,8 @@
   },
   "amazon_rider_hit_03": {
    "frame": {
-    "x": 765,
-    "y": 365,
+    "x": 1081,
+    "y": 2,
     "w": 256,
     "h": 305
    },
@@ -1322,9 +1322,9 @@
   },
   "amazon_rider_hit_03_team": {
    "frame": {
-    "x": 865,
-    "y": 1250,
-    "w": 118,
+    "x": 3027,
+    "y": 450,
+    "w": 137,
     "h": 218
    },
    "rotated": false,
@@ -1332,7 +1332,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 227,
-    "w": 118,
+    "w": 137,
     "h": 218
    },
    "sourceSize": {
@@ -1346,8 +1346,8 @@
   },
   "amazon_rider_hit_04": {
    "frame": {
-    "x": 2,
-    "y": 365,
+    "x": 826,
+    "y": 2,
     "w": 251,
     "h": 307
    },
@@ -1370,9 +1370,9 @@
   },
   "amazon_rider_hit_04_team": {
    "frame": {
-    "x": 490,
-    "y": 1250,
-    "w": 118,
+    "x": 2980,
+    "y": 2,
+    "w": 137,
     "h": 219
    },
    "rotated": false,
@@ -1380,7 +1380,7 @@
    "spriteSourceSize": {
     "x": 380,
     "y": 226,
-    "w": 118,
+    "w": 137,
     "h": 219
    },
    "sourceSize": {
@@ -1394,8 +1394,8 @@
   },
   "amazon_rider_die_00": {
    "frame": {
-    "x": 2063,
-    "y": 365,
+    "x": 1620,
+    "y": 300,
     "w": 256,
     "h": 292
    },
@@ -1418,9 +1418,9 @@
   },
   "amazon_rider_die_00_team": {
    "frame": {
-    "x": 536,
-    "y": 1475,
-    "w": 127,
+    "x": 759,
+    "y": 939,
+    "w": 142,
     "h": 203
    },
    "rotated": false,
@@ -1428,7 +1428,7 @@
    "spriteSourceSize": {
     "x": 365,
     "y": 245,
-    "w": 127,
+    "w": 142,
     "h": 203
    },
    "sourceSize": {
@@ -1466,9 +1466,9 @@
   },
   "amazon_rider_die_01_team": {
    "frame": {
-    "x": 1731,
-    "y": 971,
-    "w": 171,
+    "x": 1947,
+    "y": 886,
+    "w": 184,
     "h": 226
    },
    "rotated": false,
@@ -1476,7 +1476,7 @@
    "spriteSourceSize": {
     "x": 262,
     "y": 215,
-    "w": 171,
+    "w": 184,
     "h": 226
    },
    "sourceSize": {
@@ -1490,8 +1490,8 @@
   },
   "amazon_rider_die_02": {
    "frame": {
-    "x": 1049,
-    "y": 676,
+    "x": 1793,
+    "y": 596,
     "w": 378,
     "h": 286
    },
@@ -1514,9 +1514,9 @@
   },
   "amazon_rider_die_02_team": {
    "frame": {
-    "x": 428,
-    "y": 1690,
-    "w": 284,
+    "x": 3324,
+    "y": 872,
+    "w": 302,
     "h": 143
    },
    "rotated": false,
@@ -1524,7 +1524,7 @@
    "spriteSourceSize": {
     "x": 161,
     "y": 298,
-    "w": 284,
+    "w": 302,
     "h": 143
    },
    "sourceSize": {
@@ -1538,18 +1538,18 @@
   },
   "amazon_rider_die_03": {
    "frame": {
-    "x": 987,
-    "y": 1250,
+    "x": 3121,
+    "y": 2,
     "w": 353,
-    "h": 216
+    "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 308,
+    "y": 307,
     "w": 353,
-    "h": 216
+    "h": 217
    },
    "sourceSize": {
     "w": 820,
@@ -1562,9 +1562,9 @@
   },
   "amazon_rider_die_03_team": {
    "frame": {
-    "x": 716,
-    "y": 1690,
-    "w": 161,
+    "x": 3467,
+    "y": 679,
+    "w": 180,
     "h": 143
    },
    "rotated": false,
@@ -1572,7 +1572,7 @@
    "spriteSourceSize": {
     "x": 326,
     "y": 299,
-    "w": 161,
+    "w": 180,
     "h": 143
    },
    "sourceSize": {
@@ -1586,17 +1586,17 @@
   },
   "amazon_rider_die_04": {
    "frame": {
-    "x": 842,
-    "y": 1475,
-    "w": 462,
+    "x": 3619,
+    "y": 2,
+    "w": 465,
     "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 172,
+    "x": 169,
     "y": 382,
-    "w": 462,
+    "w": 465,
     "h": 177
    },
    "sourceSize": {
@@ -1610,9 +1610,9 @@
   },
   "amazon_rider_die_04_team": {
    "frame": {
-    "x": 881,
-    "y": 1690,
-    "w": 355,
+    "x": 3324,
+    "y": 1019,
+    "w": 375,
     "h": 123
    },
    "rotated": false,
@@ -1620,7 +1620,7 @@
    "spriteSourceSize": {
     "x": 161,
     "y": 392,
-    "w": 355,
+    "w": 375,
     "h": 123
    },
    "sourceSize": {
@@ -1634,17 +1634,17 @@
   },
   "amazon_rider_die_05": {
    "frame": {
-    "x": 1308,
-    "y": 1475,
-    "w": 451,
+    "x": 3619,
+    "y": 183,
+    "w": 454,
     "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 170,
+    "x": 167,
     "y": 394,
-    "w": 451,
+    "w": 454,
     "h": 167
    },
    "sourceSize": {
@@ -1658,9 +1658,9 @@
   },
   "amazon_rider_die_05_team": {
    "frame": {
-    "x": 1569,
-    "y": 1690,
-    "w": 348,
+    "x": 3703,
+    "y": 801,
+    "w": 368,
     "h": 116
    },
    "rotated": false,
@@ -1668,7 +1668,7 @@
    "spriteSourceSize": {
     "x": 159,
     "y": 408,
-    "w": 348,
+    "w": 368,
     "h": 116
    },
    "sourceSize": {
@@ -1682,17 +1682,17 @@
   },
   "amazon_rider_die_06": {
    "frame": {
-    "x": 1763,
-    "y": 1475,
-    "w": 441,
+    "x": 3608,
+    "y": 354,
+    "w": 443,
     "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 173,
+    "x": 171,
     "y": 391,
-    "w": 441,
+    "w": 443,
     "h": 164
    },
    "sourceSize": {
@@ -1706,9 +1706,9 @@
   },
   "amazon_rider_die_06_team": {
    "frame": {
-    "x": 1921,
-    "y": 1690,
-    "w": 339,
+    "x": 3703,
+    "y": 921,
+    "w": 360,
     "h": 115
    },
    "rotated": false,
@@ -1716,7 +1716,7 @@
    "spriteSourceSize": {
     "x": 162,
     "y": 401,
-    "w": 339,
+    "w": 360,
     "h": 115
    },
    "sourceSize": {
@@ -1730,17 +1730,17 @@
   },
   "amazon_rider_die_07": {
    "frame": {
-    "x": 2,
-    "y": 1690,
-    "w": 422,
+    "x": 3608,
+    "y": 522,
+    "w": 424,
     "h": 153
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 183,
+    "x": 181,
     "y": 403,
-    "w": 422,
+    "w": 424,
     "h": 153
    },
    "sourceSize": {
@@ -1754,9 +1754,9 @@
   },
   "amazon_rider_die_07_team": {
    "frame": {
-    "x": 1240,
-    "y": 1690,
-    "w": 325,
+    "x": 3703,
+    "y": 679,
+    "w": 339,
     "h": 118
    },
    "rotated": false,
@@ -1764,7 +1764,7 @@
    "spriteSourceSize": {
     "x": 172,
     "y": 412,
-    "w": 325,
+    "w": 339,
     "h": 118
    },
    "sourceSize": {
@@ -1891,8 +1891,8 @@
   "image": "amazon_rider.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2560,
-   "h": 1848
+   "w": 4096,
+   "h": 1144
   },
   "scale": "3",
   "ageborn": {

@@ -31,6 +31,8 @@ import math
 from ageborn_art import face as F
 from ageborn_art import gait as GT
 from ageborn_art import kit_bronze as KB
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import rigs_bronze as BZ
 from ageborn_art import kit_medieval as K
@@ -60,6 +62,23 @@ DARK = "#23262E"
 BLADE = BZ.BRONZE
 EYE = "#FAF6EE"
 NOSE = "#6E5A4E"
+BLAZE = "#E4DED4"
+FRINGE = "#CFC3A6"
+EDGE = "#F4ECD6"
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2 (cavalry). The team shabraque in two tones (a team-dark border under its studs) and the
+# cap's team-dark ear flaps; the horse's coat gets its dapples where it shows (neck, chest) and a team-dark
+# breast collar with an aged bronze phalera; item 38 B1' on attacks B and C (below).
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", POINTS: "hide", MANE: "fur", HAIR: "fur", HOOF: "bone",
+                  NOSE: "hide", BLAZE: "hide", FRINGE: "cloth", BZ.SAND: "cloth", BZ.SAND_LT: "cloth",
+                  BZ.BRONZE: "bronze", BZ.BRONZE_HI: "bronze", BZ.AGED: "bronze", EDGE: "bronze", B.WOOD: "wood",
+                  BZ.WOOD_DK: "wood", BZ.PLUM: "cloth", BZ.LEATHER: "leather", BZ.LEATHER_DK: "leather",
+                  BZ.SKIN: "skin", "team": "cloth"}
+CHEST = ((14.0, 0, 42.0), (11.0, 12.0, 11.5))
 
 # sagaris: joint in the near hand (rider space, rest pose); haft modelled pointing up (+Z)
 SX, SY, SZ = 9.5, -14.0, 65.5
@@ -94,13 +113,15 @@ def build(rig):
     cap.clip((0, 0, 27.4), (0, 0, -1))
     cf = F.Face(rig, "horse", [cap])
     rig.part("horse", cap, team=True)
+    g = KD.band_z((-3.5, 0, 43.5), (21.5, 13.8, 12.8), 30.6, 34.6, p=3.2, taper=(1.12, 0.92))   # team-dark border
+    look.team_part(rig, "horse", g, outline=0)
     g = Geo().blob((-3.5, 0, 29.0), (22.4, 14.4, 2.4), p=3.4)
     g.blob((-24.4, 0, 40.0), (2.2, 14.2, 10.0), p=3.2)
     rig.part("horse", g, BZ.SAND)
     g = Geo()
     for x in range(-22, 18, 4):                                # fringe on the edge
         g.blob((x, -15.0, 29.0), (1.2, 0.6, 1.4), p=2.2, rot=(0, 30, 0))
-    rig.part("horse", g, "#CFC3A6", outline=0)
+    rig.part("horse", g, FRINGE, outline=0)
     KB.lambda_mark(rig, "horse", (-6.0, -14.9, 39.5), size=1.4)
     for x, z in ((-14.0, 42.0), (2.0, 44.0), (-20.0, 34.0), (8.0, 36.0)):     # dapples on the haunch
         rig.part("horse", Geo().blob((x, -11.8, z), (2.6, 0.8, 2.2), p=2.2), COAT_DK, outline=0)
@@ -118,6 +139,17 @@ def build(rig):
     for y in (-9.6, 9.6):
         g.blob((-15.0, y, 57.5), (3.8, 1.2, 3.8), p=2.4)
     rig.part("horse", g, BZ.SAND, outline=0.5)
+    # dapples where the coat shows (the chest and the quarters below the shabraque), a breast collar with an
+    # aged bronze phalera
+    g = Geo()
+    for x, z, r in ((20.5, 36.0, 2.0), (23.4, 42.5, 1.7), (19.0, 47.5, 1.6)):
+        g.blob((x, KD.blob_y(*CHEST, x, z, p=2.2) + 0.45, z), (r, 0.7, r * 0.85), p=2.2)
+    rig.part("horse", g, COAT_DK, outline=0)
+    g = KD.ridge(*CHEST, [(16.6, 49.5), (21.0, 46.6), (24.2, 42.6), (25.0, 38.0)], 1.05, p=2.2, bulge=0.75)
+    look.team_part(rig, "horse", g, outline=0.4)              # a team-dark breast collar (team tack)
+    x, z = 23.0, 44.6
+    g = Geo().blob((x, KD.blob_y(*CHEST, x, z, p=2.2) - 0.5, z), (2.3, 0.9, 2.3), p=2.2)
+    rig.part("horse", g, BZ.AGED, finish="metal", outline=0.5)
 
     # neck with a plaited mane, a 1.25x head with a white blaze, bridle and brass bit
     rig.joint("neck", "horse", (21, 0, 49))
@@ -129,6 +161,11 @@ def build(rig):
         t = i / 5
         g.sphere((16.5 + 13 * t, 0, 56.5 + 15 * t), 3.0 - 0.3 * t, cuts=3)   # plaits
     rig.part("neck", g, MANE, finish="hair")
+    g = Geo()
+    for t, r in ((0.2, 2.0), (0.48, 1.8), (0.74, 1.5)):
+        cx, cz, rr = 20 + 11 * t, 46 + 18 * t, 9.2 - 2.4 * t
+        g.blob((cx + 1.0, -rr + 0.45, cz - 1.5), (r, 0.7, r * 0.85), p=2.2)
+    rig.part("neck", g, COAT_DK, outline=0)
     head = Geo().blob((38, 0, 63), (12.5, 6.4, 7.2), p=2.4, rot=(0, 40, 0))
     head.blob((46.0, 0, 55.2), (6.8, 6.0, 5.8), p=2.2)
     head.blob((33.0, 0, 62.0), (6.2, 6.6, 6.0), p=2.2)
@@ -140,7 +177,7 @@ def build(rig):
     g = Geo().blob((47.6, -1.0, 54.4), (4.4, 5.2, 4.2), p=2.2)        # nose pad
     rig.part("hhead", g, NOSE)
     g = Geo().blob((42.0, -2.8, 61.5), (7.2, 3.8, 2.4), p=2.4, rot=(0, 44, 0))   # blaze
-    rig.part("hhead", g, "#E4DED4", outline=0.6)
+    rig.part("hhead", g, BLAZE, outline=0.6)
     g = Geo().blob((34.6, -5.2, 66.2), (2.4, 1.5, 2.7))
     rig.part("hhead", g, EYE, highlight=False, outline=0.8)
     rig.joint("hpupil", "hhead", (35.4, -6.3, 65.8))
@@ -207,7 +244,7 @@ def build(rig):
     g = Geo()
     for y in (-8.6, 8.6):
         g.blob((0.0, y, 83.0), (3.6, 1.6, 6.0), p=2.3, taper=(0.7, 1.0))
-    rig.part("khead", g, team=True, outline=0.7)
+    look.team_part(rig, "khead", g, outline=0.7)                  # team-dark ear flaps (the cap in two tones)
     g = Geo().blob((0.2, 0, 89.4), (9.9, 9.7, 1.4), p=2.8)
     rig.part("khead", g, BZ.SAND, outline=0.5)
     rig.secondary("crest", "khead", (-7, 0, 86), (-18, 0, 70), max_deg=16, gain=1.3)
@@ -261,12 +298,24 @@ def build(rig):
                     (SX + 6.4, hz - 5.2), (SX + 0.6, hz - 2.4)], SY - 1.2, 1.6)
     rig.part("sabre", g, BLADE, finish=BZ.POLISH, outline_hex="#6E5A3A")
     g = Geo().capsule((SX + 8.8, SY - 2.2, hz + 3.4), (SX + 9.0, SY - 2.2, hz - 3.4), 0.6)
-    rig.part("sabre", g, "#F4ECD6", outline=0)
+    rig.part("sabre", g, EDGE, outline=0)
     g = Geo().lathe([(1.6, 0), (1.2, 2.0), (0, 6.0)], (SX - 0.6, SY - 1.0, hz), (SX - 6.6, SY - 1.0, hz), segs=8)
     rig.part("sabre", g, BZ.AGED, finish="metal", outline=0.5)
     g = Geo().blob((SX, SY - 0.8, hz), (2.2, 2.0, 3.0), p=2.6)
     rig.part("sabre", g, BZ.BRONZE_HI, finish=BZ.POLISH, outline=0.4)
     rig.track("sabreTip", "sabre", (SX + 9.4, SY, SZ + SABRE - 3.0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, rider): the team shabraque (the largest team surface, twice), the
+    rider's team tunic, the horse's neck; a strip torn from the shabraque's border."""
+    rig.damage_spot_at("shabraque", "horse", -16.0, 38.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("shabraque_fore", "horse", -3.0, 45.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("tunic", "ktorso", -4.0, 70.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("neck", "neck", 25.0, 54.0, 5.0, "hide", fill=COAT)
+    rig.damage_spot_at("hem", "horse", -20.0, 32.0, 9.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -429,6 +478,11 @@ B_ARM = [150, 175, 150, 110, 80, 60]
 B_FORE = [140, 170, 150, 100, 70, 60]
 B_SAB = [130, 100, 60, 10, -40, -50]
 B_ARZ = [0, 0, 0, 0, 0, 0]
+# item 38 B1' (art round W1): B and C lunged 30.5 and 32.1 lu at the impact (the team layer's centre against the
+# idle, the runtime's atlasCombat.lungeCurve), over the riders' 25 lu: the horse travels less on the strike and
+# the skid (the axe still meets the target on the impact frame; timing and impactAt unchanged)
+B_DX = [0.0, 0.0, -2.0, -5.0, -7.0, -6.0]
+C_DX = [0.0, 0.0, -2.0, -6.0, -9.0, -6.0]
 
 
 def _b_pose(i):
@@ -437,7 +491,7 @@ def _b_pose(i):
     k = i - 2
     pose = _attack_pose(i)
     pose = merge(pose, {
-        "horse": {"r": B_HR[k]}, "rider": {"z": B_RZ[k]},
+        "body": {"x": B_DX[k]}, "horse": {"r": B_HR[k]}, "rider": {"z": B_RZ[k]},
         "ktorso": {"r": B_KT[k], "rz": 0}, "khead": {"r": -0.5 * B_KT[k], "rz": 0},
         "karm_r": {"r": B_ARM[k] - KR0, "rz": B_ARZ[k]}, "kfore_r": {"r": B_FORE[k] - KF0},
     })
@@ -454,7 +508,8 @@ def _attack_b():
         5: [dict(CUT, **{"from": 3, "t0": 0.2})],
         6: [{"kind": "burst", "joint": "sabre", "point": TIP, "r0_lu": 8.0, "r1_lu": 15.0, "n": 6,
              "a0": -120.0, "arc": 160.0},
-            {"kind": "dust", "ground": (34.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 71, "spread": 1.2}],
+            {"kind": "dust", "ground": (34.0 + B_DX[4], 0.0), "size_lu": 10.0, "puffs": 5, "seed": 71,
+             "spread": 1.2}],
     }
     reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9)}
     return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=6,
@@ -481,7 +536,7 @@ def _c_pose(i):
     k = i - 2
     pose = _attack_pose(i)
     pose = merge(pose, {
-        "horse": {"r": C_HR[k]}, "rider": {"z": C_RZ[k]},
+        "body": {"x": C_DX[k]}, "horse": {"r": C_HR[k]}, "rider": {"z": C_RZ[k]},
         "ktorso": {"r": C_KT[k], "rx": C_KX[k], "rz": 0}, "khead": {"r": -0.4 * C_KT[k], "rz": 0},
         "karm_r": {"r": C_ARM[k] - KR0, "rz": 20}, "kfore_r": {"r": C_FORE[k] - KF0},
     })
@@ -498,7 +553,8 @@ def _attack_c():
         5: [dict(CUT, **{"from": 3, "t0": 0.2})],
         6: [{"kind": "burst", "joint": "sabre", "point": TIP, "r0_lu": 8.0, "r1_lu": 15.0, "n": 6,
              "a0": -60.0, "arc": 120.0},
-            {"kind": "dust", "ground": (30.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 72, "spread": 1.4}],
+            {"kind": "dust", "ground": (30.0 + C_DX[4], 0.0), "size_lu": 10.0, "puffs": 5, "seed": 72,
+             "spread": 1.4}],
     }
     reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9)}
     return M.clip("attack_c", [_c_pose(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=6,

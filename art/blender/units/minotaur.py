@@ -32,6 +32,8 @@ import math
 from ageborn_art import face as F
 from ageborn_art import gait as G
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -52,6 +54,22 @@ FUR_DK = "#5E4E42"
 MUZZLE = "#B59E8A"
 HORN = "#EFE7D0"
 HOOF = "#3A3330"
+HOOF_FAR = "#2C2725"
+FUR_FAR_DK = "#4C4036"
+HORN_DK = "#C9B994"
+EDGE = "#F4ECD6"
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2 (beasts: clumps, markings and value structure). The team kilt and cape in two tones
+# (team-dark bands over the kilt's sandstone hem and along the cape's hem), dark fur stockings on the shins,
+# ridged horns, an aged bronze plaque on the belt.
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {FUR: "fur", FUR_DK: "fur", FUR_FAR_DK: "fur", MUZZLE: "fur", HORN: "bone", HORN_DK: "bone",
+                  HOOF: "bone", HOOF_FAR: "bone", B.WOOD_DK: "wood", B.LEATHER: "leather", B.LEATHER_DK: "leather",
+                  B.AGED: "bronze", B.AGED_DK: "bronze", B.BRONZE: "bronze", B.BRONZE_HI: "bronze", EDGE: "bronze",
+                  B.SAND_LT: "cloth", "team": "cloth"}
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
 
 
@@ -79,7 +97,7 @@ def _labrys(rig, joint, grip, haft=34.0, back=8.0):
         edge = Geo()
         for p0, p1 in zip(pts, pts[1:]):
             edge.capsule((p0[0] - sgn * 0.6, y - 1.3, p0[1]), (p1[0] - sgn * 0.6, y - 1.3, p1[1]), 0.5)
-        rig.part(joint, edge, "#F4ECD6", outline=0)
+        rig.part(joint, edge, EDGE, outline=0)
     g = Geo().blob((gx, y - 0.6, hz), (2.6, 2.4, 3.6), p=2.6)
     rig.part(joint, g, B.AGED_DK, finish="metal", outline=0.5)
     return (gx + 12.5, y, hz)
@@ -94,7 +112,7 @@ def build(rig):
     for s in ("r", "l"):
         y = B.LEG_Y * B.SIDE_Y[s]
         col = FUR if s == "r" else FUR_DK
-        hoof = HOOF if s == "r" else "#2C2725"
+        hoof = HOOF if s == "r" else HOOF_FAR
         g = Geo().capsule((0, y, B.V3_THIGH_Z), (0.5, y, B.V3_KNEE_Z), 5.4, 4.6)
         rig.part(f"thigh_{s}", g, col, finish="hair")
         g = Geo().capsule((0.5, y, B.V3_KNEE_Z), (1.0, y, B.V3_ANKLE_Z + 0.6), 4.6, 3.2)
@@ -107,7 +125,9 @@ def build(rig):
         for a in (0, 70, 140, 210, 280):                   # fur fetlock tufts
             r = math.radians(a)
             g.lathe([(1.6, 0), (0, -3.2)], (1.0 + 3.4 * math.cos(r), y + 3.4 * math.sin(r), 7.2), segs=6)
-        rig.part(f"shin_{s}", g, FUR_DK if s == "r" else "#4C4036", finish="hair", outline=0.5)
+        rig.part(f"shin_{s}", g, FUR_DK if s == "r" else FUR_FAR_DK, finish="hair", outline=0.5)
+        g = Geo().capsule((0.75, y, 8.4), (1.0, y, B.V3_ANKLE_Z + 0.6), 4.15, 3.35)   # dark fur stockings
+        rig.part(f"shin_{s}", g, FUR_DK if s == "r" else FUR_FAR_DK, finish="hair", outline=0)
     # torso: furry chest and belly, a team strap, a team kilt with a sandstone hem, bronze belt
     g = Geo().blob((0.6, 0, 28.0), (11.6, 10.6, 12.6), p=2.3, taper=(0.92, 1.16))
     rig.part("torso", g, FUR, finish="hair")
@@ -120,6 +140,9 @@ def build(rig):
     g = Geo().blob((-9.0, 0, 26.0), (5.0, 13.4, 16.0), p=2.6, taper=(1.25, 0.85))
     g.clip((-6.0, 0, 0), (1, 0, 0))
     rig.part("cape", g, team=True)
+    g = KD.shell((-9.0, 0, 26.0), (5.0, 13.4, 16.0), p=2.6, taper=(1.25, 0.85),
+                 keep=[((0, 0, 14.2), (0, 0, 1)), ((-6.0, 0, 0), (1, 0, 0))])
+    look.team_part(rig, "cape", g, outline=0)                    # a team-dark hem on the cape
     g = Geo().blob((-1.0, 0, 40.0), (11.0, 12.6, 3.6), p=2.6)
     rig.part("torso", g, team=True, outline=0.7)
     g = Geo().sphere((9.0, -10.4, 35.4), 2.4, cuts=3)
@@ -128,10 +151,14 @@ def build(rig):
     rig.rest_offset["hem"] = (0, 0, B.V3_LIFT)              # the kilt hem >= 9 lu above the hooves
     g = Geo().blob((0.8, 0, 13.6), (12.8, 11.6, 5.6), p=2.4, taper=(1.2, 0.94))
     rig.part("hem", g, team=True)
+    g = KD.band_z((0.8, 0, 13.6), (12.8, 11.6, 5.6), 9.6, 12.6, taper=(1.2, 0.94))   # a team-dark band (3 lu)
+    look.team_part(rig, "hem", g, outline=0)
     g = Geo().blob((0.8, 0, 8.6), (13.2, 12.0, 1.4), p=3.0)
     rig.part("hem", g, B.SAND_LT, outline=0.5)
     g = Geo().blob((0.6, 0, 18.6), (12.4, 11.2, 2.2), p=3.2)
     rig.part("torso", g, B.LEATHER, outline=0.6)
+    g = Geo().blob((6.0, -11.2, 18.6), (2.6, 0.9, 2.1), p=2.6)        # an aged bronze plaque on the belt
+    rig.part("torso", g, B.AGED, finish="metal", outline=0.4)
     K.lambda_mark(rig, "hem", (8.0, -11.6, 13.0), size=1.2)
     rig.secondary("tail", "hips", (-11.0, 0, 18.0), (-17.0, 0, 9.0), max_deg=18, gain=1.3)
     g = Geo().capsule((-11.0, 0, 18.0), (-16.0, 0, 10.5), 1.4, 1.0)
@@ -156,6 +183,15 @@ def build(rig):
         a, b, c = (2.0, 9.0 * y, 59.0), (6.0, 15.0 * y, 63.0), (12.0, 15.6 * y, 70.0)
         g.capsule(a, b, 3.4, 2.8).capsule(b, c, 2.8, 0.9)
     rig.part("head", g, HORN, finish="gloss")
+    g = Geo()                                             # ridges round the horns near their roots
+    for y in (-1, 1):
+        a, b = (2.0, 9.0 * y, 59.0), (6.0, 15.0 * y, 63.0)
+        d = [b[i] - a[i] for i in range(3)]
+        for t, r in ((0.32, 3.35), (0.62, 3.15)):
+            p0 = tuple(a[i] + d[i] * t for i in range(3))
+            p1 = tuple(p0[i] + d[i] * 0.12 for i in range(3))
+            g.lathe([(0, 0), (r, 0.0), (r, 1.0), (0, 1.0)], p0, p1, segs=12)
+    rig.part("head", g, HORN_DK, finish="gloss", outline=0)
     g = Geo()
     for y in (-1, 1):
         g.blob((-3.0, 11.6 * y, 53.0), (4.4, 2.4, 2.4), p=2.2, rot=(0, -20, 0))
@@ -177,6 +213,18 @@ def build(rig):
     rig.track("axeTip", "axe", tip)
     rig.joint("axe_loose", "root", (0, 0, 0), hidden=True)
     _labrys(rig, "axe_loose", (0.0, -18.0, -14.0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3; never on the face): the team cape (the largest team surface,
+    twice), the team kilt; a strip torn from the kilt's hem. (No fur spot: the two-handed grip and the cape cover the chest
+    and the flank in the idle and the walk, 0-20% visible.)"""
+    rig.damage_spot_at("cape", "cape", -12.0, 31.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("cape_low", "cape", -15.0, 19.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("kilt", "hem", -4.0, 15.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hem", -4.0, 13.0, 10.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

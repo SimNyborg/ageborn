@@ -31,6 +31,8 @@ import math
 from ageborn_art import face as F
 from ageborn_art import gait as G
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge, squash
@@ -56,6 +58,24 @@ EYE = B.EYE
 PUPIL = B.PUPIL
 MOUTH = "#5A2E2E"
 SEAT = (21.0, 78.0)
+INNER_EAR = "#B7A39A"
+FAR_RING = "#5E5753"
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2 (beasts: clumps, markings and value structure, or the hide reads as one dark mass at 1x).
+# The team caparison in two tones (a team-dark border over its sandstone edge, team-dark lozenges), skin folds
+# and more wrinkle rings on the legs, a darker rim and veins on the ears, wrinkle rings down the whole trunk (the
+# shipped rings on its lower half sat on the upper segment's joint and slid off when it curled), aged bronze
+# corner posts on the tower.
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {HIDE: "hide", HIDE_DK: "hide", HIDE_LT: "hide", INNER_EAR: "hide", FAR_RING: "hide",
+                  NAIL: "bone", IVORY: "bone", B.SAND: "cloth", B.SAND_LT: "cloth", B.WOOD: "wood",
+                  B.WOOD_DK: "wood", B.BRONZE: "bronze", B.BRONZE_HI: "bronze", B.AGED: "bronze", B.VERD: "bronze",
+                  B.PLUM_DK: "wood", B.LEATHER_DK: "leather", B.SKIN_DK: "skin", "team": "cloth"}
+BODY = [((0, 0, 57), (30, 17.5, 19.5), 2.3), ((12, 0, 63), (17, 16, 15), 2.2), ((-18, 0, 57), (14, 16, 17), 2.2)]
+CAP = ((-2, 0, 64), (28.6, 18.6, 16.6))
 RIDER_S = 1.2
 
 
@@ -68,9 +88,17 @@ def _leg(rig, name, p0, p1, near):
     g.lathe([(8.4, 0), (8.2, 1.8), (7.6, 4.6), (0, 5.4)], (x1 + 0.6, y, 0.2), (x1 + 0.6, y, 5.6), segs=16)
     rig.part(f"leg_{name}2", g, col)
     g = Geo()                                                     # wrinkle rings at knee and ankle
-    for z in (z1 + 1.5, z1 - 1.5, 9.0):
+    for z in (z1 + 1.5, z1 - 1.5, 9.0, 15.5):
         g.lathe([(0, 0), (7.9, 0.2), (7.9, 0.8), (0, 1.0)], (x1 + 0.4, y, z), (x1 + 0.4, y, z + 1), segs=14)
-    rig.part(f"leg_{name}2", g, HIDE_DK if near else "#5E5753", outline=0)
+    rig.part(f"leg_{name}2", g, HIDE_DK if near else FAR_RING, outline=0)
+    g = Geo()                                                     # and up the thigh (W1: value structure)
+    x0, _, z0 = p0
+    for t in (0.42, 0.68):
+        z = z0 + (z1 - z0) * t
+        r = 9.0 + (7.6 - 9.0) * t + 0.3
+        x = x0 + (x1 - x0) * t
+        g.lathe([(0, 0), (r, 0.2), (r, 0.8), (0, 1.0)], (x, y, z), (x, y, z + 1), segs=14)
+    rig.part(f"leg_{name}", g, HIDE_DK if near else FAR_RING, outline=0)
     if near:
         g = Geo()
         for dx in (-3.4, 0.0, 3.4):
@@ -123,16 +151,32 @@ def build(rig):
                            bend=1.0 if name[0] == "f" else -1.0)
         rig.track(f"_foot_{name}", f"leg_{name}2", (p1[0] + 0.6, p1[1], 0.3))
 
-    g = Geo().blob((0, 0, 57), (30, 17.5, 19.5), p=2.3)
-    g.blob((12, 0, 63), (17, 16, 15), p=2.2)
-    g.blob((-18, 0, 57), (14, 16, 17), p=2.2)
+    g = Geo()
+    for c, r, p in BODY:
+        g.blob(c, r, p=p)
     rig.part("trunk", g, HIDE)
+    # skin folds: behind the shoulder and in front of the hip, below the caparison (incised, value structure)
+    for pts in (((12.0, 47.5), (14.6, 43.6), (18.4, 41.6), (22.6, 43.0)), ((-10.0, 47.5), (-13.0, 43.4),
+                                                                           (-17.6, 41.4), (-22.4, 43.4)),
+                ((2.0, 46.8), (1.0, 42.6), (2.2, 39.4))):
+        ref = Geo()
+        for c, r, p in BODY:
+            ref.blob(c, r, p=p)
+        KD.surface_line(rig, "trunk", ref, list(pts), 1.0, HIDE_DK)
     # team caparison over the back: a cloth with sandstone tassels and a lambda
     g = Geo().blob((-2, 0, 64), (28.6, 18.6, 16.6), p=3.0, taper=(1.02, 0.95))
     g.clip((0, 0, 47.0), (0, 0, -1))
     g.clip((24.0, 0, 0), (1, 0, 0))
     g.clip((-28.0, 0, 0), (-1, 0, 0))
     rig.part("trunk", g, team=True)
+    g = KD.shell(*CAP, p=3.0, taper=(1.02, 0.95), keep=[((0, 0, 52.8), (0, 0, 1)), ((0, 0, 48.6), (0, 0, -1)),
+                                                         ((23.8, 0, 0), (1, 0, 0)), ((-27.8, 0, 0), (-1, 0, 0))])
+    look.team_part(rig, "trunk", g, outline=0)                   # a team-dark border (4 lu) over the edge
+    g = Geo()                                                     # team-dark lozenges woven across the cloth
+    for x, z in ((-21.0, 59.0), (-12.0, 59.0), (8.0, 59.0), (16.0, 59.0), (-16.5, 67.0), (-4.5, 68.5), (12.0, 67.0)):
+        y = KD.blob_y(*CAP, x, z, p=3.0, taper=(1.02, 0.95))
+        g.slab([(x - 3.0, z), (x, z + 3.8), (x + 3.0, z), (x, z - 3.8)], y - 0.15, 0.7)
+    look.team_part(rig, "trunk", g, outline=0)
     g = Geo().blob((-2, 0, 47.6), (28.8, 18.8, 1.4), p=3.0)
     g.clip((24.2, 0, 0), (1, 0, 0))
     g.clip((-28.2, 0, 0), (-1, 0, 0))
@@ -151,6 +195,11 @@ def build(rig):
     rig.part("tower", g, B.WOOD_DK)
     g = Geo().blob((-6, 0, 86.6), (16.8, 13.6, 1.6), p=3.0)
     rig.part("tower", g, team=True, outline=0.5)
+    g = Geo()                                                     # aged bronze corner posts
+    for a in (-60.0, -120.0, -10.0, -170.0):
+        x, y = -6 + 14.6 * 1.15 * math.cos(math.radians(a)), 14.6 * 0.92 * math.sin(math.radians(a))
+        g.capsule((x, y, 78.4), (x, y, 87.6), 1.1)
+    rig.part("tower", g, B.AGED, finish="metal", outline=0.4)
     for x in (-13.0, 1.0):
         B.aspis(rig, "tower", (x, -14.6, 82.6), r=5.4, depth=1.4, rim=B.BRONZE, rim_w=0.9)
     # mahout on the neck
@@ -172,11 +221,21 @@ def build(rig):
     for z in (74.0, 70.5):
         g.capsule((44.5, -5.0, z), (46.0, 5.0, z), 0.7)
     rig.part("head", g, HIDE_DK, outline=0)
+    for pts in (((40.0, 78.6), (44.0, 79.4), (48.0, 77.4)), ((41.0, 64.6), (45.0, 63.8), (48.4, 65.4))):
+        ref = Geo().blob((37, 0, 69), (12, 12, 13.5), p=2.25, taper=(1.05, 0.9))     # brow and cheek folds
+        ref.blob((44, 0, 60), (7.5, 8.5, 9), p=2.2)
+        KD.surface_line(rig, "head", ref, list(pts), 0.9, HIDE_DK)
     rig.joint("ear", "head", (32, -11, 70))
     g = Geo().blob((29.5, -13.0, 66.0), (10.5, 2.6, 13.0), p=2.2, rot=(8, 6, 0))
     rig.part("ear", g, HIDE_LT)
+    g = Geo().blob((29.3, -12.2, 66.0), (11.4, 2.2, 13.9), p=2.2, rot=(8, 6, 0))
+    rig.part("ear", g, HIDE_DK, outline=0)                         # a darker rim round the ear
     g = Geo().blob((29.0, -14.6, 66.0), (7.6, 1.4, 9.6), p=2.2, rot=(8, 6, 0))
-    rig.part("ear", g, "#B7A39A", outline=0.4)                    # pink-grey inner ear
+    rig.part("ear", g, INNER_EAR, outline=0.4)                    # pink-grey inner ear
+    for pts in (((33.0, 71.0), (29.0, 72.5), (25.0, 71.0)), ((33.5, 67.0), (28.5, 65.5), (24.0, 62.5)),
+                ((32.5, 62.5), (29.5, 59.5), (27.0, 58.0))):       # veins across it
+        ref = Geo().blob((29.0, -14.6, 66.0), (7.6, 1.4, 9.6), p=2.2, rot=(8, 6, 0))
+        KD.surface_line(rig, "ear", ref, list(pts), 0.8, HIDE_DK)
     rig.joint("brow", "head", (43, -9, 74))
     g = Geo().capsule((40.5, -10.6, 75.6), (46.0, -7.6, 73.4), 1.8, 1.4)
     rig.part("brow", g, HIDE_DK, outline=0.6)
@@ -205,17 +264,32 @@ def build(rig):
     rig.part("trunk2", g, HIDE)
     g = Geo().capsule((49, 0, 26), (51, 0, 16), 3.8, 3.0).capsule((51, 0, 16), (56, 0, 13), 3.0, 2.6)
     rig.part("trunk3", g, HIDE)
-    g = Geo()
-    for z in (52, 46, 37, 31):
-        g.lathe([(0, 0), (5.6 - (60 - z) * 0.05, 0.2), (5.6 - (60 - z) * 0.05, 0.8), (0, 1.0)],
-                (47.5 + (60 - z) * 0.06, 0, z), (47.7 + (60 - z) * 0.06, 0, z + 1), segs=14)
-    rig.part("trunk1", g, HIDE_DK, outline=0)
+    # wrinkle rings down the whole trunk, each on its own segment (so they curl with it)
+    for joint, rings in (("trunk1", ((47.0, 55.0, 5.95), (47.6, 50.0, 5.65), (48.2, 45.5, 5.35))),
+                         ("trunk2", ((49.0, 38.5, 4.75), (49.0, 34.5, 4.5), (49.0, 30.5, 4.25))),
+                         ("trunk3", ((49.6, 22.5, 3.7), (50.4, 18.5, 3.4)))):
+        g = Geo()
+        for x, z, r in rings:
+            g.lathe([(0, 0), (r, 0.2), (r, 0.8), (0, 1.0)], (x, 0, z), (x + 0.15, 0, z + 1), segs=14)
+        rig.part(joint, g, HIDE_DK, outline=0)
     rig.track("trunkTip", "trunk3", (56.0, 0.0, 13.0))
     # tail
     rig.secondary("tail", "trunk", (-30, 0, 62), (-35, 0, 40), max_deg=14, gain=1.1)
     g = Geo().capsule((-30, 0, 62), (-34, 0, 44), 1.8, 1.2)
     g.lathe([(2.0, 0), (2.4, -2.4), (0, -6.5)], (-34.3, 0, 45), segs=10)
     rig.part("tail", g, HIDE_DK, finish="hair")
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, beast with a rider): the team caparison (the largest team surface,
+    twice), the hide of the near hind thigh, a team shield on the tower; a strip torn from the caparison's border."""
+    rig.damage_spot_at("caparison", "trunk", -14.0, 58.0, 9.0, "cloth", team=True)
+    rig.damage_spot_at("caparison_fore", "trunk", 12.0, 60.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("thigh", "leg_br", -19.0, 32.0, 6.0, "hide", fill=HIDE)
+    rig.damage_spot_at("tower", "tower", -4.0, 80.0, 5.0, "wood", team=True)
+    rig.damage_spot_at("hem", "trunk", -16.0, 50.5, 10.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
