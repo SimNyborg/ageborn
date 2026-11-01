@@ -18,11 +18,14 @@ Animation (ANIM_SPEC G1 swagger, appendix B clubs; distinct from the Bonker's si
   attack_c  TORNADO SPIN: a full turn with both clubs out level (a ring), ending in a backhand hit
   hit       light;  die  D1 fling and spin, a club flies off, X eyes
 """
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import kit_stone as K
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from ageborn_art import look
+from units import stone_w1 as W1
 
 SLUG = "pelt_rager"
 GAIT_NAME = "biped"
@@ -42,6 +45,20 @@ WOOD = "#9C7E62"
 WOOD_DK = "#7A604A"
 BONE = "#EDE3C8"
 FUR = "#6A5546"
+NOSE = "#2E2826"
+# W1 (the detail standard)
+PELT_LT = "#8E7666"       # lighter guard hair over the bear pelt (two tones, 30 levels over it)
+BEARD_LT = "#5E4C40"      # lighter bristles in the beard
+LEATHER_DK = "#56412F"
+CHEEK = "#BF967A"         # a ruddy cheek (17 levels under the skin)
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.65   # over the soldiers' 1.35: highlight 0.055-0.057 at idle 0 with 1.45 (band 0.06-0.10)
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", BEARD: "fur", BEARD_LT: "fur", PELT: "fur", PELT_DK: "fur", PELT_LT: "fur",
+                           SNOUT: "hide", NOSE: "hide", WOOD: "wood", WOOD_DK: "wood", BONE: "bone",
+                           LEATHER_DK: "leather", CHEEK: "skin", "team": "hide"})
 
 HIP_Y, SH_Y = 6.0, 12.6
 CLUB = 17.0
@@ -68,8 +85,18 @@ def build(rig):
     body = K.body(rig, SKIN, FUR, stocky=1.2, hip_y=HIP_Y, shoulder_y=SH_Y, torso_r=(11.8, 10.4, 11.2), foot_len=4.8,
                   fist=4.6)
     fr, fl = body.fist["r"], body.fist["l"]
-    K.pelt(rig, FUR, strap=True, emblem=True, z=28.4, r=(12.2, 11.2, 9.8), skirt_r=(12.2, 11.0, 4.6))
+    deco = K.pelt(rig, FUR, strap=True, emblem=True, z=28.4, r=(12.2, 11.2, 9.8), skirt_r=(12.2, 11.0, 4.6))
     K.wraps(rig, HIP_Y, SH_Y, wrists=("r", "l"))
+    # W1: claw-mark slashes in the team-dark tone on the pelt (the berserker's tunic in two tones, still team), a
+    # dyed belt (team-dark; a leather one left team 18.8% in the walk) with a small bone buckle, laces on the shins
+    W1.stripes(rig, "torso", deco, [[(-9.0, 31.6), (-5.6, 26.6)], [(-6.6, 32.6), (-3.2, 27.6)],
+                                    [(-4.2, 33.2), (-0.8, 28.4)]], w=1.6)
+    W1.ring(rig, "torso", (0.5, 0, 22.4), 12.85, height=3.0, ry=11.85, team=True, segs=40, outline=0.8)
+    g = Geo().blob((11.4, -7.3, 24.0), (1.9, 1.1, 1.7), p=2.4, rot=(0, 0, -36))
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    for side, y in (("r", -HIP_Y), ("l", HIP_Y)):
+        W1.laces(rig, f"shin_{side}", 0.8, y - 3.85 if side == "r" else y - 3.6, 6.2, 10.8,
+                 LEATHER_DK if side == "r" else CC.scale(LEATHER_DK, 0.8))
     # team war-paint bands on both upper arms
     for side, y in (("r", -SH_Y), ("l", SH_Y)):
         g = Geo().capsule((0.6, y, 34.0), (1.3, y + (0.3 if y > 0 else -0.3), 29.0), 4.6, 4.4)
@@ -83,23 +110,29 @@ def build(rig):
     beard = Geo().blob((6.6, 0, 41.0), (8.4, 10.0, 5.6), p=2.3)
     hood = Geo().blob((-1.0, 0, 54.6), (11.0, 11.2, 7.0), p=2.2)
     hood.blob((-6.6, 0, 48.0), (6.0, 11.0, 9.0), p=2.2)
-    K.head(rig, SKIN, z=47.5, r=(10.8, 10.4, 10.6), jaw=(8.0, 8.8, 5.6), extra_geos=(beard, hood), brow_col=BEARD)
+    face = K.head(rig, SKIN, z=47.5, r=(10.8, 10.4, 10.6), jaw=(8.0, 8.8, 5.6), extra_geos=(beard, hood),
+                  brow_col=BEARD)
     rig.part("head", beard, BEARD, finish="hair")
     rig.part("head", hood, PELT, finish="hair")
+    # W1: lighter guard hair over the bear hood, lighter bristles in the beard, a ruddy cheek
+    W1.locks(rig, "head", [((-2.0, 60.2), (-9.0, 57.4), 1.4), ((-7.0, 54.0), (-11.6, 47.0), 1.35),
+                           ((3.6, 61.0), (-1.6, 61.4), 1.3)], PELT_LT, -10.6)
+    W1.locks(rig, "head", [((9.8, 43.4), (10.4, 37.2), 1.3), ((5.8, 42.8), (6.4, 36.2), 1.3)], BEARD_LT, -9.6)
+    W1.blush(rig, "head", face, 7.6, 46.6, 2.6, 1.9, CHEEK)
     g = Geo().lathe([(10.6, 0), (11.4, 0.4), (11.4, 2.8), (10.4, 3.2)], (2.4, 0, 50.6), (1.2, 0, 53.6), segs=24)
     rig.part("head", g, team=True, outline=0.6)   # a team-dyed band where the hood meets his brow
     g = Geo().blob((8.6, 0, 57.8), (6.4, 5.6, 3.8), p=2.2)     # the bear's snout over his brow
     rig.part("head", g, SNOUT)
     g = Geo().blob((14.4, -0.4, 58.0), (1.8, 2.0, 1.6), p=2.2)
-    rig.part("head", g, "#2E2826", outline=0.4)
+    rig.part("head", g, NOSE, outline=0.4)
     g = Geo()
     for y in (-1, 1):
         g.blob((-1.0, 8.0 * y, 61.6), (3.0, 2.0, 3.0), p=2.2)
     rig.part("head", g, PELT_DK, finish="hair")
     g = Geo()
-    for y in (-3.0, 3.0):   # the bear's teeth along the hood's brim
-        g.lathe([(0.9, 0), (0, 2.2)], (11.8, y, 54.6), (12.4, y, 52.4), segs=6)
-    rig.part("head", g, BONE, outline=0.3)
+    for y in (-3.0, 3.0):   # the bear's teeth along the hood's brim (W1: bigger fangs, 2.6 lu at the root)
+        g.lathe([(1.3, 0), (0, 3.4)], (11.8, y - 0.4, 54.8), (12.6, y - 0.4, 51.4), segs=6)
+    rig.part("head", g, BONE, finish="gloss", outline=0.3)
     # a club in each fist
     for side, f in (("r", fr), ("l", fl)):
         rig.joint(f"club_{side}", f"fore_{side}", f)
@@ -111,6 +144,17 @@ def build(rig):
     rig.track("clubHead", "club_r", TIP_R)
     ARM_R = body.arm("r", "club_r", TIP_R)
     ARM_L = body.arm("l", "club_l", TIP_L)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the pelt tunic's back
+    half, the team bear cloak down his back and the kilt; a strip torn from the kilt's hem (his shins are bare)."""
+    rig.damage_spot_at("pelt", "torso", -3.0, 29.0, 7.0, "hide", team=True)
+    rig.damage_spot_at("cloak", "cloak", -12.0, 30.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("skirt", "skirt", 2.5, 20.5, 5.5, "hide", team=True)
+    rig.damage_spot_at("hem", "skirt", -6.0, 18.5, 10.0, "hide", kind="strip", team=True)
 
 
 RIG = ARM_R = ARM_L = TIP_R = TIP_L = None

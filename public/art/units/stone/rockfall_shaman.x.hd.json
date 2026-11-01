@@ -26,17 +26,17 @@
   },
   "rockfall_shaman_attack_b_02_team": {
    "frame": {
-    "x": 225,
-    "y": 230,
-    "w": 91,
+    "x": 307,
+    "y": 202,
+    "w": 93,
     "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 201,
     "y": 181,
-    "w": 91,
+    "w": 93,
     "h": 184
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "rockfall_shaman_attack_b_03_team": {
    "frame": {
-    "x": 117,
-    "y": 230,
+    "x": 434,
+    "y": 197,
     "w": 104,
     "h": 186
    },
@@ -122,8 +122,8 @@
   },
   "rockfall_shaman_attack_b_04_team": {
    "frame": {
-    "x": 320,
-    "y": 230,
+    "x": 542,
+    "y": 197,
     "w": 101,
     "h": 183
    },
@@ -148,15 +148,15 @@
    "frame": {
     "x": 307,
     "y": 2,
-    "w": 120,
+    "w": 123,
     "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 217,
+    "x": 214,
     "y": 184,
-    "w": 120,
+    "w": 123,
     "h": 196
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "rockfall_shaman_attack_b_05_team": {
    "frame": {
-    "x": 147,
-    "y": 425,
+    "x": 647,
+    "y": 175,
     "w": 118,
     "h": 153
    },
@@ -194,8 +194,8 @@
   },
   "rockfall_shaman_attack_b_06": {
    "frame": {
-    "x": 2,
-    "y": 425,
+    "x": 555,
+    "y": 2,
     "w": 141,
     "h": 169
    },
@@ -218,18 +218,18 @@
   },
   "rockfall_shaman_attack_b_06_team": {
    "frame": {
-    "x": 382,
-    "y": 425,
+    "x": 117,
+    "y": 227,
     "w": 127,
-    "h": 131
+    "h": 130
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 235,
+    "y": 236,
     "w": 127,
-    "h": 131
+    "h": 130
    },
    "sourceSize": {
     "w": 506,
@@ -242,17 +242,17 @@
   },
   "rockfall_shaman_attack_b_07": {
    "frame": {
-    "x": 2,
-    "y": 230,
-    "w": 111,
+    "x": 434,
+    "y": 2,
+    "w": 117,
     "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 234,
+    "x": 228,
     "y": 191,
-    "w": 111,
+    "w": 117,
     "h": 191
    },
    "sourceSize": {
@@ -266,18 +266,18 @@
   },
   "rockfall_shaman_attack_b_07_team": {
    "frame": {
-    "x": 269,
-    "y": 425,
-    "w": 109,
-    "h": 148
+    "x": 2,
+    "y": 230,
+    "w": 111,
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 223,
-    "y": 220,
-    "w": 109,
-    "h": 148
+    "x": 221,
+    "y": 221,
+    "w": 111,
+    "h": 147
    },
    "sourceSize": {
     "w": 506,
@@ -323,15 +323,15 @@
   "image": "rockfall_shaman.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 512,
-   "h": 596
+   "w": 768,
+   "h": 388
   },
   "scale": "3",
   "ageborn": {
    "visualId": "unit.rockfall_shaman",
    "name": "Rockfall Shaman",
    "heightLu": 66,
-   "widthLu": 35.8,
+   "widthLu": 36.6,
    "pxPerLu": 2.46,
    "feetPx": [
     254,

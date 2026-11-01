@@ -22,11 +22,14 @@ Animation (ANIM_SPEC G2 brisk waddle, appendix B casters: two releases):
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import kit_stone as K
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from ageborn_art import look
+from units import stone_w1 as W1
 
 SLUG = "rockfall_shaman"
 GAIT_NAME = "biped"
@@ -46,6 +49,18 @@ WOOD = "#8A6E54"
 LEATHER = "#7A5E48"
 ROCK = "#9A948A"
 FUR = "#7A6B5E"
+# W1 (the detail standard)
+BEARD_DK = "#AFA89A"      # darker grey strands in the white beard (two tones, 40 levels under it)
+LEATHER_DK = "#56412F"
+CHEEK = "#946E59"         # a weathered cheek (17 levels under the skin)
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_SOLDIER
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", BEARD: "fur", BEARD_DK: "fur", STONE: "stone", STONE_LT: "stone", BONE: "bone",
+                           WOOD: "wood", LEATHER: "leather", LEATHER_DK: "leather", ROCK: "stone", FUR: "fur",
+                           CHEEK: "skin", "team": "hide"})
 
 HIP_Y, SH_Y = 6.0, 11.8
 STAFF_UP, STAFF_DN = 26.0, 16.0
@@ -62,34 +77,48 @@ def build(rig):
     rig.rest_offset["skirt"] = (0, 0, K.LIFT + 1.5)
     g = Geo().lathe([(9.4, 0), (11.6, 3.0), (12.6, 8.0), (13.0, 10.4), (0, 10.6)], (0.4, 0, 24.0), (0.4, 0, 13.4), segs=22)
     rig.part("skirt", g, team=True)
+    # W1: a team-dark band round the skirt above its hem (two tones, still team)
+    W1.ring(rig, "skirt", (0.4, 0, 16.0), 12.95, height=2.8, team=True, p1=(0.4, 0, 13.4), segs=40, outline=0,
+            bulge=0.35)
     rig.secondary("cloak", "torso", (-7.0, 0, 38.0), (-13.0, 0, 18.0), max_deg=14, gain=1.2)
     g = Geo().blob((-9.6, 0, 29.0), (4.0, 12.6, 11.0), p=2.4, taper=(1.25, 0.85))
     for y in (-8.0, -3.0, 2.5, 7.5):
         g.lathe([(2.4, 0), (0, -3.6)], (-11.0, y, 19.0), segs=8)
+    cloak_face = F.Face(rig, "cloak", [g])
     rig.part("cloak", g, team=True)
+    # W1: the cloak in two tones: a team-dark band above its ragged hem and a painted spiral-disc spot
+    W1.stripes(rig, "cloak", cloak_face, [[(-16.0, 23.6), (-11.2, 22.4)], [(-11.2, 22.4), (-6.0, 21.8)]], w=2.6)
+    W1.team_spots(rig, "cloak", cloak_face, [(-11.6, 31.0, 1.8, 1.5)])
     g = Geo().blob((0.6, 0, 33.4), (11.4, 11.0, 5.0), p=2.4)
     rig.part("torso", g, team=True)
     g = Geo()
     for k in range(7):
         a = -1.1 + k * 0.36
-        g.sphere((math.cos(a) * 10.6 + 1.0, math.sin(a) * 10.0, 30.0 - 0.6 * abs(k - 3)), 1.5, cuts=2)
-    rig.part("torso", g, STONE_LT, outline=0.4)
+        g.sphere((math.cos(a) * 10.6 + 1.0, math.sin(a) * 10.0, 30.0 - 0.6 * abs(k - 3)), 1.6, cuts=2)
+    rig.part("torso", g, STONE_LT, finish="gloss", outline=0.4)
+    # W1: a dark leather belt with a stone disc buckle over the skirt's top
+    W1.ring(rig, "torso", (0.5, 0, 21.6), 11.1, height=2.8, ry=10.2, fill=LEATHER_DK, segs=40, outline=0.8)
+    g = Geo().lathe([(0, 0), (2.4, 0.1), (2.4, 1.0), (0, 1.1)], (9.6, -6.6, 23.0), (10.4, -7.4, 23.0), segs=14)
+    rig.part("torso", g, STONE, finish="gloss", outline=0.5)
     # long white beard, bead-and-disc headdress
     beard = Geo().blob((7.0, 0, 40.0), (7.6, 9.2, 7.2), p=2.3)
     beard.blob((8.6, 0, 33.6), (4.6, 6.0, 5.0), p=2.3)
     cap = Geo().blob((-1.4, 0, 54.6), (10.6, 10.8, 6.4), p=2.2)
-    K.head(rig, SKIN, z=47.0, r=(10.4, 10.0, 10.2), jaw=(7.4, 8.4, 5.2), eye_r=3.6, extra_geos=(beard, cap),
-           brow_col=BEARD)
+    face = K.head(rig, SKIN, z=47.0, r=(10.4, 10.0, 10.2), jaw=(7.4, 8.4, 5.2), eye_r=3.6, extra_geos=(beard, cap),
+                  brow_col=BEARD)
     rig.part("head", beard, BEARD, finish="hair")
     rig.part("head", cap, LEATHER, finish="hair")
+    # W1: darker strands down the white beard (two tones) and a weathered cheek
+    W1.locks(rig, "head", [((10.6, 38.4), (10.0, 30.4), 1.35), ((7.4, 38.8), (7.8, 29.6), 1.3)], BEARD_DK, -8.8)
+    W1.blush(rig, "head", face, 7.2, 46.4, 2.4, 1.8, CHEEK)
     rig.secondary("beads", "head", (0.0, 0, 60.0), (-2.0, 0, 46.0), max_deg=14, gain=1.4)
     g = Geo()
     for k in range(5):
         a = math.radians(150 + k * 30)
         x, y = 1.0 + math.cos(a) * 10.8, math.sin(a) * 10.8
         for j in range(3):
-            g.sphere((x, y, 55.0 - j * 3.0), 1.3, cuts=2)
-    rig.part("beads", g, BONE, outline=0.4)
+            g.sphere((x, y, 55.0 - j * 3.0), 1.4, cuts=2)
+    rig.part("beads", g, BONE, finish="gloss", outline=0.4)
     g = Geo()
     for k, (x, z) in enumerate(((-2.0, 66.0), (3.4, 64.6), (-7.0, 64.0))):
         g.lathe([(3.4, 0), (3.6, 0.6), (3.6, 1.6), (3.2, 2.0)], (x, 0, z), (x, 0.8, z + 1.8), segs=14, rot=(70, 0, 0))
@@ -116,6 +145,17 @@ def build(rig):
     rig.track("muzzle", "staff", CUP)
     ARM_R = body.arm("r", "staff", (fx, fy, fz + STAFF_UP))
     ARM_L = body.arm("l")
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the long skirt, the cloak
+    down his back, the shoulder cape's front; a strip torn from the cloak's ragged hem."""
+    rig.damage_spot_at("skirt", "skirt", 0.0, 22.0, 7.0, "hide", team=True)
+    rig.damage_spot_at("cloak", "cloak", -11.0, 28.0, 6.0, "hide", team=True)
+    rig.damage_spot_at("cape", "torso", 7.0, 35.6, 5.0, "hide", team=True)
+    rig.damage_spot_at("hem", "cloak", -10.0, 21.0, 9.0, "hide", kind="strip", team=True)
 
 
 RIG = ARM_R = ARM_L = CUP = FOOT = None

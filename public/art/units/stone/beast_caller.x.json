@@ -26,17 +26,17 @@
   },
   "beast_caller_attack_b_01_team": {
    "frame": {
-    "x": 65,
-    "y": 206,
-    "w": 50,
+    "x": 2,
+    "y": 111,
+    "w": 49,
     "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 93,
     "y": 98,
-    "w": 50,
+    "w": 49,
     "h": 75
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "beast_caller_attack_b_02_team": {
    "frame": {
-    "x": 2,
-    "y": 206,
+    "x": 72,
+    "y": 110,
     "w": 59,
     "h": 76
    },
@@ -122,17 +122,17 @@
   },
   "beast_caller_attack_b_03_team": {
    "frame": {
-    "x": 119,
-    "y": 206,
-    "w": 59,
+    "x": 135,
+    "y": 110,
+    "w": 61,
     "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
+    "x": 104,
     "y": 98,
-    "w": 59,
+    "w": 61,
     "h": 74
    },
    "sourceSize": {
@@ -146,17 +146,17 @@
   },
   "beast_caller_attack_b_04": {
    "frame": {
-    "x": 190,
-    "y": 111,
-    "w": 82,
+    "x": 360,
+    "y": 97,
+    "w": 83,
     "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 113,
+    "x": 112,
     "y": 99,
-    "w": 82,
+    "w": 83,
     "h": 84
    },
    "sourceSize": {
@@ -170,10 +170,10 @@
   },
   "beast_caller_attack_b_04_team": {
    "frame": {
-    "x": 258,
-    "y": 206,
+    "x": 498,
+    "y": 2,
     "w": 72,
-    "h": 59
+    "h": 58
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 108,
     "y": 116,
     "w": 72,
-    "h": 59
+    "h": 58
    },
    "sourceSize": {
     "w": 243,
@@ -196,15 +196,15 @@
    "frame": {
     "x": 296,
     "y": 2,
-    "w": 73,
+    "w": 74,
     "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 114,
+    "x": 113,
     "y": 90,
-    "w": 73,
+    "w": 74,
     "h": 91
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "beast_caller_attack_b_05_team": {
    "frame": {
-    "x": 182,
-    "y": 206,
+    "x": 200,
+    "y": 106,
     "w": 72,
     "h": 68
    },
@@ -242,8 +242,8 @@
   },
   "beast_caller_attack_c_01": {
    "frame": {
-    "x": 2,
-    "y": 111,
+    "x": 374,
+    "y": 2,
     "w": 52,
     "h": 91
    },
@@ -266,17 +266,17 @@
   },
   "beast_caller_attack_c_01_team": {
    "frame": {
-    "x": 51,
-    "y": 286,
-    "w": 44,
+    "x": 515,
+    "y": 120,
+    "w": 47,
     "h": 50
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
+    "x": 97,
     "y": 124,
-    "w": 44,
+    "w": 47,
     "h": 50
    },
    "sourceSize": {
@@ -290,8 +290,8 @@
   },
   "beast_caller_attack_c_02": {
    "frame": {
-    "x": 126,
-    "y": 111,
+    "x": 296,
+    "y": 97,
     "w": 60,
     "h": 89
    },
@@ -314,17 +314,17 @@
   },
   "beast_caller_attack_c_02_team": {
    "frame": {
-    "x": 334,
-    "y": 206,
-    "w": 46,
+    "x": 574,
+    "y": 2,
+    "w": 59,
     "h": 51
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 84,
     "y": 128,
-    "w": 46,
+    "w": 59,
     "h": 51
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "beast_caller_attack_c_03": {
    "frame": {
-    "x": 58,
-    "y": 111,
+    "x": 430,
+    "y": 2,
     "w": 64,
     "h": 90
    },
@@ -362,18 +362,18 @@
   },
   "beast_caller_attack_c_03_team": {
    "frame": {
-    "x": 99,
-    "y": 286,
-    "w": 47,
-    "h": 49
+    "x": 574,
+    "y": 57,
+    "w": 50,
+    "h": 52
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
-    "y": 128,
-    "w": 47,
-    "h": 49
+    "x": 99,
+    "y": 125,
+    "w": 50,
+    "h": 52
    },
    "sourceSize": {
     "w": 243,
@@ -386,8 +386,8 @@
   },
   "beast_caller_attack_c_04": {
    "frame": {
-    "x": 276,
-    "y": 111,
+    "x": 447,
+    "y": 96,
     "w": 64,
     "h": 83
    },
@@ -410,18 +410,18 @@
   },
   "beast_caller_attack_c_04_team": {
    "frame": {
-    "x": 150,
-    "y": 286,
+    "x": 566,
+    "y": 113,
     "w": 49,
-    "h": 45
+    "h": 47
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 131,
+    "y": 129,
     "w": 49,
-    "h": 45
+    "h": 47
    },
    "sourceSize": {
     "w": 243,
@@ -458,18 +458,18 @@
   },
   "beast_caller_attack_c_05_team": {
    "frame": {
-    "x": 2,
-    "y": 286,
+    "x": 515,
+    "y": 64,
     "w": 45,
-    "h": 50
+    "h": 52
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 127,
+    "y": 125,
     "w": 45,
-    "h": 50
+    "h": 52
    },
    "sourceSize": {
     "w": 243,
@@ -541,8 +541,8 @@
   "image": "beast_caller.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 384,
-   "h": 340
+   "w": 640,
+   "h": 188
   },
   "scale": "1.5",
   "ageborn": {
