@@ -27,8 +27,16 @@ from . import damage  # W0: damage spots and body trackers (the age's damage bun
 from .rig import Rig
 
 
+class _ExtraClips(tuple):
+    """W0: the extras sheet also takes every aimed variant (`<clip>_up45`, `_up70`, `_down`; aimed.py, C2)."""
+
+    def __contains__(self, name):
+        base, _, aim = name.rpartition("_") if isinstance(name, str) else ("", "", "")
+        return tuple.__contains__(self, name) or (aim in ("up45", "up70", "down") and base in ("attack",) + self)
+
+
 # attack variants and second attackers go into the lazily loaded extras sheet (ANIM_SPEC P4)
-EXTRA_CLIPS = ("attack_b", "attack_c", "attack_alt")
+EXTRA_CLIPS = _ExtraClips(("attack_b", "attack_c", "attack_alt"))   # and every aimed variant (W0)
 
 
 def walk_metrics(tracks, clip, planted_tol=1.0):

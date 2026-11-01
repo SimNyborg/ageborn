@@ -329,6 +329,34 @@ frame's silhouette box (parts and interior-line hulls, the outline's width, the 
 cut to the canvas) within 2 lu of the packed frame. A unit that fails is listed and keeps its old bundle entry
 (or none), so a script that no longer reproduces its sheet never writes wrong spots.
 
+**Aimed attack clips** (`ageborn_art/aimed.py`, COMMON C2). A unit that hits flyers overhead (or shoots down from a
+height) adds variants of its shot clips aimed up about 45 and 70 degrees (and down) at the end of `clips()`:
+
+```python
+from ageborn_art import aimed as AIMED
+
+AIM_W = [0, 0.45, 0.85, 1, 1, 1, 0.85, 0.4, 0, 0, 0, 0]   # per unique frame: how much of the turn it takes
+
+def _attack_pose(f, turn=0.0):    # frame f with the weapon turned `turn` degrees up (negative: down): the weapon's
+    ...                           # angle, a lean into the shot, the head with it; arms by IK; feet where they were
+
+def clips():
+    attack = _attack_clip()
+    aimed = AIMED.variants(RIG, attack, lambda f, t: _attack_pose(f, turn=t), AIM_W, aims=("up45", "up70"))
+    return [..., attack, ...] + aimed
+```
+
+`variants(rig, clip, pose, weights, aims=("up45", "up70", "down"))` solves the turn on the rig so the drawn weapon
+(the clip's `aimdata` axis through the sprite camera) points at 45, 70 or -35 degrees at the release frame within
+0.25 degrees (`targets=` overrides them), and builds `<clip>_up45`, `<clip>_up70`, `<clip>_down` with the base clip's
+exact timing (frames, sequence, step durations, impact and smear frames, `holdStep`, `holdLoop` and every other
+extra) plus `aimOf`. A frame whose weight is 0 reuses the base clip's frame (no new pixels); between 0 and 1 it takes
+that share of the turn, so the wind-up rises into the aim and the recovery falls out of it and the animation
+standard's holds and follow-through stay as they were; the release frame must be 1. Bursts and rings painted on the
+weapon joint turn with it. It raises when a planted foot moves more than 1 lu or no turn reaches a target. The
+variants go to the extras sheet (`pipeline.EXTRA_CLIPS` takes every `_up45`, `_up70` and `_down` clip). The Crossbowman is the
+worked example.
+
 ## Install
 
 Blender's Python module needs **Python 3.11** (bpy 5.0.1 wheels exist only for 3.11).
