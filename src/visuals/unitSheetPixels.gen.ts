@@ -165,6 +165,7 @@ export const UNIT_SHEET_PIXELS: Readonly<Record<string, readonly [number, number
   'stone/hunting_wolves': [2170880, 537600, 583680, 142848],
   'stone/mammoth_matriarch': [8857600, 2942976, 2277376, 746496],
   'stone/pebbler': [1820672, 1122304, 486400, 314880],
+  'stone/pebbler@snowball_pebbler': [1806336, 1130496, 485376, 301056],
   'stone/pelt_rager': [2015232, 519680, 544768, 135168],
   'stone/rockfall_shaman': [1806336, 297984, 481280, 76800],
   'stone/sabertooth': [2551808, 522240, 673792, 135168],
