@@ -1,4 +1,0 @@
-Devlog #12: how many soldiers is a Legendary worth? 🐉🚂🦣
-I tested it on my game's own simulation. The Elk Chieftain beats five cavemen, the Lindworm five crossbowmen, the Armoured Train six workers. The Mammoth only beats two, but those are heavy beasts. Which Legendary should I test next? 👇
-
-#gamedev #indiedev #indiegame #devlog #gamebalance

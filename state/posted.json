@@ -646,6 +646,21 @@
    "pillar": "devlog",
    "hook": "+1 caveman, same elk: points to devlog #11",
    "trial": false
+  },
+  {
+   "id": "18121606372948030",
+   "permalink": "https://www.instagram.com/reel/DfNcJ3lDU4s/",
+   "timestamp": "2026-11-01T19:04:27+0000",
+   "name": "dv12-devlog-12-how-many-soldiers-is-a-legendary-worth",
+   "kind": "reel",
+   "pillar": "devlog",
+   "hook": "Devlog #12: how many soldiers is a Legendary worth (round-up of four balance tests)",
+   "trial": false,
+   "length_s": 27.5,
+   "format": "devlog",
+   "hook_type": "question",
+   "experiment": "indie-angle",
+   "arm": "devlog"
   }
  ]
 }
