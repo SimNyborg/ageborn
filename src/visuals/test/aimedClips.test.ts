@@ -101,6 +101,20 @@ describe('choosing the aimed clip (atlasAim.ts)', () => {
     // a clip with its own aim has an axis: the table's omni does not apply to it
     expect(clipAimOf({ aimDeg: 3 }, { deg: 0, omni: true })).toEqual({ deg: 3 });
   });
+
+  it('a clip with sheet data builds its aim once (the battle reads it every frame), per table entry', () => {
+    const meta = { aimDeg: 20, release: { frame: 2, atLu: [10, 50] as const } };
+    const table = { deg: 38, release: [12, 40] as const };
+    const first = clipAimOf(meta, table);
+    expect(clipAimOf(meta, table)).toBe(first);
+    // the same clip under another table entry (or none) is worked out again, and kept in turn
+    const other = clipAimOf(meta, undefined);
+    expect(other).not.toBe(first);
+    expect(other).toEqual({ deg: 20, release: [10, 50] });
+    expect(clipAimOf(meta, undefined)).toBe(other);
+    // another clip (another sheet's copy of it) has its own
+    expect(clipAimOf({ ...meta }, undefined)).not.toBe(other);
+  });
 });
 
 // ---------------------------------------------------------------------------------------------

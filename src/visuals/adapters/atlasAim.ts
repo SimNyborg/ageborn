@@ -100,6 +100,9 @@ export function releasePoint(r: ClipRelease | undefined): readonly [number, numb
   return p && Number.isFinite(p[0]) && Number.isFinite(p[1]) ? p : undefined;
 }
 
+/** `clipAimOf`'s results by clip meta (one per clip per loaded sheet; they go with the sheet), with the table entry used. */
+const CLIP_AIMS = new WeakMap<ClipAimMeta, { own: ClipAim | undefined; aim: ClipAim }>();
+
 /**
  * An attack clip's drawn aim: the sheet's own data where it writes any (`aimDeg`, `release`, `omni`), with the
  * measured table's entry (`own`) filling what it leaves out; else the table's entry; else level. A clip with its own
@@ -108,9 +111,14 @@ export function releasePoint(r: ClipRelease | undefined): readonly [number, numb
 export function clipAimOf(meta: ClipAimMeta | undefined, own: ClipAim | undefined): ClipAim {
   const release = releasePoint(meta?.release);
   if (meta && (meta.aimDeg !== undefined || release !== undefined || meta.omni === true)) {
+    // the battle reads this every frame for every aiming unit (`aimNow`): built once per clip of a loaded sheet
+    const hit = CLIP_AIMS.get(meta);
+    if (hit && hit.own === own) return hit.aim;
     const rel = release ?? own?.release;
     const omni = meta.omni === true || (meta.aimDeg === undefined && own?.omni === true);
-    return { deg: meta.aimDeg ?? own?.deg ?? 0, ...(rel ? { release: rel } : {}), ...(omni ? { omni: true } : {}) };
+    const aim: ClipAim = { deg: meta.aimDeg ?? own?.deg ?? 0, ...(rel ? { release: rel } : {}), ...(omni ? { omni: true } : {}) };
+    CLIP_AIMS.set(meta, { own, aim });
+    return aim;
   }
   return own ?? DEFAULT_CLIP_AIM;
 }

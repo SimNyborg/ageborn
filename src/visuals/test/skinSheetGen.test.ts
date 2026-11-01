@@ -13,8 +13,10 @@ import { aimProblems, collect, renderSkins, sheetName, skinProblems, summarize, 
 import { SKIN_SHEETS } from '../skinSheets.gen';
 import { UNIT_SHEETS } from '../unitSheets.gen';
 
-/** Every core and extras sheet JSON of the unit folders (1x; HD copies are checked frame for frame elsewhere). */
+/** Every core and extras sheet JSON of the unit folders (1x); the HD copies on demand (`HD`), the Bonker's at once. */
 const JSONS = import.meta.glob<SheetJson>(['/public/art/units/*/*.json', '!/public/art/units/*/*.hd.json'], { eager: true, import: 'default' });
+const HD = import.meta.glob<SheetJson>('/public/art/units/*/*.hd.json', { import: 'default' });
+const BONKER_HD = import.meta.glob<SheetJson>(['/public/art/units/stone/bonker.hd.json', '/public/art/units/stone/bonker.x.hd.json'], { eager: true, import: 'default' });
 const PORTRAITS = new Set(Object.keys(import.meta.glob('/public/art/portraits/*.png', { query: '?url', import: 'default' })));
 
 const sheet = (age: string, name: string): SheetJson | null => JSONS[`/public/art/units/${age}/${name}.json`] ?? null;
@@ -24,7 +26,9 @@ const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
 function fixture(skin = 'pumpkin_head'): SkinSheets {
   const unit = sheet('stone', 'bonker');
   const unitX = sheet('stone', 'bonker.x');
-  if (!unit || !unitX) throw new Error('the Bonker sheets are not installed');
+  const unitHd = BONKER_HD['/public/art/units/stone/bonker.hd.json'];
+  const unitXHd = BONKER_HD['/public/art/units/stone/bonker.x.hd.json'];
+  if (!unit || !unitX || !unitHd || !unitXHd) throw new Error('the Bonker sheets are not installed');
   const id = `bonker@${skin}`;
   const rename = (j: SheetJson, extras: boolean): SheetJson => {
     const s = clone(j);
@@ -37,7 +41,7 @@ function fixture(skin = 'pumpkin_head'): SkinSheets {
     if (extras) a['extrasOf'] = id;
     return s;
   };
-  return { unit, unitX, skin: rename(unit, false), skinX: rename(unitX, true) };
+  return { unit, unitX, skin: rename(unit, false), skinX: rename(unitX, true), unitHd, unitXHd, skinHd: rename(unitHd, false), skinXHd: rename(unitXHd, true) };
 }
 
 describe('skin sheets (contract C3)', () => {
@@ -75,6 +79,13 @@ describe('skin sheets (contract C3)', () => {
     ['the height', (o) => (o.skin!.meta!.ageborn!['heightLu'] = 80), /heightLu 80 differs/],
     ['the density', (o) => (o.skin!.meta!.ageborn!['pxPerLu'] = 2.46), /density/],
     ["the unit's own sheet", (o) => (o.unit = null), /the unit's own sheet bonker\.json is not installed/],
+    // the HD copies (drawn on dense screens) match as the 1x ones do
+    ['HD clip with one frame fewer', (o) => o.skinHd!.animations!['attack']!.pop(), /bonker@pumpkin_head\.hd\.json attack has 10 frames, the unit 11/],
+    ['HD step duration', (o) => ((o.skinHd!.meta!.ageborn!.clips!['attack']!['durationsMs'] as number[])[3] = 111), /bonker@pumpkin_head\.hd\.json attack timing .* differs/],
+    ['HD anchor key', (o) => delete o.skinHd!.meta!.ageborn!.clips!['attack']!['anchorsLu'], /bonker@pumpkin_head\.hd\.json anchor keys/],
+    ['HD extras sheet', (o) => (o.skinXHd = null), /the unit has bonker\.x\.hd\.json, the skin has no bonker@pumpkin_head\.x\.hd\.json/],
+    ["HD extras sheet's owner", (o) => (o.skinXHd!.meta!.ageborn!['extrasOf'] = 'bonker'), /bonker@pumpkin_head\.x\.hd\.json must say extrasOf "bonker@pumpkin_head"/],
+    ['HD copy without its unit', (o) => (o.unitHd = null), /bonker@pumpkin_head\.hd\.json has no counterpart bonker\.hd\.json/],
   ];
   it.each(broken)('a skin sheet with a wrong %s fails clearly', (_what, breakIt, reason) => {
     const o = fixture();
@@ -88,7 +99,7 @@ describe('skin sheets (contract C3)', () => {
     expect(skinProblems('Bonker@Pumpkin.json', fixture())[0]).toMatch(/<slug>@<skinId>\.json/);
   });
 
-  it('every installed skin sheet matches its unit (C3 parity), and the generated table lists exactly them', () => {
+  it('every installed skin sheet matches its unit (C3 parity, 1x and HD), and the generated table lists exactly them', async () => {
     const files = Object.keys(JSONS).filter((p) => /@[a-z0-9_]+\.json$/.test(p) && !p.endsWith('.x.json'));
     const rows: string[] = [];
     for (const path of files) {
@@ -96,7 +107,8 @@ describe('skin sheets (contract C3)', () => {
       expect(m, path).not.toBeNull();
       if (!m) continue;
       const [, age, id, slug] = m as unknown as [string, string, string, string];
-      const o: SkinSheets = { unit: sheet(age, slug), unitX: sheet(age, `${slug}.x`), skin: sheet(age, id), skinX: sheet(age, `${id}.x`) };
+      const hd = async (name: string): Promise<SheetJson | null> => (await HD[`/public/art/units/${age}/${name}.hd.json`]?.()) ?? null;
+      const o: SkinSheets = { unit: sheet(age, slug), unitX: sheet(age, `${slug}.x`), skin: sheet(age, id), skinX: sheet(age, `${id}.x`), unitHd: await hd(slug), unitXHd: await hd(`${slug}.x`), skinHd: await hd(id), skinXHd: await hd(`${id}.x`) };
       expect(skinProblems(`${id}.json`, o), path).toEqual([]);
       rows.push(`${age}/${id}`);
       const still = PORTRAITS.has(`/public/art/portraits/${id}.png`) && PORTRAITS.has(`/public/art/portraits/${id}_team.png`);
