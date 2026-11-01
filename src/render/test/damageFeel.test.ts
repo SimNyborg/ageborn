@@ -94,9 +94,15 @@ describe('a damage step in the battle view', () => {
     a.feel.step(unit(2, { sizeLu: 24 }), step({ mat: 'cloth', stage: 3 }));
     expect(a.executed.filter((x) => x.a === 'sound').map((x) => (x as { id: string }).id)).toEqual(['dmg_rip']);
     const b = host();
-    b.feel.step(unit(3), step({ stage: 3, ignite: true }));
+    b.feel.step(unit(3), step({ stage: 3, ignite: true, igniteX: 20, igniteY: -18 }));
     expect(b.executed.filter((x) => x.a === 'fx').map((x) => (x as { effectId: string }).effectId)).toEqual(['fx.dmg_burst', 'fx.dmg_ignite']);
     expect(b.executed.filter((x) => x.a === 'sound').map((x) => (x as { id: string }).id)).toEqual(['dmg_clank', 'dmg_ignite']);
+    // the burst plays at the new mark, the flare where the fire burns (the view's place clear of the crew, review S3)
+    const at = (id: string): unknown => (b.executed.find((x) => x.a === 'fx' && (x as { effectId: string }).effectId === id) as { at: unknown }).at;
+    expect([at('fx.dmg_burst'), at('fx.dmg_ignite')]).toEqual([
+      { k: 'world', x: 1003, y: -30 },
+      { k: 'world', x: 1020, y: -18 },
+    ]);
     const c = host();
     c.feel.step(unit(4), step({ mend: true, stage: 1, prev: 2 }));
     expect(c.executed.map((x) => x.a)).toEqual(['fx']);

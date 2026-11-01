@@ -77,8 +77,11 @@ export interface DamageStepEvent {
   family: DamageFamily;
   /** The body's height (lu): bursts and sounds scale with it. */
   heightLu: number;
-  /** A machine's stage 3: the fire catches (`damage.ignite`). */
+  /** A machine's stage 3: the fire catches (`damage.ignite`), only where it has a place to burn clear of its crew. */
   ignite: boolean;
+  /** Where the fire catches (root space, as `x`, `y`): the fire's place, never the step's mark; set with `ignite`. */
+  igniteX?: number;
+  igniteY?: number;
 }
 
 /** A live emitter of a damaged unit (`damageFx()`): root space (lu, y down), particles per second of game time. */

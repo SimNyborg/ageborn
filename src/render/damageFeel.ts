@@ -26,6 +26,9 @@ export interface DamageStepInfo {
   family: string;
   heightLu: number;
   ignite: boolean;
+  /** Where the fire catches (root space), clear of the crew: the flare plays there, not at the step's mark. */
+  igniteX?: number;
+  igniteY?: number;
 }
 
 /** A live emitter of a damaged unit (`damageFx`; WP4 `DamageEmitter`): root space, particles per second of game time. */
@@ -160,7 +163,12 @@ export class DamageFeel {
     out.length = 0;
     const target = { at: { k: 'world' as const, x, y }, opts, x };
     this.host.rule(ev.mend ? 'damage.mend' : `damage.step.${ev.mat}.${ev.stage}`, target, out);
-    if (ev.ignite) this.host.rule('damage.ignite', target, out);
+    if (ev.ignite) {
+      // the flare plays where the fire burns (the view's place clear of the crew), not at the step's mark
+      const ix = u.drawX + (ev.igniteX ?? ev.x);
+      const iy = u.y + (ev.igniteY ?? ev.y);
+      this.host.rule('damage.ignite', { at: { k: 'world' as const, x: ix, y: iy }, opts, x: ix }, out);
+    }
     // the step's sound is a quiet layer (A13: 4 dB under the hit): big bodies every step, small and medium ones their
     // last; one per material per `soundGapMs`, at low priority
     const sound = u.sizeLu >= t.soundBodyLu || ev.stage >= 3 || ev.ignite;

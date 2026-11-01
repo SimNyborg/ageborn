@@ -3,14 +3,17 @@
  * (the damage bundle, contract C1) in place of the team-colour layer's box, keeps the estimate without them, and tells
  * the battle view (`contactRevision`) when they arrive after a reach was taken.
  */
-import { Rectangle, Texture } from 'pixi.js';
+import { Container, Rectangle, Texture } from 'pixi.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { UnitPose, UnitView, VisualDef } from '@/contracts/art';
 import { AtlasAdapter, type AtlasData } from '../adapters/atlas';
 import type { Reach } from '../adapters/atlasCombat';
-import { damageBundles } from '../damage/bundle';
+import type { PartBaker } from '../bake';
+import { DamageBundles, damageBundles } from '../damage/bundle';
+import { fireClear, headClearLu } from '../damage/emitters';
 import { trackerReach } from '../damage/trackers';
-import type { DamageUnitData } from '../damage/types';
+import type { DamageStepEvent, DamageUnitData } from '../damage/types';
+import { UnitDamage } from '../damage/unitDamage';
 import { MANIFEST } from '../manifest';
 import { createArtProvider } from '../provider';
 
@@ -224,5 +227,43 @@ describe('the marks on the atlas view (item 40)', () => {
     const now = markXs(v);
     expect(now).toHaveLength(shown.length);
     expect(now).not.toEqual(shown);
+  });
+});
+
+describe("a burning vehicle's fire and its ignite flare stay clear of the crew (W0 review B1 and S3)", () => {
+  const anchors = { feet: { x: 0, y: 0 }, head: { x: 0, y: -60 }, muzzle: { x: 30, y: -30 }, hitCenter: { x: 0, y: -28 } };
+  /** A cart whose torso box spans the machine and whose crewman's head sits over the hull's middle band. */
+  const crewed = (box: [number, number, number, number], head: [number, number]): DamageUnitData => ({ family: 'vehicle', torso: { idle: [box, box] }, head: { idle: [head, head] } });
+  const run = (entry: DamageUnitData) => {
+    const bundles = new DamageBundles(() => Promise.reject(new Error('404')), () => '/');
+    bundles.add('modern', { v: 1, units: { crew_cart: entry } });
+    const d = new UnitDamage({ body: new Container(), after: null, baker: {} as PartBaker, slug: 'crew_cart', heightLu: 80, anchors, team: 0x3a7bd5, seed: 7, bundles });
+    const steps: DamageStepEvent[] = [];
+    d.onStep((e) => steps.push(e));
+    d.setFrame('idle', 1);
+    d.setHp(10000);
+    d.setHp(2000);
+    const fx = d.emitters({ x: 0, y: 0, rotation: 0, sx: 1, sy: 1 }, 1);
+    return { steps, kinds: fx.map((e) => e.kind).sort(), fire: fx.find((e) => e.kind === 'fire') ?? null };
+  };
+
+  it('burns on the hull beside the head (not under the face, where the middle band would be), and the flare plays there', () => {
+    const { steps, kinds, fire } = run(crewed([-50, 0, 50, 50], [-5, 52]));
+    expect(kinds).toEqual(['fire', 'smokeDark', 'spark']);
+    const r = headClearLu(80);
+    // the hull's middle band (x 5) is under the crewman's face: the fire moved forward to x 20, clear of the head
+    expect(fire).toMatchObject({ x: 20, y: -20 });
+    expect(fireClear(20, 20, -5, 52, r)).toBe(true);
+    expect(fireClear(5, 22.5, -5, 52, r)).toBe(false);
+    expect(steps).toHaveLength(1);
+    // the step's burst at the torso's middle, the flare where the fire burns
+    expect(steps[0]).toMatchObject({ stage: 3, ignite: true, x: 0, y: -25, igniteX: 20, igniteY: -20 });
+  });
+
+  it('with no place clear of the head on the hull: smoke and sparks only, and no flare', () => {
+    const { steps, kinds } = run(crewed([-20, 0, 20, 50], [0, 52]));
+    expect(kinds).toEqual(['smokeDark', 'spark']);
+    expect(steps[0]).toMatchObject({ stage: 3, ignite: false });
+    expect(steps[0]?.igniteX).toBeUndefined();
   });
 });
