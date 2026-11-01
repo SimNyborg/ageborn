@@ -348,4 +348,19 @@ describe('damage bundles (contract C1)', () => {
     expect(warn).toEqual([]);
     expect(b.entry('bonker')).toBeNull();
   });
+
+  it('reads a server\'s page in place of a missing bundle (the SPA fallback) as missing, without a warning', async () => {
+    const real = globalThis.fetch;
+    globalThis.fetch = (async () => new Response('<!doctype html><title>Ageborn</title>', { status: 200, headers: { 'content-type': 'text/html' } })) as typeof fetch;
+    try {
+      const warn: string[] = [];
+      const b = new DamageBundles(undefined, () => '/', (m) => warn.push(m));
+      await b.request('stone');
+      expect(b.loaded('stone')).toBe(true);
+      expect(b.entry('bonker')).toBeNull();
+      expect(warn).toEqual([]);
+    } finally {
+      globalThis.fetch = real;
+    }
+  });
 });

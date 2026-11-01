@@ -88,7 +88,9 @@ export type BundleFetch = (url: string) => Promise<unknown>;
 
 const defaultFetch: BundleFetch = async (url) => {
   const r = await fetch(url);
-  if (!r.ok) throw new Error(`${url}: ${r.status}`);
+  // a dev or preview server answers a file it does not have with the app's page (the SPA fallback): missing, as a 404
+  const page = /text\/html/i.test(r.headers.get('content-type') ?? '');
+  if (!r.ok || page) throw new Error(`${url}: ${page ? 404 : r.status}`);
   return (await r.json()) as unknown;
 };
 

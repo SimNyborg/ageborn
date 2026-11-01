@@ -3,12 +3,18 @@
 // and stage tint on the unit's own sheet), with a x3 crop sheet per unit and a check of each composited frame:
 //
 // - team fill: the share of the silhouette that is team colour (A11: at least 18%). Each frame is drawn twice, with the
-//   default team preset and with blueYellow (side 1: orange, then yellow); the pixels that differ are the team colour.
-// - the colour rule: the share of the silhouette that is saturated (HSV s > 0.4) within 35 degrees of a team hue
-//   without being team colour (A11: at most 10%).
-// Both on the silhouette less its 2 px edge (edge pixels blend the team colour with the background). The sheet's own art
-// sets stage 0 (skin tones count against the rule here, as in the pipeline's check); a damage stage fails when it
-// takes the team fill under 18% or 3 points below stage 0, or raises the colour rule over 10% or 1 point above stage 0.
+//   default team preset and with blueYellow (side 1: orange, then yellow); the pixels that change clearly are the team
+//   colour as it reads.
+// - the colour rule: the share of the silhouette that is saturated (HSV s > 0.4) within 35 degrees of a team hue and is
+//   not team paint (A11: at most 10%; counted as src/visuals/checks.ts counts it, team layers painted grey, so only
+//   non-team paint counts). A pixel the team colour reaches at all is team paint: a mark's translucent soot darkens the
+//   team colour, it does not paint another colour.
+// Every stage is drawn at the same pose (frozen at 0 ms; later, a stage-3 unit's slower idle shows another frame) and
+// measured on the union of its silhouette and stage 0's, less the 2 px edge (edge pixels blend the team colour with the
+// background; a stage tint can take a pale plate within the background threshold, and a hole shows the background inside
+// the body). The sheet's own art sets stage 0 (skin tones count against the rule here, as in the pipeline's check); a
+// damage stage fails when it takes the team fill under 18% and more than 3 points below stage 0, or raises the colour
+// rule over 10% and more than 1 point above stage 0 (a sheet already past a limit may stay there, not go further).
 //
 // Needs a running dev or preview server (`npm run dev`: `--base http://127.0.0.1:5173/`; a preview build:
 // `--base http://127.0.0.1:4173/ageborn/`). `--bundles <dir>` serves `art/damage/<age>.json` from a folder (bundles not
@@ -54,10 +60,10 @@ if (bundles) {
 
 const HOST = '[data-testid="gallery-canvas-host"]';
 let first = true;
-/** The gallery canvas with one unit (side 1, idle, frozen at 600 ms) at a stage, as a PNG buffer. */
+/** The gallery canvas with one unit (side 1, idle, frozen at 0 ms: every stage at the same pose) at a stage, as a PNG buffer. */
 async function shot(age, slug, stage, preset) {
   // dfx=0: no emitters (smoke and sparks would change the unit's silhouette and pixels; they show in battles)
-  const q = `section=units&age=${age}&only=${slug}&skins=0&sides=1&clip=idle&damage=${stage}&zoom=${zoom}&t=600&preset=${preset}&dfx=0`;
+  const q = `section=units&age=${age}&only=${slug}&skins=0&sides=1&clip=idle&damage=${stage}&zoom=${zoom}&t=0&preset=${preset}&dfx=0`;
   if (first) {
     await page.goto(`${base}?dev=1#gallery/${q}`);
     first = false;
@@ -118,10 +124,9 @@ async function analyse(frames) {
       count.set(k, (count.get(k) ?? 0) + 1);
     }
     const bgs = [...count.entries()].sort((x, y) => y[1] - x[1]).slice(0, 2).map(([k]) => [(k >> 16) & 255, (k >> 8) & 255, k & 255]);
-    for (const { a, b } of loaded) {
-      const { w, h } = a;
-      const sil = new Uint8Array(w * h);
-      for (let p = 0; p < w * h; p++) {
+    const silOf = ({ a, b }) => {
+      const sil = new Uint8Array(a.w * a.h);
+      for (let p = 0; p < a.w * a.h; p++) {
         const i = p * 4;
         let s = 1;
         for (const bg of bgs) {
@@ -131,6 +136,15 @@ async function analyse(frames) {
         }
         sil[p] = s;
       }
+      return sil;
+    };
+    const sil0 = silOf(loaded[0]);
+    for (const frame of loaded) {
+      const { a, b } = frame;
+      const { w, h } = a;
+      // the stage's silhouette with stage 0's (the same pose): a dimmed pale plate or a hole stays inside the body
+      const sil = silOf(frame);
+      for (let p = 0; p < w * h; p++) sil[p] |= sil0[p];
       // the unit is the biggest band of rows (the cell's label is a band under it)
       const prof = new Array(h).fill(0);
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) prof[y] += sil[y * w + x];
@@ -169,9 +183,12 @@ async function analyse(frames) {
           if (!inner(x, y)) continue;
           const i = p * 4;
           n++;
-          const isTeam = Math.abs(a.d[i] - b.d[i]) + Math.abs(a.d[i + 1] - b.d[i + 1]) + Math.abs(a.d[i + 2] - b.d[i + 2]) > 12;
-          if (isTeam) team++;
-          else {
+          const diff = Math.abs(a.d[i] - b.d[i]) + Math.abs(a.d[i + 1] - b.d[i + 1]) + Math.abs(a.d[i + 2] - b.d[i + 2]);
+          // the team colour as it reads (the fill) changes clearly with the preset
+          if (diff > 12) team++;
+          // the rule counts non-team paint only: a pixel the team colour reaches at all (under a mark's soot, at a
+          // layer's edge) is team paint
+          if (diff <= 3) {
             const [hh, ss] = hsv(a.d[i] / 255, a.d[i + 1] / 255, a.d[i + 2] / 255);
             if (ss > 0.4 && inBand(hh)) bad++;
           }
