@@ -44,18 +44,19 @@ export const MAX_STRIPS = 1;
 
 /**
  * The stage tint (a vertex colour on the unit's own art, never on its team colour: free, no batch break; design 4c).
- * Machines darken and warm toward scorch; soldiers and riders darken a little; beasts take a dusty pale cast; energy
- * bodies dim. No lilac or blue (the frozen tint), no red.
+ * Neutral grey: a warm multiply would raise the saturation of the art's warm colours (bronze, leather, skin) past the
+ * A11 colour rule's 40% in the orange band, so the scorch reads through soot marks and smoke instead. Machines darken
+ * most, soldiers and beasts a little. No lilac or blue (the frozen tint), no red.
  */
 const TINT: Readonly<Record<DamageFamily, readonly [number, number, number, number]>> = {
-  soldier: [0xffffff, 0xf7f3ee, 0xece6de, 0xddd5cb],
-  armoured: [0xffffff, 0xf4f1ec, 0xe6e0d8, 0xd4ccc2],
-  rider: [0xffffff, 0xf6f2ec, 0xe9e3da, 0xd9d0c5],
-  beast: [0xffffff, 0xf7f3ea, 0xeee7da, 0xe2d9c9],
-  vehicle: [0xffffff, 0xf1ece5, 0xdcd3c8, 0xbcb1a4],
-  flyer: [0xffffff, 0xf1ece5, 0xdcd3c8, 0xc2b8ac],
-  mech: [0xffffff, 0xf1eee9, 0xdfd8cf, 0xc4bbb0],
-  energy: [0xffffff, 0xf5f4f2, 0xe9e8e5, 0xdcdad6],
+  soldier: [0xffffff, 0xf4f4f4, 0xe8e8e8, 0xdadada],
+  armoured: [0xffffff, 0xf2f2f2, 0xe4e4e4, 0xd4d4d4],
+  rider: [0xffffff, 0xf3f3f3, 0xe6e6e6, 0xd8d8d8],
+  beast: [0xffffff, 0xf6f6f6, 0xececec, 0xe0e0e0],
+  vehicle: [0xffffff, 0xeeeeee, 0xd8d8d8, 0xbcbcbc],
+  flyer: [0xffffff, 0xeeeeee, 0xd8d8d8, 0xc2c2c2],
+  mech: [0xffffff, 0xf0f0f0, 0xdcdcdc, 0xc4c4c4],
+  energy: [0xffffff, 0xf5f5f5, 0xe9e9e9, 0xdcdcdc],
 };
 
 export function stageTint(family: DamageFamily, stage: DamageStage): number {

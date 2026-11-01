@@ -13,7 +13,7 @@
  * No blood, no red; nothing here is ever drawn on faces or skin (the spots decide where marks go).
  */
 import { part } from '../parts/registry';
-import { blob, circle, ellipse, join, limb, poly, rrect } from '../svg';
+import { blob, circle, ellipse, join, limb, poly } from '../svg';
 
 const CORE = '#2B2420';
 const DEEP = '#4A3F37';
@@ -46,19 +46,25 @@ const flat = { line: 0, shade: false, light: false } as const;
 // Cloth: soot, tears, a shot hole
 
 part('dmg.cloth.soot1', [
-  { d: blob([-4.6, 0.4, -3.4, -2.8, 0.4, -3.6, 3.8, -2.2, 4.8, 0.8, 2.6, 3.2, -1.2, 3.4, -4, 2.4], 0.9), zone: CORE, alpha: 0.36, ...flat },
-  { d: blob([-2.4, 0.2, -1.4, -1.8, 1.2, -1.9, 2.6, 0, 1.4, 1.8, -1.2, 1.9], 0.9), zone: CORE, alpha: 0.32, ...flat },
-  { d: join(circle(4.2, -3.4, 0.7), circle(-4.4, -2.6, 0.55), circle(3.4, 3.6, 0.5)), zone: CORE, alpha: 0.4, ...flat },
+  { d: blob([-5.4, 0.6, -4.2, -3.2, 0.2, -4.4, 4.4, -2.8, 5.6, 0.8, 3.4, 4, -1.2, 4.2, -4.6, 3], 0.9), zone: CORE, alpha: 0.2, ...flat },
+  { d: blob([-4.2, 0.4, -3, -2.6, 0.4, -3.2, 3.4, -2, 4.2, 0.8, 2.4, 3, -1, 3.2, -3.6, 2.2], 0.9), zone: CORE, alpha: 0.26, ...flat },
+  { d: blob([-2.4, 0.4, -1.6, -1.6, 0.8, -2, 2.4, -0.6, 2, 1.4, -0.4, 2, -2, 1.6], 0.9), zone: CORE, alpha: 0.3, ...flat },
+  { d: join(circle(4.6, -3.6, 0.6), circle(-4.8, -2.8, 0.5), circle(3.8, 3.8, 0.45), circle(-3.2, 3.8, 0.4)), zone: CORE, alpha: 0.45, ...flat },
 ]);
 part('dmg.cloth.soot2', [
-  { d: blob([-5.2, 1.6, -4, -0.8, -0.6, -2.6, 3.6, -3.4, 5.2, -2, 3.8, 0.4, 0.4, 2, -3, 3], 0.9), zone: CORE, alpha: 0.4, ...flat },
-  { d: blob([-2.6, 0.8, 0.2, -1.2, 3.2, -2, 2.6, -0.4, -0.2, 1.2], 0.9), zone: CORE, alpha: 0.3, ...flat },
+  { d: blob([-5.6, 1.8, -4.4, -1.2, -0.8, -3.4, 3.8, -4, 5.6, -2.2, 4.4, 1, 0.6, 2.8, -3.2, 3.8], 0.9), zone: CORE, alpha: 0.2, ...flat },
+  { d: blob([-4.4, 1.4, -3.2, -0.6, -0.4, -2.4, 3, -3, 4.4, -1.8, 3.4, 0.4, 0.4, 1.8, -2.6, 2.8], 0.9), zone: CORE, alpha: 0.26, ...flat },
+  { d: blob([-2.4, 0.8, -0.6, -1.2, 2, -1.8, 2.8, -0.6, 1, 0.8, -1.2, 1.6], 0.9), zone: CORE, alpha: 0.3, ...flat },
+  { d: join(circle(-5, -1.8, 0.5), circle(4.8, 1.6, 0.55), circle(1.6, -4.2, 0.4)), zone: CORE, alpha: 0.45, ...flat },
 ]);
 part('dmg.cloth.tear1', [
-  // the frayed pale lip under the gash, then the gash (a dark ragged slit) and two loose threads
-  { d: poly([-4.8, 0.2, -3, 1.6, -1.6, 0.8, 0, 2.2, 1.6, 1, 3.2, 2, 4.8, 0.4, 3.4, 0.6, 1.6, -0.2, 0, 1, -1.6, -0.4, -3, 0.6]), zone: RIM, alpha: 0.72, ...flat },
-  { d: poly([-4.6, -0.4, -3, -1.8, -1.8, -0.8, -0.4, -2.4, 1, -1, 2.6, -2, 4.6, -0.2, 3, 0.4, 1.6, -0.2, 0, 1.2, -1.6, 0, -3, 0.8]), zone: CORE, alpha: 0.9, ...flat },
-  { d: join(limb(-0.4, 1.2, 0.35, -0.9, 3.4, 0.3), limb(2.6, 0.8, 0.35, 3.4, 2.8, 0.3)), zone: RIM, alpha: 0.65, ...flat },
+  // a ragged rip running down across the cloth: its torn lower lip catches the light, the gap is dark, the upper lip
+  // frays into a few thread ends; two threads still span the gap
+  { d: blob([-5.4, -2.4, -2.4, -2.6, 1.2, -0.6, 4.8, 1.4, 5.4, 3, 2.2, 2.6, -1.4, 1, -4.8, -0.6], 0.9), zone: CORE, alpha: 0.22, ...flat },
+  { d: poly([-4.8, -1.2, -3, -0.6, -2.2, -1, -0.6, 0.6, 0.6, 0.2, 2.2, 1.8, 3.4, 1.6, 4.8, 3, 3.2, 3.4, 2, 2.6, 0.6, 2, -0.8, 2, -2.4, 0.6, -3.6, 0.6]), zone: RIM, alpha: 0.78, ...flat },
+  { d: poly([-4.8, -1.8, -3.2, -2.6, -2.4, -1.8, -1.2, -2.2, 0.2, -0.8, 1.2, -1.2, 2.6, 0.6, 4, 0.6, 4.8, 2.4, 3.4, 1.2, 2.2, 1.4, 0.6, -0.2, -0.6, 0.2, -2.2, -1, -3, -0.6]), zone: CORE, alpha: 0.92, ...flat },
+  { d: join(limb(-1.6, -2, 0.3, -2.2, -3.4, 0.25), limb(0.6, -1, 0.3, 0.6, -2.6, 0.25), limb(3, 0.4, 0.3, 3.8, -0.8, 0.25)), zone: DEEP, alpha: 0.8, ...flat },
+  { d: join(limb(-1.4, -1.2, 0.28, -1, 0.6, 0.28), limb(1.8, 0.2, 0.28, 2.6, 1.8, 0.28)), zone: RIM, alpha: 0.75, ...flat },
 ]);
 part('dmg.cloth.tear2', [
   // an L-shaped rip with its flap folded down (the flap shows the cloth's lit back)
@@ -77,8 +83,9 @@ part('dmg.cloth.hole1', [
 
 const scratch = (x1: number, y1: number, x2: number, y2: number, w: number): string => limb(x1, y1, w / 2, x2, y2, w / 4);
 part('dmg.hide.scuff1', [
-  { d: join(scratch(-3.6, -2.8, 3.4, -0.4, 1.6), scratch(-3.8, -0.4, 3.2, 1.8, 1.6), scratch(-3.2, 2, 2.6, 3.8, 1.4)), zone: DEEP, alpha: 0.45, ...flat },
-  { d: join(scratch(-3.8, -3.3, 3.2, -0.9, 1.3), scratch(-4, -0.9, 3, 1.3, 1.3), scratch(-3.4, 1.5, 2.4, 3.3, 1.1)), zone: RIM, alpha: 0.75, ...flat },
+  { d: blob([-4.8, 0.8, -3.6, -2.6, 0.2, -3.4, 4.2, -2, 5, 1, 2.4, 3.6, -1.6, 3.4], 0.9), zone: '#E8DCC2', alpha: 0.32, ...flat },
+  { d: join(scratch(-3.8, -1.6, 3.6, -0.2, 1.7), scratch(-2.6, 1.2, 2.8, 2.8, 1.5)), zone: DEEP, alpha: 0.5, ...flat },
+  { d: join(scratch(-3.9, -2.2, 3.5, -0.8, 1.3), scratch(-2.7, 0.6, 2.7, 2.2, 1.1), circle(-4.2, 2.4, 0.5), circle(4.2, -2.4, 0.45)), zone: RIM, alpha: 0.82, ...flat },
 ]);
 part('dmg.hide.scuff2', [
   { d: blob([-4.4, 0.6, -2.4, -2.6, 1.6, -3, 4.4, -0.6, 3.2, 2.6, -1, 3.2], 0.9), zone: RIM, alpha: 0.3, ...flat },
@@ -97,10 +104,12 @@ part('dmg.hide.tear1', [
 // Metal: dents, a scratch, a crack, bullet holes, a missing plate, soot
 
 part('dmg.metal.dent1', [
-  // a round dent: its rim in shadow above (the light comes from the top), lit below, a crease in the middle
-  { d: ellipse(0, 0, 4.4, 3.6), zone: CORE, alpha: 0.28, ...flat },
-  { d: blob([-4.2, 0.4, -3.4, -2.4, 0, -3.6, 3.4, -2.4, 4.2, 0.4, 2.4, -1, 0, -1.6, -2.4, -1], 0.9), zone: CORE, alpha: 0.78, ...flat },
-  { d: blob([-3.6, 1, -1.6, 2.6, 0, 3, 1.6, 2.6, 3.6, 1, 2, 1.8, 0, 2.1, -2, 1.8], 0.9), zone: RIM, alpha: 0.72, ...flat },
+  // a dent: a dark bowl whose upper inner wall is in shadow (the light comes from the top) and whose lower rim catches
+  // the light, with creases running out from the blow
+  { d: blob([-4.8, 0.6, -4, -2.8, -0.4, -4, 3.6, -3, 4.8, 0.2, 3.4, 3.4, -0.6, 4, -3.8, 3], 0.9), zone: CORE, alpha: 0.3, ...flat },
+  { d: blob([-4, 0.2, -3.2, -2.6, 0, -3.4, 3.2, -2.4, 4, 0, 2.6, -0.6, 0.2, -1.4, -2.6, -0.8], 0.9), zone: CORE, alpha: 0.85, ...flat },
+  { d: blob([-3.2, 1.6, -1.4, 3, 1, 3.2, 3, 2.2, 3.8, 0.8, 2.2, 1.8, 0.2, 2.2, -1.8, 2], 0.9), zone: RIM, alpha: 0.85, ...flat },
+  { d: join(limb(0.2, -0.6, 0.4, -2.6, 1.2, 0.2), limb(0.4, -0.6, 0.4, 3, 0.6, 0.2)), zone: CORE, alpha: 0.7, ...flat },
 ]);
 part('dmg.metal.dent2', [
   { d: ellipse(0.4, 0.2, 4.8, 3), zone: CORE, alpha: 0.26, ...flat },
@@ -109,8 +118,9 @@ part('dmg.metal.dent2', [
   { d: limb(-2, 0.4, 0.5, 2.6, 0.6, 0.4), zone: CORE, alpha: 0.6, ...flat },
 ]);
 part('dmg.metal.scratch1', [
-  { d: join(scratch(-4.4, -1.6, 4.2, -3.2, 1.7), scratch(-4.2, 1.2, 4.4, -0.6, 1.7), scratch(-3, 3.6, 3, 2.2, 1.5)), zone: CORE, alpha: 0.55, ...flat },
-  { d: join(scratch(-4.4, -2.2, 4.2, -3.8, 1.1), scratch(-4.2, 0.6, 4.4, -1.2, 1.1), scratch(-3, 3, 3, 1.6, 1)), zone: RIM, alpha: 0.78, ...flat },
+  { d: join(crack(shift([-4.8, -0.6, -1.4, -2, 1.8, -2.6, 4.8, -3.6], 0, 0.75), 1.2, 0.5), crack(shift([-3.8, 2.6, -0.8, 1.6, 2.2, 1.4, 4.2, 0.4], 0, 0.7), 1.1, 0.45)), zone: RIM, alpha: 0.85, ...flat },
+  { d: join(crack([-4.8, -0.6, -1.4, -2, 1.8, -2.6, 4.8, -3.6], 1.9, 0.6), crack([-3.8, 2.6, -0.8, 1.6, 2.2, 1.4, 4.2, 0.4], 1.7, 0.5)), zone: CORE, alpha: 0.85, ...flat },
+  { d: join(circle(-5, 0.4, 0.55), circle(-4, 3.6, 0.5)), zone: RIM, alpha: 0.85, ...flat },
 ]);
 const METAL_CRACK = [-4.6, -2.4, -2.2, -1, -1, 1, 1.4, 0.4, 3, 2.4, 4.8, 2];
 const METAL_BRANCH = [-1, 1, -1.6, 3.6];
@@ -134,23 +144,26 @@ part('dmg.metal.hole1', [
   { d: H1.lip, zone: RIM, alpha: 0.72, ...flat },
   { d: H1.core, zone: CORE, alpha: 0.92, ...flat },
 ]);
-const H2 = [holeAt(-2.2, -1.2, 1.15), holeAt(2.2, -0.4, 1.05), holeAt(-0.2, 2.4, 1.1)];
+const H2 = [holeAt(-2.4, -1.4, 1.4), holeAt(2.4, -0.6, 1.2), holeAt(-0.2, 2.6, 1.05)];
 part('dmg.metal.hole2', [
   { d: join(...H2.map((h) => h.soot)), zone: CORE, alpha: 0.24, ...flat },
   { d: join(...H2.map((h) => h.lip)), zone: RIM, alpha: 0.72, ...flat },
   { d: join(...H2.map((h) => h.core)), zone: CORE, alpha: 0.92, ...flat },
 ]);
+const PLATE_HOLE = [-4.4, -2.6, -2.8, -3.6, -0.6, -3, 1.2, -3.8, 3.6, -3, 4.6, -1, 3.8, 0.6, 4.4, 2.6, 2.4, 3.6, 0.4, 2.8, -1.8, 3.8, -3.8, 2.8, -4.6, 0.8, -3.6, -0.6];
 part('dmg.metal.plate1', [
-  // a missing plate: the dark hole, the frame's ribs inside, a bent lip on top and four rivets left in the rim
-  { d: rrect(-4.8, -3.8, 9.6, 7.6, 0.8), zone: RIM, alpha: 0.6, ...flat },
-  { d: rrect(-4, -3, 8, 6.2, 0.6), zone: CORE, alpha: 0.9, ...flat },
-  { d: join(rrect(-1.6, -3, 1.1, 6.2, 0.3), rrect(1.6, -3, 1.1, 6.2, 0.3)), zone: '#6B625A', alpha: 0.85, ...flat },
-  { d: poly([-4.8, -3.8, -1, -3.8, -2.2, -2.6, -4, -2.4]), zone: RIM, alpha: 0.75, ...flat },
-  { d: join(circle(-4.3, 3.3, 0.6), circle(4.3, 3.3, 0.6), circle(4.3, -3.3, 0.6)), zone: RIM, alpha: 0.85, ...flat },
+  { d: blob([-6, 0.4, -5, -4, 0, -5, 5, -4, 6, 0.6, 5, 4.6, 0, 5.2, -5, 4.4], 0.9), zone: CORE, alpha: 0.3, ...flat },
+  { d: poly(PLATE_HOLE), zone: CORE, alpha: 0.95, ...flat },
+  { d: limb(-2.8, 3, 0.55, 2.2, -3.2, 0.5), zone: '#5A524B', alpha: 0.9, ...flat },
+  { d: crack([-3.8, 2.8, -1.8, 3.8, 0.4, 2.8, 2.4, 3.6, 4.4, 2.6], 1, 0.8), zone: RIM, alpha: 0.85, ...flat },
+  { d: poly([1.2, -3.8, 3.6, -3, 4.6, -5.4, 2, -5.4]), zone: RIM, alpha: 0.8, ...flat },
+  { d: limb(1.2, -3.8, 0.3, 3.6, -3, 0.3), zone: CORE, alpha: 0.8, ...flat },
+  { d: join(circle(-5.4, 2, 0.6), circle(-5.2, -1.6, 0.6)), zone: RIM, alpha: 0.9, ...flat },
 ]);
 part('dmg.metal.soot1', [
-  { d: blob([-5, 0.6, -3.8, -3, 0.2, -3.8, 4, -2.6, 5, 0.6, 2.8, 3.4, -1.4, 3.6, -4.2, 2.6], 0.9), zone: CORE, alpha: 0.4, ...flat },
-  { d: blob([-2.8, 0.4, -1.6, -1.8, 1.4, -2, 3, 0.2, 1.6, 2, -1.4, 2], 0.9), zone: CORE, alpha: 0.36, ...flat },
+  { d: blob([-5.6, 0.6, -4.4, -3.4, 0.2, -4.6, 4.6, -3, 5.8, 0.6, 3.6, 4, -1.4, 4.4, -4.8, 3.2], 0.9), zone: CORE, alpha: 0.22, ...flat },
+  { d: blob([-4.4, 0.6, -3.4, -2.6, 0.2, -3.4, 3.6, -2.2, 4.4, 0.6, 2.6, 2.8, -1.2, 3, -3.6, 2.2], 0.9), zone: CORE, alpha: 0.3, ...flat },
+  { d: blob([-2.6, 0.4, -1.6, -1.8, 1.4, -2, 2.8, 0.2, 1.6, 1.8, -1.4, 1.8], 0.9), zone: CORE, alpha: 0.34, ...flat },
 ]);
 
 // ---------------------------------------------------------------------------------------------
@@ -190,12 +203,15 @@ part('dmg.wood.char1', [
 // Stone, crystal and bone: chips, a crack, a shatter
 
 part('dmg.stone.chip1', [
-  { d: poly([-4, -1, -1.6, -3.6, 2.6, -3, 3.8, 0.2, 1.2, 1.4, -1.4, 3, -3.6, 1.6]), zone: FRESH_STONE, alpha: 0.95, line: 0.7, shade: false, light: false },
-  { d: poly([-1.6, -3.6, 2.6, -3, 1.2, -1.2, -1, -1.4]), zone: '#FBF7EF', alpha: 0.9, ...flat },
+  { d: poly([-4.4, -0.6, -1.8, -4, 2.8, -3.4, 4.4, 0.2, 1.4, 1.8, -1.2, 3.6, -4, 2]), zone: CORE, alpha: 0.75, ...flat },
+  { d: poly([-3.6, -1, -1.6, -3.4, 2.4, -2.8, 3.4, -0.2, 1, 0.8, -1.2, 2.4, -3.2, 1.2]), zone: FRESH_STONE, alpha: 0.95, ...flat },
+  { d: poly([-1.6, -3.4, 2.4, -2.8, 1.2, -1.2, -1, -1.2]), zone: '#FBF7EF', alpha: 0.9, ...flat },
+  { d: crack([1, 0.8, 2.6, 2.8, 4.4, 3.4], 0.9, 0.5), zone: CORE, alpha: 0.8, ...flat },
 ]);
 part('dmg.stone.chip2', [
-  { d: poly([-4.6, -2, -1.8, -3.2, -0.6, -0.6, -2.8, 1.2, -4.4, 0.4]), zone: FRESH_STONE, alpha: 0.95, line: 0.7, shade: false, light: false },
-  { d: poly([0.8, 0.6, 3.6, -0.4, 4.4, 2.4, 2.2, 3.8, 0.4, 2.8]), zone: FRESH_STONE, alpha: 0.95, line: 0.7, shade: false, light: false },
+  { d: join(poly([-5, -1.8, -2, -3.8, -0.2, -0.6, -2.8, 1.8, -4.8, 0.8]), poly([0.4, 0.4, 3.8, -1, 5, 2.6, 2.4, 4.4, 0, 3.2])), zone: CORE, alpha: 0.75, ...flat },
+  { d: join(poly([-4.4, -1.8, -2, -3.2, -0.8, -0.8, -2.8, 1, -4.2, 0.4]), poly([0.9, 0.6, 3.6, -0.4, 4.4, 2.4, 2.2, 3.6, 0.6, 2.6])), zone: FRESH_STONE, alpha: 0.95, ...flat },
+  { d: join(poly([-4.4, -1.8, -2, -3.2, -2.4, -1.6]), poly([0.9, 0.6, 3.6, -0.4, 2.6, 1])), zone: '#FBF7EF', alpha: 0.9, ...flat },
 ]);
 const STONE_CRACK = [-4.4, -3, -2, -1.2, -2.4, 0.8, 0.4, 1.4, 1.6, 3.4];
 const STONE_BRANCH = [0.4, 1.4, 3, -0.2, 4.6, 0.6];

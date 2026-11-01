@@ -47,7 +47,7 @@ describe('stages (design 3.2: 75/50/25% HP, 5 points of hysteresis on heals)', (
     expect(nextStage(1, 8001)).toBe(0);
   });
 
-  it('shows 1, then 2-3, then 3-4 marks; tints machines most and never toward lilac, blue or red', () => {
+  it('shows 1, then 2-3, then 3-4 marks; tints machines most, neutral (never more saturated, never lilac, blue or red)', () => {
     expect(marksAt(0, 1)).toBe(0);
     expect(marksAt(1, 1)).toBe(1);
     const two = new Set(Array.from({ length: 32 }, (_, i) => marksAt(2, i * 7)));
@@ -61,10 +61,11 @@ describe('stages (design 3.2: 75/50/25% HP, 5 points of hysteresis on heals)', (
         const r = (t >> 16) & 255;
         const g = (t >> 8) & 255;
         const b = t & 255;
-        // darkening and warming only: red >= green >= blue
-        expect(r).toBeGreaterThanOrEqual(g - 1);
-        expect(g).toBeGreaterThanOrEqual(b - 1);
-        expect(r - b).toBeLessThan(40);
+        // neutral darkening: a grey multiply keeps every colour's saturation (a warm one would push the art's bronze,
+        // leather and skin over the colour rule's 40% in the orange band)
+        expect(Math.abs(r - g)).toBeLessThanOrEqual(1);
+        expect(Math.abs(g - b)).toBeLessThanOrEqual(1);
+        expect(r).toBeLessThan(255);
       }
     }
     expect(stageTint('vehicle', 3)).toBeLessThan(stageTint('soldier', 3));

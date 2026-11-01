@@ -49,7 +49,15 @@ export interface UnitCellOptions {
    * adds it (`fx.legendary_aura`, sized like render/battleView.ts); the gallery does the same.
    */
   aura?: (radius: number) => EffectView;
+  /**
+   * Queue item 40: the HP the unit is drawn with (bp of max; default full): the gallery's damage control shows each
+   * stage (75/50/25%) on every unit and skin.
+   */
+  hpBp?: number;
 }
+
+/** The HP the gallery's damage control draws a unit with, by damage stage (queue item 40: 0 unhurt .. 3 wrecked). */
+export const DAMAGE_STAGE_HP: readonly number[] = [10000, 7000, 4600, 2000];
 
 /** One unit view driven through its clips. */
 export class UnitCell {
@@ -84,7 +92,7 @@ export class UnitCell {
       x: this.o.x + this.walkX,
       y: this.o.y,
       facing: this.o.side === 0 ? 1 : -1,
-      hpBp: 10000,
+      hpBp: this.o.hpBp ?? 10000,
       shieldBp: 0,
       stunned: this.stunned,
       frozen: false,

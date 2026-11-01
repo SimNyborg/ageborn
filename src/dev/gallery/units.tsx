@@ -12,7 +12,7 @@ import { getPart } from '@/visuals/parts/registry';
 import { AGES } from '@/visuals/ages';
 import type { PuppetDef } from '@/visuals/types';
 import type { UnitPose } from '@/contracts/art';
-import { TurretCell, UnitCell } from './cells';
+import { DAMAGE_STAGE_HP, TurretCell, UnitCell } from './cells';
 import type { Scene, StageContext } from './stage';
 
 export interface GridOptions {
@@ -25,6 +25,8 @@ export interface GridOptions {
   clip: string;
   trim: UnitPose['levelTrim'];
   zoom: number;
+  /** Queue item 40: the damage stage every unit is drawn at (0 unhurt .. 3 wrecked). */
+  damage?: number;
 }
 
 /**
@@ -112,6 +114,7 @@ export function buildGrid(ctx: StageContext, o: GridOptions): Scene {
             mode: o.clip,
             label: i === 0 ? clipLabel : undefined,
             ...(legendary ? { aura: (radius: number) => art.createEffect('fx.legendary_aura', { radius, side }) } : {}),
+            ...(o.damage ? { hpBp: DAMAGE_STAGE_HP[o.damage] ?? 10000 } : {}),
           }),
         );
       } else {
