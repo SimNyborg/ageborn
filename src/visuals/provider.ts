@@ -820,6 +820,17 @@ export class VisualsArtProvider implements ArtProvider {
   }
 
   /**
+   * `?art=procedural` for a base: its puppet, as `forcedPuppet` does for units (a world-sheet base forced to the
+   * procedural tier threw "No base visual"); a skin model without a puppet draws its age's plain puppet.
+   */
+  private forcedPuppetBase(age: AgeId, r: { key: string; def: VisualDef } | undefined): { key: string; def: VisualDef } | undefined {
+    const own = this.forcedPuppet(r);
+    if (this.force !== 'procedural' || !own || own.def.kind === 'procedural') return own;
+    const plain = PROCEDURAL_MANIFEST[`base.${age}`];
+    return plain && plain.kind === 'procedural' ? { key: `base.${age}`, def: plain } : own;
+  }
+
+  /**
    * A sprite-sheet unit whose sheet is not loaded yet (its age still streaming in) or failed to load
    * is drawn with its procedural puppet instead of a placeholder (B5 fallback). Null when the sheet
    * tier can draw it, when a tier is forced, or when there is no procedural entry.
@@ -918,8 +929,8 @@ export class VisualsArtProvider implements ArtProvider {
       const own = skinOf(age);
       const skinned = own ? skinnedVisualId(`base.${age}`, own) : null;
       const def = skinned ? this.manifest[skinned] : undefined;
-      if (skinned && def) return { key: skinned, def };
-      return this.resolve(`base.${age}`);
+      if (skinned && def) return this.forcedPuppetBase(age, { key: skinned, def });
+      return this.forcedPuppetBase(age, this.resolve(`base.${age}`));
     };
     if (skin && !AGES.some((a) => this.manifest[skinnedVisualId(`base.${a}`, skin)])) {
       this.once(`skin:base@${skin}`, `[visuals] no base has the skin "${skin}", drawing plain bases`);

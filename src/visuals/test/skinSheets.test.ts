@@ -8,7 +8,8 @@
  *   a skinned and a plain copy are held; extras sheets follow; the governor counts skin sheets;
  * - the card still is the skin's own when both its images are installed; the HUD's training card asks for the skin's
  *   still only (`skinStill`), else the card's own portrait;
- * - `?art=procedural` draws puppets for sheet units and sheet skins without throwing.
+ * - `?art=procedural` draws puppets for sheet units and sheet skins without throwing, and a battle can start (its
+ *   bases draw their puppets too).
  */
 import { Texture } from 'pixi.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -225,5 +226,27 @@ describe('?art=procedural draws puppets for sheet units and sheet skins', () => 
     await art.portrait({ card: 'javelineer', size: 64 });
     await settle();
     expect(keys).toEqual(['unit.bonker@pumpkin_head procedural', 'unit.javelineer procedural']);
+  });
+
+  it('a battle can start: bases draw their puppets too, a base skin model without one its age plain puppet', () => {
+    const art = createArtProvider({ warn: () => {}, force: 'procedural' });
+    const made: string[] = [];
+    const real = art.procedural.createBase.bind(art.procedural);
+    vi.spyOn(art.procedural, 'createBase').mockImplementation((r) => (made.push(`${r.key} ${r.def.kind}`), real(r)));
+    // a base skin model drawn from a world sheet (PLAN 2c), as the battle asks for it
+    const model = Object.keys(MANIFEST).find((k) => /^base\.[a-z]+@/.test(k) && MANIFEST[k]?.kind === 'atlas');
+    for (const age of ['stone', 'future'] as const) {
+      expect(MANIFEST[`base.${age}`]?.kind).not.toBe('procedural');
+      const v = art.createBase({ age, side: 0, teamPreset: 'default' });
+      v.destroy();
+    }
+    expect(made).toEqual(['base.stone procedural', 'base.future procedural']);
+    if (model) {
+      const [id, skin] = model.split('@') as [string, string];
+      const age = id.slice('base.'.length) as 'future';
+      const v = art.createBase({ age, skins: { [age]: skin }, side: 1, teamPreset: 'default' });
+      v.destroy();
+      expect(made.at(-1)).toBe(`${PROCEDURAL_MANIFEST[model]?.kind === 'procedural' ? model : `base.${age}`} procedural`);
+    }
   });
 });
