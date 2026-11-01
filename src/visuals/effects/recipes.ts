@@ -15,6 +15,7 @@
 
 import type { Container, Sprite } from 'pixi.js';
 import type { CosmeticRng } from '@/core/rng';
+import { damageBurstVariants, damageFxRecipes, damagePlainRecipes } from '../damage/fx';
 import { combatFxRecipes, combatVariantRecipes } from './combat';
 import { fortFxRecipes } from './fortRecipes';
 import { mvpFxRecipes } from './mvpRecipes';
@@ -933,6 +934,8 @@ export const FX_RECIPES: readonly FxRecipe[] = [
   ...mvpFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
   // Queue item 38: contact sparks, landing and clash dust, bits, stuck shafts, ground glow
   ...combatFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
+  // Queue item 40: a damage step's burst, damaged units' smoke, fire, sparks, steam, breath and motes, ignite and mend
+  ...damageFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
 ];
 
 export const FX_RECIPE_BY_ID: ReadonlyMap<string, FxRecipe> = new Map(FX_RECIPES.map((r) => [r.id, r]));
@@ -940,6 +943,12 @@ export const FX_RECIPE_BY_ID: ReadonlyMap<string, FxRecipe> = new Map(FX_RECIPES
 /** Every concrete variant the combat effects play (`combat.ts`; the colour-rule test runs over them). */
 export function combatFxVariants(): FxRecipe[] {
   return combatVariantRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch });
+}
+
+/** Every concrete recipe the damage effects play (`damage/fx.ts`; the colour-rule test runs over them). */
+export function damageFxVariants(): FxRecipe[] {
+  const k = { flash, ring, smoke, sparks, dust, chunks, bloom, scorch };
+  return [...damagePlainRecipes(k), ...damageBurstVariants(k)];
 }
 
 // ---------------------------------------------------------------------------------------------

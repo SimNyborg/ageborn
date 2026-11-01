@@ -21,6 +21,7 @@ import type { FeelConfig, FeelRule } from '@/contracts';
 import { CLASH_DEFAULTS, type ClashRules } from './clash';
 import { COMBAT_DEFAULTS, type CombatTuning } from './combatFeel';
 import type { ContactTuning } from './contact';
+import type { DamageTuning } from './damageFeel';
 import raw from './feel.config.json';
 
 /** Where a rule's flash goes: the victim unit, the whole screen, the struck base, or nowhere. */
@@ -130,6 +131,8 @@ export interface FeelTuning {
   combat?: Partial<CombatTuning>;
   /** The clash moment and the wide-screen lean-in (queue item 38 A6, `clash.ts`). */
   clash?: Partial<ClashRules>;
+  /** Visible battle damage (queue item 40, `damageFeel.ts`): emitter caps, the burst limit, the step sounds' spacing. */
+  damage?: Partial<DamageTuning>;
 }
 
 /** The combat tuning with its defaults filled in. */

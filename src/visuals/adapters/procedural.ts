@@ -218,6 +218,7 @@ export class ProceduralAdapter implements VisualAdapter {
       props: this.props,
       quality: this.o.quality,
       seed: r.seed,
+      key: r.key,
     });
   }
 

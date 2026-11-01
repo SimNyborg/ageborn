@@ -648,7 +648,8 @@ export class EventMapper {
           if (melee && hs.attacker > 0) out.push({ a: 'unitFreeze', id: ev.sourceId, ms: hs.attacker });
           // the victim's material rings under the hit (armour clanks, wood thocks), never for lasers and blasts
           if (material && ev.dmgType !== 'laser' && ev.dmgType !== 'blast') this.rule(`hit.material.${material}`, { at, x, opts: { dir: dirX, tier: TIER_CODE[tier] }, ...(contact ? { contact } : {}) }, out);
-          out.push({ a: 'unitClip', id: ev.targetId, clip: 'hit', tier, dir: dirX });
+          // queue item 40: the blow's damage type keys the damage mark of a step it crosses (an effective hit draws bigger)
+          out.push({ a: 'unitClip', id: ev.targetId, clip: 'hit', tier, dir: dirX, kind: ev.dmgType, ...(ev.modBp >= EFFECTIVE_BP ? { effective: true } : {}) });
           // A5: an arrow, a bolt, a javelin, a quill or a needle (a unit's or a turret's) sticks where it hit for a
           // moment and moves with the body (not in a falling one)
           const visual = killed || vDef?.fort ? null : src ? projectileOfHit(aDef, ev.dmgType) : turret ? this.turretShot(turret.side, turret.mount) : null;

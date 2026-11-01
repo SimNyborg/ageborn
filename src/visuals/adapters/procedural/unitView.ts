@@ -19,6 +19,9 @@ import { getPart } from '../../parts/registry';
 import { TRIM_COLORS } from '../../palette';
 import { CLIP_TIMING, STYLE } from '../../style';
 import type { PuppetDef } from '../../types';
+import { damageSlug } from '../../damage/families';
+import type { BlowKind, DamageEmitter, DamageStepEvent } from '../../damage/types';
+import { UnitDamage } from '../../damage/unitDamage';
 import { PuppetSprites } from './puppetSprites';
 import { clipResolver, partSprite, procContext, PuffList, tintPartSprite, type PropPool } from './shared';
 
@@ -32,6 +35,8 @@ export interface UnitViewOptions {
   props: PropPool;
   quality: 'high' | 'lite';
   seed: number;
+  /** The manifest key (`unit.bonker`, `unit.bonker@pumpkin_head`): the damage family (queue item 40). */
+  key?: string;
 }
 
 const UI_ZONES = {
@@ -78,6 +83,9 @@ export class ProceduralUnitView implements UnitView {
   /** Frosty breath puffs (snow aura skins, A5.8): where they leave the mouth and when the next comes. */
   private readonly breathAt: { x: number; y: number } | null;
   private breathMs = 0;
+  /** Queue item 40: the damage stage (tint, emitters and step bursts; no marks: a puppet is not the sheet's shape). */
+  private readonly dmg: UnitDamage;
+  private flickering = false;
 
   constructor(private readonly o: UnitViewOptions) {
     const p = o.puppet;
@@ -127,8 +135,42 @@ export class ProceduralUnitView implements UnitView {
     } else {
       this.breathAt = null;
     }
+    this.dmg = new UnitDamage({ body: this.body, after: null, baker: o.baker, slug: damageSlug(o.key ?? o.def.source), heightLu: p.heightLu, anchors: this.anchors, team: o.teamColor, seed: o.seed, air: p.motion.air === true, noSpots: true });
     this.applyAlpha();
     this.rig.apply((b) => this.animator.sample().get(b));
+  }
+
+  /** R7 (duck-typed, the battle view right after creation): the per-unit seed keeps a replay's damage motion the same. */
+  setIdentity(o: { id: number; seed: number }): void {
+    this.dmg.setSeed(o.seed);
+  }
+
+  /** Queue item 40 (duck-typed): the damage stage shown. */
+  get damageStage(): number {
+    return this.dmg.stage;
+  }
+
+  /** Queue item 40 (duck-typed): `cb` hears every damage step and mend (the battle view plays its burst and sound). */
+  onDamageStep(cb: (e: DamageStepEvent) => void): void {
+    this.dmg.onStep(cb);
+  }
+
+  /** Queue item 40 (duck-typed): the live emitters (root space; reused array). */
+  damageFx(): readonly DamageEmitter[] {
+    this.dmgXf.x = this.body.x;
+    this.dmgXf.y = this.body.y;
+    this.dmgXf.sx = this.facing;
+    return this.dmg.emitters(this.dmgXf, 1);
+  }
+
+  private readonly dmgXf = { x: 0, y: 0, rotation: 0, sx: 1, sy: 1 };
+
+  /**
+   * Queue item 40 (duck-typed; a puppet has no `react`, so the battle view tells it apart): the blow's kind for the
+   * damage step it may cross.
+   */
+  noteDamageBlow(kind: string, effective?: boolean): void {
+    this.dmg.noteBlow(kind as BlowKind, effective === true);
   }
 
   private sizeScale(): number {
@@ -162,6 +204,13 @@ export class ProceduralUnitView implements UnitView {
     }
     this.showBubble(p.shieldBp);
     this.applyAlpha();
+    // queue item 40: the damage stage (a step's burst sits at the hit centre) and its tint on the puppet's own art
+    this.dmgXf.x = this.body.x;
+    this.dmgXf.y = this.body.y;
+    this.dmgXf.sx = this.facing;
+    this.dmg.xform = this.dmgXf;
+    this.dmg.setHp(p.hpBp);
+    this.rig.setTint(this.dmg.tint);
   }
 
   private applyAlpha(): void {
@@ -261,14 +310,25 @@ export class ProceduralUnitView implements UnitView {
     this.clockMs += dtMs;
     if (!this.frozenPose) this.animator.update(dtMs);
     this.rig.apply((b) => this.animator.sample().get(b));
+    // queue item 40: weary motion at the last stage (a tired dip, a machine's judder, an energy body's flicker)
+    const weary = this.dmg.update(this.frozenPose ? 0 : dtMs, { moving: this.animator.state.base === 'walk' });
+    const wx = this.dead ? 0 : weary.shiftLu;
+    const wy = this.dead ? 0 : weary.dipLu;
     // local hitstop jitter (A12: 1-2 px)
-    if (this.animator.frozen) this.body.position.set((this.rng.next() - 0.5) * 2.4, (this.rng.next() - 0.5) * 1.2);
-    else if (this.body.x !== 0 || this.body.y !== 0) this.body.position.set(0, 0);
+    if (this.animator.frozen) this.body.position.set((this.rng.next() - 0.5) * 2.4 + wx, (this.rng.next() - 0.5) * 1.2 + wy);
+    else if (this.body.x !== wx || this.body.y !== wy) this.body.position.set(wx, wy);
     // flash: full for 60%, then fades
     if (this.flashMs > 0) {
       this.flashMs = Math.max(0, this.flashMs - dtMs);
       const t = 1 - this.flashMs / this.flashDur;
       this.rig.setFlash(this.flashMs <= 0 ? 0 : t < 0.6 ? 0.95 : 0.95 * (1 - (t - 0.6) / 0.4), this.flashColor);
+    } else if (weary.flicker > 0 && !this.dead) {
+      // an energy body's mint pulse (never faster than about 1.5 Hz)
+      this.rig.setFlash(weary.flicker * 0.6, 0xbff5e0);
+      this.flickering = true;
+    } else if (this.flickering) {
+      this.flickering = false;
+      this.rig.setFlash(0);
     }
     if (this.aura) this.aura.alpha = 0.34 + 0.16 * Math.sin((this.clockMs / 900) * Math.PI);
     if (this.stars?.visible) {
@@ -317,6 +377,7 @@ export class ProceduralUnitView implements UnitView {
 
   private die(): void {
     this.dead = true;
+    this.dmg.die();
     this.showStars(false);
     const parent = this.root.parent;
     for (const s of this.rig.slotsTagged('prop')) {
@@ -350,6 +411,7 @@ export class ProceduralUnitView implements UnitView {
   destroy(): void {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.dmg.destroy();
     this.puffs.clear();
     this.root.destroy({ children: true });
   }

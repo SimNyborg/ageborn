@@ -48,6 +48,7 @@ import { aimedPath, attackAt, firesVisual, leanFor, lineDeg, lineDegXY, pickAimV
 import { CAMERA, Camera, type CameraHold } from './camera';
 import { bodySizeOf, LEAP_DEFAULTS, leapLift, SIZE_CODE, type BodySize, type HitTier } from './combatFeel';
 import { CONTACT_DEFAULTS, springOffset, stage, type OffsetState, type Reach, type StageBody, type StageUnit } from './contact';
+import { DAMAGE_TUNING_DEFAULTS, DamageFeel, type DamageStepInfo, type DamageTuning, type DamageView } from './damageFeel';
 import { depthZ, easeToward } from './depth';
 import { EventMapper, crumbleStage, decodeTurretSource, type UnitInfo } from './eventMapper';
 import { newGait, stepGait, tickVelocity, walkDurationForSpeed, type GaitState } from './gait';
@@ -200,6 +201,9 @@ interface UnitEntry {
    * and the gaps between them); null when not aiming.
    */
   aim?: { targetId: number; kind: ShotKind; maxLean: number } | null;
+  /** Queue item 40: the world direction of the last blow (a step's pieces fly along it) and its emitters' spawn debt. */
+  hitDir?: 1 | -1;
+  dmgAcc?: number[];
 }
 
 interface TurretEntry {
@@ -445,6 +449,9 @@ export class BattleView {
   /** The warm-up's invisible health bar is drawn this frame (`drawBars`). */
   private barWarm = false;
   private readonly labelFactory: LabelFactory | undefined;
+  /** Queue item 40: damage steps' bursts and sounds, and the emitters of damaged units (`damageFeel.ts`). */
+  private readonly damage: DamageFeel;
+  private damageTuning: DamageTuning = DAMAGE_TUNING_DEFAULTS;
   private readonly onPresetChange: ((p: GraphicsPreset) => void) | undefined;
   private feel: RenderFeelConfig;
   private settings: ViewSettings;
@@ -519,6 +526,19 @@ export class BattleView {
     this.particles = new ParticlePool(o.art, this.layers.vfx, 0, this.rng, { layer: this.layers.ground, ids: GROUND_FX });
     this.numbers = new FloatingNumbers(this.layers.text, this.feel.tuning, this.rng, o.labelFactory);
     this.labelFactory = o.labelFactory;
+    this.damageTuning = { ...DAMAGE_TUNING_DEFAULTS, ...(this.feel.tuning.damage ?? {}) };
+    this.damage = new DamageFeel({
+      particles: this.particles,
+      rule: (key, t, out) => this.mapper.rule(key, t, out),
+      exec: (a) => this.exec(a),
+      nearView: (x) => this.nearView(x),
+      viewMid: () => (this.viewL + this.viewR) / 2,
+      lite: () => this.preset === 'lite',
+      reduce: () => this.settings.reduceMotion,
+      mobile: () => this.isMobile,
+      tuning: () => this.damageTuning,
+      teamOf: (side) => teamColor(this.settings.teamPreset, side),
+    });
     this.markers = new MountMarkers(o.labelFactory ?? textLabelFactory, o.mountLabel);
 
     const st = this.sim.state;
@@ -888,6 +908,7 @@ export class BattleView {
     this.director.setFeel(feel);
     this.numbers.setTuning(feel.tuning);
     this.camera.setTuning(feel.tuning.maxZoom);
+    this.damageTuning = { ...DAMAGE_TUNING_DEFAULTS, ...(feel.tuning.damage ?? {}) };
     this.applySettings(this.settings);
   }
 
@@ -1505,6 +1526,7 @@ export class BattleView {
     if (!this.paused && !frozen) this.simSlow.update(realDt);
 
     this.syncUnits(alpha, gameDt);
+    this.damage.update(gameDt, this.units.values());
     this.trapViews.sync(this.sim.state, gameDt, (x) => this.nearView(x));
     this.updateFollowers();
     this.syncBases(gameDt);
@@ -2148,10 +2170,13 @@ export class BattleView {
           // A2: every hit shows on the victim: an additive reaction on top of whatever plays (attack, walk, idle),
           // scaled by its tier; the view decides whether to insert a hit pose or play the hit clip
           const cv = e.view as CombatView;
+          e.hitDir = a.dir ?? (e.side === 0 ? -1 : 1);
           if (a.tier && typeof cv.react === 'function') {
-            cv.react(a.tier, a.dir ?? (e.side === 0 ? -1 : 1));
+            // queue item 40: the blow's kind keys the damage mark of a step it crosses
+            cv.react(a.tier, e.hitDir, a.kind, a.effective === true);
             return;
           }
+          if (a.kind) (e.view as DamageView).noteDamageBlow?.(a.kind, a.effective === true);
           if (e.oneShotLeftMs > 0) return; // views without `react`: never cut an attack or spawn short
         }
         if (a.clip === 'attack' && (a.attackIndex ?? 0) >= 1) {
@@ -2782,6 +2807,8 @@ export class BattleView {
       this.layers.units.addChild(aura.root);
     }
     this.units.set(id, e);
+    // queue item 40: a damage step plays its burst and sound here (views without damage have no hook)
+    if (!fort) (view as DamageView).onDamageStep?.((ev: DamageStepInfo) => this.damage.step(e, ev));
     this.writePose(e);
     return e;
   }
@@ -3721,8 +3748,11 @@ export interface CombatView {
   setOffsetX?(lu: number): void;
   /** A1: the share 0..1 of the clip's authored lunge taken back during each impact window. */
   setLungeComp?(share: number): void;
-  /** A2: an additive hit reaction on top of whatever plays; `dir` is the world direction of the push. */
-  react?(tier: HitTier, dir: 1 | -1): void;
+  /**
+   * A2: an additive hit reaction on top of whatever plays; `dir` is the world direction of the push. Queue item 40: `kind`
+   * (the damage type) and `effective` key the damage mark of a step the blow crosses.
+   */
+  react?(tier: HitTier, dir: 1 | -1, kind?: string, effective?: boolean): void;
   /** A2/A8: a lift arc of the body over `ms` (x is the battle view's); `onLand` fires on touch-down. */
   airborne?(o: { ms: number; liftLu: number; kind: 'knockback' | 'pounce' | 'leap'; tumble: boolean; onLand?: () => void }): void;
   /** A4: a death with weight: the fall along `dir`, a landing beat, then the body lies `lieMs` and fades over `fadeMs`. */
