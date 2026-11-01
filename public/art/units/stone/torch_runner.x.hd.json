@@ -26,17 +26,17 @@
   },
   "torch_runner_attack_b_01_team": {
    "frame": {
-    "x": 2,
-    "y": 387,
-    "w": 90,
+    "x": 1423,
+    "y": 2,
+    "w": 92,
     "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 179,
+    "x": 177,
     "y": 162,
-    "w": 90,
+    "w": 92,
     "h": 159
    },
    "sourceSize": {
@@ -74,18 +74,18 @@
   },
   "torch_runner_attack_b_02_team": {
    "frame": {
-    "x": 589,
-    "y": 205,
+    "x": 1308,
+    "y": 2,
     "w": 111,
-    "h": 165
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 154,
-    "y": 155,
+    "y": 156,
     "w": 111,
-    "h": 165
+    "h": 164
    },
    "sourceSize": {
     "w": 452,
@@ -122,8 +122,8 @@
   },
   "torch_runner_attack_b_03_team": {
    "frame": {
-    "x": 225,
-    "y": 387,
+    "x": 1120,
+    "y": 174,
     "w": 112,
     "h": 152
    },
@@ -146,8 +146,8 @@
   },
   "torch_runner_attack_b_04": {
    "frame": {
-    "x": 272,
-    "y": 205,
+    "x": 991,
+    "y": 2,
     "w": 194,
     "h": 168
    },
@@ -170,9 +170,9 @@
   },
   "torch_runner_attack_b_04_team": {
    "frame": {
-    "x": 115,
-    "y": 550,
-    "w": 152,
+    "x": 721,
+    "y": 184,
+    "w": 150,
     "h": 136
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 204,
     "y": 183,
-    "w": 152,
+    "w": 150,
     "h": 136
    },
    "sourceSize": {
@@ -194,8 +194,8 @@
   },
   "torch_runner_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 205,
+    "x": 721,
+    "y": 2,
     "w": 150,
     "h": 178
    },
@@ -218,8 +218,8 @@
   },
   "torch_runner_attack_b_05_team": {
    "frame": {
-    "x": 341,
-    "y": 387,
+    "x": 1236,
+    "y": 172,
     "w": 125,
     "h": 150
    },
@@ -242,8 +242,8 @@
   },
   "torch_runner_attack_c_01": {
    "frame": {
-    "x": 470,
-    "y": 205,
+    "x": 1189,
+    "y": 2,
     "w": 115,
     "h": 166
    },
@@ -266,8 +266,8 @@
   },
   "torch_runner_attack_c_01_team": {
    "frame": {
-    "x": 2,
-    "y": 550,
+    "x": 594,
+    "y": 185,
     "w": 109,
     "h": 139
    },
@@ -314,17 +314,17 @@
   },
   "torch_runner_attack_c_02_team": {
    "frame": {
-    "x": 470,
-    "y": 387,
-    "w": 105,
+    "x": 875,
+    "y": 177,
+    "w": 102,
     "h": 145
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 167,
+    "x": 170,
     "y": 138,
-    "w": 105,
+    "w": 102,
     "h": 145
    },
    "sourceSize": {
@@ -362,8 +362,8 @@
   },
   "torch_runner_attack_c_03_team": {
    "frame": {
-    "x": 96,
-    "y": 387,
+    "x": 991,
+    "y": 174,
     "w": 125,
     "h": 152
    },
@@ -387,9 +387,9 @@
   "torch_runner_attack_c_04": {
    "frame": {
     "x": 271,
-    "y": 550,
+    "y": 194,
     "w": 215,
-    "h": 129
+    "h": 132
    },
    "rotated": false,
    "trimmed": true,
@@ -397,7 +397,7 @@
     "x": 118,
     "y": 153,
     "w": 215,
-    "h": 129
+    "h": 132
    },
    "sourceSize": {
     "w": 452,
@@ -410,10 +410,10 @@
   },
   "torch_runner_attack_c_04_team": {
    "frame": {
-    "x": 490,
-    "y": 550,
+    "x": 2,
+    "y": 205,
     "w": 165,
-    "h": 117
+    "h": 119
    },
    "rotated": false,
    "trimmed": true,
@@ -421,7 +421,7 @@
     "x": 136,
     "y": 163,
     "w": 165,
-    "h": 117
+    "h": 119
    },
    "sourceSize": {
     "w": 452,
@@ -434,8 +434,8 @@
   },
   "torch_runner_attack_c_05": {
    "frame": {
-    "x": 156,
-    "y": 205,
+    "x": 875,
+    "y": 2,
     "w": 112,
     "h": 171
    },
@@ -458,17 +458,17 @@
   },
   "torch_runner_attack_c_05_team": {
    "frame": {
-    "x": 579,
-    "y": 387,
-    "w": 98,
+    "x": 1365,
+    "y": 170,
+    "w": 97,
     "h": 144
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 192,
+    "x": 193,
     "y": 173,
-    "w": 98,
+    "w": 97,
     "h": 144
    },
    "sourceSize": {
@@ -541,8 +541,8 @@
   "image": "torch_runner.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 692
+   "w": 1536,
+   "h": 328
   },
   "scale": "3",
   "ageborn": {

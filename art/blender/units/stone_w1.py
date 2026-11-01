@@ -77,9 +77,10 @@ def stripes(rig, joint, face, strokes, w=1.6, depth=0.35, tone=look.TEAM_DARK):
     look.team_part(rig, joint, g, tone=tone, outline=0)
 
 
-def seam(rig, joint, face, pts, fill=None, w=1.1, depth=1.0, team=False, tone=look.TEAM_DARK):
+def seam(rig, joint, face, pts, fill=None, w=1.1, depth=0.35, team=False, tone=look.TEAM_DARK):
     """A line laid on a curved surface in short pieces, each centred on the surface under its midpoint (a stitched
-    seam round a pad, a woven zigzag): pts = [(x, z), ...] in screen lu at rest. team=True: team-dark."""
+    seam round a pad, a woven zigzag, painted stripes): pts = [(x, z), ...] in screen lu at rest. team=True:
+    team-dark. Keep `depth` small: a thick decal floats off the surface, which shades it lit inside a dark ring."""
     g = Geo()
     for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
         mx, mz = (x0 + x1) / 2, (z0 + z1) / 2
@@ -101,14 +102,18 @@ def ring(rig, joint, center, rx, height=3.0, ry=None, fill=None, team=False, ton
     return rig.part(joint, g, fill, outline=outline, finish=finish)
 
 
-def laces(rig, joint, x, y, z0, z1, fill, w=0.55, n=2):
-    """Crossed cords over a wrap between heights z0 (low) and z1 (high), on the camera side at depth y."""
+def laces(rig, joint, x, y, z0, z1, fill, w=0.55, n=2, team=False):
+    """Crossed cords over a wrap between heights z0 (low) and z1 (high), on the camera side at depth y. team=True:
+    team-dark cords (they keep the wrap's team area)."""
     g = Geo()
     step = (z1 - z0) / n
     for k in range(n):
         lo, hi = z0 + k * step, z0 + (k + 1) * step
         g.capsule((x - 1.9, y, hi), (x + 1.9, y, lo), w, segs=8, rings=2)
         g.capsule((x + 1.9, y, hi), (x - 1.9, y, lo), w, segs=8, rings=2)
+    if team:
+        look.team_part(rig, joint, g, outline=0)
+        return
     rig.part(joint, g, fill, outline=0)
 
 

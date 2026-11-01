@@ -2,7 +2,7 @@
  "frames": {
   "bolas_thrower_attack_b_02": {
    "frame": {
-    "x": 126,
+    "x": 52,
     "y": 2,
     "w": 49,
     "h": 85
@@ -26,9 +26,9 @@
   },
   "bolas_thrower_attack_b_02_team": {
    "frame": {
-    "x": 439,
-    "y": 2,
-    "w": 43,
+    "x": 83,
+    "y": 174,
+    "w": 45,
     "h": 78
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 87,
     "y": 90,
-    "w": 43,
+    "w": 45,
     "h": 78
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "bolas_thrower_attack_b_03": {
    "frame": {
-    "x": 260,
-    "y": 2,
+    "x": 77,
+    "y": 91,
     "w": 63,
     "h": 79
    },
@@ -74,18 +74,18 @@
   },
   "bolas_thrower_attack_b_03_team": {
    "frame": {
-    "x": 606,
-    "y": 2,
+    "x": 192,
+    "y": 80,
     "w": 57,
-    "h": 69
+    "h": 70
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 81,
-    "y": 99,
+    "y": 98,
     "w": 57,
-    "h": 69
+    "h": 70
    },
    "sourceSize": {
     "w": 219,
@@ -98,8 +98,8 @@
   },
   "bolas_thrower_attack_b_04": {
    "frame": {
-    "x": 179,
-    "y": 2,
+    "x": 2,
+    "y": 187,
     "w": 77,
     "h": 81
    },
@@ -122,7 +122,7 @@
   },
   "bolas_thrower_attack_b_04_team": {
    "frame": {
-    "x": 486,
+    "x": 181,
     "y": 2,
     "w": 68,
     "h": 74
@@ -146,8 +146,8 @@
   },
   "bolas_thrower_attack_b_05": {
    "frame": {
-    "x": 51,
-    "y": 2,
+    "x": 2,
+    "y": 95,
     "w": 71,
     "h": 88
    },
@@ -170,18 +170,18 @@
   },
   "bolas_thrower_attack_b_05_team": {
    "frame": {
-    "x": 558,
-    "y": 2,
+    "x": 144,
+    "y": 84,
     "w": 44,
-    "h": 73
+    "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 97,
+    "y": 98,
     "w": 44,
-    "h": 73
+    "h": 72
    },
    "sourceSize": {
     "w": 219,
@@ -194,7 +194,7 @@
   },
   "bolas_thrower_attack_b_06": {
    "frame": {
-    "x": 327,
+    "x": 105,
     "y": 2,
     "w": 58,
     "h": 78
@@ -218,8 +218,8 @@
   },
   "bolas_thrower_attack_b_06_team": {
    "frame": {
-    "x": 667,
-    "y": 2,
+    "x": 192,
+    "y": 154,
     "w": 56,
     "h": 68
    },
@@ -244,15 +244,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 45,
+    "w": 46,
     "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
+    "x": 99,
     "y": 88,
-    "w": 45,
+    "w": 46,
     "h": 89
    },
    "sourceSize": {
@@ -266,9 +266,9 @@
   },
   "bolas_thrower_attack_b_07_team": {
    "frame": {
-    "x": 389,
-    "y": 2,
-    "w": 46,
+    "x": 132,
+    "y": 174,
+    "w": 45,
     "h": 78
    },
    "rotated": false,
@@ -276,7 +276,7 @@
    "spriteSourceSize": {
     "x": 95,
     "y": 92,
-    "w": 46,
+    "w": 45,
     "h": 78
    },
    "sourceSize": {
@@ -323,8 +323,8 @@
   "image": "bolas_thrower.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 96
+   "w": 256,
+   "h": 272
   },
   "scale": "1.5",
   "ageborn": {

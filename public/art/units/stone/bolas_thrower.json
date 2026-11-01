@@ -2,7 +2,7 @@
  "frames": {
   "bolas_thrower_idle_00": {
    "frame": {
-    "x": 271,
+    "x": 272,
     "y": 197,
     "w": 49,
     "h": 86
@@ -146,7 +146,7 @@
   },
   "bolas_thrower_idle_03": {
    "frame": {
-    "x": 330,
+    "x": 329,
     "y": 2,
     "w": 49,
     "h": 90
@@ -194,7 +194,7 @@
   },
   "bolas_thrower_idle_04": {
    "frame": {
-    "x": 276,
+    "x": 275,
     "y": 2,
     "w": 50,
     "h": 90
@@ -218,7 +218,7 @@
   },
   "bolas_thrower_idle_04_team": {
    "frame": {
-    "x": 321,
+    "x": 333,
     "y": 288,
     "w": 44,
     "h": 81
@@ -242,7 +242,7 @@
   },
   "bolas_thrower_idle_05": {
    "frame": {
-    "x": 221,
+    "x": 220,
     "y": 2,
     "w": 51,
     "h": 91
@@ -266,7 +266,7 @@
   },
   "bolas_thrower_idle_05_team": {
    "frame": {
-    "x": 445,
+    "x": 457,
     "y": 288,
     "w": 45,
     "h": 80
@@ -338,7 +338,7 @@
   },
   "bolas_thrower_idle_07": {
    "frame": {
-    "x": 555,
+    "x": 556,
     "y": 104,
     "w": 51,
     "h": 87
@@ -410,7 +410,7 @@
   },
   "bolas_thrower_walk_00_team": {
    "frame": {
-    "x": 451,
+    "x": 450,
     "y": 458,
     "w": 49,
     "h": 75
@@ -434,7 +434,7 @@
   },
   "bolas_thrower_walk_01": {
    "frame": {
-    "x": 160,
+    "x": 161,
     "y": 197,
     "w": 53,
     "h": 86
@@ -458,9 +458,9 @@
   },
   "bolas_thrower_walk_01_team": {
    "frame": {
-    "x": 196,
+    "x": 195,
     "y": 458,
-    "w": 47,
+    "w": 46,
     "h": 76
    },
    "rotated": false,
@@ -468,7 +468,7 @@
    "spriteSourceSize": {
     "x": 91,
     "y": 98,
-    "w": 47,
+    "w": 46,
     "h": 76
    },
    "sourceSize": {
@@ -482,17 +482,17 @@
   },
   "bolas_thrower_walk_02": {
    "frame": {
-    "x": 108,
+    "x": 55,
     "y": 197,
-    "w": 48,
+    "w": 49,
     "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 94,
     "y": 88,
-    "w": 48,
+    "w": 49,
     "h": 87
    },
    "sourceSize": {
@@ -556,7 +556,7 @@
    "frame": {
     "x": 143,
     "y": 458,
-    "w": 49,
+    "w": 48,
     "h": 76
    },
    "rotated": false,
@@ -564,7 +564,7 @@
    "spriteSourceSize": {
     "x": 90,
     "y": 87,
-    "w": 49,
+    "w": 48,
     "h": 76
    },
    "sourceSize": {
@@ -578,7 +578,7 @@
   },
   "bolas_thrower_walk_04": {
    "frame": {
-    "x": 101,
+    "x": 112,
     "y": 288,
     "w": 60,
     "h": 82
@@ -674,17 +674,17 @@
   },
   "bolas_thrower_walk_06": {
    "frame": {
-    "x": 165,
+    "x": 176,
     "y": 288,
-    "w": 48,
+    "w": 49,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 94,
     "y": 89,
-    "w": 48,
+    "w": 49,
     "h": 82
    },
    "sourceSize": {
@@ -722,7 +722,7 @@
   },
   "bolas_thrower_walk_07": {
    "frame": {
-    "x": 217,
+    "x": 218,
     "y": 197,
     "w": 50,
     "h": 86
@@ -746,9 +746,9 @@
   },
   "bolas_thrower_walk_07_team": {
    "frame": {
-    "x": 504,
+    "x": 503,
     "y": 458,
-    "w": 49,
+    "w": 48,
     "h": 75
    },
    "rotated": false,
@@ -756,7 +756,7 @@
    "spriteSourceSize": {
     "x": 90,
     "y": 88,
-    "w": 49,
+    "w": 48,
     "h": 75
    },
    "sourceSize": {
@@ -770,7 +770,7 @@
   },
   "bolas_thrower_attack_00": {
    "frame": {
-    "x": 55,
+    "x": 108,
     "y": 197,
     "w": 49,
     "h": 87
@@ -794,7 +794,7 @@
   },
   "bolas_thrower_attack_00_team": {
    "frame": {
-    "x": 298,
+    "x": 295,
     "y": 458,
     "w": 44,
     "h": 76
@@ -866,17 +866,17 @@
   },
   "bolas_thrower_attack_02": {
    "frame": {
-    "x": 2,
+    "x": 56,
     "y": 2,
-    "w": 50,
+    "w": 49,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
+    "x": 85,
     "y": 78,
-    "w": 50,
+    "w": 49,
     "h": 98
    },
    "sourceSize": {
@@ -890,9 +890,9 @@
   },
   "bolas_thrower_attack_02_team": {
    "frame": {
-    "x": 2,
+    "x": 63,
     "y": 288,
-    "w": 46,
+    "w": 45,
     "h": 83
    },
    "rotated": false,
@@ -900,7 +900,7 @@
    "spriteSourceSize": {
     "x": 83,
     "y": 85,
-    "w": 46,
+    "w": 45,
     "h": 83
    },
    "sourceSize": {
@@ -914,7 +914,7 @@
   },
   "bolas_thrower_attack_03": {
    "frame": {
-    "x": 56,
+    "x": 2,
     "y": 2,
     "w": 50,
     "h": 98
@@ -938,7 +938,7 @@
   },
   "bolas_thrower_attack_03_team": {
    "frame": {
-    "x": 487,
+    "x": 488,
     "y": 197,
     "w": 46,
     "h": 84
@@ -962,7 +962,7 @@
   },
   "bolas_thrower_attack_04": {
    "frame": {
-    "x": 110,
+    "x": 109,
     "y": 2,
     "w": 51,
     "h": 95
@@ -986,7 +986,7 @@
   },
   "bolas_thrower_attack_04_team": {
    "frame": {
-    "x": 269,
+    "x": 281,
     "y": 288,
     "w": 48,
     "h": 81
@@ -1010,17 +1010,17 @@
   },
   "bolas_thrower_attack_05": {
    "frame": {
-    "x": 457,
+    "x": 529,
     "y": 2,
-    "w": 69,
+    "w": 68,
     "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 93,
     "y": 87,
-    "w": 69,
+    "w": 68,
     "h": 89
    },
    "sourceSize": {
@@ -1058,17 +1058,17 @@
   },
   "bolas_thrower_attack_06": {
    "frame": {
-    "x": 394,
+    "x": 391,
     "y": 458,
-    "w": 53,
+    "w": 55,
     "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 101,
     "y": 99,
-    "w": 53,
+    "w": 55,
     "h": 75
    },
    "sourceSize": {
@@ -1084,7 +1084,7 @@
    "frame": {
     "x": 394,
     "y": 616,
-    "w": 56,
+    "w": 55,
     "h": 62
    },
    "rotated": false,
@@ -1092,7 +1092,7 @@
    "spriteSourceSize": {
     "x": 97,
     "y": 105,
-    "w": 56,
+    "w": 55,
     "h": 62
    },
    "sourceSize": {
@@ -1108,15 +1108,15 @@
    "frame": {
     "x": 450,
     "y": 104,
-    "w": 45,
+    "w": 46,
     "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 103,
     "y": 88,
-    "w": 45,
+    "w": 46,
     "h": 88
    },
    "sourceSize": {
@@ -1130,9 +1130,9 @@
   },
   "bolas_thrower_attack_07_team": {
    "frame": {
-    "x": 247,
+    "x": 245,
     "y": 458,
-    "w": 47,
+    "w": 46,
     "h": 76
    },
    "rotated": false,
@@ -1140,7 +1140,7 @@
    "spriteSourceSize": {
     "x": 99,
     "y": 93,
-    "w": 47,
+    "w": 46,
     "h": 76
    },
    "sourceSize": {
@@ -1154,7 +1154,7 @@
   },
   "bolas_thrower_attack_08": {
    "frame": {
-    "x": 434,
+    "x": 435,
     "y": 197,
     "w": 49,
     "h": 85
@@ -1178,7 +1178,7 @@
   },
   "bolas_thrower_attack_08_team": {
    "frame": {
-    "x": 346,
+    "x": 343,
     "y": 458,
     "w": 44,
     "h": 76
@@ -1226,7 +1226,7 @@
   },
   "bolas_thrower_attack_09_team": {
    "frame": {
-    "x": 494,
+    "x": 506,
     "y": 288,
     "w": 42,
     "h": 80
@@ -1298,7 +1298,7 @@
   },
   "bolas_thrower_hit_00": {
    "frame": {
-    "x": 369,
+    "x": 381,
     "y": 288,
     "w": 72,
     "h": 80
@@ -1346,7 +1346,7 @@
   },
   "bolas_thrower_hit_01": {
    "frame": {
-    "x": 530,
+    "x": 456,
     "y": 2,
     "w": 69,
     "h": 89
@@ -1370,7 +1370,7 @@
   },
   "bolas_thrower_hit_01_team": {
    "frame": {
-    "x": 377,
+    "x": 378,
     "y": 197,
     "w": 53,
     "h": 85
@@ -1418,7 +1418,7 @@
   },
   "bolas_thrower_hit_02_team": {
    "frame": {
-    "x": 217,
+    "x": 229,
     "y": 288,
     "w": 48,
     "h": 82
@@ -1442,7 +1442,7 @@
   },
   "bolas_thrower_hit_03": {
    "frame": {
-    "x": 324,
+    "x": 325,
     "y": 197,
     "w": 49,
     "h": 86
@@ -1466,7 +1466,7 @@
   },
   "bolas_thrower_hit_03_team": {
    "frame": {
-    "x": 557,
+    "x": 555,
     "y": 458,
     "w": 46,
     "h": 75
@@ -1538,7 +1538,7 @@
   },
   "bolas_thrower_die_00": {
    "frame": {
-    "x": 540,
+    "x": 552,
     "y": 288,
     "w": 63,
     "h": 79
@@ -1586,7 +1586,7 @@
   },
   "bolas_thrower_die_01": {
    "frame": {
-    "x": 165,
+    "x": 164,
     "y": 2,
     "w": 52,
     "h": 94
@@ -1610,18 +1610,18 @@
   },
   "bolas_thrower_die_01_team": {
    "frame": {
-    "x": 52,
-    "y": 288,
+    "x": 538,
+    "y": 197,
     "w": 45,
-    "h": 83
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 88,
-    "y": 83,
+    "y": 82,
     "w": 45,
-    "h": 83
+    "h": 84
    },
    "sourceSize": {
     "w": 219,
@@ -1634,7 +1634,7 @@
   },
   "bolas_thrower_die_02": {
    "frame": {
-    "x": 383,
+    "x": 382,
     "y": 2,
     "w": 70,
     "h": 89
@@ -1658,8 +1658,8 @@
   },
   "bolas_thrower_die_02_team": {
    "frame": {
-    "x": 537,
-    "y": 197,
+    "x": 2,
+    "y": 288,
     "w": 57,
     "h": 83
    },
@@ -1682,7 +1682,7 @@
   },
   "bolas_thrower_die_03": {
    "frame": {
-    "x": 499,
+    "x": 500,
     "y": 104,
     "w": 52,
     "h": 87
@@ -1754,7 +1754,7 @@
   },
   "bolas_thrower_die_04_team": {
    "frame": {
-    "x": 185,
+    "x": 243,
     "y": 616,
     "w": 75,
     "h": 64
@@ -1853,7 +1853,7 @@
     "x": 116,
     "y": 616,
     "w": 65,
-    "h": 65
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
@@ -1861,7 +1861,7 @@
     "x": 65,
     "y": 104,
     "w": 65,
-    "h": 65
+    "h": 66
    },
    "sourceSize": {
     "w": 219,
@@ -1946,10 +1946,10 @@
   },
   "bolas_thrower_die_08_team": {
    "frame": {
-    "x": 264,
+    "x": 185,
     "y": 616,
     "w": 54,
-    "h": 64
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
@@ -1957,7 +1957,7 @@
     "x": 74,
     "y": 104,
     "w": 54,
-    "h": 64
+    "h": 66
    },
    "sourceSize": {
     "w": 219,
@@ -1994,10 +1994,10 @@
   },
   "bolas_thrower_die_09_team": {
    "frame": {
-    "x": 454,
+    "x": 453,
     "y": 616,
     "w": 51,
-    "h": 59
+    "h": 60
    },
    "rotated": false,
    "trimmed": true,
@@ -2005,7 +2005,7 @@
     "x": 76,
     "y": 107,
     "w": 51,
-    "h": 59
+    "h": 60
    },
    "sourceSize": {
     "w": 219,
