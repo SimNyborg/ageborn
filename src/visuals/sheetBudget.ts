@@ -140,10 +140,14 @@ export interface SheetWant {
   canWait?: boolean;
 }
 
-/** Decoded bytes of a unit sheet's HD and 1x copies (core and extras), or null for an unknown source. */
+/**
+ * Decoded bytes of a unit sheet's HD and 1x copies (core and extras), or null for an unknown source. A troop skin's
+ * sheet (`<slug>@<skinId>.json`, queue item 46) counts its own images; one the table does not list yet (installed
+ * before the table was regenerated) counts as its unit's sheet, which it matches frame for frame (contract C3).
+ */
 export function unitSheetBytes(source: string): { hd: number; sd: number } | null {
-  const m = /art\/units\/([a-z]+)\/([a-z0-9_]+)\.json$/.exec(source);
-  const px = m ? UNIT_SHEET_PIXELS[`${m[1]}/${m[2]}`] : undefined;
+  const m = /art\/units\/([a-z]+)\/([a-z0-9_]+)(@[a-z0-9_]+)?\.json$/.exec(source);
+  const px = m ? (UNIT_SHEET_PIXELS[`${m[1]}/${m[2]}${m[3] ?? ''}`] ?? (m[3] ? UNIT_SHEET_PIXELS[`${m[1]}/${m[2]}`] : undefined)) : undefined;
   if (!px) return null;
   return { hd: (px[0] + px[1]) * 4, sd: (px[2] + px[3]) * 4 };
 }

@@ -473,7 +473,15 @@
      "muzzle": [
       36.9,
       17.9
-     ]
+     ],
+     "omni": true,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       36.9,
+       17.9
+      ]
+     }
     }
    },
    "team": {

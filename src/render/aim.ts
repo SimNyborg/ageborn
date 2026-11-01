@@ -90,6 +90,16 @@ export function pathFor(kind: ShotKind, lineAt: number, launchDeg: number): { pa
 }
 
 /**
+ * The launch angle a shot asks of the drawn weapon (deg above the facing direction): down the line to the target for
+ * direct and ballistic shots, an arc's least loft over it (at most `MAX_LAUNCH_DEG`). The art round's aimed clips
+ * (contract C2: `<clip>_up45`, `_up70`, `_down`) are chosen by it: the atlas view plays the clip of its attack variant
+ * drawn closest to this angle (`atlasAim.ts` `pickAimedClip`), and the lean covers the rest.
+ */
+export function aimWantDeg(kind: ShotKind, lineAt: number): number {
+  return kind === 'arc' ? Math.min(MAX_LAUNCH_DEG, lineAt + ARC_MIN_LOFT_DEG) : lineAt;
+}
+
+/**
  * How far (deg) a variant drawn at `deg` falls short of what the shot needs after the lean; 0 when it can start it. A
  * ballistic or arc shot leans only up (`leanFor`), so a weapon drawn steeper than any path takes stays too steep.
  */
@@ -104,23 +114,33 @@ export interface AimVariant {
   anim: string;
   deg: number;
   omni: boolean;
+  /** The drawn angles of the variant's loaded aimed clips (contract C2), when it has any: it can start a shot with any of them. */
+  aimed?: readonly number[];
+}
+
+/** The least a variant falls short of a shot, over its own pose and its aimed clips' (`variantShortfall`). */
+function shortfallOf(v: AimVariant, kind: ShotKind, lineAt: number, maxLean: number): number {
+  let s = variantShortfall(kind, lineAt, v.deg, maxLean);
+  for (const d of v.aimed ?? []) s = Math.min(s, variantShortfall(kind, lineAt, d, maxLean));
+  return s;
 }
 
 /**
  * The attack variant to play for this shot: null keeps the view's own cycle (its next variant can start the shot, or
- * no other fits clearly better); else the variant that fits best.
+ * no other fits clearly better); else the variant that fits best. A variant with aimed clips fits as well as the best
+ * of its poses (the view then plays the one that suits the shot).
  */
 export function pickAimVariant(variants: readonly AimVariant[], next: string | null, kind: ShotKind, lineAt: number, maxLean: number): string | null {
   if (!next || variants.length < 2) return null;
   const cur = variants.find((v) => v.anim === next);
   if (!cur || cur.omni) return null;
-  const short = variantShortfall(kind, lineAt, cur.deg, maxLean);
+  const short = shortfallOf(cur, kind, lineAt, maxLean);
   if (short <= VARIANT_SLACK_DEG) return null;
   let best: AimVariant | null = null;
   let bestShort = short;
   for (const v of variants) {
     if (v.omni || v.anim === next) continue;
-    const s = variantShortfall(kind, lineAt, v.deg, maxLean);
+    const s = shortfallOf(v, kind, lineAt, maxLean);
     if (s < bestShort) {
       best = v;
       bestShort = s;

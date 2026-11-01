@@ -2,7 +2,7 @@
  * Shared render types: view settings, view actions (the event mapper's output) and view events
  * (what the battle view tells the HUD).
  */
-import type { AgeId, CardId, ClipName, Command, EffectId, EmoteId, MatchOutcome, MusicCueId, MusicLayer, PowerSlot, Pt, Side, SoundId, TeamPreset, VisualId } from '@/contracts';
+import type { AgeId, CardId, ClipName, Command, DmgType, EffectId, EmoteId, MatchOutcome, MusicCueId, MusicLayer, PowerSlot, Pt, Side, SoundId, TeamPreset, VisualId } from '@/contracts';
 import type { BodySize, HitTier } from './combatFeel';
 import type { GraphicsSetting } from './presets';
 
@@ -145,6 +145,12 @@ export type ViewAction =
       dir?: 1 | -1;
       /** An attack's target as the sim has it (a unit id, -1 the base, 0 none): a ranged shooter aims at it (queue item 44). */
       targetId?: number;
+      /**
+       * A `hit`'s damage type and whether it was an effective counter hit (x1.5 or more): the damage mark of the step it
+       * crosses matches the blow (queue item 40; views with `react` take it as its third and fourth argument).
+       */
+      kind?: DmgType;
+      effective?: boolean;
     }
   /**
    * A death (A4): `dir` the world direction of the killing blow, `tier` its share tier (U's `dieWith` throws a heavy

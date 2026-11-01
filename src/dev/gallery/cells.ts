@@ -6,6 +6,7 @@
 import type { Container, Text } from 'pixi.js';
 import type { ClipName, EffectView, TurretView, UnitPose, UnitView, VisualDef } from '@/contracts/art';
 import type { RoleGroup, Side } from '@/contracts/ids';
+import { EMIT_EFFECT } from '@/render/damageFeel';
 
 export const UNIT_CLIPS: readonly ClipName[] = ['spawn', 'idle', 'walk', 'attack', 'hit', 'stun', 'die', 'victory', 'ability'];
 
@@ -49,7 +50,20 @@ export interface UnitCellOptions {
    * adds it (`fx.legendary_aura`, sized like render/battleView.ts); the gallery does the same.
    */
   aura?: (radius: number) => EffectView;
+  /**
+   * Queue item 40: the HP the unit is drawn with (bp of max; default full): the gallery's damage control shows each
+   * stage (75/50/25%) on every unit and skin.
+   */
+  hpBp?: number;
+  /**
+   * Queue item 40: plays a damaged unit's emitters (smoke, fire, sparks, steam, breath, motes) as the battle view does
+   * (`render/damageFeel.ts`, at their rates on the cell's clock); without it the gallery shows marks, tint and motion only.
+   */
+  fx?: (effectId: string, opts: Record<string, number>) => EffectView;
 }
+
+/** The HP the gallery's damage control draws a unit with, by damage stage (queue item 40: 0 unhurt .. 3 wrecked). */
+export const DAMAGE_STAGE_HP: readonly number[] = [10000, 7000, 4600, 2000];
 
 /** One unit view driven through its clips. */
 export class UnitCell {
@@ -62,6 +76,9 @@ export class UnitCell {
   private aura: EffectView | null = null;
   private auraPlaying = false;
   private readonly auraRadius: number;
+  /** The damage emitters' spawn debt (per emitter) and the particles they have in flight. */
+  private readonly dmgAcc: number[] = [];
+  private readonly dmgFx: EffectView[] = [];
 
   constructor(private readonly o: UnitCellOptions) {
     this.view = this.spawnView();
@@ -84,7 +101,7 @@ export class UnitCell {
       x: this.o.x + this.walkX,
       y: this.o.y,
       facing: this.o.side === 0 ? 1 : -1,
-      hpBp: 10000,
+      hpBp: this.o.hpBp ?? 10000,
       shieldBp: 0,
       stunned: this.stunned,
       frozen: false,
@@ -142,6 +159,7 @@ export class UnitCell {
     this.view.setPose(this.pose());
     this.view.update(dtMs);
     this.updateAura(dtMs);
+    this.updateDamageFx(dtMs);
     const loops = this.clip === 'idle' || this.clip === 'walk' || this.clip === 'victory' || this.clip === 'stun';
     if (this.o.mode !== 'cycle' && loops) return;
     if (this.t >= showMs(this.clip, this.o.def)) {
@@ -151,6 +169,37 @@ export class UnitCell {
       }
       if (this.o.mode !== 'cycle' || this.clip !== 'ability') this.view.play('idle');
       this.next();
+    }
+  }
+
+  /** A damaged unit's emitters, spawned in the cell's world at their rates (the battle view's rule, without its caps). */
+  private updateDamageFx(dtMs: number): void {
+    const make = this.o.fx;
+    if (!make) return;
+    for (let i = this.dmgFx.length - 1; i >= 0; i--) {
+      const e = this.dmgFx[i] as EffectView;
+      e.update(dtMs);
+      if (e.done) {
+        e.destroy();
+        this.dmgFx.splice(i, 1);
+      }
+    }
+    const v = this.view as UnitView & { damageStage?: number; damageFx?: () => readonly { kind: string; x: number; y: number; rate: number; size: number }[] };
+    if ((v.damageStage ?? 0) < 2 || this.clip === 'die' || typeof v.damageFx !== 'function') return;
+    const list = v.damageFx();
+    for (let i = 0; i < list.length; i++) {
+      const em = list[i];
+      const id = em ? EMIT_EFFECT[em.kind] : undefined;
+      if (!em || !id) continue;
+      this.dmgAcc[i] = (this.dmgAcc[i] ?? 0) + (Math.max(0, em.rate) * dtMs) / 1000;
+      while ((this.dmgAcc[i] as number) >= 1) {
+        this.dmgAcc[i] = (this.dmgAcc[i] as number) - 1;
+        const opts = { dir: this.o.side === 0 ? 1 : -1, scale: Math.max(0.4, em.size / 10) };
+        const fx = make(id, opts);
+        this.o.parent.addChild(fx.root);
+        fx.playAt({ x: v.root.x + em.x, y: v.root.y + em.y }, opts);
+        this.dmgFx.push(fx);
+      }
     }
   }
 
@@ -170,6 +219,7 @@ export class UnitCell {
 
   destroy(): void {
     this.aura?.destroy();
+    for (const e of this.dmgFx.splice(0)) e.destroy();
     this.view.destroy();
   }
 }

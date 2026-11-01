@@ -44,8 +44,14 @@ import { renderPortrait } from '../portraits';
 import { portraitStillBase, renderStillPortrait } from './atlasPortrait';
 import { partSprite, PuffList, tintPartSprite } from './procedural/shared';
 import { aimedBulge, classicBulge } from '../effects/flight';
-import { DEFAULT_CLIP_AIM, leanPolicyOf, unitAimFor, type ClipAim, type LeanPolicy, type UnitAim } from '../unitAim';
+import { leanPolicyOf, unitAimFor, type ClipAim, type LeanPolicy, type UnitAim } from '../unitAim';
+import { aimedBaseOf, aimedNamesOf, aimLevelOf, clipAimOf, pickAimedClip, type AimCandidate, type ClipRelease } from './atlasAim';
 import { aimLeanGoal, angleThroughBody, clampLean, LEAN_REDUCED_SHARE, stepLeanSpring, throughBody, type BodyXform, type LeanTiming, type SpringState } from './atlasAim';
+import { damageBundles } from '../damage/bundle';
+import { damageSlug } from '../damage/families';
+import type { BlowKind, DamageEmitter, DamageStepEvent } from '../damage/types';
+import { UnitDamage } from '../damage/unitDamage';
+import { trackerReach } from '../damage/trackers';
 import { AtlasBaseView } from './world/atlasBaseView';
 import { AtlasTurretView } from './world/atlasTurretView';
 import { isWorldSource, WorldAtlas, worldSourceAge } from './worldAtlas';
@@ -174,8 +180,15 @@ export interface AtlasClipMeta {
    * direction on screen). Wins over the `unitAim.ts` table, so a pipeline that measures it on the rig needs no code.
    */
   aimDeg?: number;
-  /** Attack clips (queue item 44, optional): where the shot leaves when the impact frame's muzzle is off the weapon (lu, x forward, y up). */
-  release?: readonly [number, number];
+  /**
+   * Attack clips (queue item 44, optional): where the shot leaves (contract C2: `{ frame, atLu }`, lu from the feet,
+   * x forward, y up; item 44's first data wrote the point alone).
+   */
+  release?: ClipRelease;
+  /** Aimed variants (contract C2): the shot clip this one aims, with exactly its timing (`atlasAim.ts`). */
+  aimOf?: string;
+  /** Attack clips that emit rather than aim (contract C2): no lean and no aimed path. */
+  omni?: boolean;
   /** Per-frame anchors (lu from the feet, y up): `muzzle`, `riderMuzzle`, `mgMuzzle`, ... */
   anchorsLu?: Readonly<Record<string, readonly (readonly [number, number] | null)[]>>;
   /** Walk only: ground speed at the authored timing (feet do not slide at this speed). */
@@ -810,7 +823,8 @@ export class AtlasAdapter implements VisualAdapter {
   private loadExtras(set: SheetSet, source: string, core: AtlasData, coreUrl: string): void {
     const def = this.o.entries().find((d) => d.kind === 'atlas' && d.source === source);
     if (!def) return;
-    const missing = EXTRA_CLIPS.filter((c) => def.clips[c] && !core.animations[def.clips[c]?.ref ?? c]);
+    // (aimed variants, contract C2, live in the extras sheet too: the manifest lists them)
+    const missing = Object.keys(def.clips).filter((c) => (EXTRA_CLIPS.includes(c) || aimedBaseOf(c) !== null) && !core.animations[def.clips[c]?.ref ?? c]);
     if (missing.length === 0) return;
     const xUrl = extrasSheetUrl(coreUrl);
     const plainX = extrasSheetUrl(this.url(source));
@@ -1242,7 +1256,8 @@ interface Track {
 }
 
 function isAttackAnim(anim: string): boolean {
-  return (ATTACK_VARIANTS as readonly string[]).includes(anim) || anim === ALT_ATTACK;
+  // (an aimed variant, contract C2, is its shot clip with the weapon turned: the same timing and the same rules)
+  return (ATTACK_VARIANTS as readonly string[]).includes(anim) || anim === ALT_ATTACK || aimedBaseOf(anim) !== null;
 }
 
 function track(sheet: AtlasData, def: VisualDef, name: string, o: { durationMs?: number; impactAtMs?: number; loop?: boolean } = {}, animOverride?: string): Track | null {
@@ -1371,6 +1386,9 @@ const AIR_STRETCH = 0.12;
 const DEATH_THROW_TILT_RAD = (7 * Math.PI) / 180;
 const LAND_SQUASH_DEPTH: Readonly<Record<UnitMass, number>> = { light: 0.16, medium: 0.12, heavy: 0.08 };
 
+/** Queue item 40: an energy body's damage flicker tints the flash sprite pale mint. */
+const DAMAGE_FLICKER_TINT = 0xbff5e0;
+
 /** `stepAir`'s answer for a unit on the ground (shared: it runs every frame for every unit, read only). */
 const AIR_NONE: { readonly rot: number; readonly y: number; readonly stretch: number } = Object.freeze({ rot: 0, y: 0, stretch: 0 });
 
@@ -1497,6 +1515,8 @@ class AtlasUnitView implements UnitView {
    * have the same geometry in texture units (`meta.scale` follows the density), so a swap keeps them.
    */
   private reachCache = new Map<string, Reach | null>();
+  /** The damage trackers' revision the cached reaches were taken with (item 38 B0). */
+  private reachRev = 0;
   private lungeCache = new Map<string, { curve: number[]; from: number }>();
   /** A2: once `react()` has run, `flash()` only flashes (the reaction owns the recoil; views without it keep the flinch). */
   private reacted = false;
@@ -1536,6 +1556,12 @@ class AtlasUnitView implements UnitView {
   private readonly aimXf: BodyXform = { x: 0, y: 0, rotation: 0, sx: 1, sy: 1 };
   private readonly aimOut = { x: 0, y: 0, deg: 0, drawnDeg: 0, leanDeg: 0, omni: false };
   private readonly leanTm: LeanTiming = { t: 0, impactAtMs: 0 };
+  /** Queue item 40: visible battle damage (stage, marks and strip on the body, tint, weary motion, emitters). */
+  private readonly dmg: UnitDamage;
+  /** An energy body's mint pulse is on the flash sprite (item 40). */
+  private flickering = false;
+  /** The stage tint on the base frame (item 40). */
+  private dmgTint = 0xffffff;
 
   constructor(
     private readonly def: VisualDef,
@@ -1588,6 +1614,10 @@ class AtlasUnitView implements UnitView {
     this.ghostBase = new Sprite(Texture.EMPTY);
     this.ghostBase.visible = false;
     this.body.addChild(this.teamSprite, this.baseSprite, this.ghostTeam, this.ghostBase, this.flashSprite);
+    // item 40: the damage marks go right after the base frame (the ghost and the flash cover them); the age's bundle loads once
+    this.dmg = new UnitDamage({ body: this.body, after: this.baseSprite, baker: decor, slug: damageSlug(def.source), heightLu: def.heightLu, anchors: def.anchors, team, seed: o.seed ?? 1, air: hovers(this.gait) });
+    const dmgAge = unitSheetAge(def.source);
+    if (dmgAge) void damageBundles.request(dmgAge);
     const hk = sheet.heightLu && def.heightLu > 0 ? def.heightLu / sheet.heightLu : 1;
     this.k = sheet.luPerUnit * (Math.abs(hk - 1) > 0.02 ? hk : 1);
     this.hk = this.k / (sheet.luPerUnit || 1);
@@ -1608,6 +1638,7 @@ class AtlasUnitView implements UnitView {
   setIdentity(o: { id: number; seed: number }): void {
     this.unitId = o.id;
     this.rng = mulberry32(o.seed >>> 0 || 1);
+    this.dmg.setSeed(o.seed);
     this.hoverPeriod = HOVER_PERIOD_MS[0] + this.rng.next() * (HOVER_PERIOD_MS[1] - HOVER_PERIOD_MS[0]);
     this.hoverPhase = this.rng.next();
     if (this.base && this.base.name === 'idle') this.base.t = this.rng.next() * this.base.durationMs;
@@ -1673,6 +1704,22 @@ class AtlasUnitView implements UnitView {
   setMotion(m: { reduce: boolean; lite: boolean }): void {
     this.reduceMotion = m.reduce;
     this.lite = m.lite;
+    this.dmg.setMotion(m);
+  }
+
+  /** Queue item 40 (duck-typed): the damage stage shown (0 unhurt, 1-3 at 75%, 50% and 25% HP). */
+  get damageStage(): number {
+    return this.dmg.stage;
+  }
+
+  /** Queue item 40 (duck-typed): `cb` hears every step (and mend) the frame it happens, with where its burst plays. */
+  onDamageStep(cb: (e: DamageStepEvent) => void): void {
+    this.dmg.onStep(cb);
+  }
+
+  /** Queue item 40 (duck-typed): the live emitters (root space, lu, y down; reused array, valid until the next call). */
+  damageFx(): readonly DamageEmitter[] {
+    return this.dmg.emitters(this.bodyXform(), this.hk);
   }
 
   /** Contact steps of a big unit since the last call (the battle view adds a little trauma for Legendaries). */
@@ -1699,13 +1746,15 @@ class AtlasUnitView implements UnitView {
    * direction; `omni` for an emitter without a direction), the variant the next attack will play, and the most this
    * unit leans toward a target now (its body type's policy, halved under Reduce motion). Null without an attack clip.
    */
-  aimInfo(): { variants: { anim: string; deg: number; omni: boolean }[]; next: string | null; maxLeanDeg: number } | null {
+  aimInfo(): { variants: { anim: string; deg: number; omni: boolean; aimed?: number[] }[]; next: string | null; maxLeanDeg: number } | null {
     if (this.destroyed) return null;
-    const variants: { anim: string; deg: number; omni: boolean }[] = [];
+    const variants: { anim: string; deg: number; omni: boolean; aimed?: number[] }[] = [];
     for (const anim of ATTACK_VARIANTS) {
       if ((this.sheet.animations[anim]?.length ?? 0) === 0) continue;
       const c = this.clipAim(anim);
-      variants.push({ anim, deg: c.deg, omni: c.omni === true });
+      // the drawn angles of its loaded aimed clips (contract C2): the variant can start a shot with any of them
+      const aimed = c.omni ? [] : this.aimedOf(anim).map((x) => x.deg);
+      variants.push({ anim, deg: c.deg, omni: c.omni === true, ...(aimed.length > 0 ? { aimed } : {}) });
     }
     if (variants.length === 0) return null;
     return { variants, next: this.nextVariant(), maxLeanDeg: this.leanPolicy.maxDeg * (this.reduceMotion ? LEAN_REDUCED_SHARE : 1) };
@@ -1733,7 +1782,8 @@ class AtlasUnitView implements UnitView {
     // between attacks the weapon counts as aimed and held as in the last shot, so a held lean stays still until the next one
     const attacking = this.action !== null && this.action.name === 'attack';
     const m = this.muzzleNow(attackIndex) ?? (attackIndex <= 0 && !attacking ? this.lastAttackMuzzle : null) ?? this.anchors.muzzle;
-    const anim = attackIndex >= 1 ? ALT_ATTACK : attacking && this.action ? this.action.anim : (this.lastAttackAnim ?? this.nextVariant());
+    const alt = this.action !== null && this.action.name === ALT_ATTACK ? this.action.anim : ALT_ATTACK;
+    const anim = attackIndex >= 1 ? alt : attacking && this.action ? this.action.anim : (this.lastAttackAnim ?? this.nextVariant());
     const c = this.clipAim(anim);
     const b = this.bodyXform();
     const out = throughBody(b, m, this.aimOut);
@@ -1744,15 +1794,39 @@ class AtlasUnitView implements UnitView {
     return out;
   }
 
-  /** An attack clip's drawn aim: the sheet's own meta, else the `unitAim.ts` table, else level. */
+  /** An attack clip's drawn aim: the sheet's own meta (contract C2), else the `unitAim.ts` table, else level (`clipAimOf`). */
   private clipAim(anim: string): ClipAim {
-    const own = this.aim?.clips[anim];
-    const meta = this.sheet.clips[anim];
-    if (meta && (meta.aimDeg !== undefined || meta.release)) {
-      const release = meta.release ?? own?.release;
-      return { deg: meta.aimDeg ?? own?.deg ?? 0, ...(release ? { release } : {}), ...(own?.omni ? { omni: true } : {}) };
+    return clipAimOf(this.sheet.clips[anim], this.aim?.clips[anim]);
+  }
+
+  /**
+   * The aimed variants of a shot clip that can play now (contract C2): loaded (an extras sheet still on its way adds
+   * none), with their own drawn angle, and not emitters. In level order (up45, up70, down).
+   */
+  private aimedOf(base: string): AimCandidate[] {
+    const out: AimCandidate[] = [];
+    for (const name of aimedNamesOf(base)) {
+      const meta = this.sheet.clips[name];
+      if ((this.sheet.animations[name]?.length ?? 0) === 0 || meta?.aimDeg === undefined || meta.omni === true) continue;
+      out.push({ anim: name, deg: meta.aimDeg });
     }
-    return own ?? DEFAULT_CLIP_AIM;
+    return out;
+  }
+
+  /**
+   * The clip a shot of the attack variant `base` plays (contract C2): the aimed variant drawn closest to the launch angle
+   * the battle view asks for (`aimAt`, degrees above the facing direction; `atlasAim.ts` `pickAimedClip`), with the same
+   * timing; the base clip when nothing is asked, the clip emits rather than aims, or no aimed variant has loaded (a first
+   * shot before the extras sheet). `prev`: the clip the last such shot played (its level holds near a midpoint).
+   */
+  private aimedFor(base: string, aimAt: number | undefined, prev: string | null): string {
+    if (aimAt === undefined || !Number.isFinite(aimAt)) return base;
+    const own = this.clipAim(base);
+    if (own.omni) return base;
+    const aimed = this.aimedOf(base);
+    if (aimed.length === 0) return base;
+    const candidates = [{ anim: base, deg: own.deg }, ...aimed];
+    return candidates[pickAimedClip(candidates, aimAt, prev === null ? null : aimLevelOf(prev))]?.anim ?? base;
   }
 
   /** The body's transform as last placed: offset in the root's space, rotation, and scale per lu (x carries the facing). */
@@ -1782,11 +1856,12 @@ class AtlasUnitView implements UnitView {
    * plays (warped to its own wind-up); otherwise a small accent shows at the rider or MG anchor on
    * the impact beat and the gait keeps running.
    */
-  playAlt(o: { impactAtMs?: number } = {}): void {
+  playAlt(o: { impactAtMs?: number; aimAt?: number } = {}): void {
     if (this.destroyed || this.dead) return;
     const busy = this.action !== null && (this.action.name === 'attack' || this.action.name === 'ability' || this.action.name === 'spawn' || this.action.hold);
     if (!busy && !this.stunned && !this.isMoving() && (this.sheet.animations[ALT_ATTACK]?.length ?? 0) > 0) {
-      const t = track(this.sheet, this.def, ALT_ATTACK, o.impactAtMs !== undefined ? { impactAtMs: o.impactAtMs } : {}, ALT_ATTACK);
+      // contract C2: the second attacker's aimed variant drawn closest to its shot (`aimAt`), else attack_alt itself
+      const t = track(this.sheet, this.def, ALT_ATTACK, o.impactAtMs !== undefined ? { impactAtMs: o.impactAtMs } : {}, this.aimedFor(ALT_ATTACK, o.aimAt, null));
       if (t) {
         this.action = t;
         this.actionMuzzle = this.muzzleOf(t);
@@ -1835,11 +1910,38 @@ class AtlasUnitView implements UnitView {
     let anim = want === undefined || want === 'attack' ? main : want;
     if (!(this.sheet.animations[anim]?.length ?? 0)) anim = main;
     if (!(this.sheet.animations[anim]?.length ?? 0)) return null;
+    // item 38 B0: the bundle's trackers arrived after a reach was taken: take it again
+    if (this.reachRev !== this.dmg.trackersRev) {
+      this.reachRev = this.dmg.trackersRev;
+      this.reachCache.clear();
+    }
     const hit = this.reachCache.get(anim);
     if (hit !== undefined) return hit;
     const r = computeReach(this.sheet, anim, this.def.clips['idle']?.ref ?? 'idle', this.impactAtOf(anim), this.k, this.hk);
-    this.reachCache.set(anim, r);
-    return r;
+    const out = r ? this.withTrackers(r, anim) : r;
+    this.reachCache.set(anim, out);
+    return out;
+  }
+
+  /**
+   * Item 38 B0 (duck-typed): changes when the view's contact data does (its damage bundle's torso and head trackers
+   * arrived after the battle view took its reach and body), so the battle view asks again.
+   */
+  get contactRevision(): number {
+    return this.dmg.trackersRev;
+  }
+
+  /**
+   * Item 38 B0: the torso from the bundle's tracked torso box instead of the team-colour layer's (which spans barding,
+   * pennants, shields and capes), and the head on the impact frame and at idle; the estimate stays where the unit has
+   * no trackers.
+   */
+  private withTrackers(r: Reach, anim: string): Reach {
+    const meta = this.sheet.clips[anim];
+    const step = clipImpactStep(meta, this.sheet.animations[anim]?.length ?? 0, this.impactAtOf(anim));
+    const frame = step === null ? null : (meta?.sequence?.[step] ?? step);
+    const t = trackerReach(this.dmg.data, anim, this.def.clips['idle']?.ref ?? 'idle', frame, this.hk);
+    return t ? { ...r, ...t } : r;
   }
 
   /** A1 (duck-typed): a presentation offset along world x (lu) on top of the pose, outside the R2 frame lock. */
@@ -1860,8 +1962,11 @@ class AtlasUnitView implements UnitView {
    * hold is cut short and bridged by the insert; a wind-up and its impact hold always show (the recoil only). A hit
    * during a reaction restarts it at the stronger of the two. A frozen (time-stopped) unit does not react.
    */
-  react(tier: HitTier, dir: 1 | -1): void {
-    if (this.destroyed || this.frozenPose) return;
+  react(tier: HitTier, dir: 1 | -1, kind?: string, effective?: boolean): void {
+    if (this.destroyed) return;
+    // item 40: the blow's kind keys the mark of the step it crosses (a frozen unit takes its marks silently)
+    if (kind !== undefined) this.dmg.noteBlow(kind as BlowKind, effective === true);
+    if (this.frozenPose) return;
     if (!this.reacted) {
       // A4: the first hit in a battle bakes the bits this age's fallen leave, in idle time, so no death frame bakes
       // a part (menus, which never hit, bake none)
@@ -1959,6 +2064,7 @@ class AtlasUnitView implements UnitView {
    */
   dieWith(o: { dir: 1 | -1; tier: HitTier; heavy: boolean; lieMs: number; fadeMs: number; onLand?: () => void }): void {
     if (this.destroyed || this.dead) return;
+    this.dmg.die();
     this.play('die');
     const tr = this.action;
     if (!this.dead || !tr) return;
@@ -2116,16 +2222,27 @@ class AtlasUnitView implements UnitView {
       this.body.tint = p.frozen ? 0xd9d2f2 : 0xffffff;
     }
     this.showBubble(p.shieldBp);
+    // item 40: the damage stage from the HP drawn (a step's burst is placed through the body as placed last)
+    this.dmg.xformOf ??= () => this.bodyXform();
+    this.dmg.hk = this.hk;
+    this.dmg.setHp(p.hpBp);
+    const tint = this.dmg.tint;
+    if (tint !== this.dmgTint) {
+      this.dmgTint = tint;
+      this.baseSprite.tint = tint;
+      this.ghostBase.tint = tint;
+    }
   }
 
   /**
    * `variant` (duck-typed, the card detail showcase): plays that attack variant instead of the next one
-   * of the per-unit cycle (R4), when it has loaded.
+   * of the per-unit cycle (R4), when it has loaded. `aimAt` (duck-typed, the battle view; contract C2): the launch
+   * angle the shot asks for, which picks the variant's aimed clip drawn closest to it (`aimedFor`).
    */
-  play(clip: ClipName | string, o?: { durationMs?: number; impactAtMs?: number; loop?: boolean; variant?: string }): void {
+  play(clip: ClipName | string, o?: { durationMs?: number; impactAtMs?: number; loop?: boolean; variant?: string; aimAt?: number }): void {
     if (this.destroyed || this.dead) return;
     if (clip === ALT_ATTACK) {
-      this.playAlt(o?.impactAtMs !== undefined ? { impactAtMs: o.impactAtMs } : {});
+      this.playAlt({ ...(o?.impactAtMs !== undefined ? { impactAtMs: o.impactAtMs } : {}), ...(o?.aimAt !== undefined ? { aimAt: o.aimAt } : {}) });
       return;
     }
     if (clip === 'idle' || clip === 'walk' || clip === 'victory') this.requested = clip;
@@ -2154,8 +2271,8 @@ class AtlasUnitView implements UnitView {
         if (this.gaitV !== null) this.walkDir = this.dirNow();
       }
     }
-    // R4: the attack variant comes from a fixed per-unit cycle over the variants that have loaded
-    const anim = clip === 'attack' ? this.variantFor(o?.variant) : undefined;
+    // R4: the attack variant comes from a fixed per-unit cycle over the variants that have loaded; C2: its aimed clip
+    const anim = clip === 'attack' ? this.aimedFor(this.variantFor(o?.variant), o?.aimAt, this.lastAttackAnim) : undefined;
     // a one-shot never loops, whatever the clip it falls back to (review B1)
     const t = track(this.sheet, this.def, clip, loops ? { loop: true, ...opts } : { ...opts, loop: false }, anim);
     if (!t) return;
@@ -2335,6 +2452,7 @@ class AtlasUnitView implements UnitView {
 
   private die(): void {
     this.dead = true;
+    this.dmg.die();
     this.insertT = -1;
     this.showStars(false);
     if (this.bubble) this.bubble.visible = false;
@@ -2384,8 +2502,10 @@ class AtlasUnitView implements UnitView {
     }
     let sx = 1;
     let sy = 1;
+    // item 40: weary motion at the last stage (presentation only: the idle's rate, dips, a judder, a pitch, a flicker)
+    const weary = this.dmg.update(this.frozenPose ? 0 : animDt, { moving: this.isMoving() });
     if (animDt > 0 && !this.frozenPose) {
-      if (this.base) this.base.t += animDt * (this.base.name === 'walk' ? this.walkDir : 1);
+      if (this.base) this.base.t += animDt * (this.base.name === 'walk' ? this.walkDir : this.base.name === 'idle' ? weary.idleRate : 1);
       if (this.action) {
         this.action.t += animDt;
         // attack_alt plays only while the unit stands (R3)
@@ -2450,6 +2570,8 @@ class AtlasUnitView implements UnitView {
         stepLeanSpring(this.aimTilt, aimLeanGoal(aimWant, this.aimFromUpright, this.leanTiming(), this.reduceMotion), animDt, this.reduceMotion);
       }
       let rot = this.lean - (this.aimTilt.x * Math.PI) / 180;
+      // item 40: a sputtering flyer flies nose down (clockwise for a unit facing right)
+      if (weary.pitchDeg !== 0 && !this.dead) rot += (weary.pitchDeg * Math.PI) / 180;
       const walking = this.base?.name === 'walk' && !this.action && !this.dead && (this.base.durationMs ?? 0) > 0;
       if (flyer) {
         // G8: nose down while moving, level at rest; a hover bob that never steps
@@ -2487,6 +2609,8 @@ class AtlasUnitView implements UnitView {
         }
       }
       this.fireAccents();
+      // item 40: a tired walker's dip, a flyer's sputter dip
+      if (!this.dead) oy += weary.dipLu;
       this.offY = oy;
       this.rot = rot;
     }
@@ -2502,6 +2626,14 @@ class AtlasUnitView implements UnitView {
     }
     // the flinch pushes the body back, away from what it faces
     if (this.flinchT >= 0) ox -= this.facing * flinchOffset(this.mass(), this.flinchT);
+    // item 40: a machine's judder, an energy body's glitch shift, a tired body's breath
+    if (!this.dead) {
+      ox += weary.shiftLu;
+      if (weary.squash !== 0) {
+        sy *= 1 - weary.squash;
+        sx *= 1 + 0.6 * weary.squash;
+      }
+    }
     // A2: the additive recoil (push along the blow, the head snapping back about the feet, the squash)
     let xr = 0;
     if (this.rx) {
@@ -2532,6 +2664,15 @@ class AtlasUnitView implements UnitView {
       const t = 1 - this.flashMs / this.flashDur;
       this.flashSprite.visible = this.flashMs > 0;
       this.flashSprite.alpha = t < 0.6 ? 0.95 : 0.95 * (1 - (t - 0.6) / 0.4);
+    } else if (weary.flicker > 0 && !this.dead) {
+      // item 40: an energy body's mint pulse (never faster than about 1.5 Hz, WCAG 2.3.1)
+      this.flashSprite.tint = DAMAGE_FLICKER_TINT;
+      this.flashSprite.visible = true;
+      this.flashSprite.alpha = weary.flicker;
+      this.flickering = true;
+    } else if (this.flickering) {
+      this.flickering = false;
+      this.flashSprite.visible = false;
     }
     if (this.stars?.visible) {
       const n = this.stars.children.length;
@@ -2821,6 +2962,13 @@ class AtlasUnitView implements UnitView {
     setFrame(this.baseSprite, shownTex);
     setFrame(this.flashSprite, shownTex);
     setFrame(this.teamSprite, (ins && ins.length >= 2 ? this.sheet.animations[`${this.insertAnim}_team`]?.[insStep] : tr.team?.[i]) ?? Texture.EMPTY);
+    // item 40: the marks follow the frame on screen (the bundle's frames are the sheet's unique frames)
+    {
+      const dAnim = ins && ins.length >= 2 ? this.insertAnim : tr.anim;
+      const dStep = ins && ins.length >= 2 ? insStep : i;
+      this.dmg.setFrame(dAnim, this.sheet.clips[dAnim]?.sequence?.[dStep] ?? dStep);
+      this.dmg.layout(this.sheet.luPerUnit);
+    }
     this.updateLungeComp(tr, i, dtMs);
     const walking = tr === this.base && tr.name === 'walk' && tr.anim === 'walk' && !this.dead;
     // R2: legged units hold their body where it stood when the frame began, so the planted foot stays put.
@@ -2873,6 +3021,8 @@ class AtlasUnitView implements UnitView {
       if (i !== this.lastWalkStep) {
         this.lastWalkStep = i;
         const c = this.sheet.clips['walk']?.contacts?.find((x) => x.step === i);
+        // item 40: a tired walker dips on every second contact
+        if (c) this.dmg.contact();
         if (c && this.def.heightLu >= FOOTFALL_MIN_HEIGHT_LU) {
           this.footfalls++;
           if (!this.lite && !this.reduceMotion) this.footDust(c.atLu);
@@ -2891,12 +3041,14 @@ class AtlasUnitView implements UnitView {
 
   setTeamColor(color: number): void {
     this.teamSprite.tint = color;
+    this.dmg.setTeam(color);
     for (const c of this.ground.children) tintPartSprite(c as Container, color);
   }
 
   destroy(): void {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.dmg.destroy();
     AtlasUnitView.pictureFades.delete(this);
     this.root.destroy({ children: true });
     this.onDestroy?.();

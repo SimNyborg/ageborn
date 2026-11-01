@@ -8,6 +8,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import type { TeamPreset } from '@/contracts/ids';
 import type { VisualDef } from '@/contracts/art';
 import { atlasVisualDef, type AtlasJson } from '@/visuals/adapters/atlas';
+import { damageBundles } from '@/visuals/damage/bundle';
 import { MANIFEST, PROCEDURAL_MANIFEST } from '@/visuals/manifest';
 import { ALL_AGES, createArtProvider, type VisualsArtProvider } from '@/visuals/provider';
 import type { VisualKind } from '@/visuals/adapters/types';
@@ -94,8 +95,9 @@ export function PixiStage(p: StageProps) {
       // unit sheets of later ages stream in the background in the game; the gallery waits for all of them,
       // but at most 8 s: anything still loading then draws with its procedural fallback
       // (docs/requests/done/wp12-gallery-sections-blank.md).
+      // item 40: and for the ages' damage bundles (a frozen frame draws once: a bundle landing later would never show)
       await Promise.race([
-        Promise.all([art.atlas.unitSheetsReady([...ALL_AGES]), art.fortSheetsReady([...ALL_AGES])]).catch(() => undefined),
+        Promise.all([art.atlas.unitSheetsReady([...ALL_AGES]), art.fortSheetsReady([...ALL_AGES]), ...ALL_AGES.map((a) => damageBundles.request(a))]).catch(() => undefined),
         new Promise<void>((r) => setTimeout(r, 8_000)),
       ]);
       if (disposed) return;

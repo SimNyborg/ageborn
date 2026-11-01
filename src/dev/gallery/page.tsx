@@ -10,6 +10,7 @@
  *  - checks: colour rule, silhouette IoU, width, scale, structure (same SVG data as the bake)
  *  - handoff: SVG sheets of the part sources for artists
  *  - bake: boot and lazy bake times against the B16 budget, atlas pages
+ *  - damage: the damage kit's marks and strips on their materials' swatches (queue item 40)
  *
  * All state is in the hash (see state.ts); `t=<ms>` freezes animation for screenshots.
  */
@@ -22,6 +23,7 @@ import type { VisualKind } from '@/visuals/adapters/types';
 import { TEAM_PRESETS } from '@/visuals/palette';
 import { STYLE, WORLD } from '@/visuals/style';
 import { UNIT_CLIPS } from './cells';
+import { buildDamageKit } from './damageKit';
 import { buildEffects } from './effects';
 import { buildForts } from './forts';
 import { BakePanel, ChecksPanel, HandoffPanel, PortraitsPanel } from './panels';
@@ -36,7 +38,7 @@ export const title = 'Art gallery';
 /** A12 checklist #7 "readable at 32 px height": the zoom that draws infantry 32 px tall (CSS px). */
 const READABLE_ZOOM = (Math.round((STYLE.minReadablePx / STYLE.heightInfantryLu) * 100) / 100).toString();
 
-const SECTIONS = ['units', 'turrets', 'forts', 'world', 'effects', 'portraits', 'checks', 'handoff', 'bake'] as const;
+const SECTIONS = ['units', 'turrets', 'forts', 'world', 'effects', 'portraits', 'checks', 'handoff', 'bake', 'damage'] as const;
 type Section = (typeof SECTIONS)[number];
 
 function Select(p: { label: string; value: string; options: readonly string[]; onChange: (v: string) => void; testId?: string }) {
@@ -76,6 +78,10 @@ export default function Gallery() {
   const trim = get(params, 'trim', 'none') as UnitPose['levelTrim'];
   const zoom = num(params, 'zoom', 1.6);
   const only = params.get('only');
+  // queue item 40: the damage stage every unit is drawn at (`damage=0..3`: 100%, 70%, 46% and 20% HP)
+  const damage = Math.max(0, Math.min(3, Math.round(num(params, 'damage', 0))));
+  // and its emitters (`dfx=0` leaves them out: the capture tool checks the unit's own composited pixels)
+  const damageFx = get(params, 'dfx', '1') !== '0';
   // `atlas=unit.bonker:/path/bonker.json,unit.x:/path/x.json` swaps visuals to sprite sheets (B5 tiers).
   const atlas = Object.fromEntries(
     (params.get('atlas') ?? '')
@@ -105,6 +111,7 @@ export default function Gallery() {
           <Select label="sides" value={sidesParam} options={['both', '0', '1']} onChange={set('sides')} />
           {kind === 'unit' ? <Select label="skins" value={skins ? '1' : '0'} options={['1', '0']} onChange={set('skins')} /> : null}
           {kind === 'unit' ? <Select label="trim" value={trim} options={['none', 'bronze', 'silver', 'gold']} onChange={set('trim')} /> : null}
+          {kind === 'unit' ? <Select label="damage" value={String(damage)} options={['0', '1', '2', '3']} onChange={set('damage')} testId="gallery-damage" /> : null}
           <Select label="zoom" value={String(zoom)} options={[READABLE_ZOOM, '1', '1.6', '2.4', '3.2']} onChange={set('zoom')} />
           {common}
         </div>
@@ -116,9 +123,9 @@ export default function Gallery() {
           quality={quality}
           freezeAtMs={freeze}
           speed={speed}
-          deps={[section, age, clip, sidesParam, skins, trim, zoom, only]}
+          deps={[section, age, clip, sidesParam, skins, trim, zoom, only, damage, damageFx]}
           atlas={atlas}
-          build={(ctx) => buildGrid(ctx, { kind, age, skins, only, sides, preset, clip, trim, zoom })}
+          build={(ctx) => buildGrid(ctx, { kind, age, skins, only, sides, preset, clip, trim, zoom, damage, damageFx })}
         />
       </>
     );
@@ -242,6 +249,28 @@ export default function Gallery() {
           <Select label="preset" value={preset} options={TEAM_PRESETS} onChange={set('preset')} />
         </div>
         <PortraitsPanel preset={preset} size={num(params, 'size', 72)} />
+      </>
+    );
+  } else if (section === 'damage') {
+    const kzoom = num(params, 'zoom', 0.92);
+    body = (
+      <>
+        <div style={bar}>
+          <Select label="zoom" value={String(kzoom)} options={['0.92', '1.84', '2.76', '4']} onChange={set('zoom')} />
+          {common}
+        </div>
+        <PixiStage
+          testId="gallery-damage-kit"
+          height={1400}
+          preset={preset}
+          tier={tier}
+          quality={quality}
+          freezeAtMs={freeze}
+          speed={speed}
+          background={0x2a2840}
+          deps={[section, kzoom]}
+          build={(ctx) => buildDamageKit(ctx, { zoom: kzoom })}
+        />
       </>
     );
   } else if (section === 'checks') {

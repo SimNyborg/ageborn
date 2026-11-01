@@ -11,7 +11,9 @@ import { portraitStillBase, UNITS_WITHOUT_STILLS } from '../adapters/atlasPortra
 import { MANIFEST, PROCEDURAL_MANIFEST } from '../manifest';
 import { unitSheetAge } from '../manifest.units';
 import { UNIT_SHEETS } from '../unitSheets.gen';
+import { SKIN_SHEETS } from '../skinSheets.gen';
 import { createArtProvider } from '../provider';
+import { aimedBaseOf } from '../../../art/blender/gen_unit_manifest.mjs';
 import { PAUSED_WAVE_IDS, PAUSED_WAVE_VISUALS } from '../../../tests/fixtures/pausedWave';
 
 interface SheetJson {
@@ -41,7 +43,8 @@ describe('HD unit sheets', () => {
 
 describe('unit sprite sheets in the manifest', () => {
   it('the generated summary matches the installed sheets (else run node art/blender/gen_unit_manifest.mjs)', () => {
-    expect(UNIT_SHEETS.map((s) => `/public/art/units/${s.age}/${s.slug}.json`).sort()).toEqual(Object.keys(SHEETS).sort());
+    // troop skins' sheets (`<slug>@<skinId>.json`, queue item 46) have a table of their own (skinSheetGen.test.ts)
+    expect(UNIT_SHEETS.map((s) => `/public/art/units/${s.age}/${s.slug}.json`).sort()).toEqual(Object.keys(SHEETS).filter((p) => !p.includes('@')).sort());
     for (const s of UNIT_SHEETS) {
       const j = SHEETS[`/public/art/units/${s.age}/${s.slug}.json`];
       expect(j?.meta.ageborn.heightLu, s.slug).toBe(s.heightLu);
@@ -62,12 +65,13 @@ describe('unit sprite sheets in the manifest', () => {
         expect(c.impactAt, `${s.slug}.${v}`).toBeCloseTo(a.impactAt ?? 0, 4);
       }
     }
-    // every extras sheet belongs to a core sheet and holds only variant clips, each with its team layer
+    // every extras sheet belongs to a core sheet and holds only variant clips (and their aimed variants, contract
+    // C2: `<clip>_up45`, `_up70`, `_down`), each with its team layer
     for (const [path, x] of Object.entries(X_SHEETS)) {
       expect(SHEETS[path.replace(/\.x\.json$/, '.json')], path).toBeDefined();
       expect(PNGS.has(path.replace(/\.json$/, '.png')), path).toBe(true);
       for (const name of Object.keys(x.animations).filter((n) => !n.endsWith('_team'))) {
-        expect(['attack_b', 'attack_c', 'attack_alt'], `${path} ${name}`).toContain(name);
+        if (aimedBaseOf(name) === null) expect(['attack_b', 'attack_c', 'attack_alt'], `${path} ${name}`).toContain(name);
         expect(x.animations[`${name}_team`]?.length, `${path} ${name}_team`).toBe(x.animations[name]?.length);
       }
     }
@@ -110,11 +114,18 @@ describe('unit sprite sheets in the manifest', () => {
     }
   });
 
-  it('skins without a sheet keep their procedural entry', () => {
+  it('skins rendered as sheets draw from them (queue item 46); skins without a sheet keep their procedural entry', () => {
+    const sheets = new Map(SKIN_SHEETS.map((s) => [s.visualId, s]));
     for (const s of Object.values(content.skins)) {
       if (!s.visualId.startsWith('unit.') || PAUSED_WAVE_VISUALS.has(s.visualId)) continue;
-      expect(MANIFEST[s.visualId]?.kind, s.visualId).toBe('procedural');
+      const sheet = sheets.get(s.visualId);
+      expect(MANIFEST[s.visualId]?.kind, s.visualId).toBe(sheet ? 'atlas' : 'procedural');
+      if (sheet) expect(MANIFEST[s.visualId]?.source, s.visualId).toBe(`art/units/${sheet.age}/${sheet.slug}.json`);
+      // the puppet stays the stand-in while the sheet loads, and the tier of `?art=procedural`
+      expect(PROCEDURAL_MANIFEST[s.visualId]?.kind, s.visualId).toBe('procedural');
     }
+    // every skin sheet is a released skin's, of its own unit
+    for (const s of SKIN_SHEETS) expect(Object.values(content.skins).some((k) => k.visualId === s.visualId && `unit.${k.target}` === s.skinOf), s.visualId).toBe(true);
   });
 });
 
@@ -137,8 +148,11 @@ describe('per-age loading', () => {
     });
     a.world.preload = async () => {};
     await a.preload(['stone', 'medieval']);
-    // the 22 Stone core sheets (8 plus the Stone wave's 14) are awaited; their extras sheets (`.x.json`, attacks B/C) follow unawaited
-    expect(loaded.filter((u) => !/\.x\.(hd\.)?json$/.test(u)).length).toBe(22);
+    // the 22 Stone core sheets (8 plus the Stone wave's 14) are awaited, and the dev pages' preload takes the Stone skins'
+    // sheets too (queue item 46); their extras sheets (`.x.json`, attacks B/C) follow unawaited
+    const cores = loaded.filter((u) => !/\.x\.(hd\.)?json$/.test(u));
+    expect(cores.filter((u) => !u.includes('@')).length).toBe(22);
+    expect(cores.filter((u) => u.includes('@')).length).toBe(SKIN_SHEETS.filter((s) => s.age === 'stone' && MANIFEST[s.visualId]?.kind === 'atlas').length);
     expect(loaded.every((u) => u.startsWith('/ageborn/art/units/stone/'))).toBe(true);
     const knight = MANIFEST['unit.destrier_knight'];
     expect(knight && a.canDraw('unit', knight)).toBe(false);
