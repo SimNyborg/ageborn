@@ -176,10 +176,10 @@ describe('reach on the shipped sheets (A1)', () => {
     expect(reachOf('medieval/footman').tipLu).toBeCloseTo(90.7, 1);
   });
 
-  it('Woolly Rhino: the impact frame tosses the horn up; the gore before it is the contact', () => {
+  it('Woolly Rhino: the impact frame is the contact since W1 (item 38 B1′): the horn thrust level, 88 lu out', () => {
     const r = reachOf('stone/woolly_rhino');
-    expect(r.tipFrom).toBe('strike');
-    expect(r.tipLu).toBeCloseTo(77.5, 1);
+    expect(r.tipFrom).toBe('impact');
+    expect(r.tipLu).toBeCloseTo(88.3, 1);
   });
 
   it('every variant of the Bonker has a reach, and ranged units reach to their muzzle', () => {
