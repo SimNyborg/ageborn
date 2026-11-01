@@ -24,6 +24,7 @@ Animation (cartoon kit v2; a viewer expects a javelin man to skip, lean back and
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import look
@@ -190,6 +191,22 @@ def build(rig):
     rig.joint("jav_loose", "root", (0, 0, 0), hidden=True)
     _javelin(rig, "jav_loose", (-JAV_F * 0.35, 0.0, 0.0))
     rig.track("muzzle", "hand_r", (hx + JAV_F * 0.6, hy - 1.0, hz))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Bronze soldier; art/blender/README.md, spot_preview.py): never on
+    the face or skin. The team tunic in front (below the strap) and low at the back (clear of the javelin arm
+    the idle holds back), the flared skirt in front and the near leg wrap; a strip torn from the skirt's hem at
+    the back (the torn chiton of stage 2). The javelin case stays clean: the idle's arm and the tunic hide it.
+    Positions are where the camera ray meets the rest pose (the upper body sits V3_LIFT higher, the hem 1.4 lu
+    more; near-side surfaces read about 1.5 lu back and 2.5 lu lower from the yaw and the camera's elevation)."""
+    rig.damage_spot_at("tunic", "torso", 6.5, 28.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("tunic_back", "torso", -7.0, 25.5, 5.0, "cloth", team=True)
+    rig.damage_spot_at("skirt", "hem", 5.5, 17.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("wrap", "shin_r", 1.0, 9.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hem", -3.0, 15.0, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -274,10 +291,34 @@ A_LL = [0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 1.5, 6.0, 1.5, 0.0, 0.0]
 A_AL = [0, -20, 0, 0, -10, -20, -30, -40, -10, 0, 0]
 
 
-def _base(f):
-    t = A_T[f]
-    pose = merge(throw(T_A[f] - t, T_F[f] - t, T_W[f] - t), aim(O_A[f] - t, O_F[f] - t), {
-        "torso": {"r": A_T[f]}, "head": {"r": A_H[f]},
+# aimed throws at flyers (queue item 44, ageborn_art/aimed.py, COMMON C2): a turn of `turn` degrees up turns the
+# javelin fully and the throwing arm partly with it, leans him back into the throw, tips the head and the eyes up
+# and raises the far, pointing arm toward the target; the feet stay planted. The skip stays the base clip's (its
+# frames are reused); the throw rises into the aim from the landing and falls out of it in the follow-through.
+AIM_LEAN = 0.18           # torso r per degree of turn (positive leans back)
+AIM_ARM = (0.65, 0.85)    # upper arm and forearm: their share of the turn (world degrees)
+AIM_HEAD = 0.30           # head r per degree, on top of the lean
+AIM_OFF = 0.70            # the far, pointing arm
+AIM_EYES = 0.010          # pupils z per degree
+#        read skip land HOLD pump whip lead| IMP follow reach draw settle
+AIM_W = [0.0, 0.0, 0.5, 0.9, 0.9, 1.0, 1.0, 1.0, 0.45, 0.0, 0.0, 0.0]
+
+
+def _aimed(pose, turn):
+    """The eyes follow the aim."""
+    if not turn:
+        return pose
+    p = dict(pose.get("pupils", {}))
+    p["z"] = p.get("z", 0.0) + AIM_EYES * turn
+    return merge(pose, {"pupils": p})
+
+
+def _base(f, turn=0.0):
+    t = A_T[f] + AIM_LEAN * turn
+    ka, kf = AIM_ARM
+    pose = merge(throw(T_A[f] + ka * turn - t, T_F[f] + kf * turn - t, T_W[f] + turn - t),
+                 aim(O_A[f] + AIM_OFF * turn - t, O_F[f] + AIM_OFF * turn - t), {
+        "torso": {"r": t}, "head": {"r": A_H[f] + AIM_HEAD * turn},
         "jav": {"hide": f in (6, 7, 8)},
     }, M.body_about((0, 0, 22), x=A_X[f], z=A_Z[f], q=A_Q[f]))
     pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f], ll=A_LL[f], al=A_AL[f])
@@ -291,7 +332,7 @@ def _base(f):
         pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
     elif f in (8, 9):
         pose = merge(pose, {"pupils": {"x": -0.6, "z": 0.3}})
-    return pose
+    return _aimed(pose, turn)
 
 
 def _pump(pose):
@@ -300,12 +341,12 @@ def _pump(pose):
                         "torso": {"r": 2}, "brow": {"z": -0.4}, "pupils": {"x": 0.4}})
 
 
-def _attack_pose(u):
+def _attack_pose(u, turn=0.0):
     if u <= 3:
-        return _base(u)
+        return _base(u, turn)
     if u == 4:
-        return _pump(_base(3))
-    return _base(u - 1)
+        return _pump(_base(3, turn))
+    return _base(u - 1, turn)
 
 
 JAV_TIP = (HR[0] + JAV_F, HR[1] - 1.0, HR[2])
@@ -350,10 +391,12 @@ B_LR = [0.0, 0.0, 0.0, 2.5, 1.0, 0.0]
 B_AR = [0, 0, -14, 0, 0, 0]                  # up on the toes of the near foot on the hold
 
 
-def _b_base(k):
-    t = B_T[k]
-    pose = merge(throw(B_TA[k] - t, B_TF[k] - t, B_TW[k] - t), aim(B_OA[k] - t, B_OF[k] - t), {
-        "torso": {"r": t}, "head": {"r": B_H[k]},
+def _b_base(k, turn=0.0):
+    t = B_T[k] + AIM_LEAN * turn
+    ka, kf = AIM_ARM
+    pose = merge(throw(B_TA[k] + ka * turn - t, B_TF[k] + kf * turn - t, B_TW[k] + turn - t),
+                 aim(B_OA[k] + AIM_OFF * turn - t, B_OF[k] + AIM_OFF * turn - t), {
+        "torso": {"r": t}, "head": {"r": B_H[k] + AIM_HEAD * turn},
         "jav": {"hide": k == 5},
     }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
     pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k], ar=B_AR[k])
@@ -363,17 +406,22 @@ def _b_base(k):
         pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
     else:
         pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
-    return pose
+    return _aimed(pose, turn)
 
 
-def _b_pose(u):
+def _b_pose(u, turn=0.0):
     if u == 0:
-        return _attack_pose(0)
+        return _attack_pose(0, turn)
     if u >= 8:
-        return _attack_pose(u)
+        return _attack_pose(u, turn)
     if u == 4:
-        return _pump(_b_base(2))
-    return _b_base(u - 1 if u < 4 else u - 2)
+        return _pump(_b_base(2, turn))
+    return _b_base(u - 1 if u < 4 else u - 2, turn)
+
+
+# B's hold already points the javelin straight up: the dip, draw and hold stay B's frames, and the flick turns
+#          read dip draw HOLD pump whip lead| IMP follow reach draw settle
+AIM_W_B = [0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 1.0, 1.0, 0.45, 0.0, 0.0, 0.0]
 
 
 def _attack_b():
@@ -426,13 +474,21 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (both variants; they go to the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, _b_pose, AIM_W_B, aims=("up45", "up70"))
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl))

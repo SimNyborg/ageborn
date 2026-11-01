@@ -324,7 +324,8 @@ def toon(fill_hex, finish="matte"):
     key = ("look", fill_hex, finish, kind)
     if key not in M._cache:
         import bpy
-        mat = bpy.data.materials.new(f"look_{fill_hex}_{finish}_{kind}")
+        # named like materials.toon's ("toon_<fill>_..."): probe.py reads a part's palette fill from the name
+        mat = bpy.data.materials.new(f"toon_{fill_hex}_{finish}_look_{kind}")
         nt, nodes, links = M._nodes(mat)
         col, _ = _lifted(nodes, links, fill_hex, finish, kind)
         M._output(nodes, links, M._fade(nodes, links, M._emission(nodes, links, col)))

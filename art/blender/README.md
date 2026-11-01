@@ -449,7 +449,20 @@ bonker@pumpkin_head`) renders the unit and its skins: `<slug>@<skin>[.x][.hd].{p
 stills. After a skin render `look2d.parity` (also `skin_parity.py`) checks DESIGN A5.8 clarity parity
 against the unit's sheet: the same clip timing and anchors, silhouette IoU >= 0.85 on every frame, the same
 IoU inside 12 lu of every weapon anchor (outside the death, where weapons are thrown away), team zones on
-every frame (>= 18%); a skin that fails is not installed.
+every frame (at least 18% of the outlined silhouette, or 60% of the unit's own share where that is lower); a
+skin that fails is not installed.
+
+**The pilot's spots and aimed clips.** The Bonker, the Javelineer and the War Chariot author their damage
+spots in `_damage_spots(rig)` at the end of `build()` through `rig.damage_spot_at` (see "Data the pipeline
+writes besides pixels"); a skin skips it and uses its unit's bundle entry (COMMON C1). The side-view (x, z) is
+where the camera ray meets the rest pose as drawn: a joint's rest offset counts (the bipeds' upper body sits
+2 lu higher), and a surface nearer the camera reads about 0.18 lu further back and 0.29 lu lower per lu of
+depth (the -10 degree yaw and the camera's 16 degree elevation). Each spot was kept only where the camera sees
+it through the motion (median visibility over idle, walk and attack at least 60%). The Javelineer throws at
+flyers with attack and attack B aimed up 45 and 70 degrees (`aimed.variants`: 7 and 4 new frames per angle;
+B's hold already points the javelin straight up, so only its flick turns). Opted-in materials are named
+`toon_<fill>_<finish>_look_<kind>`, so the probe's `fill` check reads their palette colour like any toon
+material's.
 
 **Palette encoding.** The shipped PNG8 (Pillow's octree, 256 colours, no dither) merges part of the breakup's
 subtle tones: on the detailed Bonker the game-scale flat share is 0.146 on the RGBA sheet and 0.173 on the PNG8.

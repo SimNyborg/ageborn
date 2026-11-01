@@ -2,8 +2,8 @@
  "frames": {
   "bonker@pumpkin_head_attack_b_02": {
    "frame": {
-    "x": 969,
-    "y": 2,
+    "x": 330,
+    "y": 179,
     "w": 139,
     "h": 230
    },
@@ -26,8 +26,8 @@
   },
   "bonker@pumpkin_head_attack_b_02_team": {
    "frame": {
-    "x": 848,
-    "y": 295,
+    "x": 1401,
+    "y": 231,
     "w": 113,
     "h": 116
    },
@@ -50,7 +50,7 @@
   },
   "bonker@pumpkin_head_attack_b_03": {
    "frame": {
-    "x": 209,
+    "x": 652,
     "y": 2,
     "w": 200,
     "h": 208
@@ -74,8 +74,8 @@
   },
   "bonker@pumpkin_head_attack_b_03_team": {
    "frame": {
-    "x": 1112,
-    "y": 2,
+    "x": 152,
+    "y": 289,
     "w": 124,
     "h": 120
    },
@@ -98,7 +98,7 @@
   },
   "bonker@pumpkin_head_attack_b_04": {
    "frame": {
-    "x": 263,
+    "x": 652,
     "y": 214,
     "w": 201,
     "h": 205
@@ -122,8 +122,8 @@
   },
   "bonker@pumpkin_head_attack_b_04_team": {
    "frame": {
-    "x": 1171,
-    "y": 252,
+    "x": 1390,
+    "y": 107,
     "w": 98,
     "h": 120
    },
@@ -146,8 +146,8 @@
   },
   "bonker@pumpkin_head_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 289,
+    "x": 330,
+    "y": 2,
     "w": 257,
     "h": 173
    },
@@ -170,8 +170,8 @@
   },
   "bonker@pumpkin_head_attack_b_05_team": {
    "frame": {
-    "x": 263,
-    "y": 423,
+    "x": 2,
+    "y": 295,
     "w": 146,
     "h": 93
    },
@@ -194,8 +194,8 @@
   },
   "bonker@pumpkin_head_attack_b_06": {
    "frame": {
-    "x": 468,
-    "y": 206,
+    "x": 1064,
+    "y": 2,
     "w": 197,
     "h": 202
    },
@@ -218,8 +218,8 @@
   },
   "bonker@pumpkin_head_attack_b_06_team": {
    "frame": {
-    "x": 965,
-    "y": 392,
+    "x": 1279,
+    "y": 231,
     "w": 118,
     "h": 109
    },
@@ -242,8 +242,8 @@
   },
   "bonker@pumpkin_head_attack_b_07": {
    "frame": {
-    "x": 621,
-    "y": 2,
+    "x": 857,
+    "y": 206,
     "w": 203,
     "h": 189
    },
@@ -266,8 +266,8 @@
   },
   "bonker@pumpkin_head_attack_b_07_team": {
    "frame": {
-    "x": 593,
-    "y": 416,
+    "x": 1390,
+    "y": 2,
     "w": 121,
     "h": 101
    },
@@ -290,8 +290,8 @@
   },
   "bonker@pumpkin_head_attack_c_00": {
    "frame": {
-    "x": 669,
-    "y": 195,
+    "x": 473,
+    "y": 179,
     "w": 175,
     "h": 217
    },
@@ -314,8 +314,8 @@
   },
   "bonker@pumpkin_head_attack_c_00_team": {
    "frame": {
-    "x": 1060,
-    "y": 252,
+    "x": 1279,
+    "y": 110,
     "w": 107,
     "h": 115
    },
@@ -338,7 +338,7 @@
   },
   "bonker@pumpkin_head_attack_c_01": {
    "frame": {
-    "x": 413,
+    "x": 856,
     "y": 2,
     "w": 204,
     "h": 200
@@ -362,8 +362,8 @@
   },
   "bonker@pumpkin_head_attack_c_01_team": {
    "frame": {
-    "x": 468,
-    "y": 412,
+    "x": 1265,
+    "y": 2,
     "w": 121,
     "h": 104
    },
@@ -386,7 +386,7 @@
   },
   "bonker@pumpkin_head_attack_c_02": {
    "frame": {
-    "x": 848,
+    "x": 2,
     "y": 2,
     "w": 117,
     "h": 289
@@ -410,8 +410,8 @@
   },
   "bonker@pumpkin_head_attack_c_02_team": {
    "frame": {
-    "x": 969,
-    "y": 236,
+    "x": 1064,
+    "y": 208,
     "w": 87,
     "h": 152
    },
@@ -434,7 +434,7 @@
   },
   "bonker@pumpkin_head_attack_c_03": {
    "frame": {
-    "x": 2,
+    "x": 123,
     "y": 2,
     "w": 203,
     "h": 283
@@ -458,8 +458,8 @@
   },
   "bonker@pumpkin_head_attack_c_03_team": {
    "frame": {
-    "x": 1112,
-    "y": 126,
+    "x": 1155,
+    "y": 208,
     "w": 120,
     "h": 122
    },
@@ -541,8 +541,8 @@
   "image": "bonker@pumpkin_head.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 520
+   "w": 1536,
+   "h": 424
   },
   "scale": "3",
   "ageborn": {
