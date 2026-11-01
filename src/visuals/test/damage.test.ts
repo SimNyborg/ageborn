@@ -278,17 +278,26 @@ describe('the damage model of a unit view', () => {
 });
 
 describe('emitters (design 3.3)', () => {
-  it('machines smoke from stage 2 and burn at stage 3; soldiers emit nothing; beasts breathe when tired', () => {
-    expect(emittersFor('vehicle', 1, undefined, 60)).toEqual([]);
-    expect(emittersFor('vehicle', 2, undefined, 60).map((e) => e.kind)).toEqual(['smoke']);
-    expect(emittersFor('vehicle', 3, undefined, 60).map((e) => e.kind).sort()).toEqual(['fire', 'smokeDark', 'spark']);
-    expect(emittersFor('flyer', 3, undefined, 60).map((e) => e.kind)).not.toContain('fire');
+  it('machines smoke from stage 2 and burn at stage 3 where `fireAt` found room; soldiers emit nothing; beasts breathe when tired', () => {
+    const hull = { box: [0.55, 0.45] as const };
+    expect(emittersFor('vehicle', 1, undefined, 60, hull)).toEqual([]);
+    expect(emittersFor('vehicle', 2, undefined, 60, hull).map((e) => e.kind)).toEqual(['smoke']);
+    expect(emittersFor('vehicle', 3, undefined, 60, hull).map((e) => e.kind).sort()).toEqual(['fire', 'smokeDark', 'spark']);
+    expect(emittersFor('vehicle', 3, undefined, 60, hull).find((e) => e.kind === 'fire')?.at).toEqual(hull);
+    // no place clear of the crew: smoke and sparks only (W0 review B1)
+    expect(emittersFor('vehicle', 3, undefined, 60, null).map((e) => e.kind).sort()).toEqual(['smokeDark', 'spark']);
+    expect(emittersFor('flyer', 3, undefined, 60, hull).map((e) => e.kind)).not.toContain('fire');
     expect(emittersFor('soldier', 3, undefined, 68)).toEqual([]);
     expect(emittersFor('beast', 3, undefined, 80).map((e) => e.kind)).toEqual(['breath']);
     expect(emittersFor('energy', 3, undefined, 80).map((e) => e.kind)).toEqual(['motes']);
-    // emit spots speak for themselves
+    // emit spots speak for themselves; the one fire burns at its place, not at every smoke spot
     const spots: DamageSpot[] = [{ id: 'exhaust', kind: 'emit', mat: 'steam', r: 7 }];
-    expect(emittersFor('vehicle', 3, spots, 60)).toEqual([{ kind: 'steam', at: { spot: 'exhaust' }, rate: 2.4, size: 7 }]);
+    expect(emittersFor('vehicle', 3, spots, 60, hull)).toEqual([{ kind: 'steam', at: { spot: 'exhaust' }, rate: 2.4, size: 7 }]);
+    const smoky: DamageSpot[] = [{ id: 'engine', kind: 'emit', mat: 'smoke', r: 6 }, { id: 'stack', kind: 'emit', mat: 'smoke', r: 5 }];
+    const fires = emittersFor('vehicle', 3, smoky, 60, { spot: 'stack' }).filter((e) => e.kind === 'fire');
+    expect(fires).toMatchObject([{ kind: 'fire', at: { spot: 'stack' }, rate: 3 }]);
+    expect(fires[0]?.size).toBeCloseTo(4.8, 6);
+    expect(emittersFor('vehicle', 3, smoky, 60, null).map((e) => e.kind)).toEqual(['smokeDark', 'smokeDark']);
   });
 });
 

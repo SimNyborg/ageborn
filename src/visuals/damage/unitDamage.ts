@@ -16,12 +16,12 @@ import type { PartBaker } from '../bake';
 import { FX_ZONES } from '../effects/sprites';
 import { getPart } from '../parts/registry';
 import { damageBundles, frameOf, type DamageBundles } from './bundle';
-import { emitterPoint, emittersFor, torsoPoint, type EmitterSpec } from './emitters';
+import { emitterPoint, emittersFor, fireAt, torsoPoint, type EmitterAt, type EmitterSpec } from './emitters';
 import { fallbackFamily, woodenBody } from './families';
 import { markSizeLu } from './marks';
 import { DamageModel, defaultMat, MARK_FADE_IN_MS, MARK_POP_MS, MEND_FADE_MS, type DamageStep, type PlacedMark } from './model';
 import { WearyClock, type WearyPose } from './motion';
-import { LITE_MAX_MARKS, mixRgb, smallBody, stageTint, STRIP_DULL, STRIP_DUST, STRIP_SMALL_SCALE } from './stage';
+import { burns, LITE_MAX_MARKS, mixRgb, smallBody, stageTint, STRIP_DULL, STRIP_DUST, STRIP_SMALL_SCALE } from './stage';
 import { DAMAGE_STRIP_PARTS } from './kit';
 import { markParts } from './marks';
 import type { BlowKind, DamageEmitter, DamageFamily, DamageStage, DamageStepEvent, DamageUnitData, EmitKind, SpotFrame } from './types';
@@ -33,6 +33,16 @@ export interface DamageXform {
   rotation: number;
   sx: number;
   sy: number;
+}
+
+/** A sheet point (lu, x forward, y up) in the root's space (y down) through the body's transform `b` and `hk`. */
+function toRoot(px: number, py: number, b: DamageXform | null, hk: number): { x: number; y: number } {
+  const lx = px * hk;
+  const ly = -py * hk;
+  if (!b) return { x: lx, y: ly };
+  const cs = Math.cos(b.rotation);
+  const sn = Math.sin(b.rotation);
+  return { x: b.x + lx * b.sx * cs - ly * b.sy * sn, y: b.y + lx * b.sx * sn + ly * b.sy * cs };
 }
 
 /**
@@ -144,6 +154,9 @@ export class UnitDamage {
   /** The live emitters (resolved each call, no allocation once grown). */
   private specs: EmitterSpec[] = [];
   private specsStage: DamageStage = 0;
+  /** Where a burning unit's fire and ignite flare sit (`fireAt`), null where nowhere is clear; undefined: not yet asked. */
+  private fire: EmitterAt | null | undefined = undefined;
+  private readonly firePt: [number, number] = [0, 0];
   private readonly out: DamageEmitter[] = [];
   private readonly emitPool: DamageEmitter[] = [];
   private readonly pt: [number, number] = [0, 0];
@@ -384,7 +397,7 @@ export class UnitDamage {
     const stage = this.model.stage;
     if (stage !== this.specsStage) {
       this.specsStage = stage;
-      this.specs = emittersFor(this.family, stage, this.entry?.spots, this.o.heightLu);
+      this.specs = emittersFor(this.family, stage, this.entry?.spots, this.o.heightLu, this.fireSpot());
     }
     if (this.specs.length === 0) return this.out;
     const cs = Math.cos(b.rotation);
@@ -424,12 +437,24 @@ export class UnitDamage {
         [px, py] = this.pt;
       } else [px, py] = [this.o.anchors.hitCenter.x, -this.o.anchors.hitCenter.y];
     }
-    const lx = px * hk;
-    const ly = -py * hk;
-    if (!b) return { x: lx, y: ly, spot };
-    const cs = Math.cos(b.rotation);
-    const sn = Math.sin(b.rotation);
-    return { x: b.x + lx * b.sx * cs - ly * b.sy * sn, y: b.y + lx * b.sx * sn + ly * b.sy * cs, spot };
+    return { ...toRoot(px, py, b, hk), spot };
+  }
+
+  /**
+   * Where a burning unit's fire sits (W0 review B1 and S3): `fireAt` over its bundle entry, clear of the crew's heads on
+   * every frame; null for a unit that does not burn or has no such place. Asked once per entry.
+   */
+  private fireSpot(): EmitterAt | null {
+    if (this.fire === undefined) this.fire = burns(this.family) ? fireAt(this.entry, this.o.anchors, this.o.heightLu) : null;
+    return this.fire;
+  }
+
+  /** Where the ignite flare plays on this frame (root space): the fire's place, never the step's mark; null: no flare. */
+  private igniteAt(b: DamageXform | null, hk: number): { x: number; y: number } | null {
+    const at = this.fireSpot();
+    if (!at) return null;
+    if (!emitterPoint({ kind: 'fire', at, rate: 0, size: 0 }, this.entry, this.anim, this.frame, this.o.anchors, this.o.heightLu, this.firePt)) return null;
+    return toRoot(this.firePt[0], this.firePt[1], b, hk);
   }
 
   /** The body's transform the burst is placed through (the view sets it before `setHp`, or `xformOf` to ask for it). */
@@ -440,7 +465,10 @@ export class UnitDamage {
 
   private report(step: DamageStep): void {
     if (this.listeners.length === 0) return;
-    const at = this.burstAt(step, this.xformOf ? this.xformOf() : this.xform, this.hk);
+    const b = this.xformOf ? this.xformOf() : this.xform;
+    const at = this.burstAt(step, b, this.hk);
+    // the fire catches where the fire burns, clear of the crew (never at the step's mark); no place, no flare
+    const ig = step.ignite ? this.igniteAt(b, this.hk) : null;
     const e: DamageStepEvent = {
       stage: step.stage,
       prev: step.prev,
@@ -452,7 +480,8 @@ export class UnitDamage {
       kind: step.kind,
       family: this.family,
       heightLu: this.o.heightLu,
-      ignite: step.ignite,
+      ignite: ig !== null,
+      ...(ig ? { igniteX: ig.x, igniteY: ig.y } : {}),
     };
     for (const cb of this.listeners) cb(e);
   }
@@ -485,6 +514,7 @@ export class UnitDamage {
     if (e.torso !== this.entry?.torso || e.head !== this.entry?.head) this.trackersRev++;
     this.entry = e;
     this.specsStage = 0;
+    this.fire = undefined;
     if (e.family !== this.family && this.model.stage === 0) {
       // a family the table did not know (before any step, so nothing on screen changes)
       this.family = e.family;
