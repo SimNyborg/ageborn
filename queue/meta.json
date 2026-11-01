@@ -12,5 +12,12 @@
     "hook_type": "question",
     "experiment": "narrated-duel",
     "arm": "duel"
+  },
+  "dv12-devlog-12-how-many-soldiers-is-a-legendary-worth": {
+    "length_s": 27.5,
+    "format": "devlog",
+    "hook_type": "question",
+    "experiment": "indie-angle",
+    "arm": "devlog"
   }
 }

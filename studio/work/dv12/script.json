@@ -1,0 +1,8 @@
+{"lead": 0.05, "lines": [
+ {"key": "l0", "text": "How many soldiers is one Legendary worth? I tested it on my game's simulation.", "gap": 0.35},
+ {"key": "l1", "text": "The Elk Chieftain beats five cavemen.", "gap": 0.3},
+ {"key": "l2", "text": "The Lindworm beats five crossbowmen.", "gap": 0.3},
+ {"key": "l3", "text": "The Armoured Train beats six workers.", "gap": 0.3},
+ {"key": "l4", "text": "And the Mammoth? Only two. But those are heavy beasts, not soldiers.", "gap": 0.35},
+ {"key": "l5", "text": "Which Legendary should I test next?", "gap": 0.3}
+]}
