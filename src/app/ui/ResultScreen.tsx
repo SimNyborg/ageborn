@@ -90,9 +90,9 @@ export function rewardCapsuleLook(caps: CapsuleTables | null, cap: PendingCapsul
 function RewardIcon(p: { kind: RewardIconKind; capsule?: { tier: CapsuleTier; crests: number } | null }) {
   switch (p.kind) {
     case 'amber':
-      return <AmberIcon size={30} />;
+      return <AmberIcon size={30} shine />;
     case 'dust':
-      return <DustIcon size={30} />;
+      return <DustIcon size={30} shine />;
     case 'capsule':
       return <CapsuleIcon tier={p.capsule?.tier ?? 'clay'} size={36} crests={p.capsule?.crests ?? 0} />;
     case 'crate':

@@ -3,9 +3,9 @@
  * UI environment and the pure view models:
  *
  * - `HubProfile`: avatar, name and trophies (once the Ladder is open); opens Profile.
- * - `HubTopRight`: the Sundial mark (A6.3: the dial glyph alone, in colour while a capsule is ready,
- *   once the Ladder is open; no number; it opens the Capsules tab), the Amber and Dust chips (each once earned, with its first-seen
- *   caption, MR-28) and the gear.
+ * - `HubTopRight`: the Amber and Dust chips (each once earned, with its first-seen caption, MR-28) and
+ *   the gear. (The Sundial mark left the top bar with queue item 49: the Capsules tab in the menu below
+ *   opens the same place and carries the ready badge.)
  * - `ArenaTitle` and `TrophyBar`: the arena's name ribbon and the trophy progress to the next Trophy
  *   Road reward; the bar opens Trophy Road.
  * - The match plate over Battle lives in `plate.tsx` (and its online states in `online.tsx`).
@@ -28,7 +28,7 @@ import { useUi } from '../context';
 import { arenaOf, roadProgress, trayCapsules } from '../model/progress';
 import { currentLevelId, featureOpen, levelNameKey, mapRegions, playLevelId, regionNameKey, type HomeUnlock } from '../model/warPath';
 import { RoadRewardView } from '../shared/RoadReward';
-import { CurrencyInfo, SundialChip } from './parts';
+import { CurrencyInfo } from './parts';
 import { REGION_THEMES, RegionFar, TREES } from '../warPath/regionArt';
 import { BEARER_CARD, Grove } from '../warPath/propKit';
 import { HeroPiece } from '../warPath/regionScenery';
@@ -70,7 +70,7 @@ export function pendingCurrencyCaption(s: SaveDoc): 'amber' | 'dust' | null {
 
 /** The currency chips (each once earned, with its first-seen caption, MR-28) and the gear. */
 export function HubTopRight(p: { quiet: boolean }) {
-  const { save, t, router, services, content } = useUi();
+  const { save, t, router, services } = useUi();
   const s = save.value;
   const [info, setInfo] = useState<'amber' | 'dust' | null>(null);
   const showAmber = s.currencies.amber > 0 || s.warPath?.legacy;
@@ -94,8 +94,6 @@ export function HubTopRight(p: { quiet: boolean }) {
   }, [caption]);
   return (
     <div class="wp-top__right">
-      {/* The Sundial mark (A6.3): the glyph alone, in colour while one is ready; no number, no time (A15.13). */}
-      {featureOpen(s, content, 'ladder') ? <SundialChip /> : null}
       {showAmber ? (
         <button type="button" class="wp-chip" onClick={() => setInfo('amber')} aria-label={t('ui.currency.amber')} data-testid="home-amber">
           <CurrencyChip kind="amber" value={s.currencies.amber} testid="chip-amber" />

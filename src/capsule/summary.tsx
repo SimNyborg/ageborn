@@ -14,7 +14,7 @@
  * never teases it (A15.1 red line 7). The app draws the art ({@link FoundItemsContext}).
  */
 import { createContext, type ComponentChildren } from 'preact';
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import type { ArtProvider, CardId, I18n, Rarity, SkinId } from '@/contracts';
 import css from './capsule.module.css';
 import { RARITY_COLORS, cssHex, shade } from './palette';
@@ -48,6 +48,41 @@ export interface FoundItemsEnv {
 
 /** The app's lookup for found items; without one (tests, a renderer-less shell) no found tiles show. */
 export const FoundItemsContext = createContext<FoundItemsEnv | null>(null);
+
+/** One amount on screen that the collect moment banks: where its pieces burst from (queue item 48). */
+export interface CurrencyCollect {
+  kind: 'amber' | 'dust';
+  amount: number;
+  from: Element;
+}
+
+/**
+ * Amber and Dust as the rest of the game draws them (queue item 48): the capsule layer may not import the
+ * UI (B2), so the app hands it the UI's icons and its collect moment. Without one (tests, a renderer-less
+ * shell) the show keeps its plain gems and the totals stay still.
+ */
+export interface CurrencyEnv {
+  /** The Amber or Dust icon at `size` px; `shine` adds its slow idle shine (reward displays only). */
+  icon(kind: 'amber' | 'dust', size: number, shine?: boolean): ComponentChildren;
+  /**
+   * Banks the summary's totals into the wallet: the pieces burst from each total and fly to the top-bar
+   * counter, which counts up. Presentation only: the save already holds them. Absent in tests.
+   */
+  collect?(items: readonly CurrencyCollect[]): void;
+}
+
+export const CurrencyContext = createContext<CurrencyEnv | null>(null);
+
+/** When the summary banks its totals: once its panel has risen and the first tiles have landed. */
+export const SUMMARY_COLLECT_MS = 520;
+
+/** The gem of a total: the UI's icon when the app provides one, else the plain CSS gem. */
+export function CurrencyGem(p: { kind: 'amber' | 'dust'; size: number; shine?: boolean }) {
+  const env = useContext(CurrencyContext);
+  if (env) return <span class={css.curIcon}>{env.icon(p.kind, p.size, p.shine)}</span>;
+  return <span class={p.kind === 'dust' ? css.dustGem : css.amberGem} />;
+}
+
 
 /** Only Epic and Legendary found items burst (PLAN 2a); Common and Rare land like the cards. */
 export function foundBurstLevel(r: Rarity): Exclude<BurstLevel, 'rare'> | null {
@@ -308,6 +343,21 @@ export function SummaryPanel(p: { model: SummaryModel; art: ArtProvider; i18n: I
   const t = (k: string, o?: Record<string, string | number>) => i18n.t(k, o);
   const pending = actions.pendingCount ?? 0;
   const stop = (e: Event) => e.stopPropagation();
+  // Queue item 48: once the panel has risen, the totals fly into the wallet (presentation only).
+  const currency = useContext(CurrencyContext);
+  const amberRef = useRef<HTMLSpanElement>(null);
+  const dustRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const collect = currency?.collect;
+    if (!collect || (model.amber <= 0 && model.dust <= 0)) return undefined;
+    const id = setTimeout(() => {
+      const items: CurrencyCollect[] = [];
+      if (model.amber > 0 && amberRef.current) items.push({ kind: 'amber', amount: model.amber, from: amberRef.current });
+      if (model.dust > 0 && dustRef.current) items.push({ kind: 'dust', amount: model.dust, from: dustRef.current });
+      if (items.length) collect(items);
+    }, SUMMARY_COLLECT_MS);
+    return () => clearTimeout(id);
+  }, [model]);
   return (
     <div class={css.summaryWrap} onPointerDown={stop} onPointerUp={stop} data-testid="capsule-summary">
       <div class={css.summary} role="dialog" aria-label={p.title}>
@@ -315,13 +365,13 @@ export function SummaryPanel(p: { model: SummaryModel; art: ArtProvider; i18n: I
           <h2 class={css.summaryTitle}>{p.title}</h2>
           <div class={css.totals}>
             {model.amber > 0 ? (
-              <span class={css.total} title={t('capsule.amber')}>
-                <span class={css.amberGem} />+{model.amber}
+              <span class={css.total} title={t('capsule.amber')} ref={amberRef} data-testid="capsule-total-amber">
+                <CurrencyGem kind="amber" size={26} shine />+{model.amber}
               </span>
             ) : null}
             {model.dust > 0 ? (
-              <span class={css.total} title={t('capsule.dust')}>
-                <span class={css.dustGem} />+{model.dust}
+              <span class={css.total} title={t('capsule.dust')} ref={dustRef} data-testid="capsule-total-dust">
+                <CurrencyGem kind="dust" size={26} shine />+{model.dust}
               </span>
             ) : null}
           </div>

@@ -63,7 +63,7 @@ import { ArenaTitle, CampaignCard, CapsuleSlots, HubProfile, HubTopRight, pendin
 import { JoinPanel, onlineLengths, onlineMock, OnlinePlate, OnlineVs, RoomPanel, useElapsed, type OnlineState } from './online';
 import { LAST_SEEN, MatchPlate } from './plate';
 import { FOUND_HOLD_MS, FOUND_IMPACT_MS, RankedPlate, rankedPreview, searchDelayMs, takeRankedSearch, type RankedPhase } from './ranked';
-import { FriendSoonChip, ModeSwitcher, type SwitcherMode } from './switcher';
+import { ModeSwitcher, type SwitcherMode } from './switcher';
 
 /** The ranked Ladder's search (owner decision 2026-10-07): the prepared match it reveals, and its phase. */
 type Ranked = { phase: 'idle' } | { phase: Exclude<RankedPhase, 'idle'>; req: MatchRequest; opponent: OpponentSpec; frozen?: boolean; elapsedMs?: number };
@@ -249,7 +249,6 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   // ---- Battle ---------------------------------------------------------------------------------
   const [modes, setModes] = useState(false);
   /** The card the Modes panel opens on (the Friend Duel chip opens it on Friend Duel's note). */
-  const [modesFocus, setModesFocus] = useState<SwitcherMode | null>(null);
   const [launching, setLaunching] = useState(false);
   const starter = useMatchStarter();
 
@@ -544,22 +543,11 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
           />
         )}
         <div class="wp-playRow" ref={switcherRef}>
-          {/* The friend entry, shown as coming later (owner decision 2026-10-01); gone once the mock's Friend Duel works. */}
-          {modesOpen && !training && !mock ? (
-            <FriendSoonChip
-              onOpen={() => {
-                setModesFocus('friend');
-                setModes(true);
-              }}
-            />
-          ) : null}
+          {/* The one mode button (queue item 50): Friend Duel's "coming later" card lives in the panel it opens. */}
           {modesOpen && !training ? (
             <ModeSwitcher
               mode={mode}
-              onOpen={() => {
-                setModesFocus(null);
-                setModes(true);
-              }}
+              onOpen={() => setModes(true)}
               disabled={searching || rankedBusy}
               reason={t('ui.online.searching')}
             />
@@ -602,7 +590,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
         />
       ) : null}
 
-      {modes ? <ModesSheet selected={mode} online={!!mock} focus={modesFocus} onSelect={select} onClose={() => setModes(false)} /> : null}
+      {modes ? <ModesSheet selected={mode} online={!!mock} onSelect={select} onClose={() => setModes(false)} /> : null}
       {room === 'host' && mock ? <RoomPanel mock={mock} format={onlineFormat} onFormat={setOnlineFormat} onClose={() => setRoom(null)} /> : null}
       {room === 'join' ? <JoinPanel onClose={() => setRoom(null)} /> : null}
       {vs && mock ? (

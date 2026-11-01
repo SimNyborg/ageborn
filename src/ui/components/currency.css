@@ -1,0 +1,67 @@
+/*
+ * Amber and Dust icons (queue item 48, `icons.tsx`): the slow idle shine of reward displays. Amber gets a
+ * light sweep across the polished resin every 5.6 s; Dust's two small stars twinkle in turn. Only icons drawn
+ * with `shine` animate (reward rows, the capsule summary's totals, the collect moment), never chips or menus
+ * (U15), and nothing moves under reduce motion (5.6).
+ */
+.ui-cur__sweep {
+  transform: translateX(-16px);
+}
+.ui-cur--shine .ui-cur__sweep {
+  animation: ui-cur-sweep 5600ms var(--ui-ease-standard) 900ms infinite;
+}
+@keyframes ui-cur-sweep {
+  0% {
+    transform: translateX(-16px);
+  }
+  15% {
+    transform: translateX(64px);
+  }
+  100% {
+    transform: translateX(64px);
+  }
+}
+
+.ui-cur__twinkle {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.ui-cur--shine .ui-cur__twinkle {
+  animation: ui-cur-twinkle 3200ms ease-in-out infinite;
+}
+.ui-cur--shine .ui-cur__twinkle--b {
+  animation-delay: 1600ms;
+}
+@keyframes ui-cur-twinkle {
+  0%,
+  70%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.5) rotate(25deg);
+    opacity: 0.55;
+  }
+  90% {
+    transform: scale(1.18) rotate(45deg);
+    opacity: 1;
+  }
+}
+
+.ui-root[data-reduce-motion='true'] .ui-cur__sweep,
+.ab-root[data-reduce-motion] .ui-cur__sweep {
+  display: none;
+}
+.ui-root[data-reduce-motion='true'] .ui-cur__twinkle,
+.ab-root[data-reduce-motion] .ui-cur__twinkle {
+  animation-name: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-cur__sweep {
+    display: none;
+  }
+  .ui-cur__twinkle {
+    animation-name: none !important;
+  }
+}

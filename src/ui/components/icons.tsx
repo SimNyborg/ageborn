@@ -9,6 +9,7 @@ import type { ComponentChildren } from 'preact';
 import { useId } from 'preact/hooks';
 import { ink, light, line, shade } from './tone';
 import './capsuleLadder.css';
+import './currency.css';
 
 export interface IconProps {
   size?: number;
@@ -156,32 +157,249 @@ const SWORD_PLACE = 'translate(12 11) rotate(42) scale(.95) translate(-12 -9.5)'
 // Currencies
 // ---------------------------------------------------------------------------------------------
 
-export function AmberIcon(p: IconProps) {
-  const o = ink('#d9771a');
+/**
+ * The currency icons draw on a 48-unit grid with detail by size (queue item 48): up to 18 px the
+ * silhouette, the two tones, the inner light and one highlight; from 19 px the rim light, the glitter
+ * and the inclusion; from 31 px the full piece (facet lines, bubbles, legs and wings, a halo). The
+ * outline keeps its width in screen pixels (ui-plan 3.5: 1.5 px at 20, 2 at 24, 3 at 48), so a 16 px
+ * chip icon and a 96 px reward read as the same object.
+ */
+export interface CurrencyIconProps extends IconProps {
+  /**
+   * A slow idle shine (a light sweep over Amber, Dust's small stars twinkling), for reward moments and
+   * large displays only, never in menus or chips (U15: no repeating flash in menus). Off under reduce
+   * motion (theme.css).
+   */
+  shine?: boolean;
+}
+
+/** Detail level of a currency icon drawn at `size` px: 0 tiny (<= 18), 1 chip and row (19-30), 2 large. */
+export function currencyLod(size: number): 0 | 1 | 2 {
+  return size <= 18 ? 0 : size <= 30 ? 1 : 2;
+}
+
+/** The outline width, in units of a `grid`-unit view box, that draws as the ui-plan 3.5 pixel width at `size` px. */
+export function outlineUnits(size: number, grid = 48): number {
+  const px = Math.max(1.3, Math.min(3.2, 0.3 + 0.075 * size));
+  return (px * grid) / size;
+}
+
+function CurrencySvg(p: CurrencyIconProps & { kind: 'amber' | 'dust'; children: ComponentChildren }) {
+  const s = p.size ?? 24;
+  const cls = `ui-icon ui-cur ui-cur--${p.kind}${p.shine ? ' ui-cur--shine' : ''}${p.class ? ` ${p.class}` : ''}`;
   return (
-    <Svg {...p}>
-      <path d="M12 2.2 20 7.4v9.2l-8 5.2-8-5.2V7.4z" fill="#d9771a" />
-      <path d="M12 3.6 18.5 8v8L12 20.3 5.5 16V8z" fill="#ffb238" />
-      <path d="M12 3.6V12l6.5 4V8z" fill="#ff9a1f" />
-      <path d="M12 12 5.5 16l6.5 4.3 6.5-4.3z" fill="#d97a16" />
-      <path d="M12 12 5.5 8 12 3.6z" fill="#ffc861" />
-      <path d="M7.4 8.6 12 5.6" stroke="#fff1c4" stroke-width="1.7" stroke-linecap="round" fill="none" />
-      <circle cx="15.8" cy="14.8" r=".8" fill="#fff1c4" opacity=".8" />
-      <path d="M12 2.2 20 7.4v9.2l-8 5.2-8-5.2V7.4z" fill="none" stroke={o} stroke-width="1.5" stroke-linejoin="round" />
-    </Svg>
+    <svg class={cls} width={s} height={s} viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      {p.children}
+    </svg>
   );
 }
 
-/** Dust (A18.9): one bright spark over a small heap of violet dust (ui-plan 3.5). */
-export function DustIcon(p: IconProps) {
+/**
+ * Amber's silhouette: a polished chunk of amber, roughly a rounded triangle leaning right, point down (distinct
+ * from the Epic hexagon gem, the Common circle and battle gold's coin; a drop read as a liquid).
+ */
+export const AMBER_SHAPE = 'M7.6 14.4C11.6 9 21 6.2 28.8 5.6C34.4 5.2 40.6 6.6 42 11.2C43.2 15.2 41 21.6 38.4 27.2C35.2 34.2 30 40.8 24 43.6C20.4 45.2 16.4 44.6 13.8 41.6C10 37.4 6.8 30.4 5.8 24.4C5.2 20.6 5.6 17 7.6 14.4Z';
+/** The polished top face (the table) that the light enters by, and the two bevels around it. */
+const AMBER_TABLE = 'M13 16.4C15.8 13 22.6 10.8 28.2 10.4C32.2 10.2 35.6 11 36.2 13.8C36.8 16.6 35.2 21.4 32.8 26C30.4 30.6 26.8 34.4 23.2 35.6C21 36.4 19 35.8 17.8 34.2C15.4 31 13.4 26.4 12.6 22.4C12.2 20.2 12 18 13 16.4Z';
+const AMBER_TOP_BEVEL = 'M0 0H48V9C40 8.4 20 10 13 16.4L2 15Z';
+const AMBER_FAR_BEVEL = 'M48 0V48H23.2V35.6C26.8 34.4 30.4 30.6 32.8 26C35.2 21.4 36.8 16.6 36.2 13.8L37 0Z';
+const AMBER_INK = '#5c2a04';
+const AMBER_BUG = '#6a3006';
+
+/** The signature inclusion: a little prehistoric gnat caught in the resin (drawn about its middle, head up). */
+function AmberGnat() {
+  const wing = { fill: '#fff4cf', 'fill-opacity': 0.6, stroke: AMBER_BUG, 'stroke-width': 0.35, 'stroke-opacity': 0.6 };
   return (
-    <Svg {...p}>
-      <Part d="M2.8 20.2Q3.6 16 7.4 15.2Q9.4 12.4 13 13.4Q17.8 13.4 21.2 20.2Z" fill="#9b6cf0" band={18.3} hi="M6.4 16.4Q8.2 15.6 9.4 14.4Q10.4 14 11.2 14.4Q9.6 15.2 8.6 16.4Z" />
-      <path d="M7 18.6h.01M11.4 17.4h.01M15.6 18.8h.01M13.4 15.8h.01" stroke="#e6dbff" stroke-width="1.3" stroke-linecap="round" />
-      <Part d="M12.6 1.6Q13.4 6.1 17.9 6.9Q13.4 7.7 12.6 12.2Q11.8 7.7 7.3 6.9Q11.8 6.1 12.6 1.6Z" fill="#efe6ff" band={8.6} sw={1.3} stroke="#4b2f86" />
-      <path d="M19.4 2.4 19.8 3.8 21.2 4.2 19.8 4.6 19.4 6 19 4.6 17.6 4.2 19 3.8Z" fill="#fff" stroke="#4b2f86" stroke-width=".8" stroke-linejoin="round" />
-      <path d="M5 8.2 5.3 9.1 6.2 9.4 5.3 9.7 5 10.6 4.7 9.7 3.8 9.4 4.7 9.1Z" fill="#d9c8ff" stroke="#4b2f86" stroke-width=".7" stroke-linejoin="round" />
-    </Svg>
+    <g>
+      <path
+        d="M1.3 -1.2L3.9 -2.9L5.2 -1.6M1.4 -0.3L4.5 0.6L5.4 2.4M1.1 0.7L3.1 3L3.3 5M-1.3 -1.2L-3.9 -2.9L-5.2 -1.6M-1.4 -0.3L-4.5 0.6L-5.4 2.4M-1.1 0.7L-3.1 3L-3.3 5M-0.4 -4.9L-1.7 -6.9M0.4 -4.9L1.7 -6.9"
+        fill="none"
+        stroke={AMBER_BUG}
+        stroke-width="0.55"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-opacity="0.8"
+      />
+      <path d="M0.5 -1.4C4.6 -3.3 7.8 -0.4 6 1.8C4.8 3.3 1.9 1.2 0.5 -1.4Z" {...wing} />
+      <path d="M-0.5 -1.4C-4.6 -3.3 -7.8 -0.4 -6 1.8C-4.8 3.3 -1.9 1.2 -0.5 -1.4Z" {...wing} />
+      <ellipse cx="0" cy="3.1" rx="1.85" ry="3.5" fill={AMBER_BUG} fill-opacity="0.82" />
+      <path d="M-1.6 2.3H1.6M-1.5 3.9H1.5" stroke="#c46a12" stroke-width="0.45" stroke-opacity="0.7" />
+      <circle cx="0" cy="-1.3" r="1.7" fill={AMBER_BUG} fill-opacity="0.88" />
+      <circle cx="0" cy="-3.9" r="1.15" fill={AMBER_BUG} fill-opacity="0.88" />
+    </g>
+  );
+}
+
+/**
+ * Amber (A6.2, queue item 48): a polished chunk of amber with depth. The light comes in at the top-left
+ * through the polished top face: the face glows warm and bright inside (the inner light), the top bevel
+ * catches the light, the far bevel darkens, a caustic lights the lower rim, and a little gnat sits caught in
+ * the resin (its signature detail, drawn from 31 px up, where it reads as an insect and not as a crack).
+ */
+export function AmberIcon(p: CurrencyIconProps) {
+  const size = p.size ?? 24;
+  const lod = currencyLod(size);
+  const id = useUid('amb');
+  const u = 48 / size;
+  const sw = outlineUnits(size);
+  return (
+    <CurrencySvg {...p} kind="amber">
+      <defs>
+        <radialGradient id={`${id}g`} cx="0.42" cy="0.54" r="0.62">
+          <stop offset="0" stop-color="#fff4c4" />
+          <stop offset="0.3" stop-color="#ffd458" />
+          <stop offset="0.75" stop-color="#f6a11a" />
+          <stop offset="1" stop-color="#e8850f" />
+        </radialGradient>
+        <linearGradient id={`${id}b`} x1="0" x2="0.3" y1="1" y2="0">
+          <stop offset="0" stop-color="#ffcd52" />
+          <stop offset="1" stop-color="#f08a12" />
+        </linearGradient>
+        <clipPath id={`${id}c`}>
+          <path d={AMBER_SHAPE} />
+        </clipPath>
+        {lod === 2 || p.shine ? (
+          <radialGradient id={`${id}h`}>
+            <stop offset="0.35" stop-color="#ffb83d" stop-opacity="0.42" />
+            <stop offset="1" stop-color="#ffb83d" stop-opacity="0" />
+          </radialGradient>
+        ) : null}
+        {p.shine ? (
+          <linearGradient id={`${id}s`} x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stop-color="#fff" stop-opacity="0" />
+            <stop offset="0.5" stop-color="#fff" stop-opacity="0.75" />
+            <stop offset="1" stop-color="#fff" stop-opacity="0" />
+          </linearGradient>
+        ) : null}
+      </defs>
+      {lod === 2 || p.shine ? <circle class="ui-cur__halo" cx="24" cy="25" r="25" fill={`url(#${id}h)`} /> : null}
+      <g clip-path={`url(#${id}c)`}>
+        {/* the bevels: the near one lit from inside, the far one in shadow, the top one catching the key light */}
+        <rect x="-2" y="-2" width="52" height="52" fill={`url(#${id}b)`} />
+        <path d={AMBER_FAR_BEVEL} fill="#c25d09" />
+        <path d={AMBER_TOP_BEVEL} fill="#ffd977" />
+        {/* the polished top face and the light inside it */}
+        <path d={AMBER_TABLE} fill={`url(#${id}g)`} />
+        {lod >= 1 ? <path d={AMBER_TABLE} fill="none" stroke="#fff0b8" stroke-width={Math.max(0.8, 0.55 * u)} stroke-opacity="0.55" /> : null}
+        {lod === 2 ? (
+          <g transform="translate(24 23) rotate(-30)">
+            <AmberGnat />
+          </g>
+        ) : null}
+        {lod === 2 ? (
+          <g fill="none" stroke="#fff6d6" stroke-width="0.7" stroke-opacity="0.85">
+            <circle cx="31.2" cy="15.6" r="1.3" />
+            <circle cx="32.8" cy="20.2" r="0.8" />
+          </g>
+        ) : null}
+        {/* the caustic: light that went through the resin lights the lower rim */}
+        <path d="M8.8 28C10.6 34.2 13.6 39.6 17.6 41.8" fill="none" stroke="#fff0b0" stroke-width={Math.max(1.4, 1.0 * u)} stroke-linecap="round" stroke-opacity="0.9" />
+        {/* the polish: one bright streak on the lit edge and a glint on the top corner */}
+        <path d="M10.2 16.6C13.2 11.4 21.2 8.4 28.2 7.6C22.4 9.8 17.6 12.4 14.6 16.4C13.2 18.4 9.4 18.6 10.2 16.6Z" fill="#fffbea" />
+        <circle cx="38.4" cy="9.2" r={lod === 0 ? 1.9 : 1.5} fill="#fffbea" />
+        {p.shine ? (
+          <g transform="rotate(24 24 24)">
+            <rect class="ui-cur__sweep" x="-6" y="-8" width="11" height="66" fill={`url(#${id}s)`} />
+          </g>
+        ) : null}
+      </g>
+      <path d={AMBER_SHAPE} fill="none" stroke={AMBER_INK} stroke-width={sw} stroke-linejoin="round" />
+    </CurrencySvg>
+  );
+}
+
+/** Dust's heap: three soft bumps of violet star dust on a flat base. */
+export const DUST_HEAP = 'M4.6 41.6C5 35.8 9.6 31.6 15 30.8C18 27 23.4 25.6 28 27.4C31.4 25.8 36 27.6 37.4 31.4C41.8 32.8 44.2 37 43.6 41.6Z';
+const DUST_INK = '#2a1766';
+const STAR_INK = '#35208a';
+
+/** A four-pointed sparkle with concave sides about (cx, cy); `k` sets how fat its arms are. */
+export function sparklePath(cx: number, cy: number, rx: number, ry: number, k = 0.2): string {
+  const f = (n: number) => Math.round(n * 100) / 100;
+  const ax = rx * k;
+  const ay = ry * k;
+  return `M${f(cx)} ${f(cy - ry)}Q${f(cx + ax)} ${f(cy - ay)} ${f(cx + rx)} ${f(cy)}Q${f(cx + ax)} ${f(cy + ay)} ${f(cx)} ${f(cy + ry)}Q${f(cx - ax)} ${f(cy + ay)} ${f(cx - rx)} ${f(cy)}Q${f(cx - ax)} ${f(cy - ay)} ${f(cx)} ${f(cy - ry)}Z`;
+}
+
+/**
+ * Dust (A18.9, queue item 48): glittering violet star dust: a heap of fine violet dust that glitters
+ * (white, pink and cyan specks), with a bright star rising out of it and two small ones beside it.
+ */
+export function DustIcon(p: CurrencyIconProps) {
+  const size = p.size ?? 24;
+  const lod = currencyLod(size);
+  const id = useUid('dst');
+  const sw = outlineUnits(size);
+  const fat = lod === 0 ? 0.3 : lod === 1 ? 0.24 : 0.2;
+  const big = sparklePath(25, 14.6, lod === 0 ? 12 : 11.2, 13.2, fat);
+  return (
+    <CurrencySvg {...p} kind="dust">
+      <defs>
+        <linearGradient id={`${id}g`} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#c3a2ff" />
+          <stop offset="0.5" stop-color="#8d5ff6" />
+          <stop offset="1" stop-color="#5a33cc" />
+        </linearGradient>
+        <radialGradient id={`${id}s`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#fff" />
+          <stop offset="0.55" stop-color="#f6f0ff" />
+          <stop offset="1" stop-color="#d2bcff" />
+        </radialGradient>
+        <radialGradient id={`${id}h`}>
+          <stop offset="0" stop-color="#d8c2ff" stop-opacity={lod === 0 ? 0.5 : 0.75} />
+          <stop offset="1" stop-color="#b48cff" stop-opacity="0" />
+        </radialGradient>
+        <clipPath id={`${id}c`}>
+          <path d={DUST_HEAP} />
+        </clipPath>
+      </defs>
+      {/* the star's own light */}
+      <circle class="ui-cur__halo" cx="25" cy="14.6" r={lod === 2 ? 15 : 12} fill={`url(#${id}h)`} />
+      <path d={DUST_HEAP} fill={`url(#${id}g)`} />
+      <g clip-path={`url(#${id}c)`}>
+        <path d="M-40 37.4Q24 39 88 37.4V120H-40Z" fill="#4527a8" fill-opacity="0.85" />
+        <path d="M8.2 35.4C9.8 32.8 13 31.4 15.6 31.6C17.2 29 20.6 27.6 23.8 27.8C20.8 28.8 18.8 30.4 17.2 32.8C14.4 32.6 11 33.6 8.2 35.4Z" fill="#e6dbff" fill-opacity="0.9" />
+        {lod >= 1 ? (
+          <g>
+            <circle cx="12.6" cy="37.4" r="1.25" fill="#fff" />
+            <circle cx="19.6" cy="33.6" r="1" fill="#ffc6f2" />
+            <circle cx="26.4" cy="37.8" r="1.15" fill="#b8f4ff" />
+            <circle cx="31.8" cy="31.8" r="0.95" fill="#fff" />
+            <circle cx="37" cy="36.6" r="1.2" fill="#fff" />
+            <circle cx="22.8" cy="30.6" r="0.8" fill="#fff" fill-opacity="0.9" />
+          </g>
+        ) : (
+          <g>
+            <circle cx="14" cy="36.4" r="1.6" fill="#fff" />
+            <circle cx="33.4" cy="35.4" r="1.5" fill="#fff" />
+          </g>
+        )}
+        {lod === 2 ? (
+          <g fill="#fff">
+            <path d={sparklePath(17.2, 38.6, 1.8, 1.8, 0.25)} />
+            <path d={sparklePath(33.6, 39.2, 1.6, 1.6, 0.25)} fill="#ffd8f6" />
+            <path d={sparklePath(29.4, 34.6, 1.2, 1.2, 0.25)} fill="#c9f6ff" />
+          </g>
+        ) : null}
+      </g>
+      <path d={DUST_HEAP} fill="none" stroke={DUST_INK} stroke-width={sw} stroke-linejoin="round" />
+      {/* the stars: one rising from the heap, two small ones beside it (they twinkle with `shine`) */}
+      <path d={big} fill={`url(#${id}s)`} stroke={STAR_INK} stroke-width={sw * 0.9} stroke-linejoin="round" />
+      {lod >= 1 ? <path d={sparklePath(25, 14.6, 3.4, 4, 0.3)} fill="#fff" /> : null}
+      <g class="ui-cur__twinkle ui-cur__twinkle--a">
+        <path d={sparklePath(39.6, 8.2, lod === 0 ? 5.4 : 4.4, lod === 0 ? 6.4 : 5.4, 0.26)} fill="#fff" stroke={STAR_INK} stroke-width={sw * 0.7} stroke-linejoin="round" />
+      </g>
+      <g class="ui-cur__twinkle ui-cur__twinkle--b">
+        <path d={sparklePath(9.6, 17.6, lod === 0 ? 4.2 : 3.4, lod === 0 ? 5 : 4.2, 0.26)} fill="#e4d6ff" stroke={STAR_INK} stroke-width={sw * 0.65} stroke-linejoin="round" />
+      </g>
+      {lod >= 1 ? (
+        <g>
+          <circle cx="35.2" cy="21.4" r="1.05" fill="#ffe0f8" />
+          <circle cx="15.6" cy="8.6" r="0.95" fill="#c4f5ff" />
+          {lod === 2 ? <circle cx="31.8" cy="3.8" r="0.8" fill="#fff" /> : null}
+        </g>
+      ) : null}
+    </CurrencySvg>
   );
 }
 

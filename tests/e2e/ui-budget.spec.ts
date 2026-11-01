@@ -113,13 +113,14 @@ const PAGES: PageSpec[] = [
   // Last Base Standing's Result: the reason line and the trophy row (A2.10.1; ranked since 2026-10-03).
   { name: 'result-lastWin', hash: 'screens/result-lastWin/mid/{vp}', strict: true, primary: true },
   {
-    // Home's one online entry (owner decision 2026-10-01): the Friend Duel chip opens the panel on its note.
+    // Home's one mode button (queue item 50) opens the Modes panel, Friend Duel's "coming later" card open.
     name: 'modes-friend',
     hash: 'screens/home/mid/{vp}',
     strict: true,
     primary: false,
     prepare: async (page) => {
-      await page.click('[data-testid="home-friend-soon"]');
+      await page.click('[data-testid="home-modes"]');
+      await page.click('[data-testid="mode-friend"]');
     },
   },
   // Backlog (UI-3, UI-4): reported, not failed.
