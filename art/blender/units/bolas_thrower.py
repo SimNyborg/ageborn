@@ -20,11 +20,14 @@ Animation (ANIM_SPEC G1, appendix B throwers: distinct from the Pebbler's vertic
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import kit_stone as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import stone_w1 as W1
 
 SLUG = "bolas_thrower"
 GAIT_NAME = "biped"
@@ -43,6 +46,21 @@ CORD = "#9C8466"
 BALL = "#C4AE88"
 BALL_HI = "#A88E74"
 BONE = "#EDE3C8"
+# W1 (the detail standard)
+HAIR_LT = "#54463E"       # lighter strands in the braid and the hair (31 levels over it)
+CHEEK = "#B98F72"         # a ruddy cheek and ear (19 levels under the skin)
+STONE = "#8E8A80"         # the stones peeking out of the bolas' leather wraps, the necklace
+STONE_HI = "#B4AFA6"
+LEATHER_DK = "#56412F"
+BOOT_CUFF = "#A0907C"     # a paler fur cuff on the boots (two-tone boots)
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_SOLDIER
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", HAIR: "fur", HAIR_LT: "fur", FUR: "fur", BOOT: "fur", BOOT_CUFF: "fur",
+                           CORD: "leather", BALL: "leather", BALL_HI: "leather", BONE: "bone", STONE: "stone",
+                           STONE_HI: "stone", LEATHER_DK: "leather", CHEEK: "skin", "team": "hide"})
 
 HIP_Y, SH_Y = 5.6, 11.2
 CORD_L = 15.0
@@ -53,7 +71,7 @@ def _bolas(rig, joint, fist):
     fx, fy, fz = fist
     g = Geo().blob((fx + 0.4, fy - 0.4, fz - 1.6), (1.8, 1.8, 2.0), p=2.2)
     for k, (dx, dy) in enumerate(((-2.6, 0.0), (0.0, -2.2), (2.4, 0.4))):
-        g.capsule((fx + 0.4, fy - 0.4, fz - 2.0), (fx + dx, fy + dy, fz - CORD_L), 0.6)
+        g.capsule((fx + 0.4, fy - 0.4, fz - 2.0), (fx + dx, fy + dy, fz - CORD_L), 0.75)
     rig.part(joint, g, CORD, outline=0.5)
     g = Geo()
     for dx, dy in ((-2.6, 0.0), (0.0, -2.2), (2.4, 0.4)):
@@ -63,6 +81,11 @@ def _bolas(rig, joint, fist):
     for dx, dy in ((-2.6, 0.0), (0.0, -2.2), (2.4, 0.4)):
         g.capsule((fx + dx - 2.2, fy + dy - 1.6, fz - CORD_L - 1.4), (fx + dx + 2.2, fy + dy - 1.6, fz - CORD_L - 2.2), 0.7)
     rig.part(joint, g, team=True, outline=0.4)
+    # W1: the grey stone showing through each leather wrap (a 3 lu cap, two-tone balls)
+    g = Geo()
+    for dx, dy in ((-2.6, 0.0), (0.0, -2.2), (2.4, 0.4)):
+        g.blob((fx + dx + 0.6, fy + dy - 1.2, fz - CORD_L - 4.2), (2.4, 2.4, 1.7), p=2.1)
+    rig.part(joint, g, STONE, finish="gloss", outline=0.4)
 
 
 def build(rig):
@@ -71,10 +94,23 @@ def build(rig):
     body = K.body(rig, SKIN, BOOT, stocky=1.05, hip_y=HIP_Y, shoulder_y=SH_Y, torso_r=(10.6, 9.4, 10.2), foot_len=4.6)
     fr, fl = body.fist["r"], body.fist["l"]
     FR = fr
-    K.pelt(rig, FUR, r=(11.2, 10.0, 7.6), skirt_r=(11.4, 10.2, 4.6))
+    deco = K.pelt(rig, FUR, r=(11.2, 10.0, 7.6), skirt_r=(11.4, 10.2, 4.6))
     K.wraps(rig, HIP_Y, SH_Y, wrists=("r", "l"))
     g = Geo().lathe([(11.0, 0), (11.9, 0.4), (11.9, 4.6), (10.8, 5.0)], (0.4, 0, 21.6), (0.6, 0, 26.6), segs=24)
-    rig.part("torso", g, team=True, outline=0.7)   # a wide team belt
+    look.team_part(rig, "torso", g, outline=0.7)   # a wide belt (W1: team-dark: the team zone in two tones)
+    # W1: a carved bone buckle on the belt, wildcat spots on the pelt, laces over the shin wraps, paler fur cuffs on
+    # the boots, a necklace of river stones on a thong
+    g = Geo().blob((10.9, -6.6, 24.0), (1.9, 1.1, 1.8), p=2.4, rot=(0, 0, -36))   # small: the belt is the team zone
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    W1.team_spots(rig, "torso", deco, [(-6.8, 29.6, 1.7, 1.4), (7.8, 30.0, 1.5, 1.2), (-9.0, 26.8, 1.3, 1.1)])
+    for side, y in (("r", -HIP_Y), ("l", HIP_Y)):
+        W1.laces(rig, f"shin_{side}", 0.8, y - 3.85 if side == "r" else y - 3.6, 6.2, 10.8, None,
+                 team=True)   # team-dark: leather laces cost the walk's team fill (17.x% in walk_00)
+        W1.ring(rig, f"shin_{side}", (0.9, y, 4.6), 3.7, height=2.0, fill=BOOT_CUFF if side == "r" else
+                CC.scale(BOOT_CUFF, 0.8), outline=0.5, finish="hair")   # on the boot top, under the team wrap
+    W1.thong(rig, "torso", (0.5, 0, 35.8), 8.4, LEATHER_DK, tilt_to=(2.1, 0, 37.4))
+    W1.beads(rig, "torso", [(8.6, -4.4, 33.6), (9.6, -0.6, 33.0)], STONE_HI, r=1.6)
+    W1.beads(rig, "torso", [(9.0, 3.2, 33.4)], STONE, r=1.5)
     # a coil of spare cord over the far shoulder
     g = Geo().lathe([(6.0, 0), (7.4, 0.6), (7.4, 2.6), (6.0, 3.2)], (-2.0, 3.0, 31.0), (-1.4, 5.0, 31.4), segs=18,
                     rot=(0, 30, 0))
@@ -83,17 +119,27 @@ def build(rig):
     hair = Geo().blob((-2.6, 0, 54.4), (9.8, 10.6, 5.6), p=2.2)
     hair.blob((-8.0, 0, 48.0), (4.6, 9.4, 7.6), p=2.2)
     band = Geo().lathe([(10.0, 0), (10.9, 0.4), (10.9, 3.0), (9.6, 3.4)], (1.6, 0, 52.2), (0.2, 0, 55.2), segs=22)
-    K.head(rig, SKIN, z=47.5, r=(10.8, 10.4, 10.4), jaw=(7.6, 8.6, 5.4), extra_geos=(hair, band), brow_col=HAIR)
+    face = K.head(rig, SKIN, z=47.5, r=(10.8, 10.4, 10.4), jaw=(7.6, 8.6, 5.4), extra_geos=(hair, band),
+                  brow_col=HAIR)
     rig.part("head", hair, HAIR, finish="hair")
     rig.part("head", band, team=True, outline=0.8)
+    # W1: lighter strands in the hair, a ruddy cheek and an ear
+    W1.locks(rig, "head", [((-6.2, 50.8), (-10.2, 45.6), 1.3), ((-4.4, 57.0), (-10.0, 55.0), 1.3)], HAIR_LT, -9.4)
+    W1.blush(rig, "head", face, 7.4, 45.6, 2.8, 2.0, CHEEK)
+    ear = Geo().blob((-0.9, -10.4, 47.0), (2.4, 1.5, 3.0), p=2.2)
+    ear_face = F.Face(rig, "head", [ear])
+    rig.part("head", ear, SKIN, outline=0.6)
+    W1.blush(rig, "head", ear_face, -0.7, 46.8, 1.1, 1.8, CHEEK)
     g = Geo().sphere((3.0, -10.8, 53.6), 1.4, cuts=2).sphere((-1.0, -10.6, 54.2), 1.4, cuts=2)
     rig.part("head", g, BONE, outline=0.5)
     rig.secondary("braid", "head", (-8.0, 0, 50.0), (-12.0, 0, 34.0), max_deg=18, gain=1.3)
     g = Geo()
+    g2 = Geo()
     for k in range(5):
         z = 48.0 - k * 3.4
-        g.blob((-9.6 - k * 0.6, 0, z), (2.6 - k * 0.2, 2.6 - k * 0.2, 2.2), p=2.2)
+        (g if k % 2 == 0 else g2).blob((-9.6 - k * 0.6, 0, z), (2.6 - k * 0.2, 2.6 - k * 0.2, 2.2), p=2.2)
     rig.part("braid", g, HAIR, finish="hair")
+    rig.part("braid", g2, HAIR_LT, finish="hair")    # W1: a two-tone plait
     g = Geo().lathe([(1.8, 0), (2.0, 0.4), (2.0, 1.6), (1.8, 2.0)], (-12.6, 0, 31.4), segs=12)
     rig.part("braid", g, team=True, outline=0.5)
     # bolas in the near fist; a held item whose rest points down (c = -90 hangs it)
@@ -103,6 +149,18 @@ def build(rig):
     rig.track("muzzle", "bolas", TIP)
     ARM_R = body.arm("r", "bolas", (fr[0], fr[1], fr[2] - CORD_L))
     ARM_L = body.arm("l")
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the pelt's back half, the
+    wide belt, the skirt and the near shin wrap; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("pelt", "torso", -6.4, 27.8, 5.5, "hide", team=True)
+    rig.damage_spot_at("belt", "torso", 5.0, 25.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("skirt", "skirt", 2.5, 20.0, 5.5, "hide", team=True)
+    rig.damage_spot_at("wrap", "shin_r", -2.3, 9.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("hem", "skirt", -6.0, 18.5, 10.0, "hide", kind="strip", team=True)
 
 
 RIG = ARM_R = ARM_L = FR = TIP = None

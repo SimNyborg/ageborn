@@ -2,7 +2,7 @@
  "frames": {
   "atlatl_thrower_attack_b_02": {
    "frame": {
-    "x": 122,
+    "x": 66,
     "y": 2,
     "w": 56,
     "h": 86
@@ -26,17 +26,17 @@
   },
   "atlatl_thrower_attack_b_02_team": {
    "frame": {
-    "x": 183,
-    "y": 102,
-    "w": 53,
+    "x": 126,
+    "y": 87,
+    "w": 51,
     "h": 69
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 97,
     "y": 108,
-    "w": 53,
+    "w": 51,
     "h": 69
    },
    "sourceSize": {
@@ -50,7 +50,7 @@
   },
   "atlatl_thrower_attack_b_03": {
    "frame": {
-    "x": 182,
+    "x": 126,
     "y": 2,
     "w": 59,
     "h": 81
@@ -74,17 +74,17 @@
   },
   "atlatl_thrower_attack_b_03_team": {
    "frame": {
-    "x": 56,
-    "y": 187,
-    "w": 57,
+    "x": 2,
+    "y": 184,
+    "w": 55,
     "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 93,
     "y": 115,
-    "w": 57,
+    "w": 55,
     "h": 65
    },
    "sourceSize": {
@@ -98,8 +98,8 @@
   },
   "atlatl_thrower_attack_b_04": {
    "frame": {
-    "x": 2,
-    "y": 102,
+    "x": 189,
+    "y": 2,
     "w": 59,
     "h": 81
    },
@@ -122,17 +122,17 @@
   },
   "atlatl_thrower_attack_b_04_team": {
    "frame": {
-    "x": 117,
-    "y": 187,
-    "w": 56,
+    "x": 181,
+    "y": 87,
+    "w": 54,
     "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 93,
     "y": 115,
-    "w": 56,
+    "w": 54,
     "h": 65
    },
    "sourceSize": {
@@ -170,17 +170,17 @@
   },
   "atlatl_thrower_attack_b_05_team": {
    "frame": {
-    "x": 131,
-    "y": 102,
-    "w": 48,
+    "x": 124,
+    "y": 160,
+    "w": 47,
     "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 105,
+    "x": 106,
     "y": 109,
-    "w": 48,
+    "w": 47,
     "h": 71
    },
    "sourceSize": {
@@ -194,7 +194,7 @@
   },
   "atlatl_thrower_attack_b_06": {
    "frame": {
-    "x": 65,
+    "x": 2,
     "y": 102,
     "w": 62,
     "h": 78
@@ -218,8 +218,8 @@
   },
   "atlatl_thrower_attack_b_06_team": {
    "frame": {
-    "x": 177,
-    "y": 187,
+    "x": 61,
+    "y": 186,
     "w": 59,
     "h": 58
    },
@@ -242,8 +242,8 @@
   },
   "atlatl_thrower_attack_b_07": {
    "frame": {
-    "x": 66,
-    "y": 2,
+    "x": 68,
+    "y": 92,
     "w": 52,
     "h": 90
    },
@@ -266,17 +266,17 @@
   },
   "atlatl_thrower_attack_b_07_team": {
    "frame": {
-    "x": 2,
-    "y": 187,
-    "w": 50,
+    "x": 175,
+    "y": 160,
+    "w": 49,
     "h": 68
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
+    "x": 109,
     "y": 111,
-    "w": 50,
+    "w": 49,
     "h": 68
    },
    "sourceSize": {
@@ -324,7 +324,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 256,
-   "h": 260
+   "h": 252
   },
   "scale": "1.5",
   "ageborn": {

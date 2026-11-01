@@ -2,17 +2,17 @@
  "frames": {
   "boulder_hurler_attack_b_02": {
    "frame": {
-    "x": 174,
+    "x": 175,
     "y": 2,
-    "w": 52,
+    "w": 54,
     "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 90,
     "y": 112,
-    "w": 52,
+    "w": 54,
     "h": 78
    },
    "sourceSize": {
@@ -26,8 +26,8 @@
   },
   "boulder_hurler_attack_b_02_team": {
    "frame": {
-    "x": 112,
-    "y": 93,
+    "x": 113,
+    "y": 92,
     "w": 56,
     "h": 73
    },
@@ -51,16 +51,16 @@
   "boulder_hurler_attack_b_03": {
    "frame": {
     "x": 58,
-    "y": 93,
-    "w": 50,
+    "y": 92,
+    "w": 51,
     "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 87,
     "y": 117,
-    "w": 50,
+    "w": 51,
     "h": 75
    },
    "sourceSize": {
@@ -75,7 +75,7 @@
   "boulder_hurler_attack_b_03_team": {
    "frame": {
     "x": 68,
-    "y": 173,
+    "y": 172,
     "w": 58,
     "h": 70
    },
@@ -98,17 +98,17 @@
   },
   "boulder_hurler_attack_b_04": {
    "frame": {
-    "x": 172,
-    "y": 93,
-    "w": 49,
+    "x": 173,
+    "y": 92,
+    "w": 51,
     "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 87,
     "y": 118,
-    "w": 49,
+    "w": 51,
     "h": 73
    },
    "sourceSize": {
@@ -123,7 +123,7 @@
   "boulder_hurler_attack_b_04_team": {
    "frame": {
     "x": 130,
-    "y": 173,
+    "y": 172,
     "w": 57,
     "h": 69
    },
@@ -148,16 +148,16 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 53,
-    "h": 87
+    "w": 54,
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 106,
-    "w": 53,
-    "h": 87
+    "x": 103,
+    "y": 107,
+    "w": 54,
+    "h": 86
    },
    "sourceSize": {
     "w": 239,
@@ -170,7 +170,7 @@
   },
   "boulder_hurler_attack_b_05_team": {
    "frame": {
-    "x": 118,
+    "x": 119,
     "y": 2,
     "w": 52,
     "h": 80
@@ -195,7 +195,7 @@
   "boulder_hurler_attack_b_06": {
    "frame": {
     "x": 2,
-    "y": 173,
+    "y": 172,
     "w": 62,
     "h": 71
    },
@@ -219,7 +219,7 @@
   "boulder_hurler_attack_b_06_team": {
    "frame": {
     "x": 191,
-    "y": 173,
+    "y": 172,
     "w": 59,
     "h": 65
    },
@@ -242,7 +242,7 @@
   },
   "boulder_hurler_attack_b_07": {
    "frame": {
-    "x": 59,
+    "x": 60,
     "y": 2,
     "w": 55,
     "h": 82
@@ -267,7 +267,7 @@
   "boulder_hurler_attack_b_07_team": {
    "frame": {
     "x": 2,
-    "y": 93,
+    "y": 92,
     "w": 52,
     "h": 76
    },

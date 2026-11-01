@@ -24,11 +24,14 @@ Animation (ANIM_SPEC G1, appendix B shield infantry: bash then chop, guard-and-c
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import kit_stone as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import stone_w1 as W1
 
 SLUG = "hide_shield"
 GAIT_NAME = "biped"
@@ -50,6 +53,19 @@ STONE = "#7F838A"
 STONE_DK = "#62666C"
 WOOD = "#9C7E62"
 SCAR = "#C39478"
+# W1 (the detail standard)
+HAIR_LT = "#5E4B3F"       # lighter locks in the mane (27 levels over it)
+CHEEK = "#C79F83"         # a ruddy cheek and ear (20 levels under the skin, saturation 0.34)
+STONE_HI = "#A9ADB3"      # knapped facets on the axe head (two-tone stone)
+LACE_DK = "#56412F"
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_SOLDIER
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", HAIR: "fur", HAIR_LT: "fur", FUR: "fur", HIDE: "hide", HOOP: "wood",
+                           LACE: "leather", LACE_DK: "leather", BONE: "bone", STONE: "stone", STONE_DK: "stone",
+                           STONE_HI: "stone", WOOD: "wood", SCAR: "skin", CHEEK: "skin", "team": "hide"})
 
 HIP_Y, SH_Y = 6.0, 12.0
 AXE_LEN = 20.0
@@ -64,9 +80,26 @@ def _shield(rig, joint, c):
     front = (c[0] + n[0] * 2.6, c[1] + n[1] * 2.6, c[2])
     g = Geo().lathe([(0, 0), (SH_R - 0.6, 0.0), (SH_R, 1.6), (SH_R - 1.2, 3.6), (0, 4.4)], back, front, segs=24)
     rig.part(joint, g, team=True)
+    # W1: a painted team-dark ring on the face (radius 6.4-9.4: the shield in two tones, still team)
+    ring_at = (c[0] + n[0] * 2.25, c[1] + n[1] * 2.25, c[2])
+    g = Geo().lathe([(6.4, 0), (9.4, 0), (9.4, 0.5), (6.4, 0.5)], ring_at,
+                    (ring_at[0] + n[0], ring_at[1] + n[1], c[2]), segs=32)
+    look.team_part(rig, joint, g, outline=0)
     g = Geo().lathe([(SH_R - 1.6, 0), (SH_R + 0.8, 0.4), (SH_R + 0.8, 2.6), (SH_R - 1.6, 3.0)], back,
                     (back[0] + n[0] * 3.4, back[1] + n[1] * 3.4, c[2]), segs=24)
     rig.part(joint, g, HOOP, outline=0.8)
+    # W1: leather lacing that binds the hide to the hoop (dark stitches over the rim, 1.2 lu)
+    g = Geo()
+    ux0, uy0 = -n[1], n[0]
+    for k in range(12):
+        a = math.radians(15 + k * 30)
+        rx, rz = math.cos(a), math.sin(a)
+        p_in = (c[0] + ux0 * rx * (SH_R - 2.2) + n[0] * 2.2, c[1] + uy0 * rx * (SH_R - 2.2) + n[1] * 2.2,
+                c[2] + rz * (SH_R - 2.2))
+        p_out = (c[0] + ux0 * rx * (SH_R + 0.9) + n[0] * 1.6, c[1] + uy0 * rx * (SH_R + 0.9) + n[1] * 1.6,
+                 c[2] + rz * (SH_R + 0.9))
+        g.capsule(p_in, p_out, 0.6, segs=8, rings=2)
+    rig.part(joint, g, LACE_DK, outline=0)
     # fur tufts round the rim
     g = Geo()
     ux, uy = -n[1], n[0]   # in-plane horizontal axis
@@ -104,6 +137,12 @@ def _axe(rig, joint, fist):
     g = Geo().slab([(fx + 7.0, hz - 4.6), (fx + 9.2, hz - 1.0), (fx + 9.0, hz + 4.8), (fx + 7.6, hz + 4.2)],
                    fy - 1.8, 3.6)
     rig.part(joint, g, STONE_DK, outline=0.4)
+    # W1: two lighter knapped facets on the near face of the head (two-tone stone, 2.5-3 lu)
+    g = Geo()
+    for pts in ([(fx + 1.0, hz - 3.0), (fx + 5.6, hz - 4.4), (fx + 5.0, hz - 0.6), (fx + 1.4, hz - 0.2)],
+                [(fx + 1.6, hz + 0.6), (fx + 5.2, hz + 0.2), (fx + 5.4, hz + 3.6), (fx + 1.2, hz + 2.6)]):
+        g.slab(pts, fy - 3.35, 0.4)
+    rig.part(joint, g, STONE_HI, finish="gloss", outline=0)
     g = Geo()
     for dz in (-2.0, 0.6, 3.2):
         g.capsule((fx - 1.8, fy - 2.1, hz + dz), (fx + 1.8, fy - 2.1, hz + dz - 0.8), 1.1)
@@ -115,8 +154,24 @@ def build(rig):
     RIG = rig
     body = K.body(rig, SKIN, FUR, stocky=1.12, hip_y=HIP_Y, shoulder_y=SH_Y, torso_r=(11.0, 9.6, 10.6), foot_len=4.6)
     fr, fl = body.fist["r"], body.fist["l"]
-    K.pelt(rig, FUR, r=(11.6, 10.4, 7.6), skirt_r=(11.8, 10.6, 4.4))
+    deco = K.pelt(rig, FUR, r=(11.6, 10.4, 7.6), skirt_r=(11.8, 10.6, 4.4))
     K.wraps(rig, HIP_Y, SH_Y, wrists=("r",))
+    # W1: wildcat spots in the team-dark tone on the pelt, a dyed belt (team-dark, 3 lu) with a bone toggle, cords
+    # crossed over the shin wraps, a team pelt pauldron with fur tufts on the axe shoulder
+    W1.team_spots(rig, "torso", deco, [(-7.0, 27.6, 1.8, 1.45), (-2.4, 22.2, 1.6, 1.25), (8.6, 28.6, 1.5, 1.2),
+                                       (-9.4, 22.8, 1.3, 1.1)])
+    W1.ring(rig, "torso", (0.5, 0, 22.7), 12.05, height=3.0, ry=10.95, team=True, segs=40, outline=0.8)
+    g = Geo().blob((10.3, -7.2, 24.2), (2.3, 1.3, 2.0), p=2.4, rot=(0, 0, -36))
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    for side, y in (("r", -HIP_Y), ("l", HIP_Y)):
+        W1.laces(rig, f"shin_{side}", 0.8, y - 3.85 if side == "r" else y - 3.6, 6.2, 10.8,
+                 LACE_DK if side == "r" else CC.scale(LACE_DK, 0.8))
+    g = Geo().blob((0.4, -12.8, 38.4), (7.2, 6.2, 5.2), p=2.4)
+    rig.part("arm_r", g, team=True)          # a team pelt pauldron (the team budget behind the shield)
+    g = Geo()
+    for x, z in ((-5.0, 36.2), (-0.8, 34.0), (4.0, 35.0)):
+        g.lathe([(2.0, 0), (0, 3.2)], (x, -14.4, z + 1.4), (x - 0.4, -15.0, z - 1.8), segs=8)
+    rig.part("arm_r", g, FUR, finish="hair")
     # hair cap, back hair and a bone band, then the head with the face kit
     hair = Geo().blob((-2.4, 0, 54.8), (10.4, 11.2, 6.0), p=2.2)
     hair.blob((-8.4, 0, 48.0), (5.0, 10.0, 8.4), p=2.2)
@@ -129,6 +184,15 @@ def build(rig):
         g.capsule((x0, 0, z0), (x1, -1, z1), r, 1.0)
     rig.secondary("mane", "head", (-2.0, 0, 58.0), (-8.0, 0, 64.0), max_deg=12, gain=1.1)
     rig.part("mane", g, HAIR, finish="hair")
+    # W1: lighter locks in the mane and down the back hair (two-tone hair)
+    W1.locks(rig, "mane", [((-4.4, 59.6), (-7.4, 64.0), 1.35), ((-9.6, 55.4), (-14.0, 57.6), 1.3)], HAIR_LT, -2.6)
+    W1.locks(rig, "head", [((-6.6, 51.4), (-10.6, 45.2), 1.4), ((-10.2, 52.6), (-12.6, 47.6), 1.25)], HAIR_LT, -9.0)
+    # W1: a ruddy cheek and an ear with a warm inner shadow (the big face is not one flat field)
+    W1.blush(rig, "head", face, 7.4, 45.8, 2.8, 2.0, CHEEK)
+    ear = Geo().blob((-0.9, -10.4, 47.0), (2.4, 1.5, 3.1), p=2.2)
+    ear_face = F.Face(rig, "head", [ear])
+    rig.part("head", ear, SKIN, outline=0.6)
+    W1.blush(rig, "head", ear_face, -0.7, 46.8, 1.1, 1.8, CHEEK)
     g = Geo()   # a pale scar across the near brow
     c = face.hit(10.0, 51.5)
     face.stroke(g, c, [(-1.6, 2.0), (1.4, -1.8)], 1.0, 0.4)
@@ -136,8 +200,9 @@ def build(rig):
     # bone-tooth necklace
     g = Geo()
     for x, y, z in ((9.2, -5.0, 36.6), (10.4, -0.8, 36.0), (9.4, 3.6, 36.4)):
-        g.lathe([(1.6, 0), (1.2, 1.9), (0, 4.0)], (x, y - 1.2, z + 0.8), (x + 0.8, y - 1.6, z - 3.4), segs=8)
-    rig.part("torso", g, BONE, outline=0.6)
+        g.lathe([(2.0, 0), (1.6, 2.2), (0, 5.0)], (x, y - 1.2, z + 0.8), (x + 0.9, y - 1.6, z - 4.2), segs=8)
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    W1.thong(rig, "torso", (0.6, 0, 36.6), 8.9, LACE_DK, tilt_to=(2.2, 0, 38.2))
     # shield on the far fist (held item: its rest "up" is +Z, so c = 90 keeps it upright)
     rig.joint("shield", "fore_l", fl)
     sc = (fl[0] + 3.0, fl[1] - 5.0, fl[2] + 2.0)
@@ -151,6 +216,20 @@ def build(rig):
     rig.track("axeHead", "axe", AXE_TIP)
     ARM_R = body.arm("r", "axe", (fr[0], fr[1], fr[2] + AXE_LEN))
     ARM_L = body.arm("l", "shield", (fl[0], fl[1], fl[2] + 10.0))
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, armoured: the shield takes the dents and cracks; never on the face
+    or skin): the biggest on the shield's hide face, which he holds in front of him in every clip, the team pauldron
+    on the axe shoulder (the hoop's rim turns away from the camera in every clip), the skirt and the near shin
+    wrap; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("shield", "shield", 5.0, 22.0, 8.0, "hide", team=True)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 40.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("skirt", "skirt", 2.5, 20.5, 5.5, "hide", team=True)
+    rig.damage_spot_at("wrap", "shin_r", -2.3, 9.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("hem", "skirt", -6.0, 18.5, 10.0, "hide", kind="strip", team=True)
 
 
 RIG = ARM_R = ARM_L = AXE_TIP = None

@@ -19,12 +19,15 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import gait as G
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import CaveBody
+from units import stone_w1 as W1
 
 SLUG = "spear_hunter"
 GAIT_NAME = "biped"
@@ -48,6 +51,18 @@ EYE = "#FAF6EE"
 PUPIL = "#221C19"
 MOUTH = "#4A2424"
 TOOTH = "#F4EEDC"
+QUIVER = "#7A5E48"
+LEATHER_DK = "#56412F"    # the belt, the quiver's rim and ties, the thong (W1)
+HAIR_LT = "#5C4A3E"       # lighter locks in the black mane (28 levels over it)
+
+# the detail standard (art round W1, Track STONE; ageborn_art/look.py, the pilot's recipe in units/bonker.py)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_SOLDIER
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", HAIR: "fur", HAIR_LT: "fur", FUR: "fur", WOOD: "wood", FLINT: "stone",
+                           FLINT_HI: "stone", CORD: "leather", BONE: "bone", QUIVER: "leather",
+                           LEATHER_DK: "leather", "team": "hide"})
 
 SPEAR_FWD = 50.0   # tip distance ahead of the near fist (rest: the spear points +X)
 SPEAR_BACK = 28.0
@@ -73,20 +88,31 @@ def build(rig):
     g = Geo().capsule((8.0, -6.0, 26.5), (-1.0, 8.0, 40.0), 3.8, 3.4)
     g.capsule((-7.8, -3.0, 26.5), (-1.0, 8.0, 40.0), 3.6, 3.4)
     g.blob((0.4, 0, 25.6), (10.3, 9.7, 4.6), p=2.8)
+    sash_face = F.Face(rig, "torso", [g])
     rig.part("torso", g, team=True)
+    # W1: a team-dark stripe down the sash's middle, laid in short pieces that follow its depth (two tones)
+    pts = [(7.4, 27.6), (5.6, 30.4), (3.8, 33.2), (2.0, 36.0), (0.4, 38.6)]
+    W1.stripes(rig, "torso", sash_face, [[a, b] for a, b in zip(pts, pts[1:])], w=2.6)
     rig.secondary("cloth", "hips", (0.8, 0, 23.0), (0.0, 0, 12.0), max_deg=12, gain=0.9)
     rig.rest_offset["cloth"] = (0, 0, LIFT + 1.0)
     g = Geo().blob((0.8, 0, 21.2), (10.4, 9.6, 3.4), p=2.6)
     g.blob((6.2, -3.5, 15.8), (5.2, 2.6, 7.4), p=2.4, taper=(0.7, 1.0))
     g.blob((-6.0, -2.0, 15.8), (5.2, 2.8, 7.4), p=2.4, taper=(0.7, 1.0))
+    cloth_face = F.Face(rig, "cloth", [g])
     rig.part("cloth", g, team=True)
-    g = Geo().capsule((0.9, -8.2, 23.6), (0.9, 8.2, 23.6), 1.5)
-    rig.part("torso", g, FUR, finish="hair")
-    # bone tooth necklace
+    # W1: team-dark bands across the flaps near their hems and a spot on each (two tones)
+    W1.stripes(rig, "cloth", cloth_face, [[(2.4, 11.4), (9.6, 11.0)], [(-9.4, 11.6), (-2.6, 11.2)]], w=2.6)
+    W1.team_spots(rig, "cloth", cloth_face, [(6.0, 16.6, 1.5, 1.25), (-6.4, 17.0, 1.4, 1.15)])
+    # W1: a dark leather belt (3 lu) where the sash meets the loincloth, a carved bone buckle on the near front
+    W1.ring(rig, "torso", (0.6, 0, 21.6), 10.75, height=3.0, ry=10.05, fill=LEATHER_DK, segs=40, outline=0.8)
+    g = Geo().blob((9.2, -6.6, 23.1), (2.3, 1.3, 2.0), p=2.4, rot=(0, 0, -36))
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    # bone tooth necklace (W1: bigger claws, 4 lu across, on a dark thong)
+    W1.thong(rig, "torso", (0.3, 0, 36.3), 7.6, LEATHER_DK, tilt_to=(1.9, 0, 38.0))
     g = Geo()
-    for x, y, z in ((7.8, -5.5, 36.0), (9.2, -1.5, 35.0), (9.0, 2.5, 35.4)):
-        g.lathe([(1.3, 0), (1.0, 1.5), (0, 3.4)], (x, y, z + 1.6), (x + 0.6, y, z - 1.8), segs=8)
-    rig.part("torso", g, BONE, outline=0.7)
+    for x, y, z in ((7.6, -5.6, 36.0), (9.1, -1.6, 35.2), (8.9, 2.6, 35.6)):
+        g.lathe([(2.0, 0), (1.7, 2.2), (0, 5.0)], (x, y - 0.6, z + 1.6), (x + 0.8, y - 0.8, z - 3.2), segs=8)
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
 
     # head: long lean face, strong nose, stern brow; mane swept back with team feathers
     g = Geo().blob((2.2, 0, 52.0), (9.4, 9.2, 10.6), p=2.3)
@@ -106,12 +132,20 @@ def build(rig):
                                   ((-8, 50), (-15, 46.5), 2.8)):
         g.capsule((x0, 0, z0), (x1, 0, z1), r, 1.2)
     rig.part("head", g, HAIR, finish="hair")
+    # W1: lighter locks swept back along the mane (two-tone hair, 2.6-2.8 lu wide)
+    W1.locks(rig, "head", [((-5.0, 60.6), (-13.6, 62.0), 1.35), ((-7.4, 55.6), (-15.4, 54.4), 1.35),
+                           ((-7.6, 51.0), (-13.4, 47.8), 1.3)], HAIR_LT, -6.4)
     rig.secondary("feathers", "head", (-4.0, 1.0, 60.0), (-9.0, 1.0, 74.0), max_deg=14, gain=1.2)
     g = Geo()
+    tips = Geo()
     for (x1, z1), rot in (((-7.0, 74.0), (0, -22, 0)), ((-12.8, 70.0), (0, -48, 0))):
         cx, cz = (-4.0 + x1) / 2, (60.0 + z1) / 2
         g.blob((cx, 1.5, cz), (3.4, 1.1, 8.6), p=2.2, rot=rot, taper=(0.5, 1.0))
+        # W1: a team-dark band across each feather near its tip (two tones on the team feathers)
+        tx, tz = cx + (x1 - cx) * 0.55, cz + (z1 - cz) * 0.55
+        tips.blob((tx, 0.9, tz), (3.0, 1.0, 1.7), p=2.2, rot=rot)
     rig.part("feathers", g, team=True, outline=0.8)
+    look.team_part(rig, "feathers", tips, outline=0)
     g = Geo().capsule((-4.0, 1.5, 59.5), (-6.0, 1.5, 64.5), 0.7).capsule((-4.0, 1.5, 59.5), (-9.0, 1.5, 63.0), 0.7)
     rig.part("feathers", g, BONE, outline=0.6)
     # stern brow, eyes (face kit), ochre cheek stripes, tight mouth, bone earring
@@ -140,6 +174,11 @@ def build(rig):
     # team armband on the near arm, fur pad on the far shoulder
     g = Geo().capsule((0.6, -11.6, 35.0), (1.1, -11.6, 31.6), 4.0, 3.8)
     rig.part("arm_r", g, team=True, outline=0.8)
+    # W1: a dark leather cuff on the spear arm's wrist with a bone bead
+    W1.ring(rig, "fore_r", (3.0, -11.7, 26.4), 3.4, height=2.8, fill=LEATHER_DK, p1=(3.8, -11.7, 24.0), bulge=0.5,
+            outline=0.6)
+    g = Geo().sphere((3.6, -15.6, 25.6), 1.3, cuts=2)
+    rig.part("fore_r", g, BONE, finish="gloss", outline=0.4)
     g = Geo().blob((0.3, 11.4, 40.2), (5.8, 5.0, 4.4), p=2.4)
     rig.part("torso", g, FUR, finish="hair")
 
@@ -185,9 +224,15 @@ def build(rig):
     for side, y in (("r", -5.4), ("l", 5.4)):
         g = Geo().capsule((0.7, y, 8.4), (1.0, y, 5.2), 4.2, 4.0)
         rig.part(f"shin_{side}", g, team=True, outline=0.7)
+        # W1: leather cords crossed over the wraps (a second tone in the team zone)
+        W1.laces(rig, f"shin_{side}", 1.4, y - 4.25 if side == "r" else y - 4.0, 4.8, 8.6,
+                 LEATHER_DK if side == "r" else CC.scale(LEATHER_DK, 0.8), n=1)
     # a quiver of spare flint points on his back
     g = Geo().capsule((-8.5, 3.0, 26.0), (-12.5, 3.0, 42.0), 3.4, 3.8)
-    rig.part("torso", g, "#7A5E48")
+    rig.part("torso", g, QUIVER)
+    # W1: a dark rolled rim at the quiver's mouth and a tie round its middle (3 lu bands on the tube)
+    W1.ring(rig, "torso", (-12.05, 3.0, 40.2), 3.75, height=2.6, fill=LEATHER_DK, p1=(-12.5, 3.0, 42.0), outline=0.5)
+    W1.ring(rig, "torso", (-10.3, 3.0, 33.2), 3.6, height=2.4, fill=LEATHER_DK, p1=(-12.5, 3.0, 42.0), outline=0.5)
     g = Geo()
     for dx, dz in ((0.0, 0.0), (-2.6, -1.0), (2.2, -1.4)):
         g.lathe([(0, 0), (1.8, 1.0), (2.1, 3.2), (0, 6.4)], (-12.8 + dx, 3.0, 42.6 + dz),

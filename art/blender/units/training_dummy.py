@@ -15,12 +15,15 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F  # noqa: F401
 from ageborn_art import gait as G
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import CaveBody
+from units import stone_w1 as W1
 
 SLUG = "training_dummy"
 GAIT_NAME = "biped"
@@ -39,6 +42,17 @@ WOOD = "#A58B6C"
 BUTTON = "#3A3029"
 STITCH = "#5A4636"
 PAINT_W = "#EDE3C8"
+# W1 (the detail standard)
+PATCH = "#9A8763"         # sewn-on burlap patches (24 levels under the sack)
+STRAW_DK = "#B49F6C"      # darker straw stalks among the pale ones (two-tone straw)
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_SOLDIER
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SACK: "cloth", SACK_DK: "cloth", STRAW: "wood", STRAW_DK: "wood", TWINE: "leather",
+                           WOOD: "wood", BUTTON: "ceramic", STITCH: "cloth", PAINT_W: "cloth", PATCH: "cloth",
+                           "team": "cloth"})
 
 
 THIGH_Z, KNEE_Z, ANKLE_Z = 16.0, 9.2, 3.0   # walk v3: longer straw legs (ANIM_SPEC 2.0 rule 5)
@@ -60,12 +74,16 @@ def build(rig):
     for side, y in (("r", -5.4), ("l", 5.4)):
         g = Geo().capsule((0.6, y, 10.2), (0.7, y, 7.4), 4.0, 4.0)
         rig.part(f"shin_{side}", g, team=True, outline=0.6)
+        # W1: twine crossed over the team ties (a second tone in the team zone)
+        W1.laces(rig, f"shin_{side}", 0.7, y - 4.05 if side == "r" else y - 3.8, 7.2, 10.4,
+                 TWINE if side == "r" else CC.scale(TWINE, 0.8), n=1)
     for side, y in (("r", -11.7), ("l", 11.7)):
         g = Geo().capsule((2.2, y, 20.8), (2.6, y, 18.4), 3.5, 3.5)
         rig.part(f"fore_{side}", g, team=True, outline=0.6)
     # a team-painted sack torso with a pale bullseye ring on the chest (it is a target)
     import math
     g = Geo().blob((0, 0, 24.0), (10.6, 9.6, 10.8), p=2.2, taper=(1.12, 0.9))
+    sack_face = F.Face(rig, "torso", [g])
     rig.part("torso", g, team=True)
     n = (math.cos(math.radians(40)), -math.sin(math.radians(40)), 0.0)
     c0 = (0.0 + 8.2 * n[0], 8.2 * n[1], 24.6)
@@ -74,17 +92,41 @@ def build(rig):
     ring.lathe([(0, 0), (1.5, 0.3), (1.5, 1.9), (0, 2.2)], (c0[0] + 0.8 * n[0], c0[1] + 0.8 * n[1], c0[2]),
                (c0[0] + 1.8 * n[0], c0[1] + 1.8 * n[1], c0[2]), segs=14)
     rig.part("torso", ring, PAINT_W, outline=0)
+    # W1: a team-dark outer ring round the bullseye (a target in three tones, the dark ring still team) and a
+    # stitched seam down the sack's side (texture, 1.1 lu)
+    g = Geo().lathe([(6.0, 0), (8.3, 0.1), (8.3, 0.9), (6.0, 1.0)], (c0[0] - 0.25 * n[0], c0[1] - 0.25 * n[1], c0[2]),
+                    (c0[0] + 0.75 * n[0], c0[1] + 0.75 * n[1], c0[2]), segs=28)
+    look.team_part(rig, "torso", g, outline=0)
+    g = Geo()
+    for z in (15.6, 18.6, 21.6, 24.6, 27.6):
+        sack_face.stroke(g, sack_face.hit(-7.6, z), [(-0.9, -0.8), (0.9, 0.8)], 1.0, 0.35)
+    rig.part("torso", g, STITCH, highlight=False, outline=0)
     g = Geo().lathe([(8.0, 0), (9.4, 0.5), (9.6, 3.2), (8.2, 4.0)], (0.8, 0, 30.4), (0.4, 0, 34.4), segs=22)
     rig.part("torso", g, team=True)
     rig.secondary("scarf", "torso", (-6.0, -3.0, 32.0), (-15.0, -3.0, 24.0), max_deg=20, gain=1.4)
     g = Geo().slab([(-5.0, 34.0), (-16.0, 27.0), (-18.5, 19.5), (-12.5, 20.5), (-6.0, 29.0)], -4.0, 1.8)
     rig.part("scarf", g, team=True, outline=0.8)
+    # W1: two team-dark knit stripes across the scarf's tail (two tones, still team)
+    g = Geo().slab([(-10.0, 30.3), (-12.6, 28.6), (-9.6, 25.0), (-7.4, 26.8)], -4.95, 0.3)
+    g.slab([(-14.0, 25.6), (-16.4, 23.6), (-14.4, 20.6), (-11.6, 21.6)], -4.95, 0.3)
+    look.team_part(rig, "scarf", g, outline=0)
     g = Geo().capsule((0.8, -8.6, 20.0), (0.8, 8.6, 20.0), 1.3)
     rig.part("torso", g, TWINE, outline=0.6)
 
     # head: a round sack tied at the neck, button eyes, stitched grin, straw hair
     g = Geo().blob((1.6, 0, 44.0), (10.6, 10.2, 10.4), p=2.2)
+    head_face = F.Face(rig, "head", [g])
     rig.part("head", g, SACK)
+    # W1: a darker burlap patch sewn on the back of the head, with big cross stitches (a 6 lu shape)
+    g = Geo()
+    c = head_face.hit(-4.0, 48.0)
+    head_face.decal(g, c, [(-3.2, -2.6), (3.0, -3.0), (3.4, 2.8), (-2.8, 3.2)], 0.3)
+    rig.part("head", g, PATCH, highlight=False, outline=0)
+    g = Geo()
+    for u, v in ((-3.0, 0.0), (3.2, 0.2), (0.2, 3.0), (0.0, -2.8)):
+        head_face.stroke(g, c - head_face.view * 0.2, [(u - 0.8, v - 0.8), (u + 0.8, v + 0.8)], 0.9, 0.3)
+        head_face.stroke(g, c - head_face.view * 0.2, [(u - 0.8, v + 0.8), (u + 0.8, v - 0.8)], 0.9, 0.3)
+    rig.part("head", g, STITCH, highlight=False, outline=0)
     g = Geo().capsule((0.6, -6.4, 34.6), (0.6, 6.4, 34.6), 2.0)
     rig.part("head", g, TWINE, outline=0.6)
     g = Geo()
@@ -113,6 +155,10 @@ def build(rig):
                             ((-9.0, -2.0, 57.5), 1.4), ((6.5, -3.0, 58.0), 1.2), ((1.5, 4.5, 61.0), 1.3)):
         g.capsule((0.0, 0, 52.0), (x1, y1, z1), r, 0.5)
     rig.part("straw", g, STRAW, finish="hair")
+    g = Geo()   # W1: darker stalks among the pale ones (two-tone straw)
+    for (x1, y1, z1), r in (((-3.6, -4.0, 60.8), 1.3), ((2.0, -3.6, 59.6), 1.25), ((-7.6, -3.0, 58.8), 1.2)):
+        g.capsule((-0.6, -1.0, 52.4), (x1, y1, z1), r, 0.45)
+    rig.part("straw", g, STRAW_DK, finish="hair")
     # straw tufts poking out of the cuffs
     for side, y in (("r", -11.7), ("l", 11.7)):
         g = Geo()
@@ -126,6 +172,12 @@ def build(rig):
     rig.part("club", g, WOOD)
     g = Geo().blob((fr[0], fr[1] - 0.5, fr[2] + 21.0), (4.4, 4.4, 5.6), p=2.3)
     rig.part("club", g, SACK_DK)
+    # W1: twine bound criss-cross round the padded head (1.1 lu lines) and a pale burlap patch on it
+    g = Geo()
+    for dz in (-2.6, 0.0, 2.6):
+        g.lathe([(4.3 - abs(dz) * 0.18, 0), (4.75 - abs(dz) * 0.18, 0.3), (4.75 - abs(dz) * 0.18, 0.9),
+                 (4.3 - abs(dz) * 0.18, 1.2)], (fr[0], fr[1] - 0.5, fr[2] + 20.4 + dz), segs=16)
+    rig.part("club", g, TWINE, outline=0.4)
     g = Geo().capsule((fr[0], fr[1] - 0.5, fr[2] + 17.4), (fr[0], fr[1] - 0.5, fr[2] + 18.4), 4.0, 4.0)
     rig.part("club", g, TWINE, outline=0.6)
     tip = (fr[0], fr[1] - 0.5, fr[2] + 21.0)
@@ -136,6 +188,19 @@ def build(rig):
     rig.track("_foot_l", "foot_l", (2.0, 5.4, 0.0))
     ARM_R = body.arm("r", "club", tip)
     ARM_L = body.arm("l")
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier: the burlap tears and the straw shows; never on the sack
+    face): the painted sack torso round the bullseye (its biggest surface), the scarf, the near knee tie and the
+    padded club; a strip torn from the scarf's tail."""
+    rig.damage_spot_at("sack", "torso", -2.0, 22.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("scarf", "scarf", -12.0, 27.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("tie", "shin_r", -2.4, 9.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("club", "club", 1.0, 39.4, 5.0, "cloth", fill=SACK_DK)
+    rig.damage_spot_at("tail", "scarf", -15.0, 22.5, 9.0, "cloth", kind="strip", team=True)
 
 
 ARM_R = ARM_L = None

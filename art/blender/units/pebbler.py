@@ -20,12 +20,15 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import gait as G
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import CaveBody
+from units import stone_w1 as W1
 
 SLUG = "pebbler"
 GAIT_NAME = "biped"
@@ -44,6 +47,7 @@ LEATHER = "#8C7058"
 LEATHER_DK = "#6A5242"
 CORD = "#6E5A48"
 ROCK = "#9A948A"
+ROCK_HI = "#C4BFB6"
 BONE = "#EDE3C8"
 FEATHER = "#E9DFC9"
 FEATHER_TIP = "#5B4A3E"
@@ -51,6 +55,31 @@ EYE = "#FAF6EE"
 PUPIL = "#221C19"
 MOUTH = "#4A2424"
 TOOTH = "#F4EEDC"
+
+# the detail standard (art round W1, Track STONE; ageborn_art/look.py, the pilot's recipe in units/bonker.py)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_SOLDIER
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+HAIR_LT = "#8C705C"       # lighter locks in the topknot and the back hair (29 levels over the hair)
+CHEEK = "#D6AD93"         # a ruddy cheek and ear (22 levels under the skin, saturation 0.32)
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", FRECKLE: "skin", HAIR: "fur", FUR: "fur", LEATHER: "leather",
+                           LEATHER_DK: "leather", CORD: "leather", ROCK: "stone", ROCK_HI: "stone", BONE: "bone",
+                           FEATHER: "fur", FEATHER_TIP: "fur", HAIR_LT: "fur", CHEEK: "skin", "team": "hide"})
+
+# -- skin: Snowball Pebbler (DESIGN A5.8, rare; "knit cap, snowballs instead of rocks") ------------------------
+# Same joints, trackers, poses and clips as the Pebbler. A white knit stocking cap with a team rolled brim and a
+# bobble replaces the topknot (the cap's tip and bobble hang on the topknot's follow-through joint, so they bounce
+# a frame late), every rock is a snowball, the fur is snowy fleece. The game draws its shots as snowballs
+# (`proj.snowball`, src/visuals/skins.ts).
+SNOW = "#E4EAEE"          # snowballs: white with a cool grey shadow (saturation 0.04)
+SNOW_HI = "#F8FAFB"
+FLEECE = "#D3D8DB"        # the fur tufts, shoulder pad and foot wraps as snowy fleece
+WOOL = "#E9ECEE"          # the knit cap and its bobble
+WOOL2 = "#A9B8C4"         # the knit ribs (blue-grey, saturation 0.14: far under the colour rule)
+SKINS = {"snowball_pebbler": {
+    "kinds": W1.kinds({SNOW: "ceramic", SNOW_HI: "ceramic", FLEECE: "fur", WOOL: "cloth", WOOL2: "cloth"}),
+    "palette": {ROCK: SNOW, ROCK_HI: SNOW_HI, FUR: FLEECE, CC.scale(FUR, 0.8): CC.scale(FLEECE, 0.8)}}}
 
 SLING_LEN = 13.5
 
@@ -93,16 +122,34 @@ def build(rig):
     g = Geo().blob((0.6, 0, 21.2), (11.2, 10.0, 4.4), p=2.6, taper=(1.08, 0.98))
     for x, y in ((8.0, -5.5), (2.5, -9.5), (-4.5, -9.0), (9.5, 2.5), (-9.5, -2.5)):
         g.lathe([(3.0, 0), (0, -3.4)], (x, y, 18.2), segs=10)
+    skirt_face = F.Face(rig, "skirt", [g])
     rig.part("skirt", g, team=True)
-    g = Geo().capsule((0.8, -7.2, 24.2), (0.8, 7.2, 24.2), 1.9)
-    rig.part("torso", g, LEATHER)
-    # bulging pebble pouch on the near hip with a drawstring, two pebbles peeking out
+    # W1: wildcat spots on the pelt and the skirt in the team-dark tone (the team zone in two tones, still team)
+    W1.team_spots(rig, "torso", deco, [(-6.6, 27.2, 1.8, 1.45), (-2.2, 22.0, 1.6, 1.25), (8.2, 28.4, 1.5, 1.2),
+                                       (7.4, 21.6, 1.4, 1.15), (-8.6, 22.6, 1.25, 1.05)])
+    W1.team_spots(rig, "skirt", skirt_face, [(-3.6, 19.4, 1.6, 1.3), (5.2, 18.6, 1.5, 1.2), (9.6, 21.0, 1.2, 1.0)])
+    # a dyed hide belt (3 lu) where the pelt meets the skirt, team-dark (a stripe in the team zone that keeps its
+    # team area), a carved bone toggle as its buckle on the near front
+    W1.ring(rig, "torso", (0.5, 0, 22.9), 11.35, height=3.0, ry=10.35, team=True, segs=40, outline=0.8)
+    g = Geo().blob((9.6, -6.9, 24.4), (2.2, 1.2, 1.9), p=2.4, rot=(0, 0, -38))
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    g = Geo().capsule((8.0, -8.2, 24.4), (11.0, -5.6, 24.4), 0.75, segs=8, rings=2)
+    rig.part("torso", g, LEATHER_DK, outline=0)
+    # bulging pebble pouch on the near hip with a drawstring, two pebbles peeking out; W1: it hangs from a leather
+    # loop on the belt and swings a frame late (a secondary joint), with a bone toggle on the drawstring
+    rig.secondary("pouch", "hips", (-5.8, -9.4, 24.6), (-6.2, -9.8, 14.6), max_deg=12, gain=1.2)
     g = Geo().blob((-5.8, -9.2, 19.6), (5.0, 3.9, 5.6), p=2.2, taper=(1.12, 0.78))
-    rig.part("hips", g, team=True)   # team-dyed pouch (the 18% rule in the walk)
+    pouch_face = F.Face(rig, "pouch", [g])
+    rig.part("pouch", g, team=True)   # team-dyed pouch (the 18% rule in the walk)
+    W1.team_spots(rig, "pouch", pouch_face, [(-6.8, 17.4, 1.5, 1.3), (-3.6, 15.4, 1.2, 1.0)])
     g = Geo().lathe([(3.2, 0), (3.5, 0.4), (3.5, 1.6), (3.1, 2.0)], (-5.8, -9.2, 23.2), segs=14)
-    rig.part("hips", g, LEATHER_DK, outline=0.6)
+    rig.part("pouch", g, LEATHER_DK, outline=0.6)
+    g = Geo().capsule((-6.6, -12.6, 25.6), (-6.4, -12.8, 22.8), 1.35, 1.25)
+    rig.part("pouch", g, LEATHER, outline=0.5)
+    g = Geo().sphere((-2.9, -12.0, 22.8), 1.4, cuts=3)
+    rig.part("pouch", g, BONE, finish="gloss", outline=0.5)
     g = Geo().sphere((-5.0, -10.2, 25.8), 2.3, cuts=3).sphere((-7.8, -9.0, 25.4), 2.0, cuts=3)
-    rig.part("hips", g, ROCK, outline=0.8)
+    rig.part("pouch", g, ROCK, outline=0.8)
 
     # head: round, youthful, big eyes, small nose, freckles, a tooth-gap grin; topknot with a pin
     head = Geo().blob((2, 0, 47.5), (10.4, 10.0, 10.4), p=2.25)
@@ -135,24 +182,48 @@ def build(rig):
     g = Geo().capsule((9.0, -8.0, 53.2), (12.8, -3.4, 52.8), 1.5, 1.3)
     rig.part("brow", g, HAIR, finish="hair", outline=0.6)
     rig.secondary("knot", "head", (-2.0, 0, 57.0), (-5.5, 0, 66.0), max_deg=14, gain=1.2)
-    g = Geo().blob((-2.4, 0, 59.4), (3.6, 3.6, 3.4), p=2.2)
-    for (x1, y1, z1), r in (((-1.0, -1.0, 68.5), 2.3), ((-7.5, 0.5, 66.5), 2.2),
-                            ((3.5, 1.0, 66.0), 1.9), ((-9.5, -1.5, 61.5), 1.8)):
-        g.capsule((-2.4, 0, 60.5), (x1, y1, z1), r, 0.7)
-    rig.part("knot", g, HAIR, finish="hair")
-    g = Geo().lathe([(3.4, 0), (3.9, 0.3), (3.9, 2.1), (3.2, 2.4)], (-2.4, 0, 60.4),
-                    (-2.4, 0, 63.0), segs=16)
-    rig.part("knot", g, BONE, outline=0.8)
     # a feather tucked in the headband (second follow-through part on the head)
     rig.secondary("feather", "head", (-6.0, -8.0, 54.0), (-12.0, -8.5, 64.0), max_deg=16, gain=1.3)
-    g = Geo().blob((-9.2, -8.4, 59.5), (2.4, 1.0, 6.4), p=2.2, rot=(0, -32, 0))
-    rig.part("feather", g, FEATHER, outline=0.7)
-    g = Geo().blob((-11.6, -8.6, 63.6), (1.9, 1.1, 2.4), p=2.2, rot=(0, -32, 0))
-    rig.part("feather", g, FEATHER_TIP, outline=0.5)
+    if getattr(rig, "skin", None) == "snowball_pebbler":
+        _knit_cap(rig)
+    else:
+        g = Geo().blob((-2.4, 0, 59.4), (3.6, 3.6, 3.4), p=2.2)
+        for (x1, y1, z1), r in (((-1.0, -1.0, 68.5), 2.3), ((-7.5, 0.5, 66.5), 2.2),
+                                ((3.5, 1.0, 66.0), 1.9), ((-9.5, -1.5, 61.5), 1.8)):
+            g.capsule((-2.4, 0, 60.5), (x1, y1, z1), r, 0.7)
+        rig.part("knot", g, HAIR, finish="hair")
+        g = Geo().lathe([(3.4, 0), (3.9, 0.3), (3.9, 2.1), (3.2, 2.4)], (-2.4, 0, 60.4),
+                        (-2.4, 0, 63.0), segs=16)
+        rig.part("knot", g, BONE, outline=0.8)
+        # W1: lighter locks over the topknot's near strands (two-tone hair, 2.5-2.8 lu wide)
+        W1.locks(rig, "knot", [((-2.2, 62.6), (-1.3, 68.0), 1.3), ((-3.8, 62.0), (-7.4, 65.6), 1.25),
+                               ((-4.6, 60.6), (-9.0, 61.6), 1.2)], HAIR_LT, -2.4)
+        g = Geo().blob((-9.2, -8.4, 59.5), (2.4, 1.0, 6.4), p=2.2, rot=(0, -32, 0))
+        rig.part("feather", g, FEATHER, outline=0.7)
+        g = Geo().blob((-11.6, -8.6, 63.6), (1.9, 1.1, 2.4), p=2.2, rot=(0, -32, 0))
+        rig.part("feather", g, FEATHER_TIP, outline=0.5)
+        # a dark quill line down the vane (two-tone feather)
+        g = Geo().capsule((-7.6, -9.5, 55.4), (-11.0, -9.6, 62.4), 0.55, 0.4, segs=8, rings=2)
+        rig.part("feather", g, FEATHER_TIP, outline=0)
+    # W1: lighter locks down the back hair below the headband
+    W1.locks(rig, "head", [((-6.8, 51.0), (-10.4, 45.4), 1.35), ((-9.8, 52.0), (-12.0, 47.6), 1.25)], HAIR_LT, -8.6)
     rig.secondary("tails", "head", (-9.6, 0, 51.5), (-19.5, 0, 46.0), max_deg=18, gain=1.3)
     g = Geo().slab([(-9.0, 53.0), (-19.0, 49.5), (-20.5, 46.5), (-9.5, 50.0)], -3.0, 1.2)
     g.slab([(-9.5, 52.0), (-16.5, 45.0), (-18.8, 44.0), (-10.0, 49.4)], 2.5, 1.2)
     rig.part("tails", g, team=True, outline=0.8)
+    # a stone bead where the band is knotted at the back (the tails hang from it)
+    g = Geo().sphere((-9.4, -4.6, 52.4), 1.6, cuts=3)
+    rig.part("head", g, ROCK_HI, finish="gloss", outline=0.6)
+    # a ruddy cheek under the freckles and an ear with a warm inner shadow (the big face is not one flat field)
+    g = Geo()   # under the freckles' decal (0.14 lu off the skin, the freckles 0.35)
+    face.decal(g, face.hit(8.6, 44.0) + face.view * 0.21, F.ellipse(0, 0, 3.0, 2.2, 14), 0.18)
+    rig.part("head", g, CHEEK, outline=0, highlight=False)
+    ear = Geo().blob((-0.9, -10.0, 46.6), (2.3, 1.5, 3.0), p=2.2)
+    ear_face = F.Face(rig, "head", [ear])
+    rig.part("head", ear, SKIN, outline=0.6)
+    g = Geo()
+    ear_face.decal(g, ear_face.hit(-0.7, 46.4), F.ellipse(0, 0, 1.1, 1.8, 10), 0.3)
+    rig.part("head", g, CHEEK, outline=0, highlight=False)
     # default mouth: a cheeky grin with a tooth gap (decals, so it reads at game size)
     rig.joint("mouth", "head", (12.2, 0, 42.8))
     c = face.hit(12.4, 42.6)
@@ -170,6 +241,9 @@ def build(rig):
     for side, y in (("r", -5.2), ("l", 5.2)):
         g = Geo().capsule((0.6, y, 11.2), (0.95, y, 5.6), 3.7, 3.5)
         rig.part(f"shin_{side}", g, team=True, outline=0.7)
+        # W1: leather cords crossed over the wraps (a second tone in the team zone, 1.1 lu lines)
+        W1.laces(rig, f"shin_{side}", 0.8, y - 3.75 if side == "r" else y - 3.5, 6.2, 10.8,
+                 LEATHER_DK if side == "r" else CC.scale(LEATHER_DK, 0.8))
     # team wrist wraps, a fur pad on the far shoulder
     g = Geo().capsule((2.6, -11.3, 23.8), (3.2, -11.3, 21.0), 4.0, 4.0)
     rig.part("fore_r", g, team=True, outline=0.8)
@@ -177,20 +251,36 @@ def build(rig):
     rig.part("torso", g, FUR, finish="hair")
     g = Geo().capsule((2.6, 11.3, 23.8), (3.2, 11.3, 21.0), 4.0, 4.0)
     rig.part("fore_l", g, team=True, outline=0.8)
+    # W1: a slinger's leather bracer on the sling arm above the wrap, laced with cord
+    W1.ring(rig, "fore_r", (1.8, -11.3, 27.2), 3.45, height=2.8, fill=LEATHER_DK, p1=(3.5, -11.3, 21.5), bulge=0.5,
+            outline=0.6)
+    g = Geo()
+    for dz in (0.7, 1.9):
+        g.capsule((1.2, -15.3, 27.0 - dz), (3.4, -15.0, 26.0 - dz), 0.5, segs=8, rings=2)
+    rig.part("fore_r", g, BONE, outline=0)
+    # W1: a necklace of river stones and a bone tooth on a thong at the collar
+    W1.thong(rig, "torso", (0.4, 0, 33.6), 7.9, LEATHER_DK, tilt_to=(2.0, 0, 35.4))
+    W1.beads(rig, "torso", [(8.2, -3.4, 32.2), (8.6, 0.6, 32.0)], ROCK_HI, r=1.6)
+    g = Geo().lathe([(1.5, 0), (1.25, 1.8), (0, 4.4)], (6.6, -6.4, 33.6), (6.9, -7.2, 29.4), segs=8)
+    rig.part("torso", g, BONE, finish="gloss", outline=0.5)
 
-    # the sling: a thick cord from the near fist to a leather cup holding a fat rock
+    # the sling: a thick cord from the near fist to a leather cup holding a fat rock (W1: the cord 2.6 lu thick, a
+    # dark rim on the cup, a bigger chipped facet on the rock)
     tip = (fr[0], fr[1] - 0.5, fr[2] - SLING_LEN)
     rig.secondary("sling", "fore_r", fr, tip, max_deg=16, gain=0.9)
-    g = Geo().capsule(fr, (tip[0], tip[1], tip[2] + 2.0), 1.05)
-    g.capsule((fr[0], fr[1] - 0.2, fr[2] + 1.0), (fr[0] - 1.2, fr[1] - 0.4, fr[2] - 3.0), 1.1, 0.6)  # loop
+    g = Geo().capsule(fr, (tip[0], tip[1], tip[2] + 2.0), 1.3)
+    g.capsule((fr[0], fr[1] - 0.2, fr[2] + 1.0), (fr[0] - 1.2, fr[1] - 0.4, fr[2] - 3.0), 1.25, 0.7)  # loop
     rig.part("sling", g, CORD, outline=0.7)
     g = Geo().blob((tip[0], tip[1], tip[2] - 0.5), (4.2, 3.4, 2.5), p=2.2, taper=(0.8, 1.15))
     rig.part("sling", g, LEATHER, outline=0.8)
+    g = Geo().lathe([(3.9, 0), (4.5, 0.3), (4.5, 1.1), (3.9, 1.4)], (tip[0], tip[1], tip[2] + 0.6), segs=18,
+                    squash=(1.0, 0.8))
+    rig.part("sling", g, LEATHER_DK, outline=0.5)
     rig.joint("rock", "sling", tip)
     g = Geo().blob((tip[0] + 0.2, tip[1] - 0.8, tip[2] + 1.2), (4.2, 3.8, 3.9), p=2.1)
     rig.part("rock", g, ROCK)
-    g = Geo().blob((tip[0] + 1.6, tip[1] - 3.9, tip[2] + 2.4), (1.2, 0.6, 1.0), p=2.2)
-    rig.part("rock", g, "#C4BFB6", outline=0, highlight=False)
+    g = Geo().blob((tip[0] + 1.5, tip[1] - 3.9, tip[2] + 2.5), (1.8, 0.7, 1.45), p=2.2)
+    rig.part("rock", g, ROCK_HI, outline=0, highlight=False)
     rig.track("muzzle", "sling", (tip[0], tip[1], tip[2] + 0.5))
 
     # far hand: a spare pebble to toss in idle
@@ -207,6 +297,52 @@ def build(rig):
     TIP, FR = tip, fr
     ARM_R = body.arm("r", "sling", tip)
     ARM_L = body.arm("l")
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (W0 COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier: hide, fur, bone; never on the face or skin), as the
+    rest pose is drawn (the upper body sits LIFT higher, the skirt LIFT + 1.5): the biggest mark on the pelt's back
+    half, which the sling arm and the far hand never cover (the pelt's front sits behind the far hand in idle, walk
+    and hit), the skirt, the pouch and the near leg wrap; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("pelt", "torso", -4.0, 27.0, 7.0, "hide", team=True)
+    rig.damage_spot_at("skirt", "skirt", 2.5, 20.5, 5.5, "hide", team=True)
+    rig.damage_spot_at("pouch", "pouch", -7.0, 16.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("wrap", "shin_r", -2.3, 9.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("hem", "skirt", -6.0, 18.5, 10.0, "hide", kind="strip", team=True)
+
+
+def _knit_cap(rig):
+    """Snowball Pebbler: a white knit stocking cap over the topknot. The dome sits on the head above the team band
+    (the band is now the cap's rolled brim); its tip and bobble hang on the topknot's follow-through joint, where the
+    topknot's strands were, so the silhouette keeps the topknot's mass (A5.8 parity)."""
+    prof = [(10.7, 0.0), (10.5, 2.4), (9.6, 4.6), (7.8, 6.6), (5.2, 8.2), (2.6, 9.0), (0.0, 9.3)]
+    dome = Geo().lathe(prof, (0.7, 0, 54.4), (-1.4, 0, 63.7), segs=28)
+    cap_face = F.Face(rig, "head", [dome])
+    rig.part("head", dome, WOOL)
+    # knit ribs: blue-grey lines up the dome (texture, 1.3 lu) and a blue-grey stripe round it (a shape, 2.6 lu)
+    g = Geo()
+    for x in (-6.0, -2.4, 1.4, 5.0, 8.4):
+        c = cap_face.hit(x, 57.0)
+        cap_face.stroke(g, c, [(0.0, -2.0), (-0.5, 2.6)], 1.3, 0.35)
+    rig.part("head", g, WOOL2, outline=0, highlight=False)
+    W1.ring(rig, "head", (0.05, 0, 57.6), 10.05, height=2.6, ry=10.05, fill=WOOL2, p1=(-2.0, 0, 66.9), bulge=0.4,
+            outline=0.5)
+    # the floppy tip and the bobble on the follow-through joint
+    g = Geo().capsule((-1.6, 0, 61.6), (-4.6, -0.3, 66.0), 4.4, 3.0)
+    g.capsule((-4.6, -0.3, 66.0), (-6.6, -0.5, 66.8), 3.0, 2.2)
+    rig.part("knot", g, WOOL)
+    # the bobble stays inside the topknot's box (the skin's sheet within +2% of the Pebbler's pixels)
+    g = Geo().blob((-7.6, -0.6, 67.2), (3.3, 3.2, 3.1), p=2.0)
+    for (dx, dz) in ((-2.4, 1.2), (1.4, 2.0), (-2.6, -1.4), (0.0, 2.2), (2.2, -0.6)):   # a fluffy outline
+        g.sphere((-7.6 + dx, -0.6, 67.2 + dz), 1.3, cuts=2)
+    rig.part("knot", g, WOOL, finish="hair")
+    # the feather is gone; a blue-grey knit stripe round the tip instead (not team: a team part this high would
+    # stretch every team frame's box to the bobble and grow the sheet)
+    g = Geo().lathe([(3.55, 0), (3.95, 0.3), (3.95, 2.3), (3.55, 2.6)], (-3.4, -0.2, 64.0), (-5.2, -0.35, 66.9),
+                    segs=18)
+    rig.part("knot", g, WOOL2, outline=0.5)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -288,9 +424,13 @@ A_OA = [-55, -30, 20, 30, -20, -60, -95, -80, -60, -55, -55]
 A_OF = [5, 30, 60, 70, 20, -20, -50, -30, 0, 5, 5]
 
 
-def _attack_pose(f):
-    pose = merge(sling_arm(A_A[f], A_B[f], A_C[f]), off_arm(A_OA[f], A_OF[f]), {
-        "torso": {"r": A_T[f]}, "head": {"r": A_H[f]},
+def _attack_pose(f, t=0.0):
+    """Frame f; `t` throws it t degrees higher (the aimed variants, item 44): the sling releases later in its whirl
+    (the cup higher in front), the arm swings up with it, the far hand points at the target, he leans back and
+    looks up. The legs and feet stay as they are."""
+    pose = merge(sling_arm(A_A[f] + 0.7 * t, A_B[f] + 0.85 * t, A_C[f] + 1.4 * t),
+                 off_arm(A_OA[f] + 0.7 * t, A_OF[f] + 0.5 * t), {
+        "torso": {"r": A_T[f] + 0.18 * t}, "head": {"r": A_H[f] + 0.3 * t}, "pupils": {"z": 0.025 * t},
         "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": A_SHR[f]},
         "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
         "rock": {"hide": f in (6, 7, 8)},
@@ -351,13 +491,14 @@ B_OA = [-40, -20, -30, -60, -150, -120]
 B_OF = [20, 40, 30, 0, 10, 10]
 
 
-def _b_pose(i):
+def _b_pose(i, t=0.0):
     if i in (0, 1) or i >= 8:
-        return _attack_pose(i)
+        return _attack_pose(i, t)
     k = i - 2
-    pose = merge(sling_arm(B_AA[k], B_BB[k], B_CC[k]), off_arm(B_OA[k], B_OF[k]), {
+    pose = merge(sling_arm(B_AA[k] + 0.55 * t, B_BB[k] + 0.65 * t, B_CC[k] + t),
+                 off_arm(B_OA[k] + 0.6 * t, B_OF[k] + 0.4 * t), {
         "arm_r": {"rz": B_RZ[k]},
-        "torso": {"r": B_T[k]}, "head": {"r": B_H[k]},
+        "torso": {"r": B_T[k] + 0.18 * t}, "head": {"r": B_H[k] + 0.3 * t}, "pupils": {"z": 0.025 * t},
         "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
         "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
         "rock": {"hide": i in (6, 7)},
@@ -423,9 +564,19 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES)], [M.IDLE_MS] * M.IDLE_FRAMES, loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack := _attack_clip(),
+        attack_b := _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_variants(M.check_contract(cl))
+    cl = M.check_variants(M.check_contract(cl))
+    # W1 (item 44): A and B thrown up at flyers about 45 and 70 degrees (the extras sheet); the hold and the
+    # wind-up are A's and B's own frames, the release and its follow-through turn, the reload falls out of it
+    return cl + (W1.authored_variants(attack, _attack_pose, AIM_W_A, 20.0)
+                 + W1.authored_variants(attack_b, _b_pose, AIM_W_B, 5.0))
+
+
+# per unique frame: the share of the aim's turn (0 = the base frame, reused); the release frame (5) is fully aimed
+AIM_W_A = [0, 0, 0, 0, 0.35, 1, 1, 0.7, 0.3, 0, 0]
+AIM_W_B = [0, 0, 0, 0, 0.3, 1, 1, 0.7, 0, 0, 0]
+W1.register_aims(SLUG, skins=("snowball_pebbler",), clips=("attack", "attack_b"))

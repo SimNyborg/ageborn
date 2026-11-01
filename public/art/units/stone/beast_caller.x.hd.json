@@ -2,7 +2,7 @@
  "frames": {
   "beast_caller_attack_b_01": {
    "frame": {
-    "x": 343,
+    "x": 663,
     "y": 2,
     "w": 122,
     "h": 198
@@ -26,17 +26,17 @@
   },
   "beast_caller_attack_b_01_team": {
    "frame": {
-    "x": 676,
-    "y": 214,
-    "w": 99,
+    "x": 1046,
+    "y": 189,
+    "w": 98,
     "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 185,
+    "x": 186,
     "y": 196,
-    "w": 99,
+    "w": 98,
     "h": 149
    },
    "sourceSize": {
@@ -50,7 +50,7 @@
   },
   "beast_caller_attack_b_02": {
    "frame": {
-    "x": 2,
+    "x": 207,
     "y": 2,
     "w": 132,
     "h": 208
@@ -74,8 +74,8 @@
   },
   "beast_caller_attack_b_02_team": {
    "frame": {
-    "x": 554,
-    "y": 214,
+    "x": 465,
+    "y": 187,
     "w": 118,
     "h": 152
    },
@@ -98,7 +98,7 @@
   },
   "beast_caller_attack_b_03": {
    "frame": {
-    "x": 138,
+    "x": 2,
     "y": 2,
     "w": 201,
     "h": 207
@@ -122,17 +122,17 @@
   },
   "beast_caller_attack_b_03_team": {
    "frame": {
-    "x": 2,
-    "y": 397,
-    "w": 118,
+    "x": 921,
+    "y": 189,
+    "w": 121,
     "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 212,
+    "x": 209,
     "y": 197,
-    "w": 118,
+    "w": 121,
     "h": 147
    },
    "sourceSize": {
@@ -146,17 +146,17 @@
   },
   "beast_caller_attack_b_04": {
    "frame": {
-    "x": 256,
-    "y": 214,
-    "w": 162,
+    "x": 343,
+    "y": 2,
+    "w": 164,
     "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 227,
+    "x": 225,
     "y": 199,
-    "w": 162,
+    "w": 164,
     "h": 166
    },
    "sourceSize": {
@@ -170,10 +170,10 @@
   },
   "beast_caller_attack_b_04_team": {
    "frame": {
-    "x": 272,
-    "y": 397,
+    "x": 1129,
+    "y": 2,
     "w": 144,
-    "h": 116
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 216,
     "y": 233,
     "w": 144,
-    "h": 116
+    "h": 115
    },
    "sourceSize": {
     "w": 486,
@@ -194,17 +194,17 @@
   },
   "beast_caller_attack_b_05": {
    "frame": {
-    "x": 571,
+    "x": 511,
     "y": 2,
-    "w": 146,
+    "w": 148,
     "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 228,
+    "x": 226,
     "y": 180,
-    "w": 146,
+    "w": 148,
     "h": 181
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "beast_caller_attack_b_05_team": {
    "frame": {
-    "x": 124,
-    "y": 397,
+    "x": 2,
+    "y": 214,
     "w": 144,
     "h": 136
    },
@@ -242,7 +242,7 @@
   },
   "beast_caller_attack_c_01": {
    "frame": {
-    "x": 721,
+    "x": 921,
     "y": 2,
     "w": 102,
     "h": 180
@@ -266,18 +266,18 @@
   },
   "beast_caller_attack_c_01_team": {
    "frame": {
-    "x": 514,
-    "y": 397,
-    "w": 87,
-    "h": 99
+    "x": 150,
+    "y": 214,
+    "w": 93,
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 200,
-    "y": 249,
-    "w": 87,
-    "h": 99
+    "x": 194,
+    "y": 248,
+    "w": 93,
+    "h": 100
    },
    "sourceSize": {
     "w": 486,
@@ -290,8 +290,8 @@
   },
   "beast_caller_attack_c_02": {
    "frame": {
-    "x": 134,
-    "y": 214,
+    "x": 343,
+    "y": 172,
     "w": 118,
     "h": 176
    },
@@ -314,18 +314,18 @@
   },
   "beast_caller_attack_c_02_team": {
    "frame": {
-    "x": 420,
-    "y": 397,
-    "w": 90,
-    "h": 100
+    "x": 1148,
+    "y": 121,
+    "w": 116,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 195,
-    "y": 257,
-    "w": 90,
-    "h": 100
+    "x": 169,
+    "y": 256,
+    "w": 116,
+    "h": 101
    },
    "sourceSize": {
     "w": 486,
@@ -338,8 +338,8 @@
   },
   "beast_caller_attack_c_03": {
    "frame": {
-    "x": 2,
-    "y": 214,
+    "x": 789,
+    "y": 2,
     "w": 128,
     "h": 179
    },
@@ -362,18 +362,18 @@
   },
   "beast_caller_attack_c_03_team": {
    "frame": {
-    "x": 698,
-    "y": 397,
-    "w": 93,
-    "h": 96
+    "x": 1148,
+    "y": 226,
+    "w": 98,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 204,
-    "y": 257,
-    "w": 93,
-    "h": 96
+    "x": 199,
+    "y": 250,
+    "w": 98,
+    "h": 103
    },
    "sourceSize": {
     "w": 486,
@@ -386,8 +386,8 @@
   },
   "beast_caller_attack_c_04": {
    "frame": {
-    "x": 422,
-    "y": 214,
+    "x": 789,
+    "y": 185,
     "w": 128,
     "h": 165
    },
@@ -410,18 +410,18 @@
   },
   "beast_caller_attack_c_04_team": {
    "frame": {
-    "x": 795,
-    "y": 397,
+    "x": 587,
+    "y": 204,
     "w": 97,
-    "h": 89
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 214,
-    "y": 263,
+    "y": 259,
     "w": 97,
-    "h": 89
+    "h": 93
    },
    "sourceSize": {
     "w": 486,
@@ -434,7 +434,7 @@
   },
   "beast_caller_attack_c_05": {
    "frame": {
-    "x": 469,
+    "x": 1027,
     "y": 2,
     "w": 98,
     "h": 183
@@ -458,18 +458,18 @@
   },
   "beast_caller_attack_c_05_team": {
    "frame": {
-    "x": 605,
-    "y": 397,
+    "x": 247,
+    "y": 214,
     "w": 89,
-    "h": 98
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 215,
-    "y": 255,
+    "y": 250,
     "w": 89,
-    "h": 98
+    "h": 103
    },
    "sourceSize": {
     "w": 486,
@@ -541,8 +541,8 @@
   "image": "beast_caller.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 896,
-   "h": 548
+   "w": 1280,
+   "h": 352
   },
   "scale": "3",
   "ageborn": {

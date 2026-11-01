@@ -26,8 +26,8 @@
   },
   "drum_shaman_attack_b_02_team": {
    "frame": {
-    "x": 196,
-    "y": 119,
+    "x": 263,
+    "y": 121,
     "w": 55,
     "h": 57
    },
@@ -74,8 +74,8 @@
   },
   "drum_shaman_attack_b_03_team": {
    "frame": {
-    "x": 95,
-    "y": 119,
+    "x": 217,
+    "y": 115,
     "w": 42,
     "h": 96
    },
@@ -122,8 +122,8 @@
   },
   "drum_shaman_attack_b_04_team": {
    "frame": {
-    "x": 141,
-    "y": 119,
+    "x": 263,
+    "y": 55,
     "w": 51,
     "h": 62
    },
@@ -146,8 +146,8 @@
   },
   "drum_shaman_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 119,
+    "x": 124,
+    "y": 118,
     "w": 89,
     "h": 96
    },
@@ -170,8 +170,8 @@
   },
   "drum_shaman_attack_b_05_team": {
    "frame": {
-    "x": 61,
-    "y": 219,
+    "x": 253,
+    "y": 2,
     "w": 65,
     "h": 49
    },
@@ -219,16 +219,16 @@
   "drum_shaman_attack_b_06_team": {
    "frame": {
     "x": 2,
-    "y": 219,
-    "w": 55,
+    "y": 119,
+    "w": 56,
     "h": 52
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 98,
-    "y": 124,
-    "w": 55,
+    "x": 97,
+    "y": 125,
+    "w": 56,
     "h": 52
    },
    "sourceSize": {
@@ -275,15 +275,15 @@
   "image": "drum_shaman.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 256,
-   "h": 276
+   "w": 320,
+   "h": 216
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.drum_shaman",
    "name": "Drum Shaman",
    "heightLu": 66,
-   "widthLu": 44.7,
+   "widthLu": 45.5,
    "pxPerLu": 1.23,
    "feetPx": [
     117.0,

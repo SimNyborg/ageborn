@@ -2,7 +2,7 @@
  "frames": {
   "cave_pup_attack_b_01": {
    "frame": {
-    "x": 255,
+    "x": 114,
     "y": 2,
     "w": 143,
     "h": 138
@@ -26,18 +26,18 @@
   },
   "cave_pup_attack_b_01_team": {
    "frame": {
-    "x": 272,
-    "y": 412,
-    "w": 92,
-    "h": 94
+    "x": 568,
+    "y": 104,
+    "w": 112,
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 136,
+    "x": 116,
     "y": 151,
-    "w": 92,
-    "h": 94
+    "w": 112,
+    "h": 93
    },
    "sourceSize": {
     "w": 356,
@@ -74,17 +74,17 @@
   },
   "cave_pup_attack_b_02_team": {
    "frame": {
-    "x": 344,
-    "y": 176,
-    "w": 90,
+    "x": 310,
+    "y": 119,
+    "w": 98,
     "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 129,
+    "x": 121,
     "y": 127,
-    "w": 90,
+    "w": 98,
     "h": 113
    },
    "sourceSize": {
@@ -98,8 +98,8 @@
   },
   "cave_pup_attack_b_03": {
    "frame": {
-    "x": 114,
-    "y": 2,
+    "x": 2,
+    "y": 176,
     "w": 137,
     "h": 151
    },
@@ -122,17 +122,17 @@
   },
   "cave_pup_attack_b_03_team": {
    "frame": {
-    "x": 166,
-    "y": 412,
-    "w": 102,
+    "x": 469,
+    "y": 231,
+    "w": 110,
     "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 141,
+    "x": 133,
     "y": 145,
-    "w": 102,
+    "w": 110,
     "h": 96
    },
    "sourceSize": {
@@ -146,8 +146,8 @@
   },
   "cave_pup_attack_b_04": {
    "frame": {
-    "x": 169,
-    "y": 176,
+    "x": 261,
+    "y": 2,
     "w": 171,
     "h": 113
    },
@@ -170,17 +170,17 @@
   },
   "cave_pup_attack_b_04_team": {
    "frame": {
-    "x": 101,
-    "y": 606,
-    "w": 114,
+    "x": 689,
+    "y": 290,
+    "w": 117,
     "h": 79
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 139,
+    "x": 136,
     "y": 162,
-    "w": 114,
+    "w": 117,
     "h": 79
    },
    "sourceSize": {
@@ -194,8 +194,8 @@
   },
   "cave_pup_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 176,
+    "x": 143,
+    "y": 144,
     "w": 163,
     "h": 118
    },
@@ -218,17 +218,17 @@
   },
   "cave_pup_attack_b_05_team": {
    "frame": {
-    "x": 181,
-    "y": 514,
-    "w": 98,
+    "x": 583,
+    "y": 201,
+    "w": 104,
     "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 146,
+    "x": 140,
     "y": 161,
-    "w": 98,
+    "w": 104,
     "h": 85
    },
    "sourceSize": {
@@ -242,8 +242,8 @@
   },
   "cave_pup_attack_c_01": {
    "frame": {
-    "x": 2,
-    "y": 298,
+    "x": 310,
+    "y": 236,
     "w": 155,
     "h": 110
    },
@@ -266,17 +266,17 @@
   },
   "cave_pup_attack_c_01_team": {
    "frame": {
-    "x": 2,
-    "y": 606,
-    "w": 95,
+    "x": 583,
+    "y": 290,
+    "w": 102,
     "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 127,
+    "x": 120,
     "y": 161,
-    "w": 95,
+    "w": 102,
     "h": 80
    },
    "sourceSize": {
@@ -290,8 +290,8 @@
   },
   "cave_pup_attack_c_02": {
    "frame": {
-    "x": 2,
-    "y": 412,
+    "x": 436,
+    "y": 2,
     "w": 160,
     "h": 98
    },
@@ -314,17 +314,17 @@
   },
   "cave_pup_attack_c_02_team": {
    "frame": {
-    "x": 219,
-    "y": 606,
-    "w": 95,
+    "x": 790,
+    "y": 94,
+    "w": 104,
     "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 122,
+    "x": 113,
     "y": 165,
-    "w": 95,
+    "w": 104,
     "h": 76
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "cave_pup_attack_c_03": {
    "frame": {
-    "x": 317,
-    "y": 298,
+    "x": 143,
+    "y": 266,
     "w": 147,
     "h": 104
    },
@@ -362,8 +362,8 @@
   },
   "cave_pup_attack_c_03_team": {
    "frame": {
-    "x": 368,
-    "y": 412,
+    "x": 600,
+    "y": 2,
     "w": 100,
     "h": 93
    },
@@ -386,8 +386,8 @@
   },
   "cave_pup_attack_c_04": {
    "frame": {
-    "x": 2,
-    "y": 514,
+    "x": 704,
+    "y": 2,
     "w": 175,
     "h": 88
    },
@@ -410,10 +410,10 @@
   },
   "cave_pup_attack_c_04_team": {
    "frame": {
-    "x": 385,
-    "y": 514,
+    "x": 691,
+    "y": 188,
     "w": 117,
-    "h": 84
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
@@ -421,7 +421,7 @@
     "x": 133,
     "y": 169,
     "w": 117,
-    "h": 84
+    "h": 83
    },
    "sourceSize": {
     "w": 356,
@@ -434,8 +434,8 @@
   },
   "cave_pup_attack_c_05": {
    "frame": {
-    "x": 161,
-    "y": 298,
+    "x": 412,
+    "y": 119,
     "w": 152,
     "h": 108
    },
@@ -458,17 +458,17 @@
   },
   "cave_pup_attack_c_05_team": {
    "frame": {
-    "x": 283,
-    "y": 514,
-    "w": 98,
+    "x": 684,
+    "y": 99,
+    "w": 102,
     "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 139,
+    "x": 135,
     "y": 164,
-    "w": 98,
+    "w": 102,
     "h": 85
    },
    "sourceSize": {
@@ -541,8 +541,8 @@
   "image": "cave_pup.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 512,
-   "h": 688
+   "w": 896,
+   "h": 372
   },
   "scale": "3",
   "ageborn": {

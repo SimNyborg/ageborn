@@ -2,7 +2,7 @@
  "frames": {
   "drum_shaman_attack_b_02": {
    "frame": {
-    "x": 2,
+    "x": 313,
     "y": 2,
     "w": 119,
     "h": 226
@@ -26,17 +26,17 @@
   },
   "drum_shaman_attack_b_02_team": {
    "frame": {
-    "x": 375,
-    "y": 232,
-    "w": 109,
+    "x": 754,
+    "y": 2,
+    "w": 110,
     "h": 114
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 187,
+    "x": 186,
     "y": 214,
-    "w": 109,
+    "w": 110,
     "h": 114
    },
    "sourceSize": {
@@ -50,7 +50,7 @@
   },
   "drum_shaman_attack_b_03": {
    "frame": {
-    "x": 125,
+    "x": 555,
     "y": 2,
     "w": 107,
     "h": 226
@@ -74,8 +74,8 @@
   },
   "drum_shaman_attack_b_03_team": {
    "frame": {
-    "x": 183,
-    "y": 232,
+    "x": 666,
+    "y": 2,
     "w": 84,
     "h": 190
    },
@@ -98,7 +98,7 @@
   },
   "drum_shaman_attack_b_04": {
    "frame": {
-    "x": 236,
+    "x": 436,
     "y": 2,
     "w": 115,
     "h": 224
@@ -122,9 +122,9 @@
   },
   "drum_shaman_attack_b_04_team": {
    "frame": {
-    "x": 271,
-    "y": 232,
-    "w": 100,
+    "x": 887,
+    "y": 2,
+    "w": 101,
     "h": 123
    },
    "rotated": false,
@@ -132,7 +132,7 @@
    "spriteSourceSize": {
     "x": 189,
     "y": 208,
-    "w": 100,
+    "w": 101,
     "h": 123
    },
    "sourceSize": {
@@ -147,7 +147,7 @@
   "drum_shaman_attack_b_05": {
    "frame": {
     "x": 2,
-    "y": 232,
+    "y": 2,
     "w": 177,
     "h": 190
    },
@@ -170,18 +170,18 @@
   },
   "drum_shaman_attack_b_05_team": {
    "frame": {
-    "x": 114,
-    "y": 426,
-    "w": 128,
-    "h": 98
+    "x": 754,
+    "y": 120,
+    "w": 129,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
-    "y": 262,
-    "w": 128,
-    "h": 98
+    "x": 192,
+    "y": 263,
+    "w": 129,
+    "h": 97
    },
    "sourceSize": {
     "w": 438,
@@ -194,7 +194,7 @@
   },
   "drum_shaman_attack_b_06": {
    "frame": {
-    "x": 355,
+    "x": 183,
     "y": 2,
     "w": 126,
     "h": 217
@@ -218,17 +218,17 @@
   },
   "drum_shaman_attack_b_06_team": {
    "frame": {
-    "x": 2,
-    "y": 426,
-    "w": 108,
+    "x": 887,
+    "y": 129,
+    "w": 110,
     "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 249,
-    "w": 108,
+    "x": 195,
+    "y": 250,
+    "w": 110,
     "h": 103
    },
    "sourceSize": {
@@ -275,15 +275,15 @@
   "image": "drum_shaman.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 512,
-   "h": 532
+   "w": 1024,
+   "h": 236
   },
   "scale": "3",
   "ageborn": {
    "visualId": "unit.drum_shaman",
    "name": "Drum Shaman",
    "heightLu": 66,
-   "widthLu": 44.7,
+   "widthLu": 45.5,
    "pxPerLu": 2.46,
    "feetPx": [
     234,

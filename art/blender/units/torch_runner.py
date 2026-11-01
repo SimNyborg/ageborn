@@ -18,11 +18,16 @@ Animation (ANIM_SPEC G1 sprint, appendix B: a jab, a sweep, a jump kick):
   attack_c  JUMP KICK: a hop into a flying two-footed kick, the torch held high behind
   hit       light;  die  D1 fling and spin, the torch tumbles away, X eyes
 """
+import math
+
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import kit_stone as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import stone_w1 as W1
 
 SLUG = "torch_runner"
 GAIT_NAME = "biped"
@@ -44,6 +49,20 @@ BONE = "#EDE3C8"
 FIRE = "#FFE3B0"
 FIRE_CORE = "#FFFFFF"
 MOSS = "#8A8A6A"
+# W1 (the detail standard)
+HAIR_LT = "#6E5C50"       # lighter locks in the swept hair (27 levels over it)
+CHEEK = "#D2AA8A"         # a ruddy cheek and ear (19 levels under the skin)
+LEATHER = "#7A5E48"
+LEATHER_DK = "#56412F"
+CHAR = "#4A3C34"          # the charred top of the reed bundle under the flame
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_SOLDIER
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", HAIR: "fur", HAIR_LT: "fur", FUR: "fur", REED: "wood", REED_DK: "wood",
+                           WOOD: "wood", SOOT: "skin", BONE: "bone", MOSS: "fur", CHEEK: "skin", LEATHER: "leather",
+                           LEATHER_DK: "leather", CHAR: "wood", "team": "hide"})
 
 HIP_Y, SH_Y = 5.2, 10.8
 TORCH_LEN = 18.0
@@ -60,6 +79,17 @@ def _torch(rig, joint, fist):
     for dz in (1.2, 4.0):
         g.lathe([(3.3, 0), (3.5, 0.6), (3.5, 1.4), (3.2, 1.8)], (fx, fy, fz + TORCH_LEN - 7.0 + dz), segs=14)
     rig.part(joint, g, team=True, outline=0.5)
+    # W1: dark reed lines down the bundle (texture, 1.1 lu) and its charred top (a 2.6 lu dark band)
+    g = Geo()
+    for k, a in enumerate((-70.0, -35.0, 0.0, 35.0)):
+        r = 3.35
+        ca, sa = r * math.cos(math.radians(a - 90)), r * math.sin(math.radians(a - 90))
+        g.capsule((fx + sa, fy + ca, fz + TORCH_LEN - 6.6), (fx + sa * 1.04, fy + ca * 1.04, fz + TORCH_LEN - 1.6),
+                  0.5, segs=6, rings=2)
+    rig.part(joint, g, REED_DK, outline=0)
+    g = Geo().lathe([(2.9, 0), (3.0, 0.6), (2.7, 2.0), (1.6, 2.8)], (fx, fy, fz + TORCH_LEN - 2.4),
+                    (fx, fy, fz + TORCH_LEN + 0.4), segs=14)
+    rig.part(joint, g, CHAR, outline=0.4)
     rig.joint(f"{joint}_flame", joint, (fx, fy, fz + TORCH_LEN))
     g = Geo().lathe([(0, 0), (3.0, 1.0), (3.2, 3.2), (2.0, 6.0), (0, 9.0)], (fx, fy, fz + TORCH_LEN - 0.5),
                     (fx - 1.0, fy, fz + TORCH_LEN + 8.5), segs=12)
@@ -73,13 +103,33 @@ def build(rig):
     RIG = rig
     body = K.body(rig, SKIN, FUR, stocky=0.95, hip_y=HIP_Y, shoulder_y=SH_Y, torso_r=(9.4, 8.4, 9.8), foot_len=4.4)
     fr, fl = body.fist["r"], body.fist["l"]
-    K.pelt(rig, FUR, strap=False, r=(10.4, 9.4, 6.8), skirt_r=(10.6, 9.6, 4.6), emblem=False)
+    deco = K.pelt(rig, FUR, strap=False, r=(10.4, 9.4, 6.8), skirt_r=(10.6, 9.6, 4.6), emblem=False)
     K.wraps(rig, HIP_Y, SH_Y, wrists=("l",))
-    # crossed team chest strap and a moss pouch
+    # W1: wildcat spots on the pelt in the team-dark tone, a dyed belt (team-dark) with a bone toggle, laces over
+    # the shin wraps, a dyed cuff on the torch arm
+    W1.team_spots(rig, "torso", deco, [(-6.4, 26.4, 1.7, 1.4), (-1.6, 21.8, 1.5, 1.2), (7.4, 22.6, 1.4, 1.15)])
+    W1.ring(rig, "torso", (0.5, 0, 22.4), 11.0, height=2.9, ry=10.0, team=True, segs=40, outline=0.8)
+    g = Geo().blob((9.4, -6.6, 23.8), (2.2, 1.2, 1.9), p=2.4, rot=(0, 0, -36))
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    for side, y in (("r", -HIP_Y), ("l", HIP_Y)):   # team-dark laces: leather ones cost the walk its team fill
+        W1.laces(rig, f"shin_{side}", 0.8, y - 3.85 if side == "r" else y - 3.6, 6.2, 10.8, None, team=True)
+    W1.ring(rig, "fore_r", (3.0, -SH_Y - 0.5, 23.6), 3.45, height=2.8, team=True, p1=(3.5, -SH_Y - 0.5, 21.5),
+            bulge=0.5, outline=0.6)   # a team-dark wrist cuff (team 17.2% -> over 18% in the walk's arm swing)
+    # crossed team chest strap and a moss pouch (W1: a carved bone ring where the straps cross; the moss stuffed in
+    # a leather pouch that swings a frame late)
     g = Geo().capsule((7.0, -8.0, 26.0), (2.0, 8.0, 36.0), 2.2, 2.2).capsule((7.0, 8.0, 26.0), (2.0, -8.0, 36.0), 2.2, 2.2)
     rig.part("torso", g, team=True, outline=0.6)
-    g = Geo().blob((-6.0, -8.4, 20.4), (4.0, 3.0, 4.4), p=2.2)
-    rig.part("hips", g, MOSS, finish="hair")
+    g = Geo().lathe([(1.2, 0), (2.0, 0.2), (2.0, 1.4), (1.2, 1.6)], (5.4, -3.0, 31.0), (6.6, -4.4, 31.0), segs=14)
+    rig.part("torso", g, BONE, finish="gloss", outline=0.5)
+    rig.secondary("pouch", "hips", (-6.0, -8.6, 24.0), (-6.4, -9.0, 14.8), max_deg=12, gain=1.2)
+    g = Geo().blob((-6.4, -8.6, 18.4), (3.8, 3.0, 3.8), p=2.3, taper=(1.1, 0.85))   # as small as the shipped one
+    rig.part("pouch", g, LEATHER)
+    g = Geo().lathe([(3.0, 0), (3.4, 0.4), (3.4, 1.5), (2.9, 1.9)], (-6.4, -8.6, 20.6), segs=14)
+    rig.part("pouch", g, LEATHER_DK, outline=0.5)
+    g = Geo().blob((-6.4, -8.6, 22.2), (3.0, 2.4, 1.6), p=2.2)
+    for dx, L in ((-1.8, 2.4), (0.4, 2.8), (2.2, 2.2)):
+        g.lathe([(1.3, 0), (0, L)], (-6.4 + dx, -9.2, 22.4), (-6.9 + dx * 1.3, -9.6, 22.4 + L), segs=8)
+    rig.part("pouch", g, MOSS, finish="hair")
     # wild swept-back hair in a team rag, soot smudges, a bone whistle
     hair = Geo().blob((-3.0, 0, 54.0), (9.4, 10.0, 5.4), p=2.2)
     rag = Geo().lathe([(9.6, 0), (10.4, 0.4), (10.4, 2.6), (9.2, 3.0)], (1.4, 0, 51.6), (0.2, 0, 54.4), segs=22)
@@ -92,6 +142,14 @@ def build(rig):
     for (x0, z0), (x1, z1), r in (((-5, 55), (-17, 60), 3.2), ((-6, 52), (-18, 53.5), 2.8), ((-3, 57.5), (-12, 64), 2.6)):
         g.capsule((x0, 0, z0), (x1, -0.5, z1), r, 0.8)
     rig.part("hair", g, HAIR, finish="hair")
+    # W1: lighter flame-shaped locks over the swept hair (two-tone hair, 2.6 lu)
+    W1.locks(rig, "hair", [((-6.0, 56.4), (-15.4, 60.4), 1.3), ((-5.4, 58.6), (-11.0, 63.0), 1.25)], HAIR_LT, -2.8)
+    W1.locks(rig, "head", [((-6.8, 50.4), (-10.6, 45.6), 1.3)], HAIR_LT, -8.4)
+    W1.blush(rig, "head", face, 6.6, 44.6, 2.6, 1.9, CHEEK)
+    ear = Geo().blob((-1.0, -9.6, 45.6), (2.2, 1.4, 2.9), p=2.2)
+    ear_face = F.Face(rig, "head", [ear])
+    rig.part("head", ear, SKIN, outline=0.6)
+    W1.blush(rig, "head", ear_face, -0.8, 45.4, 1.0, 1.7, CHEEK)
     rig.secondary("ragtail", "head", (-8.0, -6.0, 53.0), (-16.0, -6.5, 49.0), max_deg=18, gain=1.3)
     g = Geo().slab([(-8.0, 54.0), (-16.5, 50.5), (-17.5, 48.0), (-8.5, 51.0)], -6.0, 1.2)
     rig.part("ragtail", g, team=True, outline=0.7)
@@ -110,6 +168,19 @@ def build(rig):
     rig.track("torchTip", "torch", TIP)
     ARM_R = body.arm("r", "torch", (fr[0], fr[1], fr[2] + TORCH_LEN))
     ARM_L = body.arm("l")
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the pelt's back half and
+    its front below the crossed straps, the kilt, the moss pouch and the near shin wrap; a strip torn from the
+    kilt's hem."""
+    rig.damage_spot_at("pelt", "torso", -4.0, 26.6, 7.0, "hide", team=True)
+    rig.damage_spot_at("skirt", "skirt", 2.5, 20.5, 5.5, "hide", team=True)
+    rig.damage_spot_at("pouch", "pouch", -6.4, 17.0, 5.0, "hide", fill=LEATHER)
+    rig.damage_spot_at("wrap", "shin_r", -2.3, 9.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("hem", "skirt", -6.0, 18.5, 10.0, "hide", kind="strip", team=True)
 
 
 RIG = ARM_R = ARM_L = TIP = None

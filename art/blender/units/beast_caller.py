@@ -20,11 +20,14 @@ Animation (ANIM_SPEC G1 sneak, appendix B staff: a poke, an overhead swat, a low
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import kit_stone as K
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from ageborn_art import look
+from units import stone_w1 as W1
 
 SLUG = "beast_caller"
 GAIT_NAME = "biped"
@@ -45,6 +48,20 @@ WOOD_DK = "#6A5240"
 BONE = "#EDE3C8"
 FEATHER = "#E9DFC9"
 FUR = "#7A6B5E"
+SOCKET = "#3A322E"
+# W1 (the detail standard)
+PELT_DK = "#66605A"       # a darker saddle down the wolf pelt and its ear backs (two tones, 30 levels under it)
+FEATHER_TIP = "#5B4A3E"
+LEATHER_DK = "#56412F"
+CHEEK = "#B08A70"         # a cheek (16 levels under the skin)
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.65   # over the soldiers' 1.35: highlight 0.055-0.057 at idle 0 with 1.45 (band 0.06-0.10)
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", HAIR: "fur", SKULL: "bone", SKULL_DK: "bone", SOCKET: "bone", PELT: "fur",
+                           PELT_DK: "fur", WOOD: "wood", WOOD_DK: "wood", BONE: "bone", FEATHER: "fur",
+                           FEATHER_TIP: "fur", FUR: "fur", LEATHER_DK: "leather", CHEEK: "skin", "team": "hide"})
 
 HIP_Y, SH_Y = 5.6, 11.2
 STAFF_UP, STAFF_DN = 22.0, 18.0
@@ -65,8 +82,17 @@ def _staff(rig, joint, fist):
     rig.part(joint, g, team=True, outline=0.5)
     g = Geo()
     for a in (-0.5, 0.2):
-        g.blob((fx - 2.0 + a * 2, fy - 1.0, fz + STAFF_UP - 1.0 - abs(a) * 4), (1.0, 0.6, 3.6), p=2.2, rot=(0, 25 + a * 20, 0))
+        g.blob((fx - 2.0 + a * 2, fy - 1.0, fz + STAFF_UP - 1.0 - abs(a) * 4), (1.3, 0.6, 3.8), p=2.2, rot=(0, 25 + a * 20, 0))
     rig.part(joint, g, FEATHER, outline=0.4)
+    # W1: dark feather tips, a cord binding under the fetish and gnarl rings down the staff (two-tone wood)
+    g = Geo()
+    for a in (-0.5, 0.2):
+        g.blob((fx - 2.6 + a * 2, fy - 1.1, fz + STAFF_UP - 3.6 - abs(a) * 4), (1.1, 0.6, 1.4), p=2.2, rot=(0, 25 + a * 20, 0))
+    rig.part(joint, g, FEATHER_TIP, outline=0)
+    g = Geo()
+    for z in (-12.0, -2.0, 10.0):
+        g.lathe([(1.5, 0), (1.85, 0.3), (1.85, 0.9), (1.5, 1.2)], (fx, fy, fz + z), segs=12)
+    rig.part(joint, g, WOOD_DK, outline=0)
 
 
 def build(rig):
@@ -74,22 +100,38 @@ def build(rig):
     RIG = rig
     body = K.body(rig, SKIN, FUR, stocky=0.95, hip_y=HIP_Y, shoulder_y=SH_Y, torso_r=(9.8, 8.8, 10.0), foot_len=4.4)
     fr, fl = body.fist["r"], body.fist["l"]
-    K.pelt(rig, FUR, emblem=False, r=(10.6, 9.6, 7.8), skirt_r=(11.0, 9.8, 4.8))
+    deco = K.pelt(rig, FUR, emblem=False, r=(10.6, 9.6, 7.8), skirt_r=(11.0, 9.8, 4.8))
     K.wraps(rig, HIP_Y, SH_Y, wrists=("r", "l"))
-    # team hide shawl over the shoulders with dangling teeth and claws
+    # W1: a dyed belt (team-dark: the team zone in two tones) with a small bone buckle, team-dark spots on the
+    # tunic, laces over the shin wraps (team 17.9% in attack 3 with a leather belt and laces)
+    W1.ring(rig, "torso", (0.5, 0, 22.6), 11.35, height=3.0, ry=10.25, team=True, segs=40, outline=0.8)
+    g = Geo().blob((10.1, -6.7, 24.1), (1.8, 1.0, 1.6), p=2.4, rot=(0, 0, -36))
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    W1.team_spots(rig, "torso", deco, [(-6.4, 27.2, 1.7, 1.4), (7.2, 24.0, 1.2, 1.0)])   # not a pair
+    for side, y in (("r", -HIP_Y), ("l", HIP_Y)):
+        W1.laces(rig, f"shin_{side}", 0.8, y - 3.85 if side == "r" else y - 3.6, 6.2, 10.8, None,
+                 team=True)   # team-dark: leather laces cost the walk's team fill (the Torch Runner fell to 16.4%)
+    # team hide shawl over the shoulders with dangling teeth and claws (W1: stitched seams in the team-dark tone
+    # between its hides, and bigger teeth: 2.6 lu at the root)
     g = Geo().blob((0.6, 0, 33.6), (11.8, 11.6, 5.4), p=2.4, taper=(1.05, 0.9))
+    shawl_face = F.Face(rig, "torso", [g])
     rig.part("torso", g, team=True)
+    W1.stripes(rig, "torso", shawl_face, [[(-4.0, 36.8), (-2.6, 30.6)], [(4.6, 37.0), (5.6, 30.8)]], w=1.6)
     g = Geo()
     for k in range(6):
         a = -1.0 + k * 0.42
         x, y = math.cos(a) * 11.0 + 0.6, math.sin(a) * 10.8
-        g.lathe([(0.9, 0), (0.6, 1.4), (0, 3.2)], (x, y, 29.2), (x + 0.4, y * 1.04, 25.6), segs=6)
-    rig.part("torso", g, BONE, outline=0.4)
+        g.lathe([(1.3, 0), (0.9, 1.8), (0, 4.2)], (x, y * 1.02, 29.2), (x + 0.5, y * 1.06, 24.8), segs=6)
+    rig.part("torso", g, BONE, finish="gloss", outline=0.4)
     # wolf-skull hood: the skull over the brow, the pelt hanging down the back
     hood = Geo().blob((-1.0, 0, 54.4), (11.4, 11.2, 7.0), p=2.2)
     hood.blob((-7.0, 0, 47.4), (5.6, 10.6, 8.6), p=2.2)
-    K.head(rig, SKIN, z=46.5, r=(10.2, 9.8, 10.0), jaw=(7.0, 7.8, 5.0), extra_geos=(hood,), brow_col=HAIR, grin="smile")
+    face = K.head(rig, SKIN, z=46.5, r=(10.2, 9.8, 10.0), jaw=(7.0, 7.8, 5.0), extra_geos=(hood,), brow_col=HAIR,
+                  grin="smile")
     rig.part("head", hood, PELT, finish="hair")
+    # W1: a darker saddle down the wolf pelt (two tones) and a cheek
+    W1.locks(rig, "head", [((-4.0, 60.4), (-10.6, 54.4), 1.5), ((-7.6, 52.6), (-12.0, 45.4), 1.4)], PELT_DK, -10.8)
+    W1.blush(rig, "head", face, 7.2, 44.6, 2.6, 1.9, CHEEK)
     g = Geo().blob((5.0, 0, 57.4), (8.0, 7.0, 4.4), p=2.2)
     g.lathe([(3.6, 0), (3.0, 3.0), (2.2, 6.0), (0, 7.0)], (9.0, 0, 57.0), (16.6, 0, 55.0), segs=14)
     rig.part("head", g, SKULL)
@@ -97,11 +139,11 @@ def build(rig):
     for y in (-3.0, 3.0):
         g.blob((8.6, y, 58.6), (1.8, 1.4, 1.6), p=2.0)   # dark eye sockets
     g.blob((16.2, 0, 55.6), (1.2, 1.4, 1.0), p=2.0)
-    rig.part("head", g, "#3A322E", outline=0)
+    rig.part("head", g, SOCKET, outline=0)
     g = Geo()
-    for y in (-2.4, 2.4):   # teeth along the skull's brim
-        g.lathe([(0.8, 0), (0, 2.0)], (14.4, y, 53.4), (14.8, y, 51.4), segs=6)
-    rig.part("head", g, SKULL_DK, outline=0.3)
+    for y in (-2.4, 2.4):   # teeth along the skull's brim (W1: 2.4 lu at the root)
+        g.lathe([(1.2, 0), (0, 3.0)], (14.4, y - 0.3, 53.6), (14.9, y - 0.3, 50.6), segs=6)
+    rig.part("head", g, SKULL_DK, finish="gloss", outline=0.3)
     g = Geo()
     for y in (-1, 1):
         g.lathe([(2.6, 0), (1.6, 3.0), (0, 6.4)], (1.0, 6.6 * y, 60.0), (-0.4, 7.6 * y, 66.4), segs=8, squash=(1.0, 0.55))
@@ -111,6 +153,9 @@ def build(rig):
     for y in (-5.0, 0.0, 5.0):
         g.lathe([(2.2, 0), (0, -3.2)], (-12.6, y, 30.6), segs=8)
     rig.part("hoodtail", g, PELT, finish="hair")
+    W1.locks(rig, "hoodtail", [((-12.4, 47.0), (-13.2, 33.6), 1.5)], PELT_DK, -8.0)   # W1: the saddle continues
+    # W1: a team cord tying the pelt's tail across the back (3.2 lu; the grey pelt hides much of the team tunic)
+    W1.ring(rig, "hoodtail", (-12.0, 0, 36.4), 3.7, height=3.2, ry=8.9, team=True, tone=1.0, segs=32, outline=0.6)
     # the staff in the near fist
     rig.joint("staff", "fore_r", fr)
     _staff(rig, "staff", fr)
@@ -119,6 +164,18 @@ def build(rig):
     rig.track("staffTip", "staff", TIP)
     ARM_R = body.arm("r", "staff", (fr[0], fr[1], fr[2] + STAFF_UP))
     ARM_L = body.arm("l")
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the team shawl's back,
+    the tunic's back half, the skirt and the near shin wrap; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("shawl", "torso", -5.0, 36.0, 5.5, "hide", team=True)
+    rig.damage_spot_at("pelt", "torso", -4.0, 27.4, 6.0, "hide", team=True)
+    rig.damage_spot_at("skirt", "skirt", 2.5, 20.5, 5.5, "hide", team=True)
+    rig.damage_spot_at("wrap", "shin_r", -2.3, 9.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("hem", "skirt", -6.0, 18.5, 10.0, "hide", kind="strip", team=True)
 
 
 RIG = ARM_R = ARM_L = TIP = FOOT = None

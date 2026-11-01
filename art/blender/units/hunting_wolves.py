@@ -22,12 +22,15 @@ Animation (ANIM_SPEC G4 bound, appendix B for beasts: bite, pounce, snap):
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import gait as G
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import Quad
+from units import stone_w1 as W1
 
 SLUG = "hunting_wolves"
 GAIT_NAME = "quad"
@@ -49,6 +52,20 @@ CFG = dict(WOLF)
 FANG = (31.0, -2.4, 20.0)
 
 
+def kinds_of(c):
+    """The detail standard's material kinds for a wolf palette (the Cave Pup uses its own)."""
+    return W1.kinds({c["fur"]: "fur", c["fur_dk"]: "fur", c["saddle"]: "fur", c["cream"]: "fur", c["nose"]: "hide",
+                     c["fang"]: "bone", c["bone"]: "bone", c["strap"]: "leather", "team": "hide"})
+
+
+# the detail standard (art round W1, Track STONE; ageborn_art/look.py): the beasts' shading recipe
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_BEAST
+LOOK_SHADE = W1.SHADE_BEAST
+LOOK_RIM = W1.RIM_BEAST
+MATERIAL_KINDS = kinds_of(WOLF)
+
+
 def _leg(rig, name, p0, p1, front, c):
     x0, y, z0 = p0
     x1, _, z1 = p1
@@ -65,6 +82,14 @@ def _leg(rig, name, p0, p1, front, c):
     px = x1 + (2.2 if front else 1.6)
     g = Geo().blob((px, y, 2.2), (4.4, 3.4, 2.3), p=2.4, taper=(1.0, 0.8))
     rig.part(f"leg_{name}2", g, c["cream"] if y < 0 else c["fur_dk"])
+    if y < 0 and c.get("scale", 1.0) >= 1.0:   # the wolf only (at the Cave Pup's 0.74 they are under 2 lu)
+        # W1: claws with lighter tips on the near paws (beasts: claws and teeth with a lighter tip)
+        W1.claws(rig, f"leg_{name}2", [((px + 3.4, y - 1.6 + 1.6 * k, 1.6), (1.0, -0.35)) for k in range(3)],
+                 c["saddle"], c["fang"], r=0.8, length=2.4)
+        if front:
+            # W1: the wolf's dark "pencil mark" down the front of the foreleg (a marking of 2.5 lu)
+            g = Geo().capsule((p0[0] + 4.2, y - 2.6, p0[2] - 8.0), (x1 + 2.8, y - 2.0, z1 + 1.6), 1.3, 1.1)
+            rig.part(f"leg_{name}", g, c["saddle"], finish="hair", outline=0)
 
 
 def build_wolf(rig, c, slug_globals):
@@ -97,7 +122,15 @@ def build_wolf(rig, c, slug_globals):
     g.clip((-9.0, 0, 0), (-1, 0, 0))
     for x in (-4.0, 0.5, 5.0, 9.5):
         g.lathe([(2.2, 0), (0, -3.4)], (x, -8.4, 22.6), segs=8)
+    vest_face = F.Face(rig, "chest", [g])
     rig.part("chest", g, team=True)
+    # W1: the vest in two tones: a team-dark band along its hem (laid in pieces) and three claw marks painted on its
+    # side (war paint, 1.6 x 5.4 lu; two round spots side by side read as a face), still team
+    vz = c.get("vest_z", 22.0) + 1.6
+    hem = [(-7.6, vz + 0.4), (-3.0, vz), (1.5, vz - 0.1), (6.0, vz), (10.6, vz + 0.4)]
+    W1.stripes(rig, "chest", vest_face, [[a, b] for a, b in zip(hem, hem[1:])], w=2.4)
+    for x0 in (-3.2, 0.4, 4.0):
+        W1.seam(rig, "chest", vest_face, [(x0, 33.4), (x0 + 2.2, 28.6)], w=1.7, team=True, depth=1.0)
     g = Geo().lathe([(0, -0.1), (8.6, 0), (9.2, 3.6), (0, 3.7)], (8.6, 0, 26.0), (9.4, 0, 26.0),
                     segs=20, squash=(1.1, 1.0))
     g.clip((0, 0, 17.0), (0, 0, -1))
@@ -111,6 +144,15 @@ def build_wolf(rig, c, slug_globals):
     # dark saddle stripe along the spine behind the vest
     g = Geo().blob((-12.5, 0, 32.0), (6.0, 5.0, 2.4), p=2.4)
     rig.part("chest", g, c["saddle"], finish="hair")
+    # W1: raised hackles along the neck and withers (a scruff that breaks the top line, 3-4 lu clumps, dark tips);
+    # the wolf only: at the Cave Pup's 0.74 they are under 3 lu and cost its vest the team fill it needs on its side
+    full = c.get("scale", 1.0) >= 1.0
+    if full:
+        g = Geo()
+        for x, z, L in ((9.0, 36.0, 4.2), (12.4, 37.4, 4.6), (15.6, 38.6, 4.4)):
+            g.lathe([(2.2, 0), (1.2, L * 0.55), (0, L)], (x, 0, z - 1.2), (x - 2.4, 0, z + L - 1.6), segs=8,
+                    squash=(1.0, 0.7))
+        rig.part("chest", g, c["saddle"], finish="hair", outline=0.5)
 
     # neck (with a ruff), team collar and head: long tapered muzzle, tall ears
     rig.joint("neck", "chest", (14, 0, 31))
@@ -185,8 +227,18 @@ def build_wolf(rig, c, slug_globals):
     rig.part("tail", g, c["fur"], finish="hair")
     g = Geo().blob((-31.5, 0, 22.8), (2.8, 2.6, 2.6), p=2.2)
     rig.part("tail", g, c["saddle"], finish="hair")
+    # W1: shaggy tufts under the brush (a bushier tail outline, cream undersides)
+    g = Geo()
+    for x, z in ((-22.5, 26.0), (-26.5, 24.6), (-29.6, 22.4)):
+        g.lathe([(2.0, 0), (0, 3.6)], (x, 0, z), (x - 1.6, -0.4, z - 3.4), segs=8)
+    rig.part("tail", g, c["cream"], finish="hair", outline=0.4)
     g = Geo().lathe([(2.9, 0), (3.2, 0.4), (3.2, 2.4), (2.9, 2.8)], (-18.0, 0, 29.0), (-20.6, 0, 28.4), segs=16)
     rig.part("tail", g, team=True, outline=0.6)
+    if c.get("scale", 1.0) < 1.0:
+        # W1, the Cave Pup: a second team band down its tail (lying on its side in die_02 it showed 18.0% team, a
+        # hair under the 18% rule)
+        g = Geo().lathe([(3.5, 0), (3.8, 0.4), (3.8, 2.4), (3.5, 2.8)], (-24.6, 0, 27.0), (-27.2, 0, 25.6), segs=16)
+        rig.part("tail", g, team=True, outline=0.6)
     return legs, q
 
 
@@ -198,6 +250,18 @@ def build(rig, cfg=None, height=None):
     RIG = rig
     GAIT = None
     LEGS, _ = build_wolf(rig, CFG, globals())
+    if cfg is None and getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, beast): the team vest tears (its biggest free field) and a strip
+    hangs from its hem; scuffs on the near shoulder and haunch; breath puffs from the nose at the last stage."""
+    rig.damage_spot_at("vest", "chest", 4.0, 33.0, 6.5, "hide", team=True)
+    rig.damage_spot_at("shoulder", "leg_fr", 12.0, 20.0, 5.0, "hide")
+    rig.damage_spot_at("haunch", "leg_br", -13.0, 22.0, 5.0, "hide")
+    rig.damage_spot_at("hem", "chest", 2.0, 27.5, 8.0, "hide", kind="strip", team=True)
+    rig.damage_spot("breath", "head", (34.0, -0.3, 33.6), 3.5, "breath", kind="emit", normal=(1, 0, 0))
 
 
 RIG = None

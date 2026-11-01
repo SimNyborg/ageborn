@@ -23,12 +23,15 @@ rattles, face kit eyes and mouths.
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import CaveBody
+from ageborn_art import look
+from units import stone_w1 as W1
 
 SLUG = "drum_shaman"
 GAIT_NAME = "biped"
@@ -53,6 +56,19 @@ EYE = "#FAF6EE"
 PUPIL = "#221C19"
 MOUTH = "#3E2020"
 RING = "#FFF3D2"
+SOCKET = "#3A3029"
+# W1 (the detail standard)
+BEARD_DK = "#A69F92"      # darker grey strands in the white beard (two tones, 40 levels under it)
+LEATHER_DK = "#56412F"    # the headdress strap, the necklace thong, the rattles' cords
+CHEEK = "#76594B"         # a darker cheek on the weathered face (16 levels under the skin)
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_SOLDIER
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({ROCK: "stone", RATTLE: "wood", SKIN: "skin", BEARD: "fur", BEARD_DK: "fur", BROW: "fur",
+                           FUR: "fur", BONE: "bone", BONE_DK: "bone", HIDE: "hide", WOOD: "wood", SOCKET: "bone",
+                           LEATHER_DK: "leather", CHEEK: "skin", "team": "hide"})
 
 # drum: axis from the bottom to the head, tilted forward so the head faces the camera a bit
 DRUM_BOT = (9.5, -3.0, 12.5)
@@ -86,14 +102,29 @@ def build(rig):
     g = Geo().blob((-8.6, 0, 22.4), (5.4, 12.0, 9.8), p=2.4, taper=(1.25, 0.9))
     for y in (-9.0, -4.0, 1.0, 6.0, 10.0):
         g.lathe([(2.6, 0), (0, -4.0)], (-9.6, y, 13.8), segs=8)
+    cloak_face = F.Face(rig, "cloak", [g])
     rig.part("cloak", g, team=True)
+    # W1: the cloak in two tones: a team-dark band above its ragged hem and two painted spots, still team; a fur
+    # mantle over the shoulders (a breaker on the hunched back) with lighter tufts
+    W1.stripes(rig, "cloak", cloak_face, [[(-15.6, 18.2), (-10.6, 17.0)], [(-10.6, 17.0), (-5.2, 16.4)]], w=2.6)
+    W1.team_spots(rig, "cloak", cloak_face, [(-11.8, 25.6, 1.6, 1.3), (-8.0, 21.6, 1.3, 1.1)])
+    # the mantle is dyed (team-dark: in attack B 5 it hid the cloak's top, team 17.2%), its tufts natural fur
+    g = Geo().blob((-1.6, 0, 35.4), (8.8, 13.0, 4.2), p=2.4, rot=(0, -10, 0))
+    look.team_part(rig, "torso", g, finish="hair")
+    g = Geo()
+    for x, y in ((-8.6, -10.6), (-4.0, -12.6), (1.6, -12.4), (-9.4, -4.0)):
+        g.lathe([(2.2, 0), (0, 3.6)], (x, y, 33.6), (x - 1.4, y - 0.6, 30.4), segs=8)
+    rig.part("torso", g, FUR, finish="hair")
     g = Geo().capsule((1.0, -9.0, 20.0), (1.0, 9.0, 20.0), 1.6)
     rig.part("torso", g, FUR, finish="hair")
     # bone bead necklace
     g = Geo()
     for x, y, z in ((6.6, -6.0, 31.0), (8.4, -3.0, 29.6), (9.0, 0.5, 29.2), (8.2, 4.0, 29.8)):
-        g.sphere((x, y, z), 1.3, cuts=2)
-    rig.part("torso", g, BONE, outline=0.6)
+        g.sphere((x, y - 0.6, z), 1.5, cuts=2)
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    W1.thong(rig, "torso", (0.4, 0, 30.4), 8.0, LEATHER_DK, tilt_to=(2.0, 0, 32.0))
+    g = Geo().lathe([(1.6, 0), (1.3, 2.0), (0, 4.6)], (8.8, -1.6, 28.6), (9.4, -2.0, 24.2), segs=8)
+    rig.part("torso", g, BONE_DK, finish="gloss", outline=0.5)
 
     # head: bald crown under a horned skull, bushy white brows, big nose, long beard
     head = Geo().blob((2.0, 0, 46.0), (9.6, 9.4, 9.8), p=2.3)
@@ -123,6 +154,8 @@ def build(rig):
     g.lathe([(6.2, 0), (4.8, -5.0), (2.6, -9.5), (0, -13.0)], (8.2, 0, 38.0), segs=14,
             squash=(0.8, 1.0))
     rig.part("beard", g, BEARD, finish="hair")
+    W1.locks(rig, "beard", [((10.0, 37.0), (9.6, 29.0), 1.35), ((7.0, 37.4), (7.6, 27.4), 1.3),
+                            ((12.2, 38.4), (11.4, 33.0), 1.25)], BEARD_DK, -7.8)   # W1: darker strands
     g = Geo().blob((11.0, -0.2, 41.8), (2.4, 5.4, 1.6), p=2.2)  # moustache
     rig.part("head", g, BEARD, finish="hair", outline=0.7)
     # skull headdress: a bone cranium cap worn on the back of the crown, dark eye holes,
@@ -133,7 +166,11 @@ def build(rig):
     g = Geo()
     for y in (-3.4, 3.4):
         g.blob((9.4, y, 55.0), (1.2, 1.6, 1.4), p=2.2)
-    rig.part("head", g, "#3A3029", outline=0)
+    rig.part("head", g, SOCKET, outline=0)
+    # W1: a dark leather strap that ties the skull to his head, round the crown above the ear (3 lu)
+    W1.ring(rig, "head", (1.2, 0, 49.2), 9.55, height=2.6, ry=9.35, fill=LEATHER_DK, p1=(-0.6, 0, 58.0), bulge=0.4,
+            outline=0.6)
+    W1.blush(rig, "head", face, 7.6, 43.6, 2.6, 1.9, CHEEK)
     g = Geo()
     for y in (-1, 1):
         base, a1, a2 = (-3.0, 6.5 * y, 57.5), (-9.0, 9.0 * y, 66.0), (-16.5, 10.0 * y, 71.0)
@@ -150,6 +187,11 @@ def build(rig):
     g = Geo().lathe([(0, 0), (DRUM_R * 0.8, 0.2), (DRUM_R * 0.92, 3.0), (DRUM_R, L - 1.6),
                      (DRUM_R * 0.97, L - 0.6), (0, L - 0.5)], DRUM_BOT, DRUM_TOP, segs=22)
     rig.part("drum", g, team=True)
+    # W1: team-dark bands round the shell's top and bottom (the drum in two tones, still team)
+    for h0 in (0.8, L - 4.6):
+        look.team_part(rig, "drum", Geo().lathe([(DRUM_R * 0.96, h0), (DRUM_R + 0.45, h0 + 0.3),
+                                                 (DRUM_R + 0.45, h0 + 2.5), (DRUM_R * 0.96, h0 + 2.8)],
+                                                DRUM_BOT, DRUM_TOP, segs=24), outline=0)
     g = Geo().lathe([(0, L - 1.0), (DRUM_R + 0.6, L - 1.0), (DRUM_R + 0.7, L + 0.2),
                      (DRUM_R * 0.8, L + 0.8), (0, L + 0.9)], DRUM_BOT, DRUM_TOP, segs=22)
     rig.part("drum", g, HIDE)
@@ -217,10 +259,27 @@ def build(rig):
     # belt rattles (two gourds on cords at the hip)
     g = Geo().blob((-3.0, -9.8, 17.0), (2.4, 2.0, 3.0), p=2.2).blob((1.2, -10.4, 16.0), (2.0, 1.8, 2.6), p=2.2)
     rig.part("hips", g, RATTLE, outline=0.6)
+    # W1: the rattles' dark cords and a painted ring on each gourd (two-tone gourds)
+    g = Geo().capsule((-3.0, -10.4, 20.0), (-3.0, -10.4, 19.6), 0.6).capsule((1.2, -10.9, 18.6), (1.2, -10.9, 18.2), 0.6)
+    g.lathe([(2.3, 0), (2.55, 0.3), (2.55, 1.0), (2.3, 1.3)], (-3.0, -9.8, 16.6), segs=12, squash=(1.0, 0.85))
+    rig.part("hips", g, LEATHER_DK, outline=0)
     rig.track("_foot", "foot_r", (2.0, -5.8, 0.0))
     rig.track("_foot_l", "foot_l", (2.0, 5.8, 0.0))
     ARM_R = body.arm("r", "stick", tip)
     ARM_L = body.arm("l")
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the team drum (its
+    shell is the biggest surface he always shows), the cloak's back, the belly sash and the near forearm wrap; a
+    strip torn from the cloak's ragged hem."""
+    rig.damage_spot_at("drum", "drum", 14.0, 16.0, 6.5, "hide", team=True)
+    rig.damage_spot_at("cloak", "cloak", -11.0, 22.0, 6.0, "hide", team=True)
+    rig.damage_spot_at("sash", "torso", -5.0, 27.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("wrap", "fore_r", 3.0, 24.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("hem", "cloak", -10.0, 15.5, 9.0, "hide", kind="strip", team=True)
 
 
 ARM_R = ARM_L = STICK_TIP = None

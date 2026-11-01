@@ -19,11 +19,14 @@ Animation (ANIM_SPEC G2 brisk waddle, appendix B support: two releases, no C):
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import kit_stone as K
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from ageborn_art import look
+from units import stone_w1 as W1
 
 SLUG = "herbalist"
 GAIT_NAME = "biped"
@@ -43,6 +46,19 @@ LEATHER = "#8C7058"
 BONE = "#EDE3C8"
 FUR = "#7A6B5E"
 DUST = "#DCE3C4"
+# W1 (the detail standard)
+HAIR_DK = "#9C968C"       # darker strands in the grey bun (two tones, 40 levels under it)
+LEAF_DK = "#7E8A62"       # every other leaf of the wreath darker (two-tone wreath)
+LEATHER_DK = "#56412F"
+CHEEK = "#D49A8A"         # round rosy cheeks (saturation 0.35, 25 levels under the skin)
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.65   # over the soldiers' 1.35: highlight 0.055-0.057 at idle 0 with 1.45 (band 0.06-0.10)
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", HAIR: "fur", HAIR_DK: "fur", LEAF: "cloth", LEAF_DK: "cloth", HERB: "fur",
+                           HERB_DK: "fur", LEATHER: "leather", LEATHER_DK: "leather", BONE: "bone", FUR: "fur",
+                           CHEEK: "skin", "team": "hide"})
 
 HIP_Y, SH_Y = 6.0, 11.6
 
@@ -63,33 +79,56 @@ def build(rig):
     for x, y in ((9.0, -7.0), (2.0, -12.0), (-7.0, -10.0), (10.5, 4.0)):
         g.lathe([(2.6, 0), (0, -2.6)], (x, y, 13.4), segs=8)
     rig.part("skirt", g, team=True)
+    # W1: a team-dark band round the long skirt above its hem (the team zone in two tones, still team)
+    W1.ring(rig, "skirt", (0.4, 0, 15.6), 13.15, height=2.8, team=True, p1=(0.4, 0, 13.0), segs=40, outline=0,
+            bulge=0.35)
     g = Geo().blob((0.4, 0, 31.0), (12.6, 11.8, 7.6), p=2.4, taper=(1.05, 0.9))
     g.clip((0, 0, 25.0), (0, 0, -1))
+    shawl_face = F.Face(rig, "torso", [g])
     rig.part("torso", g, team=True)
+    # W1: the shawl's border in the team-dark tone (laid in pieces along its lower edge) and two spots
+    edge = [(-11.0, 27.0), (-5.0, 26.6), (1.0, 26.5), (7.0, 26.6), (11.4, 27.0)]
+    W1.stripes(rig, "torso", shawl_face, [[a, b] for a, b in zip(edge, edge[1:])], w=2.6)
+    W1.team_spots(rig, "torso", shawl_face, [(-6.2, 33.4, 1.7, 1.4), (6.2, 30.0, 1.2, 1.0)])   # not a pair
     g = Geo()
     for k in range(7):
         a = -1.2 + k * 0.4
-        g.sphere((math.cos(a) * 11.0 + 0.4, math.sin(a) * 10.4, 23.4), 1.3, cuts=2)
-    rig.part("torso", g, BONE, outline=0.4)
-    # herb pouch at the near hip
+        g.sphere((math.cos(a) * 11.0 + 0.4, math.sin(a) * 10.4, 23.4), 1.5, cuts=2)
+    rig.part("torso", g, BONE, finish="gloss", outline=0.4)
+    W1.ring(rig, "torso", (0.4, 0, 22.9), 10.7, height=1.0, ry=10.1, fill=LEATHER_DK, segs=36, outline=0, bulge=0.3)
+    # herb pouch at the near hip (W1: it swings a frame late, a dark flap with a bone toggle over the herbs)
+    rig.secondary("pouch", "hips", (-3.0, -11.0, 25.2), (-3.4, -11.4, 14.6), max_deg=12, gain=1.2)
     g = Geo().blob((-3.0, -11.0, 20.0), (5.2, 4.0, 5.8), p=2.2, taper=(1.12, 0.78))
-    rig.part("hips", g, LEATHER)
+    rig.part("pouch", g, LEATHER)
     g = Geo()
     for dx, dz in ((-4.4, 26.0), (-2.0, 26.8), (0.4, 26.2)):
-        g.capsule((dx, -11.4, 24.0), (dx - 0.6, -11.8, dz + 1.6), 0.6, 0.5)
-    rig.part("hips", g, HERB, outline=0.4)
+        g.capsule((dx, -11.4, 24.0), (dx - 0.6, -11.8, dz + 1.6), 0.75, 0.6)
+    rig.part("pouch", g, HERB, outline=0.4)
+    g = Geo().blob((-3.0, -14.2, 22.6), (4.6, 1.2, 2.4), p=2.6, taper=(1.0, 0.9))
+    rig.part("pouch", g, LEATHER_DK, outline=0.5)
+    g = Geo().sphere((-3.0, -15.6, 21.0), 1.3, cuts=2)
+    rig.part("pouch", g, BONE, finish="gloss", outline=0.4)
     # grey bun with twigs, a leaf wreath, round smiling face
     hair = Geo().blob((-2.6, 0, 53.0), (9.8, 10.4, 5.2), p=2.2)
     hair.blob((-7.6, 0, 46.6), (4.4, 9.2, 7.4), p=2.2)
     hair.blob((-6.0, 0, 58.4), (4.4, 4.4, 4.0), p=2.2)
-    K.head(rig, SKIN, z=45.5, r=(10.6, 10.2, 10.0), jaw=(7.8, 8.6, 5.2), eye_r=3.6, extra_geos=(hair,),
-           brow_col=HAIR, grin="smile")
+    face = K.head(rig, SKIN, z=45.5, r=(10.6, 10.2, 10.0), jaw=(7.8, 8.6, 5.2), eye_r=3.6, extra_geos=(hair,),
+                  brow_col=HAIR, grin="smile")
     rig.part("head", hair, HAIR, finish="hair")
-    g = Geo()
+    g, g2 = Geo(), Geo()
     for k in range(8):
         a = math.radians(-160 + k * 40)
-        g.blob((1.0 + math.cos(a) * 9.4, math.sin(a) * 10.0, 52.0 + 1.2 * math.sin(2 * a)), (2.4, 1.4, 1.6), p=2.2)
+        (g if k % 2 == 0 else g2).blob((1.0 + math.cos(a) * 9.4, math.sin(a) * 10.0, 52.0 + 1.2 * math.sin(2 * a)),
+                                       (2.6, 1.5, 1.7), p=2.2)
     rig.part("head", g, LEAF)
+    rig.part("head", g2, LEAF_DK)       # W1: a two-tone wreath
+    # W1: darker strands in the grey bun and down the back hair, round rosy cheeks, an ear
+    W1.locks(rig, "head", [((-4.6, 60.0), (-8.0, 57.0), 1.3), ((-6.6, 50.4), (-10.0, 45.6), 1.3)], HAIR_DK, -9.0)
+    W1.blush(rig, "head", face, 7.6, 43.0, 3.0, 2.3, CHEEK)
+    ear = Geo().blob((-0.8, -10.0, 44.8), (2.2, 1.4, 2.8), p=2.2)
+    ear_face = F.Face(rig, "head", [ear])
+    rig.part("head", ear, SKIN, outline=0.6)
+    W1.blush(rig, "head", ear_face, -0.6, 44.6, 1.0, 1.7, CHEEK)
     g = Geo().capsule((-6.0, -1.0, 58.0), (-10.0, -2.0, 64.0), 0.6).capsule((-5.0, 1.0, 59.0), (-2.0, 1.5, 64.5), 0.6)
     rig.part("head", g, LEATHER, outline=0.4)
     # the herb bundle in the far fist
@@ -111,6 +150,18 @@ def build(rig):
     rig.track("muzzle", "fore_r", (fr[0] + 2.0, fr[1] - 2.0, fr[2] + 1.0))
     ARM_R = body.arm("r")
     ARM_L = body.arm("l", "bundle", (fl[0], fl[1], fl[2] + 10.0))
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the long skirt (her
+    biggest surface), the shawl's back and front, the herb pouch; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("skirt", "skirt", 0.0, 22.0, 7.5, "hide", team=True)
+    rig.damage_spot_at("shawl", "torso", -6.0, 33.0, 6.0, "hide", team=True)
+    rig.damage_spot_at("shawl_front", "torso", 8.0, 30.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("pouch", "pouch", -5.0, 14.0, 5.0, "hide", fill=LEATHER)
+    rig.damage_spot_at("hem", "skirt", -6.0, 17.0, 10.0, "hide", kind="strip", team=True)
 
 
 RIG = ARM_R = ARM_L = FR = None
@@ -159,9 +210,11 @@ A_THR = [0, -4, -4, -6, -6, 10, 18, 14, -4, 0, 0]
 A_THL = [0, 4, 6, 8, 8, -4, -12, -10, 4, 0, 0]
 
 
-def _attack_pose(f):
-    pose = merge(near(A_A[f], A_B[f]), far(-40, 30, 100), {
-        "torso": {"r": A_T[f]}, "head": {"r": -A_T[f] * 0.5},
+def _attack_pose(f, t=0.0):
+    """Frame f; `t` flicks the dust t degrees higher (the aimed variants, item 44): the arm swings further up, she
+    leans back and looks up. Legs and feet as they are."""
+    pose = merge(near(A_A[f] + 0.8 * t, A_B[f] + 0.9 * t), far(-40, 30, 100), {
+        "torso": {"r": A_T[f] + 0.15 * t}, "head": {"r": -A_T[f] * 0.5 + 0.3 * t}, "pupils": {"z": 0.025 * t},
         "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": -abs(A_THR[f]) * 0.6},
         "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": -abs(A_THL[f]) * 0.6},
         "pinch": {"show": f in (2, 3, 4, 5)},
@@ -190,9 +243,9 @@ def _attack_clip():
 # attack B: palm puff. 0, 1 = A, 2 palm up at the mouth, 3 HOLD (cheeks puffed, palm at the mouth,
 # leaning back), 4 inhale (partner), 5 blow starts, 6 IMPACT (blowing, leaning in, palm out), 7 follow,
 # 8-10 = A
-def _b_pose(i):
+def _b_pose(i, t=0.0):
     if i in (0, 1) or i >= 8:
-        return _attack_pose(i)
+        return _attack_pose(i, t)
     tab = [  # a, b, x, z, q, t
         (-40, 70, -1.0, 0.0, 0.02, 6),
         (-30, 80, -2.0, 0.6, 0.08, 12),
@@ -201,10 +254,10 @@ def _b_pose(i):
         (-10, 20, 3.0, -1.2, -0.10, -12),
         (-15, 30, 2.6, -0.6, 0.02, -8),
     ][i - 2]
-    a, b, x, z, q, t = tab
-    pose = merge(near(a, b), far(-40, 30, 100), {
-        "torso": {"r": t}, "head": {"r": -t * 0.6},
-        "thigh_r": {"r": -t * 0.8}, "thigh_l": {"r": t * 0.6},
+    a, b, x, z, q, tr = tab
+    pose = merge(near(a + 0.8 * t, b + 0.6 * t), far(-40, 30, 100), {
+        "torso": {"r": tr + 0.15 * t}, "head": {"r": -tr * 0.6 + 0.35 * t}, "pupils": {"z": 0.025 * t},
+        "thigh_r": {"r": -tr * 0.8}, "thigh_l": {"r": tr * 0.6},
         "pinch": {"show": i in (2, 3, 4, 5)},
     }, M.body_about((0, 0, 20), x=x, z=z, q=q))
     return merge(pose, F.expr("o" if i >= 5 else "grit"))
@@ -233,9 +286,18 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES)], [M.IDLE_MS] * M.IDLE_FRAMES, loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack := _attack_clip(),
+        attack_b := _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_variants(M.check_contract(cl))
+    cl = M.check_variants(M.check_contract(cl))
+    # W1 (item 44): the flick and the palm puff thrown up at flyers about 45 and 70 degrees (the extras sheet); the
+    # wind-up and the hold are A's and B's own frames, the release and its follow-through turn
+    return cl + (W1.authored_variants(attack, _attack_pose, AIM_W, 15.0)
+                 + W1.authored_variants(attack_b, _b_pose, AIM_W, 10.0))
+
+
+# per unique frame: the share of the aim's turn (0 = the base frame, reused); the release frame (5) is fully aimed
+AIM_W = [0, 0, 0, 0, 0.3, 1, 1, 0.6, 0, 0, 0]
+W1.register_aims(SLUG, clips=("attack", "attack_b"))

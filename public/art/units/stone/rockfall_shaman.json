@@ -2,8 +2,8 @@
  "frames": {
   "rockfall_shaman_idle_00": {
    "frame": {
-    "x": 283,
-    "y": 216,
+    "x": 286,
+    "y": 112,
     "w": 51,
     "h": 96
    },
@@ -26,17 +26,17 @@
   },
   "rockfall_shaman_idle_00_team": {
    "frame": {
-    "x": 294,
-    "y": 582,
-    "w": 43,
+    "x": 250,
+    "y": 301,
+    "w": 45,
     "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
+    "x": 101,
     "y": 111,
-    "w": 43,
+    "w": 45,
     "h": 73
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "rockfall_shaman_idle_01": {
    "frame": {
-    "x": 122,
-    "y": 216,
+    "x": 125,
+    "y": 112,
     "w": 51,
     "h": 97
    },
@@ -74,17 +74,17 @@
   },
   "rockfall_shaman_idle_01_team": {
    "frame": {
-    "x": 341,
-    "y": 582,
-    "w": 42,
+    "x": 348,
+    "y": 301,
+    "w": 44,
     "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 102,
     "y": 111,
-    "w": 42,
+    "w": 44,
     "h": 73
    },
    "sourceSize": {
@@ -98,8 +98,8 @@
   },
   "rockfall_shaman_idle_02": {
    "frame": {
-    "x": 583,
-    "y": 112,
+    "x": 1201,
+    "y": 2,
     "w": 49,
     "h": 98
    },
@@ -122,17 +122,17 @@
   },
   "rockfall_shaman_idle_02_team": {
    "frame": {
-    "x": 576,
-    "y": 501,
-    "w": 41,
+    "x": 1116,
+    "y": 214,
+    "w": 44,
     "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 102,
     "y": 109,
-    "w": 41,
+    "w": 44,
     "h": 74
    },
    "sourceSize": {
@@ -170,17 +170,17 @@
   },
   "rockfall_shaman_idle_03_team": {
    "frame": {
-    "x": 51,
-    "y": 501,
-    "w": 40,
+    "x": 671,
+    "y": 214,
+    "w": 42,
     "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 103,
     "y": 106,
-    "w": 40,
+    "w": 42,
     "h": 77
    },
    "sourceSize": {
@@ -218,17 +218,17 @@
   },
   "rockfall_shaman_idle_04_team": {
    "frame": {
-    "x": 95,
-    "y": 501,
-    "w": 40,
+    "x": 624,
+    "y": 214,
+    "w": 43,
     "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 102,
     "y": 105,
-    "w": 40,
+    "w": 43,
     "h": 77
    },
    "sourceSize": {
@@ -266,17 +266,17 @@
   },
   "rockfall_shaman_idle_05_team": {
    "frame": {
-    "x": 576,
-    "y": 413,
-    "w": 40,
+    "x": 578,
+    "y": 214,
+    "w": 42,
     "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 102,
     "y": 105,
-    "w": 40,
+    "w": 42,
     "h": 78
    },
    "sourceSize": {
@@ -290,8 +290,8 @@
   },
   "rockfall_shaman_idle_06": {
    "frame": {
-    "x": 136,
-    "y": 112,
+    "x": 750,
+    "y": 2,
     "w": 50,
     "h": 99
    },
@@ -314,17 +314,17 @@
   },
   "rockfall_shaman_idle_06_team": {
    "frame": {
-    "x": 259,
-    "y": 501,
-    "w": 42,
+    "x": 717,
+    "y": 214,
+    "w": 44,
     "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
+    "x": 101,
     "y": 107,
-    "w": 42,
+    "w": 44,
     "h": 76
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "rockfall_shaman_idle_07": {
    "frame": {
-    "x": 528,
-    "y": 112,
+    "x": 1146,
+    "y": 2,
     "w": 51,
     "h": 98
    },
@@ -362,17 +362,17 @@
   },
   "rockfall_shaman_idle_07_team": {
    "frame": {
-    "x": 530,
-    "y": 501,
-    "w": 42,
+    "x": 1164,
+    "y": 214,
+    "w": 44,
     "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
+    "x": 101,
     "y": 110,
-    "w": 42,
+    "w": 44,
     "h": 74
    },
    "sourceSize": {
@@ -386,17 +386,17 @@
   },
   "rockfall_shaman_walk_00": {
    "frame": {
-    "x": 560,
-    "y": 216,
-    "w": 48,
+    "x": 565,
+    "y": 112,
+    "w": 49,
     "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
+    "x": 105,
     "y": 94,
-    "w": 48,
+    "w": 49,
     "h": 95
    },
    "sourceSize": {
@@ -410,17 +410,17 @@
   },
   "rockfall_shaman_walk_00_team": {
    "frame": {
-    "x": 537,
-    "y": 582,
-    "w": 45,
+    "x": 502,
+    "y": 301,
+    "w": 46,
     "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
+    "x": 101,
     "y": 110,
-    "w": 45,
+    "w": 46,
     "h": 72
    },
    "sourceSize": {
@@ -434,8 +434,8 @@
   },
   "rockfall_shaman_walk_01": {
    "frame": {
-    "x": 2,
-    "y": 318,
+    "x": 618,
+    "y": 112,
     "w": 53,
     "h": 91
    },
@@ -458,17 +458,17 @@
   },
   "rockfall_shaman_walk_01_team": {
    "frame": {
-    "x": 2,
-    "y": 660,
-    "w": 46,
+    "x": 602,
+    "y": 301,
+    "w": 48,
     "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 105,
+    "x": 103,
     "y": 112,
-    "w": 46,
+    "w": 48,
     "h": 71
    },
    "sourceSize": {
@@ -482,8 +482,8 @@
   },
   "rockfall_shaman_walk_02": {
    "frame": {
-    "x": 232,
-    "y": 216,
+    "x": 235,
+    "y": 112,
     "w": 47,
     "h": 97
    },
@@ -506,17 +506,17 @@
   },
   "rockfall_shaman_walk_02_team": {
    "frame": {
-    "x": 529,
-    "y": 413,
-    "w": 43,
+    "x": 481,
+    "y": 214,
+    "w": 45,
     "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
+    "x": 104,
     "y": 105,
-    "w": 43,
+    "w": 45,
     "h": 78
    },
    "sourceSize": {
@@ -530,17 +530,17 @@
   },
   "rockfall_shaman_walk_03": {
    "frame": {
-    "x": 350,
-    "y": 112,
-    "w": 45,
+    "x": 965,
+    "y": 2,
+    "w": 48,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
+    "x": 105,
     "y": 89,
-    "w": 45,
+    "w": 48,
     "h": 99
    },
    "sourceSize": {
@@ -554,17 +554,17 @@
   },
   "rockfall_shaman_walk_03_team": {
    "frame": {
-    "x": 2,
-    "y": 582,
-    "w": 41,
+    "x": 1212,
+    "y": 214,
+    "w": 43,
     "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 102,
     "y": 106,
-    "w": 41,
+    "w": 43,
     "h": 74
    },
    "sourceSize": {
@@ -578,8 +578,8 @@
   },
   "rockfall_shaman_walk_04": {
    "frame": {
-    "x": 505,
-    "y": 216,
+    "x": 510,
+    "y": 112,
     "w": 51,
     "h": 95
    },
@@ -602,17 +602,17 @@
   },
   "rockfall_shaman_walk_04_team": {
    "frame": {
-    "x": 586,
-    "y": 582,
-    "w": 45,
+    "x": 552,
+    "y": 301,
+    "w": 46,
     "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
+    "x": 101,
     "y": 110,
-    "w": 45,
+    "w": 46,
     "h": 72
    },
    "sourceSize": {
@@ -626,8 +626,8 @@
   },
   "rockfall_shaman_walk_05": {
    "frame": {
-    "x": 59,
-    "y": 318,
+    "x": 675,
+    "y": 112,
     "w": 54,
     "h": 89
    },
@@ -650,17 +650,17 @@
   },
   "rockfall_shaman_walk_05_team": {
    "frame": {
-    "x": 230,
-    "y": 660,
-    "w": 44,
+    "x": 833,
+    "y": 301,
+    "w": 45,
     "h": 69
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 103,
     "y": 114,
-    "w": 44,
+    "w": 45,
     "h": 69
    },
    "sourceSize": {
@@ -674,8 +674,8 @@
   },
   "rockfall_shaman_walk_06": {
    "frame": {
-    "x": 388,
-    "y": 216,
+    "x": 393,
+    "y": 112,
     "w": 45,
     "h": 96
    },
@@ -698,17 +698,17 @@
   },
   "rockfall_shaman_walk_06_team": {
    "frame": {
-    "x": 52,
-    "y": 660,
-    "w": 44,
+    "x": 654,
+    "y": 301,
+    "w": 45,
     "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 105,
+    "x": 104,
     "y": 108,
-    "w": 44,
+    "w": 45,
     "h": 71
    },
    "sourceSize": {
@@ -723,16 +723,16 @@
   "rockfall_shaman_walk_07": {
    "frame": {
     "x": 2,
-    "y": 216,
-    "w": 45,
+    "y": 112,
+    "w": 47,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
+    "x": 106,
     "y": 88,
-    "w": 45,
+    "w": 47,
     "h": 98
    },
    "sourceSize": {
@@ -746,17 +746,17 @@
   },
   "rockfall_shaman_walk_07_team": {
    "frame": {
-    "x": 245,
-    "y": 582,
-    "w": 45,
+    "x": 200,
+    "y": 301,
+    "w": 46,
     "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 102,
     "y": 106,
-    "w": 45,
+    "w": 46,
     "h": 73
    },
    "sourceSize": {
@@ -770,8 +770,8 @@
   },
   "rockfall_shaman_attack_00": {
    "frame": {
-    "x": 177,
-    "y": 216,
+    "x": 180,
+    "y": 112,
     "w": 51,
     "h": 97
    },
@@ -794,17 +794,17 @@
   },
   "rockfall_shaman_attack_00_team": {
    "frame": {
-    "x": 387,
-    "y": 582,
-    "w": 42,
+    "x": 299,
+    "y": 301,
+    "w": 45,
     "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 101,
     "y": 110,
-    "w": 42,
+    "w": 45,
     "h": 73
    },
    "sourceSize": {
@@ -818,8 +818,8 @@
   },
   "rockfall_shaman_attack_01": {
    "frame": {
-    "x": 437,
-    "y": 216,
+    "x": 442,
+    "y": 112,
     "w": 64,
     "h": 95
    },
@@ -842,18 +842,18 @@
   },
   "rockfall_shaman_attack_01_team": {
    "frame": {
-    "x": 206,
-    "y": 501,
-    "w": 49,
-    "h": 76
+    "x": 916,
+    "y": 214,
+    "w": 50,
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
-    "y": 107,
-    "w": 49,
-    "h": 76
+    "x": 99,
+    "y": 108,
+    "w": 50,
+    "h": 75
    },
    "sourceSize": {
     "w": 253,
@@ -890,8 +890,8 @@
   },
   "rockfall_shaman_attack_02_team": {
    "frame": {
-    "x": 171,
-    "y": 413,
+    "x": 119,
+    "y": 214,
     "w": 66,
     "h": 82
    },
@@ -938,18 +938,18 @@
   },
   "rockfall_shaman_attack_03_team": {
    "frame": {
-    "x": 526,
-    "y": 318,
+    "x": 1195,
+    "y": 112,
     "w": 66,
-    "h": 84
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 77,
-    "y": 99,
+    "y": 100,
     "w": 66,
-    "h": 84
+    "h": 83
    },
    "sourceSize": {
     "w": 253,
@@ -986,18 +986,18 @@
   },
   "rockfall_shaman_attack_04_team": {
    "frame": {
-    "x": 54,
-    "y": 413,
+    "x": 48,
+    "y": 214,
     "w": 67,
-    "h": 83
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 75,
-    "y": 100,
+    "y": 101,
     "w": 67,
-    "h": 83
+    "h": 82
    },
    "sourceSize": {
     "w": 253,
@@ -1034,8 +1034,8 @@
   },
   "rockfall_shaman_attack_05_team": {
    "frame": {
-    "x": 326,
-    "y": 318,
+    "x": 942,
+    "y": 112,
     "w": 49,
     "h": 87
    },
@@ -1058,17 +1058,17 @@
   },
   "rockfall_shaman_attack_06": {
    "frame": {
-    "x": 379,
-    "y": 318,
-    "w": 96,
+    "x": 995,
+    "y": 112,
+    "w": 97,
     "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 114,
+    "x": 113,
     "y": 103,
-    "w": 96,
+    "w": 97,
     "h": 86
    },
    "sourceSize": {
@@ -1082,8 +1082,8 @@
   },
   "rockfall_shaman_attack_06_team": {
    "frame": {
-    "x": 278,
-    "y": 660,
+    "x": 882,
+    "y": 301,
     "w": 83,
     "h": 67
    },
@@ -1106,17 +1106,17 @@
   },
   "rockfall_shaman_attack_07": {
    "frame": {
-    "x": 2,
-    "y": 112,
-    "w": 69,
+    "x": 613,
+    "y": 2,
+    "w": 72,
     "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 119,
+    "x": 116,
     "y": 92,
-    "w": 69,
+    "w": 72,
     "h": 100
    },
    "sourceSize": {
@@ -1130,17 +1130,17 @@
   },
   "rockfall_shaman_attack_07_team": {
    "frame": {
-    "x": 241,
-    "y": 413,
-    "w": 67,
+    "x": 189,
+    "y": 214,
+    "w": 69,
     "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 114,
+    "x": 112,
     "y": 108,
-    "w": 67,
+    "w": 69,
     "h": 80
    },
    "sourceSize": {
@@ -1154,17 +1154,17 @@
   },
   "rockfall_shaman_attack_08": {
    "frame": {
-    "x": 51,
-    "y": 216,
-    "w": 67,
+    "x": 53,
+    "y": 112,
+    "w": 68,
     "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 111,
+    "x": 110,
     "y": 93,
-    "w": 67,
+    "w": 68,
     "h": 97
    },
    "sourceSize": {
@@ -1178,18 +1178,18 @@
   },
   "rockfall_shaman_attack_08_team": {
    "frame": {
-    "x": 139,
-    "y": 501,
-    "w": 63,
-    "h": 76
+    "x": 848,
+    "y": 214,
+    "w": 64,
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
-    "y": 107,
-    "w": 63,
-    "h": 76
+    "x": 107,
+    "y": 108,
+    "w": 64,
+    "h": 75
    },
    "sourceSize": {
     "w": 253,
@@ -1202,8 +1202,8 @@
   },
   "rockfall_shaman_attack_09": {
    "frame": {
-    "x": 244,
-    "y": 112,
+    "x": 912,
+    "y": 2,
     "w": 49,
     "h": 99
    },
@@ -1226,17 +1226,17 @@
   },
   "rockfall_shaman_attack_09_team": {
    "frame": {
-    "x": 479,
-    "y": 413,
-    "w": 46,
+    "x": 429,
+    "y": 214,
+    "w": 48,
     "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 102,
     "y": 105,
-    "w": 46,
+    "w": 48,
     "h": 78
    },
    "sourceSize": {
@@ -1250,17 +1250,17 @@
   },
   "rockfall_shaman_attack_10": {
    "frame": {
-    "x": 297,
-    "y": 112,
-    "w": 49,
+    "x": 804,
+    "y": 2,
+    "w": 50,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 105,
+    "x": 104,
     "y": 91,
-    "w": 49,
+    "w": 50,
     "h": 99
    },
    "sourceSize": {
@@ -1274,17 +1274,17 @@
   },
   "rockfall_shaman_attack_10_team": {
    "frame": {
-    "x": 440,
-    "y": 501,
-    "w": 41,
+    "x": 970,
+    "y": 214,
+    "w": 44,
     "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
+    "x": 100,
     "y": 108,
-    "w": 41,
+    "w": 44,
     "h": 75
    },
    "sourceSize": {
@@ -1298,8 +1298,8 @@
   },
   "rockfall_shaman_hit_00": {
    "frame": {
-    "x": 190,
-    "y": 318,
+    "x": 806,
+    "y": 112,
     "w": 68,
     "h": 88
    },
@@ -1322,8 +1322,8 @@
   },
   "rockfall_shaman_hit_00_team": {
    "frame": {
-    "x": 190,
-    "y": 582,
+    "x": 145,
+    "y": 301,
     "w": 51,
     "h": 73
    },
@@ -1346,8 +1346,8 @@
   },
   "rockfall_shaman_hit_01": {
    "frame": {
-    "x": 399,
-    "y": 112,
+    "x": 1017,
+    "y": 2,
     "w": 65,
     "h": 98
    },
@@ -1370,8 +1370,8 @@
   },
   "rockfall_shaman_hit_01_team": {
    "frame": {
-    "x": 2,
-    "y": 413,
+    "x": 1143,
+    "y": 112,
     "w": 48,
     "h": 84
    },
@@ -1394,8 +1394,8 @@
   },
   "rockfall_shaman_hit_02": {
    "frame": {
-    "x": 75,
-    "y": 112,
+    "x": 689,
+    "y": 2,
     "w": 57,
     "h": 99
    },
@@ -1418,18 +1418,18 @@
   },
   "rockfall_shaman_hit_02_team": {
    "frame": {
-    "x": 2,
-    "y": 501,
-    "w": 45,
-    "h": 77
+    "x": 530,
+    "y": 214,
+    "w": 44,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 100,
-    "y": 106,
-    "w": 45,
-    "h": 77
+    "y": 105,
+    "w": 44,
+    "h": 78
    },
    "sourceSize": {
     "w": 253,
@@ -1442,17 +1442,17 @@
   },
   "rockfall_shaman_hit_03": {
    "frame": {
-    "x": 338,
-    "y": 216,
-    "w": 46,
+    "x": 341,
+    "y": 112,
+    "w": 48,
     "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 107,
+    "x": 105,
     "y": 94,
-    "w": 46,
+    "w": 48,
     "h": 96
    },
    "sourceSize": {
@@ -1466,17 +1466,17 @@
   },
   "rockfall_shaman_hit_03_team": {
    "frame": {
-    "x": 487,
-    "y": 582,
-    "w": 46,
+    "x": 450,
+    "y": 301,
+    "w": 48,
     "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 101,
     "y": 111,
-    "w": 46,
+    "w": 48,
     "h": 72
    },
    "sourceSize": {
@@ -1490,8 +1490,8 @@
   },
   "rockfall_shaman_hit_04": {
    "frame": {
-    "x": 190,
-    "y": 112,
+    "x": 858,
+    "y": 2,
     "w": 50,
     "h": 99
    },
@@ -1514,17 +1514,17 @@
   },
   "rockfall_shaman_hit_04_team": {
    "frame": {
-    "x": 485,
-    "y": 501,
-    "w": 41,
+    "x": 1018,
+    "y": 214,
+    "w": 43,
     "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 103,
     "y": 108,
-    "w": 41,
+    "w": 43,
     "h": 75
    },
    "sourceSize": {
@@ -1538,8 +1538,8 @@
   },
   "rockfall_shaman_die_00": {
    "frame": {
-    "x": 262,
-    "y": 318,
+    "x": 878,
+    "y": 112,
     "w": 60,
     "h": 87
    },
@@ -1562,8 +1562,8 @@
   },
   "rockfall_shaman_die_00_team": {
    "frame": {
-    "x": 433,
-    "y": 582,
+    "x": 396,
+    "y": 301,
     "w": 50,
     "h": 72
    },
@@ -1610,8 +1610,8 @@
   },
   "rockfall_shaman_die_01_team": {
    "frame": {
-    "x": 125,
-    "y": 413,
+    "x": 2,
+    "y": 214,
     "w": 42,
     "h": 83
    },
@@ -1658,8 +1658,8 @@
   },
   "rockfall_shaman_die_02_team": {
    "frame": {
-    "x": 479,
-    "y": 318,
+    "x": 1096,
+    "y": 112,
     "w": 43,
     "h": 85
    },
@@ -1682,8 +1682,8 @@
   },
   "rockfall_shaman_die_03": {
    "frame": {
-    "x": 468,
-    "y": 112,
+    "x": 1086,
+    "y": 2,
     "w": 56,
     "h": 98
    },
@@ -1706,18 +1706,18 @@
   },
   "rockfall_shaman_die_03_team": {
    "frame": {
-    "x": 388,
-    "y": 501,
-    "w": 48,
-    "h": 75
+    "x": 1065,
+    "y": 214,
+    "w": 47,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 105,
-    "w": 48,
-    "h": 75
+    "y": 106,
+    "w": 47,
+    "h": 74
    },
    "sourceSize": {
     "w": 253,
@@ -1730,8 +1730,8 @@
   },
   "rockfall_shaman_die_04": {
    "frame": {
-    "x": 394,
-    "y": 413,
+    "x": 344,
+    "y": 214,
     "w": 81,
     "h": 78
    },
@@ -1754,9 +1754,9 @@
   },
   "rockfall_shaman_die_04_team": {
    "frame": {
-    "x": 443,
-    "y": 660,
-    "w": 60,
+    "x": 1047,
+    "y": 301,
+    "w": 59,
     "h": 63
    },
    "rotated": false,
@@ -1764,7 +1764,7 @@
    "spriteSourceSize": {
     "x": 84,
     "y": 117,
-    "w": 60,
+    "w": 59,
     "h": 63
    },
    "sourceSize": {
@@ -1778,8 +1778,8 @@
   },
   "rockfall_shaman_die_05": {
    "frame": {
-    "x": 117,
-    "y": 318,
+    "x": 733,
+    "y": 112,
     "w": 69,
     "h": 88
    },
@@ -1802,8 +1802,8 @@
   },
   "rockfall_shaman_die_05_team": {
    "frame": {
-    "x": 129,
-    "y": 582,
+    "x": 84,
+    "y": 301,
     "w": 57,
     "h": 73
    },
@@ -1826,8 +1826,8 @@
   },
   "rockfall_shaman_die_06": {
    "frame": {
-    "x": 305,
-    "y": 501,
+    "x": 765,
+    "y": 214,
     "w": 79,
     "h": 75
    },
@@ -1850,8 +1850,8 @@
   },
   "rockfall_shaman_die_06_team": {
    "frame": {
-    "x": 100,
-    "y": 660,
+    "x": 703,
+    "y": 301,
     "w": 62,
     "h": 69
    },
@@ -1874,8 +1874,8 @@
   },
   "rockfall_shaman_die_07": {
    "frame": {
-    "x": 312,
-    "y": 413,
+    "x": 262,
+    "y": 214,
     "w": 78,
     "h": 79
    },
@@ -1898,8 +1898,8 @@
   },
   "rockfall_shaman_die_07_team": {
    "frame": {
-    "x": 166,
-    "y": 660,
+    "x": 769,
+    "y": 301,
     "w": 60,
     "h": 69
    },
@@ -1922,8 +1922,8 @@
   },
   "rockfall_shaman_die_08": {
    "frame": {
-    "x": 47,
-    "y": 582,
+    "x": 2,
+    "y": 301,
     "w": 78,
     "h": 73
    },
@@ -1946,8 +1946,8 @@
   },
   "rockfall_shaman_die_08_team": {
    "frame": {
-    "x": 507,
-    "y": 660,
+    "x": 1110,
+    "y": 301,
     "w": 59,
     "h": 62
    },
@@ -1970,8 +1970,8 @@
   },
   "rockfall_shaman_die_09": {
    "frame": {
-    "x": 365,
-    "y": 660,
+    "x": 969,
+    "y": 301,
     "w": 74,
     "h": 67
    },
@@ -1994,8 +1994,8 @@
   },
   "rockfall_shaman_die_09_team": {
    "frame": {
-    "x": 570,
-    "y": 660,
+    "x": 1173,
+    "y": 301,
     "w": 58,
     "h": 57
    },
@@ -2129,15 +2129,15 @@
   "image": "rockfall_shaman.png",
   "format": "RGBA8888",
   "size": {
-   "w": 640,
-   "h": 736
+   "w": 1280,
+   "h": 376
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.rockfall_shaman",
    "name": "Rockfall Shaman",
    "heightLu": 66,
-   "widthLu": 35.8,
+   "widthLu": 36.6,
    "pxPerLu": 1.23,
    "feetPx": [
     127.0,
@@ -2482,7 +2482,7 @@
         0,
         23.8
        ],
-       "scale": 0.447
+       "scale": 0.458
       },
       {
        "id": "fx.ko_stars",
@@ -2492,7 +2492,7 @@
         36.3
        ],
        "loops": 2,
-       "scale": 0.669
+       "scale": 0.676
       }
      ],
      "hideUnitAtMs": 695,

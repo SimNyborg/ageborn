@@ -2,8 +2,8 @@
  "frames": {
   "hunting_wolves_attack_b_01": {
    "frame": {
-    "x": 319,
-    "y": 2,
+    "x": 586,
+    "y": 144,
     "w": 179,
     "h": 179
    },
@@ -26,8 +26,8 @@
   },
   "hunting_wolves_attack_b_01_team": {
    "frame": {
-    "x": 732,
-    "y": 224,
+    "x": 769,
+    "y": 160,
     "w": 124,
     "h": 128
    },
@@ -51,8 +51,8 @@
   "hunting_wolves_attack_b_02": {
    "frame": {
     "x": 2,
-    "y": 2,
-    "w": 141,
+    "y": 124,
+    "w": 143,
     "h": 218
    },
    "rotated": false,
@@ -60,7 +60,7 @@
    "spriteSourceSize": {
     "x": 149,
     "y": 90,
-    "w": 141,
+    "w": 143,
     "h": 218
    },
    "sourceSize": {
@@ -74,7 +74,7 @@
   },
   "hunting_wolves_attack_b_02_team": {
    "frame": {
-    "x": 502,
+    "x": 769,
     "y": 2,
     "w": 120,
     "h": 154
@@ -98,9 +98,9 @@
   },
   "hunting_wolves_attack_b_03": {
    "frame": {
-    "x": 147,
-    "y": 2,
-    "w": 168,
+    "x": 223,
+    "y": 277,
+    "w": 170,
     "h": 195
    },
    "rotated": false,
@@ -108,7 +108,7 @@
    "spriteSourceSize": {
     "x": 155,
     "y": 114,
-    "w": 168,
+    "w": 170,
     "h": 195
    },
    "sourceSize": {
@@ -122,18 +122,18 @@
   },
   "hunting_wolves_attack_b_03_team": {
    "frame": {
-    "x": 586,
-    "y": 224,
-    "w": 142,
-    "h": 129
+    "x": 521,
+    "y": 456,
+    "w": 141,
+    "h": 126
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 171,
-    "y": 167,
-    "w": 142,
-    "h": 129
+    "y": 170,
+    "w": 141,
+    "h": 126
    },
    "sourceSize": {
     "w": 452,
@@ -147,7 +147,7 @@
   "hunting_wolves_attack_b_04": {
    "frame": {
     "x": 2,
-    "y": 366,
+    "y": 346,
     "w": 217,
     "h": 126
    },
@@ -170,9 +170,9 @@
   },
   "hunting_wolves_attack_b_04_team": {
    "frame": {
-    "x": 551,
-    "y": 496,
-    "w": 154,
+    "x": 208,
+    "y": 476,
+    "w": 153,
     "h": 104
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 163,
     "y": 192,
-    "w": 154,
+    "w": 153,
     "h": 104
    },
    "sourceSize": {
@@ -194,8 +194,8 @@
   },
   "hunting_wolves_attack_b_05": {
    "frame": {
-    "x": 626,
-    "y": 2,
+    "x": 149,
+    "y": 124,
     "w": 206,
     "h": 149
    },
@@ -218,17 +218,17 @@
   },
   "hunting_wolves_attack_b_05_team": {
    "frame": {
-    "x": 136,
-    "y": 496,
-    "w": 129,
+    "x": 227,
+    "y": 2,
+    "w": 128,
     "h": 114
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 174,
+    "x": 175,
     "y": 188,
-    "w": 129,
+    "w": 128,
     "h": 114
    },
    "sourceSize": {
@@ -242,8 +242,8 @@
   },
   "hunting_wolves_attack_c_01": {
    "frame": {
-    "x": 198,
-    "y": 224,
+    "x": 359,
+    "y": 2,
     "w": 195,
     "h": 137
    },
@@ -266,8 +266,8 @@
   },
   "hunting_wolves_attack_c_01_team": {
    "frame": {
-    "x": 425,
-    "y": 496,
+    "x": 769,
+    "y": 292,
     "w": 122,
     "h": 107
    },
@@ -290,8 +290,8 @@
   },
   "hunting_wolves_attack_c_02": {
    "frame": {
-    "x": 371,
-    "y": 366,
+    "x": 2,
+    "y": 476,
     "w": 202,
     "h": 121
    },
@@ -314,17 +314,17 @@
   },
   "hunting_wolves_attack_c_02_team": {
    "frame": {
-    "x": 709,
-    "y": 496,
-    "w": 123,
+    "x": 666,
+    "y": 447,
+    "w": 122,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 154,
+    "x": 155,
     "y": 193,
-    "w": 123,
+    "w": 122,
     "h": 99
    },
    "sourceSize": {
@@ -339,7 +339,7 @@
   "hunting_wolves_attack_c_03": {
    "frame": {
     "x": 397,
-    "y": 224,
+    "y": 144,
     "w": 185,
     "h": 133
    },
@@ -362,8 +362,8 @@
   },
   "hunting_wolves_attack_c_03_team": {
    "frame": {
-    "x": 223,
-    "y": 366,
+    "x": 397,
+    "y": 327,
     "w": 144,
     "h": 125
    },
@@ -386,8 +386,8 @@
   },
   "hunting_wolves_attack_c_04": {
    "frame": {
-    "x": 577,
-    "y": 366,
+    "x": 2,
+    "y": 2,
     "w": 221,
     "h": 118
    },
@@ -410,10 +410,10 @@
   },
   "hunting_wolves_attack_c_04_team": {
    "frame": {
-    "x": 269,
-    "y": 496,
+    "x": 365,
+    "y": 476,
     "w": 152,
-    "h": 109
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
@@ -421,7 +421,7 @@
     "x": 158,
     "y": 199,
     "w": 152,
-    "h": 109
+    "h": 108
    },
    "sourceSize": {
     "w": 452,
@@ -434,8 +434,8 @@
   },
   "hunting_wolves_attack_c_05": {
    "frame": {
-    "x": 2,
-    "y": 224,
+    "x": 558,
+    "y": 2,
     "w": 192,
     "h": 138
    },
@@ -458,8 +458,8 @@
   },
   "hunting_wolves_attack_c_05_team": {
    "frame": {
-    "x": 2,
-    "y": 496,
+    "x": 545,
+    "y": 327,
     "w": 130,
     "h": 116
    },
@@ -542,7 +542,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 896,
-   "h": 616
+   "h": 600
   },
   "scale": "3",
   "ageborn": {
