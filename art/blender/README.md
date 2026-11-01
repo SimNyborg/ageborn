@@ -265,6 +265,69 @@ pulse their thrust cones / tractor ring on a 2-frame beat; the bob stays in code
 loop in the same 1020 ms and 2D accents. `node art/blender/check_timing.mjs [ref]` fails if any
 clip duration or attack `impactAt` in `src/visuals/unitSheets.gen.ts` differs from the git ref.
 
+## Detail standard (art round, queue items 47, 46, 40, 44; wave W0 2026-11-01)
+
+The art round opens every model once and brings it to the detail standard of the art audit
+(`docs/design-history/item47-art-audit.md`, sections 5 and 6). Numbers are at game scale: 1.83 device px per
+lu (the HD sheet, 2.46 px/lu, drawn at 0.74x on a DPR 2 phone).
+
+**The standard, for every class** (audit 5.1; the per-class table and floors are in audit 5.2):
+
+1. *Size.* A secondary shape that must read as a shape is at least **2.5 lu** on its short side; 1.2-2.5 lu
+   reads only as texture (use it for breakup, never to carry meaning). Lines inside the silhouette 1.0-1.2 lu.
+2. *Value.* A secondary shape differs from its surroundings by at least **15 levels** of luminance or is
+   separated by a line. Each material: light, mid, core shadow and at most one highlight.
+3. *Silhouette.* 2-4 breakers (headgear, weapon, shoulder piece, cape, pack, tail, mane) of at least 4 lu; the
+   weapon keeps its full length and is at least 2.5 lu thick at its business end.
+4. *Materials.* Every colour gets a kind (`MATERIAL_KINDS`), see the lifts below. Metal: a hot spec and edge
+   wear; wood: grain along its length; stone: chips; hide and fur: clumps in two tones; dirt on the lower third.
+5. *Team zone.* 20-40% of the silhouette (never under 18% before the outline) in two tones: a trim, stripe,
+   panel or emblem of at least 2.5 lu in a team-dark or neutral tone. Detail over a team zone counts against it.
+6. *Shading and rim.* Cavity darkening, an edge highlight on raised edges, a top rim that survives the outline.
+7. *Outline v4* (thinner and darker than v3; see L5). Do not thin it further without growing the parts.
+8. *Normals.* Hard edges only where a crease is meant: flat-shaded slabs for plates, blades and planks (the
+   edge highlight lights their edges), smooth blobs and lathes elsewhere.
+9. *Motion.* The animation standard above, unchanged. New straps, pouches, tassels, manes and tails are
+   secondary joints (`rig.secondary`) that follow through a frame or two late; no new part may jitter.
+10. *Data with every render* (each model is opened once): damage spots and trackers (item 40), `aimDeg` and
+    `release` per shot clip (item 44), the skin variants (item 46).
+11. *Pixel size is fixed* (HD 2.46 px/lu, 1x 1.23; Legendaries 2.05 and 1.03): HD sheet pixels within +2%.
+
+**Opt-in** (`ageborn_art/look.py`). A unit script sets `DETAIL_STANDARD = True` and
+`MATERIAL_KINDS = {hex: kind, ..., "team": kind}`. Without the flag every hook is a no-op and a re-render is
+byte for byte the shipped sheet (checked on the Pebbler and the Hoplite), so units outside a wave never change.
+Kinds: cloth, leather, hide, fur, wood, stone (stone, crystal, bone-like rock), bone, bronze, iron, gold,
+ceramic, polymer, glass, energy, skin. A colour without a kind still gets L2, L3 and L5. Decals and other
+`highlight=False` parts (eyes, mouths, emblems drawn as decals) and glows are never lifted.
+
+| Lift | What (all deterministic; no randomness) |
+|---|---|
+| L1 | per-kind breakup in object space (`look_rest` / `look_grain` point attributes written after the build: rest-pose coordinates and the part's own principal axes, so patterns never crawl): hide blotches, fur clumps along the part, cloth folds, leather mottle, wood grain along the length, stone chips and cracks (Voronoi), bone pores, brushed metal; posterized to three value tones at 3-8% of value; value only (a gain), so hue never moves; non-team colours in the A11 team hue bands keep HSV saturation <= 0.38 unless their kind is an accent (polished bronze, gold); dirt darkens the lower 20% / 34% of the height in two steps |
+| L2 | cavity: a 1.2 lu ambient occlusion posterized into a crisp crease (strength 0.4); a convex edge highlight on the lit side from the Bevel node (0.7 lu; masked off any occluded crease, so it never draws a line where two blobs of one mesh meet); a hot spec on metal kinds |
+| L3 | a 2D top rim (`look2d.top_rim`): a band just inside the silhouette where it faces up (from the blurred silhouette's gradient), 0.35 + 0.5 lu at full strength then fading, in the part's own lit colour with its value raised (hue and saturation kept); on team surfaces the lit team grey plus a white overlay in the base frame |
+| L4 | supersampling, **off** (owner decision): `AGEBORN_SUPERSAMPLE=1` renders at 2x, outlines at 2x, downsamples 2:1 (premultiplied) and sharpens luminance only (`look2d.sharpen_luma`: RGB x Y'/Y, so hue and saturation, and with them the colour rule, cannot change) |
+| L5 | outline v4 (`look.UNIT_OUTLINE_V4`): fill x 0.46, HSV value cap 0.42, 2.8 lu wide, inner cover 0.35 lu |
+| pack | an opt-in MaxRects packer (`look2d.maxrects`) keeps the HD sheet within +2% pixels |
+
+**Checks** (in `<slug>.stats.json` under `look`; a failure raises `LookCheckError`, so `render_all.py` does
+not install): the colour rule <= 10% on the RGBA frames and on the shipped PNG8 sheets (core and extras, HD and
+1x); team fill >= 18% on every frame before the outline; planted-foot drift <= 1 lu; and against the reference
+sheet (`AGEBORN_LOOK_REF`: a tree or git ref, default `HEAD`): silhouette area per frame and HD sheet pixels.
+`look_check.py <sheet>.hd.json --ref main` prints the audit's game-scale metrics (`look2d.game_metrics`:
+flat share, micro, edge density, highlight share, reconstructed from the audit's baselines) next to the
+reference's, plus the encoded colour rule.
+
+**Skin variants** (item 46, `ageborn_art/skins.py`). A unit script lists `SKINS = {"<skin>": {"kinds":
+{...}}}` and reads `getattr(rig, "skin", None)` in `build()`: same joints, trackers, poses and clips; skin
+materials, patterns and replacement parts. `render_all.py --units bonker --skins` (or `--units
+bonker@pumpkin_head`) renders the unit and its skins: `<slug>@<skin>[.x][.hd].{png,json}` with
+`visualId unit.<slug>@<skin>`, `skinOf`, `skin`, frame names `<slug>@<skin>_...` and `extrasOf
+<slug>@<skin>`, installed next to the unit's sheets; `gen_portraits.py <out> <slug>@<skin>` writes its card
+stills. After a skin render `look2d.parity` (also `skin_parity.py`) checks DESIGN A5.8 clarity parity
+against the unit's sheet: the same clip timing and anchors, silhouette IoU >= 0.85 on every frame, the same
+IoU inside 12 lu of every weapon anchor, team zones on every frame (>= 18%); a skin that fails is not
+installed.
+
 ## Install
 
 Blender's Python module needs **Python 3.11** (bpy 5.0.1 wheels exist only for 3.11).

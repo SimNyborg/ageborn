@@ -29,11 +29,12 @@ def main():
     from PIL import Image
 
     from ageborn_art import config as C
-    from ageborn_art import pipeline, render, scene, sheet
+    from ageborn_art import look, pipeline, render, scene, sheet
     from ageborn_art.rig import Rig
     C.set_render_scale(args.scale)
 
     mod = importlib.import_module(f"units.{args.unit}")
+    look.begin(mod)          # the detail standard's lifts, when the unit opted in
     scene.reset()
     canvas = (C.px(mod.CANVAS[0]), C.px(mod.CANVAS[1]))
     feet = (C.px(mod.FEET[0]), C.px(mod.FEET[1]))
@@ -42,11 +43,13 @@ def main():
                                                                 C.CHARACTER_YAW_V3 if args.v3 else C.CHARACTER_YAW_DEG)
     rig = Rig(mod.SLUG, yaw=yaw)
     mod.build(rig)
+    look.after_build(rig)
     from ageborn_art import retime
     clips = {c.name: c for c in (retime.retime(mod, mod.clips()) if args.v3 else mod.clips())}
     spec = pipeline.default_outline(mod)
     if args.v3 and not hasattr(mod, "OUTER_OUTLINE"):
         spec = C.UNIT_OUTLINE_V3
+    spec = look.outline_spec(spec)
     poses = {}
     tmp = tempfile.mkdtemp()
     tiles = []

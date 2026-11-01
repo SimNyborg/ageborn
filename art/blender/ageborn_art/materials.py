@@ -178,8 +178,16 @@ def _team_switch(nodes):
     return v.outputs[0]
 
 
+def _look():
+    """The detail standard's lifts (look.py) when the unit being built opted in, else None."""
+    from . import look
+    return look if look.STATE is not None else None
+
+
 def toon(fill_hex, highlight=True, finish="matte"):
     """Opaque cel-shaded material in a fixed palette colour. finish: matte, gloss or metal."""
+    if highlight and _look():
+        return _look().toon(fill_hex, finish)
     key = ("toon", fill_hex, highlight, finish)
     if key not in _cache:
         mat = bpy.data.materials.new(f"toon_{fill_hex}_{finish}")
@@ -203,6 +211,8 @@ def glow(hex_):
 
 def team():
     """Team-coloured surface (tabard, caparison, plume, shield face). See module doc."""
+    if _look():
+        return _look().team()
     key = ("team",)
     if key not in _cache:
         mat = bpy.data.materials.new("team")
