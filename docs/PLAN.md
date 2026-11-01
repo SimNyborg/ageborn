@@ -32,9 +32,10 @@ what we believe, how sure we are, and what we post next because of it.
 
 ## Current mix (until the next update; owner note 2026-10-22 sets the direction)
 
-- Per day: 2 grid Reels + 1 Story, both Reels from the indie-dev angle: devlogs (a real development problem, story
-  first, an open question) and "the game improves" before/after pieces. The bandit still scores the arms, but the
-  owner's direction decides the mix; at most one plain duel every other day, captioned as a balance test.
+- Per day: 2 grid Reels + 1 Story. Owner note 2026-11-01: most Reels are developer videos. Default day is two
+  devlogs (a real development problem, story first, an open question) or one devlog plus one before/after piece.
+  Balance-test duels at most 3 a week, never on consecutive days, framed as development tests; they also feed
+  round-up devlogs (DV12). The bandit still scores the arms, but the owner's direction decides the mix.
 - Before/after series ("Ageborn is getting better"): film the same scene at an older capture pin and a newer one.
   Material now: item 37 natural motion outside battle and item 34 live Ranked matches (both released on the game's
   main branch after 63d5865), round 2's new base models and Home diorama (63d5865). Coming: item 38, more dramatic
@@ -65,6 +66,8 @@ what we believe, how sure we are, and what we post next because of it.
   as two Carbineers and wins anyway. Needs its own shot (follow the crew after the hero dies).
 
 ## Owner notes (direction that overrides the numbers)
+
+- 2026-11-01: most videos must be developer videos; duels are the exception (at most 3 a week).
 
 - 2026-10-14: 2 Reels a day to start; go to 3 only when reach holds and the queue is 2 days ahead.
 - 2026-10-16: a daily Story; devlogs with strong storytelling where viewers feel they help build the
@@ -185,3 +188,5 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-31 evening: a worker restart lost the Story and DV11 schedules; DV11 went out late at 20:55 UTC by the
   evening status, no Story today. Lesson: schedule each post the moment it is queued, before any further work.
   R19 posted 11:35 UTC. Followers 150.
+- 2026-11-01: owner note: most Reels must be developer videos. Mix changed from "one devlog plus one balance test a
+  day" to two developer videos a day, with balance tests at most 3 a week and never on consecutive days.

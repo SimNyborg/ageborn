@@ -85,6 +85,10 @@ watched), share_rate, eng_rate, reach. Followers per post are not available from
 
 ## Content direction (from the first week)
 
+Owner note 2026-11-01, mix: most Reels must be developer videos (devlogs and before/after: a real development
+question, story first, the game getting better). Balance-test duels are the exception: at most 3 a week, never two
+days in a row, and always framed as a development test. Default day: two devlogs.
+
 Owner note 2026-10-27, before/after Reels: the "before" must look clearly bad and the "after" clearly good, so
 the improvement is obvious at a glance on a phone. A "before" that is only the current version with a few features
 switched off is not bad enough (the capsule layer-by-layer devlog was criticised for this).
