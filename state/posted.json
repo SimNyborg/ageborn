@@ -636,6 +636,16 @@
    "hook_type": "question",
    "experiment": "narrated-duel",
    "arm": "duel"
+  },
+  {
+   "id": "18106139492002619",
+   "permalink": "https://www.instagram.com/stories/ageborn_game/4020882281921114331",
+   "timestamp": "2026-11-01T15:22:31+0000",
+   "name": "story-dv11-plus-one",
+   "kind": "story",
+   "pillar": "devlog",
+   "hook": "+1 caveman, same elk: points to devlog #11",
+   "trial": false
   }
  ]
 }
