@@ -249,8 +249,11 @@ export class UnitDamage {
   /** Lays the marks and the strip out for the frame on screen (cheap when nothing changed). */
   layout(luPerUnit: number): void {
     const m = this.model;
-    const swaying = m.strip !== null && !this.lite && !this.reduce;
-    if (m.revision === this.laidRev && this.anim === this.laidAnim && this.frame === this.laidFrame && !this.animating && !swaying) return;
+    if (m.revision === this.laidRev && this.anim === this.laidAnim && this.frame === this.laidFrame && !this.animating) {
+      // nothing moved but the hanging strip's sway: turn the strip only (most frames of a damaged unit)
+      if (this.strip?.root.visible) this.strip.root.rotation = this.swayAngle();
+      return;
+    }
     this.laidRev = m.revision;
     this.laidAnim = this.anim;
     this.laidFrame = this.frame;
@@ -342,13 +345,17 @@ export class UnitDamage {
     if (st.mendAt >= 0) a *= Math.max(0, 1 - (this.clock - st.mendAt) / MEND_FADE_MS);
     node.root.visible = a > 0.02;
     node.root.position.set(x * k, -y * k);
-    // it hangs (gravity), swaying a little; Lite and Reduce motion: still (design 6)
-    const sway = this.lite || this.reduce ? 0 : 0.14 * Math.sin((this.stripSway / 520) * Math.PI * 2) + 0.05 * Math.sin((this.stripSway / 210) * Math.PI * 2);
-    node.root.rotation = sway;
+    node.root.rotation = this.swayAngle();
     const len = Math.max(0.6, Math.min(1.6, (st.spot.r || 10) / 11));
     node.root.scale.set(len * k, len * k);
     node.root.alpha = a;
-    this.animating = true;
+    if (st.mendAt >= 0) this.animating = true;
+  }
+
+  /** The strip hangs (gravity), swaying a little; Lite and Reduce motion: still (design 6). */
+  private swayAngle(): number {
+    if (this.lite || this.reduce) return 0;
+    return 0.14 * Math.sin((this.stripSway / 520) * Math.PI * 2) + 0.05 * Math.sin((this.stripSway / 210) * Math.PI * 2);
   }
 
   /**
