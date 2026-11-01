@@ -84,6 +84,15 @@ def build(rig):
     rig.part("palm_glow", g, glow=W.MINT_CORE, outline=1.0, outline_hex=W.MINT)
     rig.track("muzzle", "hand_r", PALM)
     KI.loose(rig, "mast_loose", MAST0, lambda j: _loose_mast(rig, j))
+    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
+    # the team pauldron (it covers the chest from the camera) and thigh, the white backpack, the helmet shell,
+    # the projector lens; motes drift from the lens at the last stage
+    rig.damage_spot_at("shoulder", "arm_r", -2.0, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("pack", "torso", -18.0, 32.0, 5.0, "metal", fill="#E9EDF2")
+    rig.damage_spot_at("helmet", "head", -2.0, 50.0, 5.0, "metal", fill="#444A57")
+    rig.damage_spot_at("lens", "mast", -12.0, 77.0, 5.0, "glass", fill="#E9EDF2")
+    rig.damage_spot_at("thigh", "thigh_r", -1.0, 14.0, 5.0, "metal", team=True)
+    rig.damage_spot("motes", "mast", (-9.5, -9.0, 76.0), 4.0, "motes", kind="emit", normal=(0, 0, 1))
 
 
 def _loose_mast(rig, j):

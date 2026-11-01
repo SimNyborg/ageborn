@@ -15,11 +15,12 @@ A spot frame is [x, y, rotDeg, scalePct, visPct]:
   rotDeg    the spot's in-plane turn since the rest pose, counter-clockwise on screen positive (1 deg)
   scalePct  how big a patch of the surface looks against the rest pose (100): the square root of the ratio
             of a unit patch's projected areas, so foreshortening and the joint's squash and stretch together;
-            the spot's `r` is its size at rest
+            the spot's `r` is its size at rest (a strip or emitter: a patch on its joint that faces the
+            camera at rest, so it follows the joint's turn and squash, not an edge's normal)
   visPct    0 when the spot's part is hidden, else for a mark 0 when its surface is turned away and otherwise
             the share of five camera rays (the centre and four points half a radius out) that reach the
-            spot's surface; a strip's rays without the facing test (it hangs free); an emitter 100 (its
-            puffs float in front of the body)
+            spot's surface; a strip's rays without the facing test and counting a ray that meets nothing
+            (it hangs free past its part's edge); an emitter 100 (its puffs float in front of the body)
 """
 import math
 
@@ -226,11 +227,18 @@ class Probe:
         # ray hits name the object (scene.ray_cast may hand back the evaluated copy): parts by name
         self._parts_by_name = {p["obj"].name: p for p in rig.parts}
         self._spot_rest = {}
+        self._patch = {}
         if rig.damage_spots:
             rig.apply({})
             bpy.context.view_layer.update()
             for name, s in rig.damage_spots.items():
-                v = self._spot_frame_vectors(s)
+                if s["kind"] != "mark":
+                    # a strip hangs and a puff floats in the picture plane: their rotation and scale follow a
+                    # patch that faces the camera at rest (a surface normal at a hem's edge, or an emitter's
+                    # direction, can foreshorten to nothing and make the scale jump)
+                    J3 = rig.joints[s["joint"]].matrix_world.to_3x3()
+                    self._patch[name] = (J3.transposed() @ -self.view).normalized()
+                v = self._spot_frame_vectors(s, self._patch.get(name))
                 self._spot_rest[name] = (v[1], max(v[2], 1e-3))
 
     # geometry ----------------------------------------------------------------------------------------
@@ -293,13 +301,14 @@ class Probe:
         return [p[0], p[1], p[0], p[1]]
 
     # spots -------------------------------------------------------------------------------------------
-    def _spot_frame_vectors(self, s):
+    def _spot_frame_vectors(self, s, n=None):
         """World centre, the screen angle of the spot's tangent, the screen area of a unit patch, the
-        world normal and the world tangents."""
+        world normal and the world tangents (the patch: the spot's surface normal, or `n` in the joint's
+        space)."""
         e = s["empty"]
         J = self.rig.joints[s["joint"]].matrix_world
         M3 = J.to_3x3()
-        n = s["normal"]
+        n = s["normal"] if n is None else n
         ref = Vector((1.0, 0.0, 0.0)) if abs(n.x) < 0.9 else Vector((0.0, 0.0, 1.0))
         t1 = (ref - n * ref.dot(n)).normalized()
         t2 = n.cross(t1)
@@ -319,7 +328,8 @@ class Probe:
         for _ in range(24):
             ok, loc, _, _, obj, _ = scene.ray_cast(depsgraph, o, self.view, distance=left)
             if not ok:
-                return False
+                # nothing in front: a strip hangs free there; a mark's patch runs off its part's edge
+                return s["kind"] == "strip"
             part = self._parts_by_name.get(obj.name) if obj is not None else None
             if part is not None and not part["obj"].hide_render:
                 return part["joint"] in s["on"] or (loc - origin).length >= want - tol
@@ -332,7 +342,7 @@ class Probe:
 
     def _spot(self, name, s, depsgraph):
         rig = self.rig
-        c, ang, area, nw, w1, w2 = self._spot_frame_vectors(s)
+        c, ang, area, nw, w1, w2 = self._spot_frame_vectors(s, self._patch.get(name))
         x, y = _scr(c, self.se, self.ce)
         ang0, area0 = self._spot_rest[name]
         rot = int(round(_wrap(ang - ang0)))

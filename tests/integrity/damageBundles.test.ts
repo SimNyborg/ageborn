@@ -7,7 +7,9 @@
  * - an entry lists exactly the sheet's clips (core and extras) with one value per unique frame;
  * - the vocabulary and the shapes are C1's: family, spot kinds and materials, mark radius, rounding to 0.1 lu,
  *   integer degrees and percents, ordered boxes;
- * - the data agrees with the pixels: every head point lies inside its frame as packed and every torso box overlaps it.
+ * - the data agrees with the pixels: every head point lies inside its frame as packed and every torso box overlaps it;
+ * - the eight representative units (one per family) carry 4-5 marks the camera sees, strips on team cloth, and every
+ *   visible mark or strip lies on its frame.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -180,16 +182,44 @@ describe('damage bundles (public/art/damage/<age>.json)', () => {
     expect(bad).toEqual([]);
   }, 60_000);
 
-  it('the eight representative units carry spots for their family (one per family)', () => {
+  it('the eight representative units carry spots for their family: 4-5 marks the camera sees, strips on team cloth', () => {
     const fams = new Set<string>();
+    const bad: string[] = [];
     for (const [slug, family] of Object.entries(SPOTTED)) {
-      const hit = [...bundles.values()].map((b) => b.units[slug]).find((e) => e !== undefined);
-      if (!hit?.spots) continue; // step 2 of the W0 DATA track adds them
-      expect(hit.family, slug).toBe(family);
-      expect(hit.spots.length, `${slug}: 4-5 marks plus strips and emitters`).toBeGreaterThanOrEqual(4);
-      fams.add(hit.family);
+      const age = [...bundles.keys()].find((a) => bundles.get(a)!.units[slug] !== undefined);
+      const e = age === undefined ? undefined : bundles.get(age)!.units[slug];
+      expect(e?.spots, `${slug}: spots`).toBeDefined();
+      if (!e?.spots || !e.clips || age === undefined) continue;
+      expect(e.family, slug).toBe(family);
+      fams.add(e.family);
+      const marks = e.spots.filter((s) => s.kind === 'mark');
+      expect(marks.length, `${slug}: 4-5 marks`).toBeGreaterThanOrEqual(4);
+      expect(marks.length, `${slug}: 4-5 marks`).toBeLessThanOrEqual(5);
+      for (const s of e.spots.filter((x) => x.kind === 'strip')) expect(s.team, `${slug} ${s.id}: strips hang from team cloth`).toBe(true);
+      // a mark sits where the camera sees it: its median visibility over idle, walk and attack is at least 50%
+      for (const s of marks) {
+        const vis = ['idle', 'walk', 'attack'].flatMap((c) => (e.clips![c]?.[s.id] ?? []).map((f) => f[4])).sort((a, b) => a - b);
+        const median = vis[Math.floor(vis.length / 2)] ?? 0;
+        if (median < 50) bad.push(`${slug} ${s.id}: median visibility ${median}% over idle, walk and attack`);
+      }
+      // a visible mark or strip lies on its frame as packed
+      const sheet = hdSheet(age, slug);
+      for (const [clip, meta] of Object.entries(sheet.clips)) {
+        const names = sheet.anims[clip] ?? [];
+        const teams = sheet.anims[`${clip}_team`] ?? [];
+        for (let i = 0; i < meta.frames; i++) {
+          const box = frameBoxLu(sheet, [names[meta.sequence.indexOf(i)], teams[meta.sequence.indexOf(i)]]);
+          if (!box) continue;
+          for (const s of e.spots) {
+            if (s.kind === 'emit') continue;
+            const [x, y, , , vis] = e.clips[clip]![s.id]![i]!;
+            if (vis > 0 && (x < box[0] - 2 || x > box[2] + 2 || y < box[1] - 2 || y > box[3] + 2)) bad.push(`${slug} ${clip}[${i}] ${s.id} (${x}, ${y}) off the frame`);
+          }
+        }
+      }
     }
-    expect(fams.size === 0 || fams.size === FAMILIES.length).toBe(true);
+    expect([...fams].sort()).toEqual([...FAMILIES].sort());
+    expect(bad).toEqual([]);
   });
 });
 

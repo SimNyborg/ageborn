@@ -252,6 +252,16 @@ def build(rig):
     rig.track("fist", "ram", FIST)
     I.fuse_spark(rig, "ram", (x, y - 3.0, fz - 22.0), size=2.6, name="sparks", seed=2, hidden=True)
     I.steam_puff(rig, "fore_r", (x + 8.0, y - 4.0, z - UP_L - 2.0), size=1.6, name="steam")
+    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
+    # the iron boiler's shoulder above the near arm and its team band beside the furnace, the ram fist's knuckle
+    # plate, the near shin, the dome cap; steam from the chimney and sparks at the near knee
+    rig.damage_spot_at("boiler", "hull", -10.0, 78.0, 6.0, "metal", fill="#5B6168")
+    rig.damage_spot_at("band", "hull", 22.0, 54.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("ram", "ram", -14.0, 22.0, 6.0, "metal", team=True)
+    rig.damage_spot_at("shin", "shin_r", -6.0, 4.0, 5.0, "metal", fill="#5B6168")
+    rig.damage_spot_at("dome", "head", 6.0, 82.0, 5.0, "metal", fill="#767D86")
+    rig.damage_spot("stack", "hull", (-19.0, 6.0, 107.0), 5.0, "steam", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("knee", "shin_r", (2.0, -19.0, 19.0), 4.0, "spark", kind="emit", normal=(0, -1, 0))
 
 
 # -- poses ---------------------------------------------------------------------------------

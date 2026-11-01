@@ -161,6 +161,16 @@ def build(rig):
         g.sphere((-4.0 + dx, -8.0, 56.0 + dz), r, cuts=4)
     rig.part("wsmoke", g, SOOT, finish="dust", outline=0.6)
     rig.track("_foot", "odo", (0, 0, 0))
+    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
+    # the team side panel and turret, the roof, the bonnet and the front wing; engine smoke from the bonnet
+    # and the exhaust at the back
+    rig.damage_spot_at("side", "hull", -18.0, 27.0, 7.0, "metal", team=True)
+    rig.damage_spot_at("turret", "turret", -10.0, 48.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("roof", "hull", -26.0, 38.0, 5.0, "metal", fill="#5B6168")
+    rig.damage_spot_at("bonnet", "hull", 24.0, 32.0, 5.0, "metal", fill="#5B6168")
+    rig.damage_spot_at("wing", "hull", 20.0, 25.0, 5.0, "metal", fill="#454A51")
+    rig.damage_spot("engine", "hull", (30.0, 0.0, 34.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("exhaust", "hull", (-40.0, 6.0, 14.0), 5.0, "smoke", kind="emit", normal=(-1, 0, 0))
 
 
 WHEELS = [f"wn{i}" for i in range(2)] + [f"wf{i}" for i in range(2)]

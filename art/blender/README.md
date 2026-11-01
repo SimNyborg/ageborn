@@ -283,13 +283,19 @@ rig.damage_spot("exhaust", "hull", (-30.0, 4.0, 28.0), 6.0, "smoke", kind="emit"
 `damage_spot_at` casts a camera ray at the joint's own parts at rest (as the face kit lays its decals), so the
 spot sits on the surface the viewer sees, with that surface's normal; the part it sees must be a team part for
 `team=True` and not one otherwise, and have the palette colour `fill="#RRGGBB"` when given (pin it for marks next
-to skin), or it raises. `damage_spot` takes a character-space point and normal like `rig.track`. A mark's radius is its surface patch (at least 5 lu; the runtime draws 6-9 lu
-marks within about 70% of it), a strip's its longest hanging length, an emitter's its puff size. Materials:
+to skin), or it raises. `damage_spot` takes a character-space point and normal like `rig.track`. A mark's radius
+is its surface patch (at least 5 lu; the runtime draws 6-9 lu marks within about 70% of it), a strip's its longest
+hanging length, an emitter's its puff size. Materials:
 cloth, hide (hide and fur), metal, wood, stone (stone, crystal, bone), glass (glass and visors), energy; an
 emitter's medium: smoke, steam, spark, breath, motes. **Never on faces or skin** (no blood: damage shows on
 clothes, armour, shields and machines). Item 40 section 3.3 says what each family shows; 4-5 marks, a strip
 where the unit wears cloth, emitters where they fit. `on=` names other joints whose parts count as the spot's
-surface for its visibility rays (a mark on a cape that hangs from the torso).
+surface for its visibility rays (a mark on a cape that hangs from the torso). Place marks where the camera sees
+them through the unit's own motion, not only at rest: a belly band under a held spear, a tabard behind a shield
+arm or a boiler behind a swinging fist reads as hidden most of the time; check the visibility numbers in the
+preview (below) over idle, walk and attack and move the spot until they stay high. The eight representative
+units (Spear Hunter, Hoplite, Sabertooth, Destrier Knight, Armoured Car, Gyrocopter, Steam Golem, Holo
+Projector) are worked examples, one per family.
 
 **Body trackers** (item 38 B0): every unit gets a per-frame torso box and head point. The probe takes the joints
 `torso` (plus `hips`), `trunk`, `chest`, `horse`, `hull`, `plane`, `pod` or `orb` for the torso and `hhead`,
@@ -300,16 +306,21 @@ mount's), the first with parts; odd rigs call `rig.body_trackers(torso, head)` w
 **What is written** (`ageborn_art/probe.py`, the same code on both paths): per unique frame of every clip
 (extras clips too) each spot's `[x, y, rotDeg, scalePct, visPct]` (screen lu from the feet; the turn since rest;
 the size against rest, foreshortening and squash together, so `r` is the size at rest; for a mark the share of
-five camera rays that reach it, 0 when its part is hidden or turned away; a strip without the facing test; an
-emitter 100 unless hidden), the torso box `[x0, y0, x1, y1]` and the head point `[x, y]`. A render writes `<out>/<slug>.damage.json`; `render_all.py --install` (and
-`units/render_industrial.py`) merge it into `public/art/damage/<age>.json` (`ageborn_art/damage.py`: one unit per
-line, sorted, the same data gives the same bytes; families from item 40 appendix A, `DAMAGE_FAMILY` overrides).
+five camera rays that reach it, 0 when its part is hidden or turned away; a strip without the facing test, and a
+ray that meets nothing past its hem counts, as the strip hangs there; an emitter 100 unless hidden; a strip's and
+an emitter's turn and size follow a patch on its joint that faces the camera at rest), the torso box
+`[x0, y0, x1, y1]` and the head point `[x, y]`. A render writes `<out>/<slug>.damage.json`; `render_all.py
+--install` (and `units/render_industrial.py`) merge it into `public/art/damage/<age>.json`
+(`ageborn_art/damage.py`: one unit per line, sorted, the same data gives the same bytes; families from item 40
+appendix A, `DAMAGE_FAMILY` overrides).
 
 ```sh
 # every unit's bundle entry without Cycles, after a self-check against the shipped sheets
 .venv-blender/bin/python art/blender/anchors_only.py --units all --bundles --report /tmp/anchors.json
-# draw a unit's spots, torso boxes and head points over its shipped frames
+# draw a unit's spots, torso boxes and head points over its shipped frames (visibility per spot under each frame)
 .venv-blender/bin/python art/blender/spot_preview.py hoplite --clips idle,attack,die --out /tmp/hoplite_spots.png
+.venv-blender/bin/python art/blender/spot_preview.py hoplite --frames idle.0,walk.3,attack.6 --crop --scale 1.5 \
+    --out /tmp/hoplite_zoom.png
 ```
 
 The **self-check** runs before anything is written: the script must give the sheet's clips, frame counts,

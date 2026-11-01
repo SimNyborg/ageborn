@@ -6,8 +6,8 @@ times its scale (solid when the spot is fully visible, thin when partly, grey da
 away), with a tick for its rotation; a strip as a line hanging its length; an emitter as a small triangle.
 Numbers under each frame give the spot's visibility. No Blender needed (numpy and Pillow, e.g. the bpy venv).
 
-  .venv-blender/bin/python art/blender/spot_preview.py <slug> [--clips idle,attack] [--entry <slug>.damage.json] --out <png>
-      [--scale 1.0] [--team orange]
+  .venv-blender/bin/python art/blender/spot_preview.py <slug> [--clips idle,attack | --frames idle.0,attack.4]
+      [--entry <slug>.damage.json] --out <png> [--scale 1.0] [--team orange] [--crop]
 """
 import argparse
 import json
@@ -16,7 +16,7 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageChops, ImageDraw
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -76,6 +76,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("slug")
     ap.add_argument("--clips", default=None, help="comma-separated (default: every clip)")
+    ap.add_argument("--frames", help="only these unique frames, <clip>.<index> comma-separated (in this order)")
+    ap.add_argument("--crop", action="store_true", help="cut every tile to the box round the unit and its spots")
     ap.add_argument("--entry", help="a render's <slug>.damage.json (default: the age bundle's entry)")
     ap.add_argument("--out", required=True)
     ap.add_argument("--scale", type=float, default=1.0)
@@ -92,13 +94,17 @@ def main():
             raise SystemExit(f"{args.slug} has no entry in public/art/damage/{age}.json")
     frames, clips, feet, k = load_frames(age, args.slug)
     names = args.clips.split(",") if args.clips else list(entry["torso"])
+    want = None
+    if args.frames:
+        want = [(c, int(i)) for c, i in (f.rsplit(".", 1) for f in args.frames.split(","))]
+        names = list(dict.fromkeys(c for c, _ in want))
     spots = {s["id"]: s for s in entry.get("spots", [])}
     tiles, labels = [], []
     for clip in names:
         meta = clips[clip]
         seen = set()
         for step, idx in enumerate(meta["sequence"]):
-            if idx in seen:
+            if idx in seen or (want is not None and (clip, idx) not in want):
                 continue
             seen.add(idx)
             base = meta["_names"][step]
@@ -137,16 +143,33 @@ def main():
             labels.append(f"{clip}[{idx}] " + " ".join(vis_txt))
     if not tiles:
         raise SystemExit("nothing to draw")
+    if want is not None:   # the order asked for
+        order = {(c, i): n for n, (c, i) in enumerate(want)}
+        keyed = sorted(zip(tiles, labels), key=lambda t: order[(t[1].split("[")[0], int(t[1].split("[")[1].split("]")[0]))])
+        tiles, labels = [t for t, _ in keyed], [lab for _, lab in keyed]
+    if args.crop:
+        box = None
+        for im in tiles:
+            b = ImageChops.difference(im.convert("RGB"), Image.new("RGB", im.size, BG[:3])).getbbox()
+            if b:
+                box = b if box is None else (min(box[0], b[0]), min(box[1], b[1]), max(box[2], b[2]), max(box[3], b[3]))
+        if box:
+            m = 12
+            box = (max(0, box[0] - m), max(0, box[1] - m), min(tiles[0].size[0], box[2] + m), min(tiles[0].size[1], box[3] + m))
+            tiles = [im.crop(box) for im in tiles]
     cols = 6
     w, h = tiles[0].size
-    lab = 14
+    per = max(12, (w - 6) // 6)   # characters a label line holds (the default font is about 6 px wide)
+    lines = [[t[i:i + per] for i in range(0, len(t), per)] for t in labels]
+    lab = 12 * max(len(x) for x in lines) + 2
     rows = (len(tiles) + cols - 1) // cols
-    sheet = Image.new("RGBA", (w * cols, (h + lab) * rows), (255, 255, 255, 255))
+    sheet = Image.new("RGBA", (w * min(cols, len(tiles)), (h + lab) * rows), (255, 255, 255, 255))
     d = ImageDraw.Draw(sheet)
-    for n, (im, t) in enumerate(zip(tiles, labels)):
+    for n, (im, ls) in enumerate(zip(tiles, lines)):
         x, y = (n % cols) * w, (n // cols) * (h + lab)
         sheet.paste(im, (x, y))
-        d.text((x + 3, y + h + 1), t[:70], fill=(0, 0, 0, 255))
+        for j, t in enumerate(ls):
+            d.text((x + 3, y + h + 1 + 12 * j), t, fill=(0, 0, 0, 255))
     if args.scale != 1.0:
         sheet = sheet.resize((round(sheet.size[0] * args.scale), round(sheet.size[1] * args.scale)), Image.Resampling.LANCZOS)
     sheet.convert("RGB").save(args.out)
