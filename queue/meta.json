@@ -5,5 +5,12 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
+  },
+  "r20-1-mammoth-matriarch-vs-2-tuskbacks": {
+    "length_s": 7.6,
+    "format": "duel",
+    "hook_type": "question",
+    "experiment": "narrated-duel",
+    "arm": "duel"
   }
 }
