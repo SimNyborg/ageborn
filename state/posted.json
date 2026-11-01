@@ -621,6 +621,21 @@
    "hook_type": "story",
    "experiment": "indie-angle",
    "arm": "devlog"
+  },
+  {
+   "id": "18371751787208696",
+   "permalink": "https://www.instagram.com/reel/DfNCkraFIg5/",
+   "timestamp": "2026-11-01T15:20:57+0000",
+   "name": "r20-1-mammoth-matriarch-vs-2-tuskbacks",
+   "kind": "reel",
+   "pillar": "battle",
+   "hook": "1 Mammoth Matriarch vs 2 Tuskbacks, narrated balance test, spoken question from frame 1 (posted late after a worker restart)",
+   "trial": false,
+   "length_s": 7.6,
+   "format": "duel",
+   "hook_type": "question",
+   "experiment": "narrated-duel",
+   "arm": "duel"
   }
  ]
 }
