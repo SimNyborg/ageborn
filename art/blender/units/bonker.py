@@ -267,6 +267,21 @@ def build(rig):
     else:
         _head(rig)
     _arms_and_club(rig)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier; art/blender/README.md, spot_preview.py): never on
+    the face or skin. The team pelt in front of the belly, the hip pouch, the cape, the near shin wrap and the
+    club head (a cracked club at stage 2); a strip torn from the cape's hem. Positions are the rest pose as
+    drawn (the upper body sits LIFT higher)."""
+    rig.damage_spot_at("pelt", "torso", 10.5, 25.0, 6.0, "hide", team=True)
+    rig.damage_spot_at("pouch", "pouch", -6.1, 14.7, 5.0, "hide", team=True)
+    rig.damage_spot_at("cape", "cape", -12.0, 30.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("wrap", "shin_r", 1.0, 9.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("club", "club", 8.0, 53.0, 5.0, "wood", fill=WOOD)
+    rig.damage_spot_at("hem", "cape", -12.5, 23.0, 9.0, "hide", kind="strip", team=True)
 
 
 def _head(rig):

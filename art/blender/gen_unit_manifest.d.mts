@@ -7,12 +7,16 @@ export interface SheetJson {
   meta?: { scale?: string | number; image?: string; ageborn?: Record<string, unknown> & { clips?: Record<string, Record<string, unknown>> } };
 }
 
-/** A unit's and a skin's core and extras sheets (null when that file is not installed). */
+/** A unit's and a skin's core and extras sheets, 1x and HD (null, or left out for HD, when that file is not installed). */
 export interface SkinSheets {
   unit: SheetJson | null;
   unitX: SheetJson | null;
   skin: SheetJson | null;
   skinX: SheetJson | null;
+  unitHd?: SheetJson | null;
+  unitXHd?: SheetJson | null;
+  skinHd?: SheetJson | null;
+  skinXHd?: SheetJson | null;
 }
 
 export const AIM_SUFFIXES: readonly string[];

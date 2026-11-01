@@ -415,6 +415,21 @@ def build(rig):
     _horse(rig)
     _car(rig)
     _driver(rig)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, a wooden machine pulled by a horse; art/blender/README.md,
+    spot_preview.py): never on the driver's face or skin. The team car panel (the largest camera-facing part)
+    twice, the caparison and the horse's haunch; a strip torn from the caparison; smoke from the car at the
+    last stage (scorched, burning wood)."""
+    rig.damage_spot_at("panel", "cart", AX + 10.0, FLOOR_Z + 14.0, 6.0, "wood", team=True)
+    rig.damage_spot_at("panel_rear", "cart", AX - 6.0, FLOOR_Z + 12.0, 5.0, "wood", team=True)
+    rig.damage_spot_at("caparison", "horse", HX - 6.0, 38.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("haunch", "horse", HX - 20.0, 40.0, 5.0, "hide", fill=COAT)
+    rig.damage_spot_at("hem", "horse", HX + 6.0, 37.0, 9.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("smoke", "cart", (AX - 6.0, 0.0, FLOOR_Z + 20.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------

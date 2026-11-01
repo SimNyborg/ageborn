@@ -191,8 +191,9 @@ function timingOf(json) {
 
 /**
  * Problems with a skin sheet against its unit's own sheets (contract C3): names and ids, frame names, and the
- * same clips, frame counts, step durations, impact frames, anchor keys and extras as the unit. Each JSON may be
- * null when that file is not installed. `file` is the skin's core sheet name (`<slug>@<skinId>.json`).
+ * same clips, frame counts, step durations, impact frames, anchor keys and extras as the unit, for the 1x and the
+ * HD copies alike. Each JSON may be null (or left out) when that file is not installed. `file` is the skin's core
+ * sheet name (`<slug>@<skinId>.json`).
  */
 export function skinProblems(file, o) {
   const { slug, skin } = sheetName(file);
@@ -209,6 +210,8 @@ export function skinProblems(file, o) {
   const pairs = [
     ['', o.unit, o.skin],
     ['.x', o.unitX, o.skinX],
+    ['.hd', o.unitHd, o.skinHd],
+    ['.x.hd', o.unitXHd, o.skinXHd],
   ];
   for (const [suffix, unit, sk] of pairs) {
     const name = `${id}${suffix}.json`;
@@ -221,7 +224,7 @@ export function skinProblems(file, o) {
       out.push(`${where}: ${name} has no counterpart ${slug}${suffix}.json`);
       continue;
     }
-    if (suffix === '.x' && sk.meta?.ageborn?.extrasOf !== id) out.push(`${where}: ${name} must say extrasOf "${id}", got ${JSON.stringify(sk.meta?.ageborn?.extrasOf)}`);
+    if (suffix.startsWith('.x') && sk.meta?.ageborn?.extrasOf !== id) out.push(`${where}: ${name} must say extrasOf "${id}", got ${JSON.stringify(sk.meta?.ageborn?.extrasOf)}`);
     for (const f of Object.keys(sk.frames ?? {})) if (!f.startsWith(`${id}_`)) out.push(`${where}: frame "${f}" in ${name} is not prefixed "${id}_"`);
     if (!same(animNames(sk), animNames(unit))) out.push(`${where}: ${name} has clips ${animNames(sk).join(', ')}, the unit ${animNames(unit).join(', ')}`);
     for (const a of Object.keys(unit.animations ?? {})) {
@@ -272,13 +275,13 @@ export function collect(unitsDir = UNITS, portraitsDir = PORTRAITS) {
         rows.push(summarize(readJson(path.join(dir, f)), age, slug, readJson(path.join(dir, `${slug}.x.json`))));
         continue;
       }
-      const o = { unit: readJson(path.join(dir, `${slug}.json`)), unitX: readJson(path.join(dir, `${slug}.x.json`)), skin: readJson(path.join(dir, f)), skinX: readJson(path.join(dir, `${base}.x.json`)) };
-      // the HD copies pair up as the 1x ones do (the runtime loads the HD file on dense screens)
-      for (const suffix of ['.hd', '.x.hd']) {
-        const u = existsSync(path.join(dir, `${slug}${suffix}.json`));
-        const s = existsSync(path.join(dir, `${base}${suffix}.json`));
-        if (u !== s) throw new Error(`malformed skin sheet:\n  skin sheet ${f}: ${u ? `the unit has ${slug}${suffix}.json, the skin has no ${base}${suffix}.json` : `${base}${suffix}.json has no counterpart ${slug}${suffix}.json`}`);
-      }
+      // the HD copies pair up and match as the 1x ones do (the runtime loads the HD file on dense screens)
+      const pair = (suffix) => [readJson(path.join(dir, `${slug}${suffix}.json`)), readJson(path.join(dir, `${base}${suffix}.json`))];
+      const [unit, sk] = pair('');
+      const [unitX, skinX] = pair('.x');
+      const [unitHd, skinHd] = pair('.hd');
+      const [unitXHd, skinXHd] = pair('.x.hd');
+      const o = { unit, unitX, skin: sk, skinX, unitHd, skinHd, unitXHd, skinXHd };
       const still = existsSync(path.join(portraitsDir, `${base}.png`)) && existsSync(path.join(portraitsDir, `${base}_team.png`));
       skins.push(summarizeSkin(f, age, o, still));
     }
