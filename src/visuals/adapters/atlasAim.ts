@@ -7,7 +7,46 @@
  * again never rocks. An attack that starts from upright opens with a small counter-lean (anticipation); when the aim
  * ends the body stands up, where the spring's slight overshoot gives the follow-through. Angles are degrees above the
  * facing direction (aim up is positive).
+ *
+ * The art round's aim data (contract C2): a sheet writes, per shot clip, the drawn weapon's angle (`aimDeg`) and
+ * where the shot leaves (`release: { frame, atLu }`), `omni: true` on clips that emit rather than aim, and aimed
+ * variants (`<clip>_up45`, `<clip>_up70`, `<clip>_down`, `aimOf: "<clip>"`, with exactly the base clip's timing) in
+ * its extras sheet. The sheet's data wins over item 44's measured table (`unitAim.ts`), which stays the fallback.
  */
+import { DEFAULT_CLIP_AIM, type ClipAim } from '../unitAim';
+
+/** Where a shot leaves, as a sheet writes it: `{ frame, atLu }` (contract C2), or the bare point of item 44's first data. */
+export type ClipRelease = readonly [number, number] | { readonly frame: number; readonly atLu: readonly [number, number] };
+
+/** What the aim reads of a clip's meta (contract C2). */
+export interface ClipAimMeta {
+  aimDeg?: number;
+  release?: ClipRelease;
+  omni?: boolean;
+  aimOf?: string;
+}
+
+/** A release as the point it names (lu from the feet, x forward, y up), or undefined. */
+export function releasePoint(r: ClipRelease | undefined): readonly [number, number] | undefined {
+  if (!r) return undefined;
+  const p = Array.isArray(r) ? (r as readonly [number, number]) : (r as { atLu?: readonly [number, number] }).atLu;
+  return p && Number.isFinite(p[0]) && Number.isFinite(p[1]) ? p : undefined;
+}
+
+/**
+ * An attack clip's drawn aim: the sheet's own data where it writes any (`aimDeg`, `release`, `omni`), with the
+ * measured table's entry (`own`) filling what it leaves out; else the table's entry; else level. A clip with its own
+ * `aimDeg` has a real axis, so only the sheet's `omni` makes it an emitter then.
+ */
+export function clipAimOf(meta: ClipAimMeta | undefined, own: ClipAim | undefined): ClipAim {
+  const release = releasePoint(meta?.release);
+  if (meta && (meta.aimDeg !== undefined || release !== undefined || meta.omni === true)) {
+    const rel = release ?? own?.release;
+    const omni = meta.omni === true || (meta.aimDeg === undefined && own?.omni === true);
+    return { deg: meta.aimDeg ?? own?.deg ?? 0, ...(rel ? { release: rel } : {}), ...(omni ? { omni: true } : {}) };
+  }
+  return own ?? DEFAULT_CLIP_AIM;
+}
 
 /** The anticipation: this share of the lean, the other way, for this share of the wind-up (at most `ANTICIPATION_MS`). */
 export const ANTICIPATION_LEAN_SHARE = 0.2;

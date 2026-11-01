@@ -165,9 +165,10 @@ async function start(root: HTMLElement): Promise<void> {
     scheduler: pixi.scheduler,
     pixi: pixi.app,
     storage: safeStorage(),
-    portrait: (card, foil, size, plate) => {
-      // The provider takes the optional `plate` flag (docs/requests/wp4-portrait-plate-contract.md).
-      const req: Parameters<typeof art.portrait>[0] & { plate?: boolean } = { card, foil, size, side: 0, ...(plate === false ? { plate: false } : {}) };
+    portrait: (card, foil, size, plate, skin) => {
+      // The provider takes the optional `plate` flag (docs/requests/wp4-portrait-plate-contract.md) and, for the HUD's
+      // training card, `skinStill`: a skin's rendered still where it has one, else the card's own portrait (queue item 46).
+      const req: Parameters<typeof art.portrait>[0] & { plate?: boolean; skinStill?: boolean } = { card, foil, size, side: 0, ...(plate === false ? { plate: false } : {}), ...(skin ? { skin, skinStill: true } : {}) };
       return art.portrait(req);
     },
     t: (key, params) => services.i18n.t(key, params),

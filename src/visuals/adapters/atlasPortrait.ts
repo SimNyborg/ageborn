@@ -9,6 +9,7 @@ import type { AgeId, Foil } from '@/contracts/ids';
 import { drawPortraitPlate, foilFrame } from '../portraits';
 import { drawCloth2d, PORTRAIT_DRESS } from '../fortViews/fortDress';
 import { imageLedger } from '../textureMemory';
+import { skinSheetOf, skinStillBase } from '../skinSheets';
 
 /**
  * Units whose sheet is installed but whose card still is not rendered yet (`art/blender/gen_portraits.py`
@@ -17,11 +18,16 @@ import { imageLedger } from '../textureMemory';
  */
 export const UNITS_WITHOUT_STILLS: ReadonlySet<string> = new Set(['riveter', 'sapper']);
 
-/** `art/units/<age>/<slug>.json` → `art/portraits/<slug>` (no extension), or null for other sources. */
+/**
+ * `art/units/<age>/<slug>.json` → `art/portraits/<slug>` (no extension), or null for other sources. A troop skin's
+ * sheet (`<slug>@<skinId>.json`, queue item 46) → `art/portraits/<slug>@<skinId>` when both its stills are installed,
+ * else null (the skin's card then keeps its puppet portrait).
+ */
 export function portraitStillBase(source: string): string | null {
   // forts (A16.14.8): `art/forts/<age>/<slug>.json` → `art/forts/<age>/<slug>.portrait`
   const f = /^(.*art\/forts\/[a-z]+\/[a-z0-9_]+)\.json$/.exec(source);
   if (f?.[1]) return `${f[1]}.portrait`;
+  if (skinSheetOf(source)) return skinStillBase(source);
   const m = /art\/units\/[a-z]+\/([a-z0-9_]+)\.json$/.exec(source);
   const slug = m?.[1];
   return slug !== undefined && !UNITS_WITHOUT_STILLS.has(slug) ? `art/portraits/${slug}` : null;

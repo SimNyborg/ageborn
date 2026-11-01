@@ -44,8 +44,9 @@ import { renderPortrait } from '../portraits';
 import { portraitStillBase, renderStillPortrait } from './atlasPortrait';
 import { partSprite, PuffList, tintPartSprite } from './procedural/shared';
 import { aimedBulge, classicBulge } from '../effects/flight';
-import { DEFAULT_CLIP_AIM, leanPolicyOf, unitAimFor, type ClipAim, type LeanPolicy, type UnitAim } from '../unitAim';
+import { leanPolicyOf, unitAimFor, type ClipAim, type LeanPolicy, type UnitAim } from '../unitAim';
 import { aimLeanGoal, angleThroughBody, clampLean, LEAN_REDUCED_SHARE, stepLeanSpring, throughBody, type BodyXform, type LeanTiming, type SpringState } from './atlasAim';
+import { clipAimOf, type ClipRelease } from './atlasAim';
 import { AtlasBaseView } from './world/atlasBaseView';
 import { AtlasTurretView } from './world/atlasTurretView';
 import { isWorldSource, WorldAtlas, worldSourceAge } from './worldAtlas';
@@ -174,8 +175,15 @@ export interface AtlasClipMeta {
    * direction on screen). Wins over the `unitAim.ts` table, so a pipeline that measures it on the rig needs no code.
    */
   aimDeg?: number;
-  /** Attack clips (queue item 44, optional): where the shot leaves when the impact frame's muzzle is off the weapon (lu, x forward, y up). */
-  release?: readonly [number, number];
+  /**
+   * Attack clips (queue item 44, optional): where the shot leaves (contract C2: `{ frame, atLu }`, lu from the feet,
+   * x forward, y up; item 44's first data wrote the point alone).
+   */
+  release?: ClipRelease;
+  /** Aimed variants (contract C2): the shot clip this one aims, with exactly its timing (`atlasAim.ts`). */
+  aimOf?: string;
+  /** Attack clips that emit rather than aim (contract C2): no lean and no aimed path. */
+  omni?: boolean;
   /** Per-frame anchors (lu from the feet, y up): `muzzle`, `riderMuzzle`, `mgMuzzle`, ... */
   anchorsLu?: Readonly<Record<string, readonly (readonly [number, number] | null)[]>>;
   /** Walk only: ground speed at the authored timing (feet do not slide at this speed). */
@@ -1744,15 +1752,9 @@ class AtlasUnitView implements UnitView {
     return out;
   }
 
-  /** An attack clip's drawn aim: the sheet's own meta, else the `unitAim.ts` table, else level. */
+  /** An attack clip's drawn aim: the sheet's own meta (contract C2), else the `unitAim.ts` table, else level (`clipAimOf`). */
   private clipAim(anim: string): ClipAim {
-    const own = this.aim?.clips[anim];
-    const meta = this.sheet.clips[anim];
-    if (meta && (meta.aimDeg !== undefined || meta.release)) {
-      const release = meta.release ?? own?.release;
-      return { deg: meta.aimDeg ?? own?.deg ?? 0, ...(release ? { release } : {}), ...(own?.omni ? { omni: true } : {}) };
-    }
-    return own ?? DEFAULT_CLIP_AIM;
+    return clipAimOf(this.sheet.clips[anim], this.aim?.clips[anim]);
   }
 
   /** The body's transform as last placed: offset in the root's space, rotation, and scale per lu (x carries the facing). */

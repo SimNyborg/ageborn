@@ -621,7 +621,7 @@ function measureUrl(url: string): Promise<IdleStrip | null> {
 }
 
 /**
- * Whether the provider's strips draw a troop's skin: they do (docs/requests/motion-m-skinned-strips.md: its own
+ * Whether the provider's strips draw a troop's skin: they do (docs/requests/done/motion-m-skinned-strips.md: its own
  * sheet, or the skinned puppet as the lane draws it), so the still asks for the troop's skin and a skinned troop
  * keeps its outfit when the live layer takes over.
  */

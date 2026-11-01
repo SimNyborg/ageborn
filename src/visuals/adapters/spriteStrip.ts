@@ -22,7 +22,7 @@
  *   worker, a skin puppet's kept strip in the store), so a returning player's Home finds its troops ready, skins
  *   included.
  *
- * Skins (docs/requests/motion-m-skinned-strips.md): a troop's skin with its own sheet draws that sheet's strip;
+ * Skins (docs/requests/done/motion-m-skinned-strips.md): a troop's skin with its own sheet draws that sheet's strip;
  * a skin drawn as the procedural puppet (no sheet) draws the skinned puppet's idle clip as the lane draws it
  * (team colour, the skin's translucency and aura glow), on the main thread in idle time and kept like the rest;
  * a skin that cannot be drawn gets the card's own strip.
