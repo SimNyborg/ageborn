@@ -20,11 +20,14 @@ Animation (ANIM_SPEC G1 stomp, appendix B throwers: overhead and chest put):
             both arms from a lunge
   hit       light, heavy stagger;  die  D3 dizzy spin, sits down hard, the rock lands on his foot
 """
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import kit_stone as K
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from ageborn_art import look
+from units import stone_w1 as W1
 
 SLUG = "boulder_hurler"
 GAIT_NAME = "biped"
@@ -42,6 +45,20 @@ ROCK = "#8E8A82"
 ROCK_DK = "#6E6A63"
 CHALK = "#E8E2D4"
 LEATHER = "#7A5E48"
+# W1 (the detail standard)
+BEARD_LT = "#6E5A4C"      # lighter bristles in the dark beard (two tones, 28 levels over it)
+BONE = "#EDE3C8"          # bone rings on the huge upper arms, the belt's buckle
+LEATHER_DK = "#56412F"
+CHEEK = "#B68B6E"         # a ruddy cheek and ear (19 levels under the skin)
+ROCK_HI = "#B0ACA4"       # a fresh, lighter chip on the boulder (two-tone rock)
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.45   # a touch over the soldiers' 1.35: his big bare arms carry the highlight (0.059 at idle 0)
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", BEARD: "fur", BEARD_LT: "fur", FUR: "fur", ROCK: "stone", ROCK_DK: "stone",
+                           ROCK_HI: "stone", CHALK: "stone", LEATHER: "leather", LEATHER_DK: "leather", BONE: "bone",
+                           CHEEK: "skin", "team": "hide"})
 
 HIP_Y, SH_Y = 6.4, 13.4
 ROCK_R = 7.5
@@ -56,6 +73,14 @@ def _rock(rig, joint, c):
     g = Geo().lathe([(ROCK_R * 0.93, 0), (ROCK_R * 0.97, 0.6), (ROCK_R * 0.97, 1.8), (ROCK_R * 0.93, 2.4)],
                     (c[0], c[1], c[2] - 1.2), (c[0] + 0.6, c[1], c[2] + 1.2), segs=18)
     rig.part(joint, g, team=True, outline=0.4)   # a team-painted ring round the rock
+    # W1: a fresh, lighter chip knocked off the near face and a dark crack across it (the rock in two tones)
+    g = Geo().blob((c[0] + 2.8, c[1] - 5.6, c[2] + 2.6), (2.8, 1.4, 2.2), p=2.3, rot=(0, 0, 18))
+    rig.part(joint, g, ROCK_HI, outline=0)
+    g = Geo()
+    pts = [(c[0] - 4.4, c[1] - 6.0, c[2] - 3.8), (c[0] - 2.6, c[1] - 6.6, c[2] - 1.6), (c[0] - 3.4, c[1] - 6.7, c[2] + 0.2)]
+    for a, b in zip(pts, pts[1:]):
+        g.capsule(a, b, 0.6, segs=6, rings=2)
+    rig.part(joint, g, ROCK_DK, outline=0, highlight=False)
 
 
 def build(rig):
@@ -64,17 +89,35 @@ def build(rig):
     body = K.body(rig, SKIN, FUR, stocky=1.3, hip_y=HIP_Y, shoulder_y=SH_Y, torso_r=(12.6, 11.4, 11.6), foot_len=5.0,
                   fist=4.8, shoulder_z=36.0, neck_z=37.0)
     fr, fl = body.fist["r"], body.fist["l"]
-    K.pelt(rig, FUR, r=(12.8, 11.8, 7.0), skirt_r=(12.6, 11.6, 4.4))
+    deco = K.pelt(rig, FUR, r=(12.8, 11.8, 7.0), skirt_r=(12.6, 11.6, 4.4))
     K.wraps(rig, HIP_Y, SH_Y, wrists=("r", "l"))
     g = Geo().lathe([(12.2, 0), (13.1, 0.4), (13.1, 5.2), (12.0, 5.6)], (0.4, 0, 21.8), (0.6, 0, 27.4), segs=24)
-    rig.part("torso", g, team=True, outline=0.7)
+    look.team_part(rig, "torso", g, outline=0.7)   # the wide belt (W1: team-dark: the team zone in two tones)
+    # W1: a carved bone buckle, wildcat spots on the pelt, laces over the shin wraps, bone rings round the huge
+    # upper arms
+    g = Geo().blob((12.4, -7.4, 24.6), (2.6, 1.4, 2.4), p=2.4, rot=(0, 0, -36))
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    W1.team_spots(rig, "torso", deco, [(-8.0, 29.0, 1.8, 1.45), (8.6, 29.6, 1.6, 1.25), (-10.4, 26.0, 1.4, 1.1)])
+    for side, y in (("r", -HIP_Y), ("l", HIP_Y)):
+        W1.laces(rig, f"shin_{side}", 0.8, y - 3.85 if side == "r" else y - 3.6, 6.2, 10.8,
+                 LEATHER_DK if side == "r" else CC.scale(LEATHER_DK, 0.8))
+    for side, y in (("r", -SH_Y), ("l", SH_Y)):
+        W1.ring(rig, f"arm_{side}", (0.4, y, 31.6), 4.9, height=2.6, fill=BONE if side == "r" else CC.scale(BONE, 0.8),
+                p1=(1.5, y, 28.0), bulge=0.5, outline=0.6, finish="gloss")
     # small head, bald crown with a team rag band, a bristly beard
     beard = Geo().blob((7.0, 0, 41.5), (8.0, 9.6, 5.6), p=2.3)
     band = Geo().lathe([(9.0, 0), (9.9, 0.4), (9.9, 3.8), (8.6, 4.2)], (1.4, 0, 51.4), (0.2, 0, 55.2), segs=22)
-    K.head(rig, SKIN, z=47.0, r=(9.4, 9.0, 9.4), jaw=(7.0, 8.0, 5.2), nose=3.0, eye_r=3.4, eye_gap=(-4.0, 3.4),
-           extra_geos=(beard, band), brow_col=BEARD)
+    face = K.head(rig, SKIN, z=47.0, r=(9.4, 9.0, 9.4), jaw=(7.0, 8.0, 5.2), nose=3.0, eye_r=3.4,
+                  eye_gap=(-4.0, 3.4), extra_geos=(beard, band), brow_col=BEARD)
     rig.part("head", beard, BEARD, finish="hair")
     rig.part("head", band, team=True, outline=0.7)
+    # W1: lighter bristles in the beard, a ruddy cheek and an ear on the small bald head
+    W1.locks(rig, "head", [((9.8, 43.6), (10.6, 37.4), 1.3), ((5.8, 43.0), (6.6, 36.4), 1.3)], BEARD_LT, -9.4)
+    W1.blush(rig, "head", face, 6.0, 46.4, 2.4, 1.8, CHEEK)
+    ear = Geo().blob((-0.6, -9.0, 46.6), (2.2, 1.4, 2.8), p=2.2)
+    ear_face = F.Face(rig, "head", [ear])
+    rig.part("head", ear, SKIN, outline=0.6)
+    W1.blush(rig, "head", ear_face, -0.4, 46.4, 1.0, 1.7, CHEEK)
     rig.secondary("ragtail", "head", (-8.0, -4.0, 53.0), (-15.0, -4.5, 48.0), max_deg=18, gain=1.3)
     g = Geo().slab([(-7.6, 54.6), (-16.0, 50.8), (-17.4, 46.6), (-8.0, 50.6)], -4.0, 1.4)
     rig.part("ragtail", g, team=True, outline=0.7)
@@ -87,6 +130,17 @@ def build(rig):
     _rock(rig, "spare", (12.0, -2.0, ROCK_R * 0.9))
     ARM_R = body.arm("r")
     ARM_L = body.arm("l")
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the pelt's back half, the
+    wide belt in front of the bone pendant and the skirt; a strip torn from the skirt's hem (his shins are bare)."""
+    rig.damage_spot_at("pelt", "torso", -7.0, 24.5, 6.0, "hide", team=True)
+    rig.damage_spot_at("belt", "torso", 10.0, 27.5, 5.0, "hide", team=True)
+    rig.damage_spot_at("skirt", "skirt", 2.5, 20.5, 5.5, "hide", team=True)
+    rig.damage_spot_at("hem", "skirt", -6.0, 18.5, 10.0, "hide", kind="strip", team=True)
 
 
 RIG = ARM_R = ARM_L = ROCK_C = None

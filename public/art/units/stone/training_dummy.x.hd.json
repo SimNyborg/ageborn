@@ -2,7 +2,7 @@
  "frames": {
   "training_dummy_attack_b_02": {
    "frame": {
-    "x": 239,
+    "x": 500,
     "y": 2,
     "w": 127,
     "h": 173
@@ -26,8 +26,8 @@
   },
   "training_dummy_attack_b_02_team": {
    "frame": {
-    "x": 90,
-    "y": 373,
+    "x": 732,
+    "y": 2,
     "w": 107,
     "h": 94
    },
@@ -50,7 +50,7 @@
   },
   "training_dummy_attack_b_03": {
    "frame": {
-    "x": 2,
+    "x": 631,
     "y": 2,
     "w": 97,
     "h": 191
@@ -74,8 +74,8 @@
   },
   "training_dummy_attack_b_03_team": {
    "frame": {
-    "x": 359,
-    "y": 197,
+    "x": 843,
+    "y": 2,
     "w": 79,
     "h": 106
    },
@@ -98,7 +98,7 @@
   },
   "training_dummy_attack_b_04": {
    "frame": {
-    "x": 103,
+    "x": 364,
     "y": 2,
     "w": 132,
     "h": 182
@@ -122,18 +122,18 @@
   },
   "training_dummy_attack_b_04_team": {
    "frame": {
-    "x": 2,
-    "y": 373,
-    "w": 84,
-    "h": 99
+    "x": 926,
+    "y": 97,
+    "w": 86,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 156,
     "y": 207,
-    "w": 84,
-    "h": 99
+    "w": 86,
+    "h": 96
    },
    "sourceSize": {
     "w": 396,
@@ -146,8 +146,8 @@
   },
   "training_dummy_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 197,
+    "x": 208,
+    "y": 2,
     "w": 152,
     "h": 172
    },
@@ -170,8 +170,8 @@
   },
   "training_dummy_attack_b_05_team": {
    "frame": {
-    "x": 308,
-    "y": 373,
+    "x": 926,
+    "y": 2,
     "w": 91,
     "h": 91
    },
@@ -194,17 +194,17 @@
   },
   "training_dummy_attack_b_06": {
    "frame": {
-    "x": 158,
-    "y": 197,
-    "w": 197,
+    "x": 2,
+    "y": 2,
+    "w": 202,
     "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 184,
+    "x": 179,
     "y": 168,
-    "w": 197,
+    "w": 202,
     "h": 143
    },
    "sourceSize": {
@@ -218,18 +218,18 @@
   },
   "training_dummy_attack_b_06_team": {
    "frame": {
-    "x": 201,
-    "y": 373,
+    "x": 732,
+    "y": 100,
     "w": 103,
-    "h": 91
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 171,
-    "y": 213,
+    "y": 214,
     "w": 103,
-    "h": 91
+    "h": 89
    },
    "sourceSize": {
     "w": 396,
@@ -275,8 +275,8 @@
   "image": "training_dummy.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 448,
-   "h": 476
+   "w": 1024,
+   "h": 196
   },
   "scale": "3",
   "ageborn": {

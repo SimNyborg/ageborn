@@ -20,11 +20,16 @@ Animation (ANIM_SPEC G1, appendix B throwers; decided H6 art notes):
   attack_b  KNEELING LOB: drops to one knee and flicks the dart up on a steep arc from low
   hit       light;  die  D1 fling and spin, the dart flies off, X eyes
 """
+import math
+
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import kit_stone as K
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from ageborn_art import look
+from units import stone_w1 as W1
 
 SLUG = "atlatl_thrower"
 GAIT_NAME = "biped"
@@ -46,6 +51,17 @@ FLINT = "#7C8088"
 FEATHER = "#E9DFC9"
 FEATHER_TIP = "#5B4A3E"
 LEATHER = "#7A5E48"
+# W1 (the detail standard)
+LEATHER_DK = "#56412F"
+CHEEK = "#A8806A"         # a ruddy cheek and ear (16 levels under the skin)
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_SOLDIER
+LOOK_SHADE = W1.SHADE_SOLDIER
+LOOK_RIM = W1.RIM_SOLDIER
+MATERIAL_KINDS = W1.kinds({SKIN: "skin", HAIR: "fur", HAIR_GREY: "fur", FUR: "fur", BONE: "bone", BONE_DK: "bone",
+                           WOOD: "wood", FLINT: "stone", FEATHER: "fur", FEATHER_TIP: "fur", LEATHER: "leather",
+                           LEATHER_DK: "leather", CHEEK: "skin", "team": "hide"})
 
 HIP_Y, SH_Y = 5.4, 11.0
 BOARD = 13.0
@@ -77,12 +93,32 @@ def build(rig):
                   shoulder_z=36.0, neck_z=38.0)
     fr, fl = body.fist["r"], body.fist["l"]
     FR = fr
-    K.pelt(rig, FUR, r=(10.6, 9.6, 7.6), skirt_r=(11.0, 9.8, 4.6))
+    deco = K.pelt(rig, FUR, r=(10.6, 9.6, 7.6), skirt_r=(11.0, 9.8, 4.6))
     K.wraps(rig, HIP_Y, SH_Y, wrists=("l",))
+    # W1: wildcat spots in the team-dark tone, a dyed belt (team-dark) with a bone toggle, laces over the shin
+    # wraps, a thrower's leather bracer on the near forearm
+    W1.team_spots(rig, "torso", deco, [(-6.6, 27.2, 1.7, 1.4), (-1.8, 22.0, 1.5, 1.2), (7.8, 22.4, 1.4, 1.15)])
+    W1.ring(rig, "torso", (0.5, 0, 22.9), 11.15, height=3.0, ry=10.15, team=True, segs=40, outline=0.8)
+    g = Geo().blob((9.6, -6.8, 24.4), (2.2, 1.2, 1.9), p=2.4, rot=(0, 0, -36))
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
+    for side, y in (("r", -HIP_Y), ("l", HIP_Y)):
+        W1.laces(rig, f"shin_{side}", 0.8, y - 3.85 if side == "r" else y - 3.6, 6.2, 10.8, None,
+                 team=True)   # team-dark: leather laces cost the walk's team fill (the Torch Runner fell to 16.4%)
+    W1.ring(rig, "fore_r", (2.9, -SH_Y - 0.5, 24.6), 3.45, height=3.0, fill=LEATHER_DK, p1=(3.5, -SH_Y - 0.5, 21.5),
+            bulge=0.5, outline=0.6)
     # long team hide quiver on the back with four darts
     rig.joint("quiver", "torso", (-9.0, 2.0, 30.0))
     g = Geo().capsule((-8.0, 3.0, 20.0), (-13.0, 3.0, 44.0), 4.0, 4.6)
     rig.part("quiver", g, team=True)
+    # W1: team-dark bands round the quiver's mouth and foot (the long team quiver in two tones) and a fur trim
+    for c0, c1, r in (((-12.2, 3.0, 40.2), (-13.0, 3.0, 44.0), 4.5), ((-8.6, 3.0, 22.8), (-13.0, 3.0, 44.0), 4.1)):
+        W1.ring(rig, "quiver", c0, r, height=2.8, team=True, p1=c1, outline=0)
+    g = Geo()
+    for a in (-60.0, -20.0, 20.0):
+        ra = math.radians(a)
+        g.lathe([(1.8, 0), (0, 3.0)], (-13.0 + 4.4 * math.sin(ra), 3.0 - 4.4 * math.cos(ra), 44.4),
+                (-13.6 + 5.6 * math.sin(ra), 3.0 - 5.6 * math.cos(ra), 46.6), segs=8)
+    rig.part("quiver", g, FUR, finish="hair", outline=0.4)
     g = Geo()
     for k, dy in enumerate((-1.6, 0.4, 2.2, 0.0)):
         x0, z0 = -13.0 - k * 0.4, 44.0
@@ -95,13 +131,23 @@ def build(rig):
     rig.part("quiver", g, FEATHER, outline=0.4)
     g = Geo().capsule((-6.0, -6.0, 36.0), (6.0, 7.0, 22.0), 1.4, 1.4)   # quiver strap across the chest
     rig.part("torso", g, LEATHER, outline=0.6)
+    g = Geo().lathe([(1.2, 0), (2.0, 0.2), (2.0, 1.4), (1.2, 1.6)], (0.9, -6.0, 30.6), (1.6, -7.4, 30.8), segs=14)
+    rig.part("torso", g, BONE, finish="gloss", outline=0.5)    # W1: a carved bone ring on the strap
     # grey-streaked topknot, team feathered headband, a lean face
     hair = Geo().blob((-2.6, 0, 55.4), (9.6, 10.4, 5.4), p=2.2)
     hair.blob((-8.0, 0, 49.0), (4.4, 9.2, 7.2), p=2.2)
     band = Geo().lathe([(9.8, 0), (10.7, 0.4), (10.7, 2.8), (9.4, 3.2)], (1.6, 0, 53.2), (0.2, 0, 56.0), segs=22)
-    K.head(rig, SKIN, z=48.5, r=(10.2, 9.8, 10.6), jaw=(7.0, 7.8, 5.6), extra_geos=(hair, band), brow_col=HAIR_GREY)
+    face = K.head(rig, SKIN, z=48.5, r=(10.2, 9.8, 10.6), jaw=(7.0, 7.8, 5.6), extra_geos=(hair, band),
+                  brow_col=HAIR_GREY)
     rig.part("head", hair, HAIR, finish="hair")
     rig.part("head", band, team=True, outline=0.8)
+    # W1: grey streaks down the back hair (the veteran's two-tone hair), a ruddy cheek and an ear
+    W1.locks(rig, "head", [((-6.6, 51.6), (-10.4, 45.6), 1.35), ((-9.8, 52.6), (-12.2, 47.6), 1.25)], HAIR_GREY, -8.8)
+    W1.blush(rig, "head", face, 7.6, 46.6, 2.8, 2.0, CHEEK)
+    ear = Geo().blob((-0.9, -10.0, 48.0), (2.3, 1.5, 3.0), p=2.2)
+    ear_face = F.Face(rig, "head", [ear])
+    rig.part("head", ear, SKIN, outline=0.6)
+    W1.blush(rig, "head", ear_face, -0.7, 47.8, 1.1, 1.8, CHEEK)
     rig.secondary("knot", "head", (-2.0, 0, 58.0), (-6.0, 0, 67.0), max_deg=12, gain=1.1)
     g = Geo().blob((-2.6, 0, 60.4), (3.6, 3.6, 3.4), p=2.2)
     g.capsule((-2.6, 0, 61.0), (-6.5, -0.5, 68.0), 2.4, 0.8).capsule((-2.6, 0, 61.0), (1.5, 0.5, 67.0), 2.0, 0.7)
@@ -132,6 +178,18 @@ def build(rig):
     _dart(rig, "reload", (fl[0], fl[1] + 1.0, fl[2] + 14.0))
     ARM_R = body.arm("r", "atlatl", (fx, fy, fz + BOARD))
     ARM_L = body.arm("l")
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the pelt's back half, the
+    long team quiver on his back, the skirt and the near shin wrap; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("pelt", "torso", -4.0, 27.0, 6.5, "hide", team=True)
+    rig.damage_spot_at("quiver", "quiver", -11.0, 33.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("skirt", "skirt", 2.5, 20.5, 5.5, "hide", team=True)
+    rig.damage_spot_at("wrap", "shin_r", -2.3, 9.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("hem", "skirt", -6.0, 18.5, 10.0, "hide", kind="strip", team=True)
 
 
 RIG = ARM_R = ARM_L = TIP = FR = None

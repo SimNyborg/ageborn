@@ -19,12 +19,15 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import gait as G
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import Quad, bound
+from units import stone_w1 as W1
 
 SLUG = "sabertooth"
 GAIT_NAME = "quad"
@@ -50,6 +53,30 @@ PUPIL = "#221C19"
 MOUTH = "#5A2E2E"
 
 FANG_TIP = (36.0, -3.8, 22.5)
+# W1 (the detail standard)
+IVORY_DK = "#CFC3A6"      # the sabres' roots (two-tone fangs: darker roots, the polished tips lighter)
+CLAW = "#4A3E36"          # claws with lighter tips (IVORY)
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = W1.HIGHLIGHT_BEAST
+LOOK_SHADE = W1.SHADE_BEAST
+LOOK_RIM = W1.RIM_BEAST
+MATERIAL_KINDS = W1.kinds({FUR: "fur", FUR_DK: "fur", STRIPE: "fur", CREAM: "fur", NOSE: "hide", IVORY: "bone",
+                           IVORY_DK: "bone", STRAP: "leather", BONE: "bone", CLAW: "bone", "team": "hide"})
+
+# -- skin: Fossil Sabertooth (DESIGN A5.8, epic; "fossil bone look, amber eyes") ---------------------------------
+# Same joints, trackers, poses and clips. The coat becomes pale fossil bone (the stone kind: cracks and chips), the
+# tiger stripes dark fossil bands, a rib cage of dark bands down the flank and a spine line, amber eyes; the team
+# pelt, collar and bone teeth stay.
+F_BONE = "#DCD2BA"
+F_BONE_DK = "#B8AC92"
+F_BAND = "#6E6152"
+F_CREAM = "#EAE2D0"
+AMBER = "#E2AE5A"         # the amber eyes (saturation 0.60: a small accent, far under the 10% colour rule)
+SKINS = {"fossil_sabertooth": {
+    "kinds": W1.kinds({F_BONE: "stone", F_BONE_DK: "stone", F_BAND: "stone", F_CREAM: "bone"}),
+    "palette": {FUR: F_BONE, FUR_DK: F_BONE_DK, STRIPE: F_BAND, CREAM: F_CREAM, EYE: AMBER,
+                CC.scale(FUR_DK, 0.8): CC.scale(F_BONE_DK, 0.8), CC.scale(STRIPE, 0.8): CC.scale(F_BAND, 0.8)}}}
 
 
 def _leg(rig, name, p0, p1, front):
@@ -68,6 +95,16 @@ def _leg(rig, name, p0, p1, front):
     for dz in (-1.2, 1.2):   # toe bumps
         g.blob((px + (5.6 if front else 4.4), y - 1.0 if y < 0 else y + 1.0, 2.6 + dz), (1.9, 2.2, 1.5), p=2.2)
     rig.part(f"leg_{name}2", g, CREAM if y < 0 else FUR_DK)
+    # W1: tiger stripes round the legs (markings of 3 lu, the far legs' 20% darker) and the near paws' claws
+    g = Geo()
+    for t, w in ((0.3, 1.5), (0.62, 1.4)):
+        cx, cz = x0 + (x1 - x0) * t, z0 + (z1 - z0) * t
+        g.capsule((cx + 1.2, y - 6.2 if y < 0 else y - 4.6, cz + 1.4), (cx - 1.4, y - 5.4 if y < 0 else y - 3.8,
+                                                                       cz - 2.4), w, w * 0.6)
+    rig.part(f"leg_{name}", g, STRIPE if y < 0 else CC.scale(STRIPE, 0.8), outline=0)
+    if y < 0:
+        W1.claws(rig, f"leg_{name}2", [((px + (6.4 if front else 5.0), y - 1.6, 3.2 + dz), (1.0, -0.5))
+                                       for dz in (-1.4, 0.0, 1.4)], CLAW, IVORY, r=0.9, length=2.8)
 
 
 def build(rig):
@@ -102,7 +139,15 @@ def build(rig):
     g.clip((0, 0, 21.5), (0, 0, -1))
     for x in (-11.0, -5.5, 0.0, 5.5, 11.0):
         g.lathe([(2.6, 0), (0, -4.4)], (x, -11.6, 22.0), segs=8)
+    pelt_face = F.Face(rig, "trunk", [g])
     rig.part("trunk", g, team=True)
+    # W1: the war pelt in two tones: a team-dark band along its hem (in pieces round the barrel) and four tiger
+    # stripes painted on its flank, clear of the tear's centre (1.8 x 6 lu; two round spots side by side read as a
+    # face), still team
+    hem = [(-15.0, 24.4), (-9.0, 24.0), (-3.0, 23.9), (3.0, 24.0), (9.0, 24.3), (14.0, 24.8)]
+    W1.stripes(rig, "trunk", pelt_face, [[a, b] for a, b in zip(hem, hem[1:])], w=2.6)
+    for x0 in (-11.6, -7.6, 4.6, 8.6):
+        W1.seam(rig, "trunk", pelt_face, [(x0, 38.0), (x0 + 2.2, 32.0)], w=1.8, team=True)
     g = Geo().lathe([(0, -0.1), (11.0, 0), (11.6, 2.2), (0, 2.3)], (-10.0, 0, 31.5), (-9.0, 0, 31.5),
                     segs=22, squash=(1.1, 1.0))
     g.clip((0, 0, 20.0), (0, 0, -1))
@@ -113,13 +158,19 @@ def build(rig):
     rig.joint("head", "neck", (24, 0, 43), scale=1.22)  # a big readable head (fangs)
     g = Geo().blob((19, 0, 40), (8.6, 9.4, 9.6), p=2.2)
     rig.part("neck", g, FUR)
+    # W1: a dark scruff of fur clumps on the nape (a breaker on the top line, 3-4 lu)
+    g = Geo()
+    for x, z, L in ((13.6, 44.6, 4.4), (16.6, 47.0, 4.8), (19.6, 48.6, 4.2)):
+        g.lathe([(2.3, 0), (1.2, L * 0.55), (0, L)], (x, 0, z - 1.4), (x - 2.6, 0, z + L - 1.8), segs=8,
+                squash=(1.0, 0.7))
+    rig.part("neck", g, FUR_DK, finish="hair", outline=0.5)
     g = Geo().lathe([(9.4, 0), (10.8, 0.8), (10.8, 4.6), (9.2, 5.4)], (16.0, 0, 35.5), (20.5, 0, 44.5),
                     segs=22)
     rig.part("neck", g, team=True, outline=0.8)
     g = Geo()
     for dy, dz in ((-6.5, 0), (-2.5, -1.0), (2.0, -1.0)):
-        g.lathe([(1.1, 0), (0.8, 1.6), (0, 3.4)], (22.5, dy - 1.5, 38.5 + dz), (23.6, dy - 1.5, 34.8 + dz), segs=8)
-    rig.part("neck", g, BONE, outline=0.6)
+        g.lathe([(1.6, 0), (1.2, 2.0), (0, 4.4)], (22.5, dy - 1.8, 38.5 + dz), (23.8, dy - 1.9, 33.8 + dz), segs=8)
+    rig.part("neck", g, BONE, finish="gloss", outline=0.6)
     g = Geo().blob((26.5, 0, 46), (10.4, 9.8, 7.4), p=2.25)
     g.blob((33.0, 0, 42.2), (6.4, 7.0, 4.6), p=2.2)           # muzzle
     HEAD = g
@@ -167,6 +218,12 @@ def build(rig):
         g.lathe([(2.5, 0), (2.4, 5.0), (1.9, 11.0), (1.0, 15.5), (0, 17.6)], (33.4, y, 40.0),
                 (FANG_TIP[0], y, FANG_TIP[2]), segs=12)
     rig.part("head", g, IVORY, finish="gloss")
+    # W1: the sabres' stained roots (a 4 lu collar in a darker ivory: two-tone fangs, the tips stay brightest)
+    g = Geo()
+    for y in (-3.6, 3.2):
+        g.lathe([(2.75, 0), (2.7, 2.2), (2.62, 4.4), (2.4, 4.6)], (33.4, y, 40.0), (FANG_TIP[0], y, FANG_TIP[2]),
+                segs=12)
+    rig.part("head", g, IVORY_DK, finish="gloss", outline=0.4)
     rig.track("fangTip", "head", FANG_TIP)
 
     # lower jaw, opens wide; the mouth's inside shows
@@ -191,6 +248,14 @@ def build(rig):
     rig.part("tail", g, FUR)
     g = Geo().blob((-29.0, 0, 38.8), (2.6, 2.4, 2.4), p=2.2)
     rig.part("tail", g, STRIPE, finish="hair")
+    if getattr(rig, "skin", None) == "fossil_sabertooth":
+        # Fossil Sabertooth: a rib cage of dark fossil bands down the near flank below the pelt, a spine line on
+        # the haunch and the shoulder (3 lu bands; the stripes above are recoloured by the palette)
+        g = Geo()
+        for x in (-6.0, -1.5, 3.0, 7.5):
+            g.capsule((x + 1.4, -10.4, 25.6), (x - 0.6, -9.0, 19.8), 1.5, 0.8)
+        g.capsule((-22.0, -4.0, 39.6), (-15.0, -5.6, 40.4), 1.4, 1.4)
+        rig.part("trunk", g, F_BAND, outline=0)
     fx_, fz_ = q.legs["fr"][1][0] + 3.0 + 6.5, 2.9
     CLAWS = {"fr": [(fx_, -7.0, fz_ + 2.2), (fx_ + 0.8, -7.0, fz_), (fx_, -7.0, fz_ - 2.2)]}
     fl = q.legs["fl"][1][0] + 3.0 + 6.5
@@ -198,6 +263,8 @@ def build(rig):
     # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
     # the team blanket, scuffs on the near legs' hide below it, a crack in a sabre fang; a strip torn from the
     # blanket's fringe; breath puffs from the nose at the last stage
+    if getattr(rig, "skin", None) is not None:     # a skin uses its unit's damage entry (W0 COMMON C1)
+        return
     rig.damage_spot_at("blanket", "trunk", 0.0, 34.0, 8.0, "cloth", team=True)
     rig.damage_spot_at("haunch", "leg_br", -18.0, 22.0, 5.5, "hide")
     rig.damage_spot_at("foreleg", "leg_fr", 14.0, 15.0, 5.0, "hide")
