@@ -473,13 +473,32 @@
 }
 /* Narrow and short (under 800 px wide and 360 px tall, item 43's phones with the browser's bars): the tile is
    56 px tall, too short for the icon over the name and tag, and the icon stood out over its top edge. The
-   name and tag carry the mode there; the icon comes back from 361 px. */
+   name and tag carry the mode there (the icon comes back from 361 px), and the caret moves beside the tag,
+   where it no longer runs into the name. */
 @container ui-root (max-width: 799.98px) and (max-height: 360px) {
   .wp-modes.hub-switch .ui-btn__icon {
     display: none;
   }
   .wp-modes.hub-switch .ui-btn__text {
-    gap: 4px;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      'name name'
+      'tag caret';
+    align-items: center;
+    justify-items: center;
+    column-gap: 3px;
+    row-gap: 4px;
+  }
+  .hub-switch .hub-switch__name {
+    grid-area: name;
+  }
+  .hub-switch .hub-switch__tag {
+    grid-area: tag;
+  }
+  .hub-switch .hub-switch__caret {
+    grid-area: caret;
+    position: static;
   }
 }
 /* The smallest phones (under 700 px wide, such as 667 x 375; review 2): the switcher lay 37 px over the
