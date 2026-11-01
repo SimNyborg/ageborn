@@ -23,7 +23,7 @@ what we believe, how sure we are, and what we post next because of it.
 | B2 | Shorter Reels are watched further | short duels 65 % watch (n=10) vs devlogs 23 % (n=10) and classic 28 % (n=7) | confirmed for watch share, not for reach |
 | B3 | A question to the viewer gets reactions but not reach on its own | R5: highest engagement, reach 44 | signal |
 | B4 | Shares are starting | 7 posts with 1 share each, none since 2026-10-22 | stalled |
-| B5 | Posting time matters | evening 141 (n=14) vs midday 136 (n=13) median reach | rejected: no real difference |
+| B5 | Posting time matters | evening 141 (n=14) vs midday 136 (n=13); DV11 at 21:55 local only 39 in 24 h | no difference inside the windows; very late posts open |
 | B6 | Reach is capped at about 150 per post | DV3 303, DV5 194, DV1 188; devlog median 155 | weakened: a twist or visible problem breaks it |
 | B7 | Devlogs score best overall | devlog median reach 155 (n=10) vs short duels 144 (n=10) and classic 120 (n=7); lowest skip (66 %) | confirmed for reach and skip |
 | B8 | Followers grow on devlog days | 107 to 146 in 3 weeks, steps after DV1, DV3, DV5 | signal |
@@ -190,3 +190,7 @@ what we believe, how sure we are, and what we post next because of it.
   R19 posted 11:35 UTC. Followers 150.
 - 2026-11-01: owner note: most Reels must be developer videos. Mix changed from "one devlog plus one balance test a
   day" to two developer videos a day, with balance tests at most 3 a week and never on consecutive days.
+- 2026-11-01 evening: worker restarts again; R20 went out at 15:21 UTC instead of midday, Story 15:22, DV12 on time
+  (19:04). DV12 (round-up: how many soldiers is a Legendary worth) 65 reach in 1.8 h with 51 % skip, the lowest
+  early skip of any post. DV11 only 39 reach in 24 h (posted 21:55 local after the restart): a late post may cost
+  reach after all, so B5 goes back to open for very late slots. R19 220, the best duel. Followers 151.
