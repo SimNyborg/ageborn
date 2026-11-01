@@ -11,7 +11,7 @@
  * - Deterministic: the same seed, steps and blows give the same marks.
  */
 import { chooseMark, markSlots, stripFrom, stripPart, type MarkChoice, type MarkSlot } from './marks';
-import { burns, marksAt, MAX_MARKS, MAX_STRIPS, nextStage } from './stage';
+import { burns, marksAt, MAX_MARKS, MAX_STRIPS, nextStage, smallBody } from './stage';
 import type { BlowKind, DamageFamily, DamageSpot, DamageStage, MarkMat } from './types';
 
 /** A mark on the unit: where (a patch of a spot), what (a kit part) and its life on the view clock (ms). */
@@ -93,7 +93,7 @@ export class DamageModel {
     /** The surface used when the unit has no mark spots (wooden engines and shields answer as wood). */
     readonly fallbackMat: MarkMat = defaultMat(family),
   ) {
-    this.slots = markSlots(spots, seed);
+    this.slots = markSlots(spots, seed, smallBody(family));
     this.stripSpots = (spots ?? []).filter((s) => s.kind === 'strip');
   }
 
@@ -135,7 +135,7 @@ export class DamageModel {
 
   /** The unit's spots arrived (or changed): its marks are laid again on them, silently, as its steps would have. */
   setSpots(spots: readonly DamageSpot[] | undefined, nowMs: number): void {
-    this.slots = markSlots(spots, this.seed);
+    this.slots = markSlots(spots, this.seed, smallBody(this.family));
     this.stripSpots = (spots ?? []).filter((s) => s.kind === 'strip');
     this.marks.length = 0;
     this.strip = null;

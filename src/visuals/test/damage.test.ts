@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { DamageBundles, parseDamageBundle, parseDamageUnit } from '../damage/bundle';
 import { emittersFor } from '../damage/emitters';
 import { damageSlug, fallbackFamily, familyTable, woodenBody } from '../damage/families';
-import { chooseMark, MARK_KIT, markParts, markSizeLu, markSlots, spotCapacity, stripPart } from '../damage/marks';
+import { BOLD_MARK_SCALE, chooseMark, MARK_KIT, markParts, markSizeLu, markSlots, SMALL_MARK_SCALE, spotCapacity, stripPart } from '../damage/marks';
 import { DamageModel, MEND_FADE_MS, variantSeed } from '../damage/model';
 import { FLICKER_EVERY, TIRED_IDLE_RATE, WearyClock } from '../damage/motion';
 import { burns, isMachine, marksAt, multiplyRgb, nextStage, stageTint, STAGE_ENTER_BP } from '../damage/stage';
@@ -105,6 +105,11 @@ describe('marks (design 3.2 "Variety and keying")', () => {
     expect(chooseMark('cloth', 1, 'blast', 'soldier', 0).kind).toBe('soot');
     // never soot on hide or fur (a beast's coat is its skin)
     for (const k of ['blunt', 'slash', 'pierce', 'bullet', 'laser', 'blast'] as const) expect(chooseMark('hide', 3, k, 'beast', 0).kind).not.toBe('soot');
+    // a foot soldier's pelt and tunic tear where a beast's coat scuffs (A-S2: a dark-cored mark reads on a small body)
+    expect(chooseMark('hide', 1, 'blunt', 'soldier', 0).kind).toBe('tear');
+    expect(chooseMark('hide', 1, 'blunt', 'beast', 0).kind).toBe('scuff');
+    expect(chooseMark('cloth', 1, 'blunt', 'armoured', 0).kind).toBe('tear');
+    expect(chooseMark('cloth', 1, null, 'soldier', 0).kind).toBe('tear');
     // without a blow the surface's own mark for the stage
     expect(chooseMark('stone', 1, null, 'mech', 0).kind).toBe('chip');
     expect(chooseMark('stone', 3, null, 'mech', 0).kind).toBe('shatter');
@@ -145,6 +150,33 @@ describe('marks (design 3.2 "Variety and keying")', () => {
     }
     expect(stripPart('cloth', 5)).toMatch(/^dmg\.strip\.cloth[123]$/);
     expect(stripPart('metal', 5)).toBe('dmg.strip.cable1');
+  });
+
+  it("a foot soldier's first mark goes on its biggest team surface, boldest, the rest bigger; within the patch (A-S2)", () => {
+    // a Javelineer-like body: the tunic (team, r 6) is the biggest team surface; the helmet (metal, r 7) is bigger but not team
+    const spots: DamageSpot[] = [
+      { id: 'helmet', kind: 'mark', mat: 'metal', r: 7 },
+      { id: 'skirt', kind: 'mark', mat: 'cloth', r: 5, team: true },
+      { id: 'tunic', kind: 'mark', mat: 'cloth', r: 6, team: true },
+      { id: 'wrap', kind: 'mark', mat: 'cloth', r: 5, team: true },
+    ];
+    for (let seed = 1; seed < 30; seed++) {
+      const small = markSlots(spots, seed, true);
+      expect(small[0]).toMatchObject({ spot: 'tunic', slot: 0, scale: BOLD_MARK_SCALE });
+      expect(small.slice(1).every((s) => s.scale === SMALL_MARK_SCALE)).toBe(true);
+      // other families keep the standard size and order rule
+      expect(markSlots(spots, seed).every((s) => s.scale === 1)).toBe(true);
+    }
+    for (const r of [5, 6, 8]) {
+      const base = markSizeLu(r, false);
+      expect(markSizeLu(r, false, SMALL_MARK_SCALE)).toBeGreaterThan(base);
+      expect(markSizeLu(r, false, BOLD_MARK_SCALE)).toBeGreaterThan(markSizeLu(r, false, SMALL_MARK_SCALE) - 1e-9);
+      expect(markSizeLu(r, false, BOLD_MARK_SCALE)).toBeLessThanOrEqual(Math.max(base, 1.75 * r));
+    }
+    // the model gives a soldier and an armoured troop the bold first mark, a beast the standard one
+    expect(new DamageModel('soldier', 3, spots).update(7000, 0)?.mark?.slot.scale).toBe(BOLD_MARK_SCALE);
+    expect(new DamageModel('armoured', 3, spots).update(7000, 0)?.mark?.slot.scale).toBe(BOLD_MARK_SCALE);
+    expect(new DamageModel('beast', 3, spots).update(7000, 0)?.mark?.slot.scale).toBe(1);
   });
 });
 

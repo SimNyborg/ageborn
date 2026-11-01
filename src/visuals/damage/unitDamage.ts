@@ -21,7 +21,7 @@ import { fallbackFamily, woodenBody } from './families';
 import { markSizeLu } from './marks';
 import { DamageModel, defaultMat, MARK_FADE_IN_MS, MARK_POP_MS, MEND_FADE_MS, type DamageStep, type PlacedMark } from './model';
 import { WearyClock, type WearyPose } from './motion';
-import { LITE_MAX_MARKS, mixRgb, stageTint, STRIP_DULL, STRIP_DUST } from './stage';
+import { LITE_MAX_MARKS, mixRgb, smallBody, stageTint, STRIP_DULL, STRIP_DUST, STRIP_SMALL_SCALE } from './stage';
 import { DAMAGE_STRIP_PARTS } from './kit';
 import { markParts } from './marks';
 import type { BlowKind, DamageEmitter, DamageFamily, DamageStage, DamageStepEvent, DamageUnitData, EmitKind, SpotFrame } from './types';
@@ -326,7 +326,7 @@ export class UnitDamage {
     if (!node.root.visible) return;
     node.set(mk.part);
     const sc = Math.max(0.3, scalePct / 100);
-    const size = markSizeLu(mk.slot.r, mk.big) * pop;
+    const size = markSizeLu(mk.slot.r, mk.big, mk.slot.scale) * pop;
     const r = ((rot + mk.slot.turn) * Math.PI) / 180;
     // the patch offset turns and foreshortens with the spot
     const ox = (mk.slot.dx * Math.cos(r) - mk.slot.dy * Math.sin(r)) * sc;
@@ -361,7 +361,8 @@ export class UnitDamage {
     node.root.visible = a > 0.02;
     node.root.position.set(x * k, -y * k);
     node.root.rotation = this.swayAngle();
-    const len = Math.max(0.6, Math.min(1.6, (st.spot.r || 10) / 11));
+    // a foot soldier's strip hangs longer (A-S2: it carries the stage on a small body)
+    const len = Math.max(0.6, Math.min(1.6, (st.spot.r || 10) / 11)) * (smallBody(this.family) ? STRIP_SMALL_SCALE : 1);
     node.root.scale.set(len * k, len * k);
     node.root.alpha = a;
     if (st.mendAt >= 0) this.animating = true;
