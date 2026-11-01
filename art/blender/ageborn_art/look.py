@@ -89,8 +89,11 @@ def begin(mod):
     palette = {k.upper(): v.upper() for k, v in getattr(mod, "SKIN_PALETTE", {}).items()}
     STATE = {"slug": mod.SLUG, "kinds": kinds, "height": float(mod.HEIGHT_LU),
              "supersample": os.environ.get("AGEBORN_SUPERSAMPLE") == "1",
-             "rim": getattr(mod, "LOOK_RIM", None), "palette": palette}
-    sheet.PACKER = look2d.maxrects
+             "rim": getattr(mod, "LOOK_RIM", None), "palette": palette,
+             # the finish highlight's strength (its mix toward the highlight colour), per unit; the audit's
+             # highlight share (5.2) is 0.06-0.10 for infantry and ranged
+             "hl": float(getattr(mod, "LOOK_HIGHLIGHT", 1.0))}
+    sheet.PACKER = lambda images: look2d.maxrects(images, shelf=sheet.pack)   # never larger than the shelf packer
     return STATE
 
 
@@ -293,7 +296,7 @@ def _lifted(nodes, links, fill_hex, finish, kind, team=False):
     col = M._mix_rgb(nodes, links, M._math(nodes, links, "MULTIPLY", edge, strength), col,
                      to_linear(mix(fill_hex, "#FFFFFF", EDGE["mix"])))
     # the finish's highlight, the metal hot spec, the grazing rim (as materials._toon_color)
-    hl = mix(fill_hex, F.get("hl_color", "#FFFFFF"), F["hl_mix"])
+    hl = mix(fill_hex, F.get("hl_color", "#FFFFFF"), min(0.9, F["hl_mix"] * (STATE["hl"] if STATE else 1.0)))
     col = M._mix_rgb(nodes, links, m["hl"], col, to_linear(hl))
     if spec.get("metal"):
         hot = M._smoothstep(nodes, links, M._dot(nodes, links, N, C.HIGHLIGHT_DIR), HOT["lo"], HOT["hi"])
@@ -345,7 +348,7 @@ def team(tone=1.0):
         grey = rgb_to_hex((tone, tone, tone))
         col, masks = _lifted(nodes, links, grey, "matte", kind, team=True)
         team_shader = M._emission(nodes, links, col)
-        a = M._math(nodes, links, "MULTIPLY", masks["hl"], C.TEAM_HIGHLIGHT_ALPHA)
+        a = M._math(nodes, links, "MULTIPLY", masks["hl"], min(0.6, C.TEAM_HIGHLIGHT_ALPHA * STATE["hl"]))
         b = M._math(nodes, links, "MULTIPLY", masks["rim"], C.TEAM_RIM_ALPHA)
         e = M._math(nodes, links, "MULTIPLY", masks["edge"], C.TEAM_HIGHLIGHT_ALPHA)
         overlay = M._math(nodes, links, "MAXIMUM", M._math(nodes, links, "MAXIMUM", a, b), e)
@@ -547,6 +550,8 @@ def checks(mod, out_dir, file_slug, stats, clip_meta, log=print, ref_slug=None):
                                       "maxFrame": hi[1], "mean": round(float(np.mean([r for r, _ in ratios])), 3)}
     if ref_px:
         res["hdSheetPxVsRef"] = round(new_px / ref_px, 4)
+        if new_px > ref_px * 1.02:           # audit 5.1 rule 11: decoded memory must not grow
+            hard.append(f"HD sheet pixels {new_px / ref_px:.3f} x the reference (limit 1.02)")
     hd = os.path.join(out_dir, f"{file_slug}.hd.json")
     if os.path.exists(hd):
         try:

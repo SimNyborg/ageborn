@@ -28,7 +28,7 @@
    "frame": {
     "x": 848,
     "y": 295,
-    "w": 111,
+    "w": 113,
     "h": 116
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 160,
     "y": 205,
-    "w": 111,
+    "w": 113,
     "h": 116
    },
    "sourceSize": {
@@ -75,8 +75,8 @@
   "bonker@pumpkin_head_attack_b_03_team": {
    "frame": {
     "x": 1112,
-    "y": 128,
-    "w": 122,
+    "y": 2,
+    "w": 124,
     "h": 120
    },
    "rotated": false,
@@ -84,7 +84,7 @@
    "spriteSourceSize": {
     "x": 140,
     "y": 199,
-    "w": 122,
+    "w": 124,
     "h": 120
    },
    "sourceSize": {
@@ -218,7 +218,7 @@
   },
   "bonker@pumpkin_head_attack_b_06_team": {
    "frame": {
-    "x": 963,
+    "x": 965,
     "y": 392,
     "w": 118,
     "h": 109
@@ -459,7 +459,7 @@
   "bonker@pumpkin_head_attack_c_03_team": {
    "frame": {
     "x": 1112,
-    "y": 2,
+    "y": 126,
     "w": 120,
     "h": 122
    },

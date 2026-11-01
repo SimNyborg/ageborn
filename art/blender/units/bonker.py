@@ -42,6 +42,7 @@ NO_RETIME = True
 
 # the detail standard (art round W0, ageborn_art/look.py): lifts L1-L3 and L5, material kinds per colour
 DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.35        # a brighter finish highlight (skin, hide, bone): the highlight share floor (0.06)
 
 SKIN = "#EBC4A0"
 HAIR = "#3B2D25"
@@ -91,7 +92,7 @@ def _club(rig, joint, base, axis_sign=1.0):
         g.lathe([(3.0, 0), (2.4, 2.8), (0, 5.2)], b, tip, segs=10)
         mid = (b[0] + d[0] * 2.9, b[1] + d[1] * 2.9, b[2] + d[2] * 2.9)
         gt.lathe([(1.45, 0), (0, 2.5)], mid, (mid[0] + d[0] * 2.5, mid[1] + d[1] * 2.5, mid[2] + d[2] * 2.5), segs=8)
-    rig.part(joint, g, STUD)
+    rig.part(joint, g, STUD, finish="gloss")
     rig.part(joint, gt, STUD_LT, outline=0)
     # wood character on the club head's near face: a knot hole and short grain streaks (dark, 1 lu)
     g = Geo()
@@ -122,7 +123,7 @@ def _club(rig, joint, base, axis_sign=1.0):
     g = Geo()
     for dz in (-3.2, 0.2, 3.6):
         g.capsule((fx - 2.0, cy - 3.2, fz + dz), (fx + 1.6, cy - 3.2, fz + dz - 0.8), 1.3)
-    rig.part(joint, g, BONE, outline=0.6)
+    rig.part(joint, g, BONE, finish="gloss", outline=0.6)
     # the crack: a dark zig-zag groove on the near face of the head
     g = Geo()
     pts = [(cx - 2.5, cz + h + 7.0), (cx - 0.8, cz + h + 3.5), (cx - 3.4, cz + h + 0.5),
@@ -222,7 +223,7 @@ def build(rig):
                     segs=40, squash=(1.0, 0.86))
     look.team_part(rig, "torso", g, outline=0.8)
     g = Geo().blob((5.6, -12.25, 24.1), (2.7, 1.0, 2.2), p=2.4)
-    rig.part("torso", g, BONE, outline=0.6)
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
     g = Geo()
     face_b = F.Face(rig, "torso", [Geo().blob((5.6, -12.25, 24.1), (2.7, 1.0, 2.2), p=2.4)])
     face_b.decal(g, face_b.hit(5.6, 24.1), F.ellipse(0, 0, 0.9, 0.8, 8), 0.3)
@@ -231,10 +232,10 @@ def build(rig):
     rig.secondary("pouch", "torso", (-4.6, -12.4, 23.0), (-5.0, -12.8, 14.8), max_deg=14, gain=1.3)
     g = Geo().blob((-4.9, -12.7, 19.4), (3.3, 2.2, 3.7), p=2.6, taper=(1.12, 0.88))
     look.team_part(rig, "pouch", g)                 # dyed like the belt (team-dark: keeps the team budget)
-    g = Geo().blob((-4.8, -14.5, 21.4), (3.6, 1.2, 2.1), p=2.8, taper=(1.0, 0.9))   # in front of the bag
-    rig.part("pouch", g, FUR, finish="hair")
+    g = Geo().blob((-4.8, -14.5, 21.4), (3.6, 1.2, 2.1), p=2.8, taper=(1.0, 0.9))   # the flap, in front of the bag
+    look.team_part(rig, "pouch", g, outline=0.6)          # dyed like the bag (the walk's team budget)
     g = Geo().sphere((-4.5, -15.8, 20.2), 1.2, cuts=2)
-    rig.part("pouch", g, BONE, outline=0.5)
+    rig.part("pouch", g, BONE, finish="gloss", outline=0.5)
 
     # a longer team cape that flares behind (a silhouette breaker; the team budget the belt and pouch use)
     rig.secondary("cape", "torso", (-6.5, 0, 37.5), (-12.5, 0, 20.0), max_deg=16, gain=1.2)
@@ -257,7 +258,7 @@ def build(rig):
     g = Geo()
     for k, (x, y, z) in enumerate(((9.4, -6.2, 37.6), (11.0, -1.6, 36.6), (10.2, 3.6, 37.0))):
         g.lathe([(2.0, 0), (1.7, 2.3), (0, 5.4)], (x, y - 1.2, z + 0.8), (x + 1.0, y - 1.6, z - 4.6), segs=8)
-    rig.part("torso", g, BONE, outline=0.6)
+    rig.part("torso", g, BONE, finish="gloss", outline=0.6)
     g = Geo().lathe([(9.2, 0), (9.8, 0.3), (9.8, 1.4), (9.2, 1.7)], (1.2, 0, 37.0), (2.6, 0, 38.4), segs=22)
     rig.part("torso", g, LEATHER_DK, outline=0.5)
 
@@ -298,7 +299,7 @@ def _head(rig):
     g = Geo().capsule((-16.4, -3.0, 59.4), (8.2, -3.0, 71.0), 1.1, 1.1)
     g.sphere((-16.9, -3.0, 59.0), 1.8, cuts=3).sphere((-16.5, -3.0, 60.8), 1.5, cuts=3)
     g.sphere((8.6, -3.0, 71.2), 1.8, cuts=3).sphere((7.7, -3.0, 72.6), 1.5, cuts=3)
-    rig.part("hair", g, BONE, outline=0.7)
+    rig.part("hair", g, BONE, finish="gloss", outline=0.7)
     # angry V unibrow on its own joint (it lifts when he is hit)
     rig.joint("brow", "head", (12.5, 0, 56.0))
     g = Geo().capsule((11.0, -9.0, 58.4), (14.0, -0.4, 55.0), 3.2, 2.7)
@@ -438,10 +439,9 @@ def _arms_and_club(rig):
         g.blob((6.6, y + yd - 1.6, 21.6), (1.9, 1.8, 2.3), p=2.2)   # thumb
         rig.part(f"fore_{side}", g, SKIN)
         g = Geo().capsule((2.9, y + yd, 25.4), (3.6, y + yd, 23.4), 4.5, 4.5)
-        if side == "r":   # team wrist wrap on the club arm (it crosses the chest in the walk carry)
-            rig.part(f"fore_{side}", g, team=True, outline=0.7)
-        else:
-            rig.part(f"fore_{side}", g, LEATHER, outline=0.7)
+        # team wrist wraps on both arms (the club arm's crosses the chest in the walk carry; the far arm's pumps
+        # in the walk, where the belt, pouch and bone take team area: the 18% rule)
+        rig.part(f"fore_{side}", g, team=True, outline=0.7)
     g = Geo().blob((0.5, -12.6, 37.6), (7.4, 6.4, 5.6), p=2.4)
     rig.part("arm_r", g, team=True)
     g = Geo()

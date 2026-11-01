@@ -26,8 +26,8 @@
   },
   "bonker@pumpkin_head_idle_00_team": {
    "frame": {
-    "x": 785,
-    "y": 375,
+    "x": 900,
+    "y": 335,
     "w": 57,
     "h": 52
    },
@@ -74,8 +74,8 @@
   },
   "bonker@pumpkin_head_idle_01_team": {
    "frame": {
-    "x": 785,
-    "y": 431,
+    "x": 863,
+    "y": 391,
     "w": 55,
     "h": 53
    },
@@ -122,8 +122,8 @@
   },
   "bonker@pumpkin_head_idle_02_team": {
    "frame": {
-    "x": 948,
-    "y": 417,
+    "x": 962,
+    "y": 290,
     "w": 55,
     "h": 54
    },
@@ -170,8 +170,8 @@
   },
   "bonker@pumpkin_head_idle_03_team": {
    "frame": {
-    "x": 903,
-    "y": 299,
+    "x": 839,
+    "y": 306,
     "w": 57,
     "h": 54
    },
@@ -266,8 +266,8 @@
   },
   "bonker@pumpkin_head_idle_05_team": {
    "frame": {
-    "x": 948,
-    "y": 361,
+    "x": 900,
+    "y": 279,
     "w": 58,
     "h": 52
    },
@@ -314,8 +314,8 @@
   },
   "bonker@pumpkin_head_walk_00_team": {
    "frame": {
-    "x": 963,
-    "y": 475,
+    "x": 855,
+    "y": 505,
     "w": 52,
     "h": 50
    },
@@ -362,8 +362,8 @@
   },
   "bonker@pumpkin_head_walk_01_team": {
    "frame": {
-    "x": 839,
-    "y": 538,
+    "x": 126,
+    "y": 564,
     "w": 48,
     "h": 46
    },
@@ -410,8 +410,8 @@
   },
   "bonker@pumpkin_head_walk_02_team": {
    "frame": {
-    "x": 901,
-    "y": 532,
+    "x": 911,
+    "y": 505,
     "w": 48,
     "h": 52
    },
@@ -458,8 +458,8 @@
   },
   "bonker@pumpkin_head_walk_03_team": {
    "frame": {
-    "x": 785,
-    "y": 488,
+    "x": 858,
+    "y": 448,
     "w": 50,
     "h": 53
    },
@@ -506,8 +506,8 @@
   },
   "bonker@pumpkin_head_walk_04_team": {
    "frame": {
-    "x": 963,
-    "y": 529,
+    "x": 855,
+    "y": 559,
     "w": 52,
     "h": 50
    },
@@ -554,8 +554,8 @@
   },
   "bonker@pumpkin_head_walk_05_team": {
    "frame": {
-    "x": 2,
-    "y": 567,
+    "x": 912,
+    "y": 458,
     "w": 49,
     "h": 43
    },
@@ -602,8 +602,8 @@
   },
   "bonker@pumpkin_head_walk_06_team": {
    "frame": {
-    "x": 194,
-    "y": 98,
+    "x": 911,
+    "y": 561,
     "w": 49,
     "h": 49
    },
@@ -650,8 +650,8 @@
   },
   "bonker@pumpkin_head_walk_07_team": {
    "frame": {
-    "x": 970,
-    "y": 241,
+    "x": 799,
+    "y": 543,
     "w": 52,
     "h": 52
    },
@@ -698,8 +698,8 @@
   },
   "bonker@pumpkin_head_attack_00_team": {
    "frame": {
-    "x": 846,
-    "y": 424,
+    "x": 961,
+    "y": 348,
     "w": 54,
     "h": 54
    },
@@ -746,18 +746,18 @@
   },
   "bonker@pumpkin_head_attack_01_team": {
    "frame": {
-    "x": 126,
-    "y": 564,
+    "x": 922,
+    "y": 406,
     "w": 56,
-    "h": 46
+    "h": 48
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 83,
-    "y": 116,
+    "y": 114,
     "w": 56,
-    "h": 46
+    "h": 48
    },
    "sourceSize": {
     "w": 239,
@@ -795,7 +795,7 @@
   "bonker@pumpkin_head_attack_02_team": {
    "frame": {
     "x": 967,
-    "y": 103,
+    "y": 2,
     "w": 52,
     "h": 73
    },
@@ -842,18 +842,18 @@
   },
   "bonker@pumpkin_head_attack_03_team": {
    "frame": {
-    "x": 648,
-    "y": 525,
+    "x": 733,
+    "y": 408,
     "w": 61,
-    "h": 67
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 69,
-    "y": 93,
+    "y": 86,
     "w": 61,
-    "h": 67
+    "h": 74
    },
    "sourceSize": {
     "w": 239,
@@ -890,8 +890,8 @@
   },
   "bonker@pumpkin_head_attack_04_team": {
    "frame": {
-    "x": 733,
-    "y": 408,
+    "x": 967,
+    "y": 79,
     "w": 48,
     "h": 78
    },
@@ -938,8 +938,8 @@
   },
   "bonker@pumpkin_head_attack_05_team": {
    "frame": {
-    "x": 927,
-    "y": 180,
+    "x": 903,
+    "y": 161,
     "w": 62,
     "h": 57
    },
@@ -1034,8 +1034,8 @@
   },
   "bonker@pumpkin_head_attack_07_team": {
    "frame": {
-    "x": 842,
-    "y": 198,
+    "x": 735,
+    "y": 486,
     "w": 59,
     "h": 57
    },
@@ -1131,7 +1131,7 @@
   "bonker@pumpkin_head_attack_09_team": {
    "frame": {
     "x": 842,
-    "y": 259,
+    "y": 202,
     "w": 57,
     "h": 55
    },
@@ -1178,8 +1178,8 @@
   },
   "bonker@pumpkin_head_attack_10_team": {
    "frame": {
-    "x": 905,
-    "y": 241,
+    "x": 798,
+    "y": 372,
     "w": 61,
     "h": 54
    },
@@ -1226,8 +1226,8 @@
   },
   "bonker@pumpkin_head_hit_00_team": {
    "frame": {
-    "x": 844,
-    "y": 482,
+    "x": 798,
+    "y": 487,
     "w": 53,
     "h": 52
    },
@@ -1274,8 +1274,8 @@
   },
   "bonker@pumpkin_head_hit_01_team": {
    "frame": {
-    "x": 896,
-    "y": 357,
+    "x": 965,
+    "y": 223,
     "w": 48,
     "h": 63
    },
@@ -1322,8 +1322,8 @@
   },
   "bonker@pumpkin_head_hit_02_team": {
    "frame": {
-    "x": 964,
-    "y": 299,
+    "x": 969,
+    "y": 161,
     "w": 53,
     "h": 58
    },
@@ -1370,8 +1370,8 @@
   },
   "bonker@pumpkin_head_hit_03_team": {
    "frame": {
-    "x": 834,
-    "y": 318,
+    "x": 903,
+    "y": 222,
     "w": 58,
     "h": 53
    },
@@ -1418,8 +1418,8 @@
   },
   "bonker@pumpkin_head_hit_04_team": {
    "frame": {
-    "x": 904,
-    "y": 475,
+    "x": 799,
+    "y": 430,
     "w": 55,
     "h": 53
    },
@@ -1466,8 +1466,8 @@
   },
   "bonker@pumpkin_head_die_00_team": {
    "frame": {
-    "x": 770,
-    "y": 306,
+    "x": 735,
+    "y": 547,
     "w": 60,
     "h": 56
    },
@@ -1514,8 +1514,8 @@
   },
   "bonker@pumpkin_head_die_01_team": {
    "frame": {
-    "x": 840,
-    "y": 129,
+    "x": 648,
+    "y": 525,
     "w": 83,
     "h": 65
    },
@@ -1610,9 +1610,9 @@
   },
   "bonker@pumpkin_head_die_03_team": {
    "frame": {
-    "x": 967,
-    "y": 2,
-    "w": 50,
+    "x": 842,
+    "y": 101,
+    "w": 57,
     "h": 97
    },
    "rotated": false,
@@ -1620,7 +1620,7 @@
    "spriteSourceSize": {
     "x": 68,
     "y": 46,
-    "w": 50,
+    "w": 57,
     "h": 97
    },
    "sourceSize": {
@@ -1754,8 +1754,8 @@
   },
   "bonker@pumpkin_head_die_06_team": {
    "frame": {
-    "x": 713,
-    "y": 525,
+    "x": 770,
+    "y": 306,
     "w": 65,
     "h": 62
    },
@@ -1805,15 +1805,15 @@
     "x": 127,
     "y": 98,
     "w": 63,
-    "h": 48
+    "h": 50
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 69,
-    "y": 124,
+    "y": 122,
     "w": 63,
-    "h": 48
+    "h": 50
    },
    "sourceSize": {
     "w": 239,

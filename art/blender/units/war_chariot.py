@@ -69,11 +69,14 @@ MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", MANE: "fur", MANE_LT: "fur", HO
 SUN = "#E0B65A"           # bright gold for the small sun accents (an accent kind: keeps its saturation)
 SUN_LT = "#F2D892"
 SKINS = {"sun_chariot": {
+    # big metal (the helmet, the scythes, the wheels) in a pale gold under the colour rule's 0.38; only the
+    # small sun discs keep the rich gold (SUN)
     "palette": {COAT: "#EFEAE0", COAT_DK: "#D8D0C1", MANE: "#E2CFA0", MANE_LT: "#F0E2BC", HOOF: "#B39B68",
                 MARK: "#FBF7EE", B.PLUM: "#DDCB9A", B.SAND: "#F0E6CC", B.WOOD: "#D9C79A", B.WOOD_DK: "#B39A68",
-                B.AGED: "#CDB277", B.BRONZE: SUN, B.BRONZE_HI: SUN_LT, B.LEATHER_DK: "#8A6E48",
+                B.AGED: "#D2C08F", B.BRONZE: "#E3C88E", B.BRONZE_HI: "#F0DCA0", B.LEATHER_DK: "#8A6E48",
                 B.VERD: "#D9BE86", B.VERD_DK: "#BFA36E"},
-    "kinds": {SUN: "gold", SUN_LT: "gold"}}}
+    # a clean white coat (the hide blotches read as dirt on white); dirt stays on the lower legs
+    "kinds": {SUN: "gold", SUN_LT: "gold", "#EFEAE0": "skin", "#D8D0C1": "skin", "#FBF7EE": "skin"}}}
 
 HX = 26.0                    # the horse is this far ahead of the unit origin
 AX = -32.0                   # the chariot axle
@@ -207,7 +210,15 @@ def _horse(rig):
         _sun_disc(rig, "hhead", (HX + 29.6, 2.0, 70.2), 2.9)
     rig.secondary("tail", "horse", (HX - 23, 0, 45), (HX - 29, 0, 30), max_deg=15, gain=1.0)
     g = Geo().capsule((HX - 23, 0, 45), (HX - 28, 0, 39), 2.4, 2.8).capsule((HX - 28, 0, 39), (HX - 29, 0, 30), 2.8, 1.2)
+    # three clumps that flare from the dock (audit 5.2: the tail in 3-5 clumps of at least 3 lu, two tones)
+    for (x0, z0), (x1, z1), r in ((((HX - 27.0, 40.0), (HX - 31.6, 30.6), 1.9)), (((HX - 27.4, 38.0), (HX - 27.0, 27.6), 1.7)),
+                                  (((HX - 26.0, 41.0), (HX - 33.0, 34.0), 1.6))):
+        g.capsule((x0, -0.6, z0), (x1, -0.6, z1), r, 0.7)
     rig.part("tail", g, MANE, finish="hair")
+    g = Geo()
+    for (x0, z0), (x1, z1) in (((HX - 26.4, 41.6), (HX - 30.4, 33.0)), ((HX - 28.0, 37.6), (HX - 28.4, 29.6))):
+        g.capsule((x0, -2.2, z0), (x1, -2.2, z1), 0.9, 0.4)
+    rig.part("tail", g, MANE_LT, finish="hair", outline=0)      # lighter strands (two tones)
 
 
 def _wheel_detail(rig, joint, y):

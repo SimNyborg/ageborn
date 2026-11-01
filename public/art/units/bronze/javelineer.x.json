@@ -2,7 +2,7 @@
  "frames": {
   "javelineer_attack_b_01": {
    "frame": {
-    "x": 169,
+    "x": 2,
     "y": 141,
     "w": 67,
     "h": 89
@@ -26,8 +26,8 @@
   },
   "javelineer_attack_b_01_team": {
    "frame": {
-    "x": 115,
-    "y": 355,
+    "x": 316,
+    "y": 136,
     "w": 55,
     "h": 66
    },
@@ -50,8 +50,8 @@
   },
   "javelineer_attack_b_02": {
    "frame": {
-    "x": 2,
-    "y": 141,
+    "x": 331,
+    "y": 2,
     "w": 60,
     "h": 122
    },
@@ -74,8 +74,8 @@
   },
   "javelineer_attack_b_02_team": {
    "frame": {
-    "x": 178,
-    "y": 267,
+    "x": 375,
+    "y": 159,
     "w": 48,
     "h": 75
    },
@@ -98,7 +98,7 @@
   },
   "javelineer_attack_b_03": {
    "frame": {
-    "x": 100,
+    "x": 205,
     "y": 2,
     "w": 59,
     "h": 132
@@ -122,8 +122,8 @@
   },
   "javelineer_attack_b_03_team": {
    "frame": {
-    "x": 123,
-    "y": 267,
+    "x": 395,
+    "y": 2,
     "w": 51,
     "h": 78
    },
@@ -146,7 +146,7 @@
   },
   "javelineer_attack_b_04": {
    "frame": {
-    "x": 163,
+    "x": 268,
     "y": 2,
     "w": 59,
     "h": 130
@@ -170,8 +170,8 @@
   },
   "javelineer_attack_b_04_team": {
    "frame": {
-    "x": 66,
-    "y": 267,
+    "x": 139,
+    "y": 127,
     "w": 53,
     "h": 79
    },
@@ -218,8 +218,8 @@
   },
   "javelineer_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 355,
+    "x": 395,
+    "y": 84,
     "w": 51,
     "h": 71
    },
@@ -242,17 +242,17 @@
   },
   "javelineer_attack_b_06": {
    "frame": {
-    "x": 66,
-    "y": 141,
-    "w": 99,
+    "x": 100,
+    "y": 2,
+    "w": 101,
     "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 116,
+    "x": 114,
     "y": 63,
-    "w": 99,
+    "w": 101,
     "h": 121
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "javelineer_attack_b_06_team": {
    "frame": {
-    "x": 57,
-    "y": 355,
+    "x": 196,
+    "y": 138,
     "w": 54,
     "h": 70
    },
@@ -290,17 +290,17 @@
   },
   "javelineer_attack_b_07": {
    "frame": {
-    "x": 2,
-    "y": 267,
-    "w": 60,
+    "x": 73,
+    "y": 141,
+    "w": 62,
     "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 118,
+    "x": 116,
     "y": 101,
-    "w": 60,
+    "w": 62,
     "h": 84
    },
    "sourceSize": {
@@ -314,9 +314,9 @@
   },
   "javelineer_attack_b_07_team": {
    "frame": {
-    "x": 174,
-    "y": 355,
-    "w": 59,
+    "x": 254,
+    "y": 138,
+    "w": 58,
     "h": 63
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 117,
     "y": 113,
-    "w": 59,
+    "w": 58,
     "h": 63
    },
    "sourceSize": {
@@ -373,8 +373,8 @@
   "image": "javelineer.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 256,
-   "h": 428
+   "w": 448,
+   "h": 236
   },
   "scale": "1.5",
   "ageborn": {

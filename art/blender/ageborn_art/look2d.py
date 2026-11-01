@@ -219,11 +219,14 @@ def sharpen_luma(arr, radius=1.1, amount=0.55, threshold=1.0 / 255):
 
 
 # -- packing ----------------------------------------------------------------------------------------
-def _maxrects(sizes, width, height, pad):
+ORDERS = (lambda s: (-(s[0] * s[1]), -s[1]), lambda s: (-s[1], -s[0]), lambda s: (-max(s), -min(s)))
+
+
+def _maxrects(sizes, width, height, pad, order_key=ORDERS[0]):
     """MaxRects, best short side fit, no rotation. Returns positions (x + pad, y + pad) or None."""
     free = [(0, 0, width, height)]
     pos = [None] * len(sizes)
-    order = sorted(range(len(sizes)), key=lambda i: (-(sizes[i][0] * sizes[i][1]), -sizes[i][1], i))
+    order = sorted(range(len(sizes)), key=lambda i: (order_key(sizes[i]), i))
     for i in order:
         w, h = sizes[i][0] + 2 * pad, sizes[i][1] + 2 * pad
         best = None
@@ -281,35 +284,44 @@ def _prune(rects):
 WIDTHS = (128, 192, 256, 320, 384, 448, 512, 640, 768, 896, 1024, 1280, 1536, 2048, 2560, 3072, 3584, 4096)
 
 
-def maxrects(images, pad=2):
+def maxrects(images, pad=2, shelf=None):
     """Same contract as sheet.pack (images -> (sheet, positions)), packed with MaxRects: for every candidate
-    width the smallest height that fits (a multiple of 4, at most 4096), then the smallest area, with the
-    shelf packer's preference for squarish sheets."""
+    width and three sort orders the smallest height that fits (a multiple of 4, at most 4096; searched by
+    bisection, then confirmed a few steps lower, since MaxRects is not strictly monotonic in height), then the
+    smallest area, with the shelf packer's preference for squarish sheets. `shelf` (sheet.pack) is tried too
+    and wins when it is smaller, so the result is never larger than the shipped packer's."""
     sizes = [im.size for im in images]
     best = None
     area_px = sum((w + 2 * pad) * (h + 2 * pad) for w, h in sizes)
+
+    def score(width, height):
+        return width * height * (1.0 + 0.25 * max(0.0, height / width - 1.5))
     for width in WIDTHS:
         if max(s[0] for s in sizes) + pad * 2 > width:
             continue
-        lo = max(max(s[1] for s in sizes) + 2 * pad, int(area_px / width))
-        lo = (lo + 3) // 4 * 4
-        hi = 4096
-        if _maxrects(sizes, width, hi, pad) is None:
-            continue
-        # binary search the smallest height (multiple of 4) that fits
-        while lo < hi:
-            mid = (lo + hi) // 2 // 4 * 4
-            if mid < lo:
-                mid = lo
-            if _maxrects(sizes, width, mid, pad) is not None:
-                hi = mid
-            else:
-                lo = mid + 4
-        height = lo
-        pos = _maxrects(sizes, width, height, pad)
-        area = width * height * (1.0 + 0.25 * max(0.0, height / width - 1.5))
-        if best is None or area < best[0]:
-            best = (area, width, height, pos)
+        for key in ORDERS:
+            lo = max(max(s[1] for s in sizes) + 2 * pad, int(area_px / width))
+            lo = (lo + 3) // 4 * 4
+            hi = 4096
+            if _maxrects(sizes, width, hi, pad, key) is None:
+                continue
+            while lo < hi:
+                mid = max(lo, (lo + hi) // 2 // 4 * 4)
+                if _maxrects(sizes, width, mid, pad, key) is not None:
+                    hi = mid
+                else:
+                    lo = mid + 4
+            height = lo
+            for k in range(1, 6):            # a few smaller heights that bisection may have skipped
+                h2 = height - 4 * k
+                if h2 >= max(s[1] for s in sizes) + 2 * pad and _maxrects(sizes, width, h2, pad, key) is not None:
+                    height = h2
+            if best is None or score(width, height) < best[0]:
+                best = (score(width, height), width, height, _maxrects(sizes, width, height, pad, key))
+    if shelf is not None:
+        sh, spos = shelf(images)
+        if best is None or score(*sh.size) <= best[0]:
+            return sh, spos
     if best is None:
         raise ValueError(f"frames do not fit a 4096 x 4096 sheet ({len(images)} frames)")
     _, width, height, pos = best

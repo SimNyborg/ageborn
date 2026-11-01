@@ -298,7 +298,9 @@ lu (the HD sheet, 2.46 px/lu, drawn at 0.74x on a DPR 2 phone).
 byte for byte the shipped sheet (checked on the Pebbler and the Hoplite), so units outside a wave never change.
 Kinds: cloth, leather, hide, fur, wood, stone (stone, crystal, bone-like rock), bone, bronze, iron, gold,
 ceramic, polymer, glass, energy, skin. A colour without a kind still gets L2, L3 and L5. Decals and other
-`highlight=False` parts (eyes, mouths, emblems drawn as decals) and glows are never lifted.
+`highlight=False` parts (eyes, mouths, emblems drawn as decals) and glows are never lifted. Two optional knobs per
+unit: `LOOK_HIGHLIGHT` (default 1.0) scales the finish highlight's strength (capped; the Bonker uses 1.35 for the
+highlight-share floor of 5.2), and `LOOK_RIM = {...}` overrides `look2d.RIM` (the top rim's widths and lift).
 
 | Lift | What (all deterministic; no randomness) |
 |---|---|
@@ -307,12 +309,14 @@ ceramic, polymer, glass, energy, skin. A colour without a kind still gets L2, L3
 | L3 | a 2D top rim (`look2d.top_rim`): a band just inside the silhouette where it faces up (from the blurred silhouette's gradient), 0.35 + 0.5 lu at full strength then fading, in the part's own lit colour with its value raised (hue and saturation kept); on team surfaces the lit team grey plus a white overlay in the base frame |
 | L4 | supersampling, **off** (owner decision): `AGEBORN_SUPERSAMPLE=1` renders at 2x, outlines at 2x, downsamples 2:1 (premultiplied) and sharpens luminance only (`look2d.sharpen_luma`: RGB x Y'/Y, so hue and saturation, and with them the colour rule, cannot change) |
 | L5 | outline v4 (`look.UNIT_OUTLINE_V4`): fill x 0.46, HSV value cap 0.42, 2.8 lu wide, inner cover 0.35 lu |
-| pack | an opt-in MaxRects packer (`look2d.maxrects`) keeps the HD sheet within +2% pixels |
+| pack | an opt-in MaxRects packer (`look2d.maxrects`: three sort orders, the narrowest heights per width) that keeps the shelf packer's sheet when that is not larger, so packing never grows a sheet |
 
 **Checks** (in `<slug>.stats.json` under `look`; a failure raises `LookCheckError`, so `render_all.py` does
 not install): the colour rule <= 10% on the RGBA frames and on the shipped PNG8 sheets (core and extras, HD and
 1x); team fill >= 18% on every frame before the outline; planted-foot drift <= 1 lu; and against the reference
-sheet (`AGEBORN_LOOK_REF`: a tree or git ref, default `HEAD`): silhouette area per frame and HD sheet pixels.
+sheet (`AGEBORN_LOOK_REF`: a tree or git ref, default `HEAD`): silhouette area per frame (reported) and HD
+sheet pixels, core plus extras as the sheet governor counts them (more than +2% fails; a skin is measured
+against its unit's sheet).
 `look_check.py <sheet>.hd.json --ref main` prints the audit's game-scale metrics (`look2d.game_metrics`:
 flat share, micro, edge density, highlight share, reconstructed from the audit's baselines) next to the
 reference's, plus the encoded colour rule.

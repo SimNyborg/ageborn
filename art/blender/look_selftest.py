@@ -71,6 +71,11 @@ def test_maxrects():
             assert r[2] <= q[0] or q[2] <= r[0] or r[3] <= q[1] or q[3] <= r[1], "frames overlap"
     used = sum(im.width * im.height for im in ims)
     assert used / (sheet.width * sheet.height) > 0.6, "packing too loose"
+    # with the shelf packer as the fallback the sheet is never larger than the shelf packer's
+    from ageborn_art import sheet as shelf_sheet
+    best, _ = look2d.maxrects(ims, shelf=shelf_sheet.pack)
+    shelf, _ = shelf_sheet.pack(ims)
+    assert best.width * best.height <= shelf.width * shelf.height, (best.size, shelf.size)
 
 
 def test_parity_self():
