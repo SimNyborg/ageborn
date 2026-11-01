@@ -13,7 +13,7 @@
  */
 import type { Pt } from '@/contracts';
 import type { CosmeticRng } from '@/core';
-import { BitmapFont, BitmapText, Container } from 'pixi.js';
+import { BitmapFontManager, BitmapText, Container } from 'pixi.js';
 import { easeOutCubic } from '../interpolate';
 
 export type NumberKind = 'damage' | 'power' | 'base' | 'kill' | 'heal' | 'gold' | 'income';
@@ -46,12 +46,23 @@ export interface LabelNode {
 export type LabelFactory = () => LabelNode;
 
 export const NUMBER_FONT = 'ageborn-numbers';
-let fontInstalled = false;
+/** Every character a number can show, in the groups `warmNumberFont` draws one at a time. */
+const NUMBER_CHAR_GROUPS: readonly string[] = ['0123', '4567', '89+-', '.,kx', '!/s'];
+/** The installed font (Pixi's dynamic bitmap font: it draws glyphs into its page on demand) and the groups drawn. */
+let numberFont: { ensureCharacters(chars: string): void } | null = null;
+let groupsDrawn = 0;
 
-/** Default factory: a bitmap text in the shared number font (installed on first use). */
-export const bitmapLabelFactory: LabelFactory = () => {
-  if (!fontInstalled) {
-    BitmapFont.install({
+/**
+ * Installs the shared number font and draws its glyphs (idempotent). The first install drew every glyph on the frame
+ * of the battle's first gold bounty, the first kill's hitch (item 38 Phase A's open hot spot: about 18 ms at 1x for the
+ * install alone). The battle view calls this in a quiet frame after the battle is on screen; `groups` limits how many
+ * glyph groups this call draws, so the work can be spread over a few frames. Returns true once every glyph is drawn.
+ */
+export function warmNumberFont(groups = Infinity): boolean {
+  let left = groups;
+  if (!numberFont) {
+    // (BitmapFontManager.install returns the dynamic font, whose `ensureCharacters` draws more glyphs later)
+    numberFont = BitmapFontManager.install({
       name: NUMBER_FONT,
       style: {
         fontFamily: 'system-ui, "Segoe UI", Roboto, Arial, sans-serif',
@@ -60,12 +71,29 @@ export const bitmapLabelFactory: LabelFactory = () => {
         fill: 0xffffff,
         stroke: { color: 0x1c1026, width: 8, join: 'round' },
       },
-      chars: [['0', '9'], '+-.,kx!/s'],
+      chars: NUMBER_CHAR_GROUPS[0] ?? '0',
       resolution: 2,
       padding: 6,
-    });
-    fontInstalled = true;
+    }) as unknown as { ensureCharacters(chars: string): void };
+    groupsDrawn = 1;
+    left--;
   }
+  while (left > 0 && groupsDrawn < NUMBER_CHAR_GROUPS.length) {
+    numberFont.ensureCharacters(NUMBER_CHAR_GROUPS[groupsDrawn] ?? '');
+    groupsDrawn++;
+    left--;
+  }
+  return groupsDrawn >= NUMBER_CHAR_GROUPS.length;
+}
+
+/** True once the number font is installed with all its glyphs (tests, the battle view's warm-up). */
+export function numberFontWarm(): boolean {
+  return numberFont !== null && groupsDrawn >= NUMBER_CHAR_GROUPS.length;
+}
+
+/** Default factory: a bitmap text in the shared number font (installed on first use, when nothing warmed it). */
+export const bitmapLabelFactory: LabelFactory = () => {
+  warmNumberFont();
   const root = new Container();
   const text = new BitmapText({ text: '', style: { fontFamily: NUMBER_FONT, fontSize: 18 } });
   text.anchor.set(0.5, 1);
@@ -226,8 +254,43 @@ export class FloatingNumbers {
 
   destroy(): void {
     this.clear();
+    this.warmNode = null;
     for (const n of this.free) n.root.destroy({ children: true });
     this.free = [];
+  }
+
+  /** The label the warm-up drew (one frame, invisibly), until it goes to the free list. */
+  private warmNode: LabelNode | null = null;
+
+  /**
+   * The first-kill warm-up (item 38 Phase A's open hot spot): makes one label and draws it once, invisibly (alpha 0.004
+   * and a speck in size, in the text layer at `at`), so the text's first layout, its GPU set-up and the font page's
+   * upload happen on a quiet frame instead of the first gold bounty's. `endWarmLabel()` (a frame later) hands the label to the
+   * free list, where the first real number picks it up. Formatting a number once also builds the locale's number
+   * formatter (`toLocaleString`: a few ms on its first call). Idempotent while a warm label is up.
+   */
+  warmLabel(at: Pt): void {
+    if (this.warmNode) return;
+    formatNumber(12_345);
+    const node = this.free.pop() ?? this.factory();
+    node.setStyle(NUMBER_STYLES.gold.color, NUMBER_STYLES.gold.sizePx);
+    node.setText(`${NUMBER_STYLES.gold.prefix}${formatNumber(1_234)}`);
+    node.root.position.set(at.x, at.y);
+    node.root.scale.set(0.05);
+    node.root.alpha = 0.004;
+    this.layer.addChild(node.root);
+    this.warmNode = node;
+  }
+
+  /** Ends the warm-up draw: the label leaves the layer for the free list (its alpha and scale are set again on use). */
+  endWarmLabel(): void {
+    const n = this.warmNode;
+    if (!n) return;
+    this.warmNode = null;
+    n.root.parent?.removeChild(n.root);
+    n.root.alpha = 1;
+    n.root.scale.set(1);
+    this.free.push(n);
   }
 
   private text(kind: NumberKind, value: number): string {
