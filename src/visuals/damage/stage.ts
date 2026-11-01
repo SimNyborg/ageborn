@@ -63,9 +63,17 @@ export function stageTint(family: DamageFamily, stage: DamageStage): number {
   return TINT[family]?.[stage] ?? 0xffffff;
 }
 
-/** Families whose bodies are machines: smoke, sparks and fire, an engine sputter, the whump of a fire catching. */
+/** Families whose bodies are machines: smoke, sparks, an engine sputter. */
 export function isMachine(family: DamageFamily): boolean {
   return family === 'vehicle' || family === 'flyer' || family === 'mech';
+}
+
+/**
+ * Families that catch fire at their last stage (design 3.3): vehicles only, with small pale flames on the hull and the
+ * whump of the fire catching. Mechs shower sparks and flyers trail smoke instead; neither burns.
+ */
+export function burns(family: DamageFamily): boolean {
+  return family === 'vehicle';
 }
 
 /** Families that tire at stage 3 (weary motion): soldiers, armoured troops, riders and beasts. */

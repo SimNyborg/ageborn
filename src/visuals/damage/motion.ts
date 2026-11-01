@@ -55,6 +55,8 @@ export class WearyClock {
   /** Time of the next sputter, pulse or dip and how long the current one has run (-1: none). */
   private nextAt: number;
   private eventT = -1;
+  private glitchDir = 1;
+  private pulseAt = 0;
   private contacts = 0;
   private dipT = -1;
   private readonly dipLu: number;
@@ -110,16 +112,23 @@ export class WearyClock {
       // the mint pulse (and at stage 3 a glitch shift with it), on a seeded rhythm
       const every = FLICKER_EVERY[stage === 3 ? 3 : 2];
       const len = o.reduce ? FLICKER_REDUCED_MS : FLICKER_MS;
-      if (this.eventT < 0 && this.t >= this.nextAt) this.eventT = 0;
+      if (this.eventT < 0 && this.t >= this.nextAt) {
+        this.eventT = 0;
+        // the pulse's start on game time: its schedule (a stale one, from a unit only now at stage 2, starts now), so the
+        // next is scheduled from it and the rhythm does not drift with the frame rate
+        this.pulseAt = Math.max(this.nextAt, this.t - dt);
+        // the glitch's side, once per pulse (a draw per frame would tie the rhythm to the frame rate)
+        this.glitchDir = this.rng.next() < 0.5 ? -1 : 1;
+      }
       if (this.eventT >= 0) {
         this.eventT += dt;
         const u = this.eventT / len;
         if (u >= 1) {
           this.eventT = -1;
-          this.nextAt = this.t + range(this.rng, every[0], every[1]);
+          this.nextAt = this.pulseAt + len + range(this.rng, every[0], every[1]);
         } else {
           p.flicker = o.reduce ? 0.35 * Math.sin(u * Math.PI) : 0.55;
-          if (stage === 3 && !o.reduce) p.shiftLu = GLITCH_LU * (this.rng.next() < 0.5 ? -1 : 1);
+          if (stage === 3 && !o.reduce) p.shiftLu = GLITCH_LU * this.glitchDir;
         }
       }
       return p;

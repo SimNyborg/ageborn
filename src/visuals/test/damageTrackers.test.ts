@@ -4,7 +4,7 @@
  * the battle view (`contactRevision`) when they arrive after a reach was taken.
  */
 import { Rectangle, Texture } from 'pixi.js';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { UnitPose, UnitView, VisualDef } from '@/contracts/art';
 import { AtlasAdapter, type AtlasData } from '../adapters/atlas';
 import type { Reach } from '../adapters/atlasCombat';
@@ -176,6 +176,16 @@ const SPOTTED: DamageUnitData = {
 /** The view's mark nodes (item 40), read through its damage runtime. */
 const markXs = (v: UnitView): number[] =>
   (v as unknown as { dmg: { marks: { root: { visible: boolean; x: number } }[] } }).dmg.marks.filter((m) => m.root.visible).map((m) => m.root.x);
+
+describe('who loads the damage bundles (W0 review S2)', () => {
+  it('a unit view does not: menus never fetch one, the battle view asks for its ages through the provider', () => {
+    damageBundles.clear();
+    const spy = vi.spyOn(damageBundles, 'request');
+    view();
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+});
 
 describe('the marks on the atlas view (item 40)', () => {
   it('an unhurt unit lays nothing out (no mark nodes)', () => {
