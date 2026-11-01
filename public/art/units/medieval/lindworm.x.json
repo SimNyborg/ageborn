@@ -846,7 +846,15 @@
        ]
       ]
      },
-     "holdStep": 3
+     "holdStep": 3,
+     "omni": true,
+     "release": {
+      "frame": 6,
+      "atLu": [
+       196.2,
+       64.3
+      ]
+     }
     },
     "attack_c": {
      "frames": 10,
@@ -928,7 +936,15 @@
        ]
       ]
      },
-     "holdStep": 3
+     "holdStep": 3,
+     "omni": true,
+     "release": {
+      "frame": 6,
+      "atLu": [
+       201.1,
+       16.8
+      ]
+     }
     }
    },
    "team": {

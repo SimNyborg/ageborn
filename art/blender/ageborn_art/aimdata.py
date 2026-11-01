@@ -77,8 +77,10 @@ SPEC = {
     "field_surgeon": MUZZLE_AXIS,                            # the pistol is part of the hand
     "coehorn_crew": MUZZLE_AXIS, "mortar_team": MUZZLE_AXIS, "trench_mortar": MUZZLE_AXIS,   # trunnions to mouth
     "starwarden": {"*": {"joint": "staff", "axis": "muzzle"}},                # the staff, hand to beacon
-    # A: the plasma leaves the palm along the forearm; B: the swivelling lens on the mast fires (facing +X)
-    "holo_projector": {"attack": {"joint": "fore_r", "axis": "muzzle"}, "attack_b": {"joint": "mast"}},
+    # A: the plasma leaves the palm along the forearm. B: the lens on the swung mast fires from the lens tracker;
+    # the dish itself faces 72 degrees down on the rig (+X of the mast swung -76), but it reads edge-on as a bar
+    # and the pulse burst is painted level (-70..+70 around the facing), so the drawn shot is level
+    "holo_projector": {"attack": {"joint": "fore_r", "axis": "muzzle"}, "attack_b": {"deg": 0}},
     "siege_belfry": {"attack_alt": {"axis": "muzzle"}},                       # the archers' arms point the bows
     # thrown spears: the javelin's own joint on the frame before the throw (the impact frame shows the
     # follow-through, the javelin gone)
@@ -216,15 +218,34 @@ def aim_keys(rig, clip, tracks):
     return out
 
 
-def annotate_unit(mod, clip, m, rig, tracks):
-    """pipeline.run_unit: adds the clip's aim keys at the end of its meta (after attack_meta); troop units
-    only (turrets, forts and bases aim in code)."""
+VARIANT_TIMING = ("frames", "durationMs", "durationsMs", "impactAt", "impactStep", "impactFrame", "holdStep",
+                  "holdLoop", "smearFrame")
+
+
+def check_variant(base_meta, meta, name):
+    """C2: an aimed variant keeps its base clip's timing exactly (a retime that touched only the base, or a
+    hand-made variant that drifted, fails the render here)."""
+    for k in VARIANT_TIMING:
+        if meta.get(k) != base_meta.get(k):
+            raise ValueError(f"{name}.{k}: {meta.get(k)} != {meta.get('aimOf')}'s {base_meta.get(k)}")
+    if len(meta["sequence"]) != len(base_meta["sequence"]):
+        raise ValueError(f"{name}: sequence length differs from {meta.get('aimOf')}'s")
+
+
+def annotate_clips(mod, clips, clip_meta, rig, tracks):
+    """pipeline.run_unit, after the clip meta: every shot clip's aim keys at the end of its meta, and every
+    aimed variant checked against its base clip's timing. Troop units only (turrets, forts and bases aim in
+    code)."""
     from .damage import is_troop
     if not is_troop(mod):
         return
-    for k in AIM_KEYS:
-        m.pop(k, None)
-    m.update(aim_keys(rig, clip, tracks))
+    for c in clips:
+        m = clip_meta[c.name]
+        if m.get("aimOf") is not None:
+            check_variant(clip_meta[m["aimOf"]], m, c.name)
+        for k in AIM_KEYS:
+            m.pop(k, None)
+        m.update(aim_keys(rig, c, tracks.get(c.name)))
 
 
 # -- the JSON-only rewrite of shipped sheets (anchors_only.py --aim) --------------------------------------

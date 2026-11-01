@@ -329,6 +329,27 @@ frame's silhouette box (parts and interior-line hulls, the outline's width, the 
 cut to the canvas) within 2 lu of the packed frame. A unit that fails is listed and keeps its old bundle entry
 (or none), so a script that no longer reproduces its sheet never writes wrong spots.
 
+**Aim data** (queue item 44; `ageborn_art/aimdata.py`, COMMON C2). Every attack clip that launches a shot gets,
+after its other meta keys, `aimDeg` (the drawn weapon's angle at the release frame, degrees above the facing
+direction on screen, measured on the rig: the weapon joint's axis seen by the sprite camera, yaw and tilt included)
+and `release: {"frame", "atLu"}` (the unique frame and the point where the shot leaves); clips that emit rather than
+aim (drums, songs, breath, spells) get `omni: true` instead of `aimDeg`. The weapon is the joint carrying the clip's
+muzzle tracker and its +X (weapons are authored pointing forward); `aimdata.SPEC` overrides it per unit: another
+joint or axis (`"muzzle"`: from the joint's pivot to the tracker, for props authored upright), the release on the
+frame before the impact when the projectile has left the hand there, an authored angle for axis-less throws (and
+where the drawn effect, not the prop, shows the shot's direction), `omni`, or no shot at all. Renders write the keys
+(`pipeline.run_unit` calls `aimdata.annotate_clips` after the clip meta, which also checks every aimed variant's
+timing against its base); for sheets nobody re-renders, `anchors_only.py --units all --aim` writes them as a
+JSON-only rewrite of the installed sheet JSONs (PNGs untouched; removing the keys gives back the old bytes;
+rerunnable; `--aim-dry <json>` only lists them). `check_timing.mjs` checks the keys' shape and
+`tests/integrity/aimData.test.ts` checks that every clip the content says launches something carries them.
+
+```sh
+# list the aim keys every shot clip would get (sheets untouched), then write them into the installed sheets
+.venv-blender/bin/python art/blender/anchors_only.py --units all --check-only --aim-dry /tmp/aim.json
+.venv-blender/bin/python art/blender/anchors_only.py --units all --aim
+```
+
 **Aimed attack clips** (`ageborn_art/aimed.py`, COMMON C2). A unit that hits flyers overhead (or shoots down from a
 height) adds variants of its shot clips aimed up about 45 and 70 degrees (and down) at the end of `clips()`:
 
@@ -354,8 +375,9 @@ extra) plus `aimOf`. A frame whose weight is 0 reuses the base clip's frame (no 
 that share of the turn, so the wind-up rises into the aim and the recovery falls out of it and the animation
 standard's holds and follow-through stay as they were; the release frame must be 1. Bursts and rings painted on the
 weapon joint turn with it. It raises when a planted foot moves more than 1 lu or no turn reaches a target. The
-variants go to the extras sheet (`pipeline.EXTRA_CLIPS` takes every `_up45`, `_up70` and `_down` clip). The Crossbowman is the
-worked example.
+variants go to the extras sheet (`pipeline.EXTRA_CLIPS` takes every `_up45`, `_up70` and `_down` attack clip), get
+their aim keys like any shot clip, and `aimdata.annotate_clips` checks their timing against the base again when the
+meta is written. The Crossbowman is the worked example.
 
 ## Install
 

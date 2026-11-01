@@ -97,8 +97,55 @@ for (const age of readdirSync(UNITS, { withFileTypes: true }).filter((d) => d.is
     }
   }
 }
+// Aim data (queue item 44's art part; W0 COMMON C2): `aimDeg`, `release` and `omni` well formed on attack clips only, and
+// every aimed variant (`<clip>_up45`, `_up70`, `_down`, in the extras sheet) naming its base with `aimOf` and keeping the
+// base clip's timing exactly. Which clips must carry aim data comes from the content: tests/integrity/aimData.test.ts.
+const AIMED = /^(attack(?:_b|_c|_alt)?)_(up45|up70|down)$/;
+let aimed = 0;
+let aimClips = 0;
+for (const age of readdirSync(UNITS, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name)) {
+  const files = readdirSync(path.join(UNITS, age)).filter((f) => f.endsWith('.json'));
+  for (const core of files.filter((f) => !f.includes('.x.') && !f.endsWith('.x.json'))) {
+    const stem = core.replace(/\.json$/, '');
+    const xFile = stem.endsWith('.hd') ? `${stem.slice(0, -3)}.x.hd.json` : `${stem}.x.json`;
+    const coreClips = JSON.parse(readFileSync(path.join(UNITS, age, core), 'utf8')).meta?.ageborn?.clips ?? {};
+    const xClips = files.includes(xFile) ? (JSON.parse(readFileSync(path.join(UNITS, age, xFile), 'utf8')).meta?.ageborn?.clips ?? {}) : {};
+    for (const [where, clips] of [[`${age}/${core}`, coreClips], [`${age}/${xFile}`, xClips]]) {
+      for (const [name, c] of Object.entries(clips)) {
+        const at = `${where} ${name}`;
+        const variant = AIMED.exec(name);
+        if (variant && where.endsWith(core)) errors.push(`${at}: an aimed variant belongs in the extras sheet`);
+        if (c.aimDeg === undefined && c.release === undefined && c.omni === undefined && c.aimOf === undefined) continue;
+        aimClips++;
+        if (!/^attack/.test(name) || c.impactAt === undefined) errors.push(`${at}: aim keys on a clip that is not an attack`);
+        if (c.aimDeg !== undefined && !(Number.isFinite(c.aimDeg) && Math.abs(c.aimDeg) <= 180)) errors.push(`${at}: aimDeg ${c.aimDeg}`);
+        if (c.aimDeg !== undefined && c.omni !== undefined) errors.push(`${at}: aimDeg and omni together`);
+        if (c.omni !== undefined && c.omni !== true) errors.push(`${at}: omni ${c.omni}`);
+        if (c.release !== undefined) {
+          const r = c.release;
+          if (!Number.isInteger(r?.frame) || r.frame < 0 || r.frame >= c.frames) errors.push(`${at}: release frame ${r?.frame} not a unique frame`);
+          if (!Array.isArray(r?.atLu) || r.atLu.length !== 2 || !r.atLu.every(Number.isFinite) || (r.atLu[0] === 0 && r.atLu[1] === 0)) errors.push(`${at}: release atLu ${JSON.stringify(r?.atLu)}`);
+        }
+        if (!variant) {
+          if (c.aimOf !== undefined) errors.push(`${at}: aimOf on a clip that is not an aimed variant`);
+          continue;
+        }
+        aimed++;
+        const base = coreClips[variant[1]] ?? xClips[variant[1]];
+        if (c.aimOf !== variant[1] || !base) {
+          errors.push(`${at}: aimOf ${c.aimOf}, base ${variant[1]} ${base ? 'present' : 'missing'}`);
+          continue;
+        }
+        for (const k of ['frames', 'durationMs', 'impactAt', 'impactStep', 'holdStep']) if (c[k] !== base[k]) errors.push(`${at}: ${k} ${c[k]} != ${variant[1]}'s ${base[k]}`);
+        for (const k of ['durationsMs', 'holdLoop']) if (JSON.stringify(c[k]) !== JSON.stringify(base[k])) errors.push(`${at}: ${k} differs from ${variant[1]}'s`);
+        if ((c.sequence ?? []).length !== (base.sequence ?? []).length) errors.push(`${at}: sequence length differs from ${variant[1]}'s`);
+        if (c.aimDeg === undefined) errors.push(`${at}: an aimed variant without aimDeg`);
+      }
+    }
+  }
+}
 if (errors.length) {
   console.error(`timing changed against ${ref}:\n  ${errors.join('\n  ')}`);
   process.exit(1);
 }
-console.log(`timing unchanged against ${ref} (${before.size} units); impact steps agree with impactAt in ${sheets} sheets`);
+console.log(`timing unchanged against ${ref} (${before.size} units); impact steps agree with impactAt in ${sheets} sheets; aim data well formed on ${aimClips} clips (${aimed} aimed variants keep their base timing)`);

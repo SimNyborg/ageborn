@@ -23,7 +23,7 @@ import numpy as np
 
 from . import config as C
 from . import render, retime, scene, sheet
-from . import damage  # W0: damage spots and body trackers (the age's damage bundle)
+from . import aimdata, damage  # W0: aim data (C2) and damage spots and body trackers (C1)
 from .rig import Rig
 
 
@@ -266,6 +266,7 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
         for fx in m.get("fx", []):
             fx["scale"] = round((width_lu / C.FX_REF_WIDTH_LU) ** fx.pop("scalePow", 1.0), 3)
         clip_meta[c.name] = m
+    aimdata.annotate_clips(mod, clips, clip_meta, rig, tracks)   # W0: aimDeg, release, omni; aimed variants' timing
     damage.write_entry(mod, rig, clips, out_dir, file_slug)   # merged into the age bundle on install
     extra = {
         "visualId": getattr(mod, "VISUAL_ID", f"unit.{mod.SLUG}"),
