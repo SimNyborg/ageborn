@@ -153,7 +153,7 @@ export const UNIT_SHEET_PIXELS: Readonly<Record<string, readonly [number, number
   'stone/beast_caller': [1730560, 491008, 465920, 130560],
   'stone/bolas_thrower': [1684480, 253952, 440320, 73728],
   'stone/bonker': [2406400, 648192, 630784, 172032],
-  'stone/bonker@pumpkin_head': [2344960, 651264, 614400, 171520],
+  'stone/bonker@pumpkin_head': [2347008, 651264, 620544, 171520],
   'stone/boulder_hurler': [1633280, 243712, 430080, 63488],
   'stone/cave_bear': [5038080, 1474560, 1363968, 373760],
   'stone/cave_pup': [1372160, 352256, 368640, 92160],

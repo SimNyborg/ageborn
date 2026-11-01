@@ -44,6 +44,10 @@ NO_RETIME = True
 
 # the detail standard (art round W0, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2
 DETAIL_STANDARD = True
+# W0 milestone 7 (the art gate's SHD 3): a clearer light-to-shadow structure on skin, hair and the tunic
+# (look.SHADE); the top light kept moderate, so the highlight share stays in the 0.06-0.10 band
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
 _FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
 MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", B.WOOD: "wood", B.LEATHER: "leather",
                   _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather", _FAR(B.LEATHER_DK): "leather",
@@ -216,9 +220,11 @@ def _damage_spots(rig):
     the back (the torn chiton of stage 2). The javelin case stays clean: the idle's arm and the tunic hide it.
     Positions are where the camera ray meets the rest pose (the upper body sits V3_LIFT higher, the hem 1.4 lu
     more; near-side surfaces read about 1.5 lu back and 2.5 lu lower from the yaw and the camera's elevation)."""
-    rig.damage_spot_at("tunic", "torso", 6.5, 28.0, 7.0, "cloth", team=True)
-    rig.damage_spot_at("tunic_back", "torso", -7.0, 25.5, 5.0, "cloth", team=True)
-    rig.damage_spot_at("skirt", "hem", 5.5, 17.0, 5.0, "cloth", team=True)
+    # W0 milestone 7 (review A-S2): the biggest mark on the flared skirt, the largest team surface the throwing arm,
+    # the shoulder guard and the javelin leave clear (the belt above it, the linen hem below: never skin)
+    rig.damage_spot_at("skirt", "hem", 1.0, 18.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("tunic_front", "torso", 6.5, 26.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("tunic", "torso", -5.5, 25.0, 5.5, "cloth", team=True)
     rig.damage_spot_at("wrap", "shin_r", 1.0, 9.0, 5.0, "cloth", team=True)
     rig.damage_spot_at("hem", "hem", -3.0, 15.0, 10.0, "cloth", kind="strip", team=True)
 

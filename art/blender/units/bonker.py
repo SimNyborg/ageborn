@@ -43,6 +43,11 @@ NO_RETIME = True
 # the detail standard (art round W0, ageborn_art/look.py): lifts L1-L3 and L5, material kinds per colour
 DETAIL_STANDARD = True
 LOOK_HIGHLIGHT = 1.35        # a brighter finish highlight (skin, hide, bone): the highlight share floor (0.06)
+# W0 milestone 7 (the art gate's SHD 3): a clearer light-to-shadow structure on skin, hair and the pelt (look.SHADE):
+# a lit top, a core shadow along the terminator, a darker shadow band, a deeper cavity and a brighter rim
+LOOK_SHADE = {"shadow": 0.82, "core": 0.22, "core_width": 0.32, "gradient": 2.2, "cavity": 0.62, "rim_mix": 0.52,
+              "top": 0.14, "top_t": 0.60, "team_core": 0.4}
+LOOK_RIM = {"lift": 0.52, "full_lu": 0.6}
 
 SKIN = "#EBC4A0"
 HAIR = "#3B2D25"
@@ -283,8 +288,11 @@ def _damage_spots(rig):
     """Damage spots (queue item 40 section 3.3, Stone soldier; art/blender/README.md, spot_preview.py): never on
     the face or skin. The team pelt in front of the belly, the hip pouch, the cape, the near shin wrap and the
     club head (a cracked club at stage 2); a strip torn from the cape's hem. Positions are the rest pose as
-    drawn (the upper body sits LIFT higher)."""
-    rig.damage_spot_at("pelt", "torso", 10.5, 25.0, 7.0, "hide", team=True)
+    drawn (the upper body sits LIFT higher). W0 milestone 7 (review A-S2): the first and biggest mark goes on the
+    middle of the pelt behind the club arm, the largest team surface the arm and the club never cover (with the team
+    skirt below it and the fur tufts above, a mark there never reaches skin)."""
+    rig.damage_spot_at("pelt", "torso", -3.0, 24.5, 7.5, "hide", team=True)
+    rig.damage_spot_at("pelt_front", "torso", 10.5, 25.0, 6.0, "hide", team=True)
     rig.damage_spot_at("pouch", "pouch", -6.1, 14.7, 5.0, "hide", team=True)
     rig.damage_spot_at("cape", "cape", -12.0, 30.0, 6.0, "hide", team=True)
     rig.damage_spot_at("wrap", "shin_r", 1.0, 9.0, 5.0, "hide", team=True)

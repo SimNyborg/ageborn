@@ -412,9 +412,13 @@ lu (the HD sheet, 2.46 px/lu, drawn at 0.74x on a DPR 2 phone).
 byte for byte the shipped sheet (checked on the Pebbler and the Hoplite), so units outside a wave never change.
 Kinds: cloth, leather, hide, fur, wood, stone (stone, crystal, bone-like rock), bone, bronze, iron, gold,
 ceramic, polymer, glass, energy, skin. A colour without a kind still gets L2, L3 and L5. Decals and other
-`highlight=False` parts (eyes, mouths, emblems drawn as decals) and glows are never lifted. Two optional knobs per
+`highlight=False` parts (eyes, mouths, emblems drawn as decals) and glows are never lifted. Three optional knobs per
 unit: `LOOK_HIGHLIGHT` (default 1.0) scales the finish highlight's strength (capped; the Bonker uses 1.35 for the
-highlight-share floor of 5.2), and `LOOK_RIM = {...}` overrides `look2d.RIM` (the top rim's widths and lift).
+highlight-share floor of 5.2), `LOOK_RIM = {...}` overrides `look2d.RIM` (the top rim's widths and lift), and
+`LOOK_SHADE = {...}` (`look.SHADE`) gives a clearer light-to-shadow structure: a darker shadow band on non-team,
+non-metal parts, a core shadow just below the terminator that eases toward the far side (read as reflected light),
+a stronger in-band gradient and cavity, a brighter grazing rim. The terminator stays where the game's light puts
+it (a front-facing plane stays lit), so the units still share one light.
 
 | Lift | What (all deterministic; no randomness) |
 |---|---|
@@ -510,6 +514,8 @@ $PY art/blender/tools/compose_video.py art/blender/tools/plans/w0-pilot.json --f
   a desktop frame 2.5 MB.
 - A new wave copies the W0 scenario file and plan, changes the cards, seeds and captions, and sets the zoom
   boxes (`box`, `boxL`, `boxR`: device px of the 1688 x 780 phone frame) on a first capture.
+- `serveTree.mjs` does not watch files: after a merge, a checkout or an install, restart it before capturing
+  (it would otherwise keep serving the modules it had loaded).
 - During a round pass `--locks <lock folder> --track <TRACK>`: a capture then waits while another track holds
   `quiet` or `e2e`. A capture page or an encode inside another track's frame-time take spoils it; agree on a gap.
 - Chromium: Playwright's own, or the binary in `CHROMIUM` (or `PW_CHROMIUM_PATH`). ffmpeg: the PATH, `$FFMPEG`

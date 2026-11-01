@@ -52,9 +52,12 @@ FEET = (250, 276)
 ANCHORS = {"head": (-10, 104), "hitCenter": (0, 42)}
 NO_RETIME = True
 
-COAT = "#7C604B"          # chestnut, held at ~39% saturation (the A11 colour rule)
-COAT_DK = "#634D3C"
-COAT_LT = "#96765D"       # the lit planes of shoulder, haunch and neck crest, and dapples (saturation 0.38)
+# a buckskin (W0 milestone 7: the dark chestnut read as one dark mass at 1x): a light tan coat with the dark mane,
+# tail and hooves, so the value steps coat 0.74, car wood 0.61, harness leather 0.36, mane 0.16 carry the horse's
+# shape at a glance; saturation under the A11 colour rule (orange is a team hue)
+COAT = "#BC9A76"          # value 0.74, saturation 0.37
+COAT_DK = "#9E8064"       # value 0.62
+COAT_LT = "#D4B694"       # value 0.83: the lit planes of shoulder, haunch and neck crest, and dapples
 MANE = "#2A211D"
 HOOF = "#4A4038"
 MARK = "#E9E1D2"          # the white blaze and socks (markings of 3 lu and more)

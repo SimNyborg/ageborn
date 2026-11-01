@@ -20,6 +20,7 @@ With it, for every cel-shaded part (decals and glows are left alone):
       environment flag AGEBORN_SUPERSAMPLE=1 (off by default; owner decision)
   L5  outline v4: fill x 0.46, HSV value cap 0.42, 2.8 lu wide, inner cover 0.35 lu
   +   an opt-in MaxRects packer (keeps HD sheet pixels within +2% of the shipped sheet)
+  +   LOOK_SHADE (per unit, optional): a clearer light-to-shadow structure, see SHADE
 
 Checks written into `<slug>.stats.json` (`look`) and enforced (`LookCheckError`, so render_all does not
 install): the A11 colour rule on the RGBA frames and on the shipped PNG8 sheets (<= 10%), team fill
@@ -60,6 +61,15 @@ CAVITY = {"distance": 1.2, "strength": 0.4, "lo": 0.26, "hi": 0.46, "samples": 8
 EDGE = {"radius": 0.7, "lo": 0.022, "hi": 0.05, "mix": 0.42, "strength": 0.75, "metal": 0.95, "samples": 8,
         "concave_lo": 0.012, "concave_hi": 0.05}
 HOT = {"lo": 0.972, "hi": 0.984, "mix": 0.9}
+# LOOK_SHADE = {...} (a unit's opt-in on top of the standard; keys default to these): the shadow band `shadow` x
+# darker (non-team, non-metal), a core shadow (`core`: extra darkening that peaks just below the terminator and
+# eases off over `core_width` of n.l toward the far side, which so reads as reflected light), a top light (`top`:
+# a value lift on the planes that face the light more than `top_t` of n.l, so a form shows a lit top, a mid front
+# and a shadowed underside), a stronger in-band gradient (x `gradient`) and cavity (`cavity`), and a brighter
+# grazing rim (`rim_mix`); team surfaces take `team_core` of the core and the top light. The terminator itself
+# stays where the game's light puts it (config.LIGHT_THRESHOLD), so a front-facing plane stays lit.
+SHADE = {"shadow": 1.0, "core": 0.0, "core_width": 0.32, "team_core": 0.5, "gradient": 1.0,
+         "cavity": None, "rim_mix": None, "top": 0.0, "top_t": 0.62}
 DIRT_BANDS = (0.20, 0.34)   # of the unit's height: full dirt below the first, half up to the second
 # outline v4 (audit rule 7): (width px at render scale 1, fill factor, HSV value cap, inner cover px at scale 1)
 # 2.30 x 3 = 6.9 px = 2.8 lu on the HD sheet; 0.287 x 3 = 0.86 px = 0.35 lu
@@ -92,7 +102,8 @@ def begin(mod):
              "rim": getattr(mod, "LOOK_RIM", None), "palette": palette,
              # the finish highlight's strength (its mix toward the highlight colour), per unit; the audit's
              # highlight share (5.2) is 0.06-0.10 for infantry and ranged
-             "hl": float(getattr(mod, "LOOK_HIGHLIGHT", 1.0))}
+             "hl": float(getattr(mod, "LOOK_HIGHLIGHT", 1.0)),
+             "shade": dict(SHADE, **getattr(mod, "LOOK_SHADE", {}))}
     sheet.PACKER = lambda images: look2d.maxrects(images, shelf=sheet.pack)   # never larger than the shelf packer
     return STATE
 
@@ -227,15 +238,59 @@ def _pattern(nodes, links, name):
     raise ValueError(name)
 
 
+def _shading(nodes, links, finish):
+    """materials._shading's masks (lit band, in-band gradient with ambient occlusion, highlight, rim), with the
+    unit's LOOK_SHADE gradient, plus `core`: 1 just below the terminator, easing to 0 over core_width of n.l."""
+    M = _M()
+    sh = STATE["shade"] if STATE else SHADE
+    if sh["gradient"] == 1.0 and not sh["core"] and not sh["top"]:
+        return M._shading(nodes, links, finish)
+    F = C.FINISHES[finish]
+    geo = nodes.new("ShaderNodeNewGeometry")
+    n = geo.outputs["Normal"]
+    ndl = M._dot(nodes, links, n, C.LIGHT_DIR)
+    t, soft = C.LIGHT_THRESHOLD, C.TERMINATOR_SOFTNESS
+    lit = M._smoothstep(nodes, links, ndl, t - soft, t + soft)
+    grad = nodes.new("ShaderNodeMapRange")
+    grad.clamp = True
+    links.new(ndl, grad.inputs["Value"])
+    grad.inputs["From Min"].default_value = -1.0
+    grad.inputs["From Max"].default_value = 1.0
+    grad.inputs["To Min"].default_value = 1.0 - min(0.4, F["gradient"] * sh["gradient"])
+    grad.inputs["To Max"].default_value = 1.0
+    hs = C.HIGHLIGHT_SOFTNESS
+    hl = M._smoothstep(nodes, links, M._dot(nodes, links, n, C.HIGHLIGHT_DIR), F["hl_threshold"] - hs,
+                       F["hl_threshold"] + hs)
+    vm = nodes.new("ShaderNodeVectorMath")
+    vm.operation = "DOT_PRODUCT"
+    links.new(n, vm.inputs[0])
+    links.new(geo.outputs["Incoming"], vm.inputs[1])
+    facing = M._math(nodes, links, "ABSOLUTE", vm.outputs["Value"])
+    edge = M._smoothstep(nodes, links, M._math(nodes, links, "SUBTRACT", 1.0, facing), C.RIM_LO, C.RIM_HI)
+    rim = M._math(nodes, links, "MULTIPLY", edge, M._smoothstep(nodes, links, ndl, 0.05, 0.45))
+    ao = nodes.new("ShaderNodeAmbientOcclusion")
+    ao.samples = C.AO_SAMPLES
+    ao.inputs["Distance"].default_value = C.AO_DISTANCE
+    occ = M._math(nodes, links, "SUBTRACT", 1.0, ao.outputs["AO"])
+    shade = M._math(nodes, links, "SUBTRACT", 1.0, M._math(nodes, links, "MULTIPLY", occ, C.AO_STRENGTH))
+    grad_ao = M._math(nodes, links, "MULTIPLY", grad.outputs["Result"], shade)
+    core = M._math(nodes, links, "MULTIPLY", M._math(nodes, links, "SUBTRACT", 1.0, lit),
+                   M._smoothstep(nodes, links, ndl, t - soft - sh["core_width"], t - soft))
+    top = M._smoothstep(nodes, links, ndl, sh["top_t"] - 0.05, sh["top_t"] + 0.05)
+    return {"lit": lit, "grad": grad_ao, "hl": hl, "rim": rim, "core": core, "top": top}
+
+
 def _lifted(nodes, links, fill_hex, finish, kind, team=False):
     """Returns (colour socket, masks) of the lifted toon colour; `team` builds the team pass (white base)."""
     M = _M()
     F = C.FINISHES[finish]
     spec = KINDS.get(kind, {})
-    m = M._shading(nodes, links, finish)
+    sh = STATE["shade"] if STATE else SHADE
+    m = _shading(nodes, links, finish)
     if not team and not spec.get("accent"):
         fill_hex = _clamp_sat(fill_hex)
-    dark = shadow(fill_hex, F["shadow"], C.WARM_SHADOW_HUE_SHIFT)
+    dark = shadow(fill_hex, F["shadow"] * (1.0 if team or spec.get("metal") else sh["shadow"]),
+                  C.WARM_SHADOW_HUE_SHIFT)
     if "shadow_sat" in F:
         import colorsys
         hh, ss, vv = colorsys.rgb_to_hsv(*hex_to_rgb(dark))
@@ -245,6 +300,16 @@ def _lifted(nodes, links, fill_hex, finish, kind, team=False):
     N = geo.outputs["Normal"]
     ndl = M._dot(nodes, links, N, C.LIGHT_DIR)
     gain = m["grad"]
+    # LOOK_SHADE's core shadow: darkest just below the terminator (team surfaces at team_core of it)
+    if sh["core"] and "core" in m:
+        k = sh["core"] * (sh["team_core"] if team else 1.0)
+        gain = M._math(nodes, links, "MULTIPLY", gain,
+                       M._math(nodes, links, "SUBTRACT", 1.0, M._math(nodes, links, "MULTIPLY", m["core"], k)))
+    # LOOK_SHADE's top light: the planes facing the light lifted in value (team surfaces at team_core of it)
+    if sh["top"] and "top" in m:
+        k = _lin_gain(sh["top"] * (sh["team_core"] if team else 1.0))
+        gain = M._math(nodes, links, "MULTIPLY", gain,
+                       M._math(nodes, links, "ADD", 1.0, M._math(nodes, links, "MULTIPLY", m["top"], k)))
     # L1: breakup (value only), then dirt on the lower third
     amp = spec.get("amp", 0.0)
     if amp > 0 and spec.get("pattern"):
@@ -269,8 +334,9 @@ def _lifted(nodes, links, fill_hex, finish, kind, team=False):
     ao.inputs["Distance"].default_value = CAVITY["distance"]
     occ = M._math(nodes, links, "SUBTRACT", 1.0, ao.outputs["AO"])
     cav = M._smoothstep(nodes, links, occ, CAVITY["lo"], CAVITY["hi"])
+    cav_k = CAVITY["strength"] if sh["cavity"] is None else sh["cavity"]
     gain = M._math(nodes, links, "MULTIPLY", gain,
-                   M._math(nodes, links, "SUBTRACT", 1.0, M._math(nodes, links, "MULTIPLY", cav, CAVITY["strength"])))
+                   M._math(nodes, links, "SUBTRACT", 1.0, M._math(nodes, links, "MULTIPLY", cav, cav_k)))
     g = nodes.new("ShaderNodeMixRGB")
     g.blend_type = "MULTIPLY"
     g.inputs[0].default_value = 1.0
@@ -303,7 +369,8 @@ def _lifted(nodes, links, fill_hex, finish, kind, team=False):
         hot_col = "#FFF7E6" if spec.get("accent") else "#FFFFFF"
         col = M._mix_rgb(nodes, links, M._math(nodes, links, "MULTIPLY", hot, HOT["mix"]), col, to_linear(hot_col))
     rim = M._math(nodes, links, "MULTIPLY", m["rim"], C.RIM_STRENGTH)
-    col = M._mix_rgb(nodes, links, rim, col, to_linear(mix(fill_hex, "#FFFFFF", C.RIM_MIX)))
+    rim_mix = C.RIM_MIX if sh["rim_mix"] is None else sh["rim_mix"]
+    col = M._mix_rgb(nodes, links, rim, col, to_linear(mix(fill_hex, "#FFFFFF", rim_mix)))
     return col, masks
 
 

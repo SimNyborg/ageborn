@@ -2,6 +2,7 @@
 // wave"): the tree's own vite.config.ts, a fixed port, a private dependency cache (two trees that share one
 // node_modules would otherwise overwrite each other's node_modules/.vite), no HMR and no file watching (a capture
 // run needs neither, and both cost CPU while other work measures frame time). Runs until stopped; prints its PID.
+// Without watching it keeps serving the modules it loaded: restart it after a merge, a checkout or an install.
 // Dev tool: not part of the build or the test suite.
 //
 // usage: node tools/art/serveTree.mjs [--root DIR] [--port 8131] [--cache DIR]

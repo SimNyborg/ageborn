@@ -2,8 +2,8 @@
  "frames": {
   "bonker@pumpkin_head_idle_00": {
    "frame": {
-    "x": 1081,
-    "y": 2,
+    "x": 1010,
+    "y": 204,
     "w": 94,
     "h": 96
    },
@@ -26,8 +26,8 @@
   },
   "bonker@pumpkin_head_idle_00_team": {
    "frame": {
-    "x": 1234,
-    "y": 292,
+    "x": 1284,
+    "y": 291,
     "w": 57,
     "h": 52
    },
@@ -50,8 +50,8 @@
   },
   "bonker@pumpkin_head_idle_01": {
    "frame": {
-    "x": 608,
-    "y": 112,
+    "x": 125,
+    "y": 298,
     "w": 91,
     "h": 102
    },
@@ -74,8 +74,8 @@
   },
   "bonker@pumpkin_head_idle_01_team": {
    "frame": {
-    "x": 1347,
-    "y": 180,
+    "x": 1467,
+    "y": 59,
     "w": 55,
     "h": 53
    },
@@ -122,8 +122,8 @@
   },
   "bonker@pumpkin_head_idle_02_team": {
    "frame": {
-    "x": 1348,
-    "y": 122,
+    "x": 1372,
+    "y": 61,
     "w": 55,
     "h": 54
    },
@@ -146,17 +146,17 @@
   },
   "bonker@pumpkin_head_idle_03": {
    "frame": {
-    "x": 738,
-    "y": 2,
-    "w": 95,
+    "x": 715,
+    "y": 107,
+    "w": 94,
     "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 93,
     "y": 71,
-    "w": 95,
+    "w": 94,
     "h": 100
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "bonker@pumpkin_head_idle_03_team": {
    "frame": {
-    "x": 1465,
-    "y": 121,
+    "x": 1312,
+    "y": 126,
     "w": 57,
     "h": 54
    },
@@ -194,8 +194,8 @@
   },
   "bonker@pumpkin_head_idle_04": {
    "frame": {
-    "x": 612,
-    "y": 218,
+    "x": 631,
+    "y": 2,
     "w": 93,
     "h": 101
    },
@@ -218,8 +218,8 @@
   },
   "bonker@pumpkin_head_idle_04_team": {
    "frame": {
-    "x": 1467,
-    "y": 62,
+    "x": 1348,
+    "y": 2,
     "w": 57,
     "h": 55
    },
@@ -242,7 +242,7 @@
   },
   "bonker@pumpkin_head_idle_05": {
    "frame": {
-    "x": 920,
+    "x": 933,
     "y": 2,
     "w": 96,
     "h": 97
@@ -266,8 +266,8 @@
   },
   "bonker@pumpkin_head_idle_05_team": {
    "frame": {
-    "x": 1284,
-    "y": 192,
+    "x": 1323,
+    "y": 184,
     "w": 58,
     "h": 52
    },
@@ -290,7 +290,7 @@
   },
   "bonker@pumpkin_head_walk_00": {
    "frame": {
-    "x": 1001,
+    "x": 998,
     "y": 103,
     "w": 77,
     "h": 97
@@ -314,8 +314,8 @@
   },
   "bonker@pumpkin_head_walk_00_team": {
    "frame": {
-    "x": 1301,
-    "y": 348,
+    "x": 1464,
+    "y": 229,
     "w": 52,
     "h": 50
    },
@@ -338,8 +338,8 @@
   },
   "bonker@pumpkin_head_walk_01": {
    "frame": {
-    "x": 914,
-    "y": 308,
+    "x": 1108,
+    "y": 203,
     "w": 80,
     "h": 90
    },
@@ -362,8 +362,8 @@
   },
   "bonker@pumpkin_head_walk_01_team": {
    "frame": {
-    "x": 1468,
-    "y": 292,
+    "x": 1345,
+    "y": 296,
     "w": 48,
     "h": 46
    },
@@ -386,8 +386,8 @@
   },
   "bonker@pumpkin_head_walk_02": {
    "frame": {
-    "x": 1010,
-    "y": 204,
+    "x": 1079,
+    "y": 103,
     "w": 81,
     "h": 96
    },
@@ -410,8 +410,8 @@
   },
   "bonker@pumpkin_head_walk_02_team": {
    "frame": {
-    "x": 1408,
-    "y": 237,
+    "x": 1345,
+    "y": 240,
     "w": 48,
     "h": 52
    },
@@ -434,8 +434,8 @@
   },
   "bonker@pumpkin_head_walk_03": {
    "frame": {
-    "x": 709,
-    "y": 212,
+    "x": 728,
+    "y": 2,
     "w": 78,
     "h": 100
    },
@@ -458,8 +458,8 @@
   },
   "bonker@pumpkin_head_walk_03_team": {
    "frame": {
-    "x": 71,
-    "y": 314,
+    "x": 1373,
+    "y": 119,
     "w": 50,
     "h": 53
    },
@@ -482,8 +482,8 @@
   },
   "bonker@pumpkin_head_walk_04": {
    "frame": {
-    "x": 1179,
-    "y": 2,
+    "x": 1010,
+    "y": 304,
     "w": 77,
     "h": 95
    },
@@ -506,8 +506,8 @@
   },
   "bonker@pumpkin_head_walk_04_team": {
    "frame": {
-    "x": 1357,
-    "y": 348,
+    "x": 1397,
+    "y": 283,
     "w": 52,
     "h": 50
    },
@@ -530,8 +530,8 @@
   },
   "bonker@pumpkin_head_walk_05": {
    "frame": {
-    "x": 1197,
-    "y": 101,
+    "x": 812,
+    "y": 314,
     "w": 81,
     "h": 87
    },
@@ -554,8 +554,8 @@
   },
   "bonker@pumpkin_head_walk_05_team": {
    "frame": {
-    "x": 1348,
-    "y": 73,
+    "x": 1450,
+    "y": 337,
     "w": 49,
     "h": 43
    },
@@ -578,8 +578,8 @@
   },
   "bonker@pumpkin_head_walk_06": {
    "frame": {
-    "x": 1010,
-    "y": 304,
+    "x": 914,
+    "y": 308,
     "w": 81,
     "h": 93
    },
@@ -602,8 +602,8 @@
   },
   "bonker@pumpkin_head_walk_06_team": {
    "frame": {
-    "x": 1346,
-    "y": 237,
+    "x": 1397,
+    "y": 337,
     "w": 49,
     "h": 49
    },
@@ -626,8 +626,8 @@
   },
   "bonker@pumpkin_head_walk_07": {
    "frame": {
-    "x": 837,
-    "y": 2,
+    "x": 813,
+    "y": 105,
     "w": 79,
     "h": 99
    },
@@ -650,8 +650,8 @@
   },
   "bonker@pumpkin_head_walk_07_team": {
    "frame": {
-    "x": 1352,
-    "y": 292,
+    "x": 1341,
+    "y": 347,
     "w": 52,
     "h": 52
    },
@@ -698,8 +698,8 @@
   },
   "bonker@pumpkin_head_attack_00_team": {
    "frame": {
-    "x": 1407,
-    "y": 122,
+    "x": 1409,
+    "y": 2,
     "w": 54,
     "h": 54
    },
@@ -746,8 +746,8 @@
   },
   "bonker@pumpkin_head_attack_01_team": {
    "frame": {
-    "x": 1408,
-    "y": 293,
+    "x": 1223,
+    "y": 354,
     "w": 56,
     "h": 48
    },
@@ -794,8 +794,8 @@
   },
   "bonker@pumpkin_head_attack_02_team": {
    "frame": {
-    "x": 761,
-    "y": 316,
+    "x": 729,
+    "y": 321,
     "w": 52,
     "h": 73
    },
@@ -842,8 +842,8 @@
   },
   "bonker@pumpkin_head_attack_03_team": {
    "frame": {
-    "x": 612,
-    "y": 323,
+    "x": 664,
+    "y": 322,
     "w": 61,
     "h": 74
    },
@@ -890,8 +890,8 @@
   },
   "bonker@pumpkin_head_attack_04_team": {
    "frame": {
-    "x": 709,
-    "y": 316,
+    "x": 612,
+    "y": 322,
     "w": 48,
     "h": 78
    },
@@ -938,8 +938,8 @@
   },
   "bonker@pumpkin_head_attack_05_team": {
    "frame": {
-    "x": 1282,
-    "y": 73,
+    "x": 1192,
+    "y": 234,
     "w": 62,
     "h": 57
    },
@@ -962,8 +962,8 @@
   },
   "bonker@pumpkin_head_attack_06": {
    "frame": {
-    "x": 1095,
-    "y": 201,
+    "x": 1091,
+    "y": 304,
     "w": 128,
     "h": 92
    },
@@ -986,8 +986,8 @@
   },
   "bonker@pumpkin_head_attack_06_team": {
    "frame": {
-    "x": 1413,
-    "y": 345,
+    "x": 1453,
+    "y": 283,
     "w": 71,
     "h": 46
    },
@@ -1010,8 +1010,8 @@
   },
   "bonker@pumpkin_head_attack_07": {
    "frame": {
-    "x": 631,
-    "y": 2,
+    "x": 608,
+    "y": 112,
     "w": 103,
     "h": 101
    },
@@ -1034,8 +1034,8 @@
   },
   "bonker@pumpkin_head_attack_07_team": {
    "frame": {
-    "x": 1404,
-    "y": 2,
+    "x": 1249,
+    "y": 172,
     "w": 59,
     "h": 57
    },
@@ -1058,8 +1058,8 @@
   },
   "bonker@pumpkin_head_attack_08": {
    "frame": {
-    "x": 1082,
-    "y": 102,
+    "x": 1094,
+    "y": 2,
     "w": 111,
     "h": 95
    },
@@ -1082,8 +1082,8 @@
   },
   "bonker@pumpkin_head_attack_08_team": {
    "frame": {
-    "x": 1465,
-    "y": 236,
+    "x": 1427,
+    "y": 173,
     "w": 65,
     "h": 52
    },
@@ -1106,8 +1106,8 @@
   },
   "bonker@pumpkin_head_attack_09": {
    "frame": {
-    "x": 125,
-    "y": 298,
+    "x": 706,
+    "y": 217,
     "w": 102,
     "h": 100
    },
@@ -1130,8 +1130,8 @@
   },
   "bonker@pumpkin_head_attack_09_team": {
    "frame": {
-    "x": 1404,
-    "y": 63,
+    "x": 1223,
+    "y": 295,
     "w": 57,
     "h": 55
    },
@@ -1154,7 +1154,7 @@
   },
   "bonker@pumpkin_head_attack_10": {
    "frame": {
-    "x": 899,
+    "x": 896,
     "y": 105,
     "w": 98,
     "h": 98
@@ -1178,8 +1178,8 @@
   },
   "bonker@pumpkin_head_attack_10_team": {
    "frame": {
-    "x": 1282,
-    "y": 134,
+    "x": 1258,
+    "y": 233,
     "w": 61,
     "h": 54
    },
@@ -1226,8 +1226,8 @@
   },
   "bonker@pumpkin_head_hit_00_team": {
    "frame": {
-    "x": 1295,
-    "y": 292,
+    "x": 1284,
+    "y": 347,
     "w": 53,
     "h": 52
    },
@@ -1274,8 +1274,8 @@
   },
   "bonker@pumpkin_head_hit_01_team": {
    "frame": {
-    "x": 520,
-    "y": 335,
+    "x": 2,
+    "y": 314,
     "w": 48,
     "h": 63
    },
@@ -1322,8 +1322,8 @@
   },
   "bonker@pumpkin_head_hit_02_team": {
    "frame": {
-    "x": 1227,
-    "y": 192,
+    "x": 1192,
+    "y": 172,
     "w": 53,
     "h": 58
    },
@@ -1346,8 +1346,8 @@
   },
   "bonker@pumpkin_head_hit_03": {
    "frame": {
-    "x": 797,
-    "y": 106,
+    "x": 812,
+    "y": 211,
     "w": 98,
     "h": 99
    },
@@ -1370,8 +1370,8 @@
   },
   "bonker@pumpkin_head_hit_03_team": {
    "frame": {
-    "x": 1465,
-    "y": 179,
+    "x": 1467,
+    "y": 2,
     "w": 58,
     "h": 53
    },
@@ -1394,8 +1394,8 @@
   },
   "bonker@pumpkin_head_hit_04": {
    "frame": {
-    "x": 703,
-    "y": 107,
+    "x": 612,
+    "y": 217,
     "w": 90,
     "h": 101
    },
@@ -1418,8 +1418,8 @@
   },
   "bonker@pumpkin_head_hit_04_team": {
    "frame": {
-    "x": 1406,
-    "y": 180,
+    "x": 1431,
+    "y": 116,
     "w": 55,
     "h": 53
    },
@@ -1466,8 +1466,8 @@
   },
   "bonker@pumpkin_head_die_00_team": {
    "frame": {
-    "x": 1467,
-    "y": 2,
+    "x": 1308,
+    "y": 66,
     "w": 60,
     "h": 56
    },
@@ -1490,8 +1490,8 @@
   },
   "bonker@pumpkin_head_die_01": {
    "frame": {
-    "x": 791,
-    "y": 212,
+    "x": 810,
+    "y": 2,
     "w": 119,
     "h": 99
    },
@@ -1514,8 +1514,8 @@
   },
   "bonker@pumpkin_head_die_01_team": {
    "frame": {
-    "x": 817,
-    "y": 315,
+    "x": 520,
+    "y": 335,
     "w": 83,
     "h": 65
    },
@@ -1610,7 +1610,7 @@
   },
   "bonker@pumpkin_head_die_03_team": {
    "frame": {
-    "x": 1020,
+    "x": 1033,
     "y": 2,
     "w": 57,
     "h": 97
@@ -1730,8 +1730,8 @@
   },
   "bonker@pumpkin_head_die_06": {
    "frame": {
-    "x": 1095,
-    "y": 297,
+    "x": 1209,
+    "y": 2,
     "w": 135,
     "h": 60
    },
@@ -1754,7 +1754,7 @@
   },
   "bonker@pumpkin_head_die_06_team": {
    "frame": {
-    "x": 2,
+    "x": 54,
     "y": 314,
     "w": 65,
     "h": 62
@@ -1778,8 +1778,8 @@
   },
   "bonker@pumpkin_head_die_07": {
    "frame": {
-    "x": 1260,
-    "y": 2,
+    "x": 1164,
+    "y": 101,
     "w": 140,
     "h": 67
    },
@@ -1802,8 +1802,8 @@
   },
   "bonker@pumpkin_head_die_07_team": {
    "frame": {
-    "x": 1234,
-    "y": 348,
+    "x": 1397,
+    "y": 229,
     "w": 63,
     "h": 50
    },
@@ -1934,7 +1934,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 1536,
-   "h": 400
+   "h": 404
   },
   "scale": "1.5",
   "ageborn": {

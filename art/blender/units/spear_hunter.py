@@ -201,7 +201,9 @@ def build(rig):
     # the team armband (the spear crosses the belly band), loincloth and leg wrap, the leather quiver; a torn
     # strip from the loincloth hem
     rig.damage_spot_at("armband", "arm_r", -1.0, 31.0, 5.0, "cloth", team=True)
-    rig.damage_spot_at("loincloth", "cloth", 3.0, 15.0, 5.5, "cloth", team=True)
+    # W0 milestone 7 (review A-S2): the loincloth's waistband and flaps as one big surface, the back flap apart
+    rig.damage_spot_at("loincloth", "cloth", 0.5, 23.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("loincloth_back", "cloth", -5.5, 15.0, 5.5, "cloth", team=True)
     rig.damage_spot_at("quiver", "torso", -12.0, 38.0, 5.0, "hide", fill="#7A5E48")
     rig.damage_spot_at("wrap", "shin_r", -2.0, 7.0, 5.0, "cloth", team=True)
     rig.damage_spot_at("hem", "cloth", -6.0, 12.0, 9.0, "cloth", kind="strip", team=True)
