@@ -17,6 +17,8 @@ import { spriteStripArt, stripInfoUrl, stripRequest, type StripSource } from './
 import { forgetPortraitStills, portraitStillBase } from './adapters/atlasPortrait';
 import { AtlasFortView } from './fortViews/atlasFortView';
 import { damageBundles } from './damage/bundle';
+import { bakeDamageKit } from './damage/unitDamage';
+import { damageFxVariants } from './effects/recipes';
 import { fortSource, type FortKindId } from './forts';
 import type { BakeStats } from './bake';
 import { PlaceholderAdapter } from './adapters/placeholder';
@@ -1012,6 +1014,18 @@ export class VisualsArtProvider implements ArtProvider {
   }
 
   /**
+   * Queue item 40 (duck-typed for VS and the battle view): the damage kit baked once per page before a battle, in idle
+   * time, its pages uploaded once at the end, so no part bakes and no page uploads mid-battle; null once baked.
+   */
+  damageKitReady(): Promise<void> | null {
+    // the sprites of every damage effect's recipe (bursts, emitters, ignite, mend) bake with the kit
+    this.damageFxSprites ??= [...new Set(damageFxVariants().flatMap((r) => [...(r.sprites ?? []).map((s) => s.sprite), ...(r.particles ?? []).map((p) => p.sprite), ...(r.fall ? [r.fall.sprite] : [])]))];
+    return bakeDamageKit(this.procedural.baker, this.damageFxSprites);
+  }
+
+  private damageFxSprites: string[] | null = null;
+
+  /**
    * Holds the big GPU uploads of newly loaded unit sheets for `ms` (the battle view at your evolve, whose camera
    * push and new base show a long frame most; review S1). Duck-typed; small uploads go on, and a sheet a view
    * draws meanwhile is uploaded by Pixi on that frame anyway.
@@ -1051,6 +1065,9 @@ export class VisualsArtProvider implements ArtProvider {
     if (base) waits.push(base);
     // both sides' decoration props (round 3: three a side), so the first battle frame shows them, not the SVG
     waits.push(this.prefetchDecorations(o.sides.flatMap((s) => s.decorations ?? [])));
+    // the damage kit (item 40): baked while VS is up, uploaded once, so the battle bakes and uploads none of it
+    const kit = this.damageKitReady();
+    if (kit) waits.push(kit);
     if (o.units && o.units.length > 0) {
       // the battle's own hold takes the same sheets over when it starts; this one lets go a while later
       const hold = this.holdArt();

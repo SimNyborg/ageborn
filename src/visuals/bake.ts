@@ -66,6 +66,10 @@ interface Page {
   size: number;
   /** A small page for one-at-a-time bakes (see `BakerOptions.runtimePageSize`). */
   runtime: boolean;
+  /** A view got a part baked onto the page since its last upload (`flush` uploads only then; see `get`'s `ahead`). */
+  wanted: boolean;
+  /** Uploads so far: a part baked onto the page before the last one is on the GPU already. */
+  gen: number;
 }
 
 const PAD = 2;
@@ -128,16 +132,35 @@ export class PartBaker {
    * backdrop wipe while the next age preloads) takes a small page (2026-10-18: a global bulk flag gave one
    * 173 px windmill sail a 2,048 px page of its own, 34 MB at DPR 2).
    */
-  get(part: PartDef, palette: Palette, tone = 0, o: { bulk?: boolean } = {}): BakedPart {
+  get(part: PartDef, palette: Palette, tone = 0, o: { bulk?: boolean; ahead?: boolean } = {}): BakedPart {
     const key = PartBaker.key(part, palette, tone);
     const hit = this.cache.get(key);
-    if (hit) return hit;
+    if (hit) {
+      if (o.ahead !== true) this.want(hit);
+      return hit;
+    }
     const t0 = typeof performance !== 'undefined' ? performance.now() : 0;
     const baked = this.bake(part, palette, tone, o.bulk === true);
     if (typeof performance !== 'undefined') this.stats.ms += performance.now() - t0;
     this.cache.set(key, baked);
     this.stats.parts++;
+    if (o.ahead !== true) this.want(baked);
     return baked;
+  }
+
+  /**
+   * The pages each part's textures are on, with the page's upload count when it was baked (`want`). Parts baked
+   * `ahead` of use (a batch baked in idle slices before it is needed: the damage kit before a battle, an age's death
+   * bits) leave their pages to the batch's own `flushAll` at its end, so the views' flushes in between do not upload
+   * a half-baked page again and again (item 40, W0: a war uploaded the 512 px pages about 30 more times); a view that
+   * gets such a part first has its page uploaded by its next `flush`, so nothing draws from a page not uploaded.
+   */
+  private readonly partPages = new WeakMap<BakedPart, { page: Page; gen: number }[]>();
+
+  /** A view got this part: its page uploads on the next `flush` if the part is not on the GPU yet. */
+  private want(b: BakedPart): void {
+    const at = this.partPages.get(b);
+    if (at) for (const { page, gen } of at) if (page.dirty && page.gen === gen) page.wanted = true;
   }
 
   /**
@@ -149,14 +172,21 @@ export class PartBaker {
   }
 
 
-  /** Uploads pages that changed since the last flush. */
+  /** Uploads pages that changed since the last flush for a part a view got (not for parts baked `ahead`, see `get`). */
   flush(): void {
-    for (const p of this.pages) {
-      if (p.dirty) {
-        p.source.update();
-        p.dirty = false;
-      }
-    }
+    for (const p of this.pages) if (p.dirty && p.wanted) this.upload(p);
+  }
+
+  /** Uploads every page that changed, parts baked `ahead` included: the end of a batch baked ahead of use. */
+  flushAll(): void {
+    for (const p of this.pages) if (p.dirty) this.upload(p);
+  }
+
+  private upload(p: Page): void {
+    p.source.update();
+    p.dirty = false;
+    p.wanted = false;
+    p.gen++;
   }
 
   /** The atlas pages (for the gallery's bake view). */
@@ -193,6 +223,7 @@ export class PartBaker {
     const split = splitLayers(part);
     const hasTeam = split.team.length > 0;
     const hasBanner = split.team.some((l) => l.banner);
+    const at: { page: Page; gen: number }[] = [];
     const draw = (group: LayerGroup, stripes = false): Texture => {
       const slot = this.alloc(w, h, bulk);
       if (!slot) return Texture.EMPTY;
@@ -200,6 +231,7 @@ export class PartBaker {
       const t = new CanvasTarget(page.ctx, [s, 0, 0, s, x + PAD - b.minX * s, y + PAD - b.minY * s]);
       drawPart(part, t, IDENTITY, { palette, teamColor: null, group, tone: tone || undefined, stripes });
       page.dirty = true;
+      if (!at.some((e) => e.page === page)) at.push({ page, gen: page.gen });
       this.stats.textures++;
       this.stats.pixels += w * h;
       return new Texture({ source: page.source, frame: new Rectangle(x / s, y / s, w / s, h / s) });
@@ -213,6 +245,7 @@ export class PartBaker {
       over: hasTeam && (split.over.length > 0 || teamHighlights(part)) ? draw('over') : null,
       white: draw('white'),
     };
+    this.partPages.set(baked, at);
     return baked;
   }
 
@@ -261,7 +294,7 @@ export class PartBaker {
     // labelled for the dev memory hook (`textureMemory.ts` `memoryKind`)
     const source = new CanvasSource({ resource: canvas, resolution: 1, label: `bake page ${size}${runtime ? ' runtime' : ''}` });
     source.resolution = this.o.pxPerLu;
-    const page: Page = { canvas, ctx, source, x: 0, y: 0, shelfH: 0, dirty: false, size, runtime };
+    const page: Page = { canvas, ctx, source, x: 0, y: 0, shelfH: 0, dirty: false, size, runtime, wanted: false, gen: 0 };
     this.pages.push(page);
     this.stats.pages++;
     return page;
