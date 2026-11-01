@@ -43,7 +43,7 @@ export function emittersFor(family: DamageFamily, stage: DamageStage, spots: rea
         case 'smoke':
           if (stage === 2) out.push({ kind: 'smoke', at, rate: flyer ? 2.2 : 1.1, size });
           else {
-            out.push({ kind: 'smokeDark', at, rate: flyer ? 3.2 : 2.4, size: size * 1.3 });
+            out.push({ kind: 'smokeDark', at, rate: flyer ? 3.2 : 2.0, size: size * 1.15 });
             if (machine) out.push({ kind: 'fire', at, rate: 3, size: size * 0.8 });
           }
           break;
@@ -70,7 +70,7 @@ export function emittersFor(family: DamageFamily, stage: DamageStage, spots: rea
       out.push({ kind: 'smoke', at: 'torsoBack', rate: flyer ? 2.2 : 1.1, size: puff });
       if (family === 'mech') out.push({ kind: 'spark', at: 'torsoMid', rate: 0.6, size: puff * 0.6 });
     } else {
-      out.push({ kind: 'smokeDark', at: 'torsoBack', rate: flyer ? 3.2 : 2.4, size: puff * 1.3 });
+      out.push({ kind: 'smokeDark', at: 'torsoBack', rate: flyer ? 3.2 : 2.0, size: puff * 1.15 });
       if (machine) out.push({ kind: 'fire', at: 'torsoTop', rate: 3, size: puff * 0.8 });
       out.push({ kind: 'spark', at: 'torsoMid', rate: family === 'mech' ? 1.4 : 0.8, size: puff * 0.6 });
     }

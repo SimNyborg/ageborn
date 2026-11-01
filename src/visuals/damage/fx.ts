@@ -53,7 +53,8 @@ const SMOKE: ParticleSpec = {
 
 const emitterRecipes: FxRecipe[] = [
   { id: 'fx.dmg_smoke', durationMs: 1500, particles: [SMOKE] },
-  { id: 'fx.dmg_smoke_dark', durationMs: 2000, particles: [{ ...SMOKE, life: [1400, 1900], speed: [18, 30], scale: [0.55, 1.45], alpha: [0.58, 0], tint: 0x77716b }] },
+  // a darker neutral grey than the light smoke (the column reads against pale skies by its tone, not by its size)
+  { id: 'fx.dmg_smoke_dark', durationMs: 2000, particles: [{ ...SMOKE, life: [1400, 1900], speed: [18, 30], scale: [0.55, 1.45], alpha: [0.6, 0], tint: 0x57534f }] },
   { id: 'fx.dmg_steam', durationMs: 1000, particles: [{ sprite: 'fx.p.dust', count: 1, life: [700, 1000], speed: [26, 40], angle: [-104, -84], spread: 1, gravity: -18, drag: 1, scale: [0.4, 1.25], alpha: [0.55, 0], spin: [-20, 20], tint: 0xffffff }] },
   {
     id: 'fx.dmg_fire',
