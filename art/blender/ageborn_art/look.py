@@ -491,6 +491,21 @@ def _ref_sheet(name):
     return os.path.join(tmp, os.path.basename(rel))
 
 
+AIMED_SUFFIXES = ("_up45", "_up70", "_down")   # aimed variants of shot clips (COMMON C2)
+
+
+def _aimed_share(d, prefix):
+    """The share of a sheet's packed frame area taken by aimed variants (`<clip>_up45_03`, ..._team)."""
+    tot = aimed = 0
+    for name, f in d["frames"].items():
+        area = f["frame"]["w"] * f["frame"]["h"]
+        tot += area
+        rest = name[len(prefix):] if name.startswith(prefix) else name
+        if any(f"{s}_" in rest for s in AIMED_SUFFIXES):
+            aimed += area
+    return aimed / tot if tot else 0.0
+
+
 def checks(mod, out_dir, file_slug, stats, clip_meta, log=print, ref_slug=None):
     """The opted-in unit's checks (see the module doc). Adds stats["look"]; raises LookCheckError on a hard
     failure after the stats are written."""
@@ -522,7 +537,7 @@ def checks(mod, out_dir, file_slug, stats, clip_meta, log=print, ref_slug=None):
             hard.append(f"planted drift {walk['plantedDriftLu']} lu > 1")
     # against the reference sheet: silhouette area per frame and HD sheet pixels
     ref_name = ref_slug or file_slug
-    new_px = ref_px = 0
+    new_px = ref_px = aimed_px = 0
     ratios = []
     for suffix in (".hd", ".x.hd"):
         mine = os.path.join(out_dir, f"{file_slug}{suffix}.json")
@@ -531,8 +546,12 @@ def checks(mod, out_dir, file_slug, stats, clip_meta, log=print, ref_slug=None):
             continue
         a, ad = look2d.frames_of(mine)
         b, bd = look2d.frames_of(ref)
-        new_px += ad["meta"]["size"]["w"] * ad["meta"]["size"]["h"]
-        ref_px += bd["meta"]["size"]["w"] * bd["meta"]["size"]["h"]
+        # aimed variants (item 44) are budgeted apart from the +2% (audit 6.5): their share of the packed area
+        px = ad["meta"]["size"]["w"] * ad["meta"]["size"]["h"]
+        aimed = px * _aimed_share(ad, f"{file_slug}_")
+        aimed_px += aimed
+        new_px += px - aimed
+        ref_px += bd["meta"]["size"]["w"] * bd["meta"]["size"]["h"] * (1.0 - _aimed_share(bd, f"{ref_name}_"))
         pre_a = f"{file_slug}_"
         pre_b = f"{ref_name}_"
         for name in a:
@@ -550,6 +569,8 @@ def checks(mod, out_dir, file_slug, stats, clip_meta, log=print, ref_slug=None):
                                       "maxFrame": hi[1], "mean": round(float(np.mean([r for r, _ in ratios])), 3)}
     if ref_px:
         res["hdSheetPxVsRef"] = round(new_px / ref_px, 4)
+        if aimed_px:
+            res["aimedHdPx"] = int(round(aimed_px))
         if new_px > ref_px * 1.02:           # audit 5.1 rule 11: decoded memory must not grow
             hard.append(f"HD sheet pixels {new_px / ref_px:.3f} x the reference (limit 1.02)")
     hd = os.path.join(out_dir, f"{file_slug}.hd.json")
