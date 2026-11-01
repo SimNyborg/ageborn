@@ -13,9 +13,10 @@ Animation (cartoon kit v2, built on the Longbowman's draw-and-nock rig):
   idle    checks the spare arrow down its shaft, blink
   walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1, card 60 x 1.25 = 75 lu/s): the bow low in
           the bow hand, tipped forward, the draw hand pumping with the spare arrow
-  attack_b  STANDING SNAP SHOT: stays on his feet, draws to the cheek aimed nearly flat (held
-          extreme, upright) and looses; A and B hold the full draw with a small aim wobble while the
-          sim wind-up lasts (holdLoop)
+  attack_b  STANDING HIGH SHOT: stays on his feet, draws to the cheek aimed high (held extreme,
+          upright; W1: raised from nearly flat so the drawn arrow matches the high lob it launches,
+          about 45 degrees like A) and looses; A and B hold the full draw with a small aim wobble while
+          the sim wind-up lasts (holdLoop)
   attack  KNEEL, DRAW, RISE AND LOOSE: drops to one knee and nocks, draws to the cheek while
           kneeling (held extreme: full draw aimed high), rises onto his feet as he looses (the
           string snaps, a twang ring, the bow arm follows through), then reaches back into
@@ -25,9 +26,12 @@ Animation (cartoon kit v2, built on the Longbowman's draw-and-nock rig):
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import kit_medieval as K
 from ageborn_art import kit_bronze as KB
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import rigs_bronze as BZ
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
@@ -56,6 +60,22 @@ STRING = "#EDE6D6"
 PARCH = BZ.SAND_LT
 STEEL = BZ.BRONZE
 GOLD = BZ.BRONZE_HI
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2: aged-bronze bands on the quiver, a team sash tail with a team-dark fringe that swings a
+# frame late, a team-dark curl on the Phrygian cap (the cap in two tones), sinew bindings on the horn limbs, a
+# plum clavus down the linen tunic, a verdigris arm ring and a dagger on the near hip
+DETAIL_STANDARD = True
+# the glossy horn bow: a slightly softer finish highlight (the pale strings and fletching already read as small
+# highlights at 62 px; no polished bronze here, so no colour-rule cost); the roster's shading structure as is
+LOOK_HIGHLIGHT = 0.9
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, BZ.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+MATERIAL_KINDS = {SKIN: "skin", _FAR(SKIN): "skin", HAIR: "fur", BZ.LINEN: "cloth", LEATHER: "leather",
+                  _FAR(LEATHER): "leather", DARK_LEATHER: "leather", _FAR(DARK_LEATHER): "leather", WOOD: "bone",
+                  GRIP: "leather", STRING: "cloth", PARCH: "cloth", STEEL: "bronze", BZ.AGED: "bronze",
+                  BZ.AGED_DK: "bronze", BZ.SAND: "cloth", BZ.VERD: "bronze", "team": "cloth"}
 
 HL = (0.0, B.ARM_Y["r"] - 1.5, B.HAND_Z)   # bow hand (near side, so bow and arrow read)
 BOW_HALF = 26.0                       # grip to tip
@@ -91,17 +111,32 @@ def build(rig):
     for z in (27.0, 38.0):
         t = (z - 22.0) / 22.0
         g.lathe([(4.2, 0), (4.5, 0.4), (4.5, 1.6), (4.2, 2.0)], (-9.5 - 4.0 * t, 5.0, z), (-9.5 - 4.0 * t - 0.36, 5.0, z + 2.0), segs=14)
-    rig.part("torso", g, LEATHER, outline=0.5)
+    rig.part("torso", g, BZ.AGED, finish="metal", outline=0.5)        # aged bronze bands (W1: were leather)
 
-    # linen tunic, team sash and hem
+    # linen tunic, team sash and hem; a plum clavus down the tunic front (3 lu)
+    tunic = Geo().blob((0.2, 0, 28.0), (10.2, 9.4, 11.4), p=2.4, taper=(1.1, 0.92))
+    tf = F.Face(rig, "torso", [tunic])
+    g = Geo()
+    tf.stroke(g, tf.hit(4.0, 29.0), [(0.5, 6.0), (-0.3, -5.6)], 3.0, 0.35)
+    rig.part("torso", g, BZ.PLUM, outline=0)
     KB.tunic(rig, team=False, color=BZ.LINEN, hem_color=None, belt=None)
     g = Geo().blob((0.6, 0, 10.6), (11.8, 10.8, 1.8), p=3.0)
     rig.part("hem", g, team=True, outline=0.6)
+    g = Geo().blob((0.6, 0, 13.6), (12.25, 11.25, 1.35), p=3.0)       # a team-dark band over it (two tones)
+    look.team_part(rig, "hem", g, outline=0)
     rig.rest_offset["hem"] = (0, 0, BZ.V3_LIFT + 1.0)       # hem >= 9 lu above the soles
     g = Geo().blob((0.4, 0, 20.6), (11.2, 10.3, 2.6), p=3.2)
     rig.part("torso", g, team=True, outline=0.6)
     g = Geo().capsule((9.4, -3.0, 22.5), (4.0, -9.0, 35.5), 1.3)       # quiver strap
     rig.part("torso", g, DARK_LEATHER, outline=0.8)
+    # the sash's tail on the near hip: a team cloth end with a team-dark fringe, swinging a frame late
+    rig.secondary("sash", "torso", (-4.0, -10.8, 21.0), (-7.0, -11.4, 9.5), max_deg=16, gain=1.3)
+    g = Geo().slab([(-2.6, 22.0), (-5.8, 22.4), (-9.0, 11.4), (-5.2, 10.6)], -11.4, 1.2)
+    rig.part("sash", g, team=True, outline=0.6)
+    g = Geo().slab([(-8.3, 13.9), (-4.6, 13.2), (-5.2, 10.6), (-9.0, 11.4)], -11.6, 1.3)
+    look.team_part(rig, "sash", g, outline=0)
+    # a dagger in a dark sheath behind the near hip (an aged bronze locket, chape and pommel)
+    KD.scabbard(rig, "dagger", "torso", (-6.4, -10.2, 21.4), (-10.6, -10.6, 13.0), r=(1.8, 1.3), hilt=3.4)
 
     # head: face kit, a short beard, the team Phrygian cap with a forward-curling tip
     head = Geo().blob((2, 0, 48.2), (11.0, 10.4, 11.2), p=2.3)
@@ -118,6 +153,9 @@ def build(rig):
     g = Geo().blob((10.6, -0.4, 39.6), (3.6, 5.0, 3.0), p=2.2)
     rig.part("head", g, HAIR, finish="hair")
     rig.part("head", cap, team=True)
+    g = Geo().capsule((7.6, 0, 64.0), (9.6, 0, 63.1), 3.2, 2.7)          # the cap's curl in team-dark (two tones)
+    g.capsule((9.6, 0, 63.1), (11.6, 0, 59.3), 2.7, 1.7)
+    look.team_part(rig, "head", g, outline=0)
     g = Geo().blob((0.2, 0, 50.6), (12.6, 12.0, 1.6), p=2.8)
     rig.part("head", g, BZ.SAND, outline=0.6)
     KB.lambda_mark(rig, "head", (-1.0, -12.2, 55.0), size=0.9)
@@ -128,6 +166,8 @@ def build(rig):
     # arms: green linen sleeves, leather bracer on the bow arm, bare hands
     B.arm_parts(rig, "r", SLEEVE, hand=SKIN, cuff=LEATHER, glove_finish="matte")
     B.arm_parts(rig, "l", SLEEVE, hand=SKIN)
+    g = Geo().blob((0.3, B.ARM_Y["l"], 32.6), (4.7, 4.5, 1.5), p=2.8)    # a verdigris arm ring on the draw arm
+    rig.part("arm_l", g, BZ.VERD, finish="metal", outline=0.5)
 
     # the longbow in the far hand, modelled upright (rest direction 90): a D-shaped stave
     hx, hy, hz = HL
@@ -140,6 +180,12 @@ def build(rig):
         r1 = 1.0 + 1.6 * (1 - abs(z1) / BOW_HALF)
         g.capsule((hx + _bow_x(z0), hy, hz + z0), (hx + _bow_x(z1), hy, hz + z1), r0, r1, segs=10, rings=2)
     rig.part("hand_r", g, WOOD, finish="gloss")
+    g = Geo()                                   # sinew bindings round the horn limbs (2.4 lu bands)
+    for zc in (-14.0, -9.5, 9.5, 14.0):
+        r = 1.0 + 1.6 * (1 - abs(zc) / BOW_HALF) + 0.35
+        g.capsule((hx + _bow_x(zc - 1.0), hy, hz + zc - 1.0), (hx + _bow_x(zc + 1.0), hy, hz + zc + 1.0), r,
+                  segs=10, rings=2)
+    rig.part("hand_r", g, DARK_LEATHER, outline=0.4)
     g = Geo().capsule((hx + 0.2, hy, hz - 4.0), (hx + 0.2, hy, hz + 4.0), 2.8)
     rig.part("hand_r", g, GRIP)
     g = Geo()
@@ -184,6 +230,19 @@ def build(rig):
     rig.part("arrow_hand", g, PARCH, outline=0.6)
     # the arrow spawns where its head rests at full draw
     rig.track("muzzle", "hand_r", (ax0 + ARROW + 3, hy - AY, hz + AZ))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Bronze soldier; never on the face or skin): the linen tunic
+    behind the bow arm (the arm and the bow cross its front in the idle and the walk), the linen skirt, the team
+    cap, the leather quiver; a strip torn from the team hem band."""
+    rig.damage_spot_at("tunic", "torso", -7.0, 31.0, 6.5, "cloth")
+    rig.damage_spot_at("skirt", "hem", 1.0, 16.5, 6.0, "cloth")
+    rig.damage_spot_at("cap", "head", -1.0, 63.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("quiver", "torso", -12.6, 36.0, 5.0, "hide", fill=LEATHER)
+    rig.damage_spot_at("hem", "hem", -6.0, 11.5, 9.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -357,7 +416,7 @@ def _attack_clip():
 # -- attack B: standing snap shot, drawn to the cheek and aimed nearly flat --------------------------
 # frames: 0 = A nock, 1 raise (standing), 2 half, 3 FULL DRAW standing tall (the held extreme, flat),
 # 4 wobble, 5 RELEASE, 6-7 twang, 8-9 = A lower and reload
-AIM_B = 8.0
+AIM_B = 23.0       # W1: was 8 (drawn 30 degrees); now about 45 drawn, the high lob it launches
 STAND = [0.0] * 9
 
 

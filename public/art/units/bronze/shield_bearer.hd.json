@@ -2,18 +2,18 @@
  "frames": {
   "shield_bearer_idle_00": {
    "frame": {
-    "x": 2938,
-    "y": 2,
+    "x": 1052,
+    "y": 207,
     "w": 119,
-    "h": 196
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 213,
-    "y": 175,
+    "y": 173,
     "w": 119,
-    "h": 196
+    "h": 198
    },
    "sourceSize": {
     "w": 514,
@@ -26,8 +26,8 @@
   },
   "shield_bearer_idle_00_team": {
    "frame": {
-    "x": 2875,
-    "y": 261,
+    "x": 1741,
+    "y": 547,
     "w": 89,
     "h": 171
    },
@@ -50,18 +50,18 @@
   },
   "shield_bearer_idle_01": {
    "frame": {
-    "x": 2279,
-    "y": 2,
+    "x": 819,
+    "y": 210,
     "w": 112,
-    "h": 202
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 169,
+    "y": 167,
     "w": 112,
-    "h": 202
+    "h": 204
    },
    "sourceSize": {
     "w": 514,
@@ -74,8 +74,8 @@
   },
   "shield_bearer_idle_01_team": {
    "frame": {
-    "x": 2518,
-    "y": 261,
+    "x": 1827,
+    "y": 184,
     "w": 87,
     "h": 176
    },
@@ -98,18 +98,18 @@
   },
   "shield_bearer_idle_02": {
    "frame": {
-    "x": 1311,
-    "y": 2,
+    "x": 463,
+    "y": 229,
     "w": 106,
-    "h": 210
+    "h": 212
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 159,
+    "y": 157,
     "w": 106,
-    "h": 210
+    "h": 212
    },
    "sourceSize": {
     "w": 514,
@@ -122,8 +122,8 @@
   },
   "shield_bearer_idle_02_team": {
    "frame": {
-    "x": 1009,
-    "y": 261,
+    "x": 92,
+    "y": 526,
     "w": 86,
     "h": 184
    },
@@ -146,18 +146,18 @@
   },
   "shield_bearer_idle_03": {
    "frame": {
-    "x": 1067,
-    "y": 2,
+    "x": 340,
+    "y": 229,
     "w": 119,
-    "h": 211
+    "h": 213
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 157,
+    "y": 155,
     "w": 119,
-    "h": 211
+    "h": 213
    },
    "sourceSize": {
     "w": 514,
@@ -170,8 +170,8 @@
   },
   "shield_bearer_idle_03_team": {
    "frame": {
-    "x": 378,
-    "y": 261,
+    "x": 2,
+    "y": 526,
     "w": 86,
     "h": 192
    },
@@ -194,18 +194,18 @@
   },
   "shield_bearer_idle_04": {
    "frame": {
-    "x": 1792,
+    "x": 595,
     "y": 2,
     "w": 119,
-    "h": 204
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 214,
-    "y": 165,
+    "y": 162,
     "w": 119,
-    "h": 204
+    "h": 207
    },
    "sourceSize": {
     "w": 514,
@@ -218,8 +218,8 @@
   },
   "shield_bearer_idle_04_team": {
    "frame": {
-    "x": 2609,
-    "y": 261,
+    "x": 1834,
+    "y": 543,
     "w": 88,
     "h": 174
    },
@@ -242,18 +242,18 @@
   },
   "shield_bearer_idle_05": {
    "frame": {
-    "x": 2815,
+    "x": 839,
     "y": 2,
     "w": 119,
-    "h": 200
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 213,
-    "y": 171,
+    "y": 168,
     "w": 119,
-    "h": 200
+    "h": 203
    },
    "sourceSize": {
     "w": 514,
@@ -266,8 +266,8 @@
   },
   "shield_bearer_idle_05_team": {
    "frame": {
-    "x": 2968,
-    "y": 261,
+    "x": 2017,
+    "y": 2,
     "w": 89,
     "h": 171
    },
@@ -290,18 +290,18 @@
   },
   "shield_bearer_walk_00": {
    "frame": {
-    "x": 2,
-    "y": 261,
+    "x": 935,
+    "y": 416,
     "w": 118,
-    "h": 196
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 174,
+    "y": 171,
     "w": 118,
-    "h": 196
+    "h": 199
    },
    "sourceSize": {
     "w": 514,
@@ -314,17 +314,17 @@
   },
   "shield_bearer_walk_00_team": {
    "frame": {
-    "x": 620,
-    "y": 461,
-    "w": 98,
+    "x": 2027,
+    "y": 357,
+    "w": 97,
     "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 227,
+    "x": 228,
     "y": 164,
-    "w": 98,
+    "w": 97,
     "h": 167
    },
    "sourceSize": {
@@ -338,18 +338,18 @@
   },
   "shield_bearer_walk_01": {
    "frame": {
-    "x": 884,
-    "y": 261,
+    "x": 1329,
+    "y": 400,
     "w": 121,
-    "h": 184
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 186,
+    "y": 184,
     "w": 121,
-    "h": 184
+    "h": 186
    },
    "sourceSize": {
     "w": 514,
@@ -362,8 +362,8 @@
   },
   "shield_bearer_walk_01_team": {
    "frame": {
-    "x": 1050,
-    "y": 461,
+    "x": 2207,
+    "y": 2,
     "w": 102,
     "h": 163
    },
@@ -386,18 +386,18 @@
   },
   "shield_bearer_walk_02": {
    "frame": {
-    "x": 124,
-    "y": 261,
+    "x": 1150,
+    "y": 2,
     "w": 121,
-    "h": 195
+    "h": 197
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 224,
-    "y": 174,
+    "y": 172,
     "w": 121,
-    "h": 195
+    "h": 197
    },
    "sourceSize": {
     "w": 514,
@@ -410,8 +410,8 @@
   },
   "shield_bearer_walk_02_team": {
    "frame": {
-    "x": 1377,
-    "y": 461,
+    "x": 1549,
+    "y": 558,
     "w": 105,
     "h": 160
    },
@@ -434,18 +434,18 @@
   },
   "shield_bearer_walk_03": {
    "frame": {
-    "x": 1668,
-    "y": 2,
+    "x": 573,
+    "y": 215,
     "w": 120,
-    "h": 205
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 158,
+    "y": 156,
     "w": 120,
-    "h": 205
+    "h": 207
    },
    "sourceSize": {
     "w": 514,
@@ -458,17 +458,17 @@
   },
   "shield_bearer_walk_03_team": {
    "frame": {
-    "x": 942,
-    "y": 461,
-    "w": 104,
+    "x": 2128,
+    "y": 176,
+    "w": 103,
     "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 228,
+    "x": 229,
     "y": 148,
-    "w": 104,
+    "w": 103,
     "h": 163
    },
    "sourceSize": {
@@ -482,18 +482,18 @@
   },
   "shield_bearer_walk_04": {
    "frame": {
-    "x": 249,
-    "y": 261,
+    "x": 1057,
+    "y": 409,
     "w": 125,
-    "h": 193
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 213,
-    "y": 174,
+    "y": 171,
     "w": 125,
-    "h": 193
+    "h": 196
    },
    "sourceSize": {
     "w": 514,
@@ -506,17 +506,17 @@
   },
   "shield_bearer_walk_04_team": {
    "frame": {
-    "x": 1156,
-    "y": 461,
-    "w": 100,
+    "x": 2129,
+    "y": 510,
+    "w": 99,
     "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 227,
+    "x": 228,
     "y": 164,
-    "w": 100,
+    "w": 99,
     "h": 162
    },
    "sourceSize": {
@@ -530,18 +530,18 @@
   },
   "shield_bearer_walk_05": {
    "frame": {
-    "x": 2210,
-    "y": 261,
+    "x": 1704,
+    "y": 185,
     "w": 119,
-    "h": 176
+    "h": 178
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 216,
-    "y": 186,
+    "y": 184,
     "w": 119,
-    "h": 176
+    "h": 178
    },
    "sourceSize": {
     "w": 514,
@@ -554,17 +554,17 @@
   },
   "shield_bearer_walk_05_team": {
    "frame": {
-    "x": 1706,
-    "y": 461,
-    "w": 97,
+    "x": 2343,
+    "y": 332,
+    "w": 96,
     "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 227,
+    "x": 228,
     "y": 176,
-    "w": 97,
+    "w": 96,
     "h": 156
    },
    "sourceSize": {
@@ -578,18 +578,18 @@
   },
   "shield_bearer_walk_06": {
    "frame": {
-    "x": 626,
-    "y": 261,
-    "w": 111,
-    "h": 187
+    "x": 1275,
+    "y": 2,
+    "w": 112,
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 224,
-    "y": 174,
-    "w": 111,
-    "h": 187
+    "x": 223,
+    "y": 172,
+    "w": 112,
+    "h": 189
    },
    "sourceSize": {
     "w": 514,
@@ -602,8 +602,8 @@
   },
   "shield_bearer_walk_06_team": {
    "frame": {
-    "x": 1807,
-    "y": 461,
+    "x": 2346,
+    "y": 164,
     "w": 96,
     "h": 156
    },
@@ -626,18 +626,18 @@
   },
   "shield_bearer_walk_07": {
    "frame": {
-    "x": 2395,
-    "y": 2,
-    "w": 111,
-    "h": 202
+    "x": 815,
+    "y": 423,
+    "w": 116,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 223,
-    "y": 158,
-    "w": 111,
-    "h": 202
+    "x": 218,
+    "y": 156,
+    "w": 116,
+    "h": 204
    },
    "sourceSize": {
     "w": 514,
@@ -650,8 +650,8 @@
   },
   "shield_bearer_walk_07_team": {
    "frame": {
-    "x": 722,
-    "y": 461,
+    "x": 2029,
+    "y": 528,
     "w": 96,
     "h": 165
    },
@@ -674,18 +674,18 @@
   },
   "shield_bearer_attack_00": {
    "frame": {
-    "x": 2158,
+    "x": 718,
     "y": 2,
     "w": 117,
-    "h": 202
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 214,
-    "y": 168,
+    "y": 166,
     "w": 117,
-    "h": 202
+    "h": 204
    },
    "sourceSize": {
     "w": 514,
@@ -698,8 +698,8 @@
   },
   "shield_bearer_attack_00_team": {
    "frame": {
-    "x": 2333,
-    "y": 261,
+    "x": 1741,
+    "y": 367,
     "w": 89,
     "h": 176
    },
@@ -722,18 +722,18 @@
   },
   "shield_bearer_attack_01": {
    "frame": {
-    "x": 1284,
-    "y": 261,
+    "x": 1333,
+    "y": 195,
     "w": 144,
-    "h": 180
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 215,
-    "y": 190,
+    "y": 188,
     "w": 144,
-    "h": 180
+    "h": 182
    },
    "sourceSize": {
     "w": 514,
@@ -746,10 +746,10 @@
   },
   "shield_bearer_attack_01_team": {
    "frame": {
-    "x": 309,
-    "y": 461,
+    "x": 2128,
+    "y": 343,
     "w": 102,
-    "h": 169
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
@@ -757,7 +757,7 @@
     "x": 222,
     "y": 180,
     "w": 102,
-    "h": 169
+    "h": 163
    },
    "sourceSize": {
     "w": 514,
@@ -770,18 +770,18 @@
   },
   "shield_bearer_attack_02": {
    "frame": {
-    "x": 741,
-    "y": 261,
+    "x": 1186,
+    "y": 400,
     "w": 139,
-    "h": 184
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 229,
-    "y": 184,
+    "y": 182,
     "w": 139,
-    "h": 184
+    "h": 186
    },
    "sourceSize": {
     "w": 514,
@@ -794,8 +794,8 @@
   },
   "shield_bearer_attack_02_team": {
    "frame": {
-    "x": 1486,
-    "y": 461,
+    "x": 2234,
+    "y": 343,
     "w": 105,
     "h": 160
    },
@@ -818,18 +818,18 @@
   },
   "shield_bearer_attack_03": {
    "frame": {
-    "x": 813,
-    "y": 2,
+    "x": 190,
+    "y": 475,
     "w": 138,
-    "h": 219
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 172,
-    "y": 151,
+    "y": 148,
     "w": 138,
-    "h": 219
+    "h": 222
    },
    "sourceSize": {
     "w": 514,
@@ -842,8 +842,8 @@
   },
   "shield_bearer_attack_03_team": {
    "frame": {
-    "x": 1099,
-    "y": 261,
+    "x": 1454,
+    "y": 381,
     "w": 91,
     "h": 182
    },
@@ -866,7 +866,7 @@
   },
   "shield_bearer_attack_04": {
    "frame": {
-    "x": 655,
+    "x": 317,
     "y": 2,
     "w": 154,
     "h": 223
@@ -890,18 +890,18 @@
   },
   "shield_bearer_attack_04_team": {
    "frame": {
-    "x": 2426,
-    "y": 261,
+    "x": 1834,
+    "y": 364,
     "w": 88,
-    "h": 176
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 229,
-    "y": 147,
+    "y": 148,
     "w": 88,
-    "h": 176
+    "h": 175
    },
    "sourceSize": {
     "w": 514,
@@ -914,7 +914,7 @@
   },
   "shield_bearer_attack_05": {
    "frame": {
-    "x": 349,
+    "x": 161,
     "y": 2,
     "w": 152,
     "h": 238
@@ -938,8 +938,8 @@
   },
   "shield_bearer_attack_05_team": {
    "frame": {
-    "x": 1567,
-    "y": 261,
+    "x": 1549,
+    "y": 374,
     "w": 96,
     "h": 180
    },
@@ -962,18 +962,18 @@
   },
   "shield_bearer_attack_06": {
    "frame": {
-    "x": 2,
-    "y": 461,
+    "x": 1918,
+    "y": 181,
     "w": 206,
-    "h": 170
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 227,
-    "y": 201,
+    "y": 199,
     "w": 206,
-    "h": 170
+    "h": 172
    },
    "sourceSize": {
     "w": 514,
@@ -986,10 +986,10 @@
   },
   "shield_bearer_attack_06_team": {
    "frame": {
-    "x": 822,
-    "y": 461,
+    "x": 2313,
+    "y": 2,
     "w": 116,
-    "h": 163
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
@@ -997,7 +997,7 @@
     "x": 243,
     "y": 191,
     "w": 116,
-    "h": 163
+    "h": 158
    },
    "sourceSize": {
     "w": 514,
@@ -1010,18 +1010,18 @@
   },
   "shield_bearer_attack_07": {
    "frame": {
-    "x": 2701,
-    "y": 261,
+    "x": 1843,
+    "y": 2,
     "w": 170,
-    "h": 173
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 198,
+    "y": 196,
     "w": 170,
-    "h": 173
+    "h": 175
    },
    "sourceSize": {
     "w": 514,
@@ -1034,17 +1034,17 @@
   },
   "shield_bearer_attack_07_team": {
    "frame": {
-    "x": 1260,
-    "y": 461,
-    "w": 113,
+    "x": 2232,
+    "y": 510,
+    "w": 112,
     "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 246,
+    "x": 247,
     "y": 188,
-    "w": 113,
+    "w": 112,
     "h": 161
    },
    "sourceSize": {
@@ -1058,18 +1058,18 @@
   },
   "shield_bearer_attack_08": {
    "frame": {
-    "x": 468,
-    "y": 261,
+    "x": 1175,
+    "y": 203,
     "w": 154,
-    "h": 190
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 234,
-    "y": 181,
+    "y": 178,
     "w": 154,
-    "h": 190
+    "h": 193
    },
    "sourceSize": {
     "w": 514,
@@ -1082,17 +1082,17 @@
   },
   "shield_bearer_attack_08_team": {
    "frame": {
-    "x": 516,
-    "y": 461,
-    "w": 100,
+    "x": 1926,
+    "y": 530,
+    "w": 99,
     "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 236,
+    "x": 237,
     "y": 171,
-    "w": 100,
+    "w": 99,
     "h": 168
    },
    "sourceSize": {
@@ -1106,18 +1106,18 @@
   },
   "shield_bearer_attack_09": {
    "frame": {
-    "x": 1541,
-    "y": 2,
+    "x": 567,
+    "y": 445,
     "w": 123,
-    "h": 206
+    "h": 208
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 164,
+    "y": 162,
     "w": 123,
-    "h": 206
+    "h": 208
    },
    "sourceSize": {
     "w": 514,
@@ -1130,17 +1130,17 @@
   },
   "shield_bearer_attack_09_team": {
    "frame": {
-    "x": 1667,
-    "y": 261,
-    "w": 89,
+    "x": 1659,
+    "y": 2,
+    "w": 88,
     "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 229,
+    "x": 230,
     "y": 154,
-    "w": 89,
+    "w": 88,
     "h": 179
    },
    "sourceSize": {
@@ -1154,18 +1154,18 @@
   },
   "shield_bearer_attack_10": {
    "frame": {
-    "x": 1915,
-    "y": 2,
+    "x": 697,
+    "y": 213,
     "w": 118,
-    "h": 204
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 166,
+    "y": 164,
     "w": 118,
-    "h": 204
+    "h": 206
    },
    "sourceSize": {
     "w": 514,
@@ -1178,8 +1178,8 @@
   },
   "shield_bearer_attack_10_team": {
    "frame": {
-    "x": 1985,
-    "y": 261,
+    "x": 1751,
+    "y": 2,
     "w": 88,
     "h": 178
    },
@@ -1202,18 +1202,18 @@
   },
   "shield_bearer_hit_00": {
    "frame": {
-    "x": 1432,
-    "y": 261,
+    "x": 1391,
+    "y": 2,
     "w": 131,
-    "h": 180
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 194,
-    "y": 194,
+    "y": 192,
     "w": 131,
-    "h": 180
+    "h": 182
    },
    "sourceSize": {
     "w": 514,
@@ -1226,10 +1226,10 @@
   },
   "shield_bearer_hit_00_team": {
    "frame": {
-    "x": 1907,
-    "y": 461,
+    "x": 2443,
+    "y": 324,
     "w": 115,
-    "h": 151
+    "h": 150
    },
    "rotated": false,
    "trimmed": true,
@@ -1237,7 +1237,7 @@
     "x": 198,
     "y": 184,
     "w": 115,
-    "h": 151
+    "h": 150
    },
    "sourceSize": {
     "w": 514,
@@ -1250,18 +1250,18 @@
   },
   "shield_bearer_hit_01": {
    "frame": {
-    "x": 1852,
-    "y": 261,
+    "x": 1526,
+    "y": 2,
     "w": 129,
-    "h": 178
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 192,
-    "y": 197,
+    "y": 195,
     "w": 129,
-    "h": 178
+    "h": 180
    },
    "sourceSize": {
     "w": 514,
@@ -1274,8 +1274,8 @@
   },
   "shield_bearer_hit_01_team": {
    "frame": {
-    "x": 2026,
-    "y": 461,
+    "x": 2446,
+    "y": 2,
     "w": 112,
     "h": 142
    },
@@ -1298,18 +1298,18 @@
   },
   "shield_bearer_hit_02": {
    "frame": {
-    "x": 2698,
-    "y": 2,
+    "x": 935,
+    "y": 209,
     "w": 113,
-    "h": 201
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 171,
+    "y": 169,
     "w": 113,
-    "h": 201
+    "h": 203
    },
    "sourceSize": {
     "w": 514,
@@ -1322,8 +1322,8 @@
   },
   "shield_bearer_hit_02_team": {
    "frame": {
-    "x": 415,
-    "y": 461,
+    "x": 1926,
+    "y": 357,
     "w": 97,
     "h": 169
    },
@@ -1346,18 +1346,18 @@
   },
   "shield_bearer_hit_03": {
    "frame": {
-    "x": 1190,
-    "y": 2,
+    "x": 446,
+    "y": 446,
     "w": 117,
-    "h": 210
+    "h": 212
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 160,
+    "y": 158,
     "w": 117,
-    "h": 210
+    "h": 212
    },
    "sourceSize": {
     "w": 514,
@@ -1370,8 +1370,8 @@
   },
   "shield_bearer_hit_03_team": {
    "frame": {
-    "x": 1194,
-    "y": 261,
+    "x": 1481,
+    "y": 188,
     "w": 86,
     "h": 182
    },
@@ -1394,18 +1394,18 @@
   },
   "shield_bearer_hit_04": {
    "frame": {
-    "x": 1421,
+    "x": 475,
     "y": 2,
     "w": 116,
-    "h": 207
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 215,
-    "y": 163,
+    "y": 161,
     "w": 116,
-    "h": 207
+    "h": 209
    },
    "sourceSize": {
     "w": 514,
@@ -1418,8 +1418,8 @@
   },
   "shield_bearer_hit_04_team": {
    "frame": {
-    "x": 1760,
-    "y": 261,
+    "x": 1649,
+    "y": 369,
     "w": 88,
     "h": 179
    },
@@ -1442,18 +1442,18 @@
   },
   "shield_bearer_die_00": {
    "frame": {
-    "x": 2077,
-    "y": 261,
+    "x": 1571,
+    "y": 186,
     "w": 129,
-    "h": 177
+    "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 200,
-    "y": 184,
+    "y": 182,
     "w": 129,
-    "h": 177
+    "h": 179
    },
    "sourceSize": {
     "w": 514,
@@ -1466,10 +1466,10 @@
   },
   "shield_bearer_die_00_team": {
    "frame": {
-    "x": 2142,
-    "y": 461,
+    "x": 2446,
+    "y": 148,
     "w": 110,
-    "h": 135
+    "h": 134
    },
    "rotated": false,
    "trimmed": true,
@@ -1477,7 +1477,7 @@
     "x": 208,
     "y": 175,
     "w": 110,
-    "h": 135
+    "h": 134
    },
    "sourceSize": {
     "w": 514,
@@ -1490,18 +1490,18 @@
   },
   "shield_bearer_die_01": {
    "frame": {
-    "x": 955,
-    "y": 2,
-    "w": 108,
-    "h": 215
+    "x": 332,
+    "y": 475,
+    "w": 110,
+    "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 219,
-    "y": 158,
-    "w": 108,
-    "h": 215
+    "x": 217,
+    "y": 156,
+    "w": 110,
+    "h": 217
    },
    "sourceSize": {
     "w": 514,
@@ -1514,8 +1514,8 @@
   },
   "shield_bearer_die_01_team": {
    "frame": {
-    "x": 212,
-    "y": 461,
+    "x": 2110,
+    "y": 2,
     "w": 93,
     "h": 170
    },
@@ -1538,18 +1538,18 @@
   },
   "shield_bearer_die_02": {
    "frame": {
-    "x": 2037,
-    "y": 2,
+    "x": 694,
+    "y": 426,
     "w": 117,
-    "h": 204
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 186,
-    "y": 162,
+    "y": 159,
     "w": 117,
-    "h": 204
+    "h": 207
    },
    "sourceSize": {
     "w": 514,
@@ -1562,8 +1562,8 @@
   },
   "shield_bearer_die_02_team": {
    "frame": {
-    "x": 1595,
-    "y": 461,
+    "x": 2235,
+    "y": 169,
     "w": 107,
     "h": 159
    },
@@ -1586,8 +1586,8 @@
   },
   "shield_bearer_die_03": {
    "frame": {
-    "x": 505,
-    "y": 2,
+    "x": 190,
+    "y": 244,
     "w": 146,
     "h": 227
    },
@@ -1610,18 +1610,18 @@
   },
   "shield_bearer_die_03_team": {
    "frame": {
-    "x": 2463,
-    "y": 461,
+    "x": 1057,
+    "y": 609,
     "w": 104,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 196,
-    "y": 251,
+    "y": 250,
     "w": 104,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 514,
@@ -1634,10 +1634,10 @@
   },
   "shield_bearer_die_04": {
    "frame": {
-    "x": 190,
+    "x": 2,
     "y": 2,
     "w": 155,
-    "h": 255
+    "h": 261
    },
    "rotated": false,
    "trimmed": true,
@@ -1645,7 +1645,7 @@
     "x": 159,
     "y": 120,
     "w": 155,
-    "h": 255
+    "h": 261
    },
    "sourceSize": {
     "w": 514,
@@ -1658,18 +1658,18 @@
   },
   "shield_bearer_die_04_team": {
    "frame": {
-    "x": 2911,
-    "y": 461,
+    "x": 2348,
+    "y": 578,
     "w": 113,
-    "h": 90
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 190,
-    "y": 279,
+    "y": 280,
     "w": 113,
-    "h": 90
+    "h": 89
    },
    "sourceSize": {
     "w": 514,
@@ -1683,7 +1683,7 @@
   "shield_bearer_die_05": {
    "frame": {
     "x": 2,
-    "y": 2,
+    "y": 267,
     "w": 184,
     "h": 255
    },
@@ -1706,8 +1706,8 @@
   },
   "shield_bearer_die_05_team": {
    "frame": {
-    "x": 2792,
-    "y": 461,
+    "x": 1393,
+    "y": 590,
     "w": 115,
     "h": 95
    },
@@ -1730,7 +1730,7 @@
   },
   "shield_bearer_die_06": {
    "frame": {
-    "x": 2510,
+    "x": 962,
     "y": 2,
     "w": 184,
     "h": 201
@@ -1754,8 +1754,8 @@
   },
   "shield_bearer_die_06_team": {
    "frame": {
-    "x": 2571,
-    "y": 461,
+    "x": 935,
+    "y": 619,
     "w": 107,
     "h": 98
    },
@@ -1778,8 +1778,8 @@
   },
   "shield_bearer_die_07": {
    "frame": {
-    "x": 2256,
-    "y": 461,
+    "x": 1186,
+    "y": 590,
     "w": 203,
     "h": 128
    },
@@ -1802,8 +1802,8 @@
   },
   "shield_bearer_die_07_team": {
    "frame": {
-    "x": 2682,
-    "y": 461,
+    "x": 2443,
+    "y": 478,
     "w": 106,
     "h": 96
    },
@@ -1933,8 +1933,8 @@
   "image": "shield_bearer.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 3072,
-   "h": 636
+   "w": 2560,
+   "h": 720
   },
   "scale": "3",
   "ageborn": {

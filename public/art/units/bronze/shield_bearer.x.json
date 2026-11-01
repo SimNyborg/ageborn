@@ -2,18 +2,18 @@
  "frames": {
   "shield_bearer_attack_b_02": {
    "frame": {
-    "x": 415,
+    "x": 416,
     "y": 2,
     "w": 67,
-    "h": 95
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 90,
+    "y": 89,
     "w": 67,
-    "h": 95
+    "h": 96
    },
    "sourceSize": {
     "w": 257,
@@ -26,7 +26,7 @@
   },
   "shield_bearer_attack_b_02_team": {
    "frame": {
-    "x": 741,
+    "x": 840,
     "y": 2,
     "w": 41,
     "h": 88
@@ -50,18 +50,18 @@
   },
   "shield_bearer_attack_b_03": {
    "frame": {
-    "x": 130,
-    "y": 111,
+    "x": 72,
+    "y": 112,
     "w": 68,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 100,
+    "y": 99,
     "w": 68,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 257,
@@ -75,7 +75,7 @@
   "shield_bearer_attack_b_03_team": {
    "frame": {
     "x": 202,
-    "y": 111,
+    "y": 112,
     "w": 45,
     "h": 85
    },
@@ -101,15 +101,15 @@
     "x": 251,
     "y": 2,
     "w": 81,
-    "h": 96
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 87,
+    "y": 86,
     "w": 81,
-    "h": 96
+    "h": 97
    },
    "sourceSize": {
     "w": 257,
@@ -122,10 +122,10 @@
   },
   "shield_bearer_attack_b_04_team": {
    "frame": {
-    "x": 486,
+    "x": 687,
     "y": 2,
     "w": 51,
-    "h": 90
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
@@ -133,7 +133,7 @@
     "x": 111,
     "y": 82,
     "w": 51,
-    "h": 90
+    "h": 89
    },
    "sourceSize": {
     "w": 257,
@@ -149,15 +149,15 @@
     "x": 2,
     "y": 2,
     "w": 80,
-    "h": 105
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 87,
+    "y": 86,
     "w": 80,
-    "h": 105
+    "h": 106
    },
    "sourceSize": {
     "w": 257,
@@ -170,8 +170,8 @@
   },
   "shield_bearer_attack_b_05_team": {
    "frame": {
-    "x": 72,
-    "y": 111,
+    "x": 144,
+    "y": 112,
     "w": 54,
     "h": 86
    },
@@ -194,18 +194,18 @@
   },
   "shield_bearer_attack_b_06": {
    "frame": {
-    "x": 786,
+    "x": 742,
     "y": 2,
     "w": 94,
-    "h": 87
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 99,
+    "y": 98,
     "w": 94,
-    "h": 87
+    "h": 88
    },
    "sourceSize": {
     "w": 257,
@@ -219,7 +219,7 @@
   "shield_bearer_attack_b_06_team": {
    "frame": {
     "x": 251,
-    "y": 111,
+    "y": 112,
     "w": 67,
     "h": 84
    },
@@ -242,18 +242,18 @@
   },
   "shield_bearer_attack_b_07": {
    "frame": {
-    "x": 541,
+    "x": 487,
     "y": 2,
     "w": 80,
-    "h": 89
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
-    "y": 97,
+    "y": 96,
     "w": 80,
-    "h": 89
+    "h": 90
    },
    "sourceSize": {
     "w": 257,
@@ -267,7 +267,7 @@
   "shield_bearer_attack_b_07_team": {
    "frame": {
     "x": 2,
-    "y": 111,
+    "y": 112,
     "w": 66,
     "h": 87
    },
@@ -292,16 +292,16 @@
    "frame": {
     "x": 336,
     "y": 2,
-    "w": 75,
-    "h": 95
+    "w": 76,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
-    "y": 90,
-    "w": 75,
-    "h": 95
+    "x": 114,
+    "y": 89,
+    "w": 76,
+    "h": 96
    },
    "sourceSize": {
     "w": 257,
@@ -315,7 +315,7 @@
   "shield_bearer_attack_c_02_team": {
    "frame": {
     "x": 322,
-    "y": 111,
+    "y": 112,
     "w": 56,
     "h": 83
    },
@@ -338,18 +338,18 @@
   },
   "shield_bearer_attack_c_03": {
    "frame": {
-    "x": 516,
-    "y": 111,
+    "x": 450,
+    "y": 112,
     "w": 71,
-    "h": 80
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
-    "y": 106,
+    "y": 105,
     "w": 71,
-    "h": 80
+    "h": 81
    },
    "sourceSize": {
     "w": 257,
@@ -362,8 +362,8 @@
   },
   "shield_bearer_attack_c_03_team": {
    "frame": {
-    "x": 591,
-    "y": 111,
+    "x": 694,
+    "y": 112,
     "w": 59,
     "h": 80
    },
@@ -389,15 +389,15 @@
     "x": 176,
     "y": 2,
     "w": 71,
-    "h": 98
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 96,
+    "y": 95,
     "w": 71,
-    "h": 98
+    "h": 99
    },
    "sourceSize": {
     "w": 257,
@@ -410,7 +410,7 @@
   },
   "shield_bearer_attack_c_04_team": {
    "frame": {
-    "x": 685,
+    "x": 631,
     "y": 2,
     "w": 52,
     "h": 89
@@ -437,15 +437,15 @@
     "x": 86,
     "y": 2,
     "w": 86,
-    "h": 101
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 99,
+    "y": 98,
     "w": 86,
-    "h": 101
+    "h": 102
    },
    "sourceSize": {
     "w": 257,
@@ -458,7 +458,7 @@
   },
   "shield_bearer_attack_c_05_team": {
    "frame": {
-    "x": 625,
+    "x": 571,
     "y": 2,
     "w": 56,
     "h": 89
@@ -483,17 +483,17 @@
   "shield_bearer_attack_c_06": {
    "frame": {
     "x": 757,
-    "y": 111,
+    "y": 112,
     "w": 108,
-    "h": 77
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 113,
-    "y": 117,
+    "y": 116,
     "w": 108,
-    "h": 77
+    "h": 78
    },
    "sourceSize": {
     "w": 257,
@@ -507,7 +507,7 @@
   "shield_bearer_attack_c_06_team": {
    "frame": {
     "x": 382,
-    "y": 111,
+    "y": 112,
     "w": 64,
     "h": 82
    },
@@ -530,18 +530,18 @@
   },
   "shield_bearer_attack_c_07": {
    "frame": {
-    "x": 654,
-    "y": 111,
+    "x": 525,
+    "y": 112,
     "w": 99,
-    "h": 79
+    "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 115,
+    "y": 114,
     "w": 99,
-    "h": 79
+    "h": 80
    },
    "sourceSize": {
     "w": 257,
@@ -554,10 +554,10 @@
   },
   "shield_bearer_attack_c_07_team": {
    "frame": {
-    "x": 450,
-    "y": 111,
+    "x": 628,
+    "y": 112,
     "w": 62,
-    "h": 81
+    "h": 80
    },
    "rotated": false,
    "trimmed": true,
@@ -565,7 +565,7 @@
     "x": 130,
     "y": 110,
     "w": 62,
-    "h": 81
+    "h": 80
    },
    "sourceSize": {
     "w": 257,
@@ -638,7 +638,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 896,
-   "h": 200
+   "h": 204
   },
   "scale": "1.5",
   "ageborn": {
