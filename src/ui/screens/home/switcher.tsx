@@ -1,12 +1,15 @@
 /**
- * The mode switcher (spec "online-first Battle hub" 1.3, 2026-10-01): the Modes tile left of Battle
- * now *shows* the mode Battle plays ("Ranked · Online", "Quick · vs AI") and opens the chooser. Same
- * box as the Modes tile (88 × 64 phone, 112 × 80 desktop), slate, never a second primary. Opens at 3
- * wins. The Ladder reads "Ranked · Online": online ranked play (owner decision 2026-10-07).
+ * The mode button (spec "online-first Battle hub" 1.3, 2026-10-01; queue item 50, 2026-11-01): the one
+ * button left of Battle that *shows* the mode Battle plays ("Ranked · Online", "Quick · vs AI") and opens
+ * the Modes panel, where every mode lives, Friend Duel's "coming with online play" card included (the
+ * separate Friend Duel chip is gone: two buttons opened the same panel). Slate, never a second primary.
+ * Where the row has room (800 px wide and up) it reads as a picker: the mode's icon, its name and tag and
+ * a caret, 152 × 64 on phones and 200 × 80 on desktops; narrower it is the 88 × 64 tile. Opens at 3 wins.
+ * The Ladder reads "Ranked · Online": online ranked play (owner decision 2026-10-07).
  */
 import type { ComponentChildren } from 'preact';
 import { Button } from '../../components/Button';
-import { CalendarIcon, CaretIcon, FriendsIcon, GlobeIcon, LockIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
+import { CalendarIcon, CaretIcon, FriendsIcon, GlobeIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
 import { useUi } from '../context';
 import type { HomeMode } from '../model/homeMode';
 
@@ -42,7 +45,7 @@ export function ModeSwitcher(p: { mode: SwitcherMode; onOpen(): void; disabled?:
       reason={p.reason}
       onClick={p.onOpen}
     >
-      <span class="hub-switch__name" key={p.mode}>
+      <span class="hub-switch__name" key={p.mode} data-clip-check="">
         {name}
       </span>
       <span class="hub-switch__tag" data-tag="" data-mode={p.mode}>
@@ -52,32 +55,5 @@ export function ModeSwitcher(p: { mode: SwitcherMode; onOpen(): void; disabled?:
         <CaretIcon size={14} />
       </span>
     </Button>
-  );
-}
-
-/**
- * The one online entry Home shows before online play works (owner decision 2026-10-01: "Home keeps
- * the online-ready layout, with the friend entry shown as coming later"). A quiet, locked chip left of
- * the switcher: it never starts anything and never looks like a primary. A tap opens the Modes panel
- * with the Friend Duel card (first, under "vs players") explaining what it will be.
- */
-export function FriendSoonChip(p: { onOpen(): void }) {
-  const { t } = useUi();
-  return (
-    <button type="button" class="hub-friend" data-testid="home-friend-soon" aria-label={t('ui.hub.friendSoonAria')} onClick={p.onOpen}>
-      <span class="hub-friend__icon" aria-hidden="true">
-        <FriendsIcon size={22} />
-        <span class="hub-friend__lock">
-          <LockIcon size={12} />
-        </span>
-      </span>
-      <span class="hub-friend__name" data-clip-check="">
-        {t('ui.modesPanel.friend')}
-      </span>
-      <span class="hub-friend__tag" data-clip-check="" data-tag="">
-        <span class="hub-friend__short">{t('ui.hub.friendSoon')}</span>
-        <span class="hub-friend__long">{t('ui.modesPanel.friendSoon')}</span>
-      </span>
-    </button>
   );
 }

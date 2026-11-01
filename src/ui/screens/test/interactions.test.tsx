@@ -7,7 +7,7 @@ import { content } from '@/content';
 import { i18n } from '@/i18n';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fixtureOpponent, fixturePause, fixtureRequest, fixtureResult } from '../fixtures/matches';
-import { FIXTURE_NOW, midGameSave, newPlayerSave } from '../fixtures/saves';
+import { midGameSave, newPlayerSave } from '../fixtures/saves';
 import { searchDelayMs } from '../home/ranked';
 import { VS_MS } from '../vs/VsScreen';
 import { REWARD_STEP_MS } from '../model/result';
@@ -409,16 +409,17 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(text(m.q('[data-testid="caption-last"]')!)).toBe('No clock: the war ends when a base falls, by about 25½ min.');
   });
 
-  it('Home shows one honest friend entry: a locked chip that opens the panel on Friend Duel (owner decision 2026-10-01)', () => {
+  it('Home has one mode button; Friend Duel lives in the panel it opens, coming with online play (queue item 50)', () => {
     m = mount({ state: 'mid' });
-    const chip = m.q('[data-testid="home-friend-soon"]')!;
-    expect(text(chip)).toContain('Friend Duel');
-    expect(chip.getAttribute('aria-label')).toContain('arrives with online play');
-    m.click('[data-testid="home-friend-soon"]');
-    // vs players leads the panel, with Friend Duel's note open; nothing was selected or started.
+    // One button chooses the mode: no separate Friend Duel chip beside it (owner request 2026-11-01).
+    expect(m.q('[data-testid="home-friend-soon"]')).toBeNull();
+    expect(m.qa('.wp-playRow .ui-btn').map((b) => b.getAttribute('data-testid'))).toEqual(['home-modes', 'play']);
+    expect(text(m.q('[data-testid="home-modes"]')!)).toContain('Ranked');
+    m.click('[data-testid="home-modes"]');
+    // vs players leads the panel, with Friend Duel's locked card in it; nothing was selected or started.
     const groups = m.qa('[data-testid="modes-sheet"] .md-group').map(text);
     expect(groups[0]).toBe('vs players');
-    expect(text(m.q('[data-testid="mode-friend-more"]')!)).toContain('room');
+    expect(text(m.q('[data-testid="mode-friend"]')!)).toContain('Coming with online play');
     expect(m.save.value.flags['ui-homeMode.friend']).toBeUndefined();
     expect(calls('prepareMatch')).toHaveLength(0);
   });
@@ -615,23 +616,20 @@ describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
     expect(text(m.q('[data-testid="sundial-next"]')!)).toBe('Full');
   });
 
-  it('Home shows only the Sundial glyph, with no number and no time; it opens the Capsules tab (A15.13)', () => {
-    m = mount({ state: 'mid', routes: [{ id: 'home' }] });
-    const chip = m.q('[data-testid="home-sundial"]')!;
-    expect(text(chip)).toBe('');
-    expect(chip.getAttribute('aria-label')).toBe('Sundial: a capsule is ready. Finish any battle to claim it. Opens Capsules.');
-    expect(chip.className).toContain('is-ready');
+  it('Home has no Sundial mark and no time; the Capsules tab in the menu carries the ready count (A15.13, queue item 49)', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'home' }], shell: true });
+    // The owner (2026-11-01): the top-right Sundial button did what the Capsules tab below does.
+    expect(m.q('[data-testid="home-sundial"]')).toBeNull();
     const home = text(m.container);
     expect(home).not.toContain('Sundial');
     expect(home).not.toMatch(/\/34\b/);
     expect(home).not.toContain('Next one');
     expect(home).not.toMatch(/\b\d{1,2}:\d{2}\b/);
-    m.unmount();
-    const mid = midGameSave(content);
-    m = mount({ save: { ...mid, capsules: { ...mid.capsules, charges: 0, chargesUpdatedAt: FIXTURE_NOW } }, routes: [{ id: 'home' }] });
-    const dim = m.q('[data-testid="home-sundial"]')!;
-    expect(dim.className).toContain('is-dim');
-    expect(dim.getAttribute('aria-label')).toBe('Sundial: none ready yet. Opens Capsules.');
+    const s = m.save.value;
+    const badge = m.q('[data-testid="tab-capsules"] [data-badge="ready"]')!;
+    expect(text(badge)).toBe(String(s.capsules.pending.length + s.capsules.wardrobe.length));
+    m.click('[data-testid="tab-capsules"]');
+    expect(m.q('[data-testid="sundial"]')).not.toBeNull();
   });
 
   it('the one-time Sundial notice shows in the Capsules tab for a save that has it, and closes', () => {

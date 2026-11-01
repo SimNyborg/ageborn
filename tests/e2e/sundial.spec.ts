@@ -1,8 +1,8 @@
 /**
  * The Sundial (DESIGN A6.3, A15.3, A15.13; owner request 2026-09-29, built 2026-09-30), on the dev
  * screen gallery at phone landscape (844x390) and desktop (1280x720):
- * - Home shows only the Sundial glyph (no number) and no clock time anywhere; the glyph opens the
- *   Capsules tab.
+ * - Home shows no Sundial mark (queue item 49: the Capsules tab in the menu opens the same place and
+ *   carries the ready count) and no clock time anywhere.
  * - The Capsules tab shows the dial, "n of 34 ready" and the next one as a local clock time (never a
  *   running countdown), and its text changes at most once a minute.
  * - The one-time notice shows for a save that has it (save v10 sets it for saves that played), in the
@@ -22,18 +22,18 @@ async function open(page: Page, variant: string, vp: string): Promise<void> {
 
 for (const vp of VIEWPORTS) {
   test.describe(`the Sundial at ${vp}`, () => {
-    test('Home: the Sundial glyph with no number, no time on Home, and it opens the Capsules tab', async ({ page }) => {
+    test('Home: no Sundial mark and no time; the Capsules tab carries the ready count and opens the Sundial', async ({ page }) => {
       const problems = watchPage(page);
       await open(page, 'home', vp);
-      const chip = page.getByTestId('home-sundial');
-      await expect(chip).toBeVisible({ timeout: 30_000 });
-      await expect(chip).toHaveText('');
-      await expect(chip).toHaveAttribute('aria-label', /^Sundial: (a capsule is ready|none ready yet)\./);
+      const tab = page.getByTestId('tab-capsules');
+      await expect(tab).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('home-sundial')).toHaveCount(0);
+      await expect(tab.locator('[data-badge="ready"]')).toHaveText(/^\d+$/);
       const home = (await page.locator('.ui-root').first().innerText()).replace(/\s+/g, ' ');
       expect(home).not.toContain('Next one');
       expect(home).not.toMatch(/\/34\b/);
       expect(home).not.toMatch(/\b\d{1,2}:\d{2}\b/);
-      await chip.click();
+      await tab.click();
       await expect(page.getByTestId('sundial')).toBeVisible();
       expect(problems.errors).toEqual([]);
     });

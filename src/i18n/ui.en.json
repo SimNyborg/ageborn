@@ -204,9 +204,7 @@
       "arenaN": "Arena {n}",
       "warChest": "War Chest {n}/{max}",
       "warChestHint": "Ladder and Daily wins fill it. Its progress never expires.",
-      "supply": "Supply Capsule",
-      "sundialReadyAria": "Sundial: a capsule is ready. Finish any battle to claim it. Opens Capsules.",
-      "sundialEmptyAria": "Sundial: none ready yet. Opens Capsules."
+      "supply": "Supply Capsule"
     },
     "quest": {
       "claim": "Claim",
@@ -902,8 +900,6 @@
       "change": "Change",
       "difficulty": "Difficulty",
       "createRoom": "Create room",
-      "friendSoon": "Later",
-      "friendSoonAria": "Friend Duel arrives with online play. More about it",
       "easier": "Easier",
       "harder": "Harder"
     },

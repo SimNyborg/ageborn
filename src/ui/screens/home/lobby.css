@@ -420,112 +420,66 @@
     font-size: 15px;
   }
 }
-/* The Friend Duel entry, shown as coming later (owner decision 2026-10-01): a quiet, locked chip left
-   of the switcher in the bottom row. Dashed edge and muted colours say "not yet"; it never pulses. */
-.hub-dock .wp-playRow {
-  position: relative;
-}
-.hub-friend {
-  position: absolute;
-  right: calc(100% + var(--ui-s2));
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  width: 88px;
-  height: 56px;
-  padding: 4px 4px 5px;
-  border: 1.5px dashed rgba(155, 108, 240, 0.55);
-  border-radius: var(--ui-r-md);
-  background: linear-gradient(180deg, rgba(43, 36, 64, 0.88), rgba(25, 22, 38, 0.92));
-  box-shadow: var(--ui-e2);
-  color: var(--ui-text-2);
-  cursor: pointer;
-  animation: hub-friend-in var(--ui-dur-medium) var(--ui-ease-enter) both;
-  transition:
-    transform var(--ui-dur-micro) var(--ui-ease-standard),
-    border-color var(--ui-dur-small) var(--ui-ease-standard);
-}
-@keyframes hub-friend-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+/* Queue item 50: one mode button. Where the row has room (800 px wide and up; the Friend Duel chip used to
+   take that room) it reads as a picker: the mode's icon on the left, its name over its tag, the caret at the
+   right; slate and lower than Battle in weight, so Battle stays the one obvious action. */
+@container ui-root (min-width: 800px) {
+  .ui-btn.wp-modes.hub-switch {
+    --minw: 152px;
+    width: 152px;
   }
-}
-.hub-friend:hover {
-  border-color: rgba(185, 150, 255, 0.85);
-}
-.hub-friend:active {
-  transform: translateY(1px) scale(0.97);
-}
-.hub-friend__icon {
-  position: relative;
-  display: flex;
-  opacity: 0.8;
-}
-.hub-friend__lock {
-  position: absolute;
-  right: -7px;
-  bottom: -3px;
-  display: flex;
-  padding: 1px;
-  border-radius: 50%;
-  background: #1c1830;
-}
-.hub-friend__name {
-  color: var(--ui-text);
-  font: 800 12px / 1.05 var(--ui-font-text);
-  white-space: nowrap;
-}
-.hub-friend__tag {
-  padding: 1px 6px;
-  border-radius: var(--ui-r-pill);
-  background: rgba(155, 108, 240, 0.2);
-  color: #dccbff;
-  font: 800 11px / 1.15 var(--ui-font-text);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.hub-friend__long {
-  display: none;
-}
-/* Desktop (wide bottom row): the switcher's size, and the full "Arrives with online play". */
-@container ui-root (min-height: 481px) {
-  .hub-friend {
-    width: 184px;
-    height: 80px;
+  .wp-modes.hub-switch .ui-btn__face {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 0 28px 0 12px;
+  }
+  .wp-modes.hub-switch .ui-btn__text {
+    align-items: flex-start;
     gap: 4px;
-    padding: 6px 10px 8px;
   }
-  .hub-friend__icon > svg {
+  .hub-switch .hub-switch__name {
+    font-size: 16px;
+  }
+  .hub-switch .hub-switch__icon > svg {
     width: 28px;
     height: 28px;
   }
-  .hub-friend__name {
-    font-size: 15px;
-  }
-  .hub-friend__tag {
-    text-transform: none;
-    letter-spacing: 0;
-    font-size: 12px;
-  }
-  .hub-friend__short {
-    display: none;
-  }
-  .hub-friend__long {
-    display: inline;
+  .hub-switch .hub-switch__caret {
+    top: 50%;
+    right: 10px;
+    margin-top: -7px;
   }
 }
-/* Small phones (under 800 px wide, such as 750 x 340): the bottom row has no room for the chip between
-   the tab bar (5 x 80 px) and the switcher, and it lay over the Customize tab. It steps aside there;
-   Friend Duel stays one tap away in the Modes panel the switcher next to it opens (its card leads
-   "vs players"). From 800 px the row fits the tabs, the chip, the switcher and Battle. */
-@container ui-root (max-width: 799.98px) {
-  .hub-friend {
+@container ui-root (min-width: 800px) and (min-height: 481px) {
+  .ui-btn.wp-modes.hub-switch {
+    --minw: 200px;
+    width: 200px;
+  }
+  .wp-modes.hub-switch .ui-btn__face {
+    gap: 12px;
+    padding: 0 32px 0 16px;
+  }
+  .hub-switch .hub-switch__name {
+    font-size: 19px;
+  }
+  .hub-switch .hub-switch__icon > svg {
+    width: 34px;
+    height: 34px;
+  }
+  .hub-switch .hub-switch__caret {
+    right: 12px;
+  }
+}
+/* Narrow and short (under 800 px wide and 360 px tall, item 43's phones with the browser's bars): the tile is
+   56 px tall, too short for the icon over the name and tag, and the icon stood out over its top edge. The
+   name and tag carry the mode there; the icon comes back from 361 px. */
+@container ui-root (max-width: 799.98px) and (max-height: 360px) {
+  .wp-modes.hub-switch .ui-btn__icon {
     display: none;
+  }
+  .wp-modes.hub-switch .ui-btn__text {
+    gap: 4px;
   }
 }
 /* The smallest phones (under 700 px wide, such as 667 x 375; review 2): the switcher lay 37 px over the
@@ -557,9 +511,6 @@
   .hub-road__label {
     display: none;
   }
-}
-.ui-root[data-reduce-motion='true'] .hub-friend {
-  animation: none;
 }
 
 /* The token MR-120 flies from the chosen card into the tile. */
