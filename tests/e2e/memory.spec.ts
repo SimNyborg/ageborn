@@ -26,7 +26,8 @@
  * war (how many were made at all is printed); CI's slow WebKit could build a turret just after an evolve in a
  * fast-forward, before the age's turret sheets landed.
  */
-import { expect, test, type Page } from '@playwright/test';
+import fs from 'node:fs';
+import { expect, test, type Browser, type Page } from '@playwright/test';
 import { fastForward, pastOnboarding, watchPage, type AgebornDev } from './helpers';
 
 /** Decoded image memory a whole Standard War may hold at its peak (MB; 2,484 before G7, about 540 after). */
@@ -76,6 +77,95 @@ test.use({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 });
 const mb = (n: number): number => Math.round(n / 1e6);
 
 /**
+ * W0 WebKit-crash diagnostic (2026-11-01, temporary; revert once settled): CI's WebKit crashed ("Target crashed") in
+ * the long wars from the damage merge on. A page hook counts the WebGL objects alive (created minus deleted), the
+ * texture uploads (all, and of the bakers' 512 px canvas pages) and their bytes; `warPeak` logs them every 1,000 ticks
+ * with the app's estimate, the battle view's display objects, the browsers' resident memory and the machine's free
+ * memory (/proc), so a crash's log shows what grew before it.
+ */
+const GL_PROBE = (): void => {
+  const w = window as unknown as { __glProbe?: unknown };
+  if (w.__glProbe) return;
+  const alive: Record<string, number> = { texture: 0, buffer: 0, framebuffer: 0, renderbuffer: 0, vertexArray: 0 };
+  const up = { n: 0, bytes: 0, pages: 0 };
+  w.__glProbe = { alive, up };
+  const pairs: [string, string, string][] = [['createTexture', 'deleteTexture', 'texture'], ['createBuffer', 'deleteBuffer', 'buffer'], ['createFramebuffer', 'deleteFramebuffer', 'framebuffer'], ['createRenderbuffer', 'deleteRenderbuffer', 'renderbuffer'], ['createVertexArray', 'deleteVertexArray', 'vertexArray']];
+  const gl = window as unknown as { WebGLRenderingContext?: { prototype: object }; WebGL2RenderingContext?: { prototype: object } };
+  for (const proto of [gl.WebGLRenderingContext?.prototype, gl.WebGL2RenderingContext?.prototype]) {
+    if (!proto) continue;
+    const P = proto as unknown as Record<string, (...a: unknown[]) => unknown>;
+    for (const [c, d, k] of pairs) {
+      const oc = P[c];
+      const od = P[d];
+      if (!oc || !od) continue;
+      P[c] = function (this: unknown, ...a: unknown[]) {
+        alive[k] = (alive[k] ?? 0) + 1;
+        return oc.apply(this, a);
+      };
+      P[d] = function (this: unknown, o: unknown, ...a: unknown[]) {
+        if (o) alive[k] = (alive[k] ?? 0) - 1;
+        return od.call(this, o, ...a);
+      };
+    }
+    for (const name of ['texImage2D', 'texSubImage2D']) {
+      const orig = P[name];
+      if (!orig) continue;
+      P[name] = function (this: unknown, ...a: unknown[]) {
+        const src = a.find((x) => typeof x === 'object' && x !== null && 'width' in (x as object)) as { width: number; height: number; constructor: { name: string } } | undefined;
+        const wd = src ? src.width : typeof a[3] === 'number' ? a[3] : 0;
+        const ht = src ? src.height : typeof a[4] === 'number' ? a[4] : 0;
+        up.n++;
+        up.bytes += wd * ht * 4;
+        if (src && src.constructor.name === 'HTMLCanvasElement' && wd === 512 && ht === 512) up.pages++;
+        return orig.apply(this, a);
+      };
+    }
+  }
+};
+
+/** The browsers' resident memory (MB; WebKit's web and GPU processes, Chromium's) and the machine's free memory, from /proc. */
+function procMemory(): string {
+  try {
+    const rows: string[] = [];
+    for (const pid of fs.readdirSync('/proc').filter((d) => /^\d+$/.test(d))) {
+      let comm = '';
+      try {
+        comm = fs.readFileSync(`/proc/${pid}/comm`, 'utf8').trim();
+      } catch {
+        continue;
+      }
+      if (!/WebKit|chrome|headless_shell/i.test(comm)) continue;
+      const st = fs.readFileSync(`/proc/${pid}/status`, 'utf8');
+      const rss = Number(/VmRSS:\s+(\d+)/.exec(st)?.[1] ?? 0) / 1024;
+      if (rss > 150) rows.push(`${comm}:${pid}=${Math.round(rss)}`);
+    }
+    const avail = Number(/MemAvailable:\s+(\d+)/.exec(fs.readFileSync('/proc/meminfo', 'utf8'))?.[1] ?? 0) / 1024;
+    return `free ${Math.round(avail)} MB; ${rows.join(' ')}`;
+  } catch {
+    return 'no /proc';
+  }
+}
+
+/** One diagnostic line for the war on screen: tick, the app's estimate, WebGL objects, uploads, display objects, memory. */
+async function warProbe(page: Page, label: string, s: Step): Promise<void> {
+  const g = await page
+    .evaluate(() => {
+      const p = (window as unknown as { __glProbe?: { alive: Record<string, number>; up: { n: number; bytes: number; pages: number } } }).__glProbe;
+      const root = (window as unknown as { __agebornDev?: { view?: () => { root?: { children?: unknown[] } } | null } }).__agebornDev?.view?.()?.root;
+      let n = 0;
+      const walk = (o: { children?: unknown[] }): void => {
+        n++;
+        for (const c of o.children ?? []) walk(c as { children?: unknown[] });
+      };
+      if (root) walk(root);
+      return { alive: p?.alive ?? {}, up: p?.up ?? { n: 0, bytes: 0, pages: 0 }, objects: root ? n : -1 };
+    })
+    .catch(() => null);
+  const gl = g ? `gl ${Object.entries(g.alive).map(([k, v]) => `${k} ${v}`).join(', ')}; uploads ${g.up.n} (${mb(g.up.bytes)} MB, pages ${g.up.pages}); objects ${g.objects}` : 'no probe';
+  console.log(`[war] ${test.info().project.name} ${label}: ${progress(s)}; ${gl}; ${procMemory()}`);
+}
+
+/**
  * Plays the Standard War on screen and returns its memory peak: the opening at real speed (no unit may
  * appear without its art), the rest fast-forwarded five seconds of play a step while the sheets load,
  * upload and unload in between. Checks the budget, the evolves it covered and the page's errors. Returns the
@@ -105,6 +195,7 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
       if (!s.battle) break;
       seen = s;
       last = s.mem;
+      if (i % 10 === 0 || s.battle.phase === 'ended') await warProbe(page, label, s);
       for (const src of [...(s.mem.sheets?.sources ?? []), ...(s.mem.sheets?.sdSources ?? [])]) if (src.includes('@')) skinSheets.add(src);
       top = Math.max(top, ...s.battle.ages);
       if (!peak || s.mem.total > peak.total) peak = s.mem;
@@ -112,6 +203,7 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
       await page.waitForTimeout(200);
     }
   } catch (e) {
+    console.log(`[war] ${test.info().project.name} ${label}: lost after ${progress(seen)}; ${procMemory()}`);
     throw new Error(`${label}: the war stopped at ${progress(seen)} (peak so far ${mb(peak?.total ?? 0)} MB); ${lost.join('; ') || 'no crash or close event'}: ${e instanceof Error ? e.message : String(e)}`, { cause: e });
   }
   const kinds = peak?.kinds ? `; ${Object.entries(peak.kinds).map(([k, v]) => `${k} ${mb(v)}`).join(', ')}` : '';
@@ -141,6 +233,7 @@ test('G7: a long Standard War at DPR 2 (a skinned and a plain copy of the same c
   // machines and its software-rendered WebKit take two to four times as long, so it has the other wars' 20 minutes.
   test.setTimeout(1_200_000);
   const problems = watchPage(page);
+  await page.addInitScript(GL_PROBE);
   await page.goto('./?dev=1&autopilot=1&quick=standard');
   await page.waitForFunction(() => (window as unknown as { __agebornDev?: unknown }).__agebornDev !== undefined, null, { timeout: 60_000 });
   // A mirror, so the war runs through the evolves whatever the balance (queue item 38's combat levers turned the first
@@ -190,7 +283,7 @@ test('G7: a long Standard War at DPR 2 (a skinned and a plain copy of the same c
   for (const p of installed) if (p) expect(skinSheets, p).toContain(p);
 });
 
-test('round 3: the test profile (every card owned) plays a Standard War at DPR 2 under the budget', async ({ browser, baseURL }) => {
+async function roundThree(browser: Browser, baseURL: string | undefined): Promise<void> {
   // About 1.5 minutes in Chromium here (the war runs to its later ages); CI's machines and its
   // software-rendered WebKit take two to three times as long.
   test.setTimeout(1_200_000);
@@ -211,6 +304,7 @@ test('round 3: the test profile (every card owned) plays a Standard War at DPR 2
   try {
     const page = await context.newPage();
     const problems = watchPage(page);
+    await page.addInitScript(GL_PROBE);
     // `autopilot=1`: the boot waits for its art (the opening ages' base and turret sheets) and the autopilot
     // plays your side; past the onboarding, the page opens on Home
     await page.goto('./?dev=1&autopilot=1');
@@ -233,16 +327,30 @@ test('round 3: the test profile (every card owned) plays a Standard War at DPR 2
   } finally {
     await context.close();
   }
+}
+
+test('round 3: the test profile (every card owned) plays a Standard War at DPR 2 under the budget', async ({ browser, baseURL }) => {
+  await roundThree(browser, baseURL);
 });
+
+/** W0 WebKit-crash diagnostic (temporary): the two wars that crashed in CI's WebKit, twice more each there. */
+const WEBKIT_REPEATS = [2, 3];
+for (const n of WEBKIT_REPEATS) {
+  test(`round 3, again (${n}): WebKit diagnostic`, async ({ browser, baseURL, browserName }) => {
+    test.skip(browserName !== 'webkit', 'the W0 WebKit-crash diagnostic repeats the war in WebKit only');
+    await roundThree(browser, baseURL);
+  });
+}
 
 const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'] as const;
 
-test('review 2: Customize browsed through every age (Bases and Backdrops, every scene and skin owned), then a Standard War, stays under the budget', async ({ page }) => {
+async function reviewTwo(page: Page): Promise<void> {
   // Customize kept every age's scene strips, grounds and model sheets decoded for the session: 926 MB at
   // the war's peak before the match start let go of them (budget 600). About 4 minutes in Chromium here;
   // CI's machines and its software-rendered WebKit take two to three times as long.
   test.setTimeout(1_200_000);
   const problems = watchPage(page);
+  await page.addInitScript(GL_PROBE);
   await pastOnboarding(page);
   await expect(page.getByTestId('play').first()).toBeVisible({ timeout: 60_000 });
   // every released scene and base skin owned (a new player's decks, so the war is the first test's)
@@ -282,7 +390,18 @@ test('review 2: Customize browsed through every age (Bases and Backdrops, every 
   await expect(page.getByTestId('play').first()).toBeVisible({ timeout: 30_000 });
   await page.evaluate(() => (window as unknown as { __agebornDev: { controller: { quickBattle(f: string): unknown } } }).__agebornDev.controller.quickBattle('standard'));
   await warPeak(page, problems, 'Customize, then a Standard War');
+}
+
+test('review 2: Customize browsed through every age (Bases and Backdrops, every scene and skin owned), then a Standard War, stays under the budget', async ({ page }) => {
+  await reviewTwo(page);
 });
+
+for (const n of WEBKIT_REPEATS) {
+  test(`review 2, again (${n}): WebKit diagnostic`, async ({ page, browserName }) => {
+    test.skip(browserName !== 'webkit', 'the W0 WebKit-crash diagnostic repeats the war in WebKit only');
+    await reviewTwo(page);
+  });
+}
 
 /** Records every WebGL upload from a closed ImageBitmap (it draws nothing; WebKit logs it as an error, Chromium as a warning). */
 function watchClosedUploads(): void {
