@@ -209,6 +209,9 @@ export class UnitDamage {
   /** The HP the unit is drawn with this frame. The killing blow changes nothing (the body falls with its stage). */
   setHp(hpBp: number): void {
     if (this.dead) return;
+    // most frames: the same HP and no new bundle (the view calls this every frame)
+    if (hpBp === this.lastHp && this.bundleVersion === this.bundles.version) return;
+    this.lastHp = hpBp;
     this.refreshEntry();
     const step = this.model.update(hpBp, this.clock);
     if (step) this.report(step);
@@ -428,13 +431,15 @@ export class UnitDamage {
     return { x: b.x + lx * b.sx * cs - ly * b.sy * sn, y: b.y + lx * b.sx * sn + ly * b.sy * cs, spot };
   }
 
-  /** The body's transform the burst is placed through (the view sets it before `setHp`). */
+  /** The body's transform the burst is placed through (the view sets it before `setHp`, or `xformOf` to ask for it). */
   xform: DamageXform | null = null;
+  xformOf: (() => DamageXform) | null = null;
   hk = 1;
+  private lastHp = NaN;
 
   private report(step: DamageStep): void {
     if (this.listeners.length === 0) return;
-    const at = this.burstAt(step, this.xform, this.hk);
+    const at = this.burstAt(step, this.xformOf ? this.xformOf() : this.xform, this.hk);
     const e: DamageStepEvent = {
       stage: step.stage,
       prev: step.prev,

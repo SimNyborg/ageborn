@@ -1550,6 +1550,8 @@ class AtlasUnitView implements UnitView {
   private readonly dmg: UnitDamage;
   /** An energy body's mint pulse is on the flash sprite (item 40). */
   private flickering = false;
+  /** The stage tint on the base frame (item 40). */
+  private dmgTint = 0xffffff;
 
   constructor(
     private readonly def: VisualDef,
@@ -2183,11 +2185,12 @@ class AtlasUnitView implements UnitView {
     }
     this.showBubble(p.shieldBp);
     // item 40: the damage stage from the HP drawn (a step's burst is placed through the body as placed last)
-    this.dmg.xform = this.bodyXform();
+    this.dmg.xformOf ??= () => this.bodyXform();
     this.dmg.hk = this.hk;
     this.dmg.setHp(p.hpBp);
     const tint = this.dmg.tint;
-    if (this.baseSprite.tint !== tint) {
+    if (tint !== this.dmgTint) {
+      this.dmgTint = tint;
       this.baseSprite.tint = tint;
       this.ghostBase.tint = tint;
     }
