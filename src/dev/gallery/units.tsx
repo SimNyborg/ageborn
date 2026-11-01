@@ -27,6 +27,8 @@ export interface GridOptions {
   zoom: number;
   /** Queue item 40: the damage stage every unit is drawn at (0 unhurt .. 3 wrecked). */
   damage?: number;
+  /** Queue item 40: play damaged units' emitters (smoke, fire, sparks ...); off for the composited checks. */
+  damageFx?: boolean;
 }
 
 /**
@@ -115,6 +117,7 @@ export function buildGrid(ctx: StageContext, o: GridOptions): Scene {
             label: i === 0 ? clipLabel : undefined,
             ...(legendary ? { aura: (radius: number) => art.createEffect('fx.legendary_aura', { radius, side }) } : {}),
             ...(o.damage ? { hpBp: DAMAGE_STAGE_HP[o.damage] ?? 10000 } : {}),
+            ...(o.damage && o.damageFx !== false ? { fx: (id: string, opts: Record<string, number>) => art.createEffect(id, opts) } : {}),
           }),
         );
       } else {

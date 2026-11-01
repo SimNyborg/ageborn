@@ -80,6 +80,8 @@ export default function Gallery() {
   const only = params.get('only');
   // queue item 40: the damage stage every unit is drawn at (`damage=0..3`: 100%, 70%, 46% and 20% HP)
   const damage = Math.max(0, Math.min(3, Math.round(num(params, 'damage', 0))));
+  // and its emitters (`dfx=0` leaves them out: the capture tool checks the unit's own composited pixels)
+  const damageFx = get(params, 'dfx', '1') !== '0';
   // `atlas=unit.bonker:/path/bonker.json,unit.x:/path/x.json` swaps visuals to sprite sheets (B5 tiers).
   const atlas = Object.fromEntries(
     (params.get('atlas') ?? '')
@@ -121,9 +123,9 @@ export default function Gallery() {
           quality={quality}
           freezeAtMs={freeze}
           speed={speed}
-          deps={[section, age, clip, sidesParam, skins, trim, zoom, only, damage]}
+          deps={[section, age, clip, sidesParam, skins, trim, zoom, only, damage, damageFx]}
           atlas={atlas}
-          build={(ctx) => buildGrid(ctx, { kind, age, skins, only, sides, preset, clip, trim, zoom, damage })}
+          build={(ctx) => buildGrid(ctx, { kind, age, skins, only, sides, preset, clip, trim, zoom, damage, damageFx })}
         />
       </>
     );

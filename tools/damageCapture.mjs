@@ -56,7 +56,8 @@ const HOST = '[data-testid="gallery-canvas-host"]';
 let first = true;
 /** The gallery canvas with one unit (side 1, idle, frozen at 600 ms) at a stage, as a PNG buffer. */
 async function shot(age, slug, stage, preset) {
-  const q = `section=units&age=${age}&only=${slug}&skins=0&sides=1&clip=idle&damage=${stage}&zoom=${zoom}&t=600&preset=${preset}`;
+  // dfx=0: no emitters (smoke and sparks would change the unit's silhouette and pixels; they show in battles)
+  const q = `section=units&age=${age}&only=${slug}&skins=0&sides=1&clip=idle&damage=${stage}&zoom=${zoom}&t=600&preset=${preset}&dfx=0`;
   if (first) {
     await page.goto(`${base}?dev=1#gallery/${q}`);
     first = false;
