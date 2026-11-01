@@ -4,12 +4,14 @@
  * few pieces that land, lie 2 s and fade, capped across the lane, and draws the same for the same seed.
  */
 import { Container, Sprite } from 'pixi.js';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EffectView } from '@/contracts/art';
+import type { PartBaker } from '../bake';
 import { effectColorRule } from '../checks';
 import { DAMAGE_FX_IDS, liveDamagePieces, MAX_PIECES, PIECE_FADE_MS, PIECE_LIE_MS } from '../damage/fx';
 import { DAMAGE_FX_PARTS, DAMAGE_STRIP_PARTS } from '../damage/kit';
 import { markParts } from '../damage/marks';
+import { warmDamageKit } from '../damage/unitDamage';
 import { damageFxVariants } from '../effects/recipes';
 import { MANIFEST } from '../manifest';
 import { getPart } from '../parts/registry';
@@ -124,5 +126,26 @@ describe('fx.dmg_burst (design 3.4)', () => {
     expect(pos(9).length).toBeGreaterThan(0);
     expect(pos(9)).toBe(pos(9));
     expect(pos(9)).not.toBe(pos(10));
+  });
+});
+
+describe('the kit bakes ahead of the first step', () => {
+  it('warmDamageKit bakes every mark and strip once per baker, one part per idle moment', () => {
+    vi.useFakeTimers();
+    try {
+      const got: string[] = [];
+      let flushed = 0;
+      const baker = { enabled: true, has: () => false, get: (p: { id?: string }) => void got.push(p.id ?? '?'), flush: () => void flushed++ } as unknown as PartBaker;
+      warmDamageKit(baker);
+      warmDamageKit(baker);
+      expect(got).toEqual([]);
+      vi.advanceTimersByTime(60);
+      expect(got.length).toBe(1);
+      vi.advanceTimersByTime(60 * 100);
+      expect(got.length).toBe(markParts().length + DAMAGE_STRIP_PARTS.length);
+      expect(flushed).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

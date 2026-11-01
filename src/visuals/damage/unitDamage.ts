@@ -22,8 +22,9 @@ import { markSizeLu } from './marks';
 import { DamageModel, defaultMat, MARK_FADE_IN_MS, MARK_POP_MS, MEND_FADE_MS, type DamageStep, type PlacedMark } from './model';
 import { WearyClock, type WearyPose } from './motion';
 import { LITE_MAX_MARKS, mixRgb, stageTint, STRIP_DULL, STRIP_DUST } from './stage';
+import { DAMAGE_STRIP_PARTS } from './kit';
+import { markParts } from './marks';
 import type { BlowKind, DamageEmitter, DamageFamily, DamageStage, DamageStepEvent, DamageUnitData, EmitKind, SpotFrame } from './types';
-import './kit';
 
 /** The body's transform as the view placed it (atlasAim's `BodyXform`): offset (root lu), rotation, scale per lu. */
 export interface DamageXform {
@@ -62,6 +63,35 @@ class PartNode {
   set tint(c: number) {
     this.s.tint = c;
   }
+}
+
+/** Bakers whose kit is baked or queued. */
+const KIT_WARMED = new WeakSet<PartBaker>();
+
+/** Runs `fn` when the browser is idle (a frame has time left), else soon. */
+function whenIdle(fn: () => void): void {
+  const ric = (globalThis as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+  if (ric) ric(fn, { timeout: 2000 });
+  else setTimeout(fn, 50);
+}
+
+/**
+ * Bakes the damage kit's marks and strips ahead of the battle's first step, one part per idle callback (a unit view
+ * with marks calls it on its first blow, as `warmBits` does for the death bits), so no step's frame bakes a part.
+ * Once per baker.
+ */
+export function warmDamageKit(baker: PartBaker): void {
+  if (!baker.enabled || KIT_WARMED.has(baker)) return;
+  KIT_WARMED.add(baker);
+  const todo = [...markParts(), ...DAMAGE_STRIP_PARTS];
+  const step = (): void => {
+    const id = todo.shift();
+    const p = id !== undefined ? getPart(id) : undefined;
+    if (p && !baker.has(p, FX_ZONES)) baker.get(p, FX_ZONES);
+    if (todo.length > 0) whenIdle(step);
+    else baker.flush();
+  };
+  whenIdle(step);
 }
 
 /** Where an emitter's fallback point sits on a torso box `[x0, y0, x1, y1]` (lu, x forward, y up). */
@@ -168,6 +198,8 @@ export class UnitDamage {
 
   noteBlow(kind: BlowKind | null, effective = false): void {
     this.model.noteBlow(kind, effective);
+    // the battle's first blow on a unit with marks bakes the kit in idle time (units without spots never need it)
+    if (this.o.after && !this.o.noSpots && (this.entry?.spots?.length ?? 0) > 0) warmDamageKit(this.o.baker);
   }
 
   onStep(cb: (e: DamageStepEvent) => void): void {
