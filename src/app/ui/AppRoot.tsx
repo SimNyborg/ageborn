@@ -2,7 +2,7 @@
 import type { ComponentChildren } from 'preact';
 import { useEffect, useErrorBoundary, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
-import { FoundItemsContext } from '@/capsule/summary';
+import { CurrencyContext, FoundItemsContext } from '@/capsule/summary';
 import { CosmeticArtContext, CosmeticPicturesContext } from '@/ui/components/cosmeticArt';
 import { showcaseMount } from '@/render';
 import { menuStages } from '@/render/showcase';
@@ -22,6 +22,7 @@ import { isMetaRules } from '../uiServices';
 import { AgeDialog } from './AgeDialog';
 import { BattleScreen } from './BattleScreen';
 import { FirstUpgrade } from './FirstUpgrade';
+import { currencyEnv } from './currencyEnv';
 import { foundItemsEnv } from './foundItems';
 import { AppUiContext, type AppUi } from './context';
 import { MetaHost } from './MetaHost';
@@ -232,6 +233,8 @@ export function AppRoot(p: { ui: AppUi }) {
       }),
     [p.ui],
   );
+  // Queue item 48: the capsule show and summary draw Amber and Dust with the UI's icons
+  const currency = useMemo(() => currencyEnv(), []);
   return (
     <AppUiContext.Provider value={p.ui}>
       {/* A18.9.4: the code-drawn cosmetic art (flags, decorations, emotes) for the screens and the HUD */}
@@ -242,16 +245,18 @@ export function AppRoot(p: { ui: AppUi }) {
             <DioramaContext.Provider value={stages.diorama}>
               <HomeStageContext.Provider value={stages.home}>
                 <FoundItemsContext.Provider value={found}>
-                  <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
-                    <Screen ui={p.ui} meta={meta} shows={shows} />
-                    {shows?.current.value ? null : <FirstUpgrade />}
-                    <AgeDialog />
-                    <TesterDialog />
-                    <div class="ab-rotate" data-testid="rotate">
-                      <div class="ab-rotate-phone" aria-hidden="true" />
-                      <span>{p.ui.t('app.rotate')}</span>
+                  <CurrencyContext.Provider value={currency}>
+                    <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
+                      <Screen ui={p.ui} meta={meta} shows={shows} />
+                      {shows?.current.value ? null : <FirstUpgrade />}
+                      <AgeDialog />
+                      <TesterDialog />
+                      <div class="ab-rotate" data-testid="rotate">
+                        <div class="ab-rotate-phone" aria-hidden="true" />
+                        <span>{p.ui.t('app.rotate')}</span>
+                      </div>
                     </div>
-                  </div>
+                  </CurrencyContext.Provider>
                 </FoundItemsContext.Provider>
               </HomeStageContext.Provider>
             </DioramaContext.Provider>

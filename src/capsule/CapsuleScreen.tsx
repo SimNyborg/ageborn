@@ -21,7 +21,7 @@ import { RARITY_COLORS, TIER_COLORS, cssHex } from './palette';
 import { planOpenAll, planWardrobeShow, SHOW_TIMING, type Cue, type ShowPlan, type ShowStep } from './plan';
 import { ShowRunner, type RunnerState, type StrikeHit } from './runner';
 import { windowForOutputLatency } from './strikeTiming';
-import { SummaryPanel, type SummaryActions } from './summary';
+import { CurrencyGem, SummaryPanel, type SummaryActions } from './summary';
 import { pityLines, wardrobePityLines, type PityLine } from './summaryModel';
 import {
   DEFAULT_PITY_RULES,
@@ -509,7 +509,7 @@ function Counter(p: { value: number; dust: boolean; run: boolean; delayMs: numbe
   }, [p.run, p.value]);
   return (
     <div class={`${css.amber} ${pulse ? css.amberPulse : ''} ${live ? css.amberLive : css.amberWait}`} title={p.label} data-testid="capsule-amber">
-      <span class={p.dust ? css.dustGem : css.amberGem} />+{shown}
+      <CurrencyGem kind={p.dust ? 'dust' : 'amber'} size={30} />+{shown}
     </div>
   );
 }

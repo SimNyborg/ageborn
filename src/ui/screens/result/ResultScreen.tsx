@@ -244,7 +244,7 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
       return (
         <RewardRow
           testid="reward-amber"
-          icon={<AmberIcon size={34} />}
+          icon={<AmberIcon size={34} shine />}
           label={t('ui.currency.amber')}
           value={formatSigned(r.amount, locale)}
           tone="good"
@@ -254,7 +254,7 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
       return (
         <RewardRow
           testid="reward-dust"
-          icon={<DustIcon size={34} />}
+          icon={<DustIcon size={34} shine />}
           label={t('ui.currency.dust')}
           value={formatSigned(r.amount, locale)}
           tone="good"
