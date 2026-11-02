@@ -168,7 +168,7 @@ export const UNIT_SHEET_PIXELS: Readonly<Record<string, readonly [number, number
   'stone/mammoth_matriarch@frost_matriarch': [8847360, 4229120, 2252800, 1126400],
   'stone/pebbler': [1820672, 1122304, 486400, 314880],
   'stone/pebbler@snowball_pebbler': [1806336, 1130496, 485376, 301056],
-  'stone/pelt_rager': [2015232, 519680, 544768, 135168],
+  'stone/pelt_rager': [2015232, 505344, 544768, 132608],
   'stone/rockfall_shaman': [1806336, 297984, 481280, 76800],
   'stone/sabertooth': [2551808, 522240, 673792, 135168],
   'stone/sabertooth@fossil_sabertooth': [2551808, 522240, 673792, 135168],

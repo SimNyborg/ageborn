@@ -51,14 +51,15 @@ HAIR_DK = "#9C968C"       # darker strands in the grey bun (two tones, 40 levels
 LEAF_DK = "#7E8A62"       # every other leaf of the wreath darker (two-tone wreath)
 LEATHER_DK = "#56412F"
 CHEEK = "#D49A8A"         # round rosy cheeks (saturation 0.35, 25 levels under the skin)
+FLOWER = "#F4EFE2"        # small white flowers in the wreath (bright points: the idle highlight was 0.059)
 
 DETAIL_STANDARD = True
 LOOK_HIGHLIGHT = 1.65   # over the soldiers' 1.35: highlight 0.055-0.057 at idle 0 with 1.45 (band 0.06-0.10)
 LOOK_SHADE = W1.SHADE_SOLDIER
-LOOK_RIM = W1.RIM_SOLDIER
+LOOK_RIM = dict(W1.RIM_SOLDIER, lift=0.62, full_lu=0.75)   # W1: a brighter top rim (idle highlight 0.058-0.059, band 0.06-0.10)
 MATERIAL_KINDS = W1.kinds({SKIN: "skin", HAIR: "fur", HAIR_DK: "fur", LEAF: "cloth", LEAF_DK: "cloth", HERB: "fur",
                            HERB_DK: "fur", LEATHER: "leather", LEATHER_DK: "leather", BONE: "bone", FUR: "fur",
-                           CHEEK: "skin", "team": "hide"})
+                           CHEEK: "skin", FLOWER: "bone", "team": "hide"})
 
 HIP_Y, SH_Y = 6.0, 11.6
 
@@ -122,6 +123,12 @@ def build(rig):
                                        (2.6, 1.5, 1.7), p=2.2)
     rig.part("head", g, LEAF)
     rig.part("head", g2, LEAF_DK)       # W1: a two-tone wreath
+    # W1: four small white flowers between the leaves on the near side
+    g = Geo()
+    for a in (-140, -100, -60, -20):
+        r = math.radians(a)
+        g.blob((1.0 + math.cos(r) * 9.9, math.sin(r) * 10.5, 52.6 + 1.2 * math.sin(2 * r)), (1.3, 1.0, 1.3), p=2.0)
+    rig.part("head", g, FLOWER, finish="gloss", outline=0.3)
     # W1: darker strands in the grey bun and down the back hair, round rosy cheeks, an ear
     W1.locks(rig, "head", [((-4.6, 60.0), (-8.0, 57.0), 1.3), ((-6.6, 50.4), (-10.0, 45.6), 1.3)], HAIR_DK, -9.0)
     W1.blush(rig, "head", face, 7.6, 43.0, 3.0, 2.3, CHEEK)

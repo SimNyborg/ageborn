@@ -58,7 +58,7 @@ CHEEK = "#B08A70"         # a cheek (16 levels under the skin)
 DETAIL_STANDARD = True
 LOOK_HIGHLIGHT = 1.65   # over the soldiers' 1.35: highlight 0.055-0.057 at idle 0 with 1.45 (band 0.06-0.10)
 LOOK_SHADE = W1.SHADE_SOLDIER
-LOOK_RIM = W1.RIM_SOLDIER
+LOOK_RIM = dict(W1.RIM_SOLDIER, lift=0.7, full_lu=0.85)   # W1: a brighter top rim (idle highlight 0.058, band 0.06-0.10)
 MATERIAL_KINDS = W1.kinds({SKIN: "skin", HAIR: "fur", SKULL: "bone", SKULL_DK: "bone", SOCKET: "bone", PELT: "fur",
                            PELT_DK: "fur", WOOD: "wood", WOOD_DK: "wood", BONE: "bone", FEATHER: "fur",
                            FEATHER_TIP: "fur", FUR: "fur", LEATHER_DK: "leather", CHEEK: "skin", "team": "hide"})
@@ -117,6 +117,10 @@ def build(rig):
     shawl_face = F.Face(rig, "torso", [g])
     rig.part("torso", g, team=True)
     W1.stripes(rig, "torso", shawl_face, [[(-4.0, 36.8), (-2.6, 30.6)], [(4.6, 37.0), (5.6, 30.8)]], w=1.6)
+    # W1: a cord of three bone beads over the shawl's front (pale points: the idle highlight was 0.058)
+    W1.seam(rig, "torso", shawl_face, [(10.2, 36.4), (7.6, 35.4), (5.0, 34.8), (2.4, 34.6)], fill=LEATHER_DK, w=0.9)
+    W1.beads(rig, "torso", [tuple(shawl_face.hit(x, z)) for x, z in ((8.8, 35.6), (6.2, 34.9), (3.6, 34.6))], BONE,
+             r=1.25)
     g = Geo()
     for k in range(6):
         a = -1.0 + k * 0.42
