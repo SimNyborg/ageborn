@@ -65,6 +65,18 @@ describe('sideAgeCards (G7)', () => {
     const plain = config({ side0: { bronze: loadout('bronze', { units: [null, null, null, null, null, null, null] }) } });
     expect(sideAgeCards(plain, 0, 'bronze')).not.toContain(vanguard.id);
     expect(sideAgeCards(plain, 0, 'bronze', { vanguard: true })).toContain(vanguard.id);
+    // the Vanguard is worked out once per content and age (a hold sync asks every frame): asked again, and for
+    // another age of the same content, the answers are the same as worked out fresh
+    const stoneVanguard = units.find((u) => u.age === 'stone' && u.group === 'infantry' && u.rarity === 'common' && !u.hidden)!;
+    const plainStone = config({ side0: { stone: loadout('stone', { units: [null, null, null, null, null, null, null] }) } });
+    const bronzeFirst = sideAgeCards(plain, 0, 'bronze', { vanguard: true });
+    const stoneFirst = sideAgeCards(plainStone, 0, 'stone', { vanguard: true });
+    expect(stoneFirst).toContain(stoneVanguard.id);
+    expect(stoneFirst).not.toContain(vanguard.id);
+    for (let i = 0; i < 3; i++) {
+      expect(sideAgeCards(plain, 0, 'bronze', { vanguard: true })).toEqual(bronzeFirst);
+      expect(sideAgeCards(plainStone, 0, 'stone', { vanguard: true })).toEqual(stoneFirst);
+    }
   });
 
   it('a card draws its own visual with the side\'s skin', () => {

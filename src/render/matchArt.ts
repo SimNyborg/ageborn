@@ -189,16 +189,28 @@ function campLevy(config: Readonly<MatchConfig>, card: CardId): CardId | null {
   return (config.content as { forts?: Readonly<Record<CardId, { camp?: { spawn: CardId } }>> }).forts?.[card]?.camp?.spawn ?? null;
 }
 
+/** Each content's Vanguard per age (the content never changes once loaded; a hold sync asks every frame). */
+const VANGUARDS = new WeakMap<object, Map<AgeId, readonly CardId[]>>();
+
 /** The Vanguard of an age: its Infantry Common (every one, should the content ever have two), which the Ascension spawns (A2.4). */
-function vanguardCards(config: Readonly<MatchConfig>, age: AgeId): CardId[] {
+function vanguardCards(config: Readonly<MatchConfig>, age: AgeId): readonly CardId[] {
   const content = config.content;
   if (content.economy.vanguardCount <= 0) return [];
-  return Object.keys(content.units)
+  let byAge = VANGUARDS.get(content);
+  if (!byAge) {
+    byAge = new Map();
+    VANGUARDS.set(content, byAge);
+  }
+  const had = byAge.get(age);
+  if (had) return had;
+  const out = Object.keys(content.units)
     .sort()
     .filter((id) => {
       const u = content.units[id];
       return !!u && u.age === age && u.group === 'infantry' && u.rarity === 'common' && !u.hidden;
     });
+  byAge.set(age, out);
+  return out;
 }
 
 /** The visual a side draws for a card (its skin applied); null for a card the content does not know. */
