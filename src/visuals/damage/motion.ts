@@ -73,6 +73,21 @@ export class WearyClock {
     this.nextAt = range(this.rng, 300, 1200);
   }
 
+  /**
+   * The clock below stage 2, where nothing weary shows (the pose stays neutral): time runs and a dip in progress runs
+   * out, as `update` does there, without building a pose (W0: most units, most frames; the damage view calls this for
+   * an unhurt unit).
+   */
+  idle(dtMs: number): void {
+    const dt = Math.max(0, dtMs);
+    this.t += dt;
+    if (this.dipT >= 0) {
+      this.dipT += dt;
+      if (this.dipT >= DIP_MS) this.dipT = -1;
+    }
+    this.eventT = -1;
+  }
+
   /** A walk contact step was shown (the view reports them): every second one dips a tired walker or hitches a mech. */
   contact(): void {
     this.contacts++;
