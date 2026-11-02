@@ -17,6 +17,7 @@ import { spriteStripArt, stripInfoUrl, stripRequest, type StripSource } from './
 import { forgetPortraitStills, portraitStillBase } from './adapters/atlasPortrait';
 import { AtlasFortView } from './fortViews/atlasFortView';
 import { damageBundles } from './damage/bundle';
+import { damageOff } from './damage/switches';
 import { bakeDamageKit } from './damage/unitDamage';
 import { damageFxVariants } from './effects/recipes';
 import { fortSource, type FortKindId } from './forts';
@@ -1009,7 +1010,8 @@ export class VisualsArtProvider implements ArtProvider {
    * marks never change when a fetch lands mid-fight (W0 review S2); menus never ask.
    */
   damageBundleReady(age: AgeId): Promise<void> | null {
-    if (damageBundles.loaded(age)) return null;
+    // dev switch `all` (W0 WebKit bisection): no bundle is asked for
+    if (damageBundles.loaded(age) || damageOff('all')) return null;
     return damageBundles.request(age);
   }
 

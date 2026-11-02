@@ -14,6 +14,7 @@ import { render } from 'preact';
 import type { FormatId, Sim } from '@/contracts';
 import { DevRouter, isDevMode } from '@/dev/router';
 import { BattleView, DEFAULT_VIEW_SETTINGS, detectMobile, type ViewSettings } from '@/render';
+import { damageOffList, setDamageOff } from '@/visuals/damage/switches';
 import { textureMemory } from '@/visuals/textureMemory';
 import { boot, bootFlags, validateContentInDev } from './boot';
 import { AppController, ART_WAIT_MS } from './controller';
@@ -49,6 +50,8 @@ function idle(task: () => void): void {
 async function start(root: HTMLElement): Promise<void> {
   const search = window.location.search;
   const q = new URLSearchParams(search);
+  // W0 WebKit-crash bisection (temporary): `?dev=1&dmgoff=<part>,...` turns parts of the damage runtime off; dev only
+  if (q.get('dev') === '1') setDamageOff((q.get('dmgoff') ?? '').split(',').filter((p) => p !== ''));
   const canvasHost = document.createElement('div');
   canvasHost.style.cssText = 'position:absolute;inset:0';
   const uiHost = document.createElement('div');
@@ -199,6 +202,8 @@ async function start(root: HTMLElement): Promise<void> {
       controller,
       /** The narrator's event log (queue item 39): prompts, lines started, ended, cut or skipped, with times. */
       narration: { log: () => narration.log() },
+      /** The parts of the damage runtime `?dmgoff=` turned off (W0 WebKit-crash bisection, temporary). */
+      damageOff: () => damageOffList(),
       /**
        * Runs up to `ticks` sim ticks of the battle on screen at once (B13 e2e dev fast-forward). A battle
        * still loading its decks' unit sheets (G7) is waited for first, as its own start would (at most
