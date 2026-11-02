@@ -2890,7 +2890,11 @@ export class BattleView {
       // keeps its feet planted
       const drawnV = tickVelocity(u.x, u.prevX, facingOf(u.side), MILLI_LU) + facingOf(u.side) * e.stage.v;
       stepGait(e.gait, u.mode === 'attack' ? 0 : drawnV, e.refSpeed, gameDt);
-      if (!e.fort) (e.view as GaitView).setGait?.({ speedLuPerS: e.gait.v });
+      if (!e.fort) {
+        // one argument object for every unit and frame (the view reads it and keeps nothing; W1-head frame-time gate)
+        this.gaitArg.speedLuPerS = e.gait.v;
+        (e.view as GaitView).setGait?.(this.gaitArg);
+      }
       e.stunned = false;
       e.frozen = false;
       for (const s of u.statuses) {
@@ -3156,10 +3160,28 @@ export class BattleView {
     e.view.root.zIndex = e.fort ? FORT_Z + (e.id % 1000) : depthZ(e.y + zBias, e.air, e.id);
   }
 
-  private frontInputs(): { side: Side; x: number; air: boolean }[] {
-    const out: { side: Side; x: number; air: boolean }[] = [];
+  /** `setGait`'s argument, reused (`syncUnits`). */
+  private readonly gaitArg = { speedLuPerS: 0 };
+  /** `frontInputs`' list and the objects it reuses. */
+  private readonly frontBuf: { side: Side; x: number; air: boolean }[] = [];
+  private readonly frontPool: { side: Side; x: number; air: boolean }[] = [];
+
+  /**
+   * The living troops' sides and x, for the front lines (a list reused on every call, several a frame: read it before
+   * the next call; W1-head frame-time gate: no allocation per unit per call).
+   */
+  private frontInputs(): readonly { side: Side; x: number; air: boolean }[] {
+    const out = this.frontBuf;
+    out.length = 0;
     // forts are never the front (A16.14.2: the camera follows the troops)
-    for (const e of this.units.values()) if (!e.dying && !e.fort) out.push({ side: e.side, x: e.x, air: e.air });
+    for (const e of this.units.values()) {
+      if (e.dying || e.fort) continue;
+      const o = (this.frontPool[out.length] ??= { side: 0, x: 0, air: false });
+      o.side = e.side;
+      o.x = e.x;
+      o.air = e.air;
+      out.push(o);
+    }
     return out;
   }
 
@@ -3168,34 +3190,51 @@ export class BattleView {
     // hit a moment ago (its ghost is still up). Small fights show every damaged bar.
     const front = this.frontIds(BAR_FRONT_UNITS);
     const crowd = this.units.size > BAR_CROWD_UNITS;
-    const draws: BarDraw[] = [];
+    // the frame's bars in reused objects (W1-head frame-time gate: no allocation per bar per frame)
+    const draws = this.barDraws;
+    const pool = this.barPool;
+    draws.length = 0;
+    const put = (x: number, y: number, widthLu: number, bar: BarState, color: number, alpha: number): void => {
+      const i = draws.length;
+      const d = (pool[i] ??= { x: 0, y: 0, widthLu: 0, bar, color: 0, alpha: 1 });
+      d.x = x;
+      d.y = y;
+      d.widthLu = widthLu;
+      d.bar = bar;
+      d.color = color;
+      d.alpha = alpha;
+      draws.push(d);
+    };
     for (const e of this.units.values()) {
       if (e.dying || !e.bar.shown || !e.view.root.visible) continue;
       const recent = e.bar.holdMs > 0 || e.bar.ghostBp > e.bar.hpBp || e.shieldBp > 0;
       if (crowd && !recent && !front.has(e.id)) continue;
-      draws.push({
-        x: e.drawX,
-        y: e.y + e.view.anchors.head.y - 12,
-        widthLu: barWidthLu(e.sizeLu),
-        bar: e.bar,
-        color: teamColor(this.settings.teamPreset, e.side),
-        alpha: 1,
-      });
+      put(e.drawX, e.y + e.view.anchors.head.y - 12, barWidthLu(e.sizeLu), e.bar, teamColor(this.settings.teamPreset, e.side), 1);
     }
     // the first-contact warm-up: one bar a speck wide, nearly transparent, below the ground line, for one frame, so the
     // bars' Graphics sets up its GPU data before the first hit instead of on it
-    if (this.barWarm) draws.push({ x: (this.viewL + this.viewR) / 2, y: WARMUP_Y_LU, widthLu: 1, bar: WARM_BAR, color: teamColor(this.settings.teamPreset, this.mySide), alpha: 0.012 });
+    if (this.barWarm) put((this.viewL + this.viewR) / 2, WARMUP_Y_LU, 1, WARM_BAR, teamColor(this.settings.teamPreset, this.mySide), 0.012);
     this.bars.draw(draws, scale);
   }
 
-  /** Ids of the `n` frontmost ground units of each side. */
+  /** The frame's bars and the objects they reuse (`drawBars`). */
+  private readonly barDraws: BarDraw[] = [];
+  private readonly barPool: BarDraw[] = [];
+  /** `frontIds`' lists and set, reused every frame. */
+  private readonly frontLists: [UnitEntry[], UnitEntry[]] = [[], []];
+  private readonly frontSet = new Set<number>();
+
+  /** Ids of the `n` frontmost ground units of each side (a set reused every frame: read it before the next call). */
   private frontIds(n: number): Set<number> {
-    const bySide: [UnitEntry[], UnitEntry[]] = [[], []];
+    const bySide = this.frontLists;
+    bySide[0].length = 0;
+    bySide[1].length = 0;
     for (const e of this.units.values()) if (!e.dying && !e.air) bySide[e.side].push(e);
-    const out = new Set<number>();
+    const out = this.frontSet;
+    out.clear();
     bySide[0].sort((a, b) => b.x - a.x);
     bySide[1].sort((a, b) => a.x - b.x);
-    for (const list of bySide) for (const e of list.slice(0, n)) out.add(e.id);
+    for (const list of bySide) for (let i = 0; i < n && i < list.length; i++) out.add((list[i] as UnitEntry).id);
     return out;
   }
 
