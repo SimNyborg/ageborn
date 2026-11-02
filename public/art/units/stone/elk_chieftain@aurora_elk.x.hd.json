@@ -1,0 +1,733 @@
+{
+ "frames": {
+  "elk_chieftain@aurora_elk_attack_b_01": {
+   "frame": {
+    "x": 652,
+    "y": 2,
+    "w": 289,
+    "h": 422
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 297,
+    "y": 184,
+    "w": 289,
+    "h": 422
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_b_01_team": {
+   "frame": {
+    "x": 748,
+    "y": 428,
+    "w": 249,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 289,
+    "y": 259,
+    "w": 249,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 323,
+    "h": 472
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 260,
+    "y": 138,
+    "w": 323,
+    "h": 472
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_b_02_team": {
+   "frame": {
+    "x": 1001,
+    "y": 402,
+    "w": 243,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 252,
+    "y": 248,
+    "w": 243,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_b_03": {
+   "frame": {
+    "x": 329,
+    "y": 2,
+    "w": 319,
+    "h": 436
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 298,
+    "y": 170,
+    "w": 319,
+    "h": 436
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_b_03_team": {
+   "frame": {
+    "x": 491,
+    "y": 442,
+    "w": 253,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 290,
+    "y": 247,
+    "w": 253,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_b_04": {
+   "frame": {
+    "x": 2090,
+    "y": 370,
+    "w": 375,
+    "h": 338
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 346,
+    "y": 261,
+    "w": 375,
+    "h": 338
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_b_04_team": {
+   "frame": {
+    "x": 2469,
+    "y": 356,
+    "w": 276,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 337,
+    "y": 271,
+    "w": 276,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_b_05": {
+   "frame": {
+    "x": 1326,
+    "y": 2,
+    "w": 315,
+    "h": 385
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 361,
+    "y": 233,
+    "w": 315,
+    "h": 385
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_b_05_team": {
+   "frame": {
+    "x": 250,
+    "y": 478,
+    "w": 237,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 354,
+    "y": 255,
+    "w": 237,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_c_01": {
+   "frame": {
+    "x": 2039,
+    "y": 2,
+    "w": 368,
+    "h": 364
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 340,
+    "y": 243,
+    "w": 368,
+    "h": 364
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_c_01_team": {
+   "frame": {
+    "x": 2783,
+    "y": 217,
+    "w": 259,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 333,
+    "y": 262,
+    "w": 259,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_c_02": {
+   "frame": {
+    "x": 2411,
+    "y": 2,
+    "w": 368,
+    "h": 350
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 254,
+    "w": 368,
+    "h": 350
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_c_02_team": {
+   "frame": {
+    "x": 1326,
+    "y": 391,
+    "w": 263,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 335,
+    "y": 275,
+    "w": 263,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_c_03": {
+   "frame": {
+    "x": 945,
+    "y": 2,
+    "w": 377,
+    "h": 396
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 327,
+    "y": 226,
+    "w": 377,
+    "h": 396
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_c_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 478,
+    "w": 244,
+    "h": 238
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 358,
+    "y": 240,
+    "w": 244,
+    "h": 238
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_c_04": {
+   "frame": {
+    "x": 1645,
+    "y": 376,
+    "w": 441,
+    "h": 341
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 318,
+    "y": 260,
+    "w": 441,
+    "h": 341
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_c_04_team": {
+   "frame": {
+    "x": 2749,
+    "y": 430,
+    "w": 276,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 364,
+    "y": 275,
+    "w": 276,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_c_05": {
+   "frame": {
+    "x": 1645,
+    "y": 2,
+    "w": 390,
+    "h": 370
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 347,
+    "y": 242,
+    "w": 390,
+    "h": 370
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain@aurora_elk_attack_c_05_team": {
+   "frame": {
+    "x": 2783,
+    "y": 2,
+    "w": 255,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 366,
+    "y": 265,
+    "w": 255,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "elk_chieftain@aurora_elk_attack_00",
+   "elk_chieftain@aurora_elk_attack_b_01",
+   "elk_chieftain@aurora_elk_attack_b_01",
+   "elk_chieftain@aurora_elk_attack_b_02",
+   "elk_chieftain@aurora_elk_attack_b_03",
+   "elk_chieftain@aurora_elk_attack_b_03",
+   "elk_chieftain@aurora_elk_attack_b_04",
+   "elk_chieftain@aurora_elk_attack_b_05",
+   "elk_chieftain@aurora_elk_attack_08",
+   "elk_chieftain@aurora_elk_attack_08",
+   "elk_chieftain@aurora_elk_attack_09",
+   "elk_chieftain@aurora_elk_attack_09"
+  ],
+  "attack_b_team": [
+   "elk_chieftain@aurora_elk_attack_00_team",
+   "elk_chieftain@aurora_elk_attack_b_01_team",
+   "elk_chieftain@aurora_elk_attack_b_01_team",
+   "elk_chieftain@aurora_elk_attack_b_02_team",
+   "elk_chieftain@aurora_elk_attack_b_03_team",
+   "elk_chieftain@aurora_elk_attack_b_03_team",
+   "elk_chieftain@aurora_elk_attack_b_04_team",
+   "elk_chieftain@aurora_elk_attack_b_05_team",
+   "elk_chieftain@aurora_elk_attack_08_team",
+   "elk_chieftain@aurora_elk_attack_08_team",
+   "elk_chieftain@aurora_elk_attack_09_team",
+   "elk_chieftain@aurora_elk_attack_09_team"
+  ],
+  "attack_c": [
+   "elk_chieftain@aurora_elk_attack_00",
+   "elk_chieftain@aurora_elk_attack_c_01",
+   "elk_chieftain@aurora_elk_attack_c_01",
+   "elk_chieftain@aurora_elk_attack_c_02",
+   "elk_chieftain@aurora_elk_attack_c_03",
+   "elk_chieftain@aurora_elk_attack_c_03",
+   "elk_chieftain@aurora_elk_attack_c_04",
+   "elk_chieftain@aurora_elk_attack_c_05",
+   "elk_chieftain@aurora_elk_attack_08",
+   "elk_chieftain@aurora_elk_attack_08",
+   "elk_chieftain@aurora_elk_attack_09",
+   "elk_chieftain@aurora_elk_attack_09"
+  ],
+  "attack_c_team": [
+   "elk_chieftain@aurora_elk_attack_00_team",
+   "elk_chieftain@aurora_elk_attack_c_01_team",
+   "elk_chieftain@aurora_elk_attack_c_01_team",
+   "elk_chieftain@aurora_elk_attack_c_02_team",
+   "elk_chieftain@aurora_elk_attack_c_03_team",
+   "elk_chieftain@aurora_elk_attack_c_03_team",
+   "elk_chieftain@aurora_elk_attack_c_04_team",
+   "elk_chieftain@aurora_elk_attack_c_05_team",
+   "elk_chieftain@aurora_elk_attack_08_team",
+   "elk_chieftain@aurora_elk_attack_08_team",
+   "elk_chieftain@aurora_elk_attack_09_team",
+   "elk_chieftain@aurora_elk_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "elk_chieftain@aurora_elk.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 3072,
+   "h": 720
+  },
+  "scale": "2.5",
+  "ageborn": {
+   "visualId": "unit.elk_chieftain@aurora_elk",
+   "name": "Elk Chieftain",
+   "heightLu": 172,
+   "widthLu": 153.7,
+   "pxPerLu": 2.05,
+   "feetPx": [
+    454,
+    588
+   ],
+   "anchorsLu": {
+    "head": [
+     35,
+     164
+    ],
+    "hitCenter": [
+     0,
+     73
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "rider",
+   "skinOf": "unit.elk_chieftain",
+   "skin": "aurora_elk",
+   "extrasOf": "elk_chieftain@aurora_elk",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "rackTip": [
+       [
+        76.0,
+        130.9
+       ],
+       [
+        25.8,
+        168.5
+       ],
+       [
+        -22.2,
+        187.8
+       ],
+       [
+        34.9,
+        175.0
+       ],
+       [
+        100.1,
+        112.7
+       ],
+       [
+        81.0,
+        131.1
+       ],
+       [
+        68.4,
+        134.4
+       ],
+       [
+        71.8,
+        136.5
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "rackTip": [
+       [
+        76.0,
+        130.9
+       ],
+       [
+        96.6,
+        89.5
+       ],
+       [
+        97.7,
+        58.4
+       ],
+       [
+        98.6,
+        74.8
+       ],
+       [
+        121.4,
+        67.4
+       ],
+       [
+        110.6,
+        88.3
+       ],
+       [
+        68.4,
+        134.4
+       ],
+       [
+        71.8,
+        136.5
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -1,0 +1,1594 @@
+{
+ "frames": {
+  "mammoth_matriarch@frost_matriarch_attack_b_01": {
+   "frame": {
+    "x": 1068,
+    "y": 2,
+    "w": 392,
+    "h": 439
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 117,
+    "w": 392,
+    "h": 439
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_b_01_team": {
+   "frame": {
+    "x": 227,
+    "y": 894,
+    "w": 229,
+    "h": 282
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 135,
+    "w": 229,
+    "h": 282
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_b_02": {
+   "frame": {
+    "x": 331,
+    "y": 2,
+    "w": 360,
+    "h": 447
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 114,
+    "w": 360,
+    "h": 447
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_b_02_team": {
+   "frame": {
+    "x": 3006,
+    "y": 459,
+    "w": 237,
+    "h": 287
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 133,
+    "w": 237,
+    "h": 287
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 325,
+    "h": 453
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 111,
+    "w": 325,
+    "h": 453
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_b_03_team": {
+   "frame": {
+    "x": 2787,
+    "y": 459,
+    "w": 215,
+    "h": 298
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 125,
+    "w": 215,
+    "h": 298
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_b_04": {
+   "frame": {
+    "x": 2064,
+    "y": 459,
+    "w": 351,
+    "h": 416
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 138,
+    "w": 351,
+    "h": 416
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_b_04_team": {
+   "frame": {
+    "x": 2993,
+    "y": 894,
+    "w": 221,
+    "h": 274
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 153,
+    "w": 221,
+    "h": 274
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_c_01": {
+   "frame": {
+    "x": 1464,
+    "y": 2,
+    "w": 336,
+    "h": 434
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 214,
+    "y": 122,
+    "w": 336,
+    "h": 434
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_c_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 894,
+    "w": 221,
+    "h": 284
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 138,
+    "w": 221,
+    "h": 284
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_c_02": {
+   "frame": {
+    "x": 1737,
+    "y": 459,
+    "w": 323,
+    "h": 426
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 129,
+    "w": 323,
+    "h": 426
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_c_02_team": {
+   "frame": {
+    "x": 2770,
+    "y": 894,
+    "w": 219,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 145,
+    "w": 219,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_c_03": {
+   "frame": {
+    "x": 695,
+    "y": 2,
+    "w": 369,
+    "h": 444
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 216,
+    "y": 114,
+    "w": 369,
+    "h": 444
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_c_03_team": {
+   "frame": {
+    "x": 3247,
+    "y": 459,
+    "w": 225,
+    "h": 287
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 131,
+    "w": 225,
+    "h": 287
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_c_04": {
+   "frame": {
+    "x": 2419,
+    "y": 459,
+    "w": 364,
+    "h": 408
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 135,
+    "w": 364,
+    "h": 408
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_c_04_team": {
+   "frame": {
+    "x": 3218,
+    "y": 894,
+    "w": 251,
+    "h": 262
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 153,
+    "w": 251,
+    "h": 262
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_01": {
+   "frame": {
+    "x": 1804,
+    "y": 2,
+    "w": 343,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 130,
+    "w": 343,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_01_team": {
+   "frame": {
+    "x": 460,
+    "y": 894,
+    "w": 227,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 147,
+    "w": 227,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_02": {
+   "frame": {
+    "x": 2151,
+    "y": 2,
+    "w": 343,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 130,
+    "w": 343,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_02_team": {
+   "frame": {
+    "x": 691,
+    "y": 894,
+    "w": 227,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 147,
+    "w": 227,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_03": {
+   "frame": {
+    "x": 2498,
+    "y": 2,
+    "w": 343,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 130,
+    "w": 343,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_03_team": {
+   "frame": {
+    "x": 922,
+    "y": 894,
+    "w": 227,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 147,
+    "w": 227,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_04": {
+   "frame": {
+    "x": 2845,
+    "y": 2,
+    "w": 343,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 130,
+    "w": 343,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_04_team": {
+   "frame": {
+    "x": 1153,
+    "y": 894,
+    "w": 227,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 147,
+    "w": 227,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up45_02": {
+   "frame": {
+    "x": 3192,
+    "y": 2,
+    "w": 343,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 130,
+    "w": 343,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up45_02_team": {
+   "frame": {
+    "x": 1384,
+    "y": 894,
+    "w": 227,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 147,
+    "w": 227,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up45_03": {
+   "frame": {
+    "x": 2,
+    "y": 459,
+    "w": 343,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 130,
+    "w": 343,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up45_03_team": {
+   "frame": {
+    "x": 1615,
+    "y": 894,
+    "w": 227,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 147,
+    "w": 227,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up45_04": {
+   "frame": {
+    "x": 349,
+    "y": 459,
+    "w": 343,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 130,
+    "w": 343,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up45_04_team": {
+   "frame": {
+    "x": 1846,
+    "y": 894,
+    "w": 227,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 147,
+    "w": 227,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up70_02": {
+   "frame": {
+    "x": 696,
+    "y": 459,
+    "w": 343,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 130,
+    "w": 343,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up70_02_team": {
+   "frame": {
+    "x": 2077,
+    "y": 894,
+    "w": 227,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 147,
+    "w": 227,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up70_03": {
+   "frame": {
+    "x": 1043,
+    "y": 459,
+    "w": 343,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 130,
+    "w": 343,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up70_03_team": {
+   "frame": {
+    "x": 2308,
+    "y": 894,
+    "w": 227,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 147,
+    "w": 227,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up70_04": {
+   "frame": {
+    "x": 1390,
+    "y": 459,
+    "w": 343,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 130,
+    "w": 343,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch@frost_matriarch_attack_alt_up70_04_team": {
+   "frame": {
+    "x": 2539,
+    "y": 894,
+    "w": 227,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 147,
+    "w": 227,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 680,
+    "h": 622
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "mammoth_matriarch@frost_matriarch_attack_00",
+   "mammoth_matriarch@frost_matriarch_attack_b_01",
+   "mammoth_matriarch@frost_matriarch_attack_b_01",
+   "mammoth_matriarch@frost_matriarch_attack_b_02",
+   "mammoth_matriarch@frost_matriarch_attack_b_03",
+   "mammoth_matriarch@frost_matriarch_attack_b_03",
+   "mammoth_matriarch@frost_matriarch_attack_b_04",
+   "mammoth_matriarch@frost_matriarch_attack_b_04",
+   "mammoth_matriarch@frost_matriarch_attack_08",
+   "mammoth_matriarch@frost_matriarch_attack_08",
+   "mammoth_matriarch@frost_matriarch_attack_09",
+   "mammoth_matriarch@frost_matriarch_attack_09"
+  ],
+  "attack_b_team": [
+   "mammoth_matriarch@frost_matriarch_attack_00_team",
+   "mammoth_matriarch@frost_matriarch_attack_b_01_team",
+   "mammoth_matriarch@frost_matriarch_attack_b_01_team",
+   "mammoth_matriarch@frost_matriarch_attack_b_02_team",
+   "mammoth_matriarch@frost_matriarch_attack_b_03_team",
+   "mammoth_matriarch@frost_matriarch_attack_b_03_team",
+   "mammoth_matriarch@frost_matriarch_attack_b_04_team",
+   "mammoth_matriarch@frost_matriarch_attack_b_04_team",
+   "mammoth_matriarch@frost_matriarch_attack_08_team",
+   "mammoth_matriarch@frost_matriarch_attack_08_team",
+   "mammoth_matriarch@frost_matriarch_attack_09_team",
+   "mammoth_matriarch@frost_matriarch_attack_09_team"
+  ],
+  "attack_c": [
+   "mammoth_matriarch@frost_matriarch_attack_00",
+   "mammoth_matriarch@frost_matriarch_attack_c_01",
+   "mammoth_matriarch@frost_matriarch_attack_c_01",
+   "mammoth_matriarch@frost_matriarch_attack_c_02",
+   "mammoth_matriarch@frost_matriarch_attack_c_03",
+   "mammoth_matriarch@frost_matriarch_attack_c_03",
+   "mammoth_matriarch@frost_matriarch_attack_c_04",
+   "mammoth_matriarch@frost_matriarch_attack_c_04",
+   "mammoth_matriarch@frost_matriarch_attack_08",
+   "mammoth_matriarch@frost_matriarch_attack_08",
+   "mammoth_matriarch@frost_matriarch_attack_09",
+   "mammoth_matriarch@frost_matriarch_attack_09"
+  ],
+  "attack_c_team": [
+   "mammoth_matriarch@frost_matriarch_attack_00_team",
+   "mammoth_matriarch@frost_matriarch_attack_c_01_team",
+   "mammoth_matriarch@frost_matriarch_attack_c_01_team",
+   "mammoth_matriarch@frost_matriarch_attack_c_02_team",
+   "mammoth_matriarch@frost_matriarch_attack_c_03_team",
+   "mammoth_matriarch@frost_matriarch_attack_c_03_team",
+   "mammoth_matriarch@frost_matriarch_attack_c_04_team",
+   "mammoth_matriarch@frost_matriarch_attack_c_04_team",
+   "mammoth_matriarch@frost_matriarch_attack_08_team",
+   "mammoth_matriarch@frost_matriarch_attack_08_team",
+   "mammoth_matriarch@frost_matriarch_attack_09_team",
+   "mammoth_matriarch@frost_matriarch_attack_09_team"
+  ],
+  "attack_alt": [
+   "mammoth_matriarch@frost_matriarch_idle_00",
+   "mammoth_matriarch@frost_matriarch_attack_alt_01",
+   "mammoth_matriarch@frost_matriarch_attack_alt_02",
+   "mammoth_matriarch@frost_matriarch_attack_alt_03",
+   "mammoth_matriarch@frost_matriarch_attack_alt_04",
+   "mammoth_matriarch@frost_matriarch_idle_00"
+  ],
+  "attack_alt_team": [
+   "mammoth_matriarch@frost_matriarch_idle_00_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_01_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_02_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_03_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_04_team",
+   "mammoth_matriarch@frost_matriarch_idle_00_team"
+  ],
+  "attack_alt_up45": [
+   "mammoth_matriarch@frost_matriarch_idle_00",
+   "mammoth_matriarch@frost_matriarch_attack_alt_01",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up45_02",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up45_03",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up45_04",
+   "mammoth_matriarch@frost_matriarch_idle_00"
+  ],
+  "attack_alt_up45_team": [
+   "mammoth_matriarch@frost_matriarch_idle_00_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_01_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up45_02_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up45_03_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up45_04_team",
+   "mammoth_matriarch@frost_matriarch_idle_00_team"
+  ],
+  "attack_alt_up70": [
+   "mammoth_matriarch@frost_matriarch_idle_00",
+   "mammoth_matriarch@frost_matriarch_attack_alt_01",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up70_02",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up70_03",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up70_04",
+   "mammoth_matriarch@frost_matriarch_idle_00"
+  ],
+  "attack_alt_up70_team": [
+   "mammoth_matriarch@frost_matriarch_idle_00_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_01_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up70_02_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up70_03_team",
+   "mammoth_matriarch@frost_matriarch_attack_alt_up70_04_team",
+   "mammoth_matriarch@frost_matriarch_idle_00_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "mammoth_matriarch@frost_matriarch.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 3584,
+   "h": 1180
+  },
+  "scale": "2.5",
+  "ageborn": {
+   "visualId": "unit.mammoth_matriarch@frost_matriarch",
+   "name": "Mammoth Matriarch",
+   "heightLu": 196,
+   "widthLu": 163.9,
+   "pxPerLu": 2.05,
+   "feetPx": [
+    360,
+    532
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     190
+    ],
+    "hitCenter": [
+     0,
+     90
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "quad",
+   "skinOf": "unit.mammoth_matriarch",
+   "skin": "frost_matriarch",
+   "extrasOf": "mammoth_matriarch@frost_matriarch",
+   "clips": {
+    "attack_b": {
+     "frames": 7,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        11.3,
+        127.5
+       ],
+       [
+        6.6,
+        133.3
+       ],
+       [
+        -0.1,
+        138.7
+       ],
+       [
+        16.7,
+        128.3
+       ],
+       [
+        11.3,
+        138.8
+       ],
+       [
+        12.2,
+        142.5
+       ],
+       [
+        13.0,
+        128.9
+       ]
+      ],
+      "riderMuzzle": [
+       [
+        11.3,
+        127.5
+       ],
+       [
+        6.6,
+        133.3
+       ],
+       [
+        -0.1,
+        138.7
+       ],
+       [
+        16.7,
+        128.3
+       ],
+       [
+        11.3,
+        138.8
+       ],
+       [
+        12.2,
+        142.5
+       ],
+       [
+        13.0,
+        128.9
+       ]
+      ],
+      "tuskTip": [
+       [
+        83.9,
+        87.0
+       ],
+       [
+        75.0,
+        111.2
+       ],
+       [
+        62.6,
+        129.0
+       ],
+       [
+        84.6,
+        86.4
+       ],
+       [
+        94.6,
+        67.2
+       ],
+       [
+        86.9,
+        104.8
+       ],
+       [
+        84.2,
+        92.0
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 7,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        11.3,
+        127.5
+       ],
+       [
+        12.5,
+        127.6
+       ],
+       [
+        12.3,
+        125.3
+       ],
+       [
+        13.6,
+        130.5
+       ],
+       [
+        -0.7,
+        145.7
+       ],
+       [
+        12.2,
+        142.5
+       ],
+       [
+        13.0,
+        128.9
+       ]
+      ],
+      "riderMuzzle": [
+       [
+        11.3,
+        127.5
+       ],
+       [
+        12.5,
+        127.6
+       ],
+       [
+        12.3,
+        125.3
+       ],
+       [
+        13.6,
+        130.5
+       ],
+       [
+        -0.7,
+        145.7
+       ],
+       [
+        12.2,
+        142.5
+       ],
+       [
+        13.0,
+        128.9
+       ]
+      ],
+      "tuskTip": [
+       [
+        83.9,
+        87.0
+       ],
+       [
+        88.4,
+        85.4
+       ],
+       [
+        81.7,
+        75.1
+       ],
+       [
+        83.7,
+        99.5
+       ],
+       [
+        57.3,
+        105.4
+       ],
+       [
+        86.9,
+        104.8
+       ],
+       [
+        84.2,
+        92.0
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_alt": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      0
+     ],
+     "durationsMs": [
+      100,
+      160,
+      260,
+      160,
+      180,
+      240
+     ],
+     "durationMs": 1100,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.4727,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        11.5,
+        120.8
+       ],
+       [
+        -3.5,
+        139.7
+       ],
+       [
+        -16.7,
+        127.8
+       ],
+       [
+        16.8,
+        121.4
+       ],
+       [
+        9.8,
+        117.3
+       ]
+      ],
+      "riderMuzzle": [
+       [
+        11.5,
+        120.8
+       ],
+       [
+        -3.5,
+        139.7
+       ],
+       [
+        -16.7,
+        127.8
+       ],
+       [
+        16.8,
+        121.4
+       ],
+       [
+        9.8,
+        117.3
+       ]
+      ],
+      "tuskTip": [
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "muzzle": [
+      16.8,
+      121.4
+     ],
+     "aimDeg": -20.0,
+     "release": {
+      "frame": 2,
+      "atLu": [
+       -16.7,
+       127.8
+      ]
+     }
+    },
+    "attack_alt_up45": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      0
+     ],
+     "durationsMs": [
+      100,
+      160,
+      260,
+      160,
+      180,
+      240
+     ],
+     "durationMs": 1100,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.4727,
+     "aimOf": "attack_alt",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        11.5,
+        120.8
+       ],
+       [
+        -3.5,
+        139.7
+       ],
+       [
+        -6.1,
+        121.7
+       ],
+       [
+        25.7,
+        125.0
+       ],
+       [
+        19.3,
+        115.7
+       ]
+      ],
+      "riderMuzzle": [
+       [
+        11.5,
+        120.8
+       ],
+       [
+        -3.5,
+        139.7
+       ],
+       [
+        -6.1,
+        121.7
+       ],
+       [
+        25.7,
+        125.0
+       ],
+       [
+        19.3,
+        115.7
+       ]
+      ],
+      "tuskTip": [
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "muzzle": [
+      25.7,
+      125.0
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 2,
+      "atLu": [
+       -6.1,
+       121.7
+      ]
+     }
+    },
+    "attack_alt_up70": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      0
+     ],
+     "durationsMs": [
+      100,
+      160,
+      260,
+      160,
+      180,
+      240
+     ],
+     "durationMs": 1100,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.4727,
+     "aimOf": "attack_alt",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        11.5,
+        120.8
+       ],
+       [
+        -3.5,
+        139.7
+       ],
+       [
+        -0.7,
+        120.0
+       ],
+       [
+        27.0,
+        126.5
+       ],
+       [
+        22.4,
+        115.7
+       ]
+      ],
+      "riderMuzzle": [
+       [
+        11.5,
+        120.8
+       ],
+       [
+        -3.5,
+        139.7
+       ],
+       [
+        -0.7,
+        120.0
+       ],
+       [
+        27.0,
+        126.5
+       ],
+       [
+        22.4,
+        115.7
+       ]
+      ],
+      "tuskTip": [
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ],
+       [
+        85.6,
+        88.5
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "muzzle": [
+      27.0,
+      126.5
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 2,
+      "atLu": [
+       -0.7,
+       120.0
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

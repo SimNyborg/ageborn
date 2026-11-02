@@ -22,12 +22,15 @@ Animation (ANIM_SPEC G4 heavy trot, appendix B claws and jaws):
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import Quad
+from ageborn_art import look
+from units import stone_w1 as W1
 
 SLUG = "cave_bear"
 GAIT_NAME = "quad"
@@ -54,6 +57,19 @@ TOOTH = "#F4EEDC"
 
 BODY_SCALE = 1.1
 PAW_R = None
+# W1 (the detail standard): a grizzled light top over a dark body, darker paws, a pale chest crescent
+FUR_LT = "#9A846F"        # frosted guard-hair tips on the hump and shoulders (40 levels over the fur)
+SOCK = "#46392F"          # the lower legs and paws (16 levels under the fur); the far ones 20% darker again
+CLAW_DK = "#7C7062"       # the claws' dark roots (two-tone claws: the ivory tips read brightest)
+SCAR = "#CDB79F"
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.6   # over the beasts' 1.45: the dark coat's highlight was 0.038 at idle 0
+LOOK_SHADE = W1.SHADE_BIG
+LOOK_RIM = W1.RIM_BEAST
+MATERIAL_KINDS = W1.kinds({FUR: "fur", FUR_DK: "fur", FUR_LT: "fur", SOCK: "fur", MUZZLE: "fur", NOSE: "hide",
+                           CLAW: "bone", CLAW_DK: "bone", STRAP: "leather", BONE: "bone", WOOD: "wood", TOOTH: "bone",
+                           SCAR: "hide", "team": "hide"})
 
 
 def _leg(rig, name, p0, p1, front):
@@ -63,17 +79,56 @@ def _leg(rig, name, p0, p1, front):
     g = Geo().capsule(p0, p1, 10.6 if front else 11.0, 8.4)
     g.blob((x0 + (2.0 if front else -1.5), y, z0 - 5.0), (11.0, 8.4, 12.0), p=2.2)
     rig.part(f"leg_{name}", g, col, finish="hair")
+    sock = SOCK if y < 0 else CC.scale(SOCK, 0.8)     # W1: darker lower legs and paws (value structure)
     g = Geo().capsule(p1, (x1 + 1.0, y, 6.0), 8.4 if front else 7.6, 7.4)
-    rig.part(f"leg_{name}2", g, col, finish="hair")
+    rig.part(f"leg_{name}2", g, sock, finish="hair")
     if front:   # team forearm band
         g = Geo().capsule((x1 + 0.4, y, z1 - 2.0), (x1 + 0.8, y, z1 - 6.0), 8.8, 8.2)
         rig.part(f"leg_{name}2", g, team=True, outline=0.6)
+        # W1: a shaggy elbow fringe over the band (a breaker behind the forearm, 4 lu clumps)
+        g = Geo()
+        for dz in (2.0, -1.6):
+            g.lathe([(2.6, 0), (0, 4.6)], (x1 - 5.0, y - (6.0 if y < 0 else -6.0), z1 + dz),
+                    (x1 - 8.6, y - (6.6 if y < 0 else -6.6), z1 + dz - 3.0), segs=8)
+        rig.part(f"leg_{name}2", g, col, finish="hair", outline=0.5)
     g = Geo().blob((x1 + 3.0, y, 4.0), (9.6 if front else 8.4, 8.0, 4.2), p=2.4)
-    rig.part(f"leg_{name}2", g, col, finish="hair")
+    rig.part(f"leg_{name}2", g, sock, finish="hair")
     g = Geo()
+    gt = Geo()
     for dy in (-3.6, 0.0, 3.6):
-        g.lathe([(1.4, 0), (0.8, 2.0), (0, 3.6)], (x1 + 11.0, y + dy, 3.6), (x1 + 14.0, y + dy, 1.4), segs=8)
-    rig.part(f"leg_{name}2", g, CLAW, finish="gloss", outline=0.4)
+        g.lathe([(1.4, 0), (1.1, 1.2)], (x1 + 11.0, y + dy, 3.6), (x1 + 14.0, y + dy, 1.4), segs=8)
+        gt.lathe([(1.15, 0), (0.8, 0.8), (0, 2.4)], (x1 + 11.9, y + dy, 2.95), (x1 + 14.0, y + dy, 1.4), segs=8)
+    rig.part(f"leg_{name}2", g, CLAW_DK, finish="gloss", outline=0.4)   # W1: two-tone claws
+    rig.part(f"leg_{name}2", gt, CLAW, finish="gloss", outline=0)
+    if y < 0:
+        # W1: shaggy two-tone clumps over the near shoulder and haunch, under the cape's hem (the big brown masses
+        # of the upper legs broken into locks: beasts, fur in clumps)
+        locks = (((x0 - 2.5, y - 7.4, z0 + 2.5, 10.0, 8), (x0 + 3.5, y - 7.8, z0 + 2.0, 10.6, 14),
+                  (x0 + 9.0, y - 6.0, z0 + 0.0, 9.0, 22), (x0 - 4.6, y - 9.0, z0 - 9.0, 9.4, 4),
+                  (x0 + 1.6, y - 9.6, z0 - 10.0, 10.0, 10), (x0 + 7.4, y - 8.8, z0 - 11.0, 9.0, 16)) if front else
+                 ((x0 - 6.5, y - 6.6, z0 + 4.0, 10.0, -20), (x0 - 1.0, y - 7.8, z0 + 4.5, 10.6, -10),
+                  (x0 + 4.4, y - 6.6, z0 + 3.0, 9.4, -2), (x0 - 8.4, y - 8.6, z0 - 8.0, 9.4, -16),
+                  (x0 - 2.6, y - 9.6, z0 - 9.0, 10.0, -8), (x0 + 3.0, y - 9.0, z0 - 10.0, 9.0, 0)))
+        g, g2 = Geo(), Geo()
+        for k, (lx, ly, lz, L, tilt) in enumerate(locks):
+            W1.fur_lock(g if k % 2 == 0 else g2, (lx, ly, lz), L, tilt, r=2.9, dy=-0.8)
+        rig.part(f"leg_{name}", g, FUR_LT, finish="matte", outline=0.6)
+        rig.part(f"leg_{name}", g2, FUR_DK, finish="hair", outline=0.6)
+        if not front:
+            # W1: a third, shorter row down the near thigh (its lower half was the bear's biggest plain brown field)
+            g, g2 = Geo(), Geo()
+            for k, (lx, ly, lz, L, tilt) in enumerate(((x0 - 7.0, y - 8.0, z0 - 19.0, 8.4, -12),
+                                                       (x0 - 1.4, y - 8.8, z0 - 20.0, 8.8, -6),
+                                                       (x0 + 4.0, y - 8.2, z0 - 20.5, 8.0, 0))):
+                W1.fur_lock(g if k % 2 == 0 else g2, (lx, ly, lz), L, tilt, r=2.6, dy=-0.8)
+            rig.part(f"leg_{name}", g, FUR_DK, finish="hair", outline=0.6)
+            rig.part(f"leg_{name}", g2, FUR_LT, finish="matte", outline=0.6)
+            # W1: and a fringe over the hock, hanging onto the dark sock (two tones)
+            g, g2 = Geo(), Geo()
+            for k, (dx, L, tilt) in enumerate(((-3.0, 7.0, -10), (2.0, 6.4, -2))):
+                W1.fur_lock(g if k == 0 else g2, (x1 + dx, y - 7.4, z1 + 2.0), L, tilt, r=2.4, dy=-0.7)
+            rig.part(f"leg_{name}2", g, FUR, finish="hair", outline=0.5)
+            rig.part(f"leg_{name}2", g2, FUR_LT, finish="matte", outline=0.5)
 
 
 def build(rig):
@@ -95,15 +150,70 @@ def build(rig):
     g.blob((12, 0, 62), (16, 16.5, 15), p=2.2)
     g.blob((-17, 0, 48), (13, 16.5, 15), p=2.2)
     rig.part("trunk", g, FUR, finish="hair")
+    # W1: a grizzled, frosted top line: lighter shaggy clumps along the hump in front of the cape and down the
+    # haunch behind it (a light top over the dark body), and a fringe of dark tufts along the belly (4-5 lu)
+    g = Geo()
+    for x, z, ln, tilt in ((24.0, 66.0, 6.0, 30), (26.0, 60.0, 6.4, 40), (-21.0, 60.0, 6.0, -30),
+                           (-25.0, 54.0, 6.4, -40), (-27.6, 47.6, 6.0, -48)):
+        a = math.radians(tilt)
+        g.lathe([(3.0, 0), (1.8, ln * 0.5), (0, ln)], (x, -12.0, z), (x + ln * math.sin(a), -12.8, z - ln * math.cos(a)),
+                segs=8, squash=(1.0, 0.7))
+    rig.part("trunk", g, FUR_LT, finish="hair", outline=0.5)
+    g = Geo()
+    for x in (-18.0, -9.0, 0.0, 9.0):
+        g.lathe([(2.8, 0), (1.6, 2.6), (0, 5.0)], (x, -13.0, 34.0), (x - 1.6, -13.8, 29.2), segs=8)
+    rig.part("trunk", g, FUR_DK, finish="hair", outline=0.5)
+    # W1: lighter locks between the dark belly tufts (the fringe in two tones)
+    g = Geo()
+    for x in (-13.5, -4.5, 4.5):
+        g.lathe([(2.4, 0), (1.4, 2.4), (0, 4.4)], (x, -13.6, 33.6), (x - 1.4, -14.2, 29.4), segs=8)
+    rig.part("trunk", g, FUR_LT, finish="matte", outline=0.5)
     # team hide cape over the hump, a strap with bone toggles, team pennant
     g = Geo().blob((2.0, 0, 62.0), (22.4, 20.4, 13.4), p=2.8)
     g.clip((0, 0, 47.6), (0, 0, -1))
     for x in (-8.0, -2.0, 4.0, 10.0, 16.0):
         g.lathe([(2.4, 0), (0, -3.6)], (x, -17.2, 52.4), segs=8)
+    cape_face = F.Face(rig, "trunk", [g])
     rig.part("trunk", g, team=True)
+    # W1: the cape in two tones: a team-dark band above its hem (laid in pieces round the hump) and a bone paw
+    # emblem (a 6 lu shape: a pad and three toes) on its flank
+    hem = [(-12.0, 51.6), (-6.0, 51.2), (0.0, 51.0), (6.0, 51.1), (12.0, 51.4), (18.0, 52.0)]
+    W1.stripes(rig, "trunk", cape_face, [[a, b] for a, b in zip(hem, hem[1:])], w=2.8)
+    # W1: three big claw slashes painted on the cape's flank (the cave bear's own mark, up to 2.6 lu wide and
+    # pointed at both ends), team-dark; each slash is one polygon anchored at its middle where the flank faces the
+    # camera (strokes built of pieces, or laid in pieces over the curved top, show every piece's edge light and read
+    # as strings of beads)
     g = Geo()
-    for x in (-8.0, 12.0):
-        g.lathe([(0, -6.5), (19.6, -6.3), (20.2, 6.3), (0, 6.5)], (x, 0, 50), (x + 1.0, 0, 50), segs=24, squash=(1.12, 1.1))
+    for x0 in (-15.0, -11.0, -7.0):
+        (ax, az), (bx, bz) = (x0, 65.0), (x0 + 3.6, 55.6)
+        mx, mz = (ax + bx) / 2, (az + bz) / 2
+        L = math.hypot(bx - ax, bz - az)
+        tx, tz = (bx - ax) / L, (bz - az) / L
+        nx, nz = -tz, tx
+        side_a, side_b = [], []
+        for i in range(9):
+            t = i / 8
+            bow = 0.9 * math.sin(math.pi * t)                              # a slight swipe
+            w = 1.3 * math.sin(math.pi * (0.08 + 0.84 * t)) ** 0.6         # half-width, pointed at both ends
+            cx, cz = ax + (bx - ax) * t + nx * bow - mx, az + (bz - az) * t + nz * bow - mz
+            side_a.append((cx + nx * w, cz + nz * w))
+            side_b.append((cx - nx * w, cz - nz * w))
+        poly = side_a + side_b[::-1]
+        area = sum(u0 * v1 - u1 * v0 for (u0, v0), (u1, v1) in zip(poly, poly[1:] + poly[:1]))
+        cape_face.decal(g, cape_face.hit(mx, mz), poly if area > 0 else poly[::-1], 1.0)   # counter-clockwise
+    look.team_part(rig, "trunk", g, outline=0)
+    g = Geo()
+    c = cape_face.hit(2.0, 61.0)
+    cape_face.decal(g, c, F.ellipse(0, -0.8, 3.4, 2.6, 14), 0.3)
+    for u, v in ((-3.4, 3.1), (0.0, 4.2), (3.4, 3.1)):
+        cape_face.decal(g, c, F.ellipse(u, v, 1.4, 1.5, 10), 0.3)
+    rig.part("trunk", g, BONE, highlight=False, outline=0)
+    # W1: a woven team-dark zigzag down the cape's front (its biggest plain field), joining the hem band
+    W1.seam(rig, "trunk", cape_face, [(12.6 if k % 2 == 0 else 16.4, 53.6 + 3.2 * k) for k in range(6)], w=2.2,
+            team=True)
+    g = Geo()
+    for x in (-8.0, 12.0):   # W1: girth straps 17 lu wide (13 before): the team that shows when it rolls over
+        g.lathe([(0, -8.5), (19.6, -8.3), (20.2, 8.3), (0, 8.5)], (x, 0, 50), (x + 1.0, 0, 50), segs=24, squash=(1.12, 1.1))
     g.clip((0, 0, 40.0), (0, 0, 1))
     rig.part("trunk", g, team=True, outline=0.8)
     g = Geo()
@@ -116,10 +226,34 @@ def build(rig):
     rig.secondary("pennant", "pole", (-14.6, 4.0, 89), (-32, 4.0, 85), max_deg=14, gain=1.3)
     pts = [(-14.6, 91.0), (-35.0, 88.0), (-28.0, 82.0), (-34.5, 75.0), (-14.2, 74.5)]
     rig.part("pennant", Geo().slab(pts, 4.0, 1.4), team=True, outline=0.8)
+    # W1: a team-dark band at the hoist (the pennant in two tones)
+    look.team_part(rig, "pennant", Geo().slab([(-14.6, 91.0), (-19.4, 90.4), (-19.2, 75.0), (-14.2, 74.5)], 3.15, 0.5),
+                   outline=0)
+    # W1: the clan's bone paw on the pennant as on the cape (bright on the team, it reads at 30 px)
+    g = Geo().slab(F.ellipse(-23.6, 80.8, 3.2, 2.5, 14), 3.1, 0.4)
+    for x, z in ((-26.9, 85.0), (-23.6, 86.4), (-20.3, 85.0)):
+        g.slab(F.ellipse(x, z, 1.35, 1.4, 10), 3.1, 0.4)
+    rig.part("pennant", g, BONE, highlight=False, outline=0)
     # neck and head: broad dome, small ears, pale muzzle
     rig.joint("neck", "trunk", (22, 0, 54))
     rig.joint("head", "neck", (31, 0, 54), scale=1.08)
-    rig.part("neck", Geo().blob((25, 0, 55), (11, 14, 14), p=2.3), FUR, finish="hair")
+    neck = Geo().blob((25, 0, 55), (11, 14, 14), p=2.3)
+    neck_face = F.Face(rig, "neck", [neck])
+    rig.part("neck", neck, FUR, finish="hair")
+    # W1: locks down the near side of the neck in two tones (the brown mass between the cape and the head)
+    g, g2 = Geo(), Geo()
+    for k, (x, y, z, L, tilt) in enumerate(((21.6, -12.6, 61.0, 7.4, 12), (26.6, -13.4, 59.6, 7.0, 18))):
+        W1.fur_lock(g if k % 2 == 0 else g2, (x, y, z), L, tilt, r=2.7, dy=-0.6)
+    rig.part("neck", g, FUR_LT, finish="matte", outline=0.6)
+    rig.part("neck", g2, FUR_DK, finish="hair", outline=0.6)
+    # W1: the pale crescent on the chest (a marking that reads at 62 px) and a ruff of dark tufts under the jaw
+    g = Geo()
+    neck_face.stroke(g, neck_face.hit(30.0, 48.0), [(-3.6, 3.6), (-1.6, 0.6), (1.6, -0.6), (4.0, 0.8)], 2.8, 0.35)
+    rig.part("neck", g, MUZZLE, highlight=False, outline=0)
+    g = Geo()
+    for x, z in ((30.0, 46.0), (26.0, 45.0)):
+        g.lathe([(2.6, 0), (0, 5.0)], (x, -11.0, z), (x - 1.6, -11.8, z - 4.6), segs=8)
+    rig.part("neck", g, FUR_DK, finish="hair", outline=0.5)
     head = Geo().blob((36, 0, 56), (13.0, 12.6, 12.0), p=2.3)
     head.blob((47.5, 0, 51.5), (8.0, 7.6, 6.4), p=2.2)
     eye = Geo().blob((43.0, -9.6, 59.0), (2.6, 1.6, 2.4))
@@ -134,6 +268,17 @@ def build(rig):
     face.eye_marks([(44.4, 59.0)], 2.4, FUR)
     rig.joint("brow", "head", (43.0, -9.6, 62.0))
     rig.part("brow", Geo().capsule((39.6, -11.0, 63.0), (46.0, -10.0, 61.0), 2.0, 1.4), FUR_DK, finish="hair", outline=0.6)
+    # W1: an old pale scar across the brow and frosted cheek tufts (the head is not one brown dome)
+    g = Geo()
+    face.stroke(g, face.hit(38.6, 58.0), [(-1.6, 2.4), (1.6, -2.2)], 1.2, 0.35)
+    rig.part("head", g, SCAR, highlight=False, outline=0)
+    # W1: two frosted streaks down the crown (the side of the head was one brown dome at game scale)
+    for pts in ([(40.5, 64.5), (37.6, 61.4), (35.2, 58.4)], [(35.6, 65.6), (33.0, 62.6), (31.0, 59.6)]):
+        W1.seam(rig, "head", face, pts, fill=FUR_LT, w=2.4)
+    g = Geo()
+    for dz, L in ((0.0, 6.0), (4.0, 5.4)):
+        g.lathe([(2.6, 0), (0, L)], (33.0, -11.4, 52.0 + dz), (33.0 - L, -12.2, 50.0 + dz * 0.6), segs=8)
+    rig.part("head", g, FUR_LT, finish="hair", outline=0.5)
     rig.joint("ears", "head", (30.0, 0, 66.0))
     g = Geo()
     for y in (-1, 1):
@@ -154,6 +299,19 @@ def build(rig):
     # stubby tail
     rig.secondary("tail", "trunk", (-29, 0, 52), (-33, 0, 48), max_deg=20, gain=1.3)
     rig.part("tail", Geo().blob((-31.0, 0, 51.0), (4.0, 3.6, 3.6), p=2.2), FUR_DK, finish="hair")
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, beast): the team cape over the hump tears (its free field) and a
+    strip hangs from its hem; scuffs on the near shoulder and haunch; breath puffs from the nose at the last stage.
+    As the rest pose is drawn (the body x 1.1)."""
+    rig.damage_spot_at("cape", "trunk", -2.0, 66.0, 8.0, "hide", team=True)
+    rig.damage_spot_at("shoulder", "leg_fr", 22.0, 40.0, 6.5, "hide")
+    rig.damage_spot_at("haunch", "leg_br", -22.0, 36.0, 6.5, "hide")
+    rig.damage_spot_at("hem", "trunk", -6.0, 56.0, 10.0, "hide", kind="strip", team=True)
+    rig.damage_spot("breath", "head", (56.0, -2.0, 52.0), 5.0, "breath", kind="emit", normal=(1, 0, 0))
 
 
 CENTER = (0, 0, 48.0)

@@ -752,28 +752,31 @@ describe('the provider plans every hold\'s sheets together (memory governor)', (
   });
 
   it('S1: the next deck waits without a copy while the current deck steps down, then loads straight in HD (no 1x first)', async () => {
-    // room for one of the two HD copies (and a 1x copy)
+    // room for one of the two HD copies (and a 1x copy): the next deck's unit needs an HD copy bigger than the
+    // Mammoth's 1x copy (the Bonker's was, by 0.1 MB, until the Mammoth's aimed throws grew its extras sheet in W1)
+    const next = MANIFEST['unit.cave_bear']!.source;
+    expect(bytes(next).hd).toBeGreaterThan(bytes(mammoth).sd);
     const { art, log, finish, tick } = governed(bytes(mammoth).hd + bytes(mammoth).sd + 1);
     const hold = art.holdArt();
     void hold.set([{ visualId: 'unit.mammoth_matriarch', priority: SHEET_RANK.deck }]);
     await finish(`hd ${mammoth}`);
     await tick(HD_HOLD_MS);
-    // the hand-over: the Mammoth (current deck) ranks last; the next age's sheet (here the Bonker) can wait
+    // the hand-over: the Mammoth (current deck) ranks last; the next age's sheet (here the Cave Bear's) can wait
     void hold.set([
       { visualId: 'unit.mammoth_matriarch', priority: SHEET_RANK.next },
-      { visualId: 'unit.bonker', priority: SHEET_RANK.deck, canWait: true },
+      { visualId: 'unit.cave_bear', priority: SHEET_RANK.deck, canWait: true },
     ]);
-    // the step down waits for its confirmation, and the Bonker gets no copy meanwhile
-    expect(log.filter((l) => l.includes(bonker))).toEqual([]);
+    // the step down waits for its confirmation, and the next unit gets no copy meanwhile
+    expect(log.filter((l) => l.includes(next))).toEqual([]);
     await tick(DEMOTE_CONFIRM_MS + 10);
     expect(log).toContain(`lease sd ${mammoth}`);
-    // the Mammoth's HD copy is still in until its 1x copy can draw: still nothing for the Bonker
-    expect(log.filter((l) => l.includes(bonker))).toEqual([]);
+    // the Mammoth's HD copy is still in until its 1x copy can draw: still nothing for the next unit
+    expect(log.filter((l) => l.includes(next))).toEqual([]);
     await finish(`sd ${mammoth}`);
     expect(log).toContain(`release hd ${mammoth}`);
     await tick(10);
     // its HD load starts, never a 1x copy first
-    expect(log.filter((l) => l.includes(bonker))).toEqual([`lease hd ${bonker}`]);
+    expect(log.filter((l) => l.includes(next))).toEqual([`lease hd ${next}`]);
     hold.release();
   });
 

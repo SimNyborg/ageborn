@@ -34,6 +34,12 @@ SHADE_BEAST = {"shadow": 0.80, "core": 0.24, "core_width": 0.34, "gradient": 2.3
                "rim_mix": 0.55, "top": 0.18, "top_t": 0.58, "team_core": 0.4}
 RIM_BEAST = {"lift": 0.56, "full_lu": 0.65}
 HIGHLIGHT_BEAST = 1.45
+# The big mounts and beasts (Cave Bear, Mammoth Matriarch, Elk Chieftain: 100-170 lu of mostly one coat): a deeper
+# core shadow and a brighter top light, so their big forms show the lit top, the core and the shadow band as three
+# clear values at game scale (their first look-dev measured edge 0.36-0.42 against the floor 0.45).
+SHADE_BIG = dict(SHADE_BEAST, core=0.32, core_width=0.30, top=0.26, top_t=0.56)
+# the mounts with riders (Mammoth Matriarch, Elk Chieftain): deeper still (their coats carry less detail per lu)
+SHADE_MOUNT = dict(SHADE_BEAST, core=0.38, core_width=0.28, top=0.30, top_t=0.54)
 
 
 def kinds(base, far=0.8, extra_scales=()):
