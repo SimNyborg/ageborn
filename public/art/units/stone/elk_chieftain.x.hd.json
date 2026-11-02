@@ -26,9 +26,9 @@
   },
   "elk_chieftain_attack_b_01_team": {
    "frame": {
-    "x": 259,
-    "y": 1428,
-    "w": 250,
+    "x": 759,
+    "y": 430,
+    "w": 249,
     "h": 193
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 289,
     "y": 259,
-    "w": 250,
+    "w": 249,
     "h": 193
    },
    "sourceSize": {
@@ -74,10 +74,10 @@
   },
   "elk_chieftain_attack_b_02_team": {
    "frame": {
-    "x": 513,
-    "y": 1428,
+    "x": 1012,
+    "y": 402,
     "w": 243,
-    "h": 177
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
@@ -85,7 +85,7 @@
     "x": 252,
     "y": 249,
     "w": 243,
-    "h": 177
+    "h": 180
    },
    "sourceSize": {
     "w": 874,
@@ -122,8 +122,8 @@
   },
   "elk_chieftain_attack_b_03_team": {
    "frame": {
-    "x": 2,
-    "y": 1428,
+    "x": 502,
+    "y": 444,
     "w": 253,
     "h": 194
    },
@@ -146,8 +146,8 @@
   },
   "elk_chieftain_attack_b_04": {
    "frame": {
-    "x": 446,
-    "y": 869,
+    "x": 1649,
+    "y": 376,
     "w": 377,
     "h": 338
    },
@@ -170,8 +170,8 @@
   },
   "elk_chieftain_attack_b_04_team": {
    "frame": {
-    "x": 525,
-    "y": 1214,
+    "x": 2492,
+    "y": 356,
     "w": 276,
     "h": 202
    },
@@ -194,8 +194,8 @@
   },
   "elk_chieftain_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 480,
+    "x": 1328,
+    "y": 2,
     "w": 317,
     "h": 385
    },
@@ -218,8 +218,8 @@
   },
   "elk_chieftain_attack_b_05_team": {
    "frame": {
-    "x": 1075,
-    "y": 869,
+    "x": 2,
+    "y": 480,
     "w": 237,
     "h": 220
    },
@@ -242,17 +242,17 @@
   },
   "elk_chieftain_attack_c_01": {
    "frame": {
-    "x": 719,
-    "y": 480,
-    "w": 369,
+    "x": 2045,
+    "y": 2,
+    "w": 370,
     "h": 364
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 341,
+    "x": 340,
     "y": 243,
-    "w": 369,
+    "w": 370,
     "h": 364
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "elk_chieftain_attack_c_01_team": {
    "frame": {
-    "x": 2,
-    "y": 1214,
+    "x": 2793,
+    "y": 243,
     "w": 259,
     "h": 210
    },
@@ -290,18 +290,18 @@
   },
   "elk_chieftain_attack_c_02": {
    "frame": {
-    "x": 1092,
-    "y": 480,
-    "w": 371,
-    "h": 351
+    "x": 2419,
+    "y": 2,
+    "w": 370,
+    "h": 350
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 335,
-    "y": 253,
-    "w": 371,
-    "h": 351
+    "x": 342,
+    "y": 254,
+    "w": 370,
+    "h": 350
    },
    "sourceSize": {
     "w": 874,
@@ -314,18 +314,18 @@
   },
   "elk_chieftain_attack_c_02_team": {
    "frame": {
-    "x": 805,
-    "y": 1214,
+    "x": 2772,
+    "y": 457,
     "w": 263,
-    "h": 200
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 329,
-    "y": 274,
+    "x": 335,
+    "y": 275,
     "w": 263,
-    "h": 200
+    "h": 199
    },
    "sourceSize": {
     "w": 874,
@@ -341,15 +341,15 @@
     "x": 945,
     "y": 2,
     "w": 379,
-    "h": 395
+    "h": 396
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 333,
-    "y": 227,
+    "x": 327,
+    "y": 226,
     "w": 379,
-    "h": 395
+    "h": 396
    },
    "sourceSize": {
     "w": 874,
@@ -362,18 +362,18 @@
   },
   "elk_chieftain_attack_c_03_team": {
    "frame": {
-    "x": 827,
-    "y": 869,
+    "x": 2793,
+    "y": 2,
     "w": 244,
-    "h": 238
+    "h": 237
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 364,
+    "x": 358,
     "y": 240,
     "w": 244,
-    "h": 238
+    "h": 237
    },
    "sourceSize": {
     "w": 874,
@@ -386,17 +386,17 @@
   },
   "elk_chieftain_attack_c_04": {
    "frame": {
-    "x": 2,
-    "y": 869,
-    "w": 440,
+    "x": 2045,
+    "y": 370,
+    "w": 443,
     "h": 341
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 328,
+    "x": 318,
     "y": 260,
-    "w": 440,
+    "w": 443,
     "h": 341
    },
    "sourceSize": {
@@ -410,18 +410,18 @@
   },
   "elk_chieftain_attack_c_04_team": {
    "frame": {
-    "x": 1072,
-    "y": 1214,
+    "x": 1328,
+    "y": 391,
     "w": 276,
-    "h": 199
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 374,
-    "y": 276,
+    "x": 364,
+    "y": 275,
     "w": 276,
-    "h": 199
+    "h": 194
    },
    "sourceSize": {
     "w": 874,
@@ -434,15 +434,15 @@
   },
   "elk_chieftain_attack_c_05": {
    "frame": {
-    "x": 323,
-    "y": 480,
+    "x": 1649,
+    "y": 2,
     "w": 392,
     "h": 370
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 355,
+    "x": 347,
     "y": 242,
     "w": 392,
     "h": 370
@@ -458,17 +458,17 @@
   },
   "elk_chieftain_attack_c_05_team": {
    "frame": {
-    "x": 265,
-    "y": 1214,
-    "w": 256,
+    "x": 243,
+    "y": 480,
+    "w": 255,
     "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 375,
+    "x": 366,
     "y": 265,
-    "w": 256,
+    "w": 255,
     "h": 210
    },
    "sourceSize": {
@@ -545,8 +545,8 @@
   "image": "elk_chieftain.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 1624
+   "w": 3072,
+   "h": 716
   },
   "scale": "2.5",
   "ageborn": {
@@ -693,20 +693,20 @@
         89.5
        ],
        [
-        94.9,
-        58.5
+        97.7,
+        58.4
        ],
        [
-        101.0,
-        70.6
+        98.6,
+        74.8
        ],
        [
-        124.2,
-        58.6
+        121.4,
+        67.4
        ],
        [
-        115.3,
-        84.3
+        110.6,
+        88.3
        ],
        [
         68.4,

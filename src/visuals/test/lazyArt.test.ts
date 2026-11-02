@@ -22,15 +22,18 @@ import { createArtProvider } from '../provider';
 import { SKIN_PUPPETS } from '../skins';
 import { memoryKind } from '../textureMemory';
 
-/** A Stone troop skin still drawn by its puppet (skins rendered as sheets, queue item 46, draw from those instead). */
-const skinId = SKIN_PUPPETS.find((p) => p.age === 'stone' && p.id.startsWith('unit.') && MANIFEST[p.id]?.kind === 'procedural')?.id ?? '';
+/** A troop skin still drawn by its puppet (skins rendered as sheets, queue item 46, draw from those instead); every
+ *  Stone skin has its sheet since art round W1, so it comes from the first age that still has one. */
+const skinPuppet = SKIN_PUPPETS.find((p) => p.id.startsWith('unit.') && MANIFEST[p.id]?.kind === 'procedural');
+const skinId = skinPuppet?.id ?? '';
+const skinAge = skinPuppet?.age ?? 'stone';
 const [skinUnit = '', skinName = ''] = skinId.split('@');
 
 describe('skins bake when held (the game)', () => {
   it("an age's preload bakes no skin in the game; the gallery's provider still does", () => {
     expect(SKIN_PUPPETS.some((p) => p.id === skinId)).toBe(true);
     const game = createArtProvider({ warn: () => {}, unitSheets: 'match' });
-    const listed = (art: ReturnType<typeof createArtProvider>): string[] => [...new Set(art.procedural.bakeListFor(['stone']).map((e) => e.puppet.id))];
+    const listed = (art: ReturnType<typeof createArtProvider>): string[] => [...new Set(art.procedural.bakeListFor([skinAge]).map((e) => e.puppet.id))];
     expect(listed(game)).not.toContain(skinId);
     const gallery = createArtProvider({ warn: () => {} });
     expect(listed(gallery)).toContain(skinId);

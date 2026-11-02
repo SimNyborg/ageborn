@@ -30,12 +30,15 @@ bone totems on the howdah posts, toenails.
 """
 import math
 
+from ageborn_art import colors as CC
 from ageborn_art import face as F
 from ageborn_art import gait as G
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import Quad, walk4
+from units import stone_w1 as W1
 
 SLUG = "mammoth_matriarch"
 GAIT_NAME = "quad"
@@ -66,6 +69,36 @@ MOUTH = "#5A2E2E"
 
 TUSK_TIP = (88.0, -14.0, 104.0)
 KID_S = 1.22
+# W1 (the detail standard): frosted locks over the dark shag, polished tusk tips, rope lashings on the howdah
+FUR_LT = "#A28C7A"        # frosted lighter locks among the dark shag (two-tone coat, 30 levels over the fur)
+TUSK_HI = "#FBF7EC"       # the polished tusk tips (lighter tip)
+ROPE = "#56412F"          # dark rope lashings on the howdah's rim and post tops
+
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.6   # over the beasts' 1.45; not higher: the team highlight's white overlay is 0.30 x this (0.5 hides team)
+LOOK_SHADE = W1.SHADE_MOUNT
+LOOK_RIM = W1.RIM_BEAST
+MATERIAL_KINDS = W1.kinds({FUR: "fur", FUR_DK: "fur", FUR_LT: "fur", SHAG: "fur", SKIN_DK: "hide", NAIL: "bone",
+                           IVORY: "bone", TUSK_HI: "bone", BAND: "leather", WOOD: "wood", WOOD_DK: "wood", BONE: "bone",
+                           KID: "skin", KID_HAIR: "fur", ROCK: "stone", ROPE: "leather", "team": "hide"})
+
+# -- skin: Frost Matriarch (DESIGN A5.8, legendary; "ice tusks, snow aura") --------------------------------------
+# Same joints, trackers, poses and clips. A snow-white shaggy coat over pale grey skin, tusks of clear ice with
+# frosted bands, icicles instead of the bone beads along the caparison's hem, snow caps on the howdah's posts and
+# the dome; the riders, the team caparison and banner stay.
+S_FUR = "#C4C8CC"
+S_FUR_DK = "#9AA2AA"
+S_SHAG = "#E6EAEE"
+S_SKIN = "#8E979E"
+ICE = "#D2EEF0"
+ICE_HI = "#F4FCFD"
+FROST = "#EEF3F6"
+SKINS = {"frost_matriarch": {
+    "kinds": W1.kinds({S_FUR: "fur", S_FUR_DK: "fur", S_SHAG: "fur", S_SKIN: "hide", ICE: "glass", ICE_HI: "glass",
+                       FROST: "fur"}),
+    "palette": {FUR: S_FUR, FUR_DK: S_FUR_DK, SHAG: S_SHAG, SKIN_DK: S_SKIN, FUR_LT: FROST, IVORY: ICE, TUSK_HI: ICE_HI,
+                BAND: S_FUR, BONE: ICE, CC.scale(FUR_DK, 0.8): CC.scale(S_FUR_DK, 0.8),
+                CC.scale(SKIN_DK, 0.8): CC.scale(S_SKIN, 0.8), CC.scale(SHAG, 0.8): CC.scale(S_SHAG, 0.8)}}}
 
 
 def _leg(rig, name, p0, p1, front):
@@ -89,6 +122,30 @@ def _leg(rig, name, p0, p1, front):
         for dx in (-5.0, 0.0, 5.0):
             g.blob((x1 + 6.5 + dx * 0.5, y - 10.8 + abs(dx) * 0.35, 3.0), (2.6, 1.4, 2.4), p=2.2)
         rig.part(f"leg_{name}2", g, NAIL, outline=0.6)
+        # W1: shaggy two-tone locks down the near upper legs, under the caparison's fringe (the legs' big brown
+        # pillars broken into clumps; mammoths are shaggy to the knee)
+        r0 = 14.0 if front else 15.0
+        g, g2 = Geo(), Geo()
+        for k, (dx, dz, L, tilt) in enumerate(((-7.0, -6.0, 13.0, -6), (0.0, -4.0, 14.0, 4), (7.0, -6.0, 12.4, 12))):
+            W1.fur_lock(g if k % 2 == 0 else g2, (x0 + dx, y - r0 + 1.0 + abs(dx) * 0.25, z0 + dz), L, tilt, r=3.6,
+                        dy=-0.8)
+        rig.part(f"leg_{name}", g, FUR_LT, finish="matte", outline=0.7)
+        rig.part(f"leg_{name}", g2, SHAG, finish="hair", outline=0.7)
+        # W1: a second, shorter row lower down (shaggy to the knee: the pillars' lower half was plain brown)
+        g, g2 = Geo(), Geo()
+        for k, (dx, dz, L, tilt) in enumerate(((-3.6, -24.0, 10.4, 0), (3.6, -25.0, 10.0, 8))):
+            W1.fur_lock(g if k % 2 == 0 else g2, (x0 + dx, y - r0 + 1.6 + abs(dx) * 0.25, z0 + dz), L, tilt, r=3.2,
+                        dy=-0.8)
+        rig.part(f"leg_{name}", g, SHAG, finish="hair", outline=0.7)
+        rig.part(f"leg_{name}", g2, FUR_LT, finish="matte", outline=0.7)
+        # W1: an anklet of polished bone beads above the shaggy cuff (bright points on the dark skin: the beasts'
+        # highlight at game scale) and two wrinkle creases over the knee (mammoth skin, darker)
+        W1.beads(rig, f"leg_{name}2", [(x1 + dx, y - math.sqrt(max(11.9 ** 2 - dx * dx, 1.0)), 24.6)
+                                       for dx in (-6.6, -2.2, 2.2, 6.6)], BONE, r=1.9)
+        g = Geo()
+        for zc in (30.0, 34.4):
+            g.lathe([(11.75, 0), (12.25, 0.3), (12.25, 1.3), (11.75, 1.6)], (x1 + 0.6, y, zc), segs=20)
+        rig.part(f"leg_{name}2", g, CC.scale(SKIN_DK, 0.8), outline=0)
 
 
 def _kid(rig, name, parent, x, z, throw=False):
@@ -96,6 +153,7 @@ def _kid(rig, name, parent, x, z, throw=False):
     rig.joint(name, parent, (x, 0, z))
     g = Geo().blob((x, 0, z + 9.0), (7.6, 7.0, 9.0), p=2.3, taper=(1.05, 0.9))
     rig.part(name, g, team=True)
+    W1.ring(rig, name, (x, 0, z + 4.4), 7.7, height=2.6, ry=7.1, team=True, segs=28, outline=0.4)   # W1: team-dark belt
     rig.joint(f"{name}_head", name, (x + 1, 0, z + 17.0))
     g = Geo().blob((x + 1.5, 0, z + 25.0), (8.0, 7.6, 8.0), p=2.25)
     g.blob((x + 9.2, -0.4, z + 24.0), (2.0, 1.8, 1.8), p=2.0)
@@ -153,6 +211,12 @@ def build(rig):
             zb = 60 + 3 * math.cos(i)
             g.lathe([(4.2, 0), (0, -12.0 - 3 * ((i + int(y)) % 3))], (x, y * 0.95, zb + 4), segs=8)
     rig.part("trunk", g, SHAG, finish="hair")
+    # W1: frosted lighter locks between the dark ones along the near side of the fringe (two tones, 5-6 lu)
+    g = Geo()
+    for i in range(10):
+        x = -36 + 8 * i
+        g.lathe([(3.4, 0), (0, -10.0 - 2 * (i % 2))], (x, -23.4, 63.6 + 3 * math.cos(i + 0.5)), segs=8)
+    rig.part("trunk", g, FUR_LT, finish="hair", outline=0.6)
     # team caparison over the back, a bone-bead hem
     g = Geo().blob((-3, 0, 96), (38, 26.6, 24), p=3.0, taper=(1.02, 0.95))
     g.clip((0, 0, 72.0), (0, 0, -1))
@@ -160,10 +224,29 @@ def build(rig):
     g.clip((-38.0, 0, 0), (-1, 0, 0))
     for x in range(-34, 30, 8):
         g.lathe([(3.4, 0), (0, -6.0)], (x, -26.0, 72.2), segs=8)
+    cap_face = F.Face(rig, "trunk", [g])
     rig.part("trunk", g, team=True)
+    # W1: the caparison in two tones: a broad team-dark band above the hem (in pieces round the barrel) and a big
+    # bone sun disc with rays on the flank (a 14 lu shape that reads at game scale)
+    hem = [(-36.0, 77.6), (-26.0, 77.0), (-16.0, 76.7), (-6.0, 76.6), (4.0, 76.7), (14.0, 77.0), (24.0, 77.6)]
+    W1.stripes(rig, "trunk", cap_face, [[a, b] for a, b in zip(hem, hem[1:])], w=3.4)
     g = Geo()
-    for x in range(-34, 30, 8):
-        g.sphere((x + 4, -26.6, 71.4), 1.8, cuts=2)
+    c = cap_face.hit(-6.0, 96.0)
+    cap_face.decal(g, c, F.ellipse(0, 0, 4.2, 4.2, 18), 0.35)
+    for k in range(8):
+        a = math.radians(22.5 + 45 * k)
+        cap_face.stroke(g, c, [(math.cos(a) * 5.6, math.sin(a) * 5.6), (math.cos(a) * 8.4, math.sin(a) * 8.4)], 1.8, 0.35)
+    rig.part("trunk", g, BONE, finish="gloss", outline=0)   # W1: a polished disc (it carries the highlight)
+    # W1: a woven team-dark zigzag above the hem band (the caparison's big field in two tones; it breaks the blue)
+    zig = [(-34.0 + 4.0 * i, 81.6 if i % 2 == 0 else 86.6) for i in range(16)]
+    W1.seam(rig, "trunk", cap_face, zig, w=2.2, team=True)
+    g = Geo()
+    if getattr(rig, "skin", None) == "frost_matriarch":   # Frost Matriarch: icicles instead of the bone beads
+        for x in range(-34, 30, 8):
+            g.lathe([(1.9, 0), (1.2, -2.6), (0, -6.4)], (x + 4, -26.6, 72.4), segs=8)
+    else:
+        for x in range(-34, 30, 8):
+            g.sphere((x + 4, -26.6, 71.4), 1.8, cuts=2)
     rig.part("trunk", g, BONE, outline=0.6)
     # layered shaggy locks over the shoulder hump
     g = Geo()
@@ -178,10 +261,20 @@ def build(rig):
     g = Geo().lathe([(22.0, 0), (24.0, 0.4), (24.0, 7.0), (22.0, 7.4)], (-8, 0, 125.5), (-8, 0, 133.0),
                     segs=28, squash=(1.2, 0.95))
     rig.part("howdah", g, team=True)
+    # W1: dark rope lashings round the rim at the posts and between them (2.6 lu bands, the rim in two tones)
+    g = Geo()
+    for x in (18.0, 5.0, -8.0, -21.0, -34.0):
+        g.capsule((x - 1.0, -23.0, 133.4), (x + 0.6, -23.0, 125.0), 1.3, 1.3)
+    rig.part("howdah", g, ROPE, outline=0.4)
     g = Geo()
     for x, y in ((18.0, -19.0), (-34.0, -19.0), (18.0, 19.0), (-34.0, 19.0)):
         g.capsule((x, y, 121), (x, y, 138), 2.0, 1.8).sphere((x, y, 139), 2.6, cuts=2)
     rig.part("howdah", g, WOOD_DK)
+    if getattr(rig, "skin", None) == "frost_matriarch":   # snow caps on the near posts and the dome
+        g = Geo()
+        for x in (18.0, -34.0):
+            g.blob((x, -19.0, 141.2), (3.6, 3.4, 1.8), p=2.2)
+        rig.part("howdah", g, FROST, finish="hair", outline=0.5)
     g = Geo()   # bone totems on the near posts
     for x in (18.0, -34.0):
         g.blob((x, -19.0, 145.0), (3.6, 3.0, 4.2), p=2.2)
@@ -201,6 +294,19 @@ def build(rig):
     pts = [(-39.6, 193.0), (-73.0, 188.0), (-61.0, 178.0), (-72.0, 166.0), (-39.4, 165.0)]
     g = Geo().slab(pts, 8.0, 2.0)
     rig.part("banner", g, team=True, outline=1.0)
+    # W1: a team-dark band at the hoist (the banner in two tones)
+    look.team_part(rig, "banner", Geo().slab([(-39.6, 193.0), (-46.6, 192.0), (-46.4, 165.2), (-39.4, 165.0)], 6.75, 0.5),
+                   outline=0)
+    # W1: the matriarch's bone sun on the banner as on the caparison (polished: it carries a highlight up high)
+    g = Geo().slab(F.ellipse(-53.2, 179.0, 3.4, 3.4, 16), 6.75, 0.5)
+    for k in range(8):
+        a = math.radians(22.5 + 45 * k)
+        ca, sa = math.cos(a), math.sin(a)
+        r0, r1, hw = 4.6, 6.6, 0.85
+        g.slab([(-53.2 + ca * r0 + sa * hw, 179.0 + sa * r0 - ca * hw), (-53.2 + ca * r1 + sa * hw, 179.0 + sa * r1 - ca * hw),
+                (-53.2 + ca * r1 - sa * hw, 179.0 + sa * r1 + ca * hw), (-53.2 + ca * r0 - sa * hw, 179.0 + sa * r0 + ca * hw)],
+               6.75, 0.5)
+    rig.part("banner", g, BONE, finish="gloss", outline=0)
 
     # neck, domed head, small ears, eye
     rig.joint("neck", "trunk", (34, 0, 98))
@@ -218,6 +324,21 @@ def build(rig):
         base = (48 + 10 * math.cos(a) - 4, 0, 118 + 12 * math.sin(a))
         g.capsule(base, (base[0] - 6, (i - 2.5) * 1.5, base[2] + 9), 3.0, 1.0)
     rig.part("head", g, SHAG, finish="hair")
+    g = Geo()   # W1: frosted locks in the dome's tuft (two tones)
+    for i in (1, 3, 5):
+        a = math.radians(40 + 18 * i)
+        base = (48 + 10 * math.cos(a) - 4, -2.0, 118 + 12 * math.sin(a))
+        g.capsule(base, (base[0] - 5, (i - 2.5) * 1.5 - 2.0, base[2] + 7.6), 2.0, 0.8)
+    rig.part("head", g, FUR_LT, finish="hair", outline=0)
+    if getattr(rig, "skin", None) == "frost_matriarch":
+        g = Geo().blob((47.0, -2.0, 130.0), (9.0, 8.0, 3.0), p=2.2, rot=(0, -20, 0))
+        rig.part("head", g, FROST, finish="hair", outline=0.5)
+    # W1: two locks over the near cheek and forehead, between the ear and the eye (two tones)
+    g, g2 = Geo(), Geo()
+    W1.fur_lock(g, (49.5, -15.2, 125.0), 9.0, 8, r=3.2, dy=-1.2)
+    W1.fur_lock(g2, (53.6, -15.6, 121.0), 8.0, 16, r=3.0, dy=-0.8)
+    rig.part("head", g, FUR_LT, finish="matte", outline=0.6)
+    rig.part("head", g2, SHAG, finish="hair", outline=0.6)
     rig.joint("ear", "head", (42, -12, 112))
     g = Geo().blob((40, -14, 106), (7.5, 3.4, 11.5), p=2.2, rot=(10, 10, 0))  # ear
     rig.part("ear", g, FUR_DK, finish="hair")
@@ -237,13 +358,16 @@ def build(rig):
     rig.part("mouth", g, MOUTH, outline=0, highlight=False)
     # tusks: huge, sweeping forward, down, then up
     g = Geo()
+    tip = Geo()
     for y in (-1, 1):
         a = (58.0, 10.0 * y, 92.0)
         b = (70.0, 13.5 * y, 78.0)
         c = (84.0, 14.5 * y, 84.0)
         d = (TUSK_TIP[0], 13.0 * y, TUSK_TIP[2])
-        g.capsule(a, b, 5.0, 4.4).capsule(b, c, 4.4, 3.4).capsule(c, d, 3.4, 0.8)
+        g.capsule(a, b, 5.0, 4.4).capsule(b, c, 4.4, 3.4)
+        tip.capsule(c, d, 3.4, 0.8)
     rig.part("head", g, IVORY, finish="gloss")
+    rig.part("head", tip, TUSK_HI, finish="gloss", outline=0.6)   # W1: the polished, lighter tips
     g = Geo()   # carved dark bands
     for y in (-1, 1):
         a = (58.0, 10.0 * y, 92.0)
@@ -271,12 +395,32 @@ def build(rig):
         g.lathe([(0, 0), (8.2 - (90 - z) * 0.06, 0.2), (8.2 - (90 - z) * 0.06, 1.0), (0, 1.2)],
                 (x, 0, z), (x + 0.2, 0, z + 1), segs=16)
     rig.part("trunk1", g, FUR_DK, outline=0)
+    g = Geo()   # W1: wrinkle rings down the lower trunk too (the trunk's length in value steps, 1.2 lu)
+    for z in (66.0, 60.0, 54.0):
+        g.lathe([(0, 0), (6.9 - (72 - z) * 0.07, 0.2), (6.9 - (72 - z) * 0.07, 1.0), (0, 1.2)], (68.0, 0, z),
+                (68.2, 0, z + 1), segs=16)
+    rig.part("trunk2", g, FUR_DK, outline=0)
 
     # tail with a hair tuft
     rig.secondary("tail", "trunk", (-42, 0, 96), (-50, 0, 72), max_deg=14, gain=1.1)
     g = Geo().capsule((-42, 0, 96), (-48, 0, 78), 3.0, 2.2)
     g.lathe([(3.6, 0), (4.2, -4), (0, -12)], (-48.5, 0, 80), segs=10)
     rig.part("tail", g, SHAG, finish="hair")
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, rider: the mammoth as a beast, the riders as Stone soldiers): the
+    team caparison tears (its broad free field round the sun disc) and a strip hangs from its hem, scuffs on the
+    near shoulder and haunch, a crack in the near tusk, the front rider's team tunic; breath from the trunk's tip."""
+    rig.damage_spot_at("caparison", "trunk", -20.0, 90.0, 9.0, "hide", team=True)
+    rig.damage_spot_at("shoulder", "leg_fr", 30.0, 58.0, 8.0, "hide")
+    rig.damage_spot_at("haunch", "leg_br", -30.0, 56.0, 8.0, "hide")
+    rig.damage_spot_at("tusk", "head", 72.0, 80.0, 6.0, "stone", fill=IVORY)
+    rig.damage_spot_at("rider", "kid_f", 4.0, 133.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("hem", "trunk", 4.0, 78.0, 12.0, "hide", kind="strip", team=True)
+    rig.damage_spot("breath", "trunk3", (78.0, 0.0, 34.0), 6.0, "breath", kind="emit", normal=(1, 0, 0))
 
 
 
@@ -532,12 +676,18 @@ ALT_LEAN = [0, 14, 26, -24, -28]
 ALT_RISE = [0, 1.0, 2.0, 4.0, 2.5]
 
 
-def _alt_pose(i):
+def _alt_pose(i, t=0.0):
+    """Frame i of the riders' throw; `t` throws it t degrees higher (the aimed variants, item 44): the front kid
+    whips his arm further up and leans back instead of into the throw."""
     pose = _idle(0)
     if i == 0:
         return pose
-    pose["kid_f_arm"] = {"r": ALT_THROW[i]}
-    pose["kid_f"] = {"r": ALT_LEAN[i], "z": ALT_RISE[i]}
+    pose["kid_f_arm"] = {"r": ALT_THROW[i] + t}
+    pose["kid_f"] = {"r": ALT_LEAN[i] - 0.3 * t, "z": ALT_RISE[i]}
+    if t:
+        hd = dict(pose.get("kid_f_head", {}))
+        hd["r"] = hd.get("r", 0.0) + 0.3 * t      # he looks up after his throw
+        pose["kid_f_head"] = hd
     pose["kid_b_arm"] = {"r": [0, 10, 20, 90, 140][i]}
     pose["rock"] = {"hide": i in (3, 4)}
     return pose
@@ -601,9 +751,17 @@ def clips():
         _attack_clip(),
         _attack_b(),
         _attack_c(),
-        _attack_alt(),
+        alt := _attack_alt(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(keep[i]) for i in range(len(keep))], M.DIE_MS_HEAVY,
                sequence=M.DIE_SEQ_HEAVY, extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_variants(M.check_contract(cl, heavy=True))
+    cl = M.check_variants(M.check_contract(cl, heavy=True))
+    # W1 (item 44): the riders' throw up at flyers about 45 and 70 degrees (the extras sheet): the hold (the release
+    # frame, the rock behind the kid's head) is cocked higher, the throw and its follow-through go up
+    return cl + W1.authored_variants(alt, _alt_pose, AIM_W_ALT, -20.0)
+
+
+# per unique frame of attack_alt: the share of the aim's turn (0 = the base frame); the release frame (2) is fully aimed
+AIM_W_ALT = [0, 0, 1, 1, 0.7]
+W1.register_aims(SLUG, skins=("frost_matriarch",), clips=("attack_alt",))
