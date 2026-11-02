@@ -12,16 +12,26 @@
  * it ended: `ok` with the tick reached, or `CRASHED` with where), plus a `[war]` line every 2,000 ticks. WebKit only;
  * no retries (a crash is the result here, not a flake); a lost page fails its test, so the next run gets a fresh
  * browser. A war is fast-forwarded from its start and stops at tick 8,000 (every crash seen so far came by tick 7,780):
- * about 7 minutes a war on CI's runner, 10 with review 2's Customize, so the 42 runs add about 3 hours to the e2e job
- * on its two workers. `CONFIGS`, `RUNS` and `TICK_CAP` below are the knobs to trim it.
+ * about 7 minutes a war on CI's runner, 10 with review 2's Customize.
+ *
+ * It runs only with `DMG_CRASH=1`, in CI's `webkit-crash` job (`.github/workflows/ci.yml`): one job per configuration
+ * (`DMG_CRASH_CFG`), side by side and beside the e2e job, each playing both wars `DMG_CRASH_RUNS` times (default 3),
+ * so the bisection adds no time to the e2e job. Without `DMG_CRASH=1` the file declares no tests.
  */
 import fs from 'node:fs';
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import { pastOnboarding, type AgebornDev } from './helpers';
 
-const CONFIGS = ['full', 'all', 'strips', 'emitters', 'marks', 'bursts', 'tint'] as const;
-type Config = (typeof CONFIGS)[number];
-const RUNS = [1, 2, 3];
+const ALL_CONFIGS = ['full', 'all', 'strips', 'emitters', 'marks', 'bursts', 'tint'] as const;
+type Config = (typeof ALL_CONFIGS)[number];
+/** Only with `DMG_CRASH=1` (CI's `webkit-crash` job); otherwise the file declares no tests. */
+const ENABLED = process.env['DMG_CRASH'] === '1';
+/** One configuration (env `DMG_CRASH_CFG`, one per CI job) or all of them. */
+const ONLY = process.env['DMG_CRASH_CFG'];
+const CONFIGS: readonly Config[] = ONLY === undefined || ONLY === '' ? ALL_CONFIGS : ALL_CONFIGS.filter((c) => c === ONLY);
+if (ENABLED && CONFIGS.length === 0) throw new Error(`DMG_CRASH_CFG=${ONLY ?? ''} names no configuration (${ALL_CONFIGS.join(', ')})`);
+/** How many times each war runs per configuration (env `DMG_CRASH_RUNS`, default 3). */
+const RUNS = Array.from({ length: Math.max(1, Number(process.env['DMG_CRASH_RUNS'] ?? 3) || 3) }, (_, i) => i + 1);
 /** Where a war stops (env `DMG_CRASH_TICKS`: a shorter local check of the spec itself). */
 const TICK_CAP = Number(process.env['DMG_CRASH_TICKS'] ?? 8000);
 /** WebKit only, unless `DMG_CRASH_ANY=1` (a local check of the spec in Chromium). */
@@ -211,7 +221,7 @@ async function reviewTwo(page: Page, r: Run): Promise<void> {
 
 const fresh = (cfg: Config, war: string, run: number): Run => ({ cfg, war, run, off: '?', seen: null, crashed: false, closed: false, t0: Date.now() });
 
-for (const cfg of CONFIGS) {
+for (const cfg of ENABLED ? CONFIGS : []) {
   for (const run of RUNS) {
     test(`damage crash bisection: round 3, damage ${cfg}, run ${run}`, async ({ browser, baseURL, browserName }) => {
       test.skip(!engineOk(browserName), 'the W0 crash bisection runs in WebKit only');
