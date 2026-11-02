@@ -124,6 +124,13 @@ describe('the collect plan (pure)', () => {
     expect(p.labelOut).toBeGreaterThan(p.labelIn);
   });
 
+  it('bursts upwards, and downwards from a source by the top of the screen (the capsule summary\'s totals)', () => {
+    const ups = planCollect(base).pieces.filter((p) => p.by < 0).length;
+    expect(ups).toBe(planCollect(base).pieces.length);
+    const top = planCollect({ ...base, from: { x: 760, y: 24 }, to: { x: 640, y: 24 } });
+    expect(top.pieces.filter((p) => p.by > 0).length).toBe(top.pieces.length);
+  });
+
   it('is seeded: the same seed gives the same moment, another seed another jitter', () => {
     expect(planCollect(base)).toEqual(planCollect(base));
     expect(planCollect({ ...base, seed: 8 }).pieces).not.toEqual(planCollect(base).pieces);

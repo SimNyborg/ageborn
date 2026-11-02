@@ -118,6 +118,8 @@ const EARN = {
 } as const;
 const SPEND = { delay: 40, flight: 320, stagger: 40, count: 300, labelOut: 520 } as const;
 const TICK_GAP = 45;
+/** A source closer than this to the screen's top bursts downwards (px). */
+const BURST_ROOM = 72;
 const FADE = MOTION_DUR.reduced;
 
 export function collectTier(amount: number): 0 | 1 | 2 | 3 {
@@ -242,11 +244,12 @@ export function planCollect(i: CollectPlanInput): CollectPlan {
   const n = pieceCount(i.kind, 'earn', amount);
   const step = n > 1 ? Math.min(k.staggerStep, k.staggerMax / (n - 1)) : 0;
   const maxLand = COLLECT_MAX_MS - k.tail;
-  // The burst fans out upwards, leaning away from the counter's side, so the arcs read as a toss into the counter.
+  // The burst fans out upwards (downwards from a source by the screen's top, where there is no room above),
+  // leaning away from the counter's side, so the arcs read as a toss into the counter.
   const toward = Math.atan2(i.to.y - i.from.y, i.to.x - i.from.x);
   const away = toward + Math.PI;
-  const up = -Math.PI / 2;
-  const centre = Math.atan2(Math.sin(up) * 0.8 + Math.sin(away) * 0.2, Math.cos(up) * 0.8 + Math.cos(away) * 0.2);
+  const open = i.from.y < BURST_ROOM ? Math.PI / 2 : -Math.PI / 2;
+  const centre = Math.atan2(Math.sin(open) * 0.8 + Math.sin(away) * 0.2, Math.cos(open) * 0.8 + Math.cos(away) * 0.2);
   const pieces: PiecePlan[] = [];
   for (let j = 0; j < n; j++) {
     const launch = k.anticipation + Math.round(rand() * 24);
