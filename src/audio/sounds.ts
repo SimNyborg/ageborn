@@ -27,12 +27,13 @@ export type SoundBus = 'sfx' | 'ui';
 /**
  * Pre-render groups (B7): UI; `battle`, the sounds every battle needs from its first seconds; one per
  * age (attacks and powers); `match`, the rarer sounds of later match moments (evolve fanfares, Overdrive,
- * Siege, Last Stand, Legendary spawns, the end of the match); and the capsule show.
+ * Siege, Last Stand, Legendary spawns, the end of the match); the capsule show; and `currency`, Amber and
+ * Dust's collect moment (queue item 48, on the UI bus; its small sheet loads with the UI's).
  */
-export type SoundGroup = 'ui' | 'battle' | AgeId | 'match' | 'capsule';
+export type SoundGroup = 'ui' | 'battle' | AgeId | 'match' | 'capsule' | 'currency';
 
 /** Every group, in lazy render order after boot (the eight ages in match order, A17.8). */
-export const SOUND_GROUPS: readonly SoundGroup[] = ['ui', 'battle', 'stone', 'bronze', 'medieval', 'match', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic', 'capsule'];
+export const SOUND_GROUPS: readonly SoundGroup[] = ['ui', 'battle', 'stone', 'bronze', 'medieval', 'match', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic', 'capsule', 'currency'];
 
 /**
  * Groups rendered at boot (B7 with A17.17: UI and the first two ages, now Stone and Bronze, plus the
@@ -77,7 +78,7 @@ export const DEFAULT_VOL_VAR_DB = 3;
 type Extra = Omit<SoundMix, 'bus' | 'group'>;
 
 function busOf(group: SoundGroup): SoundBus {
-  return group === 'ui' ? 'ui' : 'sfx';
+  return group === 'ui' || group === 'currency' ? 'ui' : 'sfx';
 }
 
 /** A single-call ZzFX sound. */
@@ -2062,6 +2063,51 @@ const COMBAT_SOUNDS: Record<SoundId, SoundDef> = {
 export const COMBAT_SOUND_IDS: readonly SoundId[] = Object.keys(COMBAT_SOUNDS);
 
 /**
+ * Amber and Dust's collect moment (queue item 48, `src/ui/components/collect.ts`): the pickup as the pieces burst
+ * out, a tick per landing (the moment raises each a semitone, so they are caller-pitched), the chime as the count
+ * ends, and the short spend. Designs for the recorded `currency` sheet in `tools/audio/sfx/sounds_currency.py`
+ * (Amber warm glassy resin, Dust airy star dust, richer and deeper); these ZzFX versions are the fallback.
+ */
+const CURRENCY_SOUNDS: Record<SoundId, SoundDef> = {
+  amber_pickup: mix('currency', mixVariants(3, (v) => [
+    note(10, 'G5', { vol: 0.2, attack: 0.001, release: 0.08, shape: 'tri' }, v * 0.3),
+    note(52, 'C6', { vol: 0.22, attack: 0.001, release: 0.08, shape: 'tri' }, v * 0.3),
+    note(94, 'E6', { vol: 0.2, attack: 0.001, release: 0.1, shape: 'tri' }, v * 0.3),
+    noiseBurst(80, { vol: 0.1, freq: 900, attack: 0.25, release: 0.15, lowpass: 2400 }),
+  ]), { maxVoices: 2 }),
+  amber_tick: fx('currency', variants(3, (v) => ({ vol: 0.16, freq: 1319 * (1 + 0.004 * v), attack: 0.001, release: 0.07, shape: 'tri' })), CALLER_PITCHED),
+  amber_chime: mix('currency', mixVariants(3, (_v, k) => [
+    note(0, 'C5', { vol: 0.16, attack: 0.002, release: 0.55, shape: 'sin' }),
+    note(0, 'C6', { vol: 0.26, attack: 0.002, release: 0.6, shape: 'tri' }),
+    note(35 - 3 * k, 'E6', { vol: 0.22, attack: 0.002, release: 0.6, shape: 'tri' }),
+    note(70 - 6 * k, 'G6', { vol: 0.2, attack: 0.002, release: 0.7, shape: 'tri' }),
+  ]), { ...MUSICAL, maxVoices: 2 }),
+  amber_spend: mix('currency', mixVariants(3, (v) => [
+    note(0, 'E6', { vol: 0.18, attack: 0.001, release: 0.08, shape: 'tri' }, v * 0.3),
+    note(40, 'C6', { vol: 0.17, attack: 0.001, release: 0.08, shape: 'tri' }, v * 0.3),
+    note(80, 'G5', { vol: 0.16, attack: 0.001, release: 0.1, shape: 'tri' }, v * 0.3),
+    noiseBurst(20, { vol: 0.08, freq: 2000, release: 0.25, slide: -2, lowpass: 3000 }),
+  ]), { maxVoices: 2 }),
+  dust_pickup: mix('currency', mixVariants(3, (v) => [
+    note(0, 'C5', { vol: 0.12, attack: 0.03, release: 0.4, shape: 'sin' }, v * 0.3),
+    ...['C6', 'D6', 'E6', 'G6', 'A6', 'C7'].map((n, i) => note(20 + 40 * i, n, { vol: 0.1, attack: 0.001, release: 0.12, shape: 'sin' }, v * 0.3)),
+    noiseBurst(60, { vol: 0.06, freq: 4000, attack: 0.35, release: 0.2, highpass: 3000 }),
+  ]), { maxVoices: 2 }),
+  dust_tick: fx('currency', variants(3, (v) => ({ vol: 0.14, freq: 1047 * (1 + 0.004 * v), attack: 0.001, release: 0.1, shape: 'sin', mod: 0.4 })), CALLER_PITCHED),
+  dust_chime: mix('currency', mixVariants(3, (_v, k) => [
+    ...['C5', 'G5', 'E6', 'B6'].map((n, i) => note(i * (55 - 3 * k), n, { vol: [0.22, 0.18, 0.15, 0.08][i]!, attack: 0.002, release: 1.0, shape: 'sin' })),
+    ...['E7', 'D7', 'C7', 'A6', 'G6'].map((n, i) => note(210 + 65 * i, n, { vol: 0.05, attack: 0.001, release: 0.2, shape: 'sin' })),
+  ]), { ...MUSICAL, maxVoices: 2 }),
+  dust_spend: mix('currency', mixVariants(3, (v) => [
+    ...['A6', 'G6', 'E6', 'D6', 'C6'].map((n, i) => note(42 * i, n, { vol: 0.1, attack: 0.001, release: 0.1, shape: 'sin' }, v * 0.3)),
+    note(300, 'C5', { vol: 0.1, attack: 0.01, release: 0.25, shape: 'sin' }, v * 0.3),
+  ]), { maxVoices: 2 }),
+};
+
+/** The collect moment's ids (queue item 48), for the DESIGN A13 row and the tests. */
+export const CURRENCY_SOUND_IDS: readonly SoundId[] = Object.keys(CURRENCY_SOUNDS);
+
+/**
  * Visible battle damage (queue item 40, design 3.4): the quiet material layer of a damage step, 4 dB under the hit
  * (the feel rules play them at -4 dB, one per material per 200 ms, at low priority; small bodies only at their last
  * step). Designs for the recorded sheet in `tools/audio/sfx/sounds_damage.py`; until the next render these ZzFX
@@ -2127,7 +2173,7 @@ function withLazy(all: Record<SoundId, SoundDef>, ids: readonly SoundId[]): Reco
   return out;
 }
 
-export const sounds: Readonly<Record<SoundId, SoundDef>> = withLazy({ ...BASE_SOUNDS, ...MVP_SOUNDS, ...MOMENT_SOUNDS, ...COMBAT_SOUNDS, ...DAMAGE_SOUNDS }, LAZY_BOOT_SOUNDS);
+export const sounds: Readonly<Record<SoundId, SoundDef>> = withLazy({ ...BASE_SOUNDS, ...MVP_SOUNDS, ...MOMENT_SOUNDS, ...COMBAT_SOUNDS, ...DAMAGE_SOUNDS, ...CURRENCY_SOUNDS }, LAZY_BOOT_SOUNDS);
 
 /** Every sound id in the manifest, in declaration order. */
 export const SOUND_IDS: readonly SoundId[] = Object.keys(sounds);
