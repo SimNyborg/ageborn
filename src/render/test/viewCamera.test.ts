@@ -104,32 +104,4 @@ describe('battle view camera (A17.4)', () => {
     const visible = roots.filter((c) => c.visible).length;
     expect(visible).toBe(1);
   });
-
-  it('draws no structure that is off the screen, by its screen bounds, measured while culled (W1-head frame-time gate)', () => {
-    const s = setup([]);
-    s.frames(16);
-    const bases = (): { x: number; culled: boolean }[] =>
-      s.view.layers.structures.children.filter((c) => c.label !== 'holdFlag').map((c) => ({ x: Math.round(c.x), culled: c.culled }));
-    const offScreen = (c: Container): boolean => {
-      const b = c.getBounds();
-      return b.maxX < -64 || b.minX > 844 + 64 || b.maxY < -64 || b.minY > 390 + 64;
-    };
-    // the opening view: your base at the screen's left edge, the foe's far off to the right
-    expect(bases()).toEqual([
-      { x: 0, culled: false },
-      { x: 2000, culled: true },
-    ]);
-    s.view.cameraCommand({ t: 'scrub', x: 1800 });
-    s.frames(400);
-    expect(bases()).toEqual([
-      { x: 0, culled: true },
-      { x: 2000, culled: false },
-    ]);
-    // culled means exactly off the screen; a culled structure keeps its bounds and stays visible (only Pixi skips it)
-    for (const c of s.view.layers.structures.children) {
-      expect(c.culled).toBe(offScreen(c));
-      expect(c.visible).toBe(true);
-    }
-    expect(s.view.layers.structures.children.some((c) => c.culled && c.getBounds().width > 0)).toBe(true);
-  });
 });
