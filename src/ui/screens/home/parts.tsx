@@ -6,10 +6,11 @@ import { arenaNameKey, capsuleKindNameKey, questNameKey } from '@/content/keys';
 import type { QuestReward } from '@/content/types';
 import type { OpponentSpec } from '@/contracts';
 import type { ComponentChildren } from 'preact';
-import { useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { Button, IconButton } from '../../components/Button';
 import { AiBadge, Badge, CurrencyChip } from '../../components/Chips';
+import { useCollect } from '../../components/collect';
 import { formatInt, tierNumeral } from '../../components/format';
 import {
   AmberIcon,
@@ -157,11 +158,13 @@ export function RewardIcon(p: { reward: QuestReward; size?: number }) {
 }
 
 function QuestRow(p: { q: QuestView; rerollLeft: boolean }) {
-  const { t, locale, services, toasts } = useUi();
+  const { t, locale, services, toasts, save } = useUi();
+  const collect = useCollect();
+  const rowRef = useRef<HTMLLIElement>(null);
   const q = p.q;
   const name = t(questNameKey(q.def.id), { n: formatInt(q.target, locale) });
   return (
-    <li class={`home-quest${q.done ? ' is-done' : ''}${q.claimed ? ' is-claimed' : ''}`} data-testid={`quest-${q.slot}`}>
+    <li class={`home-quest${q.done ? ' is-done' : ''}${q.claimed ? ' is-claimed' : ''}`} data-testid={`quest-${q.slot}`} ref={rowRef}>
       <span class="home-quest__icon" aria-hidden="true">
         <QuestGlyph stat={q.def.metric} size={26} />
       </span>
@@ -176,7 +179,7 @@ function QuestRow(p: { q: QuestView; rerollLeft: boolean }) {
       </div>
       <span class="home-quest__reward">
         {q.def.rewards.map((r, i) => (
-          <span key={i} class="home-quest__rw">
+          <span key={i} class="home-quest__rw" data-currency={r.kind === 'amber' || r.kind === 'dust' ? r.kind : undefined}>
             <RewardIcon reward={r} size={18} />
             <b>{rewardText(r, t, locale)}</b>
           </span>
@@ -194,7 +197,23 @@ function QuestRow(p: { q: QuestView; rerollLeft: boolean }) {
           testid={`quest-claim-${q.slot}`}
           onClick={() => {
             const r = services.claimQuest(q.slot);
-            toasts.show(r.ok ? t('ui.quest.claimedToast') : t('ui.error.generic'), { tone: r.ok ? 'good' : 'bad' });
+            if (!r.ok) {
+              toasts.show(t('ui.error.generic'), { tone: 'bad' });
+              return;
+            }
+            // Queue item 48: the quest's Amber and Dust fly into the wallet (the moment is the feedback);
+            // a quest that pays something else keeps the toast.
+            let amber = 0;
+            let dust = 0;
+            for (const x of q.def.rewards) {
+              if (x.kind === 'amber') amber += x.amount;
+              else if (x.kind === 'dust') dust += x.amount;
+            }
+            const wallet = save.peek().currencies;
+            const at = (kind: 'amber' | 'dust') => Array.from(rowRef.current?.querySelectorAll(`[data-currency="${kind}"]`) ?? []);
+            if (amber > 0) collect({ kind: 'amber', amount: amber, from: at('amber'), total: wallet.amber });
+            if (dust > 0) collect({ kind: 'dust', amount: dust, from: at('dust'), total: wallet.dust, delay: amber > 0 ? 220 : 0 });
+            if (amber <= 0 && dust <= 0) toasts.show(t('ui.quest.claimedToast'), { tone: 'good' });
           }}
         >
           {t('ui.quest.claim')}

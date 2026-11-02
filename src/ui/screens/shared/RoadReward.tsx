@@ -23,14 +23,14 @@ export function RoadRewardView(p: { r: RoadReward; compact?: boolean }) {
   switch (r.kind) {
     case 'amber':
       return (
-        <span class={cls}>
+        <span class={cls} data-currency="amber">
           <AmberIcon size={px(30)} />
           <b>{formatInt(r.amount, locale)}</b>
         </span>
       );
     case 'dust':
       return (
-        <span class={cls}>
+        <span class={cls} data-currency="dust">
           <DustIcon size={px(30)} />
           <b>{formatInt(r.amount, locale)}</b>
         </span>

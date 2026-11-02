@@ -23,6 +23,7 @@ import { Button } from '@/ui/components/Button';
 import { formatInt } from '@/ui/components/format';
 import { haptic } from '@/ui/components/haptics';
 import { AmberIcon } from '@/ui/components/icons';
+import { collectCurrency } from '@/ui/components/collect';
 import { UiKitContext, type UiKit } from '@/ui/components/kit';
 import { useBlockingOverlay } from '@/ui/components/overlay';
 import { CardStage } from '@/ui/screens/cardDetail/CardStage';
@@ -141,6 +142,11 @@ export function FirstUpgrade() {
     c.setSave({ ...r.value, flags: { ...r.value.flags, [FIRST_UPGRADE_FLAG]: true } }, { immediate: true });
     ui.services.audio.play('level_up', { priority: 1 });
     setPhase('charge');
+    // Queue item 48: the first spend shows where Amber goes: the pieces leave the wallet for the card.
+    const card = typeof document !== 'undefined' ? document.querySelector('[data-testid="first-upgrade-stage"] .cd-stage__card') : null;
+    if (card && cost) {
+      collectCurrency({ kind: 'amber', mode: 'spend', amount: cost.amber, from: card, total: r.value.currencies.amber, sound: kit.sound, reduce, locale: 'en', label: ui.t('ui.currency.amber') });
+    }
   };
 
   return (

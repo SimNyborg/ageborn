@@ -1,0 +1,181 @@
+/*
+ * The collect moment (queue item 48, `collect.ts`): the layer over a UI root, the flying pieces, their light
+ * trails, Dust's shed sparkles, the landing rings and sparks, the "+N" and the wallet chip that drops in where
+ * a screen has no counter of its own. Everything here is moved by Web Animations on transform and opacity
+ * only; the layer never takes input.
+ */
+.ui-collect {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout style;
+}
+.ui-collect * {
+  pointer-events: none;
+}
+.ui-collect__moment {
+  position: absolute;
+  inset: 0;
+}
+.ui-collect--amber {
+  --glow: rgba(255, 196, 82, 0.5);
+  --trail-head: rgba(255, 226, 150, 0.95);
+  --trail-tail: rgba(255, 168, 40, 0);
+  --ring: #ffd36e;
+  --flash: rgba(255, 214, 120, 0.75);
+}
+.ui-collect--dust {
+  --glow: rgba(200, 168, 255, 0.55);
+  --trail-head: rgba(240, 232, 255, 0.95);
+  --trail-tail: rgba(150, 110, 255, 0);
+  --ring: #d8c4ff;
+  --flash: rgba(196, 160, 255, 0.7);
+}
+
+/* A piece: the currency's art in its own soft light. */
+.ui-collect__piece {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--s, 28px);
+  height: var(--s, 28px);
+  margin: calc(var(--s, 28px) / -2) 0 0 calc(var(--s, 28px) / -2);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.ui-collect__piece::before {
+  content: '';
+  position: absolute;
+  inset: -60%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--glow) 0, transparent 64%);
+}
+.ui-collect__piece > img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The light trail: a streak along the flight, its head at the piece. */
+.ui-collect__trail {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 70px;
+  height: 7px;
+  margin: -3.5px 0 0 -70px;
+  border-radius: 4px;
+  background: linear-gradient(to right, var(--trail-tail), var(--trail-head));
+  transform-origin: 100% 50%;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.ui-collect--dust .ui-collect__trail {
+  width: 84px;
+  height: 5px;
+  margin: -2.5px 0 0 -84px;
+}
+
+/* Dust's shed sparkles and the sparks thrown on the last landing. */
+.ui-collect__glint,
+.ui-collect__spark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  opacity: 0;
+}
+.ui-collect__spark {
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+}
+.ui-collect__glint > img,
+.ui-collect__spark > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The landing: a ring and a soft flash on the counter's icon. */
+.ui-collect__ring {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 3px solid var(--ring);
+  border-radius: 50%;
+  opacity: 0;
+}
+.ui-collect__ring.is-big {
+  border-width: 4px;
+  box-shadow: 0 0 12px var(--ring);
+}
+.ui-collect__glow {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 0 -36px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--flash) 0, transparent 66%);
+  opacity: 0;
+}
+
+/* "+N" (an earning, the good green of "+12", 3.2) and "−N" (a spend, neutral), on a small dark badge so it
+   reads over any screen and is not taken for one of the screen's own numbers. */
+.ui-collect__delta {
+  position: absolute;
+  padding: 3px 9px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(9, 11, 16, 0.86);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+  color: var(--ui-good);
+  font: 800 16px / 1 var(--ui-font-text, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  opacity: 0;
+}
+.ui-collect__delta--spend {
+  color: var(--ui-text-2);
+}
+
+/* The wallet: a counter like Home's that drops in at the top right for a moment, where a screen has none. */
+.ui-collect__wallet {
+  position: absolute;
+  top: calc(var(--ui-safe-t) + var(--ui-header-h) / 2);
+  right: calc(var(--ui-margin) + var(--ui-safe-r));
+  display: flex;
+  gap: var(--ui-s2);
+  transform: translateY(-50%);
+}
+/* A slot per currency in Home's order, each as wide as a counter, so a chip that drops in never moves another. */
+.ui-collect__slot {
+  display: inline-flex;
+  justify-content: flex-end;
+  min-width: 112px;
+}
+.ui-collect__chip {
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.45),
+    0 4px 14px rgba(0, 0, 0, 0.45);
+}
+.ui-collect__chip .ui-chip__icon > img {
+  display: block;
+  width: 26px;
+  height: 26px;
+}
+@container ui-root (max-height: 480px) {
+  .ui-collect__slot {
+    min-width: 100px;
+  }
+  .ui-collect__chip .ui-chip__icon > img {
+    width: 22px;
+    height: 22px;
+  }
+}

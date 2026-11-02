@@ -4,6 +4,7 @@
  */
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { counterDriven, counterValue } from './counter';
 import { formatInt } from './format';
 import { AmberIcon, DustIcon, RobotIcon, TrophyIcon } from './icons';
 import { useKit } from './kit';
@@ -22,30 +23,39 @@ export function CurrencyIcon(p: { kind: Currency; size?: number }) {
   return <TrophyIcon size={p.size} />;
 }
 
-/** A currency counter chip. Numbers pop briefly when they change. */
+/**
+ * A currency counter chip. Numbers pop briefly when they change. An Amber or Dust chip is a collect target
+ * (`data-currency-counter`, queue item 48): while a collect moment plays it shows the moment's count, which
+ * the moment pulses itself; its accessible name always gives the save's true value.
+ */
 export function CurrencyChip(p: { kind: Currency; value: number; testid?: string; compact?: boolean }) {
   const { t, locale } = useKit();
-  const prev = useRef(p.value);
+  const wallet = p.kind === 'trophies' ? null : p.kind;
+  const shown = wallet ? counterValue(wallet, p.value) : p.value;
+  const driven = wallet ? counterDriven(wallet) : false;
+  const prev = useRef(shown);
   const [pop, setPop] = useState(false);
   useEffect(() => {
-    if (prev.current === p.value) return;
-    prev.current = p.value;
+    if (prev.current === shown) return;
+    prev.current = shown;
+    if (driven) return;
     setPop(true);
     const id = setTimeout(() => setPop(false), 350);
     return () => clearTimeout(id);
-  }, [p.value]);
+  }, [shown]);
   const label = t(CURRENCY_LABEL[p.kind]);
   return (
     <span
       class={`ui-chip ui-chip--${p.kind}${pop ? ' is-pop' : ''}${p.compact ? ' ui-chip--compact' : ''}`}
       data-testid={p.testid}
+      data-currency-counter={wallet ?? undefined}
       title={label}
     >
       <span class="ui-chip__icon">
         <CurrencyIcon kind={p.kind} size={p.compact ? 22 : 26} />
       </span>
       <span class="ui-chip__value" aria-label={`${label}: ${formatInt(p.value, locale)}`}>
-        {formatInt(p.value, locale)}
+        {formatInt(shown, locale)}
       </span>
     </span>
   );

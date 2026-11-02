@@ -11,6 +11,7 @@ import type { AgeId, BaseEmoteId, Rarity, SkinDef } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
+import { useCollect } from '../../components/collect';
 import { useConfirmSpend } from '../../components/confirm';
 import { AvatarLookView, resolveLook, type ResolvedLook } from '../../components/Avatar';
 import { BackdropLook, BaseThumb, ClothItem, CosmeticImage, FlagTileImage, QuoteBubble, SceneThumb, useCosmeticImage, useFlagAtlasReady, type BubbleTail } from '../../components/cosmeticArt';
@@ -247,8 +248,10 @@ export function ItemTile(p: {
   const rated = p.item.collection !== 'nationalFlag';
   const pop = usePop(p.on);
   const [info, setInfo] = useState(false);
+  const tileRef = useRef<HTMLDivElement>(null);
   return (
     <div
+      ref={tileRef}
       class={`cos-tile ${rated ? plateClass(rarity) : 'cos-card cos-card--plain'} cos-tile--${p.item.collection}${p.wide ? ' cos-tile--wide' : ''}${have ? '' : ' is-locked'}${p.on ? ' is-on' : ''}${p.onPreview ? ' is-previewable' : ''}${p.trying ? ' is-trying' : ''}`}
       style={{ '--rar': RARITY_COLOR[rarity] }}
       data-testid={`item-${key}`}
@@ -321,7 +324,9 @@ export function ItemTile(p: {
         </span>
       </button>
       {pop > 0 && rated && rarity !== 'common' && !reduce ? <span class={`cos-card__spark cos-card__spark--${rarity}`} key={`s${pop}`} aria-hidden="true" /> : null}
-      {info ? <ItemInfo item={p.item} art={p.bigArt ?? (() => <CosmeticImage item={key} animate={!reduce} pole={p.item.collection === 'baseFlag'} />)} onClose={() => setInfo(false)} /> : null}
+      {info ? (
+        <ItemInfo item={p.item} art={p.bigArt ?? (() => <CosmeticImage item={key} animate={!reduce} pole={p.item.collection === 'baseFlag'} />)} onClose={() => setInfo(false)} tile={() => tileRef.current} />
+      ) : null}
     </div>
   );
 }
@@ -331,9 +336,10 @@ export function ItemTile(p: {
  * its rarity and collection, how it is earned, and, for drop-pool items, a two-tap craft (U14: the first
  * tap shows the price and the Dust after, the second crafts; nothing is sold for money).
  */
-function ItemInfo(p: { item: CosmeticItemDef; art: () => ComponentChildren; onClose: () => void }) {
+function ItemInfo(p: { item: CosmeticItemDef; art: () => ComponentChildren; onClose: () => void; tile?: () => Element | null }) {
   const { save, content, t, services, locale, sound } = useUi();
   const act = useAct();
+  const collect = useCollect();
   const key = itemKey(p.item);
   const price = craftPrice(content, p.item, save.value);
   const lockedCraft = craftLocked(save.value, p.item);
@@ -358,9 +364,16 @@ function ItemInfo(p: { item: CosmeticItemDef; art: () => ComponentChildren; onCl
           class={craft.armed ? 'is-armed' : ''}
           onClick={() =>
             craft.press(() => {
+              const before = save.peek().currencies.dust;
               const r = services.craftCosmetic(key);
               act(r, t('cosmetic.ui.crafted'));
-              if (r.ok) p.onClose();
+              if (r.ok) {
+                // Queue item 48: the Dust leaves the counter for the item's card as the panel closes.
+                const after = save.peek().currencies.dust;
+                const tile = p.tile?.();
+                if (tile && after < before) collect({ kind: 'dust', mode: 'spend', amount: before - after, from: tile, total: after });
+                p.onClose();
+              }
               return r.ok;
             })
           }

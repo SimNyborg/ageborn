@@ -5,13 +5,14 @@
  * tap skips to the next) and the fixed action bar with one primary bottom-right. A lost onboarding
  * match offers Retry (A8). The opponent keeps its AI badge (A7.1, C5 #38).
  */
-import { useEffect, useMemo } from 'preact/hooks';
+import { useEffect, useMemo, useRef } from 'preact/hooks';
 import { resultActions, type ResultActionId } from '@/ui/screens/model/result';
 import { LevelBadgeView, ResultLayout, resultBar } from '@/ui/screens/result/ResultScreen';
 import { AiBadge } from '@/ui/components/Chips';
 import { formatClock, formatInt } from '@/ui/components/format';
 import { AmberIcon, CapsuleIcon, CheckIcon, CrateIcon, CrownIcon, DustIcon, FlagIcon, StarIcon, SwordsIcon, TrophyIcon } from '@/ui/components/icons';
 import { UiKitContext, type UiKit } from '@/ui/components/kit';
+import { collectCurrency } from '@/ui/components/collect';
 import { asContent } from '@/content';
 import type { CapsuleTables } from '@/content/types';
 import { pendingCrests, visibleTier } from '@/ui/components/capsuleLook';
@@ -109,6 +110,9 @@ function RewardIcon(p: { kind: RewardIconKind; capsule?: { tier: CapsuleTier; cr
       return <CheckIcon size={24} />;
   }
 }
+
+/** Onboarding Results whose Amber and Dust rows have flown into the wallet (queue item 48): never twice. */
+const COLLECTED = new WeakMap<object, Set<number>>();
 
 function clock(ms: number): string {
   const s = Math.floor(ms / 1000);
@@ -217,6 +221,33 @@ export function ResultScreen(p: { result: ResultState }) {
     () => ({ t: ui.t, locale: 'en', portrait: ui.art.portrait.bind(ui.art), reduceMotion: reduce, sound: (id: string, o?: { pitchBp?: number }) => ui.services.audio.play(UI_SOUND_FALLBACK[id] ?? id, o) }),
     [ui, reduce],
   );
+  // Queue item 48: each Amber or Dust row, as it lands, flies into the wallet (the wallet chip drops in at the
+  // top right) and the counter counts up to the save's total. Presentation only; once per row and Result.
+  const rewardsRef = useRef<HTMLElement>(null);
+  // a row's moment waits for the row to land; a later row (or a tap that reveals the rest) must not drop it
+  const collectTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => () => collectTimers.current.forEach(clearTimeout), []);
+  useEffect(() => {
+    const done = COLLECTED.get(p.result) ?? new Set<number>();
+    COLLECTED.set(p.result, done);
+    shown.slice(0, revealed).forEach(({ r }, i) => {
+      if ((r.kind !== 'amber' && r.kind !== 'dust') || r.amount <= 0 || done.has(i)) return;
+      done.add(i);
+      const kind = r.kind;
+      // the row lands first (`result-reward-in`, 420 ms), then its pieces leave
+      collectTimers.current.push(
+        setTimeout(() => {
+          const row = rewardsRef.current?.querySelector(`[data-index="${i}"] .result-reward__icon`);
+          const wallet = c.save.peek()?.currencies;
+          if (!row || !wallet) return;
+          // the save holds every row already: the counter ends on it less the rows of this kind still to come
+          let later = 0;
+          for (const x of shown.slice(i + 1)) if (x.r.kind === kind) later += Math.max(0, x.r.amount);
+          collectCurrency({ kind, amount: r.amount, from: row, total: wallet[kind] - later, sound: kit.sound, reduce, locale: 'en', label: ui.t(`ui.currency.${kind}`) });
+        }, 380),
+      );
+    });
+  }, [revealed]);
   const recap = [
     { id: 'time', icon: <FlagIcon size={22} />, label: ui.t('ui.result.time'), value: formatClock(input.stats.durationMs) },
     { id: 'trained', icon: <SwordsIcon size={22} />, label: ui.t('ui.result.trained'), value: formatInt(input.stats.trained, 'en') },
@@ -259,11 +290,11 @@ export function ResultScreen(p: { result: ResultState }) {
             </section>
           }
           rewards={
-            <section class="result__rewards" data-testid="result-rewards" hidden={shown.length === 0}>
+            <section class="result__rewards" data-testid="result-rewards" hidden={shown.length === 0} ref={rewardsRef}>
               <h2 class="result__h">{ui.t('ui.result.rewards')}</h2>
               <ul class="result__list">
                 {shown.slice(0, revealed).map(({ r, chip }, i) => (
-                  <li class={`result-reward result-reward--${chip.icon === 'amber' || chip.icon === 'dust' ? 'good' : 'gold'}`} key={i} data-testid="result-reward" data-kind={r.kind}>
+                  <li class={`result-reward result-reward--${chip.icon === 'amber' || chip.icon === 'dust' ? 'good' : 'gold'}`} key={i} data-testid="result-reward" data-kind={r.kind} data-index={i}>
                     <span class="result-reward__icon">
                       <RewardIcon kind={chip.icon} capsule={r.kind === 'capsule' ? capsuleLooks.get(r.capsuleId) : null} />
                     </span>

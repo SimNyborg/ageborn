@@ -5,11 +5,12 @@
  */
 import './trophyRoad.css';
 import { arenaNameKey, bannerNameKey, capsuleTierNameKey, formatNameKey, skinNameKey } from '@/content/keys';
-import type { ArenaDef, GateReward } from '@/content/types';
+import type { ArenaDef, GateReward, RoadReward } from '@/content/types';
 import type { JSX } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import { Avatar } from '../../components/Avatar';
 import { Button } from '../../components/Button';
+import { useCollect } from '../../components/collect';
 import { CosmeticImage, CosmeticTileArt } from '../../components/cosmeticArt';
 import { Pill } from '../../components/Chips';
 import { formatInt } from '../../components/format';
@@ -87,8 +88,21 @@ function GateLines(p: { arena: ArenaDef; prev: ArenaDef | null }) {
 /** Collections whose road items show their Customize card's picture (a base skin's model on its scene strip, a scene's thumbnail). */
 const PICTURE_ITEMS = new Set(['baseSkin', 'scene']);
 
+/** A road reward's Amber and Dust (queue item 48: they fly into the wallet when the node is claimed). */
+function nodeCurrency(rewards: readonly RoadReward[]): { amber: number; dust: number } {
+  let amber = 0;
+  let dust = 0;
+  for (const r of rewards) {
+    if (r.kind === 'amber') amber += r.amount;
+    else if (r.kind === 'dust') dust += r.amount;
+  }
+  return { amber, dust };
+}
+
 function Node(p: { v: RoadNodeView; side: 'l' | 'r' }) {
   const { t, locale, services, toasts, content, save } = useUi();
+  const collect = useCollect();
+  const cardRef = useRef<HTMLDivElement>(null);
   const { v } = p;
   // collection items (A18.9.4) this node grants, so the Collection's "Trophy Road at N" is visible here
   const items = roadItemsAt(content, v.node.trophies);
@@ -98,7 +112,7 @@ function Node(p: { v: RoadNodeView; side: 'l' | 'r' }) {
       <span class="road-node__dot" aria-hidden="true">
         {v.state === 'claimed' ? <CheckIcon size={18} /> : v.state === 'locked' ? <LockIcon size={16} /> : <TrophyIcon size={18} />}
       </span>
-      <div class="road-node__card">
+      <div class="road-node__card" ref={cardRef}>
         <span class="road-node__trophies">
           <TrophyIcon size={16} /> {formatInt(v.node.trophies, locale)}
         </span>
@@ -127,7 +141,18 @@ function Node(p: { v: RoadNodeView; side: 'l' | 'r' }) {
             testid={`road-claim-${v.node.trophies}`}
             onClick={() => {
               const r = services.claimRoadNode(v.node.trophies);
-              toasts.show(r.ok ? t('ui.road.claimed') : t('ui.error.generic'), { tone: r.ok ? 'good' : 'bad' });
+              if (!r.ok) {
+                toasts.show(t('ui.error.generic'), { tone: 'bad' });
+                return;
+              }
+              // Queue item 48: Amber and Dust fly from the node into the wallet (the moment is the feedback);
+              // other rewards keep the "Claimed" toast.
+              const earned = nodeCurrency(v.node.rewards);
+              const wallet = save.peek().currencies;
+              const at = (kind: 'amber' | 'dust') => Array.from(cardRef.current?.querySelectorAll(`[data-currency="${kind}"]`) ?? []);
+              if (earned.amber > 0) collect({ kind: 'amber', amount: earned.amber, from: at('amber'), total: wallet.amber });
+              if (earned.dust > 0) collect({ kind: 'dust', amount: earned.dust, from: at('dust'), total: wallet.dust, delay: earned.amber > 0 ? 220 : 0 });
+              if (earned.amber <= 0 && earned.dust <= 0) toasts.show(t('ui.road.claimed'), { tone: 'good' });
             }}
           >
             {t('ui.home.claim')}

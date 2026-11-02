@@ -40,8 +40,15 @@ import { OddsSheet } from '@/ui/components/OddsSheet';
 import { oddsModel } from '@/ui/components/oddsModel';
 import '@/ui/theme.css';
 import '@/app/capsules/capsuleHost.css';
+import { CurrencyContext } from '@/capsule/summary';
+import { currencyEnv } from '@/app/ui/currencyEnv';
+import { fixtureSave } from '@/ui/screens/fixtures/saves';
 import { BENCH_CASES, type BenchCase } from './cases';
+import { installCollectCapture } from '../collectStep';
 import { bodySamplePoints, gemSamplePoints, mountDrumGallery } from './drumGallery';
+
+// Queue item 48: `&step=1` steps the summary's collect moment frame by frame for captures
+installCollectCapture();
 
 /** The drum gallery's pseudo case id. */
 const DRUMS = 'drums';
@@ -109,6 +116,11 @@ export default function CapsuleBench() {
   const [state, setState] = useState<RunnerState | null>(null);
   const [log, setLog] = useState<string[]>([]);
   const host = useRef<HTMLDivElement>(null);
+  // Queue item 48: the summary's totals fly into a wallet over the stage (a mid-game fixture's wallet).
+  const currency = useMemo(() => {
+    const wallet = fixtureSave(content, 'mid');
+    return currencyEnv({ save: () => ({ ...wallet, settings: { ...wallet.settings, reduceMotion } }), root: () => host.current });
+  }, [reduceMotion]);
   const audio = useMemo(() => new FakeAudio(), []);
   const t0 = useRef(performance.now());
 
@@ -357,6 +369,7 @@ export default function CapsuleBench() {
         </a>
       </div>
       <div style={S.stage} ref={host} data-testid="capsule-bench-stage">
+        <CurrencyContext.Provider value={currency}>
         {gallery ? null : app && art && bench ? (
           bench.crate ? (
             <WardrobeScreen key={`${bench.id}-${runKey}-${artKind}`} {...common} pixi={app} art={art} reveal={bench.crate} {...(bench.pity ? { pity: bench.pity } : {})} />
@@ -366,6 +379,7 @@ export default function CapsuleBench() {
         ) : (
           <div style={{ padding: '20px' }}>Loading art…</div>
         )}
+        </CurrencyContext.Provider>
       </div>
     </div>
   );

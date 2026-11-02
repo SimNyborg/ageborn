@@ -76,6 +76,9 @@ export const CurrencyContext = createContext<CurrencyEnv | null>(null);
 /** When the summary banks its totals: once its panel has risen and the first tiles have landed. */
 export const SUMMARY_COLLECT_MS = 520;
 
+/** Summaries whose totals have flown into the wallet: once per opening, even if the panel mounts again. */
+const COLLECTED = new WeakSet<object>();
+
 /** The gem of a total: the UI's icon when the app provides one, else the plain CSS gem. */
 export function CurrencyGem(p: { kind: 'amber' | 'dust'; size: number; shine?: boolean }) {
   const env = useContext(CurrencyContext);
@@ -349,12 +352,14 @@ export function SummaryPanel(p: { model: SummaryModel; art: ArtProvider; i18n: I
   const dustRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const collect = currency?.collect;
-    if (!collect || (model.amber <= 0 && model.dust <= 0)) return undefined;
+    if (!collect || (model.amber <= 0 && model.dust <= 0) || COLLECTED.has(model)) return undefined;
     const id = setTimeout(() => {
       const items: CurrencyCollect[] = [];
       if (model.amber > 0 && amberRef.current) items.push({ kind: 'amber', amount: model.amber, from: amberRef.current });
       if (model.dust > 0 && dustRef.current) items.push({ kind: 'dust', amount: model.dust, from: dustRef.current });
-      if (items.length) collect(items);
+      if (!items.length) return;
+      COLLECTED.add(model);
+      collect(items);
     }, SUMMARY_COLLECT_MS);
     return () => clearTimeout(id);
   }, [model]);
