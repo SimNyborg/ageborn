@@ -113,14 +113,16 @@ const PAGES: PageSpec[] = [
   // Last Base Standing's Result: the reason line and the trophy row (A2.10.1; ranked since 2026-10-03).
   { name: 'result-lastWin', hash: 'screens/result-lastWin/mid/{vp}', strict: true, primary: true },
   {
-    // Home's one mode button (queue item 50) opens the Modes panel, Friend Duel's "coming later" card open.
+    // Home's one mode button (queue item 50) opens the Modes panel with Friend Duel's "coming later" card in view.
+    // The card is aria-disabled until online play exists, so it is scrolled into view, not clicked (Playwright
+    // waits for a disabled element to become enabled before a click).
     name: 'modes-friend',
     hash: 'screens/home/mid/{vp}',
     strict: true,
     primary: false,
     prepare: async (page) => {
       await page.click('[data-testid="home-modes"]');
-      await page.click('[data-testid="mode-friend"]');
+      await page.locator('[data-testid="mode-friend"]').scrollIntoViewIfNeeded();
     },
   },
   // Backlog (UI-3, UI-4): reported, not failed.
