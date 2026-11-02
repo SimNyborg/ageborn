@@ -23,7 +23,6 @@ import { DamageModel, defaultMat, MARK_FADE_IN_MS, MARK_POP_MS, MEND_FADE_MS, ty
 import { WearyClock, type WearyPose } from './motion';
 import { burns, LITE_MAX_MARKS, mixRgb, smallBody, stageTint, STRIP_DULL, STRIP_DUST, STRIP_SMALL_SCALE } from './stage';
 import { DAMAGE_FX_PARTS, DAMAGE_STRIP_PARTS } from './kit';
-import { damageOff } from './switches';
 import { markParts } from './marks';
 import type { BlowKind, DamageEmitter, DamageFamily, DamageStage, DamageStepEvent, DamageUnitData, EmitKind, SpotFrame } from './types';
 
@@ -117,7 +116,7 @@ export function damageKitParts(): string[] {
  * on the spot, as before; a kit part a view gets while the kit bakes has its page uploaded by that view's flush.
  */
 export function bakeDamageKit(baker: PartBaker, extra: readonly string[] = []): Promise<void> | null {
-  if (!baker.enabled || KIT_DONE.has(baker) || damageOff('marks')) return null;
+  if (!baker.enabled || KIT_DONE.has(baker)) return null;
   const had = KIT_BAKES.get(baker);
   if (had) return had;
   const todo = [...new Set([...damageKitParts(), ...extra])];
@@ -244,7 +243,6 @@ export class UnitDamage {
   }
 
   noteBlow(kind: BlowKind | null, effective = false): void {
-    if (damageOff('all')) return;
     this.model.noteBlow(kind, effective);
     // a battle that did not bake the kit up front (no VS, no wait): it bakes now in idle time, once
     if (this.o.after && !this.o.noSpots && (this.entry?.spots?.length ?? 0) > 0) void bakeDamageKit(this.o.baker);
@@ -256,8 +254,7 @@ export class UnitDamage {
 
   /** The HP the unit is drawn with this frame. The killing blow changes nothing (the body falls with its stage). */
   setHp(hpBp: number): void {
-    // dev switch `all` (W0 WebKit bisection): the unit never leaves stage 0, so nothing of the runtime shows
-    if (this.dead || damageOff('all')) return;
+    if (this.dead) return;
     // most frames: the same HP and no new bundle (the view calls this every frame)
     if (hpBp === this.lastHp && this.bundleVersion === this.bundles.version) return;
     const first = Number.isNaN(this.lastHp);
@@ -285,7 +282,7 @@ export class UnitDamage {
 
   /** The stage tint for the unit's own art (never its team colour). */
   get tint(): number {
-    return damageOff('tint') ? 0xffffff : stageTint(this.family, this.model.stage);
+    return stageTint(this.family, this.model.stage);
   }
 
   /** Advances the clocks (game ms) and returns the motion to add this frame. */
@@ -298,19 +295,15 @@ export class UnitDamage {
       return NEUTRAL_POSE;
     }
     m.prune(this.clock);
-    if (this.strip?.root.visible && !this.lite && !this.reduce) {
-      this.stripSway += dtMs;
-    }
-    // dev switch `tint` (W0 WebKit bisection): no weary motion either
-    if (damageOff('tint')) {
-      this.weary.idle(dtMs);
-      return NEUTRAL_POSE;
-    }
     // one options object for the life of the view (no allocation per frame)
     const wo = this.wearyOpts;
     wo.moving = moving;
     wo.reduce = this.reduce;
-    return this.weary.update(dtMs, this.model.stage, wo);
+    const pose = this.weary.update(dtMs, this.model.stage, wo);
+    if (this.strip?.root.visible && !this.lite && !this.reduce) {
+      this.stripSway += dtMs;
+    }
+    return pose;
   }
 
   /** A walk contact step was shown (tired walkers dip on every second one, a mech hitches). */
@@ -336,8 +329,8 @@ export class UnitDamage {
     this.animating = false;
     const clips = this.entry?.clips?.[this.anim];
     const k = 1 / (luPerUnit || 1);
-    // Lite keeps the newest marks only; dev switch `marks` (W0 WebKit bisection): none
-    const first = damageOff('marks') ? m.marks.length : this.lite ? Math.max(0, m.marks.length - LITE_MAX_MARKS) : 0;
+    // Lite keeps the newest marks only
+    const first = this.lite ? Math.max(0, m.marks.length - LITE_MAX_MARKS) : 0;
     let n = 0;
     for (let i = first; i < m.marks.length; i++) {
       const mk = m.marks[i] as PlacedMark;
@@ -401,8 +394,7 @@ export class UnitDamage {
   }
 
   private placeStrip(clips: Readonly<Record<string, readonly SpotFrame[]>> | undefined, k: number): void {
-    // dev switch `strips` (W0 WebKit bisection): no strip
-    const st = damageOff('strips') ? null : this.model.strip;
+    const st = this.model.strip;
     const f = st ? frameOf<SpotFrame>(clips?.[st.spot.id], this.frame) : null;
     if (!st || !f) {
       if (this.strip) this.strip.root.visible = false;
@@ -442,8 +434,7 @@ export class UnitDamage {
    */
   emitters(b: DamageXform, hk: number): readonly DamageEmitter[] {
     this.out.length = 0;
-    // dev switch `emitters` (W0 WebKit bisection): none
-    if (this.dead || damageOff('emitters')) return this.out;
+    if (this.dead) return this.out;
     const stage = this.model.stage;
     if (stage !== this.specsStage) {
       this.specsStage = stage;
@@ -514,8 +505,7 @@ export class UnitDamage {
   private lastHp = NaN;
 
   private report(step: DamageStep): void {
-    // dev switch `bursts` (W0 WebKit bisection): no step events (no burst, flare or sound; the marks still come)
-    if (this.listeners.length === 0 || damageOff('bursts')) return;
+    if (this.listeners.length === 0) return;
     const b = this.xformOf ? this.xformOf() : this.xform;
     const at = this.burstAt(step, b, this.hk);
     // the fire catches where the fire burns, clear of the crew (never at the step's mark); no place, no flare

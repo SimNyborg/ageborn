@@ -11,6 +11,8 @@
  * take seconds (release, 2026-10-18): transient tags and bubbles (1.8-2.4 s) are caught in the page as they render
  * (`watchFor`, started before the action), their card's buttons get one mouse input once the card is awake
  * (`clickCard`), and no check races their proposal's 8 s window (a card that ran out makes way for a fresh one).
+ * Your own proposals go through `proposeFromMenu` (2026-11-02): one mouse input per tap, and a proposal refused while
+ * the match catches up (a slow frame starts one; the refusal has no tag) is tried again once the catch-up is over.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { watchPage } from './helpers';
@@ -93,6 +95,46 @@ async function caught(page: Page, sels: string[], action: () => Promise<unknown>
   return seen;
 }
 
+/**
+ * One mouse input at the middle of `testid`'s box. Playwright's click and its actionability waits can take seconds
+ * over a running software-GL battle (CI), past a tag's life or the 15 s cooldown a check needs to land in.
+ */
+async function tapAt(page: Page, testid: string): Promise<void> {
+  const box = await page.getByTestId(testid).boundingBox();
+  if (box === null) throw new Error(`${testid} has no box to tap`);
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+}
+
+/**
+ * Proposes `speed` from the tempo menu as a player does (a tap opens the menu, a tap picks), with `sels` watched from
+ * before the pick, and returns what they caught. While a live match catches up, the tempo button and a pick are
+ * refused without a tag (review O nit 2), and on CI's slow machines any frame over 250 ms starts a short catch-up: so
+ * each try waits for the catch-up to end, and a proposal that did not go out (none of yours open or newly ended) is
+ * tried again.
+ */
+async function proposeFromMenu(page: Page, speed: number, sels: string[]): Promise<Caught> {
+  const lastKey = 'const t = b.live.tempo.peek(); return t.last ? t.last.by + t.last.id : "";';
+  const wentOut = 'const t = b.live.tempo.peek(); return (t.pending !== null && t.pending.by === "me") || (t.last !== null && t.last.by === "me" && t.last.by + t.last.id !== a);';
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    await expect.poll(() => onBattle<boolean>(page, 'return b.session.catchingUp'), { timeout: 30_000 }).toBe(false);
+    if ((await page.getByTestId('hud-tempo-menu').count()) === 0) await tapAt(page, 'hud-tempo');
+    const open = await page
+      .getByTestId('hud-tempo-menu')
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .then(() => true, () => false);
+    if (!open) continue;
+    const before = await onBattle<string>(page, lastKey);
+    const seen = watchFor(page, sels);
+    await tapAt(page, `hud-tempo-${speed}`);
+    const went = await expect
+      .poll(() => onBattle<boolean>(page, wentOut, before), { timeout: 3000 })
+      .toBe(true)
+      .then(() => true, () => false);
+    if (went) return seen;
+  }
+  throw new Error(`a ${speed}x proposal did not go out in five tries`);
+}
+
 /** The open or last proposal of theirs: 'open', or how it ended ('accepted', 'declined', 'timeout'), or 'none'. */
 function theirs(page: Page): Promise<string> {
   return onBattle<string>(page, 'const t = b.live.tempo.peek(); if (t.pending) return t.pending.by === "foe" ? "open" : "mine"; return t.last && t.last.by === "foe" ? t.last.result : "none";');
@@ -144,9 +186,9 @@ async function rankedBattle(page: Page): Promise<void> {
 }
 
 /**
- * W0 WebKit diagnostic (2026-11-01, temporary; revert once settled): CI's WebKit missed live waits from the damage
- * merge on. A page sampler records every frame's interval and the sim's tick; `pace` logs the frames and the tick
- * rate since the last call, so a missed wait's log shows how fast the battle ran in that browser.
+ * Pace record (2026-11-01; kept 2026-11-02): CI's software-GL machines run these battles at a few frames a second. A
+ * page sampler records every frame's interval and the sim's tick; `pace` logs the frames and the tick rate since the
+ * last call, so a missed wait's log shows how fast the battle ran in that browser.
  */
 async function startPace(page: Page): Promise<void> {
   await page.evaluate(() => {
@@ -227,17 +269,16 @@ test.describe('live matches (queue item 34)', () => {
     // the 8 s window; then "2x agreed" shows for 2.4 s. Both are caught in the page as they render.
     await pace(page, 'accept test, before the proposal');
     await onBattle(page, 'b.live.dev.answers({ answer: "accept", delayMs: 6000 })');
-    await page.getByTestId('hud-tempo').click();
-    await expect(page.getByTestId('hud-tempo-menu')).toBeVisible();
-    const agreed = watchFor(page, ['[data-testid="hud-tempo-tag"][data-tone="good"]'], 30_000);
-    await caught(page, ['[data-testid="hud-tempo"][data-asking="2"]', '[data-testid="hud-tempo-tag"][data-tone="wait"]'], () => page.getByTestId('hud-tempo-2').click());
+    const agreed = watchFor(page, ['[data-testid="hud-tempo-tag"][data-tone="good"]'], 90_000);
+    await proposeFromMenu(page, 2, ['[data-testid="hud-tempo"][data-asking="2"]', '[data-testid="hud-tempo-tag"][data-tone="wait"]']);
     await agreed;
+
+    // the next proposal waits a 15 s cooldown: a tap says so (its tag shows 1.8 s) and changes nothing. It is tapped as
+    // soon as "2x agreed" shows, before the other checks, which can take seconds on CI's slow machines.
+    await caught(page, ['[data-testid="hud-tempo-tag"][data-tone="deny"]'], () => tapAt(page, 'hud-tempo'));
+    await expect(page.getByTestId('hud-tempo-menu')).toHaveCount(0);
     await expect(page.getByTestId('hud-tempo')).toHaveAttribute('data-speed', '2');
     expect(await onBattle<number>(page, 'return b.session.currentSpeed')).toBe(2);
-
-    // the next proposal waits a cooldown: a tap says so (its tag shows 1.8 s) and changes nothing
-    await caught(page, ['[data-testid="hud-tempo-tag"][data-tone="deny"]'], () => page.getByTestId('hud-tempo').click());
-    await expect(page.getByTestId('hud-tempo-menu')).toHaveCount(0);
     expect(problems.errors).toEqual([]);
   });
 
@@ -248,10 +289,9 @@ test.describe('live matches (queue item 34)', () => {
     await rankedBattle(page);
     await pace(page, 'decline test, before the proposal');
     await onBattle(page, 'b.live.dev.answers({ answer: "decline", delayMs: 3000 })');
-    await page.getByTestId('hud-tempo').click();
     // "<name> said no" shows for 2.4 s: caught in the page as it renders
-    const said = watchFor(page, ['[data-testid="hud-tempo-tag"][data-tone="bad"]'], 30_000);
-    await page.getByTestId('hud-tempo-1.5').click();
+    const said = watchFor(page, ['[data-testid="hud-tempo-tag"][data-tone="bad"]'], 90_000);
+    await proposeFromMenu(page, 1.5, ['[data-testid="hud-tempo"][data-asking="1.5"]']);
     await said;
     await pace(page, 'decline test, after "said no"');
     await expect(page.getByTestId('hud-tempo')).toHaveAttribute('data-speed', '1');
@@ -336,11 +376,10 @@ test.describe('live matches (queue item 34)', () => {
     await rankedBattle(page);
     // my proposal, left unanswered: the gold ring drains over the whole 8 s, the waiting tag stays readable
     await onBattle(page, 'b.live.dev.answers({ answer: "ignore" })');
-    await page.getByTestId('hud-tempo').click();
     // no answer: the outcome tag fades in, holds and fades out over its 2.4 s (it used to end at opacity 0 at once);
     // caught in the page as it renders, 8 s on
-    const noAnswer = watchFor(page, ['[data-testid="hud-tempo-tag"][data-tone="dim"]'], 30_000);
-    const ring = await caught(page, ['[data-testid="hud-tempo"][data-asking="2"] .hud-tempo-ring-fill'], () => page.getByTestId('hud-tempo-2').click());
+    const noAnswer = watchFor(page, ['[data-testid="hud-tempo-tag"][data-tone="dim"]'], 90_000);
+    const ring = await proposeFromMenu(page, 2, ['[data-testid="hud-tempo"][data-asking="2"] .hud-tempo-ring-fill']);
     expect(ring.animationDuration).toBe('8s');
     await page.waitForTimeout(1000);
     if ((await theirs(page)) === 'mine') expect(await styleOf(page, '[data-testid="hud-tempo-tag"][data-tone="wait"]', 'opacity')).toBe('1');

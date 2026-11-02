@@ -56,34 +56,3 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
-
-  # Temporary (W0 WebKit-crash bisection, 2026-11-02; remove together with tests/e2e/damageCrash.spec.ts and
-  # src/visuals/damage/switches.ts). CI's WebKit loses its page in some long wars since the damage merge. Each job
-  # plays the two crash-prone wars ten times with one part of the damage runtime switched off (`full`: nothing off;
-  # `all`: all of it), beside the e2e job, so it adds no time to it. Diagnostic only: `continue-on-error` keeps a
-  # crash here from failing the run; the `[crashcfg]` lines at the end of each job's log are the result.
-  webkit-crash:
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    timeout-minutes: 200
-    strategy:
-      fail-fast: false
-      matrix:
-        cfg: [full, all, strips, emitters, marks, bursts, tint]
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-      - run: npm ci
-      - run: npx playwright install --with-deps webkit
-      - name: Crash bisection (${{ matrix.cfg }})
-        shell: bash
-        run: npx playwright test tests/e2e/damageCrash.spec.ts --project=webkit --reporter=list 2>&1 | tee crash.log
-        env:
-          DMG_CRASH: '1'
-          DMG_CRASH_CFG: ${{ matrix.cfg }}
-          DMG_CRASH_RUNS: '10'
-      - name: Crash lines
-        if: always()
-        run: grep -h '\[crashcfg\]' crash.log || echo "no [crashcfg] lines"

@@ -77,8 +77,9 @@ test.use({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 });
 const mb = (n: number): number => Math.round(n / 1e6);
 
 /**
- * W0 WebKit-crash diagnostic (2026-11-01, temporary; revert once settled): CI's WebKit crashed ("Target crashed") in
- * the long wars from the damage merge on. A page hook counts the WebGL objects alive (created minus deleted), the
+ * WebKit-crash record (2026-11-01; kept 2026-11-02): CI's WebKit (Playwright's WPE build, software GL) loses its page
+ * ("Target crashed") in about one long DPR-2 war in eighteen, whatever the damage runtime does (the W0 bisection found
+ * the same rate with all of it off; docs/decisions.md, W0). A page hook counts the WebGL objects alive (created minus deleted), the
  * texture uploads (all, and of the bakers' 512 px canvas pages) and their bytes; `warPeak` logs them every 1,000 ticks
  * with the app's estimate, the battle view's display objects, the browsers' resident memory and the machine's free
  * memory (/proc), so a crash's log shows what grew before it.
