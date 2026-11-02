@@ -43,7 +43,7 @@ import type {
 } from '@/contracts';
 import { mulberry32, xmur3, type CosmeticRng } from '@/core';
 import { reachAreaMax, type PowerReachRules } from '@/core/powerReach';
-import { ColorMatrixFilter, Graphics, Sprite, Texture, type Container } from 'pixi.js';
+import { Bounds, ColorMatrixFilter, Graphics, Sprite, Texture, type Container } from 'pixi.js';
 import { aimedPath, attackAt, firesVisual, leanFor, lineDeg, lineDegXY, pickAimVariant, shotKindOf, type ShotKind, type ShotPath } from './aim';
 import { aimWantDeg } from './aim';
 import { CAMERA, Camera, type CameraHold } from './camera';
@@ -309,6 +309,8 @@ const BAR_CROWD_UNITS = 10;
 const BAR_FRONT_UNITS = 3;
 /** Display objects further than this outside the view are not drawn (A17.7 culling). */
 const CULL_LU = 150;
+/** A structure is not drawn while its screen bounds lie more than this outside the screen (CSS px; `cullStructures`). */
+const STRUCTURE_CULL_PX = 64;
 /** How long a battle's start waits for its opening ages' damage bundles (ms); a slower one applies when it lands. */
 const DAMAGE_BUNDLE_WAIT_MS = 2000;
 /**
@@ -1630,6 +1632,31 @@ export class BattleView {
     this.layers.shaker.pivot.set(L.width / 2, L.height / 2);
     this.layers.shaker.position.set(L.width / 2 + s.x, L.height / 2 + s.y);
     this.layers.shaker.rotation = s.rot;
+    this.cullStructures();
+  }
+
+  /** `cullStructures`' bounds, reused. */
+  private readonly structureBounds = new Bounds();
+
+  /**
+   * Structures entirely off the screen are not drawn (W1-head frame-time gate: in a fight in the middle of the lane both
+   * bases and their turrets, about 170 display objects, are off the screen and Pixi gathered and batched them every
+   * frame). Each child of the structures layer (a base with its dressing, a turret, a leaving one, the Hold flag) is
+   * culled while its screen bounds lie more than `STRUCTURE_CULL_PX` outside the screen. Taken last in the frame, after
+   * every move of it (the camera, the shake, the structures' own updates), so what is culled draws nothing that frame;
+   * `culled`, unlike `visible`, keeps a structure measured and changes nothing but whether Pixi draws it (its state and
+   * transforms update as before). The view's root sits untransformed on the stage (every host), so global bounds are
+   * screen CSS px.
+   */
+  private cullStructures(): void {
+    const w = this.camera.layout.width;
+    const h = this.camera.layout.height;
+    const m = STRUCTURE_CULL_PX;
+    const b = this.structureBounds;
+    for (const c of this.layers.structures.children) {
+      c.getBounds(false, b);
+      c.culled = b.maxX < -m || b.minX > w + m || b.maxY < -m || b.minY > h + m;
+    }
   }
 
   // ------------------------------------------------------------------------------------------
