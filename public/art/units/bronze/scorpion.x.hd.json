@@ -74,7 +74,7 @@
   },
   "scorpion_attack_b_02_team": {
    "frame": {
-    "x": 1706,
+    "x": 1705,
     "y": 2,
     "w": 257,
     "h": 224
@@ -100,15 +100,15 @@
    "frame": {
     "x": 836,
     "y": 2,
-    "w": 283,
+    "w": 282,
     "h": 238
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 442,
+    "x": 443,
     "y": 187,
-    "w": 283,
+    "w": 282,
     "h": 238
    },
    "sourceSize": {
@@ -146,7 +146,7 @@
   },
   "scorpion_attack_b_04": {
    "frame": {
-    "x": 1123,
+    "x": 1122,
     "y": 2,
     "w": 280,
     "h": 238
@@ -290,7 +290,7 @@
   },
   "scorpion_attack_b_07": {
    "frame": {
-    "x": 1407,
+    "x": 1406,
     "y": 2,
     "w": 295,
     "h": 228

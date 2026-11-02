@@ -26,7 +26,7 @@
   },
   "wooden_horse_attack_b_01_team": {
    "frame": {
-    "x": 385,
+    "x": 234,
     "y": 567,
     "w": 114,
     "h": 118
@@ -122,7 +122,7 @@
   },
   "wooden_horse_attack_b_03_team": {
    "frame": {
-    "x": 503,
+    "x": 352,
     "y": 567,
     "w": 110,
     "h": 118
@@ -266,18 +266,18 @@
   },
   "wooden_horse_attack_b_06_team": {
    "frame": {
-    "x": 234,
+    "x": 466,
     "y": 567,
     "w": 147,
-    "h": 118
+    "h": 117
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 123,
-    "y": 111,
+    "y": 112,
     "w": 147,
-    "h": 118
+    "h": 117
    },
    "sourceSize": {
     "w": 342,

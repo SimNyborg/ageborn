@@ -29,6 +29,8 @@ import math
 
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge, squash
@@ -48,6 +50,21 @@ WOOD = "#B39570"
 WOOD_DK = "#7E6650"
 SEAM = "#5E4C3C"
 ROPE = "#CDBB92"
+WOOD_LT = "#CDB58F"      # worn wood where hands and feet rub the edges
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2 (war machines). Aged bronze bands round the barrel's ends and the neck's root, plank seams
+# and pegs down the neck, the team zones in two tones (a team-dark border over the saddle cloth's edge, every
+# other mane tuft team-dark, a team-dark band and a sandstone lambda on the pennant), polished bronze pulls on the
+# hatches and pale wooden pegs along the seams.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.3     # a brighter finish highlight on the oiled wood (the war machines' highlight floor, 0.06)
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {WOOD: "wood", WOOD_DK: "wood", SEAM: "wood", ROPE: "fur", WOOD_LT: "wood", B.SAND: "cloth", B.SAND_LT: "cloth",
+                  B.BRONZE: "bronze", B.AGED: "bronze", B.LEATHER: "leather", B.LEATHER_DK: "leather",
+                  B.LINEN: "cloth", B.SKIN: "skin", "team": "cloth"}
+BARREL = ((0, 0, 50.0), (30.0, 14.0, 13.0))
 R_WHEEL = 11.0
 AXLES = (-24.0, 22.0)
 SPOKES = 4
@@ -79,6 +96,13 @@ def _wheel(rig, name, x, y):
     rig.part(name, g, "#D9C7A4", outline=0.7)
     g = Geo().blob((x, y - 1.0, R_WHEEL), (4.2, 2.6, 4.2), p=2.4)
     rig.part(name, g, team=True, outline=0.6)
+    if y < 0:                                    # pale treenails pin the near wheels' felloes
+        g = Geo()
+        for k in range(7):
+            a = 2 * math.pi * (k + 0.5) / 7
+            g.sphere((x + (R_WHEEL - 1.4) * math.cos(a), y - 2.0, R_WHEEL + (R_WHEEL - 1.4) * math.sin(a)), 0.9,
+                     cuts=2)
+        rig.part(name, g, B.SAND_LT, outline=0)
 
 
 def _spearman(rig, name, x, z, hidden=True):
@@ -140,12 +164,19 @@ def build(rig):
     for x in range(-32, 36, 8):
         g.capsule((x, -14.2, R_WHEEL + 4.0), (x, -14.2, R_WHEEL + 8.0), 0.5)
     rig.part("chassis", g, SEAM, outline=0)
+    g = Geo().capsule((-34.0, -13.5, R_WHEEL + 8.8), (34.0, -13.5, R_WHEEL + 8.8), 0.5, segs=8, rings=2)
+    rig.part("chassis", g, WOOD_LT, outline=0)               # the worn top edge of the platform
     rig.joint("hull", "chassis", (0, 0, 22.0))
     # stiff wooden legs on the platform
     for x, y, col in ((-18.0, 7.0, WOOD_DK), (16.0, 7.0, WOOD_DK), (-20.0, -7.0, WOOD), (14.0, -7.0, WOOD)):
         g = Geo().capsule((x, y, 44.0), (x + 1.0, y, 23.0), 4.6, 4.0)
         g.blob((x + 2.0, y, 22.6), (5.6, 4.4, 2.4), p=2.6)
         rig.part("hull", g, col)
+        if y < 0:                                # pale pegs where the near legs are pinned
+            g = Geo()
+            for z, r in ((40.5, 4.5), (28.0, 4.15)):
+                g.sphere((x + (44.0 - z) / 21.0 + 0.6, y - r + 0.15, z), 0.8, cuts=2)
+            rig.part("hull", g, B.SAND_LT, outline=0)
     # barrel body of planks
     g = Geo().blob((0, 0, 50.0), (30.0, 14.0, 13.0), p=2.2)
     rig.part("hull", g, WOOD)
@@ -155,10 +186,31 @@ def build(rig):
     for x in (-20.0, 0.0, 20.0):
         g.sphere((x, -14.0, 47.0), 0.9, cuts=2)
     rig.part("hull", g, SEAM, outline=0)
+    g = Geo()                                                 # pale wooden pegs (dowels) along the seams
+    for x in (-15.0, -5.0, 5.0, 15.0):
+        for z in (46.0, 52.0):
+            g.sphere((x, KD.blob_y(*BARREL, x, z, p=2.2) - 0.2, z), 0.8, cuts=2)
+    rig.part("hull", g, B.SAND_LT, outline=0)
+    for x0, x1 in ((19.6, 22.2), (-24.6, -22.0)):          # aged bronze bands round the barrel's ends
+        g = KD.shell(*BARREL, p=2.2, grow=0.35, keep=[((x1, 0, 0), (1, 0, 0)), ((x0, 0, 0), (-1, 0, 0))])
+        rig.part("hull", g, B.AGED, finish="metal", outline=0)
+        g = Geo()
+        for z in (44.0, 50.0, 56.0):
+            xm = (x0 + x1) / 2
+            g.sphere((xm, KD.blob_y(*BARREL, xm, z, p=2.2) - 0.25, z), 0.75, cuts=2)
+        rig.part("hull", g, B.BRONZE, finish=B.POLISH, outline=0)        # polished rivets catch the light
     # team saddle cloth with a lambda
     g = Geo().blob((-2.0, 0, 55.0), (18.0, 15.0, 11.0), p=3.0)
     g.clip((0, 0, 47.5), (0, 0, -1))
     rig.part("hull", g, team=True)
+    g = KD.band_z((-2.0, 0, 55.0), (18.0, 15.0, 11.0), 47.5, 51.4, p=3.0)    # a team-dark border over the edge
+    look.team_part(rig, "hull", g, outline=0)
+    g = Geo()                                                 # pale key dots woven into the border
+    for x in (-16.5, -12.5, -8.5, 5.5, 9.5, 13.5):
+        g.sphere((x, KD.blob_y((-2.0, 0, 55.0), (18.0, 15.0, 11.0), x, 49.6, p=3.0) - 0.35, 49.6), 0.75, cuts=2)
+    for x in (-14.5, -10.5, 7.5, 11.5):                       # and a staggered row above it
+        g.sphere((x, KD.blob_y((-2.0, 0, 55.0), (18.0, 15.0, 11.0), x, 53.6, p=3.0) - 0.3, 53.6), 0.75, cuts=2)
+    rig.part("hull", g, B.SAND_LT, outline=0)
     g = Geo().blob((-2.0, 0, 47.9), (18.2, 15.2, 1.3), p=3.0)
     rig.part("hull", g, B.SAND, outline=0.5)
     g = Geo()
@@ -167,11 +219,21 @@ def build(rig):
     rig.part("hull", g, B.SAND_LT, outline=0.4)
     K.lambda_mark(rig, "hull", (-2.0, -15.4, 56.0), size=1.4)
     # A11: heavies carry a pennant: a team banner on a pole at the back
-    g = Geo().capsule((-24.0, 6.0, 52.0), (-27.0, 6.0, 98.0), 1.3, 1.1).sphere((-27.2, 6.0, 99.4), 2.0, cuts=3)
+    g = Geo().capsule((-24.0, 6.0, 52.0), (-27.0, 6.0, 98.0), 1.3, 1.1)
     rig.part("hull", g, WOOD_DK)
+    g = Geo().sphere((-27.2, 6.0, 99.4), 2.0, cuts=3)
+    rig.part("hull", g, B.BRONZE, finish=B.POLISH)              # a polished bronze finial
     rig.secondary("pennant", "hull", (-26.8, 6.0, 95.0), (-50.0, 6.0, 88.0), max_deg=12, gain=1.2)
     g = Geo().slab([(-26.8, 96.0), (-50.0, 92.0), (-41.0, 85.0), (-49.0, 77.0), (-26.6, 77.0)], 6.0, 1.6)
     rig.part("pennant", g, team=True, outline=0.8)
+    g = Geo().slab([(-26.8, 96.0), (-30.6, 95.3), (-30.6, 77.0), (-26.6, 77.0)], 4.95, 0.5)
+    look.team_part(rig, "pennant", g, outline=0)               # a team-dark band by the pole
+    K.lambda_mark(rig, "pennant", (-37.5, 4.7, 87.0), size=1.0)     # the age's sandstone lambda on the flag
+    g = Geo()                                                   # pale piping along the flag's free edges
+    edge = [(-30.8, 95.0), (-48.6, 91.9), (-40.2, 85.0), (-48.4, 77.8), (-30.8, 77.7)]
+    for (x0, z0), (x1, z1) in zip(edge, edge[1:]):
+        g.capsule((x0, 4.9, z0), (x1, 4.9, z1), 0.45, segs=6, rings=2)
+    rig.part("pennant", g, B.SAND_LT, outline=0)
     # hatches in the flank (doors open by pose) and the spearmen behind them
     for i, (hx, hz) in enumerate(HATCHES):
         g = Geo().blob((hx, -14.4, hz), (5.4, 1.0, 5.0), p=3.0)
@@ -179,11 +241,29 @@ def build(rig):
         rig.joint(f"door{i}", "hull", (hx - 5.4, -15.2, hz))
         g = Geo().blob((hx, -15.2, hz), (5.6, 1.0, 5.2), p=3.2)
         rig.part(f"door{i}", g, WOOD_DK, outline=0.6)
+        g = Geo().sphere((hx + 3.2, -16.3, hz), 1.0, cuts=3)          # a polished bronze pull on each door
+        rig.part(f"door{i}", g, B.BRONZE, finish=B.POLISH, outline=0.4)
         _spearman(rig, f"man{i}", hx + 1.0, hz - 1.0)
     # neck, head with a bronze nose cap, painted eye, team mane
     rig.joint("neck", "hull", (20.0, 0, 58.0))
     g = Geo().capsule((20.0, 0, 56.0), (31.0, 0, 82.0), 9.6, 7.4)
     rig.part("neck", g, WOOD)
+    for off in (3.2, -3.6):                                   # plank seams down the neck
+        pts = [(20.0 + 11.0 * t + 0.92 * off, 56.0 + 26.0 * t - 0.39 * off) for t in (0.05, 0.35, 0.65, 0.92)]
+        KD.surface_line(rig, "neck", Geo().capsule((20.0, 0, 56.0), (31.0, 0, 82.0), 9.6, 7.4), pts, 0.9, SEAM)
+    fc = F.Face(rig, "neck", [Geo().capsule((20.0, 0, 56.0), (31.0, 0, 82.0), 9.6, 7.4)])
+    g = Geo()                                                 # pale pegs pin the neck's planks
+    for off in (3.2, -3.6):
+        for t in (0.22, 0.5, 0.78):
+            g.sphere(tuple(fc.hit(20.0 + 11.0 * t + 0.92 * off + 1.3, 56.0 + 26.0 * t - 0.39 * off - 0.55)), 0.9, cuts=2)
+    rig.part("neck", g, B.SAND_LT, outline=0)
+    g = Geo().lathe([(0, 0), (10.2, 0.0), (10.2, 2.2), (0, 2.2)], (19.4, 0, 56.4), (19.8, 0, 57.4), segs=24)
+    rig.part("neck", g, B.AGED, finish="metal", outline=0.4)   # an aged bronze collar at the neck's root
+    g = Geo()                                                 # polished rosettes on the collar's near side
+    for pt in KD.lathe_points((19.4, 0, 56.4), (19.8, 0, 57.4), 10.4, 1.1, 10):
+        if pt[1] < -5.0:
+            g.sphere(pt, 1.2, cuts=2)
+    rig.part("neck", g, B.BRONZE, finish=B.POLISH, outline=0.3)
     rig.joint("head", "neck", (32.0, 0, 84.0))
     head = Geo().blob((38.0, 0, 86.0), (11.0, 7.6, 7.8), p=2.4, rot=(0, 20, 0))
     head.blob((47.0, 0, 81.0), (6.4, 6.4, 6.2), p=2.4)
@@ -195,6 +275,8 @@ def build(rig):
     rig.joint("pupils", "head", (40.6, -7.6, 87.8))
     rig.part("pupils", pup, B.PUPIL, outline=0)
     face.eye_marks([(40.4, 88.0)], 3.2, WOOD)
+    g = Geo().sphere(tuple(face.hit(36.0, 83.6)), 1.5, cuts=2)        # a polished cheek rosette
+    rig.part("head", g, B.BRONZE, finish=B.POLISH, outline=0.4)
     rig.joint("brow", "head", (40.0, -7.0, 92.0))
     g = Geo().capsule((36.6, -7.6, 93.0), (43.0, -6.0, 91.0), 1.4, 1.1)
     rig.part("brow", g, SEAM, outline=0.5)
@@ -203,11 +285,12 @@ def build(rig):
     for y in (-3.0, 3.0):
         g = Geo().blob((31.0, y, 94.0), (2.0, 1.6, 4.4), p=2.2, rot=(0, -20, 0))
         rig.part("head", g, WOOD_DK, outline=0.5)
-    g = Geo()
+    g, gd = Geo(), Geo()                                      # the mane, every other tuft team-dark
     for i in range(8):
         t = i / 7
-        g.blob((29.0 - 14.0 * t, 0, 93.0 - 33.0 * t), (5.0, 3.6, 4.6), p=2.2, rot=(0, -55, 0))
+        (gd if i % 2 else g).blob((29.0 - 14.0 * t, 0, 93.0 - 33.0 * t), (5.0, 3.6, 4.6), p=2.2, rot=(0, -55, 0))
     rig.part("neck", g, team=True)
+    look.team_part(rig, "neck", gd)
     rig.track("nose", "head", (54.0, 0, 80.0))
     # rope tail
     rig.secondary("tail", "hull", (-29.0, 0, 54.0), (-34.0, 0, 34.0), max_deg=12, gain=1.0)
@@ -245,6 +328,17 @@ def build(rig):
     g.clip((0, 0, 42.6), (0, 0, -1))
     rig.part("c_body", g, B.BRONZE, finish=B.POLISH)
     rig.part("c_body", Geo().blob((-41.0, -4.0, 47.8), (4.4, 1.2, 2.2), p=2.2), team=True, outline=0.4)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, vehicle): the team saddle cloth, the planked flank, the team
+    pennant; a strip torn from the saddle cloth's border."""
+    rig.damage_spot_at("cloth", "hull", -12.0, 56.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("planks", "hull", 14.0, 48.0, 6.0, "wood", fill=WOOD)
+    rig.damage_spot_at("pennant", "pennant", -38.0, 86.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hull", -14.0, 47.0, 9.0, "cloth", kind="strip", team=True)
 
 
 WHEELS = ("wheel_bn", "wheel_fn", "wheel_bf", "wheel_ff")

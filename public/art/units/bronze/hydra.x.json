@@ -2,17 +2,17 @@
  "frames": {
   "hydra_attack_b_01": {
    "frame": {
-    "x": 728,
+    "x": 1134,
     "y": 2,
-    "w": 262,
+    "w": 263,
     "h": 228
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 119,
+    "x": 118,
     "y": 146,
-    "w": 262,
+    "w": 263,
     "h": 228
    },
    "sourceSize": {
@@ -26,8 +26,8 @@
   },
   "hydra_attack_b_01_team": {
    "frame": {
-    "x": 542,
-    "y": 244,
+    "x": 2732,
+    "y": 2,
     "w": 229,
     "h": 208
    },
@@ -50,18 +50,18 @@
   },
   "hydra_attack_b_02": {
    "frame": {
-    "x": 217,
+    "x": 1722,
     "y": 2,
-    "w": 232,
-    "h": 237
+    "w": 233,
+    "h": 247
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 122,
+    "x": 121,
     "y": 137,
-    "w": 232,
-    "h": 237
+    "w": 233,
+    "h": 247
    },
    "sourceSize": {
     "w": 513,
@@ -74,7 +74,7 @@
   },
   "hydra_attack_b_02_team": {
    "frame": {
-    "x": 1202,
+    "x": 2965,
     "y": 2,
     "w": 209,
     "h": 223
@@ -98,18 +98,18 @@
   },
   "hydra_attack_b_03": {
    "frame": {
-    "x": 2,
+    "x": 2275,
     "y": 2,
-    "w": 211,
-    "h": 238
+    "w": 212,
+    "h": 251
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 125,
+    "x": 124,
     "y": 139,
-    "w": 211,
-    "h": 238
+    "w": 212,
+    "h": 251
    },
    "sourceSize": {
     "w": 513,
@@ -122,7 +122,7 @@
   },
   "hydra_attack_b_03_team": {
    "frame": {
-    "x": 994,
+    "x": 3178,
     "y": 2,
     "w": 204,
     "h": 224
@@ -146,17 +146,17 @@
   },
   "hydra_attack_b_04": {
    "frame": {
-    "x": 453,
+    "x": 2,
     "y": 2,
-    "w": 271,
+    "w": 273,
     "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 119,
+    "x": 117,
     "y": 143,
-    "w": 271,
+    "w": 273,
     "h": 231
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "hydra_attack_b_04_team": {
    "frame": {
-    "x": 1016,
-    "y": 244,
+    "x": 3386,
+    "y": 2,
     "w": 236,
     "h": 190
    },
@@ -194,17 +194,17 @@
   },
   "hydra_attack_b_05": {
    "frame": {
-    "x": 1561,
-    "y": 244,
-    "w": 316,
+    "x": 1401,
+    "y": 2,
+    "w": 317,
     "h": 188
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 107,
+    "x": 106,
     "y": 188,
-    "w": 316,
+    "w": 317,
     "h": 188
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "hydra_attack_b_05_team": {
    "frame": {
-    "x": 560,
-    "y": 646,
+    "x": 2197,
+    "y": 257,
     "w": 286,
     "h": 135
    },
@@ -242,17 +242,17 @@
   },
   "hydra_attack_b_06": {
    "frame": {
-    "x": 882,
-    "y": 460,
-    "w": 340,
+    "x": 2,
+    "y": 237,
+    "w": 341,
     "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 103,
     "y": 223,
-    "w": 340,
+    "w": 341,
     "h": 160
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "hydra_attack_b_06_team": {
    "frame": {
-    "x": 1152,
-    "y": 646,
+    "x": 3016,
+    "y": 230,
     "w": 306,
     "h": 127
    },
@@ -290,17 +290,17 @@
   },
   "hydra_attack_b_07": {
    "frame": {
-    "x": 561,
-    "y": 460,
-    "w": 317,
+    "x": 347,
+    "y": 235,
+    "w": 320,
     "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 111,
+    "x": 108,
     "y": 215,
-    "w": 317,
+    "w": 320,
     "h": 164
    },
    "sourceSize": {
@@ -314,10 +314,10 @@
   },
   "hydra_attack_b_07_team": {
    "frame": {
-    "x": 850,
-    "y": 646,
+    "x": 3326,
+    "y": 230,
     "w": 298,
-    "h": 130
+    "h": 129
    },
    "rotated": false,
    "trimmed": true,
@@ -325,7 +325,7 @@
     "x": 103,
     "y": 216,
     "w": 298,
-    "h": 130
+    "h": 129
    },
    "sourceSize": {
     "w": 513,
@@ -338,17 +338,17 @@
   },
   "hydra_attack_c_01": {
    "frame": {
-    "x": 1256,
-    "y": 244,
-    "w": 301,
+    "x": 1401,
+    "y": 194,
+    "w": 304,
     "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 112,
+    "x": 109,
     "y": 188,
-    "w": 301,
+    "w": 304,
     "h": 189
    },
    "sourceSize": {
@@ -362,8 +362,8 @@
   },
   "hydra_attack_c_01_team": {
    "frame": {
-    "x": 2,
-    "y": 646,
+    "x": 2742,
+    "y": 230,
     "w": 270,
     "h": 148
    },
@@ -386,17 +386,17 @@
   },
   "hydra_attack_c_02": {
    "frame": {
-    "x": 1226,
-    "y": 460,
-    "w": 309,
+    "x": 671,
+    "y": 235,
+    "w": 312,
     "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 107,
+    "x": 104,
     "y": 224,
-    "w": 309,
+    "w": 312,
     "h": 156
    },
    "sourceSize": {
@@ -410,8 +410,8 @@
   },
   "hydra_attack_c_02_team": {
    "frame": {
-    "x": 1462,
-    "y": 646,
+    "x": 3628,
+    "y": 142,
     "w": 288,
     "h": 125
    },
@@ -434,17 +434,17 @@
   },
   "hydra_attack_c_03": {
    "frame": {
-    "x": 1539,
-    "y": 460,
-    "w": 301,
+    "x": 987,
+    "y": 234,
+    "w": 305,
     "h": 150
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 105,
+    "x": 101,
     "y": 231,
-    "w": 301,
+    "w": 305,
     "h": 150
    },
    "sourceSize": {
@@ -458,9 +458,9 @@
   },
   "hydra_attack_c_03_team": {
    "frame": {
-    "x": 1754,
-    "y": 646,
-    "w": 290,
+    "x": 3628,
+    "y": 271,
+    "w": 289,
     "h": 115
    },
    "rotated": false,
@@ -468,7 +468,7 @@
    "spriteSourceSize": {
     "x": 97,
     "y": 231,
-    "w": 290,
+    "w": 289,
     "h": 115
    },
    "sourceSize": {
@@ -482,17 +482,17 @@
   },
   "hydra_attack_c_04": {
    "frame": {
-    "x": 253,
-    "y": 460,
-    "w": 304,
+    "x": 1959,
+    "y": 2,
+    "w": 312,
     "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 119,
+    "x": 111,
     "y": 202,
-    "w": 304,
+    "w": 312,
     "h": 177
    },
    "sourceSize": {
@@ -506,8 +506,8 @@
   },
   "hydra_attack_c_04_team": {
    "frame": {
-    "x": 276,
-    "y": 646,
+    "x": 3626,
+    "y": 2,
     "w": 280,
     "h": 136
    },
@@ -530,17 +530,17 @@
   },
   "hydra_attack_c_05": {
    "frame": {
-    "x": 240,
-    "y": 244,
-    "w": 298,
+    "x": 279,
+    "y": 2,
+    "w": 299,
     "h": 209
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 124,
+    "x": 123,
     "y": 166,
-    "w": 298,
+    "w": 299,
     "h": 209
    },
    "sourceSize": {
@@ -554,8 +554,8 @@
   },
   "hydra_attack_c_05_team": {
    "frame": {
-    "x": 2,
-    "y": 460,
+    "x": 2491,
+    "y": 214,
     "w": 247,
     "h": 182
    },
@@ -578,18 +578,18 @@
   },
   "hydra_attack_c_06": {
    "frame": {
-    "x": 1415,
+    "x": 582,
     "y": 2,
-    "w": 269,
-    "h": 220
+    "w": 270,
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 133,
+    "x": 132,
     "y": 152,
-    "w": 269,
-    "h": 220
+    "w": 270,
+    "h": 229
    },
    "sourceSize": {
     "w": 513,
@@ -602,8 +602,8 @@
   },
   "hydra_attack_c_06_team": {
    "frame": {
-    "x": 2,
-    "y": 244,
+    "x": 1959,
+    "y": 183,
     "w": 234,
     "h": 212
    },
@@ -626,18 +626,18 @@
   },
   "hydra_attack_c_07": {
    "frame": {
-    "x": 1688,
+    "x": 856,
     "y": 2,
-    "w": 273,
-    "h": 218
+    "w": 274,
+    "h": 221
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 131,
+    "x": 130,
     "y": 155,
-    "w": 273,
-    "h": 218
+    "w": 274,
+    "h": 221
    },
    "sourceSize": {
     "w": 513,
@@ -650,8 +650,8 @@
   },
   "hydra_attack_c_07_team": {
    "frame": {
-    "x": 775,
-    "y": 244,
+    "x": 2491,
+    "y": 2,
     "w": 237,
     "h": 204
    },
@@ -737,8 +737,8 @@
   "image": "hydra.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2048,
-   "h": 796
+   "w": 4096,
+   "h": 404
   },
   "scale": "1.5",
   "ageborn": {

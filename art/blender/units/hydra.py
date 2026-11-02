@@ -30,6 +30,8 @@ import math
 from ageborn_art import face as F
 from ageborn_art import gait as G
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge, squash
@@ -53,6 +55,35 @@ FANG = "#F4EEDC"
 CLAW = "#E2D6BC"
 EYEC = "#F2E6B0"
 MOUTH = "#5A2E2E"
+BELLY_DK = "#B8AD8B"
+TONGUE = "#C77F7A"
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2 (beasts: clumps, markings and value structure, or the body reads as one dark mass). Dark
+# scale bands across every neck, the near legs and down the tail (a banded water snake), scutes across the pale
+# belly, the caparison hanging in folds, the team zones in two tones (a team-dark border over the caparison's
+# fringe, team-dark lozenges, team-dark middle frills, a team-dark girth).
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+# the scales take the "stone" breakup: its cells with dark borders read as scales (3 lu plates), where "hide" is
+# soft blotches
+MATERIAL_KINDS = {SCALE_G: "stone", SCALE_DK: "stone", SCALE_LT: "stone", BELLY: "hide", BELLY_DK: "hide",
+                  FANG: "bone", CLAW: "bone", B.SAND_LT: "cloth", "team": "cloth"}
+
+
+def _bands(rig, joint, p0, p1, r0, r1, ts, y, width=2.4):
+    """Dark scale bands across a capsule segment (p0 -> p1 in the side view, radii r0 -> r1) at the fractions
+    `ts`: rings a little proud of it, so the necks and the tail read banded at 1x."""
+    g = Geo()
+    for t in ts:
+        c = (p0[0] + (p1[0] - p0[0]) * t, y, p0[1] + (p1[1] - p0[1]) * t)
+        d = (p1[0] - p0[0], 0.0, p1[1] - p0[1])
+        n = math.hypot(d[0], d[2])
+        d = (d[0] / n, 0.0, d[2] / n)
+        r = r0 + (r1 - r0) * t + 0.25
+        g.lathe([(0, 0), (r, 0.0), (r, width), (0, width)], c, (c[0] + d[0], y, c[2] + d[2]), segs=18)
+    rig.part(joint, g, SCALE_DK, outline=0.4)       # inked edges: the bands read as plates at 1x
 
 # necks: name, base (x, y, z), segment lengths, rest angles (deg above horizontal), radii
 NECKS = {
@@ -76,25 +107,29 @@ def _neck(rig, n, base, l, ang, r, team_frill=True, face=False):
     rig.part(f"n{n}1", g, col)
     g = Geo().capsule((x1, y, z1), (x2, y, z2), r[0], r[1])
     rig.part(f"n{n}2", g, col)
+    if y <= 0:                                                  # dark scale bands (the far neck is dark already)
+        _bands(rig, f"n{n}1", (x0, z0), (x1, z1), r[0] + 1.6, r[0], (0.24, 0.44, 0.64, 0.84), y)
+        _bands(rig, f"n{n}2", (x1, z1), (x2, z2), r[0], r[1], (0.16, 0.36, 0.56, 0.76), y, width=2.0)
     # pale belly scales along the front of the neck
     g = Geo()
-    for t in (0.25, 0.55, 0.85):
+    for t in (0.12, 0.3, 0.48, 0.66, 0.84):                   # W1: a full row of belly plates (value structure)
         g.blob((x0 + (x1 - x0) * t + 3.6 * math.sin(a1), y - (r[0] * 0.55 if near else 0), z0 + (z1 - z0) * t - 3.6 * math.cos(a1)),
                (3.2, 3.0, 1.4), p=2.4, rot=(0, -ang[0], 0))
-    for t in (0.3, 0.7):
+    for t in (0.18, 0.42, 0.66, 0.9):
         g.blob((x1 + (x2 - x1) * t + 3.0 * math.sin(a2), y - (r[1] * 0.55 if near else 0), z1 + (z2 - z1) * t - 3.0 * math.cos(a2)),
                (2.8, 2.6, 1.2), p=2.4, rot=(0, -ang[1], 0))
     rig.part(f"n{n}1", g, BELLY, outline=0.4)
     if team_frill:
         for seg, (p0, p1, aa, rr) in enumerate((((x0, z0), (x1, z1), a1, r[0]), ((x1, z1), (x2, z2), a2, r[1]))):
-            g = Geo()
+            g, gd = Geo(), Geo()                            # the middle frill team-dark (two tones)
             for t in (0.15, 0.5, 0.85):
                 cx, cz = p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t
                 bx, bz = cx - (rr + 0.5) * math.sin(aa), cz + (rr + 0.5) * math.cos(aa)
                 tx, tz = bx - 6.0 * math.sin(aa) - 2.0 * math.cos(aa), bz + 6.0 * math.cos(aa) - 2.0 * math.sin(aa)
-                g.slab([(bx - 3.2 * math.cos(aa), bz - 3.2 * math.sin(aa)), (bx + 3.2 * math.cos(aa), bz + 3.2 * math.sin(aa)),
-                        (tx, tz)], y, 1.6)
+                (gd if t == 0.5 else g).slab([(bx - 3.2 * math.cos(aa), bz - 3.2 * math.sin(aa)),
+                                              (bx + 3.2 * math.cos(aa), bz + 3.2 * math.sin(aa)), (tx, tz)], y, 1.6)
             rig.part(f"n{n}{seg + 1}", g, team=True, outline=0.7)
+            look.team_part(rig, f"n{n}{seg + 1}", gd, outline=0.7)
     # head: snout along +X, horns, eye, an open-able jaw
     hx, hz = x2, z2
     head = Geo().blob((hx + 6.0, y, hz + 1.0), (11.0, 7.0, 6.4), p=2.3, taper=(1.0, 0.9))
@@ -133,7 +168,7 @@ def _neck(rig, n, base, l, ang, r, team_frill=True, face=False):
     g = Geo().capsule((hx + 14.0, y - 0.8, hz - 3.0), (hx + 23.0, y - 0.8, hz - 2.0), 0.8, 0.5)
     g.capsule((hx + 23.0, y - 0.8, hz - 2.0), (hx + 25.0, y - 0.8, hz - 0.6), 0.5, 0.3)
     g.capsule((hx + 23.0, y - 0.8, hz - 2.0), (hx + 25.0, y - 0.8, hz - 3.4), 0.5, 0.3)
-    rig.part(f"t{n}", g, "#C77F7A", outline=0.3)
+    rig.part(f"t{n}", g, TONGUE, outline=0.3)
     rig.track(f"bite_{n}", f"n{n}h", (hx + 21.0, y, hz - 1.0))
     # a team collar ring at the base of the head (the beast's war harness)
     g = Geo().lathe([(0, 0), (r[1] + 1.6, 0.2), (r[1] + 1.6, 3.4), (0, 3.6)], (x2 - 4.0 * math.cos(a2), y, z2 - 4.0 * math.sin(a2)),
@@ -153,6 +188,8 @@ def _leg(rig, name, x, y):
     g = Geo().capsule((x + 2.0, y, 12.0), (x + 3.0, y, 4.0), 5.6, 4.6)
     g.blob((x + 5.0, y, 2.4), (7.4, 5.6, 2.6), p=2.6)
     rig.part(f"{name}2", g, col)
+    if near:                                                      # dark scale bands on the near legs
+        _bands(rig, name, (x, 26.0), (x + 2.0, 12.0), 7.0, 5.6, (0.25, 0.5, 0.75), y, width=1.8)
     g = Geo()
     for dy in (-3.6, 0.0, 3.6):
         g.lathe([(1.4, 0), (0, 3.4)], (x + 11.0, y + dy, 1.6), (x + 14.0, y + dy, 1.0), segs=6)
@@ -185,6 +222,20 @@ def build(rig):
     rig.part("tail1", Geo().capsule((-28.0, 0, 34.0), (-50.0, 0, 26.0), 12.0, 8.6), SCALE_G)
     rig.part("tail2", Geo().capsule((-50.0, 0, 26.0), (-70.0, 0, 14.0), 8.6, 5.4), SCALE_G)
     rig.part("tail3", Geo().capsule((-70.0, 0, 14.0), (-86.0, 0, 8.0), 5.4, 2.2), SCALE_G)
+    _bands(rig, "tail1", (-28.0, 34.0), (-50.0, 26.0), 12.0, 8.6, (0.22, 0.44, 0.66, 0.88), 0.0, width=2.6)
+    _bands(rig, "tail2", (-50.0, 26.0), (-70.0, 14.0), 8.6, 5.4, (0.18, 0.4, 0.62, 0.84), 0.0, width=2.2)
+    _bands(rig, "tail3", (-70.0, 14.0), (-86.0, 8.0), 5.4, 2.2, (0.35,), 0.0, width=1.8)
+    # dark blotches along the top of the tail (a water snake's markings), inked
+    for joint, (ax, az), (bx, bz), ra, rb, ts in (("tail1", (-28.0, 34.0), (-50.0, 26.0), 12.0, 8.6, (0.2, 0.5, 0.8)),
+                                                   ("tail2", (-50.0, 26.0), (-70.0, 14.0), 8.6, 5.4, (0.25, 0.65))):
+        g = Geo()
+        for t in ts:
+            x, z, r = ax + (bx - ax) * t, az + (bz - az) * t, ra + (rb - ra) * t
+            g.blob((x + 1.5, -r * 0.5, z + r * 0.8), (2.6, 1.6, 1.8), p=2.2)
+        rig.part(joint, g, SCALE_DK, outline=0.35)
+    # a pale ventral stripe along the tail's underside (the belly's colour carried down the tail)
+    rig.part("tail1", Geo().capsule((-29.0, -4.5, 23.6), (-50.0, -3.6, 18.6), 1.7, 1.3), BELLY, outline=0.4)
+    rig.part("tail2", Geo().capsule((-50.0, -3.6, 18.6), (-69.0, -2.4, 9.6), 1.3, 0.9), BELLY, outline=0.4)
     g = Geo().slab([(-80.0, 9.0), (-94.0, 18.0), (-90.0, 7.0), (-95.0, -2.0)], 0.0, 1.6)
     rig.part("tail3", g, team=True, outline=0.7)
     # body: a squat barrel with a pale belly, team back frills, a lambda brand
@@ -193,11 +244,16 @@ def build(rig):
     rig.part("trunk", g, SCALE_G)
     g = Geo().blob((2.0, -4.0, 25.0), (28.0, 16.0, 7.0), p=2.4)
     rig.part("trunk", g, BELLY, outline=0.6)
+    for x in range(-18, 26, 6):                                 # scutes across the belly
+        ref = Geo().blob((2.0, -4.0, 25.0), (28.0, 16.0, 7.0), p=2.4)
+        KD.surface_line(rig, "trunk", ref, [(x + 1.2, 28.6), (x, 25.0), (x + 0.8, 21.2)], 0.9, BELLY_DK)
     g = Geo()
+    gd = Geo()
     for i, x in enumerate((-24.0, -12.0, 0.0, 12.0)):
         z = 54.0 - 0.06 * x * x / 6
-        g.slab([(x - 5.0, z - 1.0), (x + 5.0, z), (x - 2.0, z + 10.0 - (i % 2) * 2.0)], 0.0, 2.0)
+        (gd if i % 2 else g).slab([(x - 5.0, z - 1.0), (x + 5.0, z), (x - 2.0, z + 10.0 - (i % 2) * 2.0)], 0.0, 2.0)
     rig.part("trunk", g, team=True, outline=0.8)
+    look.team_part(rig, "trunk", gd, outline=0.8)               # every other back frill team-dark
     g = Geo()
     for x, z in ((-16.0, 42.0), (-4.0, 46.0), (8.0, 44.0), (-10.0, 32.0), (2.0, 34.0)):
         g.blob((x, -19.4, z), (3.0, 1.0, 2.2), p=2.4)
@@ -208,6 +264,20 @@ def build(rig):
     g.clip((22.0, 0, 0), (1, 0, 0))
     g.clip((-26.0, 0, 0), (-1, 0, 0))
     rig.part("trunk", g, team=True)
+    g = KD.shell((-2.0, 0, 46.0), (26.0, 22.6, 14.0), p=3.0, keep=[((0, 0, 36.6), (0, 0, 1)), ((0, 0, 32.0), (0, 0, -1)),
+                                                                   ((21.8, 0, 0), (1, 0, 0)), ((-25.8, 0, 0), (-1, 0, 0))])
+    look.team_part(rig, "trunk", g, outline=0)                   # a team-dark border over the fringe
+    cap, cap_kw = ((-2.0, 0, 46.0), (26.0, 22.6, 14.0)), {"p": 3.0}
+    g = Geo()                                                     # the caparison hangs in folds
+    for x in (-19.0, -11.0, 7.0, 15.0):
+        KD.ridge(*cap, [(x + 0.6, 57.0), (x, 47.0), (x - 0.4, 38.0)], [0.9, 1.3, 1.5], bulge=0.6, geo=g, **cap_kw)
+    look.team_part(rig, "trunk", g, outline=0.5)                 # team-dark: the folds read as stripes at 1x
+    g = Geo()                                                     # team-dark lozenges woven between the folds
+    for x, z in ((-15.0, 52.0), (11.0, 52.0), (19.0, 52.0), (-15.0, 43.0), (11.0, 43.0), (19.0, 43.0),
+                 (-22.5, 47.5), (-7.0, 54.5)):
+        y = KD.blob_y(*cap, x, z, **cap_kw)
+        g.slab([(x - 2.6, z), (x, z + 3.4), (x + 2.6, z), (x, z - 3.4)], y - 0.15, 0.7)
+    look.team_part(rig, "trunk", g, outline=0)
     g = Geo()
     for x in range(-24, 22, 5):
         g.lathe([(1.6, 0), (2.0, -1.8), (0, -4.6)], (x, -22.4, 32.2), segs=8)
@@ -216,7 +286,7 @@ def build(rig):
     g = Geo().lathe([(0, 0), (20.6, 0.2), (21.0, 4.2), (0, 4.4)], (24.0, 0, 26.0), (25.2, 0, 50.0), segs=24,
                     squash=(1.0, 1.05))                                 # a team girth band behind the necks
     g.clip((0, 0, 24.0), (0, 0, -1))
-    rig.part("trunk", g, team=True, outline=0.6)
+    look.team_part(rig, "trunk", g, outline=0.6)                 # the girth band team-dark
     # necks and heads (far first, near last so the near neck sits in front)
     _neck(rig, "c", **NECKS["c"])
     _neck(rig, "b", **NECKS["b"], face=True)
@@ -224,6 +294,18 @@ def build(rig):
     for name, x, y in (("leg_fr", 18.0, -13.0), ("leg_br", -20.0, -13.0)):
         _leg(rig, name, x, y)
         _leg_ik(name, x, y)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, beast; never on a face): the team caparison (the largest team
+    surface, twice), the near neck's scales, the tail; a strip torn from the caparison's border."""
+    rig.damage_spot_at("caparison", "trunk", -22.0, 50.0, 9.0, "cloth", team=True)
+    rig.damage_spot_at("caparison_fore", "trunk", 10.0, 46.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("neck", "na1", 25.0, 52.0, 5.0, "hide", fill=SCALE_G)
+    rig.damage_spot_at("tail", "tail1", -39.0, 40.0, 5.0, "hide", fill=SCALE_G)
+    rig.damage_spot_at("hem", "trunk", -26.0, 43.5, 10.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

@@ -1,0 +1,2395 @@
+{
+ "frames": {
+  "bronze_colossus@obsidian_colossus_idle_00": {
+   "frame": {
+    "x": 139,
+    "y": 2,
+    "w": 143,
+    "h": 231
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 178,
+    "w": 143,
+    "h": 231
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_00_team": {
+   "frame": {
+    "x": 1066,
+    "y": 624,
+    "w": 138,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 175,
+    "w": 138,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_01": {
+   "frame": {
+    "x": 2,
+    "y": 719,
+    "w": 145,
+    "h": 226
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 183,
+    "w": 145,
+    "h": 226
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_01_team": {
+   "frame": {
+    "x": 1478,
+    "y": 175,
+    "w": 139,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 180,
+    "w": 139,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_02": {
+   "frame": {
+    "x": 600,
+    "y": 455,
+    "w": 147,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 190,
+    "w": 147,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_02_team": {
+   "frame": {
+    "x": 1463,
+    "y": 732,
+    "w": 142,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 187,
+    "w": 142,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_03": {
+   "frame": {
+    "x": 739,
+    "y": 2,
+    "w": 149,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 192,
+    "w": 149,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_03_team": {
+   "frame": {
+    "x": 1463,
+    "y": 900,
+    "w": 142,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 189,
+    "w": 142,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_04": {
+   "frame": {
+    "x": 459,
+    "y": 684,
+    "w": 147,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 188,
+    "w": 147,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_04_team": {
+   "frame": {
+    "x": 1754,
+    "y": 2,
+    "w": 142,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 184,
+    "w": 142,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_05": {
+   "frame": {
+    "x": 149,
+    "y": 237,
+    "w": 144,
+    "h": 228
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 181,
+    "w": 144,
+    "h": 228
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_idle_05_team": {
+   "frame": {
+    "x": 1176,
+    "y": 800,
+    "w": 139,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 177,
+    "w": 139,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_00": {
+   "frame": {
+    "x": 754,
+    "y": 663,
+    "w": 151,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 199,
+    "w": 151,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_00_team": {
+   "frame": {
+    "x": 1609,
+    "y": 689,
+    "w": 144,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 195,
+    "w": 144,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_01": {
+   "frame": {
+    "x": 754,
+    "y": 876,
+    "w": 153,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 207,
+    "w": 153,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_01_team": {
+   "frame": {
+    "x": 1767,
+    "y": 840,
+    "w": 146,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 204,
+    "w": 146,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_02": {
+   "frame": {
+    "x": 739,
+    "y": 223,
+    "w": 146,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 191,
+    "w": 146,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_02_team": {
+   "frame": {
+    "x": 1896,
+    "y": 343,
+    "w": 139,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 188,
+    "w": 139,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_03": {
+   "frame": {
+    "x": 592,
+    "y": 229,
+    "w": 143,
+    "h": 222
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 184,
+    "w": 143,
+    "h": 222
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_03_team": {
+   "frame": {
+    "x": 1614,
+    "y": 2,
+    "w": 136,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 181,
+    "w": 136,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_04": {
+   "frame": {
+    "x": 447,
+    "y": 230,
+    "w": 141,
+    "h": 224
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 180,
+    "w": 141,
+    "h": 224
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_04_team": {
+   "frame": {
+    "x": 1179,
+    "y": 427,
+    "w": 135,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 176,
+    "w": 135,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_05": {
+   "frame": {
+    "x": 1036,
+    "y": 217,
+    "w": 147,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 196,
+    "w": 147,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_05_team": {
+   "frame": {
+    "x": 1495,
+    "y": 522,
+    "w": 140,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 193,
+    "w": 140,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_06": {
+   "frame": {
+    "x": 909,
+    "y": 654,
+    "w": 153,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 205,
+    "w": 153,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_06_team": {
+   "frame": {
+    "x": 1757,
+    "y": 677,
+    "w": 142,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 201,
+    "w": 142,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_07": {
+   "frame": {
+    "x": 1032,
+    "y": 2,
+    "w": 143,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 190,
+    "w": 143,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_07_team": {
+   "frame": {
+    "x": 1896,
+    "y": 173,
+    "w": 137,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 187,
+    "w": 137,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_08": {
+   "frame": {
+    "x": 889,
+    "y": 223,
+    "w": 143,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 185,
+    "w": 143,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_08_team": {
+   "frame": {
+    "x": 1754,
+    "y": 173,
+    "w": 138,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 182,
+    "w": 138,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_09": {
+   "frame": {
+    "x": 311,
+    "y": 698,
+    "w": 144,
+    "h": 223
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 181,
+    "w": 144,
+    "h": 223
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_walk_09_team": {
+   "frame": {
+    "x": 1353,
+    "y": 559,
+    "w": 138,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 178,
+    "w": 138,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_00": {
+   "frame": {
+    "x": 286,
+    "y": 2,
+    "w": 146,
+    "h": 226
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 183,
+    "w": 146,
+    "h": 226
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_00_team": {
+   "frame": {
+    "x": 1319,
+    "y": 777,
+    "w": 140,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 180,
+    "w": 140,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_01": {
+   "frame": {
+    "x": 751,
+    "y": 444,
+    "w": 149,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 193,
+    "w": 149,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_01_team": {
+   "frame": {
+    "x": 1621,
+    "y": 344,
+    "w": 146,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 190,
+    "w": 146,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_02": {
+   "frame": {
+    "x": 610,
+    "y": 678,
+    "w": 140,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 179,
+    "w": 140,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_02_team": {
+   "frame": {
+    "x": 1038,
+    "y": 855,
+    "w": 134,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 176,
+    "w": 134,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 133,
+    "h": 240
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 158,
+    "w": 133,
+    "h": 240
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_03_team": {
+   "frame": {
+    "x": 911,
+    "y": 855,
+    "w": 123,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 164,
+    "w": 123,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_04": {
+   "frame": {
+    "x": 2,
+    "y": 486,
+    "w": 144,
+    "h": 229
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 169,
+    "w": 144,
+    "h": 229
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_04_team": {
+   "frame": {
+    "x": 151,
+    "y": 928,
+    "w": 141,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 180,
+    "w": 141,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_05": {
+   "frame": {
+    "x": 904,
+    "y": 441,
+    "w": 137,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 197,
+    "w": 137,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_05_team": {
+   "frame": {
+    "x": 1639,
+    "y": 512,
+    "w": 132,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 194,
+    "w": 132,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_06": {
+   "frame": {
+    "x": 610,
+    "y": 901,
+    "w": 127,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 226,
+    "w": 127,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 949,
+    "w": 120,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 223,
+    "w": 120,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_07": {
+   "frame": {
+    "x": 1045,
+    "y": 427,
+    "w": 130,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 220,
+    "w": 130,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_07_team": {
+   "frame": {
+    "x": 1771,
+    "y": 344,
+    "w": 120,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 217,
+    "w": 120,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_08": {
+   "frame": {
+    "x": 892,
+    "y": 2,
+    "w": 136,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 198,
+    "w": 136,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_08_team": {
+   "frame": {
+    "x": 1621,
+    "y": 174,
+    "w": 128,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 195,
+    "w": 128,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_09": {
+   "frame": {
+    "x": 451,
+    "y": 458,
+    "w": 145,
+    "h": 222
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 188,
+    "w": 145,
+    "h": 222
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_attack_09_team": {
+   "frame": {
+    "x": 1900,
+    "y": 2,
+    "w": 139,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 184,
+    "w": 139,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_hit_00": {
+   "frame": {
+    "x": 151,
+    "y": 699,
+    "w": 156,
+    "h": 225
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 184,
+    "w": 156,
+    "h": 225
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_hit_00_team": {
+   "frame": {
+    "x": 1324,
+    "y": 2,
+    "w": 141,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 180,
+    "w": 141,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_hit_01": {
+   "frame": {
+    "x": 293,
+    "y": 469,
+    "w": 154,
+    "h": 225
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 157,
+    "y": 184,
+    "w": 154,
+    "h": 225
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_hit_01_team": {
+   "frame": {
+    "x": 1208,
+    "y": 603,
+    "w": 141,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 181,
+    "w": 141,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_hit_02": {
+   "frame": {
+    "x": 436,
+    "y": 2,
+    "w": 149,
+    "h": 224
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 185,
+    "w": 149,
+    "h": 224
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_hit_02_team": {
+   "frame": {
+    "x": 1333,
+    "y": 177,
+    "w": 141,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 181,
+    "w": 141,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_hit_03": {
+   "frame": {
+    "x": 589,
+    "y": 2,
+    "w": 146,
+    "h": 223
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 186,
+    "w": 146,
+    "h": 223
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_hit_03_team": {
+   "frame": {
+    "x": 1460,
+    "y": 350,
+    "w": 140,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 182,
+    "w": 140,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_hit_04": {
+   "frame": {
+    "x": 297,
+    "y": 232,
+    "w": 146,
+    "h": 225
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 184,
+    "w": 146,
+    "h": 225
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_hit_04_team": {
+   "frame": {
+    "x": 1469,
+    "y": 2,
+    "w": 141,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 181,
+    "w": 141,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_00": {
+   "frame": {
+    "x": 2,
+    "y": 246,
+    "w": 143,
+    "h": 236
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 182,
+    "w": 143,
+    "h": 236
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_00_team": {
+   "frame": {
+    "x": 1187,
+    "y": 210,
+    "w": 142,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 155,
+    "y": 178,
+    "w": 142,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_01": {
+   "frame": {
+    "x": 150,
+    "y": 469,
+    "w": 139,
+    "h": 226
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 152,
+    "y": 175,
+    "w": 139,
+    "h": 226
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_01_team": {
+   "frame": {
+    "x": 1318,
+    "y": 385,
+    "w": 138,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 178,
+    "w": 138,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_02": {
+   "frame": {
+    "x": 1179,
+    "y": 2,
+    "w": 141,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 207,
+    "w": 141,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_02_team": {
+   "frame": {
+    "x": 1775,
+    "y": 512,
+    "w": 135,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 204,
+    "w": 135,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_03": {
+   "frame": {
+    "x": 311,
+    "y": 925,
+    "w": 137,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 250,
+    "w": 137,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_03_team": {
+   "frame": {
+    "x": 1917,
+    "y": 781,
+    "w": 120,
+    "h": 130
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 247,
+    "w": 120,
+    "h": 130
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_04": {
+   "frame": {
+    "x": 459,
+    "y": 909,
+    "w": 142,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 237,
+    "w": 142,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_04_team": {
+   "frame": {
+    "x": 1332,
+    "y": 950,
+    "w": 124,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 233,
+    "w": 124,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_05": {
+   "frame": {
+    "x": 1609,
+    "y": 854,
+    "w": 154,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 258,
+    "w": 154,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_05_team": {
+   "frame": {
+    "x": 1917,
+    "y": 915,
+    "w": 113,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 269,
+    "w": 113,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_06": {
+   "frame": {
+    "x": 1176,
+    "y": 975,
+    "w": 152,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 301,
+    "w": 152,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_06_team": {
+   "frame": {
+    "x": 1914,
+    "y": 512,
+    "w": 118,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 297,
+    "w": 118,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_07": {
+   "frame": {
+    "x": 1903,
+    "y": 675,
+    "w": 140,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 316,
+    "w": 140,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus@obsidian_colossus_die_07_team": {
+   "frame": {
+    "x": 1767,
+    "y": 999,
+    "w": 109,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 312,
+    "w": 109,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "bronze_colossus@obsidian_colossus_idle_00",
+   "bronze_colossus@obsidian_colossus_idle_01",
+   "bronze_colossus@obsidian_colossus_idle_02",
+   "bronze_colossus@obsidian_colossus_idle_03",
+   "bronze_colossus@obsidian_colossus_idle_04",
+   "bronze_colossus@obsidian_colossus_idle_05"
+  ],
+  "idle_team": [
+   "bronze_colossus@obsidian_colossus_idle_00_team",
+   "bronze_colossus@obsidian_colossus_idle_01_team",
+   "bronze_colossus@obsidian_colossus_idle_02_team",
+   "bronze_colossus@obsidian_colossus_idle_03_team",
+   "bronze_colossus@obsidian_colossus_idle_04_team",
+   "bronze_colossus@obsidian_colossus_idle_05_team"
+  ],
+  "walk": [
+   "bronze_colossus@obsidian_colossus_walk_00",
+   "bronze_colossus@obsidian_colossus_walk_01",
+   "bronze_colossus@obsidian_colossus_walk_02",
+   "bronze_colossus@obsidian_colossus_walk_03",
+   "bronze_colossus@obsidian_colossus_walk_04",
+   "bronze_colossus@obsidian_colossus_walk_05",
+   "bronze_colossus@obsidian_colossus_walk_06",
+   "bronze_colossus@obsidian_colossus_walk_07",
+   "bronze_colossus@obsidian_colossus_walk_08",
+   "bronze_colossus@obsidian_colossus_walk_09"
+  ],
+  "walk_team": [
+   "bronze_colossus@obsidian_colossus_walk_00_team",
+   "bronze_colossus@obsidian_colossus_walk_01_team",
+   "bronze_colossus@obsidian_colossus_walk_02_team",
+   "bronze_colossus@obsidian_colossus_walk_03_team",
+   "bronze_colossus@obsidian_colossus_walk_04_team",
+   "bronze_colossus@obsidian_colossus_walk_05_team",
+   "bronze_colossus@obsidian_colossus_walk_06_team",
+   "bronze_colossus@obsidian_colossus_walk_07_team",
+   "bronze_colossus@obsidian_colossus_walk_08_team",
+   "bronze_colossus@obsidian_colossus_walk_09_team"
+  ],
+  "attack": [
+   "bronze_colossus@obsidian_colossus_attack_00",
+   "bronze_colossus@obsidian_colossus_attack_01",
+   "bronze_colossus@obsidian_colossus_attack_02",
+   "bronze_colossus@obsidian_colossus_attack_03",
+   "bronze_colossus@obsidian_colossus_attack_04",
+   "bronze_colossus@obsidian_colossus_attack_05",
+   "bronze_colossus@obsidian_colossus_attack_06",
+   "bronze_colossus@obsidian_colossus_attack_07",
+   "bronze_colossus@obsidian_colossus_attack_08",
+   "bronze_colossus@obsidian_colossus_attack_08",
+   "bronze_colossus@obsidian_colossus_attack_09",
+   "bronze_colossus@obsidian_colossus_attack_09"
+  ],
+  "attack_team": [
+   "bronze_colossus@obsidian_colossus_attack_00_team",
+   "bronze_colossus@obsidian_colossus_attack_01_team",
+   "bronze_colossus@obsidian_colossus_attack_02_team",
+   "bronze_colossus@obsidian_colossus_attack_03_team",
+   "bronze_colossus@obsidian_colossus_attack_04_team",
+   "bronze_colossus@obsidian_colossus_attack_05_team",
+   "bronze_colossus@obsidian_colossus_attack_06_team",
+   "bronze_colossus@obsidian_colossus_attack_07_team",
+   "bronze_colossus@obsidian_colossus_attack_08_team",
+   "bronze_colossus@obsidian_colossus_attack_08_team",
+   "bronze_colossus@obsidian_colossus_attack_09_team",
+   "bronze_colossus@obsidian_colossus_attack_09_team"
+  ],
+  "hit": [
+   "bronze_colossus@obsidian_colossus_hit_00",
+   "bronze_colossus@obsidian_colossus_hit_01",
+   "bronze_colossus@obsidian_colossus_hit_02",
+   "bronze_colossus@obsidian_colossus_hit_03",
+   "bronze_colossus@obsidian_colossus_hit_04"
+  ],
+  "hit_team": [
+   "bronze_colossus@obsidian_colossus_hit_00_team",
+   "bronze_colossus@obsidian_colossus_hit_01_team",
+   "bronze_colossus@obsidian_colossus_hit_02_team",
+   "bronze_colossus@obsidian_colossus_hit_03_team",
+   "bronze_colossus@obsidian_colossus_hit_04_team"
+  ],
+  "die": [
+   "bronze_colossus@obsidian_colossus_die_00",
+   "bronze_colossus@obsidian_colossus_die_01",
+   "bronze_colossus@obsidian_colossus_die_02",
+   "bronze_colossus@obsidian_colossus_die_03",
+   "bronze_colossus@obsidian_colossus_die_03",
+   "bronze_colossus@obsidian_colossus_die_04",
+   "bronze_colossus@obsidian_colossus_die_04",
+   "bronze_colossus@obsidian_colossus_die_05",
+   "bronze_colossus@obsidian_colossus_die_06",
+   "bronze_colossus@obsidian_colossus_die_06",
+   "bronze_colossus@obsidian_colossus_die_07",
+   "bronze_colossus@obsidian_colossus_die_07"
+  ],
+  "die_team": [
+   "bronze_colossus@obsidian_colossus_die_00_team",
+   "bronze_colossus@obsidian_colossus_die_01_team",
+   "bronze_colossus@obsidian_colossus_die_02_team",
+   "bronze_colossus@obsidian_colossus_die_03_team",
+   "bronze_colossus@obsidian_colossus_die_03_team",
+   "bronze_colossus@obsidian_colossus_die_04_team",
+   "bronze_colossus@obsidian_colossus_die_04_team",
+   "bronze_colossus@obsidian_colossus_die_05_team",
+   "bronze_colossus@obsidian_colossus_die_06_team",
+   "bronze_colossus@obsidian_colossus_die_06_team",
+   "bronze_colossus@obsidian_colossus_die_07_team",
+   "bronze_colossus@obsidian_colossus_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "bronze_colossus@obsidian_colossus.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2048,
+   "h": 1100
+  },
+  "scale": "1.25",
+  "ageborn": {
+   "visualId": "unit.bronze_colossus@obsidian_colossus",
+   "name": "Bronze Colossus",
+   "heightLu": 200,
+   "widthLu": 133.7,
+   "pxPerLu": 1.025,
+   "feetPx": [
+    220.0,
+    393.0
+   ],
+   "anchorsLu": {
+    "head": [
+     6,
+     196
+    ],
+    "hitCenter": [
+     0,
+     104
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "heavy",
+   "skinOf": "unit.bronze_colossus",
+   "skin": "obsidian_colossus",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -43.0,
+        194.8
+       ],
+       [
+        -42.0,
+        192.7
+       ],
+       [
+        -40.9,
+        186.7
+       ],
+       [
+        -41.0,
+        183.0
+       ],
+       [
+        -41.9,
+        185.2
+       ],
+       [
+        -42.9,
+        191.1
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 10,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125
+     ],
+     "durationMs": 1250,
+     "gait": "heavy",
+     "gaitSpeedLuPerS": 50.0,
+     "cycleMs": 1250,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -26.7,
+        171.8
+       ],
+       [
+        -20.3,
+        161.3
+       ],
+       [
+        -15.7,
+        178.2
+       ],
+       [
+        -21.6,
+        189.1
+       ],
+       [
+        -31.7,
+        195.0
+       ],
+       [
+        -39.4,
+        181.0
+       ],
+       [
+        -39.9,
+        174.8
+       ],
+       [
+        -38.2,
+        186.9
+       ],
+       [
+        -37.4,
+        190.1
+       ],
+       [
+        -33.1,
+        190.8
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 50.0,
+     "strideLu": 62.5,
+     "plantedDriftLu": 0.25,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        9.1,
+        -7.9
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "l",
+       "atLu": [
+        31.2,
+        -1.1
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -42.4,
+        189.8
+       ],
+       [
+        -36.5,
+        181.7
+       ],
+       [
+        -51.1,
+        170.2
+       ],
+       [
+        -56.9,
+        159.3
+       ],
+       [
+        -29.8,
+        170.4
+       ],
+       [
+        -2.3,
+        154.1
+       ],
+       [
+        13.1,
+        141.0
+       ],
+       [
+        3.8,
+        155.1
+       ],
+       [
+        -18.2,
+        177.2
+       ],
+       [
+        -36.2,
+        187.1
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -61.1,
+        184.3
+       ],
+       [
+        -57.4,
+        185.7
+       ],
+       [
+        -48.8,
+        188.0
+       ],
+       [
+        -39.5,
+        188.8
+       ],
+       [
+        -41.9,
+        188.9
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      70,
+      80,
+      90,
+      80,
+      70,
+      60,
+      70,
+      90,
+      100,
+      110,
+      110,
+      120
+     ],
+     "durationMs": 1050,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 780,
+       "offsetLu": [
+        0,
+        72.0
+       ],
+       "scale": 1.671
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 860,
+       "offsetLu": [
+        0,
+        110.0
+       ],
+       "loops": 2,
+       "scale": 1.293
+      }
+     ],
+     "burstAtMs": 390,
+     "hideUnitAtMs": 1050,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -22.2,
+        195.7
+       ],
+       [
+        -54.9,
+        208.7
+       ],
+       [
+        46.7,
+        71.5
+       ],
+       [
+        -4.8,
+        -24.9
+       ],
+       [
+        11.8,
+        -28.4
+       ],
+       [
+        -33.3,
+        -16.8
+       ],
+       [
+        -53.8,
+        11.7
+       ],
+       [
+        -50.2,
+        14.7
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}
