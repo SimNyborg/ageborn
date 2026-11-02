@@ -51,14 +51,15 @@ PELT_LT = "#8E7666"       # lighter guard hair over the bear pelt (two tones, 30
 BEARD_LT = "#5E4C40"      # lighter bristles in the beard
 LEATHER_DK = "#56412F"
 CHEEK = "#BF967A"         # a ruddy cheek (17 levels under the skin)
+CLAW_TIP = "#FBF7EC"      # the necklace's polished claw tips
 
 DETAIL_STANDARD = True
 LOOK_HIGHLIGHT = 1.65   # over the soldiers' 1.35: highlight 0.055-0.057 at idle 0 with 1.45 (band 0.06-0.10)
 LOOK_SHADE = W1.SHADE_SOLDIER
-LOOK_RIM = W1.RIM_SOLDIER
+LOOK_RIM = dict(W1.RIM_SOLDIER, lift=0.7, full_lu=0.85)   # W1: a brighter top rim (idle highlight 0.058-0.059, band 0.06-0.10)
 MATERIAL_KINDS = W1.kinds({SKIN: "skin", BEARD: "fur", BEARD_LT: "fur", PELT: "fur", PELT_DK: "fur", PELT_LT: "fur",
                            SNOUT: "hide", NOSE: "hide", WOOD: "wood", WOOD_DK: "wood", BONE: "bone",
-                           LEATHER_DK: "leather", CHEEK: "skin", "team": "hide"})
+                           LEATHER_DK: "leather", CHEEK: "skin", "team": "hide", CLAW_TIP: "bone"})
 
 HIP_Y, SH_Y = 6.0, 12.6
 CLUB = 17.0
@@ -97,6 +98,11 @@ def build(rig):
     for side, y in (("r", -HIP_Y), ("l", HIP_Y)):
         W1.laces(rig, f"shin_{side}", 0.8, y - 3.85 if side == "r" else y - 3.6, 6.2, 10.8,
                  LEATHER_DK if side == "r" else CC.scale(LEATHER_DK, 0.8))
+    # W1: a necklace of three bear claws on a dark cord over the tunic (pale points: the idle highlight was 0.059)
+    W1.seam(rig, "torso", deco, [(10.8, 35.4), (8.2, 34.6), (5.6, 34.2), (3.0, 34.2)], fill=LEATHER_DK, w=0.9)
+    W1.claws(rig, "torso", [((h.x, h.y - 0.3, h.z), (0.1, -1.0)) for h in (deco.hit(9.4, 34.8), deco.hit(6.8, 34.3),
+                                                                         deco.hit(4.2, 34.1))],
+             BONE, CLAW_TIP, r=1.2, length=3.2)
     # team war-paint bands on both upper arms
     for side, y in (("r", -SH_Y), ("l", SH_Y)):
         g = Geo().capsule((0.6, y, 34.0), (1.3, y + (0.3 if y > 0 else -0.3), 29.0), 4.6, 4.4)
