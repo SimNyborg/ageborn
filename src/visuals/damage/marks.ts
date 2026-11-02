@@ -175,10 +175,11 @@ export function markSlots(spots: readonly DamageSpot[] | undefined, seed: number
 
 /**
  * The size a mark is drawn at on its spot (lu across): 6-9 lu, never past about 70% of the patch, bigger when big; a
- * small body's (`scale` > 1) bigger still, within about 85% of the patch so it stays on its surface.
+ * small body's (`scale` > 1) bigger still and growing with its spot past 9 lu (A-S2: the soldiers' and shields' spots
+ * were made bigger so their marks read at phone scale), within about 85% of the patch so it stays on its surface.
  */
 export function markSizeLu(r: number, big: boolean, scale = 1): number {
-  const fit = Math.max(6, Math.min(9, 1.3 * r));
+  const fit = Math.max(6, scale === 1 ? Math.min(9, 1.3 * r) : 1.3 * r);
   const base = Math.min(fit * (big ? 1.18 : 1), Math.max(6, 1.4 * r) * (big ? 1.1 : 1));
   return scale === 1 ? base : Math.min(base * scale, Math.max(base, 1.75 * r));
 }

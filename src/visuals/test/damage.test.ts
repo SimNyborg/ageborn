@@ -173,6 +173,21 @@ describe('marks (design 3.2 "Variety and keying")', () => {
       expect(markSizeLu(r, false, BOLD_MARK_SCALE)).toBeGreaterThan(markSizeLu(r, false, SMALL_MARK_SCALE) - 1e-9);
       expect(markSizeLu(r, false, BOLD_MARK_SCALE)).toBeLessThanOrEqual(Math.max(base, 1.75 * r));
     }
+    // a small body's marks grow with the spot past 9 lu (the enlarged soldier and shield spots), within its patch; a
+    // big body's stay 6-9 lu
+    let last = { small: 0, bold: 0 };
+    for (let r = 5; r <= 10; r += 0.5) {
+      for (const big of [false, true]) {
+        for (const scale of [SMALL_MARK_SCALE, BOLD_MARK_SCALE]) expect(markSizeLu(r, big, scale)).toBeLessThanOrEqual(1.75 * r + 1e-9);
+      }
+      const now = { small: markSizeLu(r, false, SMALL_MARK_SCALE), bold: markSizeLu(r, false, BOLD_MARK_SCALE) };
+      expect(now.small).toBeGreaterThan(last.small);
+      expect(now.bold).toBeGreaterThan(last.bold);
+      last = now;
+    }
+    expect(markSizeLu(9, false, SMALL_MARK_SCALE)).toBeGreaterThan(13);
+    expect(markSizeLu(9, false, BOLD_MARK_SCALE)).toBeGreaterThan(15);
+    expect(markSizeLu(9, false)).toBeLessThanOrEqual(9);
     // the model gives a soldier and an armoured troop the bold first mark, a beast the standard one
     expect(new DamageModel('soldier', 3, spots).update(7000, 0)?.mark?.slot.scale).toBe(BOLD_MARK_SCALE);
     expect(new DamageModel('armoured', 3, spots).update(7000, 0)?.mark?.slot.scale).toBe(BOLD_MARK_SCALE);
@@ -378,6 +393,27 @@ describe('weary motion (design 3.5: presentation only)', () => {
     expect(b.side).toEqual(a.side);
     // the same starts, within a frame of the slower rate
     expect(b.at.map((t, i) => Math.abs(t - (a.at[i] as number)) <= 1000 / 30 + 1e-6)).toEqual(b.at.map(() => true));
+  });
+
+  it('idles below stage 2 exactly as it updates there: the same motion once the unit tires (W0 cut)', () => {
+    // a unit unhurt for a while (contacts and their dips included), then at its last stage: `idle` for the unhurt frames
+    // gives the same poses afterwards as `update` at stage 0 did
+    for (const family of ['soldier', 'vehicle', 'energy', 'flyer', 'mech'] as const) {
+      const trace = (idle: boolean): string[] => {
+        const w = new WearyClock(family, 21);
+        for (let i = 0; i < 90; i++) {
+          if (i % 7 === 0) w.contact();
+          if (idle) w.idle(16);
+          else expect(w.update(16, 0, { moving: true, reduce: false })).toMatchObject({ idleRate: 1, squash: 0, dipLu: 0, shiftLu: 0, pitchDeg: 0, flicker: 0, puff: false });
+        }
+        w.contact();
+        w.contact();
+        const out: string[] = [];
+        for (let i = 0; i < 400; i++) out.push(JSON.stringify(w.update(16, 3, { moving: i % 2 === 0, reduce: false })));
+        return out;
+      };
+      expect(trace(true)).toEqual(trace(false));
+    }
   });
 
   it('is deterministic for a seed', () => {

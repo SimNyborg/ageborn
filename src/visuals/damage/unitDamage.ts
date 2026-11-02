@@ -98,6 +98,9 @@ function whenIdle(fn: (left: () => number) => void): void {
 /** At most this long of baking in one idle slice (ms). */
 const KIT_SLICE_MS = 8;
 
+/** The pose of a unit that shows nothing weary (`update` below stage 2 without marks). */
+const NEUTRAL_POSE: Readonly<WearyPose> = Object.freeze({ idleRate: 1, squash: 0, dipLu: 0, shiftLu: 0, pitchDeg: 0, flicker: 0, puff: false });
+
 /** Every part of the damage kit: the marks and strips the units wear, and the step's pieces and flames. */
 export function damageKitParts(): string[] {
   return [...markParts(), ...DAMAGE_STRIP_PARTS, ...DAMAGE_FX_PARTS];
@@ -285,7 +288,13 @@ export class UnitDamage {
   /** Advances the clocks (game ms) and returns the motion to add this frame. */
   update(dtMs: number, moving: boolean): Readonly<WearyPose> {
     this.clock += Math.max(0, dtMs);
-    this.model.prune(this.clock);
+    const m = this.model;
+    // an unhurt unit (most units, most frames): nothing to prune and no weary motion, so no pose to build (W0)
+    if (m.stage === 0 && m.marks.length === 0 && m.strip === null) {
+      this.weary.idle(dtMs);
+      return NEUTRAL_POSE;
+    }
+    m.prune(this.clock);
     // one options object for the life of the view (no allocation per frame)
     const wo = this.wearyOpts;
     wo.moving = moving;

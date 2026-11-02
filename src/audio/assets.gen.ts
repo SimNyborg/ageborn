@@ -38,12 +38,12 @@ export interface MusicFile {
   alt?: string;
 }
 
-export const SFX_BYTES = 3803118;
+export const SFX_BYTES = 3824474;
 export const MUSIC_BYTES = 6730878;
 
 export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
   ui: { src: "audio/sfx/ui.40bf754e.ogg", bytes: 146453, seconds: 29.01, alt: "audio/sfx/ui.d47ded06.m4a", sync: 0.02031 },
-  battle: { src: "audio/sfx/battle.282ec87e.ogg", bytes: 309004, seconds: 60.981, alt: "audio/sfx/battle.cc79ef52.m4a", sync: 0.02031 },
+  battle: { src: "audio/sfx/battle.9505595e.ogg", bytes: 330360, seconds: 65.214, alt: "audio/sfx/battle.e915bc99.m4a", sync: 0.02031 },
   stone: { src: "audio/sfx/stone.9bce7610.ogg", bytes: 204254, seconds: 40.759, alt: "audio/sfx/stone.32e7e80b.m4a", sync: 0.02031 },
   bronze: { src: "audio/sfx/bronze.07809bb2.ogg", bytes: 241403, seconds: 48.464, alt: "audio/sfx/bronze.c620a791.m4a", sync: 0.02031 },
   medieval: { src: "audio/sfx/medieval.c5faa6d4.ogg", bytes: 239381, seconds: 47.036, alt: "audio/sfx/medieval.2ad20c60.m4a", sync: 0.02031 },
@@ -120,6 +120,12 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   clash_crash: { sheet: "battle", variants: [[47.27242, 0.82848], [48.1509, 0.82971]] },
   leap_land: { sheet: "battle", variants: [[49.0306, 0.25], [49.3306, 0.25], [49.6306, 0.25]] },
   ambience_battle: { sheet: "battle", variants: [[49.9306, 11.0]], loop: [0.25, 10.5] },
+  dmg_rip: { sheet: "battle", variants: [[60.9806, 0.13], [61.1606, 0.13], [61.3406, 0.13]] },
+  dmg_clank: { sheet: "battle", variants: [[61.5206, 0.222], [61.7926, 0.222], [62.0646, 0.222]] },
+  dmg_splinter: { sheet: "battle", variants: [[62.3366, 0.10565], [62.49225, 0.1146], [62.65685, 0.13]] },
+  dmg_crunch: { sheet: "battle", variants: [[62.83685, 0.13758], [63.02444, 0.138], [63.21244, 0.138]] },
+  dmg_zap: { sheet: "battle", variants: [[63.40044, 0.1], [63.55044, 0.1], [63.70044, 0.1]] },
+  dmg_ignite: { sheet: "battle", variants: [[63.85044, 0.39275], [64.29319, 0.41177], [64.75496, 0.40858]] },
   shot_sling: { sheet: "stone", variants: [[0.15, 0.13], [0.33, 0.13], [0.51, 0.13]] },
   shot_catapult: { sheet: "stone", variants: [[0.69, 0.58048], [1.32048, 0.57002], [1.9405, 0.58377]] },
   bee_buzz: { sheet: "stone", variants: [[2.57427, 0.4], [3.02427, 0.4], [3.47427, 0.4]] },
