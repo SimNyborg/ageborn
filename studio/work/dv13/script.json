@@ -1,0 +1,6 @@
+{"lead": 0.05, "lines": [
+ {"key": "l0", "text": "My soldiers just shot down the mothership. Fight over?", "gap": 0.35},
+ {"key": "l1", "text": "Not quite. A second later, something hits all four of them.", "gap": 0.4},
+ {"key": "l2", "text": "Just before it died, the ship called in a strike. And the strike still lands.", "gap": 0.4},
+ {"key": "l3", "text": "Should a dead unit's last attack still count?", "gap": 0.3}
+]}
