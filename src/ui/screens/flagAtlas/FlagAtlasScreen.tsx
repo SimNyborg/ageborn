@@ -20,12 +20,13 @@
  * Strings live in `src/i18n/flags.en.json` (`cosmetic.flagAtlas.*`, regions `cosmetic.flagRegion.*`).
  */
 import './flagAtlas.css';
-import { countDuration } from '@/core/motion';
 import { flagRegionNameKey, titleNameKey } from '@/content/keys';
 import type { FlagRegion } from '@/content/types';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
+import { CurrencyChip } from '../../components/Chips';
+import { useCollect } from '../../components/collect';
 import { useConfirmSpend } from '../../components/confirm';
 import { CosmeticImage, flagSpriteStyle, useCosmeticImage, useFlagAtlasReady } from '../../components/cosmeticArt';
 import { formatInt } from '../../components/format';
@@ -75,56 +76,6 @@ function SearchGlyph() {
       <circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="2.6" />
       <path d="M15.2 15.2l5 5" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
     </svg>
-  );
-}
-
-/** A number that rolls to its new value (MR-20: `out` easing over the count token for the change), then bumps. */
-function useRolling(value: number, still: boolean): { shown: number; bump: boolean } {
-  const [shown, setShown] = useState(value);
-  const [bump, setBump] = useState(false);
-  useEffect(() => {
-    if (shown === value) return undefined;
-    if (still || typeof requestAnimationFrame !== 'function') {
-      setShown(value);
-      return undefined;
-    }
-    const from = shown;
-    const t0 = performance.now();
-    const dur = countDuration(value - from);
-    let raf = 0;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const step = (now: number): void => {
-      const k = Math.min(1, (now - t0) / dur);
-      setShown(Math.round(from + (value - from) * (1 - (1 - k) ** 3)));
-      if (k < 1) raf = requestAnimationFrame(step);
-      else {
-        setBump(true);
-        timer = setTimeout(() => setBump(false), 260);
-      }
-    };
-    raf = requestAnimationFrame(step);
-    return () => {
-      cancelAnimationFrame(raf);
-      if (timer) clearTimeout(timer);
-      setShown(value);
-    };
-  }, [value]);
-  return { shown, bump };
-}
-
-/** The Dust chip of the header; its number rolls to a new balance instead of jumping. */
-function DustCounter(p: { value: number; still: boolean }) {
-  const { t, locale } = useUi();
-  const { shown, bump } = useRolling(p.value, p.still);
-  return (
-    <span class={`ui-chip ui-chip--dust ui-chip--compact fa-dust${bump ? ' is-pop' : ''}`} data-testid="atlas-dust" title={t('ui.currency.dust')}>
-      <span class="ui-chip__icon">
-        <DustIcon size={22} />
-      </span>
-      <span class="ui-chip__value ui-num" aria-label={`${t('ui.currency.dust')}: ${formatInt(p.value, locale)}`}>
-        {formatInt(shown, locale)}
-      </span>
-    </span>
   );
 }
 
@@ -433,6 +384,7 @@ function RewardReveal(p: { item: { kind: 'region'; region: FlagRegion; reward: s
 
 export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
   const { t, locale, router, services, save, content, sound, toasts } = useUi();
+  const collect = useCollect();
   const art = useCosmeticImage();
   // the grid waits for the one flag atlas (soft placeholders meanwhile), then shows its cells
   const ready = useFlagAtlasReady(art);
@@ -524,6 +476,7 @@ export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
   const buy = (): boolean => {
     if (!chosen) return false;
     const before = services.flagAtlasProgress();
+    const dustBefore = save.peek().currencies.dust;
     const r = services.buyNationalFlag(chosen.key);
     if (!r.ok) {
       sound?.('ui_deny');
@@ -534,6 +487,10 @@ export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
     haptic('thump');
     setPop(chosen.key);
     setUnfurl((n) => n + 1);
+    // Queue item 48: the Dust leaves the counter for the flag it bought while the counter counts down.
+    const dustAfter = save.peek().currencies.dust;
+    const flag = typeof document !== 'undefined' ? document.querySelector('[data-testid="atlas-big-flag"]') : null;
+    if (flag && dustAfter < dustBefore) collect({ kind: 'dust', mode: 'spend', amount: dustBefore - dustAfter, from: flag, total: dustAfter });
     const won = newRewards(before, services.flagAtlasProgress());
     if (won.length > 0) {
       // the purchase lands first (the unfurl, the stamp, the Dust roll), then the reward: medium moments
@@ -592,7 +549,7 @@ export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
           <span class="ui-num">{t('ui.common.progress', { n: formatInt(atlas.owned, locale), max: formatInt(atlas.total, locale) })}</span>
         </span>
       }
-      right={<DustCounter value={s.currencies.dust} still={still} />}
+      right={<CurrencyChip kind="dust" value={s.currencies.dust} compact testid="atlas-dust" />}
     >
       <div class={`fa${chosen ? ' has-sheet' : ''}${ready ? ' is-ready' : ''}`} data-testid="flag-atlas" data-flag={chosen?.key ?? ''} data-region={filter}>
         <div class="fa-main">

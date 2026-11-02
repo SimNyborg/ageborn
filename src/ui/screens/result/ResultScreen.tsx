@@ -41,6 +41,7 @@ import {
 } from '../../components/icons';
 import { pendingCrests, pendingNameKey, visibleTier } from '../../components/capsuleLook';
 import { starPitchBp, useKit } from '../../components/kit';
+import { useCollect } from '../../components/collect';
 import { ClayMeter, ProgressBar } from '../../components/Meters';
 import type { ResultCard, RouteOf } from '../../router';
 import { useUi } from '../context';
@@ -75,6 +76,24 @@ const BANNER_KEYS = { win: 'ui.result.victory', loss: 'ui.result.defeat', draw: 
  */
 const MOMENT_OF = new WeakMap<object, VictoryMoveDef | null>();
 const MOMENT_PLAYED = new WeakSet<object>();
+
+/** Results whose Amber and Dust have flown into the wallet (queue item 48): once, never again on a return. */
+const COLLECTED = new WeakSet<object>();
+
+/** When the wallet moment starts after the summary row: once its pills have risen in (`ui-enter`, 320 ms). */
+export const RESULT_COLLECT_DELAY_MS = 360;
+
+/** The Amber and the Dust a Result shows as earned: its Amber and Dust steps and each found feat's Dust. */
+export function resultCurrency(rewards: readonly RewardStep[], content: Content): { amber: number; dust: number } {
+  let amber = 0;
+  let dust = 0;
+  for (const r of rewards) {
+    if (r.kind === 'amber') amber += Math.max(0, r.amount);
+    else if (r.kind === 'dust') dust += Math.max(0, r.amount);
+    else if (r.kind === 'feat') dust += Math.max(0, content.feats.list[r.featId]?.dust ?? 0);
+  }
+  return { amber, dust };
+}
 
 /**
  * The War Path level badge on the Result (4.9, 2.7 "a star stamps onto the level badge"): the level's
@@ -188,10 +207,14 @@ function RewardRow(p: {
   tone?: 'good' | 'bad' | 'gold';
   children?: ComponentChildren;
   testid: string;
+  /** Amber or Dust: the row's icon is where the collect moment's pieces burst from (queue item 48). */
+  currency?: 'amber' | 'dust';
 }) {
   return (
     <li class={`result-reward result-reward--${p.tone ?? 'gold'}`} data-testid={p.testid}>
-      <span class="result-reward__icon">{p.icon}</span>
+      <span class="result-reward__icon" data-currency={p.currency}>
+        {p.icon}
+      </span>
       <span class="result-reward__main">
         <span class="result-reward__label">{p.label}</span>
         {p.children}
@@ -244,6 +267,7 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
       return (
         <RewardRow
           testid="reward-amber"
+          currency="amber"
           icon={<AmberIcon size={34} shine />}
           label={t('ui.currency.amber')}
           value={formatSigned(r.amount, locale)}
@@ -254,6 +278,7 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
       return (
         <RewardRow
           testid="reward-dust"
+          currency="dust"
           icon={<DustIcon size={34} shine />}
           label={t('ui.currency.dust')}
           value={formatSigned(r.amount, locale)}
@@ -427,7 +452,7 @@ function FeatStage(p: { featId: string }) {
       label={t('ui.result.featFound', { name: def ? t(def.nameKey) : p.featId })}
       value={
         def ? (
-          <span class="result-reward__dust">
+          <span class="result-reward__dust" data-currency="dust">
             <DustIcon size={22} /> {formatSigned(def.dust, locale)}
           </span>
         ) : undefined
@@ -479,13 +504,13 @@ function SummaryChip(p: { r: RewardStep }) {
       );
     case 'amber':
       return (
-        <span class="result-sum__chip">
+        <span class="result-sum__chip" data-currency="amber" data-testid="sum-amber">
           <AmberIcon size={18} /> {formatSigned(r.amount, locale)}
         </span>
       );
     case 'dust':
       return (
-        <span class="result-sum__chip">
+        <span class="result-sum__chip" data-currency="dust" data-testid="sum-dust">
           <DustIcon size={18} /> {formatSigned(r.amount, locale)}
         </span>
       );
@@ -738,6 +763,32 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
 
   const skipOne = () => setShown((n) => Math.min(stages.length, n + 1));
   const done = shown >= stages.length;
+
+  // Queue item 48: once the rewards are all in, what was earned flies into the wallet: the Amber and Dust
+  // pills burst, the pieces arc to the counter (a wallet chip that drops in at the top right, where Home keeps
+  // it) and it counts up to the save's total. Once per match; presentation only (the save already holds it).
+  const collect = useCollect();
+  const rewardsRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!done || retreated || COLLECTED.has(info)) return undefined;
+    const earned = resultCurrency(info.rewards, content);
+    if (earned.amber <= 0 && earned.dust <= 0) return undefined;
+    COLLECTED.add(info);
+    const id = setTimeout(() => {
+      const box = rewardsRef.current;
+      const wallet = save.peek().currencies;
+      const at = (kind: 'amber' | 'dust') => (box ? Array.from(box.querySelectorAll(`[data-currency="${kind}"]`)) : []);
+      if (earned.amber > 0) {
+        const from = at('amber');
+        if (from.length) collect({ kind: 'amber', amount: earned.amber, from, total: wallet.amber });
+      }
+      if (earned.dust > 0) {
+        const from = at('dust');
+        if (from.length) collect({ kind: 'dust', amount: earned.dust, from, total: wallet.dust, delay: earned.amber > 0 ? 260 : 0 });
+      }
+    }, RESULT_COLLECT_DELAY_MS);
+    return () => clearTimeout(id);
+  }, [done]);
   const mvp = stats.mvpCard ? cardTile(save.value, content, stats.mvpCard, t) : null;
   const card = done && cardOpen ? (info.card ?? null) : null;
   // A stopping card makes Home the primary button (A15.6).
@@ -930,6 +981,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
           data-scroll=""
           aria-live="polite"
           onClick={skipOne}
+          ref={rewardsRef}
         >
           {info.tipKey ? <ResultTip tipKey={info.tipKey} tipCard={info.tipCard} tipAge={info.tipAge} /> : null}
           <h2 class="result__h" id="result-rewards-title">

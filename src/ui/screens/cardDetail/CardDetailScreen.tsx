@@ -25,7 +25,8 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { useConfirmSpend } from '../../components/confirm';
 import { haptic } from '../../components/haptics';
-import { fly, reducedMotion } from '../../components/motion';
+import { reducedMotion } from '../../components/motion';
+import { useCollect } from '../../components/collect';
 import { CardTile, type CardTileData } from '../../components/CardTile';
 import { CLASS_NAME_KEY, ClassChip, ClassIcon, counterNoteKey } from '../../components/ClassIcon';
 import { CurrencyChip, Pill } from '../../components/Chips';
@@ -82,6 +83,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   const id: CardId = p.route.card;
   const def = cardDef(content, id);
   const kit = useUi();
+  const collect = useCollect();
   // MR-39 ceremony: 'charge' (300 ms: Amber flies in, the card trembles), then 'impact' (burst, the
   // level flips, the stat rows tick with green chips), then done. A tap on the stage skips it.
   const [cer, setCer] = useState<{
@@ -157,14 +159,22 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   }
 
   function doUpgrade(): boolean {
+    const before = save.peek().currencies;
     const r = services.upgrade(id);
     if (r.ok) {
       setCer((c) => ({ n: (c?.n ?? 0) + 1, from: level, phase: 'charge' }));
       kit.sound?.('level_up');
-      // Amber tokens fly from the Amber chip into the card (a reverse MR-21).
-      const chip = typeof document !== 'undefined' ? document.querySelector('[data-testid="cd-amber"]') : null;
+      // MR-39's charge with queue item 48's reverse: the Amber pieces leave the counter for the card while it
+      // counts down; what the upgrade paid back (a Codex level's Amber, the Dust of copies past the cap) then
+      // flies from the card into the wallet.
+      const after = save.peek().currencies;
       const card = stageRef.current?.querySelector('.cd-stage__card');
-      if (chip && card) fly(chip, card, { count: 5 });
+      if (card) {
+        const spent = collect({ kind: 'amber', mode: 'spend', amount: price, from: card, total: before.amber - price });
+        const back = after.amber - (before.amber - price);
+        if (back > 0) void spent.done.then(() => collect({ kind: 'amber', amount: back, from: card, total: after.amber }));
+        if (after.dust > before.dust) collect({ kind: 'dust', amount: after.dust - before.dust, from: card, total: after.dust, delay: MOTION_DUR.medium });
+      }
       return true;
     }
     toasts.show(t(reasonKey(r.reason)), { tone: 'bad', anchor: upRef.current });
@@ -172,11 +182,16 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   }
 
   function doCraft(anchor: HTMLElement | null): boolean {
+    const before = save.peek().currencies.dust;
     const r = services.craft(id);
     toasts.show(r.ok ? t('ui.card.crafted') : t(reasonKey(r.reason)), {
       tone: r.ok ? 'good' : 'bad',
       anchor,
     });
+    // Queue item 48: the Dust leaves the counter for the card it became.
+    const after = save.peek().currencies.dust;
+    const card = stageRef.current?.querySelector('.cd-stage__card');
+    if (r.ok && card && after < before) collect({ kind: 'dust', mode: 'spend', amount: before - after, from: card, total: after });
     return r.ok;
   }
 

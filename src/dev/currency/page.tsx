@@ -5,21 +5,24 @@
  * - `#currency/844x390/icons` and `#currency/1280x720/icons`: the icon sheet (13 to 96 px, plain and with the
  *   idle shine) on the app background, a panel, a raised row and a button face.
  * - `.../context`: the chips, reward rows, summary pills, quest and road rewards and buttons, as the screens draw them.
- * - `.../lab` (add `/rm` for reduce motion): a mock top bar and reward sources; the buttons play the moment
- *   (`window.__currencyLab.play(kind, amount, mode, target)` does the same for captures).
+ * - `.../lab` (add `/rm` for reduce motion, `/wallet` for a top bar without counters): a mock top bar and
+ *   reward sources; the buttons play the moment (`window.__currencyLab.play(kind, amount, mode, src)` and
+ *   `.both()` do the same for captures; `?step=1` and `window.__collectSounds`: `src/dev/collectStep.ts`).
  *
  * Dev pages are internal tools and are exempt from the i18n rule.
  */
 import { i18n } from '@/i18n';
 import { Button, IconButton } from '@/ui/components/Button';
 import { CurrencyChip } from '@/ui/components/Chips';
+import { primeCollectArt, useCollect } from '@/ui/components/collect';
 import { AmberIcon, BackIcon, DustIcon } from '@/ui/components/icons';
 import { PortalContext, UiKitContext, type UiKit } from '@/ui/components/kit';
 import '@/ui/theme.css';
 import '@/ui/motion.css';
 import '@/ui/screens/result/result.css';
 import type { ComponentChildren } from 'preact';
-import { useMemo, useRef } from 'preact/hooks';
+import { installCollectCapture } from '../collectStep';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 export const title = 'Amber and Dust (queue item 48)';
 
@@ -143,17 +146,112 @@ function InContext() {
   );
 }
 
+installCollectCapture();
+
+type Wallet = { amber: number; dust: number };
+
+/**
+ * The lab: a top bar with the two counters (or none: `#currency/<vp>/lab/wallet`, where the wallet chip drops
+ * in), and reward sources like the screens': a Result's summary pills, a feat row, a Trophy Road node, a quest,
+ * and a card to spend on. Each button plays the moment exactly as the screens do.
+ */
+function Lab(p: { wallet: Wallet; setWallet: (w: Wallet) => void; chips: boolean }) {
+  const collect = useCollect();
+  useEffect(() => void primeCollectArt(), []);
+  const pills = useRef<HTMLDivElement>(null);
+  const road = useRef<HTMLDivElement>(null);
+  const card = useRef<HTMLDivElement>(null);
+  const earn = (kind: 'amber' | 'dust', amount: number, src: 'pills' | 'road', delay = 0) => {
+    const total = p.wallet[kind] + amount;
+    const box = src === 'road' ? road.current : pills.current;
+    const from = box ? Array.from(box.querySelectorAll(`[data-currency="${kind}"]`)) : [];
+    return { total, go: () => collect({ kind, amount, from, total, delay }) };
+  };
+  const play = (kind: 'amber' | 'dust', amount: number, mode: 'earn' | 'spend' = 'earn', src: 'pills' | 'road' = 'pills') => {
+    if (mode === 'spend') {
+      const total = Math.max(0, p.wallet[kind] - amount);
+      p.setWallet({ ...p.wallet, [kind]: total });
+      if (card.current) collect({ kind, amount, from: card.current, total, mode: 'spend' });
+      return;
+    }
+    const e = earn(kind, amount, src);
+    p.setWallet({ ...p.wallet, [kind]: e.total });
+    e.go();
+  };
+  const both = () => {
+    const a = earn('amber', 310, 'road');
+    const d = earn('dust', 100, 'road', 220);
+    p.setWallet({ amber: a.total, dust: d.total });
+    a.go();
+    d.go();
+  };
+  (window as Window & { __currencyLab?: unknown }).__currencyLab = { play, both };
+  const pill: Record<string, string | number> = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    height: '34px',
+    padding: '0 12px',
+    borderRadius: '999px',
+    background: 'rgba(8,10,14,0.55)',
+    border: '1px solid rgba(107,120,144,0.45)',
+    fontWeight: 800,
+    fontSize: '16px',
+  };
+  const btn = (label: string, f: () => void, testid: string) => (
+    <Button kind="secondary" size="s" onClick={f} testid={testid}>
+      {label}
+    </Button>
+  );
+  return (
+    <div style={{ display: 'grid', gap: '10px' }} data-testid="currency-lab" data-chips={p.chips ? 'yes' : 'no'}>
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        {btn('Amber +20', () => play('amber', 20), 'lab-a20')}
+        {btn('Amber +350', () => play('amber', 350), 'lab-a350')}
+        {btn('Amber +3,000', () => play('amber', 3000), 'lab-a3000')}
+        {btn('Dust +25', () => play('dust', 25), 'lab-d25')}
+        {btn('Dust +400', () => play('dust', 400), 'lab-d400')}
+        {btn('Road: both', both, 'lab-both')}
+        {btn('Spend 350 Amber', () => play('amber', 350, 'spend'), 'lab-sa')}
+        {btn('Spend 100 Dust', () => play('dust', 100, 'spend'), 'lab-sd')}
+      </div>
+      <div style={{ display: 'flex', gap: '18px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+        <div ref={pills} style={{ display: 'flex', gap: '8px', padding: '10px', borderRadius: '14px', background: 'var(--ui-surface-1)' }} data-testid="lab-pills">
+          <span style={pill} data-currency="amber">
+            <AmberIcon size={18} /> +47
+          </span>
+          <span style={pill} data-currency="dust">
+            <DustIcon size={18} /> +25
+          </span>
+        </div>
+        <div ref={road} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 14px', borderRadius: '14px', background: '#2c2552' }} data-testid="lab-road">
+          <span style={{ display: 'inline-flex', gap: '6px', alignItems: 'center', fontWeight: 800 }} data-currency="amber">
+            <AmberIcon size={30} /> 310
+          </span>
+          <span style={{ display: 'inline-flex', gap: '6px', alignItems: 'center', fontWeight: 800 }} data-currency="dust">
+            <DustIcon size={30} /> 100
+          </span>
+        </div>
+        <div ref={card} style={{ width: '64px', height: '84px', borderRadius: '10px', background: 'linear-gradient(#3a4660, #232a39)', border: '2px solid #22b8cf' }} data-testid="lab-card" />
+      </div>
+    </div>
+  );
+}
+
 export default function CurrencyPage() {
   const { viewport, view, mode } = parse();
   const [w, h] = viewport.split('x').map(Number) as [number, number];
   const rootRef = useRef<HTMLDivElement>(null);
-  const kit: UiKit = useMemo(() => ({ t, locale: 'en', portrait: null, reduceMotion: mode === 'rm' }), [mode]);
+  const kit: UiKit = useMemo(() => ({ t, locale: 'en', portrait: null, reduceMotion: mode === 'rm', sound: () => undefined }), [mode]);
   const compact = h <= 480;
+  const [wallet, setWallet] = useState<Wallet>({ amber: 3450, dust: 820 });
+  // `/wallet` (or `/rm/wallet`): no counters in the top bar, so the wallet chip drops in for the moment
+  const chips = !window.location.hash.includes('/wallet');
   const body =
     view === 'context' ? (
       <InContext />
     ) : view === 'lab' ? (
-      <div data-testid="currency-lab-empty">The collect moment lab arrives with the module.</div>
+      <Lab wallet={wallet} setWallet={setWallet} chips={chips} />
     ) : (
       <IconSheet compact={compact} />
     );
@@ -170,7 +268,14 @@ export default function CurrencyPage() {
                     <div class="ui-screen__titles">
                       <h1 class="ui-screen__title">Amber and Dust</h1>
                     </div>
-                    <div class="ui-screen__right" />
+                    <div class="ui-screen__right">
+                      {view === 'lab' && chips ? (
+                        <>
+                          <CurrencyChip kind="amber" value={wallet.amber} testid="chip-amber" />
+                          <CurrencyChip kind="dust" value={wallet.dust} testid="chip-dust" />
+                        </>
+                      ) : null}
+                    </div>
                   </header>
                   <div class="ui-screen__body" style={{ padding: '10px 16px' }}>
                     {body}

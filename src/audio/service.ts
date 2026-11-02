@@ -108,8 +108,8 @@ export const SFX_SHEET_IDLE_MS = 60_000;
 /** How often (ms) the idle effect sheets are looked for. */
 const SFX_IDLE_CHECK_MS = 5000;
 
-/** Effect sheets never let go of: the UI, the shared battle sounds and the match's. */
-const KEPT_SHEETS: readonly string[] = ['ui', 'battle', 'match'];
+/** Effect sheets never let go of: the UI and its Amber and Dust (queue item 48), the shared battle sounds and the match's. */
+const KEPT_SHEETS: readonly string[] = ['ui', 'currency', 'battle', 'match'];
 
 /** The battle ambience loop's sound id (a loop window in the battle sheet, `SfxFileEntry.loop`). */
 export const AMBIENCE_ID = 'ambience_battle';
@@ -160,8 +160,11 @@ const SHEETS_FOR_CUE: Readonly<Record<MusicCueId, readonly string[]>> = {
   'music.cosmic': ['cosmic', 'match'],
   'music.capsule': ['capsule'],
 };
-/** Sheets loaded right after unlock, in order (every match opens in Stone and moves to Bronze). */
-const BOOT_SHEETS: readonly string[] = ['ui', 'battle', 'stone', 'bronze', 'match'];
+/**
+ * Sheets loaded right after unlock, in order (every match opens in Stone and moves to Bronze). The small `currency`
+ * sheet (queue item 48) comes with the UI's: a quest or a road reward can be claimed in the first minute.
+ */
+const BOOT_SHEETS: readonly string[] = ['ui', 'currency', 'battle', 'stone', 'bronze', 'match'];
 
 export interface ServiceStats {
   started: number;

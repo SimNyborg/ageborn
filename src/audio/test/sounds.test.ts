@@ -141,6 +141,8 @@ const A13: Record<string, string[]> = {
   ],
   /** Visible battle damage (queue item 40): the quiet material layers of a damage step and the fire catching. */
   damage: ['dmg_rip', 'dmg_clank', 'dmg_splinter', 'dmg_crunch', 'dmg_zap', 'dmg_ignite'],
+  /** Amber and Dust's collect moment (queue item 48): pickup, tick, chime and spend for each. */
+  currency: ['amber_pickup', 'amber_tick', 'amber_chime', 'amber_spend', 'dust_pickup', 'dust_tick', 'dust_chime', 'dust_spend'],
 };
 const A13_IDS = Object.values(A13).flat();
 
@@ -159,8 +161,8 @@ describe('sound manifest (A13)', () => {
     // + the 19 of the Future wave + the 18 of the Cosmic wave
     // + the 4 of the rarity burst (2026-10-07) + the 10 of the base collapse (2026-10-08)
     // + the 17 of the Result's victory moments (2026-10-08) + the 11 of the combat sound pass (2026-10-18)
-    // + the 6 of visible battle damage (queue item 40, 2026-11-01)
-    expect(A13_IDS).toHaveLength(411);
+    // + the 6 of visible battle damage (queue item 40, 2026-11-01) + the 8 of Amber and Dust's collect moment (queue item 48)
+    expect(A13_IDS).toHaveLength(419);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 
@@ -172,7 +174,8 @@ describe('sound manifest (A13)', () => {
       expect(d.variants.length, id).toBeGreaterThanOrEqual(3);
       expect(d.variants.length, id).toBeLessThanOrEqual(5);
       expect(SOUND_GROUPS, id).toContain(d.group);
-      expect(d.bus, id).toBe(d.group === 'ui' ? 'ui' : 'sfx');
+      // UI sounds and Amber and Dust's collect moment (queue item 48) play on the UI bus
+      expect(d.bus, id).toBe(d.group === 'ui' || d.group === 'currency' ? 'ui' : 'sfx');
     }
     for (const id of A13.ui!) expect(sounds[id]!.bus).toBe('ui');
   });

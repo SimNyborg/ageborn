@@ -14,6 +14,7 @@ File names carry a content hash, so a browser never plays a stale cached file af
 files that are no longer referenced are deleted.
 
 Usage: python build.py   (after render_music.py and render_sfx.py; see README.md)
+       python build.py --only currency   (rebuild those groups' sheets only; see `merge_manifest`)
 """
 from __future__ import annotations
 
@@ -185,6 +186,68 @@ def ts_value(v, indent: int = 0) -> str:
     return json.dumps(v, indent=None, separators=(", ", ": "))
 
 
+def sheet_line(g: str, s: dict) -> str:
+    extra = (f", alt: {json.dumps(s['alt'])}" if "alt" in s else "") + (f", sync: {s['sync']}" if "sync" in s else "")
+    return f"  {g}: {{ src: {json.dumps(s['src'])}, bytes: {s['bytes']}, seconds: {s['seconds']}{extra} }},"
+
+
+def entry_line(sid: str, e: dict) -> str:
+    spans = ", ".join(f"[{a}, {b}]" for a, b in e["variants"])
+    loop = f", loop: [{e['loop'][0]}, {e['loop'][1]}]" if e.get("loop") else ""
+    return f"  {sid}: {{ sheet: {json.dumps(e['sheet'])}, variants: [{spans}]{loop} }},"
+
+
+def merge_manifest(meta: dict, only: list[str], sheets: dict, entries: dict) -> None:
+    """`--only`: puts the rebuilt groups' sheets and entries into the current manifest and keeps every other
+    line exactly as it is (the other sheets, their offsets and the music are not re-encoded), in the order a
+    full build writes them: sheets by group, entries by group and then by id. `SFX_BYTES` is summed again."""
+    import re
+
+    text = GEN.read_text()
+    head, rest = text.split("export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {\n", 1)
+    sheet_block, rest = rest.split("};\n", 1)
+    mid, rest = rest.split("export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {\n", 1)
+    file_block, tail = rest.split("};\n", 1)
+    key = re.compile(r"^  (\w+): \{")
+
+    def keyed(block: str) -> dict[str, str]:
+        out = {}
+        for line in block.splitlines():
+            m = key.match(line)
+            if not m:
+                raise SystemExit(f"unexpected manifest line: {line!r}")
+            out[m.group(1)] = line
+        return out
+
+    old_sheets, old_files = keyed(sheet_block), keyed(file_block)
+    sheet_lines = []
+    for g in meta["groups"]:
+        if g in only:
+            if g in sheets:
+                sheet_lines.append(sheet_line(g, sheets[g]))
+        elif g in old_sheets:
+            sheet_lines.append(old_sheets[g])
+    file_lines, unbuilt = [], []
+    for g in meta["groups"]:
+        for sid, info in meta["sounds"].items():
+            if info["group"] != g:
+                continue
+            if g in only:
+                if sid in entries:
+                    file_lines.append(entry_line(sid, entries[sid]))
+            elif sid in old_files:
+                file_lines.append(old_files[sid])
+            else:
+                # registered since the last full build: its ZzFX fallback plays until then, as before
+                unbuilt.append(sid)
+    if unbuilt:
+        print(f"  not in the current manifest (left for the next full build): {', '.join(unbuilt)}")
+    sfx_bytes = sum(int(re.search(r"bytes: (\d+)", line).group(1)) for line in sheet_lines)
+    head = re.sub(r"export const SFX_BYTES = \d+;", f"export const SFX_BYTES = {sfx_bytes};", head)
+    GEN.write_text(head + "export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {\n" + "".join(l + "\n" for l in sheet_lines) + "};\n" + mid + "export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {\n" + "".join(l + "\n" for l in file_lines) + "};\n" + tail)
+    print(f"merged {', '.join(only)} into {GEN}: sfx {sfx_bytes / 1024:.0f} KB")
+
+
 def write_manifest(sheets: dict, entries: dict, music: dict, sfx_bytes: int, music_bytes: int) -> None:
     lines = [
         "/**",
@@ -233,13 +296,10 @@ def write_manifest(sheets: dict, entries: dict, music: dict, sfx_bytes: int, mus
         "export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {",
     ]
     for g, s in sheets.items():
-        extra = (f", alt: {json.dumps(s['alt'])}" if "alt" in s else "") + (f", sync: {s['sync']}" if "sync" in s else "")
-        lines.append(f"  {g}: {{ src: {json.dumps(s['src'])}, bytes: {s['bytes']}, seconds: {s['seconds']}{extra} }},")
+        lines.append(sheet_line(g, s))
     lines += ["};", "", "export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {"]
     for sid, e in entries.items():
-        spans = ", ".join(f"[{a}, {b}]" for a, b in e["variants"])
-        loop = f", loop: [{e['loop'][0]}, {e['loop'][1]}]" if e.get("loop") else ""
-        lines.append(f"  {sid}: {{ sheet: {json.dumps(e['sheet'])}, variants: [{spans}]{loop} }},")
+        lines.append(entry_line(sid, e))
     lines += ["};", "", "export const MUSIC_FILES: Readonly<Record<string, MusicFile>> = {"]
     for cue, m in music.items():
         extra = ""
@@ -281,6 +341,7 @@ def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description="Encode the rendered audio and write the manifest.")
     ap.add_argument("--manifest-out", type=Path, default=None, help="write the manifest here instead of src/audio/assets.gen.ts")
     ap.add_argument("--no-prune", action="store_true", help="keep files in public/audio that the new manifest no longer lists")
+    ap.add_argument("--only", default=None, help="comma-separated sound groups: build only their sheets and merge them into the current manifest (everything else stays as it is)")
     args = ap.parse_args(argv)
     global GEN
     if args.manifest_out is not None:
@@ -288,7 +349,22 @@ def main(argv: list[str] | None = None) -> None:
         GEN.parent.mkdir(parents=True, exist_ok=True)
     listing = subprocess.run(["npx", "tsx", str(HERE / "list-sounds.ts")], cwd=ROOT, check=True, capture_output=True, text=True).stdout
     meta = merge_pending(json.loads(listing))
+    CACHE.mkdir(parents=True, exist_ok=True)
     (CACHE / "sounds.json").write_text(json.dumps(meta))
+    if args.only:
+        only = [g.strip() for g in args.only.split(",") if g.strip()]
+        unknown = [g for g in only if g not in meta["groups"]]
+        if unknown:
+            raise SystemExit(f"unknown sound groups: {unknown}")
+        print(f"sound effects ({', '.join(only)} only):")
+        sheets, entries, _ = build_sfx(only, {sid: v for sid, v in meta["sounds"].items() if v["group"] in only})
+        keep = {s["src"] for s in sheets.values()} | {s["alt"] for s in sheets.values() if "alt" in s}
+        if not args.no_prune:
+            for f in (PUBLIC / "sfx").iterdir():
+                if f.name.split(".")[0] in only and f"audio/sfx/{f.name}" not in keep:
+                    f.unlink()
+        merge_manifest(meta, only, sheets, entries)
+        return None
     print("sound effects:")
     sheets, entries, sfx_bytes = build_sfx(meta["groups"], meta["sounds"])
     print("music:")

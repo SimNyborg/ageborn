@@ -9,6 +9,7 @@ import { ageNameKey, rarityNameKey, skinNameKey } from '@/content/keys';
 import type { AgeId, SkinDef } from '@/contracts';
 import { useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
+import { useCollect } from '../../components/collect';
 import { CardArt } from '../../components/CardTile';
 import { CurrencyChip, Pill } from '../../components/Chips';
 import { formatInt } from '../../components/format';
@@ -32,6 +33,7 @@ import { reasonKey } from '../model/reasons';
  */
 export function SkinTile(p: { skin: SkinDef }) {
   const { save, content, t, locale, services, toasts, sound } = useUi();
+  const collect = useCollect();
   const s = save.value;
   const k = p.skin;
   const owned = s.skins.owned.includes(k.id);
@@ -106,9 +108,14 @@ export function SkinTile(p: { skin: SkinDef }) {
           icon={<DustIcon size={18} />}
           inert={s.currencies.dust < price}
           testid={`craft-${k.id}`}
-          onClick={() => {
+          onClick={(e) => {
+            const before = s.currencies.dust;
             const r = services.craft(k.id);
             toasts.show(r.ok ? t('ui.skins.crafted') : t(reasonKey(r.reason)), { tone: r.ok ? 'good' : 'bad' });
+            // Queue item 48: the Dust leaves the counter for the skin it became.
+            const after = save.peek().currencies.dust;
+            const tile = (e.currentTarget as Element | null)?.closest('.col-skin');
+            if (r.ok && tile && after < before) collect({ kind: 'dust', mode: 'spend', amount: before - after, from: tile, total: after });
           }}
         >
           {formatInt(price, locale)}

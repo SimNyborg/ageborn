@@ -62,6 +62,7 @@ const GROUP_TITLES: Record<SoundGroup, string> = {
   industrial: 'Industrial (lazy)',
   cosmic: 'Cosmic (lazy)',
   capsule: 'Capsules (lazy)',
+  currency: 'Amber and Dust (lazy; the sheet loads with the UI)',
 };
 
 const BUSES: Bus[] = ['master', 'music', 'sfx', 'ui', 'voice'];

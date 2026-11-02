@@ -37,8 +37,12 @@ import { createArtProvider } from '@/visuals';
 import { cosmeticImageUrl, onCosmeticPicturesChanged } from '@/visuals/cosmetics/art';
 import { signal } from '@preact/signals';
 import { useEffect, useMemo, useState } from 'preact/hooks';
+import { installCollectCapture } from '../collectStep';
 
 export const title = 'Meta UI screens (WP9)';
+
+// Queue item 48: `?step=1` steps the collect moments (the Result's Amber and Dust) frame by frame for captures
+installCollectCapture();
 
 interface Variant {
   id: string;

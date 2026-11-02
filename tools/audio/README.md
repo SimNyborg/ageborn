@@ -35,6 +35,11 @@ Single pieces: `cd tools/audio/music && python render_music.py music.stone`, or
 `cd tools/audio/sfx && python render_sfx.py hit_blunt coin_gain`, then `python tools/audio/build.py`.
 FluidSynth renders are cached in `tools/audio/.cache/` (git-ignored), so re-runs are fast.
 
+One group only: `python tools/audio/build.py --only currency` packs and encodes just that group's sheet
+(only its ids need renders in `.cache/`) and merges it into `src/audio/assets.gen.ts`, leaving every other
+line of the manifest, every other sheet and the music exactly as they are; stale files of that group are
+deleted. A new group's ids must be in `src/audio/sounds.ts` first.
+
 Then check the result in the browser: `npm run dev`, open `http://localhost:5173/?dev=1#soundboard`,
 press "Render every id and cue offline" (decodes and measures every file) and click through the ids.
 
@@ -51,6 +56,7 @@ press "Render every id and cue offline" (decodes and measures every file) and cl
 | `sfx/kit.py` | Effect building blocks: transients, pitched thumps, bells, plucks, whooshes, debris, crackle, GM layers |
 | `sfx/sounds.py` | Every sound id of DESIGN A13/A14 as a layered design, with its loudness target and variant count |
 | `sfx/sounds_combat.py` | The combat sound pass (queue item 38, A7): kill accent, material layers, body falls, huge bodies' deaths, the clash, the leap landing and the battle ambience loop |
+| `sfx/sounds_currency.py` | Amber and Dust's collect moment (queue item 48): pickup, tick, chime and spend for each currency, in the small `currency` sheet |
 | `sfx/render_sfx.py` | Renders, cleans up, normalises and limits every variant |
 | `build.py` | Packs the sprite sheets, encodes everything to Ogg Opus, writes `src/audio/assets.gen.ts`, deletes stale files; an input it encoded before with the same settings is not encoded again (`.cache/encoded/`), so a rebuild after one changed sheet takes under a minute |
 | `analyze.py` | The numerical listening test (below) |
@@ -135,6 +141,13 @@ press "Render every id and cue offline" (decodes and measures every file) and cl
   0.7 master trim), so a single hit is barely limited and gets its loudness from body; stacked moments
   meet the limiter. The combat layers: `kill_accent` -24, `mat_armour`/`mat_wood` -28 (6 dB under a hit),
   `body_fall_s/m/l` -27/-24/-21, `die_bio_l`/`die_mech_l` -21/-20, `clash_crash` -19, `leap_land` -26.
+- **Amber and Dust** (queue item 48, `src/ui/components/collect.ts`): a moment plays the pickup as the
+  pieces burst out (its swish carries them to the counter), a tick per landing (the game raises each a
+  semitone, so they are caller-pitched) and the chime as the count ends; spending plays one short sound.
+  Amber is warm polished resin (glassy taps, a honey-warm swish, a round C6 E6 G6 chime over C5); Dust is
+  star dust, richer and slower (airy shimmer, glittering pentatonic grains, glass-bell twinkles, a deeper
+  C5 G5 E6 B6 chord with a falling sparkle). Quiet like UI sounds: pickups and spends -29, ticks -33,
+  chimes -26 (Dust -25.5). Their own `currency` sheet loads with the UI's and stays.
 - **Loops in a sheet.** `sfx(..., loop=(start, length))` marks a seamless window inside a sound (the
   battle ambience: its events sit on a circle, it is rendered three times with its reverb and the middle
   copy is cut with 0.25 s of wrap-around margin on both sides); `build.py` writes it to the manifest as

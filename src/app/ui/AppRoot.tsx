@@ -3,6 +3,7 @@ import type { ComponentChildren } from 'preact';
 import { useEffect, useErrorBoundary, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
 import { CurrencyContext, FoundItemsContext } from '@/capsule/summary';
+import { primeCollectArt } from '@/ui/components/collect';
 import { CosmeticArtContext, CosmeticPicturesContext } from '@/ui/components/cosmeticArt';
 import { showcaseMount } from '@/render';
 import { menuStages } from '@/render/showcase';
@@ -233,8 +234,17 @@ export function AppRoot(p: { ui: AppUi }) {
       }),
     [p.ui],
   );
-  // Queue item 48: the capsule show and summary draw Amber and Dust with the UI's icons
-  const currency = useMemo(() => currencyEnv(), []);
+  // Queue item 48: the capsule show and summary draw Amber and Dust with the UI's icons, and the summary's
+  // totals fly into the wallet
+  const currency = useMemo(
+    () => currencyEnv({ save: () => p.ui.controller.save.peek(), sound: (id, o) => p.ui.services.audio.play(id, o), t: p.ui.t }),
+    [p.ui],
+  );
+  useEffect(() => {
+    // the collect moment's pictures decoded ahead (after the boot's own work), so the first moment never waits
+    const id = setTimeout(primeCollectArt, 2000);
+    return () => clearTimeout(id);
+  }, []);
   return (
     <AppUiContext.Provider value={p.ui}>
       {/* A18.9.4: the code-drawn cosmetic art (flags, decorations, emotes) for the screens and the HUD */}

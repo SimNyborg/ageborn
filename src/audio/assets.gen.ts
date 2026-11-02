@@ -38,7 +38,7 @@ export interface MusicFile {
   alt?: string;
 }
 
-export const SFX_BYTES = 3824474;
+export const SFX_BYTES = 3893990;
 export const MUSIC_BYTES = 6730878;
 
 export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
@@ -54,6 +54,7 @@ export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
   future: { src: "audio/sfx/future.690cc856.ogg", bytes: 313687, seconds: 61.683, alt: "audio/sfx/future.5d802444.m4a", sync: 0.02031 },
   cosmic: { src: "audio/sfx/cosmic.15c3e017.ogg", bytes: 275024, seconds: 54.66, alt: "audio/sfx/cosmic.4415733d.m4a", sync: 0.02031 },
   capsule: { src: "audio/sfx/capsule.f9ff7eba.ogg", bytes: 324190, seconds: 64.005, alt: "audio/sfx/capsule.071bd619.m4a", sync: 0.02031 },
+  currency: { src: "audio/sfx/currency.7f73279d.ogg", bytes: 69516, seconds: 13.744, alt: "audio/sfx/currency.4dc840ff.m4a", sync: 0.02031 },
 };
 
 export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
@@ -468,6 +469,14 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   upgrade_slam: { sheet: "capsule", variants: [[60.17946, 0.93835], [61.16781, 0.92756]] },
   level_up: { sheet: "capsule", variants: [[62.14538, 1.6]] },
   reel_tick: { sheet: "capsule", variants: [[63.79537, 0.02], [63.86538, 0.02], [63.93538, 0.02]] },
+  amber_pickup: { sheet: "currency", variants: [[0.15, 0.67], [0.87, 0.67], [1.59, 0.67]] },
+  amber_tick: { sheet: "currency", variants: [[2.31, 0.11], [2.47, 0.11], [2.63, 0.11]] },
+  amber_chime: { sheet: "currency", variants: [[2.79, 1.05958], [3.89958, 1.08173]] },
+  amber_spend: { sheet: "currency", variants: [[5.03131, 0.39], [5.47131, 0.39]] },
+  dust_pickup: { sheet: "currency", variants: [[5.91131, 0.82], [6.78131, 0.82], [7.65131, 0.82]] },
+  dust_tick: { sheet: "currency", variants: [[8.52131, 0.17], [8.74131, 0.17], [8.96131, 0.17]] },
+  dust_chime: { sheet: "currency", variants: [[9.18131, 1.58183], [10.81315, 1.58358]] },
+  dust_spend: { sheet: "currency", variants: [[12.44673, 0.59794], [13.09467, 0.59904]] },
 };
 
 export const MUSIC_FILES: Readonly<Record<string, MusicFile>> = {
