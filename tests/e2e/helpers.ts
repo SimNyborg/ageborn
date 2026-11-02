@@ -118,10 +118,11 @@ export function fastForward(page: Page, ticks: number): Promise<number> {
 
 /**
  * Opens the game with a profile that is past onboarding (step 4, 3 matches played), so the start
- * screen is Home (WP9) and War Plan and Skirmish are open. Uses the `?dev=1&game=1` controller hook.
+ * screen is Home (WP9) and War Plan and Skirmish are open. Uses the `?dev=1&game=1` controller hook;
+ * `query` adds parameters to that page's URL (`&dmgoff=...`, the W0 damage-crash spec).
  */
-export async function pastOnboarding(page: Page): Promise<void> {
-  await page.goto('./?dev=1&game=1');
+export async function pastOnboarding(page: Page, query = ''): Promise<void> {
+  await page.goto(`./?dev=1&game=1${query}`);
   await page.waitForFunction(() => (window as unknown as { __agebornDev?: unknown }).__agebornDev !== undefined, null, { timeout: 30_000 });
   await page.evaluate(() => {
     type Save = { tutorial: { step: number }; matchesPlayed: number; flags: Record<string, boolean>; warPath: { stars: Record<string, number>; legacy: boolean } };

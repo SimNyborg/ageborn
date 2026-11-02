@@ -333,15 +333,6 @@ test('round 3: the test profile (every card owned) plays a Standard War at DPR 2
   await roundThree(browser, baseURL);
 });
 
-/** W0 WebKit-crash diagnostic (temporary): the two wars that crashed in CI's WebKit, twice more each there. */
-const WEBKIT_REPEATS = [2, 3];
-for (const n of WEBKIT_REPEATS) {
-  test(`round 3, again (${n}): WebKit diagnostic`, async ({ browser, baseURL, browserName }) => {
-    test.skip(browserName !== 'webkit', 'the W0 WebKit-crash diagnostic repeats the war in WebKit only');
-    await roundThree(browser, baseURL);
-  });
-}
-
 const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'] as const;
 
 async function reviewTwo(page: Page): Promise<void> {
@@ -395,13 +386,6 @@ async function reviewTwo(page: Page): Promise<void> {
 test('review 2: Customize browsed through every age (Bases and Backdrops, every scene and skin owned), then a Standard War, stays under the budget', async ({ page }) => {
   await reviewTwo(page);
 });
-
-for (const n of WEBKIT_REPEATS) {
-  test(`review 2, again (${n}): WebKit diagnostic`, async ({ page, browserName }) => {
-    test.skip(browserName !== 'webkit', 'the W0 WebKit-crash diagnostic repeats the war in WebKit only');
-    await reviewTwo(page);
-  });
-}
 
 /** Records every WebGL upload from a closed ImageBitmap (it draws nothing; WebKit logs it as an error, Chromium as a warning). */
 function watchClosedUploads(): void {
