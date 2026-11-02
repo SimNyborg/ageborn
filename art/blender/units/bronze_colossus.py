@@ -31,6 +31,8 @@ ground so hard it shakes, with a slow, heavy wind-up):
 import math
 
 from ageborn_art import gait as GT
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art import rigs_future as F
@@ -48,8 +50,8 @@ FEET = (262, 580)
 ANCHORS = {"head": (6, 196), "hitCenter": (0, 104)}
 NO_RETIME = True
 
-BR = "#AC8F6C"           # statue bronze, aged (sat ~37%, outside the colour rule)
-BR_DK = "#806A4E"
+BR = "#AC9375"           # statue bronze, aged (sat 0.32: its shaded tones stay under the colour rule in PNG8)
+BR_DK = "#806D56"
 BR_LT = "#C0A585"
 PATINA = B.VERD_LT
 SEAM = B.FIRE
@@ -58,6 +60,38 @@ FLARE = "#FFFFFF"
 DARK = "#2E2722"
 POL = B.BRONZE           # polished bronze accents (<= 10% of the silhouette)
 RICH = "bronze_rich"     # the polished finish with a tighter highlight (config.FINISHES)
+BLADE_C = "#D6C29E"
+RIVET = "#D9C8A4"        # pale polished rivet heads
+JOIN = "#574C42"         # the dark line where two bronze plates meet
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2. The team zones in two tones (two team-dark rings and twelve polished studs on the shield's
+# face, a team-dark base on the crest, team-dark tips on the pteruges), verdigris streaks running down the near
+# thigh (markings: the statue's weathering where the eye lands after the chest).
+DETAIL_STANDARD = True
+# a brighter finish highlight on the big bronze planes (the war machines' highlight floor, 0.06; raising it mixes
+# polished bronze further toward cream, which lowers its saturation: no colour-rule cost)
+LOOK_HIGHLIGHT = 1.3
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {BR: "bronze", BR_DK: "bronze", BR_LT: "bronze", PATINA: "stone", DARK: "iron", POL: "bronze",
+                  B.BRONZE_HI: "bronze", B.VERD: "bronze", B.VERD_DK: "bronze", B.PLUM: "cloth", B.PLUM_DK: "wood",
+                  B.SAND_LT: "cloth", BLADE_C: "bronze", B.DUST: "stone", RIVET: "bronze", JOIN: "iron",
+                  "team": "cloth"}
+# Obsidian Colossus (DESIGN A5.8, legendary skin): the same statue hewn from black volcanic glass, its seams and
+# heart glowing lilac (never the base unit's orange); the team crest, sash, pauldrons, pteruges and shield face
+# stay team.
+# The glass takes the brushed (flow-banded) breakup with a hot spec, a value step over near-black: at #2E2B36 with
+# the stone breakup the dark planes were flat at game scale (micro 3.30 under the war machines' 3.4).
+OBSIDIAN = {BR: "#3A3644", BR_DK: "#2B2734", BR_LT: "#4A4559", POL: "#5A5470", DARK: "#1A1621", PATINA: "#6E6390",
+            B.VERD: "#6A6288", B.VERD_DK: "#55506C", B.BRONZE_HI: "#7A7194", BLADE_C: "#8C83A8",
+            B.PLUM: "#3D3346", B.PLUM_DK: "#2A2330", SEAM: "#B78CFF", SEAM_CORE: "#F1E6FF", FLARE: "#F6F0FF",
+            RIVET: "#A49BC2", JOIN: "#17141C"}
+SKINS = {"obsidian_colossus": {
+    "palette": OBSIDIAN,
+    "kinds": {"#3A3644": "iron", "#2B2734": "stone", "#4A4559": "stone", "#5A5470": "glass", "#1A1621": "stone",
+              "#6E6390": "stone", "#6A6288": "glass", "#55506C": "stone", "#7A7194": "glass", "#8C83A8": "glass",
+              "#3D3346": "cloth", "#2A2330": "wood", "#A49BC2": "glass", "#17141C": "stone"}}}
 
 HIP_Z = 62.0
 THIGH, SHIN = 32.0, 36.0
@@ -103,6 +137,35 @@ def _ring(center, radius, axis_y=True, sg=1):
     return build
 
 
+def _on_blob(center, radii, z, deg, p=2.6, out=0.0):
+    """The point of a `Geo.blob` (no taper, no rot) at height z and azimuth `deg` (0 = +X, the front; -44 faces
+    the camera at this unit's yaw), pushed `out` lu outward."""
+    cx, cy, cz = center
+    rx, ry, rz = radii
+    zn = max(-1.0, min(1.0, (z - cz) / rz))
+    q = max(0.0, 1.0 - abs(zn) ** p)
+    c, s = math.cos(math.radians(deg)), math.sin(math.radians(deg))
+    t = (q / (abs(c / rx) ** p + abs(s / ry) ** p)) ** (1.0 / p) + out
+    return (cx + t * c, cy + t * s, z)
+
+
+def _rivets(rig, joint, center, radii, z, degs, p=2.6, r=1.0):
+    """A row of pale polished rivet heads round a blob at height z (the audit's rivet rows on war machines)."""
+    g = Geo()
+    for d in degs:
+        g.sphere(_on_blob(center, radii, z, d, p, out=0.25 - r * 0.35), r, cuts=2)
+    rig.part(joint, g, RIVET, finish=B.POLISH, outline=0.3)
+
+
+def _join(rig, joint, center, radii, z, d0, d1, p=2.6, n=10):
+    """A dark plate join round a blob at height z, from azimuth d0 to d1."""
+    pts = [_on_blob(center, radii, z, d0 + (d1 - d0) * i / n, p, out=0.05) for i in range(n + 1)]
+    g = Geo()
+    for a, b in zip(pts, pts[1:]):
+        g.capsule(a, b, 0.5, segs=6, rings=2)
+    rig.part(joint, g, JOIN, outline=0)
+
+
 def _arm(rig, s):
     y = ARM_Y[s]
     z = SHOULDER_Z
@@ -116,6 +179,11 @@ def _arm(rig, s):
     rig.part(f"arm_{s}", g, team=True)
     g = Geo().blob((1.0, y - 1.6 * sg, z - 2.4), (15.6, 13.6, 1.5), p=3.0)
     rig.part(f"arm_{s}", g, B.VERD, finish="metal", outline=0.6)
+    if s == "r":                                    # the near arm's rivets and plate join
+        _rivets(rig, f"arm_{s}", (1.0, y - 1.6 * sg, z - 2.4), (15.6, 13.6, 1.5), z - 2.4,
+                (-110, -84, -58, -32, -6, 20), p=3.0, r=0.9)
+        _join(rig, f"arm_{s}", (0, y, z - 12.5), (8.6, 8.6, 30.0), z - 13.0, -125, 40, p=2.0)
+        _rivets(rig, f"arm_{s}", (0, y, z - 12.5), (8.6, 8.6, 30.0), z - 10.8, (-100, -70, -40, -10, 20), p=2.0)
     g = Geo().lathe([(0, -3.0), (9.2, -2.8), (9.6, 0), (9.2, 2.8), (0, 3.0)], (0, y, z - UPPER), (0, y + 1, z - UPPER),
                     segs=18)
     rig.part(f"fore_{s}", g, DARK, finish="metal")
@@ -125,6 +193,10 @@ def _arm(rig, s):
     rig.part(f"fore_{s}", g, BR, finish="metal")
     g = Geo().blob((0.5, y, z - UPPER - 14.0), (10.2, 10.2, 5.4), p=3.0)           # polished bracer
     rig.part(f"fore_{s}", g, B.VERD, finish="metal", outline=0.8)
+    if s == "r":
+        for dz in (-2.2, 2.2):
+            _rivets(rig, f"fore_{s}", (0.5, y, z - UPPER - 14.0), (10.2, 10.2, 5.4), z - UPPER - 14.0 + dz,
+                    (-100, -60, -20, 20), p=3.0, r=0.9)
     x, hy, hz = HAND[s]
     g = Geo().blob((x + 1.5, hy, hz - 2.0), (11.0, 9.6, 10.4), p=2.6)              # big fist
     g.blob((x + 8.0, hy - 4.0 * sg, hz + 1.0), (4.4, 4.0, 4.0), p=2.4)              # thumb
@@ -144,7 +216,7 @@ def _sword(rig):
     b0 = z + 13.0
     g = Geo().lathe([(0, 0), (4.0, 2.0), (5.2, BLADE * 0.35), (6.4, BLADE * 0.62), (3.8, BLADE * 0.86), (0, BLADE)],
                     (x, y, b0), (x, y, b0 + BLADE), segs=14, squash=(1.0, 0.3))
-    rig.part("sword", g, "#D6C29E", finish=B.POLISH, outline=0.8, outline_hex=BR_DK)
+    rig.part("sword", g, BLADE_C, finish=B.POLISH, outline=0.8, outline_hex=BR_DK)
     g = Geo().capsule((x, y - 2.0, b0 + 3.0), (x, y - 2.0, b0 + BLADE * 0.72), 0.9, 0.5, segs=8, rings=2)
     rig.part("sword", g, glow=SEAM, outline=0)
     rig.track("swordTip", "sword", (x, y, b0 + BLADE))
@@ -170,6 +242,23 @@ def _shield(rig):
     rig.part("shield", g, POL, finish=B.POLISH, outline=0.8)
     g = Geo().lathe([(0, 0.0), (R - 2.6, 0.0), (R - 3.0, 1.6), (R * 0.5, 3.4), (0, 4.2)], at(1.0), at(2.0), segs=32)
     rig.part("shield", g, team=True, outline=0.8)
+    # a team-dark ring (4.5 lu) on the face (the shield in two tones); its caps lie under the face's dome
+
+    def hgt(r):
+        return 1.6 + (R - 3.0 - r) * 1.8 / (R - 3.0 - R * 0.5)
+    for r0, r1 in ((R - 9.0, R - 4.5), (15.5, 18.5)):       # an outer and an inner ring
+        g = Geo().lathe([(r0, hgt(r0) + 0.25), (r1, hgt(r1) + 0.25), (r1, hgt(r1) - 0.5), (r0, hgt(r0) - 0.5)],
+                        at(1.0), at(2.0), segs=40)
+        look.team_part(rig, "shield", g, outline=0)
+    ux0, uy0 = -ny, nx                                        # polished studs round the outer ring
+    g = Geo()
+    for i in range(12):
+        a = 2 * math.pi * (i + 0.5) / 12
+        rr = R - 6.75
+        d = hgt(rr) + 0.55
+        g.sphere((c[0] + ux0 * rr * math.cos(a) + nx * d, c[1] + uy0 * rr * math.cos(a) + ny * d,
+                  c[2] + rr * math.sin(a)), 1.0, cuts=2)
+    rig.part("shield", g, POL, finish=B.POLISH, outline=0.3)
     # lambda chevron, lying on the face (built in the face plane)
     ux, uy = -ny, nx          # in-plane horizontal axis of the face
     k = R / 13.0
@@ -233,6 +322,15 @@ def build(rig):
         sg = 1 if s == "r" else -1
         g = Geo().capsule((0, y, HIP_Z), (0, y, kz), 10.0, 8.4)
         rig.part(f"thigh_{s}", g, BR, finish="metal")
+        if s == "r":                                    # verdigris streaks down the near thigh (camera side)
+            g = Geo()
+            for dz, h, k in ((-9.0, 7.0, 0.0), (-19.0, 5.0, 1.0)):
+                ox, oy = 0.72 * (9.6 - 0.8 * k), -0.69 * (9.6 - 0.8 * k)
+                g.blob((ox + 1.6 * k, y + oy, HIP_Z + dz), (1.6, 1.2, h), p=2.2, rot=(0, 0, 46))
+            rig.part(f"thigh_{s}", g, PATINA)
+            th = ((0, y, (HIP_Z + kz) / 2), (8.8, 8.8, 40.0))
+            _seam(rig, f"thigh_{s}", _line([_on_blob(*th, z, d, p=2.0, out=0.3) for z, d in
+                                            ((47.0, -12), (42.0, 4), (37.5, -14), (33.0, -2))]), r=1.0)
         g = Geo().lathe([(0, -4.0), (8.8, -3.8), (9.4, 0), (8.8, 3.8), (0, 4.0)], (0, y, kz), (0, y + 1, kz), segs=20)
         rig.part(f"shin_{s}", g, DARK, finish="metal")
         _seam(rig, f"shin_{s}", _ring((0, y - 0.6 * sg, kz), 9.8), r=1.2)
@@ -266,13 +364,22 @@ def build(rig):
         g.blob((23.0 * math.cos(ang), 23.0 * math.sin(ang), HIP_Z - 5.0), (6.0, 3.8, 11.5), p=3.4, taper=(0.9, 1.0),
                rot=(0, 0, math.degrees(ang) + 90))
     rig.part("hem", g, team=True)
+    for k in range(n):                                  # team-dark tips on the pteruges
+        ang = math.pi * (0.55 + 1.9 * k / (n - 1))
+        g = KD.shell((23.0 * math.cos(ang), 23.0 * math.sin(ang), HIP_Z - 5.0), (6.0, 3.8, 11.5), p=3.4,
+                     taper=(0.9, 1.0), rot=(0, 0, math.degrees(ang) + 90), keep=[((0, 0, HIP_Z - 12.2), (0, 0, 1))])
+        look.team_part(rig, "hem", g, outline=0)
     g = Geo().blob((1.0, 0, HIP_Z + 7.0), (23.6, 23.4, 3.4), p=3.2)                            # belt
     rig.part("hips", g, B.VERD, finish="metal")
+    _rivets(rig, "hips", (1.0, 0, HIP_Z + 7.0), (23.6, 23.4, 3.4), HIP_Z + 8.6, (-110, -88, -66, -44, -22, 0, 22),
+            p=3.2)
     _seam(rig, "hips", _ring((1.0, 0, HIP_Z + 11.0), 21.0, axis_y=False), r=1.1)
 
     # torso: a muscled bronze cuirass, patina streaks, molten cracks and heart, team sash
     g = Geo().blob((0, 0, 88.0), (19.0, 19.0, 13.0), p=2.6)
     rig.part("torso", g, BR, finish="metal")
+    _join(rig, "torso", (0, 0, 88.0), (19.0, 19.0, 13.0), 82.0, -125, 35, n=14)       # a riveted plate join
+    _rivets(rig, "torso", (0, 0, 88.0), (19.0, 19.0, 13.0), 84.6, (-105, -80, -55, -30, -5, 20))
     g = Geo().blob((1.0, 0, 114.0), (30.0, 29.0, 25.0), p=2.6, taper=(0.78, 1.1))
     rig.part("torso", g, BR_LT, finish="metal")
     g = Geo().blob((17.0, -9.0, 118.0), (12.0, 10.0, 8.6), p=2.2)                                  # pecs
@@ -290,6 +397,9 @@ def build(rig):
     _seam(rig, "torso", _line([(25.0, -19.0, 117.0), (29.0, -6.0, 118.0), (27.0, 4.0, 124.0)]), r=1.2)
     _seam(rig, "torso", _line([(24.0, -20.0, 110.0), (12.0, -28.0, 104.0), (4.0, -29.0, 96.0)]), r=1.2)
     _seam(rig, "torso", _ring((3.0, 0, 140.0), 14.0, axis_y=False), r=1.2)                       # neck
+    ab = ((0, 0, 88.0), (19.0, 19.0, 13.0))
+    _seam(rig, "torso", _line([(4.0, -29.0, 96.0)] + [_on_blob(*ab, z, d, out=0.4) for z, d in
+                                                      ((90.0, -76), (85.0, -64), (80.0, -72), (75.5, -60))]), r=1.1)
     rig.joint("heart", "torso", (26.5, -18.0, 115.0))
     g = Geo().sphere((26.5, -18.0, 115.0), 3.6, cuts=3)
     rig.part("heart", g, glow=SEAM_CORE, outline=0.8, outline_hex=SEAM)
@@ -321,6 +431,10 @@ def build(rig):
     rig.part("eyes", g, glow=SEAM_CORE, outline=0.6, outline_hex=SEAM)
     g = Geo().blob((6.4, 0, 158.6), (15.6, 14.6, 2.0), p=2.8)                                      # polished brow band
     rig.part("head", g, B.VERD, finish="metal", outline=0.6)
+    _rivets(rig, "head", (6.4, 0, 158.6), (15.6, 14.6, 2.0), 158.6, (-118, -97, -76, -55), p=2.8, r=0.9)
+    hd = ((6.0, 0, 158.0), (15.0, 14.0, 15.0))
+    _seam(rig, "head", _line([_on_blob(*hd, z, d, p=2.4, out=0.3) for z, d in
+                              ((161.5, -50), (165.0, -64), (168.0, -56), (170.5, -72))]), r=1.0)
     g = Geo().capsule((20.0, -6.0, 165.0), (20.4, 6.0, 165.0), 1.8)
     rig.part("head", g, POL, finish=RICH, outline=0.6)
     g = Geo().blob((2.0, -9.0, 166.0), (8.0, 1.8, 5.0), p=2.2)
@@ -338,6 +452,15 @@ def build(rig):
         r = 6.0 + 2.6 * math.sin(math.pi * t) - 2.0 * t
         g.blob((x, 0, z), (r * 1.05, 4.2, r), p=2.1)
     rig.part("crest", g, team=True)
+    g = Geo()                                           # a team-dark base along the crest (two tones)
+    for i in range(n):
+        t = i / (n - 1)
+        a = math.pi * (0.1 + 0.95 * t)
+        x = 8.0 + 12.0 * math.cos(a) - 24.0 * t
+        z = 175.0 + 20.0 * math.sin(a) * (1.0 - 0.25 * t)
+        r = 6.0 + 2.6 * math.sin(math.pi * t) - 2.0 * t
+        g.blob((x, 0, z - r * 0.6), (r * 1.1, 4.5, r * 0.5), p=2.1)
+    look.team_part(rig, "crest", g, outline=0)
 
     _shield(rig)
     _arm(rig, "r")
@@ -345,6 +468,21 @@ def build(rig):
     _debris(rig)
     B.dust_puff(rig, "root", (40.0, -22.0, 4.0), size=2.6, name="dust")
     B.sparks(rig, "root", (78.0, -30.0, 30.0), size=2.8, name="sparks", rays=8, seed=3)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, armoured; never on the face): the team shield face (the largest
+    team surface, twice) and a dent in its polished rim, the team crest, a strip torn from the pteruges, and steam
+    out of the molten heart's cracks. (The chest is the heart, its cracks, the sash and the polished plates: no
+    plain bronze field there for a mark.)"""
+    rig.damage_spot_at("shield", "shield", 14.0, 100.0, 10.0, "cloth", team=True)
+    rig.damage_spot_at("shield_low", "shield", 40.0, 84.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("rim", "shield", 2.0, 104.0, 5.0, "metal", fill=POL)
+    rig.damage_spot_at("crest", "crest", -2.0, 186.0, 7.0, "hide", team=True)
+    rig.damage_spot_at("hem", "hem", 4.0, 52.0, 10.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("steam", "torso", (24.0, -21.0, 120.0), 6.0, "steam", kind="emit", normal=(0.72, -0.69, 0.0))
 
 
 # -- poses ---------------------------------------------------------------------------------

@@ -29,6 +29,8 @@ import math
 
 from ageborn_art import face as F
 from ageborn_art import gait as GT
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art import rigs_gunpowder as G
@@ -61,6 +63,20 @@ IDLE_ELEV, FIRE_ELEV = 4.0, 8.0
 
 
 TIPS = {}
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2 (war machines). The team zones in two tones (a team-dark border along the drape's ragged
+# edge, a team-dark clavus and hem band on the crewman's tunic), aged bronze straps on the trail and corner plates
+# on the torsion housing; a smoke emitter on the housing (item 40: the fire of a badly damaged machine sits on
+# the machine, not at the crewman's hands).
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {B.PLUM: "wood", B.WOOD: "wood", B.WOOD_DK: "wood", B.SAND_DK: "fur", B.SAND_LT: "cloth",
+                  B.LINEN: "cloth", B.LEATHER: "leather", B.LEATHER_DK: "leather", B.AGED: "bronze",
+                  B.AGED_DK: "bronze", B.BRONZE: "bronze", B.BRONZE_HI: "bronze", B.VERD: "bronze",
+                  B.SKIN: "skin", B.HAIR: "fur", "team": "cloth"}
+DRAPE = [(-4.0, 29.0), (-30.0, 11.0), (-30.0, 3.0), (-24.0, 6.0), (-19.0, 2.5), (-14.0, 7.0), (-9.0, 4.0), (-4.0, 17.0)]
 
 
 def _cheek(y):
@@ -102,9 +118,16 @@ def build(rig):
     g = Geo().capsule((0.0, -14.0, WHEEL_R), (0.0, 14.0, WHEEL_R), 2.0)
     g.capsule((-46.0, -7.5, 2.4), (-46.0, 7.5, 2.4), 1.8)
     rig.part("cart", g, B.WOOD_DK, finish="metal", outline=0.8)
-    g = Geo().slab([(-4.0, 29.0), (-30.0, 11.0), (-30.0, 3.0), (-24.0, 6.0), (-19.0, 2.5), (-14.0, 7.0), (-9.0, 4.0),
-                    (-4.0, 17.0)], -8.0, 1.4)
+    g = Geo().slab(DRAPE, -8.0, 1.4)
     rig.part("cart", g, team=True, outline=0.8)
+    # a team-dark border (2.6 lu) along the drape's ragged lower edge
+    edge = DRAPE[2:] + [(-4.0, 19.6), (-9.0, 6.6), (-14.0, 9.6), (-19.0, 5.1), (-24.0, 8.6), (-30.0, 5.6)]
+    g = Geo().slab(edge, -8.95, 0.5)
+    look.team_part(rig, "cart", g, outline=0)
+    g = Geo()                                   # aged bronze straps round the trail behind the drape
+    for x0, z0, z1 in ((-35.5, 4.6, 10.6), (-41.5, 2.0, 6.4)):
+        g.slab([(x0 - 1.0, z0), (x0 + 1.0, z0), (x0 + 1.0, z1), (x0 - 1.0, z1)], -7.7, 0.6)
+    rig.part("cart", g, B.AGED, finish="metal", outline=0.4)
     g = Geo().capsule((-30.5, -8.8, 11.5), (-4.0, -8.8, 29.5), 0.9)
     rig.part("cart", g, B.SAND_LT, outline=0.4)
     # a rack of spare bolts strapped along the near side of the trail
@@ -131,6 +154,11 @@ def build(rig):
     rig.part("frame", g, B.PLUM)
     g = Geo().blob((hx - 0.4, 0, tz + 3.0), (6.8, 13.4, 2.2), p=3.0)   # verdigris strap
     rig.part("frame", g, B.VERD, outline=0.6)
+    g = Geo()                                                         # aged bronze corner plates
+    for dx in (-4.6, 4.6):
+        for dz in (-8.2, 8.2):
+            g.blob((hx + dx, -13.1, tz + 3.0 + dz), (1.9, 0.6, 2.4), p=3.0)
+    rig.part("frame", g, B.AGED, finish="metal", outline=0.4)
     g = Geo()
     for y in (-8.5, 8.5):
         for z in (tz + 14.4, tz - 8.4):
@@ -201,8 +229,12 @@ def build(rig):
     B.sandal_legs(rig, greaves=False)
     g = Geo().blob((0.2, 0, 27.5), (10.2, 9.4, 11.4), p=2.4, taper=(1.1, 0.92))
     rig.part("torso", g, team=True)
+    g = KD.stripe_x((0.2, 0, 27.5), (10.2, 9.4, 11.4), 1.6, 5.0, z0=19.0, z1=39.0, taper=(1.1, 0.92))
+    look.team_part(rig, "torso", g, outline=0)                        # a team-dark clavus
     g = Geo().blob((0.6, 0, 15.0), (11.2, 10.2, 5.2), p=2.4, taper=(1.14, 0.92))
     rig.part("hips", g, team=True)
+    g = KD.band_z((0.6, 0, 15.0), (11.2, 10.2, 5.2), 10.0, 13.0, taper=(1.14, 0.92))
+    look.team_part(rig, "hips", g, outline=0)                         # a team-dark hem band
     g = Geo().blob((0.4, 0, 20.4), (11.0, 10.1, 1.8), p=3.2)
     rig.part("torso", g, B.LEATHER)
     beard = Geo().blob((11.0, 0, 41.2), (6.2, 8.6, 3.6), p=2.2)       # short beard
@@ -226,6 +258,19 @@ def build(rig):
     # crew feet: the walk's natural speed comes from his planted soles (pipeline.walk_metrics)
     rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
     rig.track("_foot_l", "shin_l", (3.1, 6.0, 0.5))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, vehicle with a crewman): the team drape, the plum torsion housing,
+    the crewman's team tunic, a strip torn from the drape's edge, and smoke rising from the housing's top."""
+    rig.damage_spot_at("drape", "cart", -25.0, 12.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("housing", "frame", 32.0, 33.0, 5.0, "wood", fill=B.PLUM)
+    rig.damage_spot_at("tunic", "torso", -2.0, 27.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "cart", -26.0, 5.0, 8.0, "cloth", kind="strip", team=True)
+    tx, _, tz = TRUN
+    rig.damage_spot("smoke", "frame", (HOUSING_X - 1.0, -3.0, tz + 14.4), 5.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------

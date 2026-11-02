@@ -2,18 +2,18 @@
  "frames": {
   "bronze_colossus_idle_00": {
    "frame": {
-    "x": 562,
+    "x": 272,
     "y": 2,
     "w": 285,
-    "h": 459
+    "h": 460
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 342,
-    "y": 358,
+    "y": 357,
     "w": 285,
-    "h": 459
+    "h": 460
    },
    "sourceSize": {
     "w": 912,
@@ -26,8 +26,8 @@
   },
   "bronze_colossus_idle_00_team": {
    "frame": {
-    "x": 1329,
-    "y": 1808,
+    "x": 2339,
+    "y": 409,
     "w": 274,
     "h": 344
    },
@@ -50,18 +50,18 @@
   },
   "bronze_colossus_idle_01": {
    "frame": {
-    "x": 2011,
-    "y": 2,
+    "x": 2,
+    "y": 1422,
     "w": 289,
-    "h": 449
+    "h": 451
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 342,
-    "y": 368,
+    "y": 366,
     "w": 289,
-    "h": 449
+    "h": 451
    },
    "sourceSize": {
     "w": 912,
@@ -74,10 +74,10 @@
   },
   "bronze_colossus_idle_01_team": {
    "frame": {
-    "x": 1993,
-    "y": 2200,
+    "x": 3735,
+    "y": 2,
     "w": 277,
-    "h": 337
+    "h": 336
    },
    "rotated": false,
    "trimmed": true,
@@ -85,7 +85,7 @@
     "x": 341,
     "y": 360,
     "w": 277,
-    "h": 337
+    "h": 336
    },
    "sourceSize": {
     "w": 912,
@@ -98,18 +98,18 @@
   },
   "bronze_colossus_idle_02": {
    "frame": {
-    "x": 588,
-    "y": 936,
+    "x": 1179,
+    "y": 451,
     "w": 294,
-    "h": 435
+    "h": 437
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 342,
-    "y": 382,
+    "y": 380,
     "w": 294,
-    "h": 435
+    "h": 437
    },
    "sourceSize": {
     "w": 912,
@@ -122,8 +122,8 @@
   },
   "bronze_colossus_idle_02_team": {
    "frame": {
-    "x": 2,
-    "y": 2885,
+    "x": 3466,
+    "y": 342,
     "w": 283,
     "h": 328
    },
@@ -146,18 +146,18 @@
   },
   "bronze_colossus_idle_03": {
    "frame": {
-    "x": 1464,
-    "y": 936,
+    "x": 1476,
+    "y": 892,
     "w": 297,
-    "h": 430
+    "h": 432
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 342,
-    "y": 387,
+    "y": 385,
     "w": 297,
-    "h": 430
+    "h": 432
    },
    "sourceSize": {
     "w": 912,
@@ -170,8 +170,8 @@
   },
   "bronze_colossus_idle_03_team": {
    "frame": {
-    "x": 289,
-    "y": 2885,
+    "x": 3753,
+    "y": 342,
     "w": 284,
     "h": 326
    },
@@ -194,18 +194,18 @@
   },
   "bronze_colossus_idle_04": {
    "frame": {
-    "x": 290,
-    "y": 936,
+    "x": 1178,
+    "y": 905,
     "w": 294,
-    "h": 439
+    "h": 441
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 342,
-    "y": 378,
+    "y": 376,
     "w": 294,
-    "h": 439
+    "h": 441
    },
    "sourceSize": {
     "w": 912,
@@ -218,8 +218,8 @@
   },
   "bronze_colossus_idle_04_team": {
    "frame": {
-    "x": 845,
-    "y": 2545,
+    "x": 2868,
+    "y": 1034,
     "w": 282,
     "h": 333
    },
@@ -242,18 +242,18 @@
   },
   "bronze_colossus_idle_05": {
    "frame": {
-    "x": 1142,
-    "y": 2,
+    "x": 292,
+    "y": 466,
     "w": 288,
-    "h": 453
+    "h": 455
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 342,
-    "y": 364,
+    "y": 362,
     "w": 288,
-    "h": 453
+    "h": 455
    },
    "sourceSize": {
     "w": 912,
@@ -266,10 +266,10 @@
   },
   "bronze_colossus_idle_05_team": {
    "frame": {
-    "x": 1883,
-    "y": 1808,
+    "x": 2353,
+    "y": 757,
     "w": 277,
-    "h": 342
+    "h": 341
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 341,
     "y": 355,
     "w": 277,
-    "h": 342
+    "h": 341
    },
    "sourceSize": {
     "w": 912,
@@ -290,18 +290,18 @@
   },
   "bronze_colossus_walk_00": {
    "frame": {
-    "x": 565,
-    "y": 1381,
+    "x": 1777,
+    "y": 875,
     "w": 301,
-    "h": 416
+    "h": 417
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 342,
-    "y": 399,
+    "y": 398,
     "w": 301,
-    "h": 416
+    "h": 417
    },
    "sourceSize": {
     "w": 912,
@@ -314,8 +314,8 @@
   },
   "bronze_colossus_walk_00_team": {
    "frame": {
-    "x": 1697,
-    "y": 2885,
+    "x": 610,
+    "y": 1826,
     "w": 287,
     "h": 320
    },
@@ -338,18 +338,18 @@
   },
   "bronze_colossus_walk_01": {
    "frame": {
-    "x": 1730,
-    "y": 1381,
+    "x": 2305,
+    "y": 2,
     "w": 305,
-    "h": 401
+    "h": 403
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 345,
-    "y": 417,
+    "y": 415,
     "w": 305,
-    "h": 401
+    "h": 403
    },
    "sourceSize": {
     "w": 912,
@@ -362,17 +362,17 @@
   },
   "bronze_colossus_walk_01_team": {
    "frame": {
-    "x": 2,
-    "y": 3217,
-    "w": 292,
+    "x": 295,
+    "y": 1833,
+    "w": 291,
     "h": 309
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 345,
+    "x": 346,
     "y": 408,
-    "w": 292,
+    "w": 291,
     "h": 309
    },
    "sourceSize": {
@@ -386,18 +386,18 @@
   },
   "bronze_colossus_walk_02": {
    "frame": {
-    "x": 1170,
-    "y": 936,
+    "x": 1190,
+    "y": 1350,
     "w": 290,
-    "h": 431
+    "h": 433
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 357,
-    "y": 384,
+    "y": 382,
     "w": 290,
-    "h": 431
+    "h": 433
    },
    "sourceSize": {
     "w": 912,
@@ -410,8 +410,8 @@
   },
   "bronze_colossus_walk_02_team": {
    "frame": {
-    "x": 1966,
-    "y": 2545,
+    "x": 3154,
+    "y": 1024,
     "w": 276,
     "h": 329
    },
@@ -434,18 +434,18 @@
   },
   "bronze_colossus_walk_03": {
    "frame": {
-    "x": 2,
-    "y": 936,
+    "x": 902,
+    "y": 1352,
     "w": 284,
-    "h": 441
+    "h": 443
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 361,
-    "y": 370,
+    "y": 368,
     "w": 284,
-    "h": 441
+    "h": 443
    },
    "sourceSize": {
     "w": 912,
@@ -458,8 +458,8 @@
   },
   "bronze_colossus_walk_03_team": {
    "frame": {
-    "x": 286,
-    "y": 2545,
+    "x": 2642,
+    "y": 1445,
     "w": 272,
     "h": 336
    },
@@ -482,18 +482,18 @@
   },
   "bronze_colossus_walk_04": {
    "frame": {
-    "x": 923,
-    "y": 485,
+    "x": 855,
+    "y": 2,
     "w": 280,
-    "h": 446
+    "h": 448
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 359,
-    "y": 362,
+    "y": 360,
     "w": 280,
-    "h": 446
+    "h": 448
    },
    "sourceSize": {
     "w": 912,
@@ -506,8 +506,8 @@
   },
   "bronze_colossus_walk_04_team": {
    "frame": {
-    "x": 2164,
-    "y": 1808,
+    "x": 2614,
+    "y": 2,
     "w": 269,
     "h": 342
    },
@@ -530,18 +530,18 @@
   },
   "bronze_colossus_walk_05": {
    "frame": {
-    "x": 1147,
-    "y": 1381,
+    "x": 2007,
+    "y": 2,
     "w": 294,
-    "h": 408
+    "h": 410
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 348,
-    "y": 395,
+    "y": 393,
     "w": 294,
-    "h": 408
+    "h": 410
    },
    "sourceSize": {
     "w": 912,
@@ -554,8 +554,8 @@
   },
   "bronze_colossus_walk_05_team": {
    "frame": {
-    "x": 577,
-    "y": 2885,
+    "x": 3753,
+    "y": 672,
     "w": 280,
     "h": 325
    },
@@ -578,18 +578,18 @@
   },
   "bronze_colossus_walk_06": {
    "frame": {
-    "x": 2039,
-    "y": 1381,
+    "x": 1759,
+    "y": 1752,
     "w": 305,
-    "h": 392
+    "h": 394
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 338,
-    "y": 412,
+    "y": 410,
     "w": 305,
-    "h": 392
+    "h": 394
    },
    "sourceSize": {
     "w": 912,
@@ -602,10 +602,10 @@
   },
   "bronze_colossus_walk_06_team": {
    "frame": {
-    "x": 1988,
-    "y": 2885,
+    "x": 3195,
+    "y": 1357,
     "w": 283,
-    "h": 318
+    "h": 317
    },
    "rotated": false,
    "trimmed": true,
@@ -613,7 +613,7 @@
     "x": 347,
     "y": 403,
     "w": 283,
-    "h": 318
+    "h": 317
    },
    "sourceSize": {
     "w": 912,
@@ -626,18 +626,18 @@
   },
   "bronze_colossus_walk_07": {
    "frame": {
-    "x": 277,
-    "y": 1381,
+    "x": 1759,
+    "y": 1328,
     "w": 284,
-    "h": 418
+    "h": 420
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 349,
-    "y": 383,
+    "y": 381,
     "w": 284,
-    "h": 418
+    "h": 420
    },
    "sourceSize": {
     "w": 912,
@@ -650,8 +650,8 @@
   },
   "bronze_colossus_walk_07_team": {
    "frame": {
-    "x": 1689,
-    "y": 2545,
+    "x": 2918,
+    "y": 1371,
     "w": 273,
     "h": 331
    },
@@ -674,18 +674,18 @@
   },
   "bronze_colossus_walk_08": {
    "frame": {
-    "x": 2067,
-    "y": 936,
+    "x": 1718,
+    "y": 2,
     "w": 285,
-    "h": 426
+    "h": 428
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 346,
-    "y": 372,
+    "y": 370,
     "w": 285,
-    "h": 426
+    "h": 428
    },
    "sourceSize": {
     "w": 912,
@@ -698,8 +698,8 @@
   },
   "bronze_colossus_walk_08_team": {
    "frame": {
-    "x": 1411,
-    "y": 2545,
+    "x": 3188,
+    "y": 343,
     "w": 274,
     "h": 333
    },
@@ -722,18 +722,18 @@
   },
   "bronze_colossus_walk_09": {
    "frame": {
-    "x": 1802,
-    "y": 485,
+    "x": 610,
+    "y": 1377,
     "w": 288,
-    "h": 443
+    "h": 445
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 344,
-    "y": 365,
+    "y": 363,
     "w": 288,
-    "h": 443
+    "h": 445
    },
    "sourceSize": {
     "w": 912,
@@ -746,8 +746,8 @@
   },
   "bronze_colossus_walk_09_team": {
    "frame": {
-    "x": 2274,
-    "y": 2200,
+    "x": 3173,
+    "y": 2,
     "w": 274,
     "h": 337
    },
@@ -770,18 +770,18 @@
   },
   "bronze_colossus_attack_00": {
    "frame": {
-    "x": 1716,
+    "x": 561,
     "y": 2,
-    "w": 291,
-    "h": 449
+    "w": 290,
+    "h": 451
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 336,
-    "y": 368,
-    "w": 291,
-    "h": 449
+    "x": 337,
+    "y": 366,
+    "w": 290,
+    "h": 451
    },
    "sourceSize": {
     "w": 912,
@@ -794,10 +794,10 @@
   },
   "bronze_colossus_attack_00_team": {
    "frame": {
-    "x": 1145,
-    "y": 2200,
+    "x": 2634,
+    "y": 692,
     "w": 280,
-    "h": 339
+    "h": 338
    },
    "rotated": false,
    "trimmed": true,
@@ -805,7 +805,7 @@
     "x": 334,
     "y": 360,
     "w": 280,
-    "h": 339
+    "h": 338
    },
    "sourceSize": {
     "w": 912,
@@ -818,18 +818,18 @@
   },
   "bronze_colossus_attack_01": {
    "frame": {
-    "x": 1765,
-    "y": 936,
-    "w": 298,
-    "h": 427
+    "x": 1477,
+    "y": 442,
+    "w": 297,
+    "h": 429
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 330,
-    "y": 389,
-    "w": 298,
-    "h": 427
+    "x": 331,
+    "y": 387,
+    "w": 297,
+    "h": 429
    },
    "sourceSize": {
     "w": 912,
@@ -842,8 +842,8 @@
   },
   "bronze_colossus_attack_01_team": {
    "frame": {
-    "x": 2246,
-    "y": 2545,
+    "x": 3198,
+    "y": 680,
     "w": 291,
     "h": 328
    },
@@ -866,18 +866,18 @@
   },
   "bronze_colossus_attack_02": {
    "frame": {
-    "x": 886,
-    "y": 936,
+    "x": 1434,
+    "y": 2,
     "w": 280,
-    "h": 434
+    "h": 436
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 328,
-    "y": 361,
+    "y": 359,
     "w": 280,
-    "h": 434
+    "h": 436
    },
    "sourceSize": {
     "w": 912,
@@ -890,10 +890,10 @@
   },
   "bronze_colossus_attack_02_team": {
    "frame": {
-    "x": 1058,
-    "y": 1808,
+    "x": 2082,
+    "y": 828,
     "w": 267,
-    "h": 346
+    "h": 345
    },
    "rotated": false,
    "trimmed": true,
@@ -901,7 +901,7 @@
     "x": 329,
     "y": 352,
     "w": 267,
-    "h": 346
+    "h": 345
    },
    "sourceSize": {
     "w": 912,
@@ -938,8 +938,8 @@
   },
   "bronze_colossus_attack_03_team": {
    "frame": {
-    "x": 810,
-    "y": 1808,
+    "x": 1190,
+    "y": 1787,
     "w": 244,
     "h": 357
    },
@@ -962,8 +962,8 @@
   },
   "bronze_colossus_attack_04": {
    "frame": {
-    "x": 851,
-    "y": 2,
+    "x": 2,
+    "y": 961,
     "w": 287,
     "h": 457
    },
@@ -986,8 +986,8 @@
   },
   "bronze_colossus_attack_04_team": {
    "frame": {
-    "x": 287,
-    "y": 2200,
+    "x": 2617,
+    "y": 348,
     "w": 282,
     "h": 340
    },
@@ -1010,18 +1010,18 @@
   },
   "bronze_colossus_attack_05": {
    "frame": {
-    "x": 870,
-    "y": 1381,
-    "w": 273,
-    "h": 415
+    "x": 1778,
+    "y": 434,
+    "w": 272,
+    "h": 417
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 370,
-    "y": 397,
-    "w": 273,
-    "h": 415
+    "x": 371,
+    "y": 395,
+    "w": 272,
+    "h": 417
    },
    "sourceSize": {
     "w": 912,
@@ -1034,10 +1034,10 @@
   },
   "bronze_colossus_attack_05_team": {
    "frame": {
-    "x": 861,
-    "y": 2885,
+    "x": 2925,
+    "y": 1706,
     "w": 263,
-    "h": 322
+    "h": 321
    },
    "rotated": false,
    "trimmed": true,
@@ -1045,7 +1045,7 @@
     "x": 367,
     "y": 389,
     "w": 263,
-    "h": 322
+    "h": 321
    },
    "sourceSize": {
     "w": 912,
@@ -1058,18 +1058,18 @@
   },
   "bronze_colossus_attack_06": {
    "frame": {
-    "x": 2,
-    "y": 1808,
+    "x": 2047,
+    "y": 1296,
     "w": 253,
-    "h": 388
+    "h": 390
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 376,
-    "y": 455,
+    "y": 453,
     "w": 253,
-    "h": 388
+    "h": 390
    },
    "sourceSize": {
     "w": 912,
@@ -1082,8 +1082,8 @@
   },
   "bronze_colossus_attack_06_team": {
    "frame": {
-    "x": 793,
-    "y": 3217,
+    "x": 3734,
+    "y": 1296,
     "w": 240,
     "h": 288
    },
@@ -1106,18 +1106,18 @@
   },
   "bronze_colossus_attack_07": {
    "frame": {
-    "x": 259,
-    "y": 1808,
+    "x": 1484,
+    "y": 1757,
     "w": 259,
-    "h": 384
+    "h": 386
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 370,
-    "y": 442,
+    "y": 440,
     "w": 259,
-    "h": 384
+    "h": 386
    },
    "sourceSize": {
     "w": 912,
@@ -1130,8 +1130,8 @@
   },
   "bronze_colossus_attack_07_team": {
    "frame": {
-    "x": 550,
-    "y": 3217,
+    "x": 3707,
+    "y": 1001,
     "w": 239,
     "h": 291
    },
@@ -1154,18 +1154,18 @@
   },
   "bronze_colossus_attack_08": {
    "frame": {
-    "x": 2,
-    "y": 1381,
+    "x": 1484,
+    "y": 1328,
     "w": 271,
-    "h": 423
+    "h": 425
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 360,
-    "y": 399,
+    "y": 397,
     "w": 271,
-    "h": 423
+    "h": 425
    },
    "sourceSize": {
     "w": 912,
@@ -1178,8 +1178,8 @@
   },
   "bronze_colossus_attack_08_team": {
    "frame": {
-    "x": 1128,
-    "y": 2885,
+    "x": 3493,
+    "y": 674,
     "w": 255,
     "h": 322
    },
@@ -1202,18 +1202,18 @@
   },
   "bronze_colossus_attack_09": {
    "frame": {
-    "x": 2094,
-    "y": 485,
+    "x": 886,
+    "y": 905,
     "w": 288,
-    "h": 441
+    "h": 443
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 349,
-    "y": 378,
+    "y": 376,
     "w": 288,
-    "h": 441
+    "h": 443
    },
    "sourceSize": {
     "w": 912,
@@ -1226,8 +1226,8 @@
   },
   "bronze_colossus_attack_09_team": {
    "frame": {
-    "x": 1131,
-    "y": 2545,
+    "x": 2918,
+    "y": 687,
     "w": 276,
     "h": 333
    },
@@ -1250,18 +1250,18 @@
   },
   "bronze_colossus_hit_00": {
    "frame": {
-    "x": 2,
-    "y": 485,
+    "x": 295,
+    "y": 1380,
     "w": 311,
-    "h": 447
+    "h": 449
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 308,
-    "y": 370,
+    "y": 368,
     "w": 311,
-    "h": 447
+    "h": 449
    },
    "sourceSize": {
     "w": 912,
@@ -1274,8 +1274,8 @@
   },
   "bronze_colossus_hit_00_team": {
    "frame": {
-    "x": 2,
-    "y": 2200,
+    "x": 2304,
+    "y": 1177,
     "w": 281,
     "h": 341
    },
@@ -1298,18 +1298,18 @@
   },
   "bronze_colossus_hit_01": {
    "frame": {
-    "x": 317,
-    "y": 485,
+    "x": 575,
+    "y": 925,
     "w": 307,
-    "h": 447
+    "h": 448
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 315,
-    "y": 370,
+    "y": 369,
     "w": 307,
-    "h": 447
+    "h": 448
    },
    "sourceSize": {
     "w": 912,
@@ -1322,8 +1322,8 @@
   },
   "bronze_colossus_hit_01_team": {
    "frame": {
-    "x": 859,
-    "y": 2200,
+    "x": 2356,
+    "y": 1522,
     "w": 282,
     "h": 339
    },
@@ -1346,18 +1346,18 @@
   },
   "bronze_colossus_hit_02": {
    "frame": {
-    "x": 1207,
-    "y": 485,
+    "x": 879,
+    "y": 454,
     "w": 296,
-    "h": 445
+    "h": 447
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 333,
-    "y": 372,
+    "y": 370,
     "w": 296,
-    "h": 445
+    "h": 447
    },
    "sourceSize": {
     "w": 912,
@@ -1370,8 +1370,8 @@
   },
   "bronze_colossus_hit_02_team": {
    "frame": {
-    "x": 1708,
-    "y": 2200,
+    "x": 2903,
+    "y": 346,
     "w": 281,
     "h": 337
    },
@@ -1394,18 +1394,18 @@
   },
   "bronze_colossus_hit_03": {
    "frame": {
-    "x": 1507,
-    "y": 485,
+    "x": 1139,
+    "y": 2,
     "w": 291,
-    "h": 443
+    "h": 445
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 344,
-    "y": 374,
+    "y": 372,
     "w": 291,
-    "h": 443
+    "h": 445
    },
    "sourceSize": {
     "w": 912,
@@ -1418,8 +1418,8 @@
   },
   "bronze_colossus_hit_03_team": {
    "frame": {
-    "x": 562,
-    "y": 2545,
+    "x": 2642,
+    "y": 1785,
     "w": 279,
     "h": 334
    },
@@ -1442,18 +1442,18 @@
   },
   "bronze_colossus_hit_04": {
    "frame": {
-    "x": 628,
-    "y": 485,
+    "x": 584,
+    "y": 457,
     "w": 291,
-    "h": 446
+    "h": 448
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 342,
-    "y": 371,
+    "y": 369,
     "w": 291,
-    "h": 446
+    "h": 448
    },
    "sourceSize": {
     "w": 912,
@@ -1466,8 +1466,8 @@
   },
   "bronze_colossus_hit_04_team": {
    "frame": {
-    "x": 2,
-    "y": 2545,
+    "x": 3451,
+    "y": 2,
     "w": 280,
     "h": 336
    },
@@ -1490,18 +1490,18 @@
   },
   "bronze_colossus_die_00": {
    "frame": {
-    "x": 272,
-    "y": 2,
+    "x": 2,
+    "y": 485,
     "w": 286,
-    "h": 470
+    "h": 472
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 320,
-    "y": 366,
+    "y": 364,
     "w": 286,
-    "h": 470
+    "h": 472
    },
    "sourceSize": {
     "w": 912,
@@ -1514,8 +1514,8 @@
   },
   "bronze_colossus_die_00_team": {
    "frame": {
-    "x": 573,
-    "y": 2200,
+    "x": 2887,
+    "y": 2,
     "w": 282,
     "h": 340
    },
@@ -1538,8 +1538,8 @@
   },
   "bronze_colossus_die_01": {
    "frame": {
-    "x": 1434,
-    "y": 2,
+    "x": 293,
+    "y": 925,
     "w": 278,
     "h": 451
    },
@@ -1562,8 +1562,8 @@
   },
   "bronze_colossus_die_01_team": {
    "frame": {
-    "x": 1429,
-    "y": 2200,
+    "x": 2589,
+    "y": 1102,
     "w": 275,
     "h": 339
    },
@@ -1586,18 +1586,18 @@
   },
   "bronze_colossus_die_02": {
    "frame": {
-    "x": 1445,
-    "y": 1381,
+    "x": 2054,
+    "y": 416,
     "w": 281,
-    "h": 406
+    "h": 408
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 359,
-    "y": 416,
+    "y": 414,
     "w": 281,
-    "h": 406
+    "h": 408
    },
    "sourceSize": {
     "w": 912,
@@ -1610,10 +1610,10 @@
   },
   "bronze_colossus_die_02_team": {
    "frame": {
-    "x": 2275,
-    "y": 2885,
+    "x": 3434,
+    "y": 1012,
     "w": 269,
-    "h": 318
+    "h": 317
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 358,
     "y": 408,
     "w": 269,
-    "h": 318
+    "h": 317
    },
    "sourceSize": {
     "w": 912,
@@ -1634,18 +1634,18 @@
   },
   "bronze_colossus_die_03": {
    "frame": {
-    "x": 1607,
-    "y": 1808,
+    "x": 902,
+    "y": 1799,
     "w": 272,
-    "h": 343
+    "h": 345
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 369,
-    "y": 502,
+    "y": 500,
     "w": 272,
-    "h": 343
+    "h": 345
    },
    "sourceSize": {
     "w": 912,
@@ -1658,8 +1658,8 @@
   },
   "bronze_colossus_die_03_team": {
    "frame": {
-    "x": 1037,
-    "y": 3217,
+    "x": 2,
+    "y": 1877,
     "w": 239,
     "h": 259
    },
@@ -1682,18 +1682,18 @@
   },
   "bronze_colossus_die_04": {
    "frame": {
-    "x": 522,
-    "y": 1808,
+    "x": 2068,
+    "y": 1690,
     "w": 284,
-    "h": 376
+    "h": 378
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 366,
-    "y": 476,
+    "y": 474,
     "w": 284,
-    "h": 376
+    "h": 378
    },
    "sourceSize": {
     "w": 912,
@@ -1706,8 +1706,8 @@
   },
   "bronze_colossus_die_04_team": {
    "frame": {
-    "x": 298,
-    "y": 3217,
+    "x": 3482,
+    "y": 1333,
     "w": 248,
     "h": 292
    },
@@ -1730,8 +1730,8 @@
   },
   "bronze_colossus_die_05": {
    "frame": {
-    "x": 1387,
-    "y": 2885,
+    "x": 3192,
+    "y": 1706,
     "w": 306,
     "h": 320
    },
@@ -1754,8 +1754,8 @@
   },
   "bronze_colossus_die_05_team": {
    "frame": {
-    "x": 1280,
-    "y": 3217,
+    "x": 3502,
+    "y": 1629,
     "w": 225,
     "h": 238
    },
@@ -1778,18 +1778,18 @@
   },
   "bronze_colossus_die_06": {
    "frame": {
-    "x": 1509,
-    "y": 3217,
+    "x": 3734,
+    "y": 1588,
     "w": 303,
-    "h": 236
+    "h": 238
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 323,
-    "y": 604,
+    "y": 602,
     "w": 303,
-    "h": 236
+    "h": 238
    },
    "sourceSize": {
     "w": 912,
@@ -1802,8 +1802,8 @@
   },
   "bronze_colossus_die_06_team": {
    "frame": {
-    "x": 2100,
-    "y": 3217,
+    "x": 3502,
+    "y": 1871,
     "w": 234,
     "h": 200
    },
@@ -1826,18 +1826,18 @@
   },
   "bronze_colossus_die_07": {
    "frame": {
-    "x": 1816,
-    "y": 3217,
+    "x": 2356,
+    "y": 1865,
     "w": 280,
-    "h": 203
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 330,
-    "y": 633,
+    "y": 632,
     "w": 280,
-    "h": 203
+    "h": 204
    },
    "sourceSize": {
     "w": 912,
@@ -1850,8 +1850,8 @@
   },
   "bronze_colossus_die_07_team": {
    "frame": {
-    "x": 2338,
-    "y": 3217,
+    "x": 3740,
+    "y": 1830,
     "w": 218,
     "h": 174
    },
@@ -1991,8 +1991,8 @@
   "image": "bronze_colossus.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2560,
-   "h": 3528
+   "w": 4096,
+   "h": 2148
   },
   "scale": "2.5",
   "ageborn": {
