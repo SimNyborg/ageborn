@@ -2,6 +2,23 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-11-02: Art round W0 and W1 built (every Stone and Bronze troop, their skins, visible damage), Amber and Dust that feel precious, a calmer Home; not live yet (cloud session, branch `main-ipy06f`, draft PR #13)
+
+**What a player will see once it is released.**
+
+- **Every Stone and Bronze troop is redrawn to the new detail standard**: clearer secondary shapes (straps, lacing, rims, fur clumps), materials that read as hide, wood, stone and bronze with wear, shading from a lit top to a core shadow with a rim light, and outlines that read at phone size. Beasts and mounts have markings and value structure instead of dark masses. The pilot (the Bonker, Javelineer and War Chariot) set the standard; 39 more troops and summons followed.
+- **Skins are real variants of their unit**, rendered with it: Pumpkin Head, Sun Chariot, Snowball Pebbler, Woolly Tuskback, Fossil Sabertooth, Frost Matriarch, Aurora Elk, Marble Hoplite and Obsidian Colossus, with the same size, weapon and motion as the plain unit.
+- **Hurt units show it (queue item 40)**: cracks, dents and torn cloth on the body, smoke, sparks and fire on machines, a tired walk. No blood and nothing on faces, as decided.
+- **Throwers aim up at flyers** where they can hit them, and a few attacks that lunged or tossed beyond their art now land where the art reaches (the Woolly Rhino, Elk Chieftain, Amazon Rider, Thracian Raider), with the same timing.
+- **Amber and Dust feel precious (queue item 48)**: a polished piece of amber with a gnat caught inside and glittering violet star dust; earned pieces burst out, fly to the wallet with a light trail and land with a pulse while the counter counts up with ticks and a chime; Dust is slower and richer; spending flies the other way. A tap skips it, it never blocks a button, and it never changes the amounts.
+- **A calmer Home (queue items 49 and 50)**: the Sundial mark is gone from the top bar (the Capsules tab's badge says the same), and one mode button beside Battle replaces the two (Friend Duel waits in the Modes panel as a locked "coming later" card).
+
+**Checks so far (2026-11-02).** W0's strict art review passed the pilot at 3.82 (gate 3.8) after two more passes; memory in the long war at DPR 2 is 367 MB of 600; typecheck and lint clean; 8,347 unit tests pass (347 files, 2 skipped); CI's browser tests pass except one Ranked test, fixed in the newest push (below). The browser tests in CI's Safari engine sometimes crashed in long battles (a retry absorbs it): a test across 140 battles showed the same crash rate with the damage effects switched off completely, so it is the test machine's software-drawn browser (its process grows to over 4 GB), not the game's new code. A Ranked speed-proposal test failed on GitHub's slow machine because the match briefly catches up there and refuses a proposal on purpose; the test now waits and tries again, like a player would (24 of 24 local runs passed on a very slow machine).
+
+**Open before the release.** The strict art review of all of W1 (Stone must score at least 3.8, the wave 3.5), the frame-time gate (on the W0 build the busiest test battle took about 2 ms more per frame on a slowed-down machine against a limit of 1 ms; it is being re-measured on the W1 build and cut where it can be without changing any picture), and CI green on the newest push. Then `main` moves and the game updates.
+
+**What the owner can do (optional):** if the game has ever closed by itself on your iPhone during a battle, say so; the crash above is only seen on GitHub's test machine, and a real report would reopen it.
+
 ## 2026-10-26: Weapons point where they shoot (queue item 44), with the strict review's fixes (cloud session, branch `main-ipy06f`)
 
 **What a player sees.**
