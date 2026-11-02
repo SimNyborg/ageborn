@@ -11,8 +11,8 @@ at low priority; small and medium bodies only at their last step.
 - `dmg_ignite` (a machine's last stage, the fire catching): a soft low whump and a breath of flame.
 
 Loudness: -31 to -32 LUFS (the material layers of the combat pass sit at -28: these are quieter still, a texture
-under the battle, not a beat of their own). Imported at the end of sounds.py. Until a render runs, the game plays the
-ZzFX versions in `src/audio/sounds.ts`.
+under the battle, not a beat of their own). Imported at the end of sounds.py. Rendered into the `battle` sheet (W0,
+2026-11-02); the ZzFX versions in `src/audio/sounds.ts` stay as the fallback while the sheet loads.
 """
 from __future__ import annotations
 
