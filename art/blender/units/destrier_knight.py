@@ -24,6 +24,8 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
   hit     the horse shakes its head, eyes squeezed, the knight rocks behind the shield
   die     D5 unhorsed: the horse rears, the knight is thrown off the back spinning and lands
           flat behind it, the horse buckles at the knees and flops down, X eye and tongue
+  charge  (items 51/52, extras sheet) THE CHARGE AT THE GALLOP: a transverse gallop with a gathered
+          suspension at ground speed, the knight leaning in with the lance couched level
 """
 import math
 
@@ -474,6 +476,55 @@ def _walk(f, report=None):
     return _finish(out, IDLE_LANCE + 4.0 * post)
 
 
+# -- charge (items 51/52, extras sheet): the couched lance at the gallop, Momentum's run-up ----------------------
+# A transverse gallop with one gathered suspension at ground speed, planted hooves solved like the walk's: the
+# hinds land one after the other (0, 1) under the still-high forehand and drive (2), the leading diagonal hands
+# over (3), the forelegs take the weight while the body rocks down over them (4, 5), the leading foreleg vaults
+# it up (6) into the suspension with all four legs folded under the belly (7). 8 x 65 ms at 150 lu/s (the walk's
+# speed doubled, like a charging prince): the game plays it frame-locked at the charge's real speed (the clip's
+# gait meta, as for the walk). The knight sits deep and leans into the charge, the lance couched level under his
+# arm and held steady over the rocking horse, the shield tucked in; the neck stretches out and pumps, the tail,
+# plume and pennant stream.
+CHARGE_SPEED = 150.0
+GALLOP = {"bl": 0.0, "br": 0.1, "fl": 0.375, "fr": 0.475}   # touchdown phases: hind, hind, fore, leading fore
+CHARGE_GAIT = None
+C_LOW = 0.4        # the body is lowest where the weight passes from the hinds to the forelegs (3-4)
+C_UP = 0.05        # the forehand is highest as the hinds land
+
+
+def _charge_gait():
+    global CHARGE_GAIT
+    if CHARGE_GAIT is None:
+        CHARGE_GAIT = G.Gait(8, 520, CHARGE_SPEED,
+                             G.quad_feet(LEGS, GALLOP, x_off={"fr": 3.0, "fl": 3.0, "br": 2.0, "bl": 2.0}),
+                             0.3, lift=15.0, kick=9.0, reach=10.0, toe_off=0.0, heel_strike=0.0, early_lift=10.0)
+    return CHARGE_GAIT
+
+
+def _charge(f, report=None):
+    g = _charge_gait()
+    t = f / g.frames
+    rock = math.cos(2 * math.pi * (t - C_UP))                  # +1 forehand up (0), -1 forehand down (4-5)
+    rock_late = math.cos(2 * math.pi * (t - C_UP - 1.0 / g.frames))
+    pump = math.cos(2 * math.pi * (t - 0.55))                   # +1 where the neck reaches down over the forelegs
+
+    def extra(ctx):
+        return merge(STANCE, {
+            "neck": {"r": -8 - 5 * pump}, "hhead": {"r": 14 + 3 * pump},     # stretched out, the nose forward
+            "forelock": {"r": -4 * rock},
+            "rider": {"z": -0.8 * math.cos(2 * math.pi * (t - C_LOW - 1.0 / g.frames))},
+            "ktorso": {"r": -19 - 3 * rock_late}, "khead": {"r": 9 + 2 * rock_late},
+            "karm_l": {"r": -24}, "karm_r": {"r": 6 + 2 * rock_late}, "kfore_r": {"r": -6},
+            "tail": {"r": -16 + 6 * math.sin(2 * math.pi * t - 1.3)},
+        })
+    out = G.quad_walk(RIG, f, g, {}, trunk="horse", base_z=-6.0, bob=3.5, beats=1, low_at=C_LOW, pitch=8.0,
+                      pitch_phase=2 * math.pi * (C_LOW - C_UP) + math.pi / 2, roll=1.0, extra=extra, report=report)
+    out = merge(out, F.expr("grit", mouth=None))
+    pose = _finish(out, 3.0 + 1.5 * math.sin(2 * math.pi * t))
+    pose["pennant"]["r"] += 4.0 * (-1) ** f                    # the pennant snaps in the wind
+    return pose
+
+
 # attack: 10 unique poses in the 12 heavy steps (moves.HEAVY_MELEE_MS), impact on pose 6
 ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
 #      shift  dip  coil HOLD burst reach IMPACT skid follow settle
@@ -730,5 +781,6 @@ def clips():
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
+        M.walk_clip("charge", RIG, _charge, _charge_gait(), "rider"),
     ]
     return M.check_variants(M.check_contract(cl, heavy=True))

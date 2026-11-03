@@ -23,11 +23,13 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
   hit     armoured: dips behind the shield, the kettle hat clanks down over his eyes
   die     D2 topple: rocks back, stiffens, falls flat on his face like a plank, the hat pops
           off and rolls away, X eyes and tongue
+  shield_lock  (items 51/52, extras sheet) the shield raised and braced forward, his eyes over the
+          rim and the sword cocked back over his shoulder: the pose of Cover and of the Shield Wall
 """
 import math
 
 from ageborn_art import face as F
-from ageborn_art import gait as G  # noqa: F401
+from ageborn_art import gait as G
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
@@ -555,6 +557,38 @@ def _attack_c():
                   reuse=reuse, extra={"holdStep": 3})
 
 
+# -- shield_lock (items 51/52, extras sheet): the pose of Cover and of the Shield Wall -------------------------------
+# The shield raised and braced forward: he drops into a brace behind it (the near leg forward and bent, the far leg
+# driven back onto the ball of its foot), leans his shoulder into the shield, its top tipped toward the foe and its
+# rim under his eyes so they peer over it, and cocks the sword back over his shoulder, ready to strike over the rim.
+# A held loop of 4 frames: he leans in, the shield nudges forward, and settles back (the plume and hem late). The
+# feet are solved onto fixed marks: they never move.
+LOCK_FEET = {"r": (9.0, 0.0), "l": (-13.0, -24.0)}   # ankle x of each flat foot, and its roll about the toe (deg)
+# the held pose: shield and sword (a, f, w as in shield()/sword()), torso lean, head, body shift and drop (lu)
+LOCK = {"shield": (-14, 8, 84), "sword": (60, 105, 140), "torso": -18, "head": 14, "x": 2.0, "z": -6.0}
+
+
+def _planted(s, x, ang):
+    """IK target of foot `s` set down with its (flat) ankle at x, rolled `ang` degrees about the toe."""
+    leg = LEGS[s]
+    gz = leg.end.z
+    px, pz = x + leg.toe.x - leg.end.x, gz + leg.toe.z - leg.end.z
+    dx, dz = x - px, gz - pz
+    r = math.radians(ang)
+    return (leg, px + dx * math.cos(r) - dz * math.sin(r), pz + dx * math.sin(r) + dz * math.cos(r), ang)
+
+
+def _lock_pose(f):
+    br = [0.0, 0.5, 1.0, 0.5][f]
+    (sa, sf, sw), (wa, wf, ww) = LOCK["shield"], LOCK["sword"]
+    pose = merge(shield(sa + 3 * br, sf + 2 * br, sw), sword(wa + 2 * br, wf, ww - 3 * br), {
+        "torso": {"r": LOCK["torso"] - 2 * br}, "head": {"r": LOCK["head"] + 1.5 * br, "z": -0.4 * br},
+        "plume": {"r": 5 * br}, "hem": {"r": -3 * br},
+    }, M.body_about((0, 0, 22), x=LOCK["x"] + 0.5 * br, z=LOCK["z"] - 0.4 * br))
+    pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.9}})
+    return G.solve(RIG, pose, {s: _planted(s, *LOCK_FEET[s]) for s in ("r", "l")})
+
+
 def _hit(k):
     def recoil(a):
         return {"head": {"r": 10 * a}, "torso": {"r": 8 * a},
@@ -605,5 +639,6 @@ def clips():
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
+        M.clip("shield_lock", [_lock_pose(f) for f in range(4)], [220, 180, 220, 180], loop=True),
     ]
     return M.check_variants(M.check_contract(cl))
