@@ -15,6 +15,7 @@ rounded fur tufts); this module adds what Medieval kit needs:
   panel()         heraldry (a pale, a chief, a bend) in the team-dark tone (the team zone in two tones)
   paw()           the bear paw emblem with every pad and toe on the surface (kit_medieval.paw loses the upper toes)
   cut_loop() / piping()  a rolled edge round the rim a clip left (a hood's facing round the face opening)
+  shell_bands()   mail rows (or lames) on a blob's own shape; lattice(): diagonal quilting lines for folds()
   skin_palette()  a skin's palette with the far side's shaded copies mapped as well
 
 Every number is in lu at rest, character space (x forward, y away from the camera, z up).
@@ -77,6 +78,45 @@ def mail_rows(rig, joint, p0, p1, radii, fill, step=2.4, w=0.85, bulge=0.32, squ
         g.lathe(prof, c, tuple(ci + di for ci, di in zip(c, d)), segs=20, squash=squash)
     rig.part(joint, g, fill, finish=finish, outline=outline)
     return g
+
+
+def shell_bands(rig, joint, center, radii, zs, fill, w=0.85, proud=0.3, p=2.0, taper=(1.0, 1.0), shift=(0.0, 0.0),
+                cuts=(), finish="metal", outline=0):
+    """Bands `w` lu tall at heights zs on a blob's own shape (a copy of it `proud` lu bigger, cut to each band): mail
+    rows round a coif or a hauberk that follow a superellipsoid exactly (a lathed ring is round and sinks into a
+    p > 2 blob's shoulders); `cuts` are extra (point, normal) clips, e.g. a face opening."""
+    big = tuple(r + proud for r in radii)
+    for z in zs:
+        g = Geo().blob(center, big, p=p, taper=taper, shift=shift)
+        for pt, n in cuts:
+            g.clip(pt, n)
+        g.clip((0, 0, z + w / 2), (0, 0, 1))
+        g.clip((0, 0, z - w / 2), (0, 0, -1))
+        rig.part(joint, g, fill, finish=finish, outline=outline)
+
+
+def lattice(x0, x1, z0, z1, step):
+    """Diagonal quilting lines (both diagonals, `step` lu apart) clipped to the box x0..x1, z0..z1: a list of
+    [(x, z), (x, z)] segments for folds()."""
+    out = []
+    for sgn in (1, -1):
+        k = -int((x1 - x0 + z1 - z0) / step) - 1
+        while k * step <= (x1 - x0 + z1 - z0):
+            c = k * step                      # the line z - z0 = sgn * (x - x0) + c
+            pts = []
+            for x in (x0, x1):
+                z = z0 + sgn * (x - x0) + c
+                if z0 <= z <= z1:
+                    pts.append((x, z))
+            for z in (z0, z1):
+                x = x0 + (z - z0 - c) * sgn
+                if x0 <= x <= x1:
+                    pts.append((x, z))
+            pts = sorted(set((round(a, 4), round(b, 4)) for a, b in pts))
+            if len(pts) >= 2 and math.dist(pts[0], pts[-1]) > 1.5:
+                out.append([pts[0], pts[-1]])
+            k += 1
+    return out
 
 
 # A decal from face.decal / face.stroke is flat in the screen plane, which the 16 degree camera tilts away from a

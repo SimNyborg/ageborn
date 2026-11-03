@@ -401,9 +401,13 @@ function deps(o: Partial<StripDeps> = {}): StripDeps & { worker: WorkerMock; mai
 }
 
 const sheet = (url = '/ageborn/art/units/medieval/footman.json'): StripSource => ({ kind: 'atlas', url, heightLu: 68, headLu: 66 });
-const tinCan = (): StripSource => {
-  const def = MANIFEST['unit.footman@tin_can'] as VisualDef;
-  return { kind: 'puppet', key: 'unit.footman@tin_can', puppet: SKIN_PUPPETS.find((p) => p.id === 'unit.footman@tin_can')!, def, headLu: -def.anchors.head.y, aura: true };
+// The example skin is the first unit skin still drawn as a puppet: skins move to Blender sheets wave by wave.
+const PUPPET_SKIN = SKIN_PUPPETS.find((p) => p.id.startsWith('unit.') && MANIFEST[p.id]?.kind === 'procedural')!;
+const PUPPET_ID = PUPPET_SKIN.id;
+const [PUPPET_CARD, PUPPET_SKIN_ID] = PUPPET_ID.slice('unit.'.length).split('@') as [string, string];
+const puppetSkin = (): StripSource => {
+  const def = MANIFEST[PUPPET_ID] as VisualDef;
+  return { kind: 'puppet', key: PUPPET_ID, puppet: PUPPET_SKIN, def, headLu: -def.anchors.head.y, aura: true };
 };
 
 describe('the strip of a request', () => {
@@ -436,17 +440,17 @@ describe('the strip of a request', () => {
   it("tries the skin's drawing first, then the card's own sheet", async () => {
     const d = deps();
     // the puppet draws on a canvas, which this test has not: the card's own strip answers
-    expect(await spriteStripArt({ sources: [tinCan(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default', deps: d })).toEqual(ART);
+    expect(await spriteStripArt({ sources: [puppetSkin(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default', deps: d })).toEqual(ART);
     expect(d.mainSlot).toHaveBeenCalledTimes(1);
     expect(d.worker).toHaveBeenCalledTimes(1);
     // a kept puppet strip answers at once (when puppet strips are kept)
     const store = { get: vi.fn(async (_slot: string, _version: string) => ART as StripArt | null), put: vi.fn(async () => undefined) };
     const kept = deps({ store });
-    expect(await spriteStripArt({ sources: [tinCan(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default', deps: kept })).toEqual(ART);
+    expect(await spriteStripArt({ sources: [puppetSkin(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default', deps: kept })).toEqual(ART);
     expect(kept.worker).not.toHaveBeenCalled();
-    expect(store.get.mock.calls[0]![0]).toBe('idle|160|2f7df6|unit.footman@tin_can');
+    expect(store.get.mock.calls[0]![0]).toBe(`idle|160|2f7df6|${PUPPET_ID}`);
     const unkept = deps({ store, keepPuppets: false });
-    await spriteStripArt({ sources: [tinCan(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default', deps: unkept });
+    await spriteStripArt({ sources: [puppetSkin(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default', deps: unkept });
     expect(store.get).toHaveBeenCalledTimes(1);
   });
 
@@ -482,7 +486,7 @@ describe("the provider's strips", () => {
     const d = deps();
     setStripDeps(d);
     const art = createArtProvider({ warn: () => {} });
-    expect(await art.portrait({ card: 'strip:idle:footman', skin: 'tin_can', size: 160 })).toBe(ART.url);
+    expect(await art.portrait({ card: `strip:idle:${PUPPET_CARD}`, skin: PUPPET_SKIN_ID, size: 160 })).toBe(ART.url);
     // the skinned strip is its own job (the puppet first, here without a canvas, then the card's sheet)
     expect(d.mainSlot).toHaveBeenCalledTimes(1);
     await art.portrait({ card: 'strip:idle:footman', size: 160 });
@@ -495,7 +499,7 @@ describe("the provider's strips", () => {
 
 describe("a skin puppet's strip", () => {
   it('samples its idle clip at about 115 ms a frame and stands it on its feet in the cell', () => {
-    const src = tinCan() as Extract<StripSource, { kind: 'puppet' }>;
+    const src = puppetSkin() as Extract<StripSource, { kind: 'puppet' }>;
     const l = puppetStripLayout(src, 'idle', 160)!;
     const ms = (src.def.clips['idle'] as { durationMs: number }).durationMs;
     expect(l.info.frames).toBe(Math.round(ms / 115));
@@ -549,26 +553,26 @@ describe('strips ready at boot', () => {
     const d = deps({ keep: 'https://x.test/' });
     setStripDeps(d);
     await spriteStripArt({ sources: [sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' });
-    await spriteStripArt({ sources: [tinCan(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' });
+    await spriteStripArt({ sources: [puppetSkin(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' });
     await vi.advanceTimersByTimeAsync(1100);
     const saved = JSON.parse(data.get(RECENT_KEY) ?? '[]') as { id: string; puppet?: unknown; sources: unknown[] }[];
-    expect(saved.map((r) => r.id)).toEqual(['/ageborn/art/units/medieval/footman.json|idle|160|2f7df6', 'unit.footman@tin_can>/ageborn/art/units/medieval/footman.json|idle|160|2f7df6']);
+    expect(saved.map((r) => r.id)).toEqual(['/ageborn/art/units/medieval/footman.json|idle|160|2f7df6', `${PUPPET_ID}>/ageborn/art/units/medieval/footman.json|idle|160|2f7df6`]);
     // of the skin's puppet only what its kept strip is keyed by (the puppet itself is the provider's)
-    const head = -(MANIFEST['unit.footman@tin_can'] as VisualDef).anchors.head.y;
-    expect(saved[1]!.puppet).toEqual({ key: 'unit.footman@tin_can', headLu: head, aura: true });
+    const head = -(MANIFEST[PUPPET_ID] as VisualDef).anchors.head.y;
+    expect(saved[1]!.puppet).toEqual({ key: PUPPET_ID, headLu: head, aura: true });
     expect(saved[1]!.sources).toEqual([sheet()]);
     // the next page load: the skin's kept strip is one store read, the sheet's goes through the worker
     const PUPPET_ART: StripArt = { url: 'data:image/png;base64,BBBB', info: INFO };
-    const store = { get: vi.fn(async (slot: string, _version: string) => (slot.endsWith('|unit.footman@tin_can') ? PUPPET_ART : null)), put: vi.fn(async () => undefined) };
+    const store = { get: vi.fn(async (slot: string, _version: string) => (slot.endsWith(`|${PUPPET_ID}`) ? PUPPET_ART : null)), put: vi.fn(async () => undefined) };
     const next = deps({ keep: 'https://x.test/', store });
     setStripDeps(next);
     expect(warmRecentStrips()).toBe(2);
     expect(next.worker.warm).toHaveBeenCalledTimes(1);
     expect(next.worker).toHaveBeenCalledTimes(1);
-    expect(store.get.mock.calls.map((c) => c[0])).toEqual(['idle|160|2f7df6|unit.footman@tin_can']);
+    expect(store.get.mock.calls.map((c) => c[0])).toEqual([`idle|160|2f7df6|${PUPPET_ID}`]);
     // Home's requests find both under way: nothing is drawn, no second worker job or store read
     await spriteStripArt({ sources: [sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' });
-    expect(await spriteStripArt({ sources: [tinCan(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' })).toEqual(PUPPET_ART);
+    expect(await spriteStripArt({ sources: [puppetSkin(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' })).toEqual(PUPPET_ART);
     expect(next.worker).toHaveBeenCalledTimes(1);
     expect(next.mainSlot).not.toHaveBeenCalled();
     expect(store.get).toHaveBeenCalledTimes(1);
@@ -576,7 +580,7 @@ describe('strips ready at boot', () => {
     const empty = deps({ keep: 'https://x.test/', store: { get: vi.fn(async () => null), put: vi.fn(async () => undefined) } });
     setStripDeps(empty);
     warmRecentStrips();
-    expect(await spriteStripArt({ sources: [tinCan(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' })).toEqual(ART);
+    expect(await spriteStripArt({ sources: [puppetSkin(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' })).toEqual(ART);
     expect(empty.mainSlot).toHaveBeenCalledTimes(1);
   });
 

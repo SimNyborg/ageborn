@@ -2,18 +2,18 @@
  "frames": {
   "brigand_attack_b_02": {
    "frame": {
-    "x": 76,
-    "y": 96,
+    "x": 489,
+    "y": 2,
     "w": 64,
-    "h": 83
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 101,
+    "y": 100,
     "w": 64,
-    "h": 83
+    "h": 84
    },
    "sourceSize": {
     "w": 239,
@@ -26,8 +26,8 @@
   },
   "brigand_attack_b_02_team": {
    "frame": {
-    "x": 272,
-    "y": 184,
+    "x": 471,
+    "y": 90,
     "w": 45,
     "h": 73
    },
@@ -50,18 +50,18 @@
   },
   "brigand_attack_b_03": {
    "frame": {
-    "x": 50,
-    "y": 184,
+    "x": 625,
+    "y": 86,
     "w": 63,
-    "h": 77
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 109,
+    "y": 108,
     "w": 63,
-    "h": 77
+    "h": 78
    },
    "sourceSize": {
     "w": 239,
@@ -74,9 +74,9 @@
   },
   "brigand_attack_b_03_team": {
    "frame": {
-    "x": 337,
-    "y": 266,
-    "w": 54,
+    "x": 247,
+    "y": 98,
+    "w": 55,
     "h": 68
    },
    "rotated": false,
@@ -84,7 +84,7 @@
    "spriteSourceSize": {
     "x": 91,
     "y": 104,
-    "w": 54,
+    "w": 55,
     "h": 68
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "brigand_attack_b_04": {
    "frame": {
-    "x": 76,
+    "x": 693,
     "y": 2,
-    "w": 55,
-    "h": 89
+    "w": 56,
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
-    "y": 98,
-    "w": 55,
-    "h": 89
+    "x": 102,
+    "y": 97,
+    "w": 56,
+    "h": 90
    },
    "sourceSize": {
     "w": 239,
@@ -122,8 +122,8 @@
   },
   "brigand_attack_b_04_team": {
    "frame": {
-    "x": 460,
-    "y": 96,
+    "x": 417,
+    "y": 87,
     "w": 50,
     "h": 78
    },
@@ -146,18 +146,18 @@
   },
   "brigand_attack_b_05": {
    "frame": {
-    "x": 299,
+    "x": 753,
     "y": 2,
     "w": 58,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 108,
-    "y": 100,
+    "y": 99,
     "w": 58,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 239,
@@ -170,9 +170,9 @@
   },
   "brigand_attack_b_05_team": {
    "frame": {
-    "x": 164,
-    "y": 184,
-    "w": 53,
+    "x": 189,
+    "y": 92,
+    "w": 54,
     "h": 73
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 106,
     "y": 95,
-    "w": 53,
+    "w": 54,
     "h": 73
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "brigand_attack_b_06": {
    "frame": {
-    "x": 262,
-    "y": 266,
+    "x": 692,
+    "y": 96,
     "w": 71,
-    "h": 68
+    "h": 69
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
-    "y": 111,
+    "y": 110,
     "w": 71,
-    "h": 68
+    "h": 69
    },
    "sourceSize": {
     "w": 239,
@@ -218,9 +218,9 @@
   },
   "brigand_attack_b_06_team": {
    "frame": {
-    "x": 449,
-    "y": 266,
-    "w": 61,
+    "x": 557,
+    "y": 89,
+    "w": 62,
     "h": 61
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 110,
     "y": 106,
-    "w": 61,
+    "w": 62,
     "h": 61
    },
    "sourceSize": {
@@ -242,18 +242,18 @@
   },
   "brigand_attack_b_07": {
    "frame": {
-    "x": 144,
-    "y": 96,
+    "x": 815,
+    "y": 2,
     "w": 59,
-    "h": 83
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 113,
-    "y": 100,
+    "y": 99,
     "w": 59,
-    "h": 83
+    "h": 84
    },
    "sourceSize": {
     "w": 239,
@@ -266,9 +266,9 @@
   },
   "brigand_attack_b_07_team": {
    "frame": {
-    "x": 105,
-    "y": 266,
-    "w": 50,
+    "x": 85,
+    "y": 94,
+    "w": 51,
     "h": 72
    },
    "rotated": false,
@@ -276,7 +276,7 @@
    "spriteSourceSize": {
     "x": 113,
     "y": 95,
-    "w": 50,
+    "w": 51,
     "h": 72
    },
    "sourceSize": {
@@ -290,18 +290,18 @@
   },
   "brigand_attack_b_08": {
    "frame": {
-    "x": 207,
-    "y": 96,
-    "w": 63,
-    "h": 82
+    "x": 557,
+    "y": 2,
+    "w": 64,
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
-    "y": 100,
-    "w": 63,
-    "h": 82
+    "x": 102,
+    "y": 99,
+    "w": 64,
+    "h": 83
    },
    "sourceSize": {
     "w": 239,
@@ -314,9 +314,9 @@
   },
   "brigand_attack_b_08_team": {
    "frame": {
-    "x": 221,
-    "y": 184,
-    "w": 47,
+    "x": 767,
+    "y": 92,
+    "w": 48,
     "h": 73
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 106,
     "y": 95,
-    "w": 47,
+    "w": 48,
     "h": 73
    },
    "sourceSize": {
@@ -338,18 +338,18 @@
   },
   "brigand_attack_c_01": {
    "frame": {
-    "x": 2,
-    "y": 96,
+    "x": 343,
+    "y": 2,
     "w": 70,
-    "h": 84
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 101,
+    "y": 100,
     "w": 70,
-    "h": 84
+    "h": 85
    },
    "sourceSize": {
     "w": 239,
@@ -362,8 +362,8 @@
   },
   "brigand_attack_c_01_team": {
    "frame": {
-    "x": 321,
-    "y": 184,
+    "x": 927,
+    "y": 2,
     "w": 43,
     "h": 73
    },
@@ -386,18 +386,18 @@
   },
   "brigand_attack_c_02": {
    "frame": {
-    "x": 274,
-    "y": 96,
+    "x": 417,
+    "y": 2,
     "w": 68,
-    "h": 80
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 107,
+    "y": 106,
     "w": 68,
-    "h": 80
+    "h": 81
    },
    "sourceSize": {
     "w": 239,
@@ -410,8 +410,8 @@
   },
   "brigand_attack_c_02_team": {
    "frame": {
-    "x": 211,
-    "y": 266,
+    "x": 819,
+    "y": 90,
     "w": 47,
     "h": 70
    },
@@ -434,18 +434,18 @@
   },
   "brigand_attack_c_03": {
    "frame": {
-    "x": 346,
-    "y": 96,
+    "x": 625,
+    "y": 2,
     "w": 64,
-    "h": 79
+    "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 89,
-    "y": 108,
+    "y": 107,
     "w": 64,
-    "h": 79
+    "h": 80
    },
    "sourceSize": {
     "w": 239,
@@ -458,8 +458,8 @@
   },
   "brigand_attack_c_03_team": {
    "frame": {
-    "x": 159,
-    "y": 266,
+    "x": 361,
+    "y": 91,
     "w": 48,
     "h": 71
    },
@@ -482,18 +482,18 @@
   },
   "brigand_attack_c_04": {
    "frame": {
-    "x": 2,
+    "x": 269,
     "y": 2,
     "w": 70,
-    "h": 90
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 97,
-    "y": 99,
+    "y": 97,
     "w": 70,
-    "h": 90
+    "h": 92
    },
    "sourceSize": {
     "w": 239,
@@ -506,8 +506,8 @@
   },
   "brigand_attack_c_04_team": {
    "frame": {
-    "x": 414,
-    "y": 96,
+    "x": 878,
+    "y": 84,
     "w": 42,
     "h": 79
    },
@@ -530,18 +530,18 @@
   },
   "brigand_attack_c_05": {
    "frame": {
-    "x": 135,
+    "x": 105,
     "y": 2,
     "w": 80,
-    "h": 87
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 100,
-    "y": 99,
+    "y": 98,
     "w": 80,
-    "h": 87
+    "h": 88
    },
    "sourceSize": {
     "w": 239,
@@ -554,9 +554,9 @@
   },
   "brigand_attack_c_05_team": {
    "frame": {
-    "x": 2,
-    "y": 184,
-    "w": 44,
+    "x": 878,
+    "y": 2,
+    "w": 45,
     "h": 78
    },
    "rotated": false,
@@ -564,7 +564,7 @@
    "spriteSourceSize": {
     "x": 105,
     "y": 94,
-    "w": 44,
+    "w": 45,
     "h": 78
    },
    "sourceSize": {
@@ -579,17 +579,17 @@
   "brigand_attack_c_06": {
    "frame": {
     "x": 2,
-    "y": 266,
+    "y": 2,
     "w": 99,
-    "h": 72
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 103,
-    "y": 109,
+    "y": 108,
     "w": 99,
-    "h": 72
+    "h": 73
    },
    "sourceSize": {
     "w": 239,
@@ -602,9 +602,9 @@
   },
   "brigand_attack_c_06_team": {
    "frame": {
-    "x": 395,
-    "y": 266,
-    "w": 50,
+    "x": 306,
+    "y": 98,
+    "w": 51,
     "h": 68
    },
    "rotated": false,
@@ -612,7 +612,7 @@
    "spriteSourceSize": {
     "x": 109,
     "y": 104,
-    "w": 50,
+    "w": 51,
     "h": 68
    },
    "sourceSize": {
@@ -626,18 +626,18 @@
   },
   "brigand_attack_c_07": {
    "frame": {
-    "x": 219,
+    "x": 189,
     "y": 2,
     "w": 76,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 108,
-    "y": 99,
+    "y": 98,
     "w": 76,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 239,
@@ -650,8 +650,8 @@
   },
   "brigand_attack_c_07_team": {
    "frame": {
-    "x": 117,
-    "y": 184,
+    "x": 924,
+    "y": 84,
     "w": 43,
     "h": 76
    },
@@ -674,18 +674,18 @@
   },
   "brigand_attack_c_08": {
    "frame": {
-    "x": 361,
-    "y": 2,
+    "x": 2,
+    "y": 79,
     "w": 79,
-    "h": 84
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 99,
-    "y": 99,
+    "y": 98,
     "w": 79,
-    "h": 84
+    "h": 85
    },
    "sourceSize": {
     "w": 239,
@@ -698,8 +698,8 @@
   },
   "brigand_attack_c_08_team": {
    "frame": {
-    "x": 368,
-    "y": 184,
+    "x": 974,
+    "y": 2,
     "w": 43,
     "h": 73
    },
@@ -781,8 +781,8 @@
   "image": "brigand.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 512,
-   "h": 340
+   "w": 1024,
+   "h": 168
   },
   "scale": "1.5",
   "ageborn": {
