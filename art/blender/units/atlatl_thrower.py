@@ -185,7 +185,7 @@ def build(rig):
 def _damage_spots(rig):
     """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the pelt's back half, the
     long team quiver on his back, the skirt and the near shin wrap; a strip torn from the skirt's hem."""
-    rig.damage_spot_at("pelt", "torso", -4.0, 27.0, 6.5, "hide", team=True)
+    rig.damage_spot_at("pelt", "torso", -3.5, 24.5, 7.0, "hide", team=True)   # W1 art gate nit 1: r 7 (6.5)
     rig.damage_spot_at("quiver", "quiver", -11.0, 33.0, 5.0, "hide", team=True)
     rig.damage_spot_at("skirt", "skirt", 2.5, 20.5, 5.5, "hide", team=True)
     rig.damage_spot_at("wrap", "shin_r", -2.3, 9.0, 5.0, "hide", team=True)

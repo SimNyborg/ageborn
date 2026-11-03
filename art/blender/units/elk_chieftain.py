@@ -90,16 +90,22 @@ MATERIAL_KINDS = W1.kinds({COAT: "hide", COAT_DK: "hide", NECK_DK: "hide", MANE:
 # Same joints, trackers, poses and clips. A night-violet pelt speckled with star-white four-point stars, a dusky
 # violet mane, glowing mint aurora antlers with violet streaks (green and violet only, CONTENT_PLAN 5.1: neither is
 # in the A11 team hue bands). The chieftain, the team blanket, bridle and pennant stay.
-A_COAT = "#4F4766"
-A_COAT_DK = "#383150"
+# W1 art gate (S1): the night violet raised to a mid violet (HSV value 0.49 on the lit side, 0.40 before) so the lit
+# top, the core shadow and the rim show on it; the far side and the neck under the mane stay dark (0.36), and the
+# socks are violet (they were the elk's brown, merging with the outline) with a glowing mint band over each hoof
+A_COAT = "#65587D"
+A_COAT_DK = "#493E5C"
 A_MANE = "#6A5A8A"
 A_SNOUT = "#BDB4D0"
+A_SOCK = "#564C66"
 AURORA = "#3AF0B4"
+AURORA_FAR = "#2CC897"
 AURORA2 = "#C8A8F0"
 STARWHITE = "#F2F0FF"
 SKINS = {"aurora_elk": {
-    "kinds": W1.kinds({A_COAT: "hide", A_COAT_DK: "hide", A_MANE: "fur", A_SNOUT: "fur"}),
+    "kinds": W1.kinds({A_COAT: "hide", A_COAT_DK: "hide", A_MANE: "fur", A_SNOUT: "fur", A_SOCK: "hide"}),
     "palette": {COAT: A_COAT, COAT_DK: A_COAT_DK, NECK_DK: A_COAT_DK, MANE: A_MANE, MANE_LT: A_SNOUT, RUMP: A_SNOUT,
+                SOCK: A_SOCK, "#3E352E": CC.scale(A_SOCK, 0.8),
                 CC.scale(COAT_DK, 0.8): CC.scale(A_COAT_DK, 0.8), CC.scale(MANE, 0.8): CC.scale(A_MANE, 0.8)}}}
 
 
@@ -116,6 +122,12 @@ def _leg(rig, name, p0, p1, front):
     rig.part(f"leg_{name}2", g, sock)
     g = Geo().blob((x1 + 1.8, y, 2.6), (4.4, 4.0, 2.8), p=3.0, taper=(1.05, 0.82))
     rig.part(f"leg_{name}2", g, HOOF, finish="gloss")
+    if getattr(rig, "skin", None) == "aurora_elk":
+        # Aurora Elk (W1 art gate): a glowing mint band round each sock above the hoof's pale band, so the legs
+        # separate from the outline at 1x (the far ones in the far antler's darker mint)
+        cx = x1 + (0.85 if front else 0.5)
+        g = Geo().lathe([(3.15, 0.0), (3.6, 0.3), (3.6, 2.1), (3.15, 2.4)], (cx, y, 7.2), segs=24)
+        rig.part(f"leg_{name}2", g, glow=AURORA if y < 0 else AURORA_FAR, outline=0)
     if y < 0:   # W1: a pale band over each hoof (the elk's leg markings: the dark socks in two tones, 2.4 lu)
         W1.ring(rig, f"leg_{name}2", (x1 + 0.9, y, 5.2), 3.15, height=1.7, fill=RUMP, outline=0, bulge=0.3)
         # W1: dark shaggy hair over the near elbow / stifle in two tones and a tuft over the knee (the long legs
@@ -150,7 +162,7 @@ def _rack(rig, joint, side_y):
         g.capsule((x0, side_y * 2.6, z0), (x1, side_y * 2.7, z1), 1.6, 0.5)
     if getattr(rig, "skin", None) == "aurora_elk":
         # Aurora Elk: the rack glows mint (unshaded, like a light) with violet streaks along the palm
-        rig.part(joint, g, glow=AURORA if side_y < 0 else "#2CC897", outline=0.6, outline_hex="#1E8C6C")
+        rig.part(joint, g, glow=AURORA if side_y < 0 else AURORA_FAR, outline=0.6, outline_hex="#1E8C6C")
         st = Geo()
         for (x0, z0), (x1, z1) in (((38.0, 95.4), (52.0, 100.6)), ((41.0, 98.6), (55.0, 102.4)),
                                    ((42.0, 93.8), (54.0, 97.2)),     # W1: more streaks (the flat glowing palm)
@@ -454,6 +466,34 @@ def _star_pelt(rig):
         for p in pts:
             g.sphere(p, 0.75, cuts=2)
         rig.part(leg, g, glow=STARWHITE, outline=0)
+    # W1 art gate: the far side starred as well (it faces the camera when the elk rolls over in its fall: the die
+    # frames showed plain violet, micro 2.9 and edge 0.38-0.40): the flank's stars, specks and ribbons mirrored, and
+    # the far legs' (3 lu further back)
+    g, dots = Geo(), Geo()
+    for x, y, z, r in ((10.0, 12.6, 56.0, 1.8), (-6.0, 12.2, 50.0, 1.5), (-18.0, 11.6, 54.0, 1.6), (20.0, 11.4, 62.0, 1.4),
+                       (2.0, 12.8, 50.6, 1.3), (12.0, 12.6, 48.6, 1.3), (-10.0, 12.4, 48.0, 1.2), (0.0, 12.6, 47.6, 1.1)):
+        g.star((x, y, z), r, r * 0.32, 0.5, points=4)
+    for x, y, z in ((14.0, 12.4, 52.0), (-12.0, 12.4, 52.6), (6.0, 12.6, 59.0), (-1.0, 12.6, 56.6), (8.0, 12.6, 46.4),
+                    (-4.0, 12.6, 46.6), (-16.0, 12.2, 47.6)):
+        dots.sphere((x, y, z), 0.7, cuts=2)
+    rig.part("trunk", g, glow=STARWHITE, outline=0)
+    rig.part("trunk", dots, glow=STARWHITE, outline=0)
+    ribbon("trunk", [(15.6, 12.4, 64.6), (19.6, 12.2, 60.4), (24.6, 10.4, 56.6)], AURORA_FAR)
+    ribbon("trunk", [(-17.6, 12.6, 61.0), (-21.0, 12.0, 56.4), (-23.4, 10.6, 52.0)], AURORA_FAR)
+    ribbon("trunk", [(-15.4, 12.8, 58.4), (-18.6, 12.4, 54.0), (-20.6, 11.2, 50.4)], AURORA2, r=0.65)
+    for leg, x0, z0 in (("leg_fl", 18.5, 50.0), ("leg_bl", -23.5, 48.0)):
+        ribbon(leg, [(x0 + 1.6, 12.2, z0), (x0 - 0.4, 12.6, z0 - 6.0), (x0 + 0.8, 12.0, z0 - 11.0)], AURORA_FAR)
+    for leg, stars, pts in (("leg_fl", ((16.6, 12.7, 40.0, 1.3), (18.6, 13.0, 47.0, 1.1)), ((18.4, 12.4, 44.0), (17.2, 12.0, 34.0))),
+                            ("leg_bl", ((-23.2, 13.2, 38.0, 1.3), (-21.6, 14.0, 46.0, 1.1)), ((-22.0, 13.0, 42.6), (-24.6, 12.4, 33.0))),
+                            ("leg_fl2", ((18.4, 10.7, 19.0, 1.2), (18.8, 10.6, 11.0, 1.0)), ((18.0, 10.6, 14.6),)),
+                            ("leg_bl2", ((-24.8, 10.7, 17.5, 1.2), (-24.6, 10.6, 10.0, 1.0)), ((-25.0, 10.6, 13.6),))):
+        g, dots = Geo(), Geo()
+        for x, y, z, r in stars:
+            g.star((x, y, z), r, r * 0.32, 0.5, points=4)
+        for p in pts:
+            dots.sphere(p, 0.7, cuts=2)
+        rig.part(leg, g, glow=STARWHITE, outline=0)
+        rig.part(leg, dots, glow=STARWHITE, outline=0)
 
 
 def _damage_spots(rig):

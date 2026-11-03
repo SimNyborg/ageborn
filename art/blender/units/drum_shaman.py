@@ -275,7 +275,7 @@ def _damage_spots(rig):
     """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the team drum (its
     shell is the biggest surface he always shows), the cloak's back, the belly sash and the near forearm wrap; a
     strip torn from the cloak's ragged hem."""
-    rig.damage_spot_at("drum", "drum", 14.0, 16.0, 6.5, "hide", team=True)
+    rig.damage_spot_at("drum", "drum", 8.5, 14.5, 7.0, "hide", team=True)   # W1 art gate nit 1: r 7 (6.5)
     rig.damage_spot_at("cloak", "cloak", -11.0, 22.0, 6.0, "hide", team=True)
     rig.damage_spot_at("sash", "torso", -5.0, 27.0, 5.0, "hide", team=True)
     rig.damage_spot_at("wrap", "fore_r", 3.0, 24.0, 5.0, "hide", team=True)

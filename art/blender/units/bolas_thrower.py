@@ -158,7 +158,7 @@ def _damage_spots(rig):
     wide belt, the skirt and the near shin wrap; a strip torn from the skirt's hem."""
     rig.damage_spot_at("pelt", "torso", -6.4, 27.8, 5.5, "hide", team=True)
     rig.damage_spot_at("belt", "torso", 5.0, 25.0, 5.0, "hide", team=True)
-    rig.damage_spot_at("skirt", "skirt", 2.5, 20.0, 5.5, "hide", team=True)
+    rig.damage_spot_at("skirt", "skirt", 0.0, 21.0, 7.0, "hide", team=True)   # W1 art gate nit 1: r 7 (5.5)
     rig.damage_spot_at("wrap", "shin_r", -2.3, 9.0, 5.0, "hide", team=True)
     rig.damage_spot_at("hem", "skirt", -6.0, 18.5, 10.0, "hide", kind="strip", team=True)
 

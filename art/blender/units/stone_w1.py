@@ -11,6 +11,8 @@ helpers add the secondary shapes the standard asks for (item 47 audit 5.1 and 5.
   laces()        crossed cords over a wrap (1.1 lu lines on part boundaries)
   beads()        a necklace or a strap of round beads (2.5-3.4 lu)
   blush()        a ruddy cheek patch on a big face (a 15+ level value step on skin)
+  Coat, tufts()  rounded fur tufts laid onto a part's surface by a ray along y, on the near or the far side
+  shingles(), fan()  their spots in overlapping, jittered rows, each a tuft of three fanned locks (the Cave Bear)
 
 Every number is in lu at rest, character space (x forward, y away from the camera, z up). Shapes that must read
 are at least 2.5 lu on their short side and at least 15 levels of luminance off their neighbours.
@@ -154,6 +156,140 @@ def fur_lock(g, root, length, tilt, r=2.4, dy=-0.6):
     g.lathe([(r, 0), (r * 0.85, length * 0.35), (r * 0.45, length * 0.75), (0, length)], root, tip, segs=10,
             squash=(1.0, 0.75))
     return g
+
+
+def bvh(g):
+    """A ray-cast tree of a Geo's surface at rest. Take it before rig.part, which frees the Geo's bmesh."""
+    from mathutils.bvhtree import BVHTree
+    return BVHTree.FromBMesh(g.bm)
+
+
+class Coat:
+    """A coat's surface at rest, to lay rounded tufts on it with `tufts`: `geos` are the Geo pieces of one part (or
+    their `bvh` trees), taken before rig.part frees them. `blockers`: other parts' pieces or trees that cover it (a
+    tuft is skipped where one of them is hit first: under the cape, a strap or a leg)."""
+
+    def __init__(self, geos, blockers=()):
+        self.trees = [g if not hasattr(g, "bm") else bvh(g) for g in geos]
+        self.blockers = [g if not hasattr(g, "bm") else bvh(g) for g in blockers]
+
+    def hit(self, x, z, side=-1):
+        """(point, outward normal) of the coat seen at (x, z) along y, from the camera side (side -1) or the far side
+        (+1), or None where the ray misses it or a blocker covers it."""
+        from mathutils import Vector
+        o, d = Vector((x, side * 90.0, z)), Vector((0.0, -float(side), 0.0))
+        best = None
+        for t in self.trees:
+            loc, nrm, _, dist = t.ray_cast(o, d, 200.0)
+            if loc is not None and (best is None or dist < best[2]):
+                best = (loc, nrm, dist)
+        if best is None:
+            return None
+        for t in self.blockers:
+            loc, _, _, dist = t.ray_cast(o, d, 200.0)
+            if loc is not None and dist < best[2] - 0.4:
+                return None
+        n = best[1] if best[1].dot(d) < 0 else -best[1]
+        return best[0], n.normalized()
+
+
+def tufts(coat, spots, side=-1, r=1.9, inset=0.5, lean=0.22, flat=0.72, cap=0.42, roots=None, lobes=None,
+          shape="round"):
+    """Rounded tufts of fur (3-6 lu; the W1 art gate's ask for the Cave Bear, whose light-tipped cones read as
+    spikes) laid on `coat` (a Coat): spots = [(x, z, length, tilt[, r])], the root seen at (x, z) from `side` (-1 the
+    camera side, +1 the far side), its length and its tilt from straight down (positive leans forward, +x). Each tuft
+    hangs along the surface (the tilted downward direction laid on the tangent plane, leaning `lean` off it), sunk
+    `inset` lu at its root and flattened across the coat (`flat`), and ends round (`shape`: ROUND or LOCK), so its end
+    turns down into the shadow band instead of a pale point. `cap` > 0 adds a darker cap over that share of its
+    length (into `roots`; caps over round lobes read as acorns, so the Cave Bear shows its darker roots between
+    shingled rows instead, cap=0). Returns (roots, lobes); roots is None without a cap."""
+    roots = roots if roots is not None or not cap else Geo()
+    lobes = lobes if lobes is not None else Geo()
+    for spot in spots:
+        x, z, length, tilt = spot[:4]
+        h = coat.hit(x, z, side)
+        if h is not None:
+            tuft_at(roots, lobes, h[0], h[1], length, tilt, spot[4] if len(spot) > 4 else r, inset, lean, flat, cap,
+                    shape)
+    return roots, lobes
+
+
+def _hash(seed, k, i):
+    """A deterministic pseudo-random number in [-0.5, 0.5)."""
+    v = ((seed * 73856093) ^ (k * 19349663) ^ (i * 83492791)) & 0xFFFFFFFF
+    v = (v * 2654435761) & 0xFFFFFFFF
+    return (v >> 8) / float(1 << 24) - 0.5
+
+
+def shingles(x0, x1, z_top, z_bot, dx=4.0, dz=4.0, length=(4.6, 5.4), tilt=0.0, tilt_jit=8.0, jit=0.9,
+             r=(1.55, 1.8), seed=1, jit_z=None):
+    """Spots for `tufts` in staggered rows that overlap like shingles (each row's round ends cover the next row's
+    roots: the darker roots show only between them) over the screen box x0..x1, z_top..z_bot, with a deterministic
+    jitter in place, length, tilt and width so the coat reads as fur, not as scales. `tilt` is degrees or a function
+    of (x, z)."""
+    out = []
+    k, row, z = 0, 0, z_top
+    while z >= z_bot - 1e-6:
+        x = x0 + (dx * 0.5 if row % 2 else 0.0)
+        while x <= x1 + 1e-6:
+            h = [_hash(seed, k, i) for i in range(5)]
+            px, pz = x + jit * h[0], z + (jit if jit_z is None else jit_z) * h[1]
+            t = tilt(px, pz) if callable(tilt) else tilt
+            out.append((px, pz, length[0] + (length[1] - length[0]) * (h[2] + 0.5), t + tilt_jit * h[3],
+                        r[0] + (r[1] - r[0]) * (h[4] + 0.5)))
+            x += dx
+            k += 1
+        z -= dz
+        row += 1
+    return out
+
+
+# the tufts' profiles (radius, height) as fractions of r and the length: a round lobe, or a lock (widest near the
+# root, tapering to a round end; a pointed flame read as small spikes again at game scale)
+ROUND = [(0.62, 0), (0.86, 0.14), (0.98, 0.3), (1.0, 0.48), (0.9, 0.68), (0.7, 0.84), (0.42, 0.94), (0, 1.0)]
+LOCK = [(0.75, 0), (0.97, 0.12), (1.0, 0.27), (0.96, 0.46), (0.88, 0.63), (0.74, 0.78), (0.54, 0.9), (0.3, 0.97),
+        (0, 1.0)]
+PROFILES = {"round": ROUND, "lock": LOCK}
+
+
+def fan(spots, spread=1.3, side=0.8, splay=12.0):
+    """Each spot (x, z, length, tilt, r) as a tuft of three locks fanning from one root (the middle one longest), so
+    the coat reads as tufts with a W-shaped end rather than as a grid of scales."""
+    out = []
+    for x, z, length, tilt, r in spots:
+        out += [(x - spread, z + 0.5, length * side, tilt - splay, r * 0.9),
+                (x + spread, z + 0.5, length * side * 0.94, tilt + splay, r * 0.9),
+                (x, z, length, tilt, r)]
+    return out
+
+
+def tuft_at(roots, lobes, p, n, length, tilt, r=1.9, inset=0.5, lean=0.22, flat=0.72, cap=0.42, shape="round"):
+    """One rounded tuft (see `tufts`) rooted at the surface point `p` with the outward normal `n` (Vectors or
+    tuples)."""
+    from mathutils import Vector
+    p, n = Vector(p), Vector(n).normalized()
+    a = math.radians(tilt)
+    down = Vector((math.sin(a), 0.0, -math.cos(a)))
+    t = down - n * down.dot(n)
+    t = t.normalized() if t.length > 0.2 else down
+    d = (t + n * lean).normalized()
+    root = p - n * inset
+    tip = root + d * length
+    # the section's squashed axis (local y) along the surface normal: the tuft lies flat on the coat
+    R = Vector((0.0, 0.0, 1.0)).rotation_difference(d).to_matrix()
+    e1, e2 = R @ Vector((1.0, 0.0, 0.0)), R @ Vector((0.0, 1.0, 0.0))
+    nn = n - d * n.dot(d)
+    phi = math.degrees(math.atan2(-nn.dot(e1), nn.dot(e2))) if nn.length > 1e-6 else 0.0
+    L, rr = length, r
+    prof = PROFILES[shape]
+    lobes.lathe([(rr * a, L * b) for a, b in prof], tuple(root), tuple(tip), segs=12, rot=(0, 0, phi),
+                squash=(1.0, flat))
+    if cap and roots is not None:
+        c = cap * L
+        roots.lathe([(rr * 0.7, 0), (rr * 1.0, c * 0.25), (rr * 1.08, c * 0.55), (rr * 1.02, c * 0.8),
+                     (rr * 0.6, c * 0.95), (0, c)], tuple(root), tuple(tip), segs=12, rot=(0, 0, phi),
+                    squash=(1.0, flat))
+    return roots, lobes
 
 
 def claws(rig, joint, tips, fill, tip_fill, r=1.3, length=3.4):

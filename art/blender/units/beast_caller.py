@@ -176,7 +176,7 @@ def _damage_spots(rig):
     """Damage spots (queue item 40 section 3.3, Stone soldier; never on the face or skin): the team shawl's back,
     the tunic's back half, the skirt and the near shin wrap; a strip torn from the skirt's hem."""
     rig.damage_spot_at("shawl", "torso", -5.0, 36.0, 5.5, "hide", team=True)
-    rig.damage_spot_at("pelt", "torso", -4.0, 27.4, 6.0, "hide", team=True)
+    rig.damage_spot_at("pelt", "torso", -6.0, 30.0, 7.0, "hide", team=True)   # W1 art gate nit 1: r 7 (6)
     rig.damage_spot_at("skirt", "skirt", 2.5, 20.5, 5.5, "hide", team=True)
     rig.damage_spot_at("wrap", "shin_r", -2.3, 9.0, 5.0, "hide", team=True)
     rig.damage_spot_at("hem", "skirt", -6.0, 18.5, 10.0, "hide", kind="strip", team=True)

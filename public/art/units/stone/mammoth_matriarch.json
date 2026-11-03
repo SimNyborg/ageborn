@@ -26,7 +26,7 @@
   },
   "mammoth_matriarch_idle_00_team": {
    "frame": {
-    "x": 2090,
+    "x": 2089,
     "y": 2,
     "w": 114,
     "h": 141
@@ -74,7 +74,7 @@
   },
   "mammoth_matriarch_idle_01_team": {
    "frame": {
-    "x": 2102,
+    "x": 2101,
     "y": 441,
     "w": 112,
     "h": 141
@@ -98,7 +98,7 @@
   },
   "mammoth_matriarch_idle_02": {
    "frame": {
-    "x": 201,
+    "x": 200,
     "y": 2,
     "w": 167,
     "h": 221
@@ -170,7 +170,7 @@
   },
   "mammoth_matriarch_idle_03_team": {
    "frame": {
-    "x": 1744,
+    "x": 1743,
     "y": 2,
     "w": 111,
     "h": 146
@@ -218,7 +218,7 @@
   },
   "mammoth_matriarch_walk_00_team": {
    "frame": {
-    "x": 1750,
+    "x": 1749,
     "y": 725,
     "w": 110,
     "h": 144
@@ -266,7 +266,7 @@
   },
   "mammoth_matriarch_walk_01_team": {
    "frame": {
-    "x": 1978,
+    "x": 1977,
     "y": 724,
     "w": 111,
     "h": 143
@@ -290,7 +290,7 @@
   },
   "mammoth_matriarch_walk_02": {
    "frame": {
-    "x": 1343,
+    "x": 1342,
     "y": 655,
     "w": 174,
     "h": 211
@@ -386,7 +386,7 @@
   },
   "mammoth_matriarch_walk_04": {
    "frame": {
-    "x": 719,
+    "x": 718,
     "y": 2,
     "w": 177,
     "h": 217
@@ -410,7 +410,7 @@
   },
   "mammoth_matriarch_walk_04_team": {
    "frame": {
-    "x": 1973,
+    "x": 1972,
     "y": 2,
     "w": 113,
     "h": 142
@@ -434,7 +434,7 @@
   },
   "mammoth_matriarch_walk_05": {
    "frame": {
-    "x": 544,
+    "x": 543,
     "y": 2,
     "w": 171,
     "h": 218
@@ -458,7 +458,7 @@
   },
   "mammoth_matriarch_walk_05_team": {
    "frame": {
-    "x": 1634,
+    "x": 1633,
     "y": 649,
     "w": 112,
     "h": 144
@@ -506,7 +506,7 @@
   },
   "mammoth_matriarch_walk_06_team": {
    "frame": {
-    "x": 1864,
+    "x": 1863,
     "y": 725,
     "w": 110,
     "h": 144
@@ -554,7 +554,7 @@
   },
   "mammoth_matriarch_walk_07_team": {
    "frame": {
-    "x": 1859,
+    "x": 1858,
     "y": 2,
     "w": 110,
     "h": 143
@@ -578,7 +578,7 @@
   },
   "mammoth_matriarch_walk_08": {
    "frame": {
-    "x": 1166,
+    "x": 1165,
     "y": 661,
     "w": 173,
     "h": 212
@@ -626,7 +626,7 @@
   },
   "mammoth_matriarch_walk_09": {
    "frame": {
-    "x": 1278,
+    "x": 1277,
     "y": 2,
     "w": 174,
     "h": 213
@@ -650,7 +650,7 @@
   },
   "mammoth_matriarch_walk_09_team": {
    "frame": {
-    "x": 1985,
+    "x": 1984,
     "y": 445,
     "w": 113,
     "h": 142
@@ -794,7 +794,7 @@
   },
   "mammoth_matriarch_attack_00_team": {
    "frame": {
-    "x": 2093,
+    "x": 2092,
     "y": 591,
     "w": 114,
     "h": 141
@@ -842,7 +842,7 @@
   },
   "mammoth_matriarch_attack_01_team": {
    "frame": {
-    "x": 1866,
+    "x": 1865,
     "y": 577,
     "w": 115,
     "h": 143
@@ -866,7 +866,7 @@
   },
   "mammoth_matriarch_attack_02": {
    "frame": {
-    "x": 1456,
+    "x": 1455,
     "y": 2,
     "w": 166,
     "h": 212
@@ -890,7 +890,7 @@
   },
   "mammoth_matriarch_attack_02_team": {
    "frame": {
-    "x": 2093,
+    "x": 2092,
     "y": 736,
     "w": 114,
     "h": 141
@@ -938,7 +938,7 @@
   },
   "mammoth_matriarch_attack_03_team": {
    "frame": {
-    "x": 2448,
+    "x": 2447,
     "y": 2,
     "w": 109,
     "h": 139
@@ -986,7 +986,7 @@
   },
   "mammoth_matriarch_attack_04_team": {
    "frame": {
-    "x": 1521,
+    "x": 1520,
     "y": 649,
     "w": 109,
     "h": 146
@@ -1034,7 +1034,7 @@
   },
   "mammoth_matriarch_attack_05_team": {
    "frame": {
-    "x": 1626,
+    "x": 1625,
     "y": 2,
     "w": 114,
     "h": 146
@@ -1060,15 +1060,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 195,
+    "w": 194,
     "h": 228
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 110,
+    "x": 111,
     "y": 54,
-    "w": 195,
+    "w": 194,
     "h": 228
    },
    "sourceSize": {
@@ -1154,7 +1154,7 @@
   },
   "mammoth_matriarch_attack_08": {
    "frame": {
-    "x": 900,
+    "x": 899,
     "y": 2,
     "w": 195,
     "h": 216
@@ -1178,7 +1178,7 @@
   },
   "mammoth_matriarch_attack_08_team": {
    "frame": {
-    "x": 2208,
+    "x": 2207,
     "y": 2,
     "w": 116,
     "h": 139
@@ -1226,7 +1226,7 @@
   },
   "mammoth_matriarch_attack_09_team": {
    "frame": {
-    "x": 1750,
+    "x": 1749,
     "y": 577,
     "w": 112,
     "h": 144
@@ -1274,7 +1274,7 @@
   },
   "mammoth_matriarch_hit_00_team": {
    "frame": {
-    "x": 2211,
+    "x": 2210,
     "y": 586,
     "w": 120,
     "h": 136
@@ -1322,7 +1322,7 @@
   },
   "mammoth_matriarch_hit_01_team": {
    "frame": {
-    "x": 2218,
+    "x": 2217,
     "y": 439,
     "w": 122,
     "h": 134
@@ -1346,7 +1346,7 @@
   },
   "mammoth_matriarch_hit_02": {
    "frame": {
-    "x": 1099,
+    "x": 1098,
     "y": 2,
     "w": 175,
     "h": 215
@@ -1370,7 +1370,7 @@
   },
   "mammoth_matriarch_hit_02_team": {
    "frame": {
-    "x": 2328,
+    "x": 2327,
     "y": 2,
     "w": 116,
     "h": 139
@@ -1394,7 +1394,7 @@
   },
   "mammoth_matriarch_hit_03": {
    "frame": {
-    "x": 372,
+    "x": 371,
     "y": 2,
     "w": 168,
     "h": 220
@@ -1540,15 +1540,15 @@
    "frame": {
     "x": 933,
     "y": 664,
-    "w": 229,
+    "w": 228,
     "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 63,
+    "x": 64,
     "y": 66,
-    "w": 229,
+    "w": 228,
     "h": 214
    },
    "sourceSize": {
@@ -1610,7 +1610,7 @@
   },
   "mammoth_matriarch_die_02_team": {
    "frame": {
-    "x": 2376,
+    "x": 2375,
     "y": 646,
     "w": 174,
     "h": 102
@@ -1634,7 +1634,7 @@
   },
   "mammoth_matriarch_die_03": {
    "frame": {
-    "x": 2344,
+    "x": 2343,
     "y": 531,
     "w": 197,
     "h": 111
@@ -1658,8 +1658,8 @@
   },
   "mammoth_matriarch_die_03_team": {
    "frame": {
-    "x": 1656,
-    "y": 577,
+    "x": 1887,
+    "y": 445,
     "w": 90,
     "h": 67
    },
@@ -1706,7 +1706,7 @@
   },
   "mammoth_matriarch_die_04_team": {
    "frame": {
-    "x": 1521,
+    "x": 1520,
     "y": 799,
     "w": 78,
     "h": 64
@@ -1754,8 +1754,8 @@
   },
   "mammoth_matriarch_die_05_team": {
    "frame": {
-    "x": 1887,
-    "y": 445,
+    "x": 1656,
+    "y": 577,
     "w": 83,
     "h": 65
    },
@@ -1778,7 +1778,7 @@
   },
   "mammoth_matriarch_die_06": {
    "frame": {
-    "x": 2211,
+    "x": 2210,
     "y": 726,
     "w": 161,
     "h": 121
@@ -1802,7 +1802,7 @@
   },
   "mammoth_matriarch_die_06_team": {
    "frame": {
-    "x": 1603,
+    "x": 1602,
     "y": 799,
     "w": 81,
     "h": 63
@@ -1850,7 +1850,7 @@
   },
   "mammoth_matriarch_die_07_team": {
    "frame": {
-    "x": 1626,
+    "x": 1625,
     "y": 152,
     "w": 79,
     "h": 61
