@@ -110,7 +110,7 @@ export const UNIT_SHEET_PIXELS: Readonly<Record<string, readonly [number, number
   'industrial/steam_golem': [4431872, 1972224, 1126400, 517120],
   'industrial/steam_tractor': [5062656, 1249280, 1298432, 318976],
   'industrial/trench_mortar': [3342336, 491008, 881664, 128000],
-  'medieval/alchemist': [1253376, 283136, 337920, 77824],
+  'medieval/alchemist': [1179648, 911360, 328704, 243712],
   'medieval/battering_ram': [5652480, 1028608, 1449984, 265216],
   'medieval/brigand': [1720320, 645120, 471040, 172032],
   'medieval/crossbowman': [1945600, 1634304, 522240, 430080],

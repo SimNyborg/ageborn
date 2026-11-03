@@ -21,8 +21,7 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
   die     D3 dizzy sit: spins, sits down hard, legs out, the book in his lap, spiral eyes
 
 Detail standard (art round W2, Track MEDIEVAL): the habit in two tones (team-dark pleats round the bell skirt, wide
-team-dark cuffs on the sleeves, a mended team-dark patch on its side), the paw whole on the belly, folds in the
-parchment cowl. Aimed at flyers (queue item 44): A and B up about 45 and 70 degrees, hand-posed like W1's slingers
+team-dark cuffs on the sleeves), the paw whole on the belly, folds in the parchment cowl. Aimed at flyers (queue item 44): A and B up about 45 and 70 degrees, hand-posed like W1's slingers
 (kit_bronze_detail.aimed_hand: the turn is solved on the sling's cord at the release), the stone lobbed up at the
 target. Damage spots: the habit's back, a sleeve, the cowl, a strip torn from the skirt.
 """
@@ -123,8 +122,6 @@ def build(rig):
     # W2: pleats round the bell skirt, team-dark, flaring to the hem (the habit reads as cloth)
     MW.folds(rig, "skirt", kface, [[(x, 17.0), (1.0 + (x - 1.0) * 1.2, 10.6)] for x in (-7.4, -3.2, 1.0, 5.2, 9.0)],
              w=1.3)
-    # W2: a mended patch on the skirt's back half, team-dark (a poor friar's habit)
-    MW.panel(rig, "skirt", kface, [(-9.6, 11.4), (-5.2, 11.0), (-4.9, 15.4), (-9.3, 15.8)], depth=0.25)
     # rope belt with a hanging knotted end
     g = Geo().lathe([(12.4, -1.3), (13.4, 0), (12.4, 1.3)], (2.0, 0, 20.8), segs=24, squash=(1.0, 0.9))
     g.capsule((11.0, -8.5, 20.5), (11.6, -9.4, 10.5), 1.2)
