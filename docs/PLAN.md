@@ -194,3 +194,7 @@ what we believe, how sure we are, and what we post next because of it.
   (19:04). DV12 (round-up: how many soldiers is a Legendary worth) 65 reach in 1.8 h with 51 % skip, the lowest
   early skip of any post. DV11 only 39 reach in 24 h (posted 21:55 local after the restart): a late post may cost
   reach after all, so B5 goes back to open for very late slots. R19 220, the best duel. Followers 151.
+- 2026-11-03: worker restarts lost the 2026-11-02 run entirely (no posts that day) and most of 2026-11-03; DV13 (the
+  ship whose last strike lands after it dies, found in DV10's event log) went out 18:42 UTC. DV14 (the same fight
+  filmed twice, pixel-identical: determinism) is queued and scheduled for 2026-11-04 midday, made a day ahead as a
+  buffer against restarts. Rule: keep one scheduled post a day ahead at all times.
