@@ -328,7 +328,7 @@ def _damage_spots(rig):
     shabraque's cream edge."""
     rig.damage_spot_at("shabraque", "horse", -28.0, 58.0, 10.0, "cloth", team=True)
     rig.damage_spot_at("neck", "neck", 31.0, 82.0, 9.0, "hide", fill=COAT)
-    rig.damage_spot_at("coat", "ktorso", -10.0, 108.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("coat", "ktorso", -16.0, 104.0, 8.0, "cloth", team=True)   # the back, clear of the arm
     rig.damage_spot_at("hat", "hat", -14.0, 155.0, 8.0, "cloth", team=True)
     rig.damage_spot_at("hem", "horse", -20.0, 41.0, 10.0, "cloth", kind="strip", fill=B.CREAM)
 
@@ -461,15 +461,18 @@ TIP = (SX + 7.0, SY, SZ + SABRE)
 SIN = (SX + 3.0, SY, SZ + SABRE * 0.45)
 CUT = {"kind": "arc", "joint": "sabre", "inner": SIN, "outer": TIP, "color": BLADE, "taper": 0.2,
        "white": 0.3, "t0": 0.0, "t1": 0.95, "lines": 3, "samples": 18}
+# W2: hollow smears (the outer band of the swept area and four speed lines): a filled crescent the size of the
+# charger is one flat field, so the smear frames fell under the cavalry floors (micro 2.4 on B's sweep)
+HOLLOW = {"band": 0.4, "lines": 4}
 
 
 def _attack_clip():
     ov = {
-        4: [dict(CUT, **{"from": 3}),
+        4: [dict(CUT, **{"from": 3}, **HOLLOW),
             {"kind": "dust", "ground": (-24.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 61, "spread": 1.2,
              "dir": -1.0}],
-        5: [dict(CUT, **{"from": 3, "t0": 0.2})],
-        6: [dict(CUT, **{"from": 5, "t1": 1.0, "lines": 2}),
+        5: [dict(CUT, **{"from": 3, "t0": 0.2}, **HOLLOW)],
+        6: [dict(CUT, **{"from": 5, "t1": 1.0, "lines": 2, "band": HOLLOW["band"]}),
             {"kind": "burst", "joint": "sabre", "point": TIP, "r0_lu": 8.0, "r1_lu": 15.0, "n": 6,
              "a0": -80.0, "arc": 160.0},
             {"kind": "dust", "ground": (32.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 62, "spread": 1.2}],
@@ -545,20 +548,20 @@ THRUST = {"kind": "streak", "joint": "sabre", "point": TIP, "color": BLADE, "wid
 def _attack_v(v):
     if v == "b":
         ov = {
-            4: [dict(CUT, **{"from": 3, "t0": 0.0, "t1": 1.0}),
+            4: [dict(CUT, **{"from": 3, "t0": 0.0, "t1": 1.0}, **HOLLOW),
                 {"kind": "dust", "ground": (-24.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 64,
                  "spread": 1.2, "dir": -1.0}],
-            5: [dict(CUT, **{"from": 3, "t0": 0.3, "t1": 1.0})],
-            6: [dict(CUT, **{"from": 5, "t1": 1.0, "lines": 2}),
+            5: [dict(CUT, **{"from": 3, "t0": 0.3, "t1": 1.0}, **HOLLOW)],
+            6: [dict(CUT, **{"from": 5, "t1": 1.0, "lines": 2, "band": HOLLOW["band"]}),
                 {"kind": "burst", "joint": "sabre", "point": TIP, "r0_lu": 8.0, "r1_lu": 15.0, "n": 6,
                  "a0": -40.0, "arc": 160.0},
                 {"kind": "dust", "ground": (32.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 65, "spread": 1.2}],
         }
     else:
         ov = {
-            4: [dict(THRUST, **{"from": 3, "t0": 0.0, "t1": 1.0})],
-            5: [dict(THRUST, **{"from": 3, "t0": 0.3, "t1": 1.0, "width_lu": 8.0})],
-            6: [dict(THRUST, **{"from": 4, "t0": 0.4, "t1": 1.0, "width_lu": 6.0}),
+            4: [dict(THRUST, **{"from": 3, "t0": 0.0, "t1": 1.0, "width_lu": 7.0})],     # W2: narrower (the floors)
+            5: [dict(THRUST, **{"from": 3, "t0": 0.3, "t1": 1.0, "width_lu": 6.0})],
+            6: [dict(THRUST, **{"from": 4, "t0": 0.4, "t1": 1.0, "width_lu": 5.0}),
                 {"kind": "burst", "joint": "sabre", "point": TIP, "r0_lu": 7.0, "r1_lu": 14.0, "n": 6,
                  "a0": -70.0, "arc": 140.0},
                 {"kind": "dust", "ground": (34.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 66, "spread": 1.2}],

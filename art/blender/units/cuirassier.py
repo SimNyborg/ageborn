@@ -319,8 +319,8 @@ def build(rig):
 
 
 def _damage_spots(rig):
-    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The shabraque (the largest
-    team surface, under the rider's leg), the bay's neck, the rider's cuirass and his coat tails, the crest; a torn
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The shabraque (the largest team
+    surface, under the rider's leg), the bay's neck, the cuirass's backplate and his coat tails, the crest; a torn
     strip from the shabraque's cream edge."""
     rig.damage_spot_at("shabraque", "horse", -12.0, 42.0, 9.0, "cloth", team=True)
     rig.damage_spot_at("neck", "neck", 24.0, 54.0, 7.0, "hide", fill=COAT)

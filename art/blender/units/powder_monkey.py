@@ -204,9 +204,9 @@ def build(rig):
 
 
 def _damage_spots(rig):
-    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The waistcoat's back (the
-    largest team surface the scoop arm leaves clear), the stocking cap, the near trouser leg (the cask hides behind
-    him); a torn strip from the shirt's cream tail."""
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The waistcoat's side below the
+    arms (the largest team surface the scoop arm leaves clear in every frame), the stocking cap, the near trouser
+    leg (the cask hides behind him); a torn strip from the shirt's cream tail."""
     rig.damage_spot_at("vest", "torso", 0.0, 22.0, 7.0, "cloth", team=True)     # clear of the arms in every frame
     rig.damage_spot_at("cap", "head", -3.0, 60.0, 5.0, "cloth", team=True)
     rig.damage_spot_at("trousers", "thigh_r", -1.0, 16.0, 5.0, "cloth", fill=TROUSER)
