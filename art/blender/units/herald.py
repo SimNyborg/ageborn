@@ -18,15 +18,25 @@ Animation (ANIM_SPEC G1 march, appendix B for a horn: level blast, raised fanfar
   attack_b  RAISED FANFARE: tips the trumpet high toward the sky on his toes and blasts a fanfare
   hit       light: the head snaps back, the plume flops
   die       D3 dizzy sit: the trumpet in his lap, spiral eyes
+
+Detail standard (art round W2, Track MEDIEVAL): the tabard's lower back quarter and the skirt's back half team-dark
+(the quartering in two tones), pleats down the skirt, the ruff's puffs in two parchments, the banner's fringe
+team-dark and its paw whole, a polished rim on the trumpet's bell. Aimed at flyers (queue item 44): the level blast A
+up about 45 and 70 degrees, the raised fanfare B (48.7 degrees) up about 70 (aimed.py on the trumpet: he tips it up
+and leans back, the mouthpiece kept at his lips). Damage spots: the tabard, the banner, the beret, a strip torn from
+the skirt.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "herald"
 GAIT_NAME = "biped"
@@ -46,6 +56,16 @@ BRASS = "#C9B78E"
 BRASS_DK = "#8F8064"
 PARCH = "#E8DFC8"
 PARCH_DK = "#C9BDA0"
+BRASS_HI = "#E6D9B4"      # the bell's polished rim
+
+# the detail standard (art round W2): the soldier's lifts; cloth, brass and parchment apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", CHEEK: "skin", HAIR: "fur", HOSE: "cloth", SHOE: "leather", BRASS: "bronze",
+                           BRASS_DK: "bronze", BRASS_HI: "bronze", PARCH: "cloth", PARCH_DK: "cloth", "#3E332B": "leather",
+                           "team": "cloth"})
 
 SH = (0.0, B.SHOULDER_Z)
 MP = (13.6, -5.0, 41.6)               # the trumpet mouthpiece at the lips (rest, character space)
@@ -83,21 +103,28 @@ def build(rig):
     c = tface.hit(9.0, 23.0)
     tface.decal(g2, c, [(-4.0, -6.0), (2.6, -6.0), (2.6, 0.0), (-4.0, 0.0)], 0.4)
     rig.part("torso", g2, PARCH, highlight=False, outline=0)
-    g = K.paw(tface, Geo(), (3.0, 30.0), s=1.0)
+    g = MW.paw(tface, Geo(), (3.0, 30.0), s=1.0)        # W2: the paw whole
     rig.part("torso", g, PARCH, highlight=False, outline=0)
+    # W2: the quartering in two tones: the lower back quarter team-dark (the parchment quarter is the lower front)
+    MW.panel(rig, "torso", tface, [(-9.8, 23.0), (5.0, 23.0), (5.0, 16.6), (-9.2, 16.6)], depth=0.25)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.6, 0, 14.8), (11.6, 10.6, 4.8), p=2.7, taper=(1.12, 1.0))
     for x, y in ((9.0, -7.0), (1.0, -11.0), (-7.0, -9.0)):
         g.lathe([(2.2, 0), (0, -3.4)], (x, y, 11.6), segs=8)
+    hface = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    # W2: the skirt's back half team-dark (the quarter above runs on down), pleats down its front half
+    MW.panel(rig, "hem", hface, [(-10.6, 18.6), (2.6, 18.6), (2.6, 11.0), (-10.0, 11.0)], depth=0.25)
+    MW.folds(rig, "hem", hface, [[(x, 18.0), (x + 0.6, 11.4)] for x in (5.0, 8.6)], w=1.3)
     g = Geo().blob((0.4, 0, 20.6), (11.4, 10.4, 1.6), p=3.2)
     rig.part("torso", g, SHOE)
-    g = Geo()
-    for k in range(8):   # puffed collar
+    g, gd = Geo(), Geo()
+    for k in range(8):   # puffed collar (W2: every other puff in the darker parchment, a ruff's folds)
         t = math.radians(-160 + 40 * k)
-        g.blob((1.0 + 9.6 * math.cos(t), 10.0 * math.sin(t), 37.4), (3.4, 3.4, 2.6), p=2.0)
+        (gd if k % 2 else g).blob((1.0 + 9.6 * math.cos(t), 10.0 * math.sin(t), 37.4), (3.4, 3.4, 2.6), p=2.0)
     rig.part("torso", g, PARCH)
+    rig.part("torso", gd, PARCH_DK)
 
     # head: rosy cheeks, a pointed chin, a neat fringe, a plumed team beret
     head = Geo().blob((2, 0, 48.0), (11.0, 10.4, 11.0), p=2.3)
@@ -142,15 +169,33 @@ def build(rig):
     g = Geo().lathe([(1.4, 0), (1.4, 1.2)], (mx - 0.6, my, mz), (mx + 0.8, my, mz), segs=10)
     g.sphere((mx + 9.0, my, mz), 1.6, cuts=2).sphere((mx + 18.0, my, mz), 1.6, cuts=2)
     rig.part("trumpet", g, BRASS_DK, finish="gloss", outline=0.5)
+    # W2: the bell's rim rolled and polished (the brass carries a clear highlight band)
+    g = Geo().lathe([(5.2, TLEN * 1.02 - 1.0), (6.1, TLEN * 1.02 - 0.2), (6.1, TLEN * 1.02 + 0.4), (5.4, TLEN * 1.02 + 0.8)],
+                    (mx + TLEN - 8.0, my, mz), (mx + TLEN + 2.0, my, mz), segs=18)
+    rig.part("trumpet", g, BRASS_HI, finish="gloss", outline=0.5)
     rig.secondary("banner", "trumpet", (mx + 9.0, my - 0.6, mz - 0.6), (mx + 13.0, my - 0.6, mz - 14.0),
                   max_deg=12, gain=1.2)
     bn = Geo().slab([(mx + 8.0, mz - 1.0), (mx + 21.0, mz - 1.0), (mx + 21.0, mz - 13.0), (mx + 14.5, mz - 16.0),
                      (mx + 8.0, mz - 13.0)], my - 1.0, 1.0)
     bface = F.Face(rig, "banner", [bn])
     rig.part("banner", bn, team=True, outline=0.6)
-    g = K.paw(bface, Geo(), K.scr(bface, (mx + 14.5, my - 1.6, mz - 7.0)), s=0.95)
+    g = MW.paw(bface, Geo(), K.scr(bface, (mx + 14.5, my - 1.6, mz - 6.4)), s=0.95)    # W2: the paw whole
     rig.part("banner", g, PARCH, highlight=False, outline=0)
+    # W2: the banner's swallowtail fringe team-dark (two tones)
+    MW.panel(rig, "banner", bface, [K.scr(bface, (mx + dx, my - 1.6, mz + dz)) for dx, dz in
+                                    ((8.6, -11.4), (20.4, -11.4), (20.4, -12.8), (14.5, -15.4), (8.6, -12.8))], depth=0.25)
     rig.track("muzzle", "trumpet", BELL)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the tabard's back, the banner,
+    the beret, a strip torn from the skirt."""
+    rig.damage_spot_at("tabard", "torso", -7.5, 29.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("banner", "banner", 27.0, 30.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("beret", "beret", -4.0, 60.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hem", -4.0, 13.5, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -205,14 +250,42 @@ A_THR = [0, 2, 4, 6, 6, 12, 18, 16, 8, 2, 0]
 A_THL = [0, -2, -4, -6, -6, -10, -14, -12, -6, -2, 0]
 
 
-def _attack_pose(f, up=0.0):
+# aimed blasts at flyers (queue item 44; aimed.py on the trumpet, whose +X is its axis): a turn of `aim` degrees tips
+# the trumpet up and leans him back with his head following, the mouthpiece kept at his lips; the feet stay planted
+# (B's tiptoe belongs to its own fanfare). The lift rises into the aim, the hold and the blast are fully aimed.
+AIM_LEAN = 0.12           # torso r per degree of aim (positive leans back)
+AIM_HEAD = 0.25           # head r per degree, on top of the lean
+#        read lift raise HOLD wobble lead BLAST over lower settle settle
+AIM_W = [0.0, 0.35, 1.0, 1.0, 1.0, 1.0, 1.0, 0.75, 0.3, 0.0, 0.0]
+HEAD_C = (1.0, 38.0)      # the head joint (torso space x, z)
+A_HEAD = [0, 2, 4, 6, 5, -2, -4, -3, 0, 0, 0]
+
+
+def _lips_shift(h0, dh):
+    """How far the lips move (torso space) when the head turns on from h0 to h0 + dh degrees about its joint."""
+    lx, lz = LIPS[0] - HEAD_C[0], LIPS[1] - HEAD_C[1]
+
+    def at(h):
+        r = math.radians(h)
+        return lx * math.cos(r) - lz * math.sin(r), lx * math.sin(r) + lz * math.cos(r)
+    (ax, az), (bx, bz) = at(h0), at(h0 + dh)
+    return bx - ax, bz - az
+
+
+def _attack_pose(f, up=0.0, aim=0.0):
     px, pz, deg = A_T[f]
     playing = 2 <= f <= 7
     if playing:
         deg += up
+    head = (0.6 * up if playing else 0) + A_HEAD[f]
+    if aim:
+        deg += aim
+        if playing:     # the mouthpiece stays at the lips as the head tips up
+            dx, dz = _lips_shift(head, AIM_HEAD * aim)
+            px, pz = px + dx, pz + dz
     pose = merge(tpt(px, pz, deg), B.arm("l", -60, 10), {
-        "torso": {"r": A_LEAN[f] + (6.0 * up / 50.0 if playing else 0)},
-        "head": {"r": (0.6 * up if playing else 0) + [0, 2, 4, 6, 5, -2, -4, -3, 0, 0, 0][f]},
+        "torso": {"r": A_LEAN[f] + (6.0 * up / 50.0 if playing else 0) + AIM_LEAN * aim},
+        "head": {"r": head + AIM_HEAD * aim},
         "thigh_r": {"r": A_THR[f]}, "thigh_l": {"r": A_THL[f]},
         "cheeks": {"show": f in (3, 4, 5)},
         "banner": {"r": [0, 4, 6, 8, 6, -6, -14, -8, 2, 0, 0][f]},
@@ -272,13 +345,22 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed at flyers (they go to the extras sheet): the level blast up about 45 and 70 degrees; the raised fanfare
+    # already blasts 48.7 degrees up, so only up about 70
+    aimed_a = AIMED.variants(RIG, attack, lambda f, t: _attack_pose(f, aim=t), AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, lambda f, t: _attack_pose(f, up=52.0, aim=t), AIM_W, aims=("up70",))
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
     return M.check_variants(M.check_contract(cl))

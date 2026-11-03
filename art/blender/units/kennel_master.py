@@ -19,15 +19,23 @@ Animation (ANIM_SPEC G1 stride, appendix B for a whip: overhead crack, side-arm 
             at knee height
   hit       light: the head snaps back, the cap flies up a little
   die       D1 fling and spin: the whip flies off, X eyes and tongue
+
+Detail standard (art round W2, Track MEDIEVAL): the jerkin quilted in team-dark channels and its shoulder caps
+team-dark (the team zone in two tones), pleats down its skirt, a stitched border and a pocket on the leather apron, an
+iron belt buckle, lighter strands in the beard. Damage spots: the jerkin's back, the apron, the cap, a strip torn from
+the skirt.
 """
 import math
 
 from ageborn_art import face as F
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
+from units import stone_w1 as W1
 
 SLUG = "kennel_master"
 GAIT_NAME = "biped"
@@ -47,6 +55,17 @@ LEATHER_DK = "#4E3F33"
 WOOD = "#9A8268"
 BONE = "#EDE3C8"
 PARCH = "#E8DFC8"
+BEARD_LT = "#9A8070"      # lighter strands in the beard (two tones)
+IRON = "#A7B0BB"          # the belt buckle
+
+# the detail standard (art round W2): the soldier's lifts; cloth, leather, wood and bone apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.65         # matte leather and cloth: hl 0.052 with the soldier's lifts, 0.055 with the Sergeant's
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = dict(MW.RIM_SOLDIER, lift=0.85, full_lu=0.85)
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", BEARD: "fur", BEARD_LT: "fur", HOSE: "cloth", BOOT: "leather", "#443A31": "leather",
+                           LEATHER: "leather", LEATHER_DK: "leather", WOOD: "wood", BONE: "bone", PARCH: "cloth",
+                           IRON: "iron", "team": "cloth"})
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
 HANDLE = 8.0
@@ -84,17 +103,34 @@ def build(rig):
 
     # torso: a big team jerkin, a leather apron, a belt with two empty leashes and team collars
     g = Geo().blob((1.4, 0, 26.6), (12.8, 11.2, 12.2), p=2.1, taper=(1.12, 0.86))
+    jface = F.Face(rig, "torso", [g])
     rig.part("torso", g, team=True)
+    # W2: the jerkin quilted in team-dark channels where it shows behind the apron (padded cloth, two tones)
+    MW.folds(rig, "torso", jface, [[(x, 33.0), (x - 0.4, 17.4)] for x in (-8.6, -4.6, -0.6, 3.4)], w=1.2)
     g = Geo().blob((2.2, 0, 22.0), (12.2, 10.0, 9.6), p=2.8)
     g.clip((7.0, 0, 0), (-1, 0, 0))
     g.clip((0, 0, 30.0), (0, 0, 1))
+    aface = F.Face(rig, "torso", [g])
     rig.part("torso", g, LEATHER)
+    # W2: the apron's stitched border and a pocket (leather with its own seams)
+    MW.seam(rig, "torso", aface, [(8.4, 29.0), (8.4, 14.6)], fill=LEATHER_DK, w=0.9)
+    MW.panel(rig, "torso", aface, [(9.0, 22.6), (12.6, 22.6), (12.4, 26.6), (9.2, 26.6)], team=False, fill=LEATHER_DK,
+             depth=0.25)
+    g = Geo()   # W2: iron rivets at the apron's top corners and down its side seam
+    for x, z in ((8.6, 28.8), (8.5, 24.6), (8.5, 17.2)):
+        c = aface.hit(x, z)
+        g.sphere((c.x, c.y, c.z), 0.85, cuts=2)
+    rig.part("torso", g, IRON, finish="metal", outline=0)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.8, 0, 15.0), (12.4, 11.0, 4.8), p=2.7, taper=(1.12, 1.0))
+    hface = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    MW.folds(rig, "hem", hface, [[(x + 0.4, 18.6), (x + 0.6, 11.2)] for x in (-8.6, -4.6, -0.6, 3.4)], w=1.3)   # W2
     g = Geo().blob((1.0, 0, 20.4), (13.2, 11.6, 1.8), p=3.2)
     rig.part("torso", g, LEATHER_DK)
+    g = Geo().blob((13.4, -2.4, 20.4), (1.3, 2.4, 2.4), p=3.0)       # W2: an iron buckle
+    rig.part("torso", g, IRON, finish="metal", outline=0.6)
     g = Geo().capsule((11.0, -3.0, 36.0), (13.6, -4.0, 27.0), 0.5)   # whistle cord
     rig.part("torso", g, LEATHER_DK, outline=0.3)
     g = Geo().capsule((13.4, -4.6, 27.2), (13.8, -4.8, 23.8), 1.0)
@@ -117,6 +153,7 @@ def build(rig):
             mouth_dz=-7.4, mouth_x=12.6, eye_at=(13.8, 49.2), mark_r=3.8, extra_geos=[beard])
     rig.part("head", head, SKIN)
     rig.part("head", beard, BEARD, finish="hair")
+    W1.locks(rig, "head", [((6.0, 45.4), (8.4, 37.6), 1.35), ((10.6, 43.8), (11.6, 36.0), 1.3)], BEARD_LT, -10.2)   # W2
     rig.joint("cap", "head", CAP_C)
     _cap(rig, "cap")
 
@@ -124,7 +161,7 @@ def build(rig):
         B.arm_parts(rig, s, LEATHER, hand=SKIN, cuff=LEATHER_DK, r0=4.8, r1=4.3, fist=4.6)
         y = B.ARM_Y[s]
         g = Geo().blob((0.0, y, 36.8), (6.6, 5.8, 5.2), p=2.4)
-        rig.part(f"arm_{s}", g, team=True)
+        look.team_part(rig, f"arm_{s}", g)       # W2: the shoulder caps team-dark (the jerkin in two tones)
 
     # the whip: handle in the near fist (rest up), the lash on two joints
     hx, hy, hz = HR
@@ -147,6 +184,17 @@ def build(rig):
     g = Geo().capsule((-6.0, -11.0, 30.0), (6.0, -11.0, 30.0), 1.5)
     g.capsule((6.0, -11.0, 30.0), (24.0, -11.0, 26.0), 0.9, 0.5)
     rig.part("whip_loose", g, LEATHER)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the jerkin's back, the apron, the
+    cap, a strip torn from the skirt."""
+    rig.damage_spot_at("jerkin", "torso", -7.0, 28.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("apron", "torso", 10.0, 23.0, 5.0, "hide", fill=LEATHER)
+    rig.damage_spot_at("cap", "cap", -3.0, 60.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hem", -5.0, 14.0, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

@@ -2,18 +2,18 @@
  "frames": {
   "kennel_master_idle_00": {
    "frame": {
-    "x": 322,
-    "y": 601,
+    "x": 1074,
+    "y": 360,
     "w": 114,
-    "h": 168
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 256,
-    "y": 254,
+    "y": 252,
     "w": 114,
-    "h": 168
+    "h": 170
    },
    "sourceSize": {
     "w": 582,
@@ -26,8 +26,8 @@
   },
   "kennel_master_idle_00_team": {
    "frame": {
-    "x": 820,
-    "y": 601,
+    "x": 1816,
+    "y": 348,
     "w": 109,
     "h": 166
    },
@@ -50,18 +50,18 @@
   },
   "kennel_master_idle_01": {
    "frame": {
-    "x": 1053,
-    "y": 423,
+    "x": 1362,
+    "y": 358,
     "w": 115,
-    "h": 169
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 257,
-    "y": 252,
+    "y": 249,
     "w": 115,
-    "h": 169
+    "h": 172
    },
    "sourceSize": {
     "w": 582,
@@ -74,9 +74,9 @@
   },
   "kennel_master_idle_01_team": {
    "frame": {
-    "x": 114,
-    "y": 774,
-    "w": 107,
+    "x": 2039,
+    "y": 2,
+    "w": 90,
     "h": 164
    },
    "rotated": false,
@@ -84,7 +84,7 @@
    "spriteSourceSize": {
     "x": 257,
     "y": 242,
-    "w": 107,
+    "w": 90,
     "h": 164
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "kennel_master_idle_02": {
    "frame": {
-    "x": 719,
-    "y": 241,
+    "x": 901,
+    "y": 2,
     "w": 111,
-    "h": 175
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 258,
-    "y": 245,
+    "y": 243,
     "w": 111,
-    "h": 175
+    "h": 177
    },
    "sourceSize": {
     "w": 582,
@@ -122,8 +122,8 @@
   },
   "kennel_master_idle_02_team": {
    "frame": {
-    "x": 389,
-    "y": 423,
+    "x": 1562,
+    "y": 179,
     "w": 105,
     "h": 173
    },
@@ -146,18 +146,18 @@
   },
   "kennel_master_idle_03": {
    "frame": {
-    "x": 264,
-    "y": 241,
+    "x": 684,
+    "y": 2,
     "w": 105,
-    "h": 177
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 258,
-    "y": 242,
+    "y": 239,
     "w": 105,
-    "h": 177
+    "h": 180
    },
    "sourceSize": {
     "w": 582,
@@ -170,9 +170,9 @@
   },
   "kennel_master_idle_03_team": {
    "frame": {
-    "x": 792,
+    "x": 443,
     "y": 2,
-    "w": 107,
+    "w": 105,
     "h": 182
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 254,
     "y": 231,
-    "w": 107,
+    "w": 105,
     "h": 182
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "kennel_master_idle_04": {
    "frame": {
-    "x": 834,
-    "y": 241,
+    "x": 793,
+    "y": 2,
     "w": 104,
-    "h": 175
+    "h": 178
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 256,
-    "y": 244,
+    "y": 241,
     "w": 104,
-    "h": 175
+    "h": 178
    },
    "sourceSize": {
     "w": 582,
@@ -218,9 +218,9 @@
   },
   "kennel_master_idle_04_team": {
    "frame": {
-    "x": 903,
-    "y": 2,
-    "w": 109,
+    "x": 490,
+    "y": 188,
+    "w": 108,
     "h": 181
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 251,
     "y": 234,
-    "w": 109,
+    "w": 108,
     "h": 181
    },
    "sourceSize": {
@@ -242,18 +242,18 @@
   },
   "kennel_master_idle_05": {
    "frame": {
-    "x": 825,
-    "y": 423,
+    "x": 1471,
+    "y": 2,
     "w": 108,
-    "h": 171
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 256,
-    "y": 250,
+    "y": 248,
     "w": 108,
-    "h": 171
+    "h": 173
    },
    "sourceSize": {
     "w": 582,
@@ -266,8 +266,8 @@
   },
   "kennel_master_idle_05_team": {
    "frame": {
-    "x": 1043,
-    "y": 241,
+    "x": 1248,
+    "y": 181,
     "w": 110,
     "h": 174
    },
@@ -290,18 +290,18 @@
   },
   "kennel_master_walk_00": {
    "frame": {
-    "x": 695,
-    "y": 774,
+    "x": 2133,
+    "y": 2,
     "w": 113,
-    "h": 160
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 257,
-    "y": 261,
+    "y": 258,
     "w": 113,
-    "h": 160
+    "h": 163
    },
    "sourceSize": {
     "w": 582,
@@ -314,8 +314,8 @@
   },
   "kennel_master_walk_00_team": {
    "frame": {
-    "x": 471,
-    "y": 942,
+    "x": 2492,
+    "y": 2,
     "w": 119,
     "h": 156
    },
@@ -338,18 +338,18 @@
   },
   "kennel_master_walk_01": {
    "frame": {
-    "x": 965,
-    "y": 942,
+    "x": 2469,
+    "y": 163,
     "w": 111,
-    "h": 154
+    "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 261,
-    "y": 267,
+    "y": 264,
     "w": 111,
-    "h": 154
+    "h": 157
    },
    "sourceSize": {
     "w": 582,
@@ -362,8 +362,8 @@
   },
   "kennel_master_walk_01_team": {
    "frame": {
-    "x": 352,
-    "y": 942,
+    "x": 2400,
+    "y": 326,
     "w": 115,
     "h": 157
    },
@@ -386,18 +386,18 @@
   },
   "kennel_master_walk_02": {
    "frame": {
-    "x": 586,
-    "y": 601,
+    "x": 1671,
+    "y": 178,
     "w": 110,
-    "h": 167
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 263,
-    "y": 253,
+    "y": 250,
     "w": 110,
-    "h": 167
+    "h": 170
    },
    "sourceSize": {
     "w": 582,
@@ -410,8 +410,8 @@
   },
   "kennel_master_walk_02_team": {
    "frame": {
-    "x": 1016,
-    "y": 774,
+    "x": 2250,
+    "y": 2,
     "w": 115,
     "h": 158
    },
@@ -434,18 +434,18 @@
   },
   "kennel_master_walk_03": {
    "frame": {
-    "x": 937,
-    "y": 423,
-    "w": 112,
-    "h": 170
+    "x": 1481,
+    "y": 358,
+    "w": 113,
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 261,
-    "y": 243,
-    "w": 112,
-    "h": 170
+    "x": 260,
+    "y": 241,
+    "w": 113,
+    "h": 172
    },
    "sourceSize": {
     "w": 582,
@@ -458,8 +458,8 @@
   },
   "kennel_master_walk_03_team": {
    "frame": {
-    "x": 229,
-    "y": 942,
+    "x": 2369,
+    "y": 2,
     "w": 119,
     "h": 157
    },
@@ -482,18 +482,18 @@
   },
   "kennel_master_walk_04": {
    "frame": {
-    "x": 717,
-    "y": 942,
-    "w": 118,
-    "h": 155
+    "x": 2237,
+    "y": 169,
+    "w": 117,
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 252,
-    "y": 261,
-    "w": 118,
-    "h": 155
+    "x": 253,
+    "y": 258,
+    "w": 117,
+    "h": 158
    },
    "sourceSize": {
     "w": 582,
@@ -506,8 +506,8 @@
   },
   "kennel_master_walk_04_team": {
    "frame": {
-    "x": 264,
-    "y": 1104,
+    "x": 463,
+    "y": 378,
     "w": 120,
     "h": 151
    },
@@ -530,18 +530,18 @@
   },
   "kennel_master_walk_05": {
    "frame": {
-    "x": 388,
-    "y": 1104,
+    "x": 2710,
+    "y": 159,
     "w": 115,
-    "h": 146
+    "h": 148
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 255,
-    "y": 267,
+    "y": 265,
     "w": 115,
-    "h": 146
+    "h": 148
    },
    "sourceSize": {
     "w": 582,
@@ -554,8 +554,8 @@
   },
   "kennel_master_walk_05_team": {
    "frame": {
-    "x": 594,
-    "y": 942,
+    "x": 2519,
+    "y": 324,
     "w": 119,
     "h": 155
    },
@@ -578,18 +578,18 @@
   },
   "kennel_master_walk_06": {
    "frame": {
-    "x": 1135,
-    "y": 774,
+    "x": 602,
+    "y": 370,
     "w": 115,
-    "h": 158
+    "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 256,
-    "y": 254,
+    "y": 252,
     "w": 115,
-    "h": 158
+    "h": 160
    },
    "sourceSize": {
     "w": 582,
@@ -602,8 +602,8 @@
   },
   "kennel_master_walk_06_team": {
    "frame": {
-    "x": 839,
-    "y": 942,
+    "x": 2584,
+    "y": 162,
     "w": 122,
     "h": 154
    },
@@ -626,18 +626,18 @@
   },
   "kennel_master_walk_07": {
    "frame": {
-    "x": 700,
-    "y": 601,
-    "w": 116,
-    "h": 166
+    "x": 1695,
+    "y": 352,
+    "w": 117,
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 255,
-    "y": 244,
-    "w": 116,
-    "h": 166
+    "x": 254,
+    "y": 241,
+    "w": 117,
+    "h": 169
    },
    "sourceSize": {
     "w": 582,
@@ -650,8 +650,8 @@
   },
   "kennel_master_walk_07_team": {
    "frame": {
-    "x": 1080,
-    "y": 942,
+    "x": 2615,
+    "y": 2,
     "w": 123,
     "h": 153
    },
@@ -674,18 +674,18 @@
   },
   "kennel_master_attack_00": {
    "frame": {
-    "x": 2,
-    "y": 601,
+    "x": 1583,
+    "y": 2,
     "w": 111,
-    "h": 169
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 256,
-    "y": 250,
+    "y": 247,
     "w": 111,
-    "h": 169
+    "h": 172
    },
    "sourceSize": {
     "w": 582,
@@ -698,18 +698,18 @@
   },
   "kennel_master_attack_00_team": {
    "frame": {
-    "x": 711,
-    "y": 423,
-    "w": 110,
-    "h": 171
+    "x": 1976,
+    "y": 172,
+    "w": 91,
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 255,
     "y": 240,
-    "w": 110,
-    "h": 171
+    "w": 91,
+    "h": 164
    },
    "sourceSize": {
     "w": 582,
@@ -722,18 +722,18 @@
   },
   "kennel_master_attack_01": {
    "frame": {
-    "x": 1171,
-    "y": 601,
+    "x": 960,
+    "y": 363,
     "w": 97,
-    "h": 165
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 252,
-    "y": 253,
+    "y": 251,
     "w": 97,
-    "h": 165
+    "h": 167
    },
    "sourceSize": {
     "w": 582,
@@ -746,8 +746,8 @@
   },
   "kennel_master_attack_01_team": {
    "frame": {
-    "x": 812,
-    "y": 774,
+    "x": 721,
+    "y": 370,
     "w": 93,
     "h": 160
    },
@@ -770,18 +770,18 @@
   },
   "kennel_master_attack_02": {
    "frame": {
-    "x": 2,
-    "y": 241,
+    "x": 552,
+    "y": 2,
     "w": 128,
-    "h": 178
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 210,
-    "y": 244,
+    "y": 242,
     "w": 128,
-    "h": 178
+    "h": 180
    },
    "sourceSize": {
     "w": 582,
@@ -794,8 +794,8 @@
   },
   "kennel_master_attack_02_team": {
    "frame": {
-    "x": 2,
-    "y": 423,
+    "x": 1463,
+    "y": 180,
     "w": 95,
     "h": 174
    },
@@ -818,18 +818,18 @@
   },
   "kennel_master_attack_03": {
    "frame": {
-    "x": 1016,
-    "y": 2,
+    "x": 352,
+    "y": 191,
     "w": 134,
-    "h": 180
+    "h": 183
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 200,
-    "y": 243,
+    "y": 240,
     "w": 134,
-    "h": 180
+    "h": 183
    },
    "sourceSize": {
     "w": 582,
@@ -842,10 +842,10 @@
   },
   "kennel_master_attack_03_team": {
    "frame": {
-    "x": 942,
-    "y": 241,
+    "x": 1362,
+    "y": 180,
     "w": 97,
-    "h": 175
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
@@ -853,7 +853,7 @@
     "x": 235,
     "y": 232,
     "w": 97,
-    "h": 175
+    "h": 174
    },
    "sourceSize": {
     "w": 582,
@@ -890,7 +890,7 @@
   },
   "kennel_master_attack_04_team": {
    "frame": {
-    "x": 498,
+    "x": 306,
     "y": 2,
     "w": 133,
     "h": 185
@@ -914,8 +914,8 @@
   },
   "kennel_master_attack_05": {
    "frame": {
-    "x": 146,
-    "y": 2,
+    "x": 2,
+    "y": 241,
     "w": 188,
     "h": 231
    },
@@ -938,8 +938,8 @@
   },
   "kennel_master_attack_05_team": {
    "frame": {
-    "x": 1029,
-    "y": 601,
+    "x": 1929,
+    "y": 342,
     "w": 138,
     "h": 165
    },
@@ -962,17 +962,17 @@
   },
   "kennel_master_attack_06": {
    "frame": {
-    "x": 373,
-    "y": 241,
-    "w": 222,
+    "x": 1016,
+    "y": 2,
+    "w": 223,
     "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 266,
+    "x": 265,
     "y": 237,
-    "w": 222,
+    "w": 223,
     "h": 175
    },
    "sourceSize": {
@@ -986,8 +986,8 @@
   },
   "kennel_master_attack_06_team": {
    "frame": {
-    "x": 662,
-    "y": 1104,
+    "x": 2793,
+    "y": 311,
     "w": 127,
     "h": 142
    },
@@ -1010,18 +1010,18 @@
   },
   "kennel_master_attack_07": {
    "frame": {
-    "x": 101,
-    "y": 423,
+    "x": 1074,
+    "y": 181,
     "w": 170,
-    "h": 173
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 273,
-    "y": 247,
+    "y": 245,
     "w": 170,
-    "h": 173
+    "h": 175
    },
    "sourceSize": {
     "w": 582,
@@ -1034,8 +1034,8 @@
   },
   "kennel_master_attack_07_team": {
    "frame": {
-    "x": 2,
-    "y": 774,
+    "x": 840,
+    "y": 365,
     "w": 108,
     "h": 164
    },
@@ -1058,18 +1058,18 @@
   },
   "kennel_master_attack_08": {
    "frame": {
-    "x": 440,
-    "y": 601,
+    "x": 1698,
+    "y": 2,
     "w": 142,
-    "h": 167
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 268,
-    "y": 253,
+    "y": 251,
     "w": 142,
-    "h": 167
+    "h": 169
    },
    "sourceSize": {
     "w": 582,
@@ -1082,8 +1082,8 @@
   },
   "kennel_master_attack_08_team": {
    "frame": {
-    "x": 909,
-    "y": 774,
+    "x": 2177,
+    "y": 337,
     "w": 103,
     "h": 159
    },
@@ -1106,18 +1106,18 @@
   },
   "kennel_master_attack_09": {
    "frame": {
-    "x": 599,
-    "y": 241,
+    "x": 840,
+    "y": 184,
     "w": 116,
-    "h": 175
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 263,
-    "y": 246,
+    "y": 244,
     "w": 116,
-    "h": 175
+    "h": 177
    },
    "sourceSize": {
     "w": 582,
@@ -1130,8 +1130,8 @@
   },
   "kennel_master_attack_09_team": {
    "frame": {
-    "x": 227,
-    "y": 601,
+    "x": 1785,
+    "y": 175,
     "w": 91,
     "h": 169
    },
@@ -1154,18 +1154,18 @@
   },
   "kennel_master_attack_10": {
    "frame": {
-    "x": 498,
-    "y": 423,
+    "x": 1243,
+    "y": 2,
     "w": 112,
-    "h": 172
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 257,
-    "y": 248,
+    "y": 245,
     "w": 112,
-    "h": 172
+    "h": 175
    },
    "sourceSize": {
     "w": 582,
@@ -1178,8 +1178,8 @@
   },
   "kennel_master_attack_10_team": {
    "frame": {
-    "x": 933,
-    "y": 601,
+    "x": 1880,
+    "y": 172,
     "w": 92,
     "h": 166
    },
@@ -1202,18 +1202,18 @@
   },
   "kennel_master_hit_00": {
    "frame": {
-    "x": 530,
-    "y": 774,
-    "w": 161,
-    "h": 161
+    "x": 2071,
+    "y": 170,
+    "w": 162,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 237,
-    "y": 259,
-    "w": 161,
-    "h": 161
+    "x": 236,
+    "y": 257,
+    "w": 162,
+    "h": 163
    },
    "sourceSize": {
     "w": 582,
@@ -1226,8 +1226,8 @@
   },
   "kennel_master_hit_00_team": {
    "frame": {
-    "x": 2,
-    "y": 942,
+    "x": 2284,
+    "y": 331,
     "w": 112,
     "h": 158
    },
@@ -1250,18 +1250,18 @@
   },
   "kennel_master_hit_01": {
    "frame": {
-    "x": 635,
-    "y": 2,
-    "w": 153,
-    "h": 184
+    "x": 194,
+    "y": 201,
+    "w": 154,
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 235,
-    "y": 235,
-    "w": 153,
-    "h": 184
+    "x": 234,
+    "y": 233,
+    "w": 154,
+    "h": 186
    },
    "sourceSize": {
     "w": 582,
@@ -1274,8 +1274,8 @@
   },
   "kennel_master_hit_01_team": {
    "frame": {
-    "x": 1154,
-    "y": 2,
+    "x": 731,
+    "y": 186,
     "w": 105,
     "h": 179
    },
@@ -1298,18 +1298,18 @@
   },
   "kennel_master_hit_02": {
    "frame": {
-    "x": 134,
-    "y": 241,
-    "w": 126,
-    "h": 177
+    "x": 602,
+    "y": 186,
+    "w": 125,
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 252,
-    "y": 243,
-    "w": 126,
-    "h": 177
+    "x": 253,
+    "y": 240,
+    "w": 125,
+    "h": 180
    },
    "sourceSize": {
     "w": 582,
@@ -1322,8 +1322,8 @@
   },
   "kennel_master_hit_02_team": {
    "frame": {
-    "x": 614,
-    "y": 423,
+    "x": 1598,
+    "y": 356,
     "w": 93,
     "h": 172
    },
@@ -1346,18 +1346,18 @@
   },
   "kennel_master_hit_03": {
    "frame": {
-    "x": 117,
-    "y": 601,
+    "x": 1248,
+    "y": 359,
     "w": 106,
-    "h": 169
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 256,
-    "y": 252,
+    "y": 250,
     "w": 106,
-    "h": 169
+    "h": 171
    },
    "sourceSize": {
     "w": 582,
@@ -1370,18 +1370,18 @@
   },
   "kennel_master_hit_03_team": {
    "frame": {
-    "x": 225,
-    "y": 774,
-    "w": 106,
-    "h": 164
+    "x": 2071,
+    "y": 337,
+    "w": 102,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 253,
     "y": 242,
-    "w": 106,
-    "h": 164
+    "w": 102,
+    "h": 163
    },
    "sourceSize": {
     "w": 582,
@@ -1394,18 +1394,18 @@
   },
   "kennel_master_hit_04": {
    "frame": {
-    "x": 275,
-    "y": 423,
+    "x": 960,
+    "y": 183,
     "w": 110,
-    "h": 173
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 257,
-    "y": 248,
+    "y": 245,
     "w": 110,
-    "h": 173
+    "h": 176
    },
    "sourceSize": {
     "w": 582,
@@ -1418,8 +1418,8 @@
   },
   "kennel_master_hit_04_team": {
    "frame": {
-    "x": 1157,
-    "y": 241,
+    "x": 1359,
+    "y": 2,
     "w": 108,
     "h": 174
    },
@@ -1442,18 +1442,18 @@
   },
   "kennel_master_die_00": {
    "frame": {
-    "x": 507,
-    "y": 1104,
-    "w": 151,
-    "h": 145
+    "x": 2742,
+    "y": 2,
+    "w": 152,
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 247,
-    "y": 258,
-    "w": 151,
-    "h": 145
+    "x": 246,
+    "y": 256,
+    "w": 152,
+    "h": 147
    },
    "sourceSize": {
     "w": 582,
@@ -1466,8 +1466,8 @@
   },
   "kennel_master_die_00_team": {
    "frame": {
-    "x": 153,
-    "y": 1104,
+    "x": 352,
+    "y": 378,
     "w": 107,
     "h": 152
    },
@@ -1490,8 +1490,8 @@
   },
   "kennel_master_die_01": {
    "frame": {
-    "x": 2,
-    "y": 1260,
+    "x": 2898,
+    "y": 2,
     "w": 194,
     "h": 126
    },
@@ -1514,8 +1514,8 @@
   },
   "kennel_master_die_01_team": {
    "frame": {
-    "x": 484,
-    "y": 1260,
+    "x": 3094,
+    "y": 132,
     "w": 166,
     "h": 118
    },
@@ -1538,7 +1538,7 @@
   },
   "kennel_master_die_02": {
    "frame": {
-    "x": 338,
+    "x": 146,
     "y": 2,
     "w": 156,
     "h": 195
@@ -1562,8 +1562,8 @@
   },
   "kennel_master_die_02_team": {
    "frame": {
-    "x": 118,
-    "y": 942,
+    "x": 2358,
+    "y": 164,
     "w": 107,
     "h": 158
    },
@@ -1586,18 +1586,18 @@
   },
   "kennel_master_die_03": {
    "frame": {
-    "x": 335,
-    "y": 774,
+    "x": 1844,
+    "y": 2,
     "w": 191,
-    "h": 163
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 212,
-    "y": 223,
+    "y": 220,
     "w": 191,
-    "h": 163
+    "h": 166
    },
    "sourceSize": {
     "w": 582,
@@ -1610,10 +1610,10 @@
   },
   "kennel_master_die_03_team": {
    "frame": {
-    "x": 2,
-    "y": 1104,
+    "x": 2642,
+    "y": 320,
     "w": 147,
-    "h": 152
+    "h": 151
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 204,
     "y": 213,
     "w": 147,
-    "h": 152
+    "h": 151
    },
    "sourceSize": {
     "w": 582,
@@ -1634,8 +1634,8 @@
   },
   "kennel_master_die_04": {
    "frame": {
-    "x": 928,
-    "y": 1104,
+    "x": 2829,
+    "y": 153,
     "w": 261,
     "h": 131
    },
@@ -1658,8 +1658,8 @@
   },
   "kennel_master_die_04_team": {
    "frame": {
-    "x": 793,
-    "y": 1104,
+    "x": 194,
+    "y": 391,
     "w": 131,
     "h": 139
    },
@@ -1682,8 +1682,8 @@
   },
   "kennel_master_die_05": {
    "frame": {
-    "x": 2,
-    "y": 1390,
+    "x": 3264,
+    "y": 119,
     "w": 293,
     "h": 108
    },
@@ -1706,8 +1706,8 @@
   },
   "kennel_master_die_05_team": {
    "frame": {
-    "x": 570,
-    "y": 1390,
+    "x": 3213,
+    "y": 362,
     "w": 161,
     "h": 102
    },
@@ -1730,8 +1730,8 @@
   },
   "kennel_master_die_06": {
    "frame": {
-    "x": 200,
-    "y": 1260,
+    "x": 2924,
+    "y": 288,
     "w": 280,
     "h": 121
    },
@@ -1754,8 +1754,8 @@
   },
   "kennel_master_die_06_team": {
    "frame": {
-    "x": 299,
-    "y": 1390,
+    "x": 3370,
+    "y": 2,
     "w": 139,
     "h": 107
    },
@@ -1778,8 +1778,8 @@
   },
   "kennel_master_die_07": {
    "frame": {
-    "x": 654,
-    "y": 1260,
+    "x": 2924,
+    "y": 413,
     "w": 285,
     "h": 115
    },
@@ -1802,8 +1802,8 @@
   },
   "kennel_master_die_07_team": {
    "frame": {
-    "x": 735,
-    "y": 1390,
+    "x": 3336,
+    "y": 231,
     "w": 149,
     "h": 101
    },
@@ -1826,8 +1826,8 @@
   },
   "kennel_master_die_08": {
    "frame": {
-    "x": 943,
-    "y": 1260,
+    "x": 3096,
+    "y": 2,
     "w": 270,
     "h": 113
    },
@@ -1850,8 +1850,8 @@
   },
   "kennel_master_die_08_team": {
    "frame": {
-    "x": 442,
-    "y": 1390,
+    "x": 3208,
+    "y": 254,
     "w": 124,
     "h": 104
    },
@@ -1981,8 +1981,8 @@
   "image": "kennel_master.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 1500
+   "w": 3584,
+   "h": 532
   },
   "scale": "3",
   "ageborn": {

@@ -26,10 +26,12 @@ import math
 
 from ageborn_art import face as F
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "warhammer_sergeant"
 GAIT_NAME = "biped"
@@ -53,6 +55,19 @@ ASH = "#B8A285"
 PARCH = "#E8DFC8"
 GOLD = "#D4A437"
 
+# the detail standard (art round W2): the tabard paly (two team-dark pallets down its back half, the hammer badge on
+# the front) with pleats down its skirt, the helmet tail's end team-dark, the brigandine's polished rivets where it
+# shows above the tabard and a polished band round the helmet (his dark kit had too few highlights: share 0.05)
+STEEL_HI = "#D9DFE6"      # polished rivets and the helmet's band (the dark kit's highlights)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.6         # over the soldiers' 1.35, with a brighter rim: the dark kit's highlight share was 0.05
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = dict(MW.RIM_SOLDIER, lift=0.66, full_lu=0.72)
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", MOUSTACHE: "fur", STEEL: "iron", STEEL_DK: "iron", STEEL_HI: "iron", IRON: "iron",
+                           BRIG: "iron",
+                           HOSE: "cloth", BOOT: "leather", LEATHER: "leather", ASH: "wood", PARCH: "cloth",
+                           GOLD: "gold", "team": "cloth"})
+
 SH = (0.0, B.SHOULDER_Z)
 G0 = (6.0, -13.0, 24.0)               # near hand at rest; the haft along +x
 HAFT = 30.0
@@ -68,6 +83,11 @@ def _helm(rig, joint):
     g = Geo().blob((1.0, 0.0, 55.4), (12.2, 12.0, 11.2), p=2.3, taper=(1.0, 0.9))
     g.clip((0, 0, 53.4), (0, 0, -1))
     rig.part(joint, g, STEEL, finish="metal")
+    # W2: a polished band round the crown (the helmet's own shape 0.35 lu proud, cut to 1.6 lu)
+    g = Geo().blob((1.0, 0.0, 55.4), (12.55, 12.35, 11.55), p=2.3, taper=(1.0, 0.9))
+    g.clip((0, 0, 62.6), (0, 0, 1))
+    g.clip((0, 0, 61.0), (0, 0, -1))
+    rig.part(joint, g, STEEL_HI, finish="metal", outline=0.4)
     g = Geo().lathe([(12.0, 0), (12.6, 0.4), (12.6, 3.2), (12.0, 3.6)], (1.0, 0.0, 53.2), segs=28)
     rig.part(joint, g, team=True, outline=0.6)
     g = Geo().capsule((12.8, -1.0, 55.0), (14.2, -1.0, 46.6), 1.4, 1.1)   # nasal
@@ -109,6 +129,13 @@ def build(rig):
     # torso: a riveted brigandine under a team tabard with a parchment hammer badge, a belt
     g = Geo().blob((0.8, 0, 27.6), (11.8, 10.6, 12.0), p=2.2, taper=(1.12, 0.9))
     rig.part("torso", g, BRIG, finish="metal")
+    # W2: the brigandine's rivets where it shows above the tabard (two rows on its near side, polished)
+    g = Geo()
+    for z, rx, ry, angles in ((36.0, 8.35, 7.5, (30, 55, 80, 105, 130, 155)), (38.0, 5.95, 5.35, (40, 75, 110, 145))):
+        for a in angles:
+            t = math.radians(a)
+            g.sphere((0.8 + rx * math.cos(t), -ry * math.sin(t) - 0.3, z), 0.85, cuts=2)
+    rig.part("torso", g, STEEL_HI, finish="metal", outline=0)
     tb = Geo().blob((1.0, 0, 26.6), (12.3, 11.1, 10.6), p=2.8, taper=(1.12, 0.9))
     tb.clip((0, 0, 35.8), (0, 0, 1))
     tface = F.Face(rig, "torso", [tb])
@@ -118,10 +145,14 @@ def build(rig):
     tface.decal(g, c, [(-3.2, 1.0), (3.2, 1.0), (3.2, 3.4), (-3.2, 3.4)], 0.4)
     tface.decal(g, c, [(-0.8, -4.6), (0.8, -4.6), (0.8, 1.2), (-0.8, 1.2)], 0.4)
     rig.part("torso", g, PARCH, highlight=False, outline=0)
+    # W2: the tabard paly, two team-dark pallets down its back half (the badge stays on the light front)
+    MW.folds(rig, "torso", tface, [[(x, 34.2), (x - 0.4, 28.0), (x, 22.6)] for x in (-7.6, -2.2)], w=2.6)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.8, 0, 15.2), (12.4, 11.0, 4.6), p=2.7, taper=(1.12, 1.0))
+    hface = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    MW.folds(rig, "hem", hface, [[(x + 0.4, 16.0), (x + 0.6, 10.8)] for x in (-8.4, -4.4, -0.4, 3.6, 7.6)], w=1.2)
     g = Geo().blob((0.8, 0, 20.6), (12.8, 11.4, 2.0), p=3.2)
     rig.part("torso", g, LEATHER)
     g = Geo().blob((13.4, -2.0, 20.6), (1.5, 2.6, 2.6), p=3.0)
@@ -142,8 +173,10 @@ def build(rig):
     rig.part("head", g, MOUSTACHE, finish="hair")
     _helm(rig, "helm")
     rig.secondary("tail", "helm", (-10.0, 0, 55.0), (-20.0, 0, 46.0), max_deg=16, gain=1.2)
-    g = Geo().capsule((-10.0, 0, 55.0), (-19.0, 0, 47.0), 2.6, 1.6)
+    g = Geo().capsule((-10.0, 0, 55.0), (-14.5, 0, 51.0), 2.6, 2.1)
     rig.part("tail", g, team=True)
+    g = Geo().capsule((-14.5, 0, 51.0), (-19.0, 0, 47.0), 2.1, 1.6)   # W2: the tail's end team-dark
+    look.team_part(rig, "tail", g)
     rig.joint("helm_loose", "root", HELM_C, hidden=True)
     _helm(rig, "helm_loose")
 
@@ -155,6 +188,17 @@ def build(rig):
     rig.joint("hammer", "torso", G0)
     _hammer(rig, "hammer")
     rig.track("beak", "hammer", BEAK_TIP)
+    _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the tabard (the largest team
+    field the hammer arms leave clear), the brigandine above it, a dent in the helmet, a strip torn from the
+    skirt."""
+    rig.damage_spot_at("tabard", "torso", -5.0, 28.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("brigandine", "torso", 0.0, 38.5, 5.0, "metal", fill=BRIG)
+    rig.damage_spot_at("helmet", "helm", -4.0, 60.0, 5.5, "metal", fill=STEEL)
+    rig.damage_spot_at("skirt", "hem", -2.0, 14.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

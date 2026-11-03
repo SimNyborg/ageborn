@@ -2,17 +2,17 @@
  "frames": {
   "warhammer_sergeant_idle_00": {
    "frame": {
-    "x": 318,
-    "y": 114,
-    "w": 72,
+    "x": 305,
+    "y": 214,
+    "w": 73,
     "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
+    "x": 105,
     "y": 122,
-    "w": 72,
+    "w": 73,
     "h": 100
    },
    "sourceSize": {
@@ -26,8 +26,8 @@
   },
   "warhammer_sergeant_idle_00_team": {
    "frame": {
-    "x": 578,
-    "y": 491,
+    "x": 982,
+    "y": 146,
     "w": 55,
     "h": 66
    },
@@ -50,17 +50,17 @@
   },
   "warhammer_sergeant_idle_01": {
    "frame": {
-    "x": 394,
-    "y": 114,
-    "w": 71,
+    "x": 377,
+    "y": 108,
+    "w": 72,
     "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 107,
+    "x": 106,
     "y": 121,
-    "w": 71,
+    "w": 72,
     "h": 100
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "warhammer_sergeant_idle_01_team": {
    "frame": {
-    "x": 119,
-    "y": 562,
+    "x": 1058,
+    "y": 2,
     "w": 54,
     "h": 65
    },
@@ -98,17 +98,17 @@
   },
   "warhammer_sergeant_idle_02": {
    "frame": {
-    "x": 300,
-    "y": 2,
-    "w": 68,
+    "x": 75,
+    "y": 111,
+    "w": 69,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
+    "x": 107,
     "y": 117,
-    "w": 68,
+    "w": 69,
     "h": 105
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "warhammer_sergeant_idle_02_team": {
    "frame": {
-    "x": 354,
-    "y": 491,
+    "x": 939,
+    "y": 75,
     "w": 52,
     "h": 67
    },
@@ -148,15 +148,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 66,
+    "w": 67,
     "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
+    "x": 107,
     "y": 115,
-    "w": 66,
+    "w": 67,
     "h": 108
    },
    "sourceSize": {
@@ -170,18 +170,18 @@
   },
   "warhammer_sergeant_idle_03_team": {
    "frame": {
-    "x": 360,
-    "y": 416,
+    "x": 848,
+    "y": 239,
     "w": 52,
-    "h": 69
+    "h": 68
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 103,
-    "y": 128,
+    "y": 129,
     "w": 52,
-    "h": 69
+    "h": 68
    },
    "sourceSize": {
     "w": 274,
@@ -194,17 +194,17 @@
   },
   "warhammer_sergeant_idle_04": {
    "frame": {
-    "x": 72,
-    "y": 2,
-    "w": 68,
+    "x": 2,
+    "y": 114,
+    "w": 69,
     "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
+    "x": 105,
     "y": 116,
-    "w": 68,
+    "w": 69,
     "h": 107
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "warhammer_sergeant_idle_04_team": {
    "frame": {
-    "x": 180,
-    "y": 491,
+    "x": 908,
+    "y": 310,
     "w": 54,
     "h": 67
    },
@@ -242,17 +242,17 @@
   },
   "warhammer_sergeant_idle_05": {
    "frame": {
-    "x": 448,
-    "y": 2,
-    "w": 71,
+    "x": 148,
+    "y": 111,
+    "w": 72,
     "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 105,
+    "x": 104,
     "y": 119,
-    "w": 71,
+    "w": 72,
     "h": 104
    },
    "sourceSize": {
@@ -266,18 +266,18 @@
   },
   "warhammer_sergeant_idle_05_team": {
    "frame": {
-    "x": 62,
-    "y": 491,
+    "x": 995,
+    "y": 73,
     "w": 55,
-    "h": 67
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 100,
-    "y": 132,
+    "y": 133,
     "w": 55,
-    "h": 67
+    "h": 66
    },
    "sourceSize": {
     "w": 274,
@@ -290,8 +290,8 @@
   },
   "warhammer_sergeant_walk_00": {
    "frame": {
-    "x": 386,
-    "y": 220,
+    "x": 544,
+    "y": 204,
     "w": 78,
     "h": 92
    },
@@ -314,8 +314,8 @@
   },
   "warhammer_sergeant_walk_00_team": {
    "frame": {
-    "x": 518,
-    "y": 491,
+    "x": 963,
+    "y": 217,
     "w": 56,
     "h": 66
    },
@@ -338,8 +338,8 @@
   },
   "warhammer_sergeant_walk_01": {
    "frame": {
-    "x": 2,
-    "y": 322,
+    "x": 684,
+    "y": 2,
     "w": 75,
     "h": 90
    },
@@ -362,8 +362,8 @@
   },
   "warhammer_sergeant_walk_01_team": {
    "frame": {
-    "x": 177,
-    "y": 562,
+    "x": 1075,
+    "y": 212,
     "w": 52,
     "h": 65
    },
@@ -386,8 +386,8 @@
   },
   "warhammer_sergeant_walk_02": {
    "frame": {
-    "x": 226,
-    "y": 220,
+    "x": 543,
+    "y": 104,
     "w": 74,
     "h": 96
    },
@@ -410,8 +410,8 @@
   },
   "warhammer_sergeant_walk_02_team": {
    "frame": {
-    "x": 410,
-    "y": 491,
+    "x": 943,
+    "y": 2,
     "w": 52,
     "h": 67
    },
@@ -434,8 +434,8 @@
   },
   "warhammer_sergeant_walk_03": {
    "frame": {
-    "x": 146,
-    "y": 220,
+    "x": 464,
+    "y": 208,
     "w": 76,
     "h": 97
    },
@@ -458,8 +458,8 @@
   },
   "warhammer_sergeant_walk_03_team": {
    "frame": {
-    "x": 637,
-    "y": 491,
+    "x": 999,
+    "y": 2,
     "w": 55,
     "h": 66
    },
@@ -482,8 +482,8 @@
   },
   "warhammer_sergeant_walk_04": {
    "frame": {
-    "x": 81,
-    "y": 322,
+    "x": 626,
+    "y": 194,
     "w": 78,
     "h": 89
    },
@@ -506,8 +506,8 @@
   },
   "warhammer_sergeant_walk_04_team": {
    "frame": {
-    "x": 59,
-    "y": 562,
+    "x": 1041,
+    "y": 143,
     "w": 56,
     "h": 65
    },
@@ -530,8 +530,8 @@
   },
   "warhammer_sergeant_walk_05": {
    "frame": {
-    "x": 336,
-    "y": 322,
+    "x": 696,
+    "y": 287,
     "w": 78,
     "h": 85
    },
@@ -554,18 +554,18 @@
   },
   "warhammer_sergeant_walk_05_team": {
    "frame": {
-    "x": 696,
-    "y": 491,
+    "x": 1025,
+    "y": 286,
     "w": 53,
-    "h": 66
+    "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 108,
-    "y": 139,
+    "y": 140,
     "w": 53,
-    "h": 66
+    "h": 65
    },
    "sourceSize": {
     "w": 274,
@@ -578,8 +578,8 @@
   },
   "warhammer_sergeant_walk_06": {
    "frame": {
-    "x": 619,
-    "y": 220,
+    "x": 621,
+    "y": 100,
     "w": 77,
     "h": 90
    },
@@ -602,18 +602,18 @@
   },
   "warhammer_sergeant_walk_06_team": {
    "frame": {
-    "x": 466,
-    "y": 491,
+    "x": 1023,
+    "y": 216,
     "w": 48,
-    "h": 67
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 110,
-    "y": 132,
+    "y": 133,
     "w": 48,
-    "h": 67
+    "h": 66
    },
    "sourceSize": {
     "w": 274,
@@ -626,8 +626,8 @@
   },
   "warhammer_sergeant_walk_07": {
    "frame": {
-    "x": 304,
-    "y": 220,
+    "x": 602,
+    "y": 2,
     "w": 78,
     "h": 94
    },
@@ -650,18 +650,18 @@
   },
   "warhammer_sergeant_walk_07_team": {
    "frame": {
-    "x": 601,
-    "y": 416,
-    "w": 56,
-    "h": 67
+    "x": 966,
+    "y": 287,
+    "w": 55,
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 127,
-    "w": 56,
-    "h": 67
+    "y": 128,
+    "w": 55,
+    "h": 66
    },
    "sourceSize": {
     "w": 274,
@@ -674,17 +674,17 @@
   },
   "warhammer_sergeant_attack_00": {
    "frame": {
-    "x": 168,
-    "y": 114,
-    "w": 71,
+    "x": 301,
+    "y": 108,
+    "w": 72,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
+    "x": 105,
     "y": 120,
-    "w": 71,
+    "w": 72,
     "h": 102
    },
    "sourceSize": {
@@ -698,8 +698,8 @@
   },
   "warhammer_sergeant_attack_00_team": {
    "frame": {
-    "x": 238,
-    "y": 491,
+    "x": 881,
+    "y": 75,
     "w": 54,
     "h": 67
    },
@@ -722,17 +722,17 @@
   },
   "warhammer_sergeant_attack_01": {
    "frame": {
-    "x": 539,
-    "y": 220,
-    "w": 76,
+    "x": 615,
+    "y": 300,
+    "w": 77,
     "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 102,
     "y": 125,
-    "w": 76,
+    "w": 77,
     "h": 91
    },
    "sourceSize": {
@@ -746,8 +746,8 @@
   },
   "warhammer_sergeant_attack_01_team": {
    "frame": {
-    "x": 340,
-    "y": 562,
+    "x": 2,
+    "y": 334,
     "w": 58,
     "h": 64
    },
@@ -770,8 +770,8 @@
   },
   "warhammer_sergeant_attack_02": {
    "frame": {
-    "x": 469,
-    "y": 114,
+    "x": 392,
+    "y": 2,
     "w": 61,
     "h": 100
    },
@@ -794,8 +794,8 @@
   },
   "warhammer_sergeant_attack_02_team": {
    "frame": {
-    "x": 56,
-    "y": 416,
+    "x": 78,
+    "y": 328,
     "w": 57,
     "h": 70
    },
@@ -818,8 +818,8 @@
   },
   "warhammer_sergeant_attack_03": {
    "frame": {
-    "x": 243,
-    "y": 114,
+    "x": 317,
+    "y": 2,
     "w": 71,
     "h": 102
    },
@@ -842,8 +842,8 @@
   },
   "warhammer_sergeant_attack_03_team": {
    "frame": {
-    "x": 640,
-    "y": 322,
+    "x": 285,
+    "y": 323,
     "w": 59,
     "h": 71
    },
@@ -866,7 +866,7 @@
   },
   "warhammer_sergeant_attack_04": {
    "frame": {
-    "x": 144,
+    "x": 73,
     "y": 2,
     "w": 76,
     "h": 105
@@ -890,8 +890,8 @@
   },
   "warhammer_sergeant_attack_04_team": {
    "frame": {
-    "x": 703,
-    "y": 322,
+    "x": 348,
+    "y": 318,
     "w": 53,
     "h": 71
    },
@@ -914,17 +914,17 @@
   },
   "warhammer_sergeant_attack_05": {
    "frame": {
-    "x": 616,
-    "y": 114,
-    "w": 85,
+    "x": 453,
+    "y": 106,
+    "w": 86,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 118,
+    "x": 117,
     "y": 119,
-    "w": 85,
+    "w": 86,
     "h": 98
    },
    "sourceSize": {
@@ -938,8 +938,8 @@
   },
   "warhammer_sergeant_attack_05_team": {
    "frame": {
-    "x": 302,
-    "y": 416,
+    "x": 459,
+    "y": 315,
     "w": 54,
     "h": 69
    },
@@ -962,8 +962,8 @@
   },
   "warhammer_sergeant_attack_06": {
    "frame": {
-    "x": 2,
-    "y": 114,
+    "x": 227,
+    "y": 2,
     "w": 86,
     "h": 102
    },
@@ -986,8 +986,8 @@
   },
   "warhammer_sergeant_attack_06_team": {
    "frame": {
-    "x": 655,
-    "y": 562,
+    "x": 1082,
+    "y": 281,
     "w": 60,
     "h": 60
    },
@@ -1010,8 +1010,8 @@
   },
   "warhammer_sergeant_attack_07": {
    "frame": {
-    "x": 224,
-    "y": 2,
+    "x": 2,
+    "y": 225,
     "w": 72,
     "h": 105
    },
@@ -1034,8 +1034,8 @@
   },
   "warhammer_sergeant_attack_07_team": {
    "frame": {
-    "x": 2,
-    "y": 416,
+    "x": 405,
+    "y": 315,
     "w": 50,
     "h": 71
    },
@@ -1058,8 +1058,8 @@
   },
   "warhammer_sergeant_attack_08": {
    "frame": {
-    "x": 2,
-    "y": 220,
+    "x": 457,
+    "y": 2,
     "w": 77,
     "h": 98
    },
@@ -1082,18 +1082,18 @@
   },
   "warhammer_sergeant_attack_08_team": {
    "frame": {
-    "x": 2,
-    "y": 562,
-    "w": 53,
-    "h": 66
+    "x": 1101,
+    "y": 141,
+    "w": 52,
+    "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 118,
-    "y": 136,
-    "w": 53,
-    "h": 66
+    "y": 137,
+    "w": 52,
+    "h": 65
    },
    "sourceSize": {
     "w": 274,
@@ -1106,17 +1106,17 @@
   },
   "warhammer_sergeant_attack_09": {
    "frame": {
-    "x": 597,
-    "y": 2,
-    "w": 68,
+    "x": 155,
+    "y": 219,
+    "w": 69,
     "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 116,
+    "x": 115,
     "y": 119,
-    "w": 68,
+    "w": 69,
     "h": 104
    },
    "sourceSize": {
@@ -1130,10 +1130,10 @@
   },
   "warhammer_sergeant_attack_09_team": {
    "frame": {
-    "x": 416,
-    "y": 416,
+    "x": 870,
+    "y": 167,
     "w": 50,
-    "h": 69
+    "h": 68
    },
    "rotated": false,
    "trimmed": true,
@@ -1141,7 +1141,7 @@
     "x": 111,
     "y": 132,
     "w": 50,
-    "h": 69
+    "h": 68
    },
    "sourceSize": {
     "w": 274,
@@ -1154,17 +1154,17 @@
   },
   "warhammer_sergeant_attack_10": {
    "frame": {
-    "x": 669,
-    "y": 2,
-    "w": 72,
+    "x": 224,
+    "y": 110,
+    "w": 73,
     "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
+    "x": 105,
     "y": 119,
-    "w": 72,
+    "w": 73,
     "h": 103
    },
    "sourceSize": {
@@ -1178,8 +1178,8 @@
   },
   "warhammer_sergeant_attack_10_team": {
    "frame": {
-    "x": 121,
-    "y": 491,
+    "x": 904,
+    "y": 239,
     "w": 55,
     "h": 67
    },
@@ -1202,8 +1202,8 @@
   },
   "warhammer_sergeant_hit_00": {
    "frame": {
-    "x": 251,
-    "y": 322,
+    "x": 763,
+    "y": 2,
     "w": 81,
     "h": 87
    },
@@ -1226,9 +1226,9 @@
   },
   "warhammer_sergeant_hit_00_team": {
    "frame": {
-    "x": 468,
-    "y": 562,
-    "w": 59,
+    "x": 1182,
+    "y": 2,
+    "w": 58,
     "h": 61
    },
    "rotated": false,
@@ -1236,7 +1236,7 @@
    "spriteSourceSize": {
     "x": 94,
     "y": 142,
-    "w": 59,
+    "w": 58,
     "h": 61
    },
    "sourceSize": {
@@ -1250,17 +1250,17 @@
   },
   "warhammer_sergeant_hit_01": {
    "frame": {
-    "x": 163,
-    "y": 322,
-    "w": 84,
+    "x": 702,
+    "y": 96,
+    "w": 85,
     "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 96,
+    "x": 95,
     "y": 131,
-    "w": 84,
+    "w": 85,
     "h": 87
    },
    "sourceSize": {
@@ -1274,8 +1274,8 @@
   },
   "warhammer_sergeant_hit_01_team": {
    "frame": {
-    "x": 2,
-    "y": 632,
+    "x": 1131,
+    "y": 210,
     "w": 59,
     "h": 60
    },
@@ -1298,17 +1298,17 @@
   },
   "warhammer_sergeant_hit_02": {
    "frame": {
-    "x": 92,
-    "y": 114,
-    "w": 72,
+    "x": 228,
+    "y": 217,
+    "w": 73,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 102,
     "y": 118,
-    "w": 72,
+    "w": 73,
     "h": 102
    },
    "sourceSize": {
@@ -1322,8 +1322,8 @@
   },
   "warhammer_sergeant_hit_02_team": {
    "frame": {
-    "x": 296,
-    "y": 491,
+    "x": 924,
+    "y": 146,
     "w": 54,
     "h": 67
    },
@@ -1346,7 +1346,7 @@
   },
   "warhammer_sergeant_hit_03": {
    "frame": {
-    "x": 523,
+    "x": 153,
     "y": 2,
     "w": 70,
     "h": 104
@@ -1370,18 +1370,18 @@
   },
   "warhammer_sergeant_hit_03_team": {
    "frame": {
-    "x": 661,
-    "y": 416,
+    "x": 1054,
+    "y": 72,
     "w": 56,
-    "h": 67
+    "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 100,
-    "y": 132,
+    "y": 133,
     "w": 56,
-    "h": 67
+    "h": 65
    },
    "sourceSize": {
     "w": 274,
@@ -1394,17 +1394,17 @@
   },
   "warhammer_sergeant_hit_04": {
    "frame": {
-    "x": 372,
-    "y": 2,
-    "w": 72,
+    "x": 78,
+    "y": 220,
+    "w": 73,
     "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 103,
     "y": 118,
-    "w": 72,
+    "w": 73,
     "h": 104
    },
    "sourceSize": {
@@ -1418,8 +1418,8 @@
   },
   "warhammer_sergeant_hit_04_team": {
    "frame": {
-    "x": 2,
-    "y": 491,
+    "x": 848,
+    "y": 311,
     "w": 56,
     "h": 67
    },
@@ -1442,8 +1442,8 @@
   },
   "warhammer_sergeant_die_00": {
    "frame": {
-    "x": 418,
-    "y": 322,
+    "x": 708,
+    "y": 187,
     "w": 97,
     "h": 84
    },
@@ -1466,8 +1466,8 @@
   },
   "warhammer_sergeant_die_00_team": {
    "frame": {
-    "x": 402,
-    "y": 562,
+    "x": 1116,
+    "y": 2,
     "w": 62,
     "h": 62
    },
@@ -1490,8 +1490,8 @@
   },
   "warhammer_sergeant_die_01": {
    "frame": {
-    "x": 534,
-    "y": 114,
+    "x": 382,
+    "y": 212,
     "w": 78,
     "h": 99
    },
@@ -1514,8 +1514,8 @@
   },
   "warhammer_sergeant_die_01_team": {
    "frame": {
-    "x": 576,
-    "y": 322,
+    "x": 155,
+    "y": 327,
     "w": 60,
     "h": 71
    },
@@ -1538,17 +1538,17 @@
   },
   "warhammer_sergeant_die_02": {
    "frame": {
-    "x": 83,
-    "y": 220,
-    "w": 59,
+    "x": 538,
+    "y": 2,
+    "w": 60,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 99,
+    "x": 98,
     "y": 116,
-    "w": 59,
+    "w": 60,
     "h": 98
    },
    "sourceSize": {
@@ -1562,8 +1562,8 @@
   },
   "warhammer_sergeant_die_02_team": {
    "frame": {
-    "x": 470,
-    "y": 416,
+    "x": 809,
+    "y": 167,
     "w": 57,
     "h": 68
    },
@@ -1586,8 +1586,8 @@
   },
   "warhammer_sergeant_die_03": {
    "frame": {
-    "x": 468,
-    "y": 220,
+    "x": 544,
+    "y": 300,
     "w": 67,
     "h": 92
    },
@@ -1610,8 +1610,8 @@
   },
   "warhammer_sergeant_die_03_team": {
    "frame": {
-    "x": 519,
-    "y": 322,
+    "x": 228,
+    "y": 323,
     "w": 53,
     "h": 74
    },
@@ -1634,18 +1634,18 @@
   },
   "warhammer_sergeant_die_04": {
    "frame": {
-    "x": 212,
-    "y": 416,
+    "x": 791,
+    "y": 93,
     "w": 86,
-    "h": 69
+    "h": 70
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 131,
-    "y": 140,
+    "y": 139,
     "w": 86,
-    "h": 69
+    "h": 70
    },
    "sourceSize": {
     "w": 274,
@@ -1658,10 +1658,10 @@
   },
   "warhammer_sergeant_die_04_team": {
    "frame": {
-    "x": 531,
-    "y": 416,
+    "x": 778,
+    "y": 275,
     "w": 66,
-    "h": 67
+    "h": 68
    },
    "rotated": false,
    "trimmed": true,
@@ -1669,7 +1669,7 @@
     "x": 142,
     "y": 135,
     "w": 66,
-    "h": 67
+    "h": 68
    },
    "sourceSize": {
     "w": 274,
@@ -1682,8 +1682,8 @@
   },
   "warhammer_sergeant_die_05": {
    "frame": {
-    "x": 117,
-    "y": 416,
+    "x": 848,
+    "y": 2,
     "w": 91,
     "h": 69
    },
@@ -1706,10 +1706,10 @@
   },
   "warhammer_sergeant_die_05_team": {
    "frame": {
-    "x": 255,
-    "y": 632,
+    "x": 778,
+    "y": 347,
     "w": 63,
-    "h": 48
+    "h": 49
    },
    "rotated": false,
    "trimmed": true,
@@ -1717,7 +1717,7 @@
     "x": 150,
     "y": 168,
     "w": 63,
-    "h": 48
+    "h": 49
    },
    "sourceSize": {
     "w": 274,
@@ -1730,8 +1730,8 @@
   },
   "warhammer_sergeant_die_06": {
    "frame": {
-    "x": 152,
-    "y": 632,
+    "x": 1146,
+    "y": 274,
     "w": 99,
     "h": 55
    },
@@ -1754,10 +1754,10 @@
   },
   "warhammer_sergeant_die_06_team": {
    "frame": {
-    "x": 429,
-    "y": 632,
+    "x": 966,
+    "y": 357,
     "w": 85,
-    "h": 38
+    "h": 39
    },
    "rotated": false,
    "trimmed": true,
@@ -1765,7 +1765,7 @@
     "x": 149,
     "y": 167,
     "w": 85,
-    "h": 38
+    "h": 39
    },
    "sourceSize": {
     "w": 274,
@@ -1778,8 +1778,8 @@
   },
   "warhammer_sergeant_die_07": {
    "frame": {
-    "x": 233,
-    "y": 562,
+    "x": 1114,
+    "y": 71,
     "w": 103,
     "h": 64
    },
@@ -1802,8 +1802,8 @@
   },
   "warhammer_sergeant_die_07_team": {
    "frame": {
-    "x": 65,
-    "y": 632,
+    "x": 1194,
+    "y": 203,
     "w": 83,
     "h": 56
    },
@@ -1826,8 +1826,8 @@
   },
   "warhammer_sergeant_die_08": {
    "frame": {
-    "x": 531,
-    "y": 562,
+    "x": 1157,
+    "y": 139,
     "w": 120,
     "h": 60
    },
@@ -1850,9 +1850,9 @@
   },
   "warhammer_sergeant_die_08_team": {
    "frame": {
-    "x": 322,
-    "y": 632,
-    "w": 103,
+    "x": 1082,
+    "y": 345,
+    "w": 102,
     "h": 47
    },
    "rotated": false,
@@ -1860,7 +1860,7 @@
    "spriteSourceSize": {
     "x": 150,
     "y": 171,
-    "w": 103,
+    "w": 102,
     "h": 47
    },
    "sourceSize": {
@@ -1981,8 +1981,8 @@
   "image": "warhammer_sergeant.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 696
+   "w": 1280,
+   "h": 400
   },
   "scale": "1.5",
   "ageborn": {

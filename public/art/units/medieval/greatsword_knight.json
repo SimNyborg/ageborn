@@ -2,18 +2,18 @@
  "frames": {
   "greatsword_knight_idle_00": {
    "frame": {
-    "x": 174,
-    "y": 299,
-    "w": 106,
-    "h": 123
+    "x": 809,
+    "y": 2,
+    "w": 107,
+    "h": 125
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 160,
-    "y": 140,
-    "w": 106,
-    "h": 123
+    "x": 159,
+    "y": 138,
+    "w": 107,
+    "h": 125
    },
    "sourceSize": {
     "w": 428,
@@ -26,18 +26,18 @@
   },
   "greatsword_knight_idle_00_team": {
    "frame": {
-    "x": 481,
-    "y": 897,
-    "w": 65,
-    "h": 102
+    "x": 2361,
+    "y": 2,
+    "w": 66,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 155,
+    "x": 154,
     "y": 134,
-    "w": 65,
-    "h": 102
+    "w": 66,
+    "h": 101
    },
    "sourceSize": {
     "w": 428,
@@ -50,18 +50,18 @@
   },
   "greatsword_knight_idle_01": {
    "frame": {
-    "x": 394,
-    "y": 299,
-    "w": 103,
-    "h": 123
+    "x": 903,
+    "y": 131,
+    "w": 105,
+    "h": 125
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 163,
-    "y": 138,
-    "w": 103,
-    "h": 123
+    "x": 161,
+    "y": 136,
+    "w": 105,
+    "h": 125
    },
    "sourceSize": {
     "w": 428,
@@ -74,8 +74,8 @@
   },
   "greatsword_knight_idle_01_team": {
    "frame": {
-    "x": 550,
-    "y": 897,
+    "x": 2322,
+    "y": 109,
     "w": 63,
     "h": 102
    },
@@ -83,7 +83,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 157,
-    "y": 133,
+    "y": 132,
     "w": 63,
     "h": 102
    },
@@ -98,18 +98,18 @@
   },
   "greatsword_knight_idle_02": {
    "frame": {
-    "x": 407,
-    "y": 159,
-    "w": 98,
-    "h": 131
+    "x": 532,
+    "y": 2,
+    "w": 99,
+    "h": 133
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 165,
-    "y": 132,
-    "w": 98,
-    "h": 131
+    "x": 164,
+    "y": 130,
+    "w": 99,
+    "h": 133
    },
    "sourceSize": {
     "w": 428,
@@ -122,8 +122,8 @@
   },
   "greatsword_knight_idle_02_team": {
    "frame": {
-    "x": 326,
-    "y": 787,
+    "x": 1882,
+    "y": 112,
     "w": 59,
     "h": 106
    },
@@ -131,7 +131,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 160,
-    "y": 127,
+    "y": 126,
     "w": 59,
     "h": 106
    },
@@ -146,18 +146,18 @@
   },
   "greatsword_knight_idle_03": {
    "frame": {
-    "x": 600,
-    "y": 2,
-    "w": 92,
-    "h": 138
+    "x": 280,
+    "y": 147,
+    "w": 94,
+    "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 166,
-    "y": 128,
-    "w": 92,
-    "h": 138
+    "x": 164,
+    "y": 126,
+    "w": 94,
+    "h": 140
    },
    "sourceSize": {
     "w": 428,
@@ -170,10 +170,10 @@
   },
   "greatsword_knight_idle_03_team": {
    "frame": {
-    "x": 506,
-    "y": 556,
+    "x": 1690,
+    "y": 117,
     "w": 59,
-    "h": 110
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 160,
     "y": 123,
     "w": 59,
-    "h": 110
+    "h": 108
    },
    "sourceSize": {
     "w": 428,
@@ -194,18 +194,18 @@
   },
   "greatsword_knight_idle_04": {
    "frame": {
-    "x": 2,
-    "y": 159,
-    "w": 95,
-    "h": 136
+    "x": 326,
+    "y": 2,
+    "w": 97,
+    "h": 138
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 163,
-    "y": 131,
-    "w": 95,
-    "h": 136
+    "x": 161,
+    "y": 129,
+    "w": 97,
+    "h": 138
    },
    "sourceSize": {
     "w": 428,
@@ -218,18 +218,18 @@
   },
   "greatsword_knight_idle_04_team": {
    "frame": {
-    "x": 122,
-    "y": 674,
+    "x": 1703,
+    "y": 2,
     "w": 61,
-    "h": 108
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 157,
-    "y": 126,
+    "y": 125,
     "w": 61,
-    "h": 108
+    "h": 107
    },
    "sourceSize": {
     "w": 428,
@@ -242,18 +242,18 @@
   },
   "greatsword_knight_idle_05": {
    "frame": {
-    "x": 2,
-    "y": 299,
-    "w": 101,
-    "h": 129
+    "x": 684,
+    "y": 138,
+    "w": 103,
+    "h": 131
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 160,
-    "y": 136,
-    "w": 101,
-    "h": 129
+    "x": 158,
+    "y": 134,
+    "w": 103,
+    "h": 131
    },
    "sourceSize": {
     "w": 428,
@@ -266,17 +266,17 @@
   },
   "greatsword_knight_idle_05_team": {
    "frame": {
-    "x": 2,
-    "y": 897,
-    "w": 64,
+    "x": 2153,
+    "y": 2,
+    "w": 65,
     "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 155,
-    "y": 131,
-    "w": 64,
+    "x": 154,
+    "y": 130,
+    "w": 65,
     "h": 104
    },
    "sourceSize": {
@@ -290,18 +290,18 @@
   },
   "greatsword_knight_walk_00": {
    "frame": {
-    "x": 131,
-    "y": 556,
+    "x": 1464,
+    "y": 122,
     "w": 91,
-    "h": 114
+    "h": 116
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 141,
-    "y": 137,
+    "y": 135,
     "w": 91,
-    "h": 114
+    "h": 116
    },
    "sourceSize": {
     "w": 428,
@@ -314,10 +314,10 @@
   },
   "greatsword_knight_walk_00_team": {
    "frame": {
-    "x": 249,
-    "y": 674,
+    "x": 2065,
+    "y": 111,
     "w": 57,
-    "h": 108
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
@@ -325,7 +325,7 @@
     "x": 167,
     "y": 132,
     "w": 57,
-    "h": 108
+    "h": 105
    },
    "sourceSize": {
     "w": 428,
@@ -338,18 +338,18 @@
   },
   "greatsword_knight_walk_01": {
    "frame": {
-    "x": 289,
-    "y": 556,
+    "x": 1521,
+    "y": 2,
     "w": 87,
-    "h": 113
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 144,
-    "y": 143,
+    "y": 141,
     "w": 87,
-    "h": 113
+    "h": 115
    },
    "sourceSize": {
     "w": 428,
@@ -362,18 +362,18 @@
   },
   "greatsword_knight_walk_01_team": {
    "frame": {
-    "x": 508,
-    "y": 674,
-    "w": 61,
-    "h": 107
+    "x": 2164,
+    "y": 219,
+    "w": 60,
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 164,
-    "y": 138,
-    "w": 61,
-    "h": 107
+    "y": 137,
+    "w": 60,
+    "h": 104
    },
    "sourceSize": {
     "w": 428,
@@ -386,18 +386,18 @@
   },
   "greatsword_knight_walk_02": {
    "frame": {
-    "x": 207,
-    "y": 432,
+    "x": 1195,
+    "y": 128,
     "w": 83,
-    "h": 119
+    "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 148,
-    "y": 137,
+    "y": 135,
     "w": 83,
-    "h": 119
+    "h": 121
    },
    "sourceSize": {
     "w": 428,
@@ -410,18 +410,18 @@
   },
   "greatsword_knight_walk_02_team": {
    "frame": {
-    "x": 263,
-    "y": 897,
-    "w": 59,
-    "h": 103
+    "x": 2197,
+    "y": 110,
+    "w": 60,
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 164,
-    "y": 132,
-    "w": 59,
-    "h": 103
+    "x": 163,
+    "y": 131,
+    "w": 60,
+    "h": 104
    },
    "sourceSize": {
     "w": 428,
@@ -434,18 +434,18 @@
   },
   "greatsword_knight_walk_03": {
    "frame": {
-    "x": 116,
-    "y": 432,
+    "x": 1104,
+    "y": 128,
     "w": 87,
-    "h": 119
+    "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 145,
-    "y": 136,
+    "y": 134,
     "w": 87,
-    "h": 119
+    "h": 121
    },
    "sourceSize": {
     "w": 428,
@@ -458,8 +458,8 @@
   },
   "greatsword_knight_walk_03_team": {
    "frame": {
-    "x": 607,
-    "y": 787,
+    "x": 2013,
+    "y": 220,
     "w": 58,
     "h": 105
    },
@@ -467,7 +467,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 166,
-    "y": 131,
+    "y": 130,
     "w": 58,
     "h": 105
    },
@@ -482,18 +482,18 @@
   },
   "greatsword_knight_walk_04": {
    "frame": {
-    "x": 667,
-    "y": 299,
+    "x": 1012,
+    "y": 130,
     "w": 88,
-    "h": 121
+    "h": 123
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 143,
-    "y": 131,
+    "y": 129,
     "w": 88,
-    "h": 121
+    "h": 123
    },
    "sourceSize": {
     "w": 428,
@@ -506,18 +506,18 @@
   },
   "greatsword_knight_walk_04_team": {
    "frame": {
-    "x": 660,
-    "y": 556,
-    "w": 58,
-    "h": 109
+    "x": 1895,
+    "y": 2,
+    "w": 59,
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 166,
+    "x": 165,
     "y": 125,
-    "w": 58,
-    "h": 109
+    "w": 59,
+    "h": 106
    },
    "sourceSize": {
     "w": 428,
@@ -530,18 +530,18 @@
   },
   "greatsword_knight_walk_05": {
    "frame": {
-    "x": 386,
-    "y": 432,
+    "x": 1282,
+    "y": 126,
     "w": 91,
-    "h": 117
+    "h": 119
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 141,
-    "y": 137,
+    "y": 135,
     "w": 91,
-    "h": 117
+    "h": 119
    },
    "sourceSize": {
     "w": 428,
@@ -554,10 +554,10 @@
   },
   "greatsword_knight_walk_05_team": {
    "frame": {
-    "x": 2,
-    "y": 674,
+    "x": 2092,
+    "y": 2,
     "w": 57,
-    "h": 109
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
@@ -565,7 +565,7 @@
     "x": 167,
     "y": 132,
     "w": 57,
-    "h": 109
+    "h": 105
    },
    "sourceSize": {
     "w": 428,
@@ -578,18 +578,18 @@
   },
   "greatsword_knight_walk_06": {
    "frame": {
-    "x": 569,
-    "y": 556,
+    "x": 1612,
+    "y": 2,
     "w": 87,
-    "h": 109
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 146,
-    "y": 143,
+    "y": 141,
     "w": 87,
-    "h": 109
+    "h": 111
    },
    "sourceSize": {
     "w": 428,
@@ -602,18 +602,18 @@
   },
   "greatsword_knight_walk_06_team": {
    "frame": {
-    "x": 636,
-    "y": 674,
-    "w": 57,
-    "h": 107
+    "x": 2228,
+    "y": 218,
+    "w": 58,
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 168,
-    "y": 138,
-    "w": 57,
-    "h": 107
+    "x": 167,
+    "y": 137,
+    "w": 58,
+    "h": 104
    },
    "sourceSize": {
     "w": 428,
@@ -626,18 +626,18 @@
   },
   "greatsword_knight_walk_07": {
    "frame": {
-    "x": 571,
-    "y": 432,
+    "x": 1377,
+    "y": 124,
     "w": 83,
-    "h": 115
+    "h": 117
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 151,
-    "y": 136,
+    "y": 134,
     "w": 83,
-    "h": 115
+    "h": 117
    },
    "sourceSize": {
     "w": 428,
@@ -650,8 +650,8 @@
   },
   "greatsword_knight_walk_07_team": {
    "frame": {
-    "x": 70,
-    "y": 897,
+    "x": 2261,
+    "y": 110,
     "w": 57,
     "h": 104
    },
@@ -674,18 +674,18 @@
   },
   "greatsword_knight_walk_08": {
    "frame": {
-    "x": 481,
-    "y": 432,
+    "x": 1300,
+    "y": 2,
     "w": 86,
-    "h": 116
+    "h": 118
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 148,
-    "y": 135,
+    "y": 133,
     "w": 86,
-    "h": 116
+    "h": 118
    },
    "sourceSize": {
     "w": 428,
@@ -698,18 +698,18 @@
   },
   "greatsword_knight_walk_08_team": {
    "frame": {
-    "x": 63,
-    "y": 674,
+    "x": 1888,
+    "y": 222,
     "w": 55,
-    "h": 109
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 172,
-    "y": 130,
+    "y": 129,
     "w": 55,
-    "h": 109
+    "h": 106
    },
    "sourceSize": {
     "w": 428,
@@ -722,18 +722,18 @@
   },
   "greatsword_knight_walk_09": {
    "frame": {
-    "x": 294,
-    "y": 432,
+    "x": 1208,
+    "y": 2,
     "w": 88,
-    "h": 118
+    "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 145,
-    "y": 130,
+    "y": 128,
     "w": 88,
-    "h": 118
+    "h": 120
    },
    "sourceSize": {
     "w": 428,
@@ -746,18 +746,18 @@
   },
   "greatsword_knight_walk_09_team": {
    "frame": {
-    "x": 389,
-    "y": 787,
-    "w": 56,
-    "h": 106
+    "x": 1768,
+    "y": 2,
+    "w": 57,
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 170,
-    "y": 125,
-    "w": 56,
-    "h": 106
+    "x": 169,
+    "y": 124,
+    "w": 57,
+    "h": 107
    },
    "sourceSize": {
     "w": 428,
@@ -770,18 +770,18 @@
   },
   "greatsword_knight_attack_00": {
    "frame": {
-    "x": 304,
-    "y": 159,
-    "w": 99,
-    "h": 131
+    "x": 478,
+    "y": 140,
+    "w": 101,
+    "h": 133
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 163,
-    "y": 133,
-    "w": 99,
-    "h": 131
+    "x": 161,
+    "y": 131,
+    "w": 101,
+    "h": 133
    },
    "sourceSize": {
     "w": 428,
@@ -794,17 +794,17 @@
   },
   "greatsword_knight_attack_00_team": {
    "frame": {
-    "x": 132,
-    "y": 787,
-    "w": 61,
+    "x": 1829,
+    "y": 2,
+    "w": 62,
     "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 158,
-    "y": 128,
-    "w": 61,
+    "x": 157,
+    "y": 127,
+    "w": 62,
     "h": 106
    },
    "sourceSize": {
@@ -818,18 +818,18 @@
   },
   "greatsword_knight_attack_01": {
    "frame": {
-    "x": 2,
-    "y": 556,
-    "w": 125,
-    "h": 114
+    "x": 1390,
+    "y": 2,
+    "w": 127,
+    "h": 116
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
-    "y": 142,
-    "w": 125,
-    "h": 114
+    "x": 155,
+    "y": 140,
+    "w": 127,
+    "h": 116
    },
    "sourceSize": {
     "w": 428,
@@ -842,8 +842,8 @@
   },
   "greatsword_knight_attack_01_team": {
    "frame": {
-    "x": 679,
-    "y": 897,
+    "x": 1526,
+    "y": 242,
     "w": 72,
     "h": 99
    },
@@ -851,7 +851,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 151,
-    "y": 137,
+    "y": 136,
     "w": 72,
     "h": 99
    },
@@ -866,17 +866,17 @@
   },
   "greatsword_knight_attack_02": {
    "frame": {
-    "x": 107,
-    "y": 299,
-    "w": 63,
+    "x": 740,
+    "y": 2,
+    "w": 65,
     "h": 129
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 154,
+    "x": 152,
     "y": 128,
-    "w": 63,
+    "w": 65,
     "h": 129
    },
    "sourceSize": {
@@ -890,18 +890,18 @@
   },
   "greatsword_knight_attack_02_team": {
    "frame": {
-    "x": 669,
-    "y": 787,
+    "x": 2286,
+    "y": 2,
     "w": 71,
-    "h": 104
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 148,
-    "y": 131,
+    "y": 130,
     "w": 71,
-    "h": 104
+    "h": 103
    },
    "sourceSize": {
     "w": 428,
@@ -914,18 +914,18 @@
   },
   "greatsword_knight_attack_03": {
    "frame": {
-    "x": 501,
-    "y": 299,
+    "x": 920,
+    "y": 2,
     "w": 85,
-    "h": 123
+    "h": 125
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 132,
-    "y": 133,
+    "y": 131,
     "w": 85,
-    "h": 123
+    "h": 125
    },
    "sourceSize": {
     "w": 428,
@@ -938,18 +938,18 @@
   },
   "greatsword_knight_attack_03_team": {
    "frame": {
-    "x": 367,
-    "y": 674,
-    "w": 71,
-    "h": 107
+    "x": 1812,
+    "y": 224,
+    "w": 72,
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 146,
-    "y": 128,
-    "w": 71,
-    "h": 107
+    "x": 145,
+    "y": 127,
+    "w": 72,
+    "h": 106
    },
    "sourceSize": {
     "w": 428,
@@ -962,8 +962,8 @@
   },
   "greatsword_knight_attack_04": {
    "frame": {
-    "x": 124,
-    "y": 2,
+    "x": 2,
+    "y": 159,
     "w": 109,
     "h": 152
    },
@@ -986,18 +986,18 @@
   },
   "greatsword_knight_attack_04_team": {
    "frame": {
-    "x": 380,
-    "y": 556,
+    "x": 1622,
+    "y": 117,
     "w": 64,
-    "h": 112
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 159,
-    "y": 125,
+    "y": 124,
     "w": 64,
-    "h": 112
+    "h": 110
    },
    "sourceSize": {
     "w": 428,
@@ -1012,15 +1012,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 118,
+    "w": 120,
     "h": 153
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 179,
+    "x": 177,
     "y": 104,
-    "w": 118,
+    "w": 120,
     "h": 153
    },
    "sourceSize": {
@@ -1034,18 +1034,18 @@
   },
   "greatsword_knight_attack_05_team": {
    "frame": {
-    "x": 448,
-    "y": 556,
-    "w": 54,
-    "h": 112
+    "x": 1622,
+    "y": 231,
+    "w": 55,
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 174,
-    "y": 127,
-    "w": 54,
-    "h": 112
+    "x": 173,
+    "y": 126,
+    "w": 55,
+    "h": 109
    },
    "sourceSize": {
     "w": 428,
@@ -1058,18 +1058,18 @@
   },
   "greatsword_knight_attack_06": {
    "frame": {
-    "x": 312,
+    "x": 126,
     "y": 2,
     "w": 111,
-    "h": 143
+    "h": 145
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 180,
-    "y": 152,
+    "y": 150,
     "w": 111,
-    "h": 143
+    "h": 145
    },
    "sourceSize": {
     "w": 428,
@@ -1082,18 +1082,18 @@
   },
   "greatsword_knight_attack_06_team": {
    "frame": {
-    "x": 226,
-    "y": 1005,
-    "w": 59,
-    "h": 93
+    "x": 1364,
+    "y": 249,
+    "w": 60,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 178,
+    "x": 177,
     "y": 147,
-    "w": 59,
-    "h": 93
+    "w": 60,
+    "h": 91
    },
    "sourceSize": {
     "w": 428,
@@ -1106,18 +1106,18 @@
   },
   "greatsword_knight_attack_07": {
    "frame": {
-    "x": 237,
-    "y": 2,
+    "x": 115,
+    "y": 159,
     "w": 71,
-    "h": 150
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 183,
-    "y": 138,
+    "y": 136,
     "w": 71,
-    "h": 150
+    "h": 152
    },
    "sourceSize": {
     "w": 428,
@@ -1130,10 +1130,10 @@
   },
   "greatsword_knight_attack_07_team": {
    "frame": {
-    "x": 310,
-    "y": 674,
+    "x": 1945,
+    "y": 112,
     "w": 53,
-    "h": 108
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
@@ -1141,7 +1141,7 @@
     "x": 181,
     "y": 132,
     "w": 53,
-    "h": 108
+    "h": 106
    },
    "sourceSize": {
     "w": 428,
@@ -1154,18 +1154,18 @@
   },
   "greatsword_knight_attack_08": {
    "frame": {
-    "x": 516,
+    "x": 241,
     "y": 2,
-    "w": 80,
-    "h": 139
+    "w": 81,
+    "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 180,
-    "y": 141,
-    "w": 80,
-    "h": 139
+    "x": 179,
+    "y": 139,
+    "w": 81,
+    "h": 141
    },
    "sourceSize": {
     "w": 428,
@@ -1178,10 +1178,10 @@
   },
   "greatsword_knight_attack_08_team": {
    "frame": {
-    "x": 617,
-    "y": 897,
+    "x": 1464,
+    "y": 242,
     "w": 58,
-    "h": 102
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
@@ -1189,7 +1189,7 @@
     "x": 175,
     "y": 136,
     "w": 58,
-    "h": 102
+    "h": 100
    },
    "sourceSize": {
     "w": 428,
@@ -1202,18 +1202,18 @@
   },
   "greatsword_knight_attack_09": {
    "frame": {
-    "x": 427,
-    "y": 2,
-    "w": 85,
-    "h": 140
+    "x": 190,
+    "y": 151,
+    "w": 86,
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 175,
-    "y": 134,
-    "w": 85,
-    "h": 140
+    "x": 174,
+    "y": 132,
+    "w": 86,
+    "h": 142
    },
    "sourceSize": {
     "w": 428,
@@ -1226,18 +1226,18 @@
   },
   "greatsword_knight_attack_09_team": {
    "frame": {
-    "x": 187,
-    "y": 674,
+    "x": 1753,
+    "y": 113,
     "w": 58,
-    "h": 108
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 170,
-    "y": 129,
+    "y": 128,
     "w": 58,
-    "h": 108
+    "h": 107
    },
    "sourceSize": {
     "w": 428,
@@ -1250,18 +1250,18 @@
   },
   "greatsword_knight_attack_10": {
    "frame": {
-    "x": 509,
-    "y": 159,
-    "w": 95,
-    "h": 131
+    "x": 583,
+    "y": 139,
+    "w": 97,
+    "h": 133
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 168,
-    "y": 135,
-    "w": 95,
-    "h": 131
+    "x": 166,
+    "y": 133,
+    "w": 97,
+    "h": 133
    },
    "sourceSize": {
     "w": 428,
@@ -1274,18 +1274,18 @@
   },
   "greatsword_knight_attack_10_team": {
    "frame": {
-    "x": 262,
-    "y": 787,
+    "x": 2222,
+    "y": 2,
     "w": 60,
-    "h": 106
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 162,
-    "y": 130,
+    "y": 129,
     "w": 60,
-    "h": 106
+    "h": 104
    },
    "sourceSize": {
     "w": 428,
@@ -1298,18 +1298,18 @@
   },
   "greatsword_knight_attack_11": {
    "frame": {
-    "x": 608,
-    "y": 159,
-    "w": 99,
-    "h": 130
+    "x": 635,
+    "y": 2,
+    "w": 101,
+    "h": 132
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 163,
-    "y": 134,
-    "w": 99,
-    "h": 130
+    "x": 161,
+    "y": 132,
+    "w": 101,
+    "h": 132
    },
    "sourceSize": {
     "w": 428,
@@ -1322,18 +1322,18 @@
   },
   "greatsword_knight_attack_11_team": {
    "frame": {
-    "x": 197,
-    "y": 787,
-    "w": 61,
-    "h": 106
+    "x": 1947,
+    "y": 222,
+    "w": 62,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 158,
-    "y": 129,
-    "w": 61,
-    "h": 106
+    "x": 157,
+    "y": 128,
+    "w": 62,
+    "h": 105
    },
    "sourceSize": {
     "w": 428,
@@ -1346,18 +1346,18 @@
   },
   "greatsword_knight_hit_00": {
    "frame": {
-    "x": 131,
-    "y": 897,
-    "w": 128,
-    "h": 103
+    "x": 1958,
+    "y": 2,
+    "w": 130,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 146,
-    "y": 154,
-    "w": 128,
-    "h": 103
+    "x": 144,
+    "y": 152,
+    "w": 130,
+    "h": 105
    },
    "sourceSize": {
     "w": 428,
@@ -1370,18 +1370,18 @@
   },
   "greatsword_knight_hit_00_team": {
    "frame": {
-    "x": 370,
-    "y": 1005,
-    "w": 78,
-    "h": 90
+    "x": 1104,
+    "y": 253,
+    "w": 79,
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 141,
-    "y": 149,
-    "w": 78,
-    "h": 90
+    "x": 140,
+    "y": 148,
+    "w": 79,
+    "h": 89
    },
    "sourceSize": {
     "w": 428,
@@ -1394,18 +1394,18 @@
   },
   "greatsword_knight_hit_01": {
    "frame": {
-    "x": 2,
-    "y": 787,
-    "w": 126,
-    "h": 106
+    "x": 1681,
+    "y": 231,
+    "w": 127,
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 146,
-    "y": 152,
-    "w": 126,
-    "h": 106
+    "x": 145,
+    "y": 150,
+    "w": 127,
+    "h": 108
    },
    "sourceSize": {
     "w": 428,
@@ -1418,18 +1418,18 @@
   },
   "greatsword_knight_hit_01_team": {
    "frame": {
-    "x": 289,
-    "y": 1005,
-    "w": 77,
-    "h": 92
+    "x": 1282,
+    "y": 249,
+    "w": 78,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 141,
-    "y": 147,
-    "w": 77,
-    "h": 92
+    "x": 140,
+    "y": 146,
+    "w": 78,
+    "h": 91
    },
    "sourceSize": {
     "w": 428,
@@ -1442,18 +1442,18 @@
   },
   "greatsword_knight_hit_02": {
    "frame": {
-    "x": 284,
-    "y": 299,
-    "w": 106,
-    "h": 123
+    "x": 791,
+    "y": 135,
+    "w": 108,
+    "h": 125
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
-    "y": 136,
-    "w": 106,
-    "h": 123
+    "x": 155,
+    "y": 134,
+    "w": 108,
+    "h": 125
    },
    "sourceSize": {
     "w": 428,
@@ -1466,18 +1466,18 @@
   },
   "greatsword_knight_hit_02_team": {
    "frame": {
-    "x": 537,
-    "y": 787,
-    "w": 66,
-    "h": 105
+    "x": 2126,
+    "y": 111,
+    "w": 67,
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 151,
-    "y": 131,
-    "w": 66,
-    "h": 105
+    "y": 130,
+    "w": 67,
+    "h": 104
    },
    "sourceSize": {
     "w": 428,
@@ -1490,18 +1490,18 @@
   },
   "greatsword_knight_hit_03": {
    "frame": {
-    "x": 101,
-    "y": 159,
-    "w": 95,
-    "h": 134
+    "x": 378,
+    "y": 144,
+    "w": 96,
+    "h": 136
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 165,
-    "y": 133,
-    "w": 95,
-    "h": 134
+    "x": 164,
+    "y": 131,
+    "w": 96,
+    "h": 136
    },
    "sourceSize": {
     "w": 428,
@@ -1514,10 +1514,10 @@
   },
   "greatsword_knight_hit_03_team": {
    "frame": {
-    "x": 573,
-    "y": 674,
+    "x": 2002,
+    "y": 111,
     "w": 59,
-    "h": 107
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
@@ -1525,7 +1525,7 @@
     "x": 160,
     "y": 128,
     "w": 59,
-    "h": 107
+    "h": 105
    },
    "sourceSize": {
     "w": 428,
@@ -1538,18 +1538,18 @@
   },
   "greatsword_knight_hit_04": {
    "frame": {
-    "x": 200,
-    "y": 159,
-    "w": 100,
-    "h": 131
+    "x": 427,
+    "y": 2,
+    "w": 101,
+    "h": 134
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 162,
-    "y": 133,
-    "w": 100,
-    "h": 131
+    "x": 161,
+    "y": 130,
+    "w": 101,
+    "h": 134
    },
    "sourceSize": {
     "w": 428,
@@ -1562,18 +1562,18 @@
   },
   "greatsword_knight_hit_04_team": {
    "frame": {
-    "x": 442,
-    "y": 674,
-    "w": 62,
-    "h": 107
+    "x": 1815,
+    "y": 113,
+    "w": 63,
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
+    "x": 156,
     "y": 127,
-    "w": 62,
-    "h": 107
+    "w": 63,
+    "h": 106
    },
    "sourceSize": {
     "w": 428,
@@ -1586,17 +1586,17 @@
   },
   "greatsword_knight_die_00": {
    "frame": {
-    "x": 326,
-    "y": 897,
-    "w": 151,
+    "x": 2290,
+    "y": 218,
+    "w": 153,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 135,
+    "x": 133,
     "y": 152,
-    "w": 151,
+    "w": 153,
     "h": 102
    },
    "sourceSize": {
@@ -1610,17 +1610,17 @@
   },
   "greatsword_knight_die_00_team": {
    "frame": {
-    "x": 452,
-    "y": 1005,
-    "w": 90,
+    "x": 1187,
+    "y": 253,
+    "w": 91,
     "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 130,
-    "y": 151,
-    "w": 90,
+    "x": 129,
+    "y": 150,
+    "w": 91,
     "h": 87
    },
    "sourceSize": {
@@ -1634,18 +1634,18 @@
   },
   "greatsword_knight_die_01": {
    "frame": {
-    "x": 2,
-    "y": 432,
-    "w": 110,
-    "h": 120
+    "x": 1093,
+    "y": 2,
+    "w": 111,
+    "h": 122
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 131,
-    "y": 131,
-    "w": 110,
-    "h": 120
+    "x": 130,
+    "y": 129,
+    "w": 111,
+    "h": 122
    },
    "sourceSize": {
     "w": 428,
@@ -1658,18 +1658,18 @@
   },
   "greatsword_knight_die_01_team": {
    "frame": {
-    "x": 449,
-    "y": 787,
-    "w": 84,
-    "h": 105
+    "x": 2075,
+    "y": 220,
+    "w": 85,
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 126,
+    "x": 125,
     "y": 125,
-    "w": 84,
-    "h": 105
+    "w": 85,
+    "h": 104
    },
    "sourceSize": {
     "w": 428,
@@ -1682,18 +1682,18 @@
   },
   "greatsword_knight_die_02": {
    "frame": {
-    "x": 590,
-    "y": 299,
-    "w": 73,
-    "h": 122
+    "x": 1009,
+    "y": 2,
+    "w": 80,
+    "h": 124
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 188,
-    "y": 130,
-    "w": 73,
-    "h": 122
+    "x": 181,
+    "y": 128,
+    "w": 80,
+    "h": 124
    },
    "sourceSize": {
     "w": 428,
@@ -1706,15 +1706,15 @@
   },
   "greatsword_knight_die_02_team": {
    "frame": {
-    "x": 226,
-    "y": 556,
+    "x": 1559,
+    "y": 121,
     "w": 59,
     "h": 114
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 183,
+    "x": 184,
     "y": 124,
     "w": 59,
     "h": 114
@@ -1730,18 +1730,18 @@
   },
   "greatsword_knight_die_03": {
    "frame": {
-    "x": 101,
-    "y": 1005,
+    "x": 2431,
+    "y": 2,
     "w": 121,
-    "h": 93
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 194,
-    "y": 155,
+    "y": 153,
     "w": 121,
-    "h": 93
+    "h": 95
    },
    "sourceSize": {
     "w": 428,
@@ -1754,18 +1754,18 @@
   },
   "greatsword_knight_die_03_team": {
    "frame": {
-    "x": 2,
-    "y": 1005,
-    "w": 95,
-    "h": 95
+    "x": 2389,
+    "y": 107,
+    "w": 97,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 207,
+    "x": 206,
     "y": 149,
-    "w": 95,
-    "h": 95
+    "w": 97,
+    "h": 97
    },
    "sourceSize": {
     "w": 428,
@@ -1778,18 +1778,18 @@
   },
   "greatsword_knight_die_04": {
    "frame": {
-    "x": 617,
-    "y": 1005,
+    "x": 2447,
+    "y": 208,
     "w": 111,
-    "h": 72
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 205,
+    "y": 204,
     "w": 111,
-    "h": 72
+    "h": 73
    },
    "sourceSize": {
     "w": 428,
@@ -1802,17 +1802,17 @@
   },
   "greatsword_knight_die_04_team": {
    "frame": {
-    "x": 382,
-    "y": 1104,
-    "w": 86,
+    "x": 705,
+    "y": 273,
+    "w": 82,
     "h": 54
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 214,
+    "x": 219,
     "y": 201,
-    "w": 86,
+    "w": 82,
     "h": 54
    },
    "sourceSize": {
@@ -1826,18 +1826,18 @@
   },
   "greatsword_knight_die_05": {
    "frame": {
-    "x": 2,
-    "y": 1104,
+    "x": 791,
+    "y": 264,
     "w": 125,
-    "h": 68
+    "h": 70
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 198,
-    "y": 206,
+    "y": 204,
     "w": 125,
-    "h": 68
+    "h": 70
    },
    "sourceSize": {
     "w": 428,
@@ -1850,18 +1850,18 @@
   },
   "greatsword_knight_die_05_team": {
    "frame": {
-    "x": 546,
-    "y": 1005,
-    "w": 67,
-    "h": 73
+    "x": 2490,
+    "y": 101,
+    "w": 65,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 219,
+    "x": 221,
     "y": 203,
-    "w": 67,
-    "h": 73
+    "w": 65,
+    "h": 74
    },
    "sourceSize": {
     "w": 428,
@@ -1874,18 +1874,18 @@
   },
   "greatsword_knight_die_06": {
    "frame": {
-    "x": 131,
-    "y": 1104,
+    "x": 920,
+    "y": 260,
     "w": 125,
-    "h": 66
+    "h": 68
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 198,
-    "y": 207,
+    "y": 205,
     "w": 125,
-    "h": 66
+    "h": 68
    },
    "sourceSize": {
     "w": 428,
@@ -1898,18 +1898,18 @@
   },
   "greatsword_knight_die_06_team": {
    "frame": {
-    "x": 472,
-    "y": 1104,
-    "w": 72,
-    "h": 51
+    "x": 367,
+    "y": 291,
+    "w": 70,
+    "h": 50
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 218,
+    "x": 220,
     "y": 204,
-    "w": 72,
-    "h": 51
+    "w": 70,
+    "h": 50
    },
    "sourceSize": {
     "w": 428,
@@ -1922,18 +1922,18 @@
   },
   "greatsword_knight_die_07": {
    "frame": {
-    "x": 260,
-    "y": 1104,
+    "x": 583,
+    "y": 276,
     "w": 118,
-    "h": 64
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 208,
+    "y": 206,
     "w": 118,
-    "h": 64
+    "h": 66
    },
    "sourceSize": {
     "w": 428,
@@ -1946,17 +1946,17 @@
   },
   "greatsword_knight_die_07_team": {
    "frame": {
-    "x": 548,
-    "y": 1104,
-    "w": 85,
+    "x": 280,
+    "y": 291,
+    "w": 83,
     "h": 50
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 217,
+    "x": 219,
     "y": 204,
-    "w": 85,
+    "w": 83,
     "h": 50
    },
    "sourceSize": {
@@ -2087,15 +2087,15 @@
   "image": "greatsword_knight.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 1176
+   "w": 2560,
+   "h": 344
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.greatsword_knight",
    "name": "Greatsword Knight",
    "heightLu": 82,
-   "widthLu": 84.1,
+   "widthLu": 84.6,
    "pxPerLu": 1.23,
    "feetPx": [
     196.0,
@@ -2434,7 +2434,7 @@
         0,
         29.5
        ],
-       "scale": 1.051
+       "scale": 1.057
       },
       {
        "id": "fx.ko_stars",
@@ -2444,7 +2444,7 @@
         45.1
        ],
        "loops": 2,
-       "scale": 1.025
+       "scale": 1.028
       }
      ],
      "hideUnitAtMs": 990,

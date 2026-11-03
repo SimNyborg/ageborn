@@ -19,16 +19,26 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
           new stone from his belt. The stone leaves `muzzle` (the pouch) on the lob frame.
   hit     light: head back, eyes squeezed, the belly jiggles
   die     D3 dizzy sit: spins, sits down hard, legs out, the book in his lap, spiral eyes
+
+Detail standard (art round W2, Track MEDIEVAL): the habit in two tones (team-dark pleats round the bell skirt, wide
+team-dark cuffs on the sleeves, a mended team-dark patch on its side), the paw whole on the belly, folds in the
+parchment cowl. Aimed at flyers (queue item 44): A and B up about 45 and 70 degrees, hand-posed like W1's slingers
+(kit_bronze_detail.aimed_hand: the turn is solved on the sling's cord at the release), the stone lobbed up at the
+target. Damage spots: the habit's back, a sleeve, the cowl, a strip torn from the skirt.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import colors as C
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "friar"
 GAIT_NAME = "biped"
@@ -49,6 +59,19 @@ SANDAL = "#8C765F"
 GOLD = "#D4A437"
 ROCK = "#8C8A86"
 BOOK = "#6E3346"
+BOTTLE = "#4E7A52"
+CORK = "#B89C78"
+BEAD = "#8A6A4E"
+
+# the detail standard (art round W2): the friar's soft look (the soldier's lifts), cloth, leather and wood apart
+PARCH_DK = "#CFC3A6"      # the cowl's folds
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", CHEEK: "skin", HAIR: "fur", ROPE: "cloth", PARCH: "cloth", PARCH_DK: "cloth",
+                           LEATHER: "leather", SANDAL: "leather", GOLD: "gold", ROCK: "stone", BOOK: "leather",
+                           BOTTLE: "glass", CORK: "wood", BEAD: "wood", "team": "cloth"})
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
 SLING = 16.0   # cord length from the fist to the pouch
@@ -81,21 +104,27 @@ def build(rig):
     belly = Geo().blob((1.5, 0, 26.5), (12.8, 11.4, 12.2), p=2.1, taper=(1.12, 0.84))
     bface = F.Face(rig, "torso", [belly])
     rig.part("torso", belly, team=True)
-    g = K.paw(bface, Geo(), (10.0, 25.5), s=1.45)
+    g = MW.paw(bface, Geo(), (10.0, 25.5), s=1.4)       # W2: the paw whole (pad and four toes on the belly)
     rig.part("torso", g, PARCH, highlight=False, outline=0)
     # leather satchel on the far hip with a green bottle poking out
     g = Geo().blob((-6.5, 11.5, 19.0), (5.4, 2.6, 5.0), p=3.2)
     rig.part("torso", g, LEATHER)
     g = Geo().capsule((-8.0, 12.2, 22.0), (-9.4, 12.2, 29.0), 1.8, 1.2)
-    rig.part("torso", g, "#4E7A52", finish="gloss", outline=0.7)
+    rig.part("torso", g, BOTTLE, finish="gloss", outline=0.7)
     g = Geo().capsule((-9.2, 12.2, 28.6), (-9.6, 12.2, 30.6), 1.4)
-    rig.part("torso", g, "#B89C78", outline=0.5)
+    rig.part("torso", g, CORK, outline=0.5)
     # the habit, shortened for walk v3 (the hem 11 lu above the soles, ANIM_SPEC G2), swings
     rig.secondary("skirt", "hips", (0.8, 0, 17.0), (0.0, 0, 8.0), max_deg=14, gain=1.1)
     rig.rest_offset["skirt"] = (0, 0, K.V3_LIFT)
     g = Geo().lathe([(0, 9.0), (13.0, 9.2), (13.6, 10.8), (12.2, 14.0), (10.8, 18.0), (0, 18.5)],
                     (1.0, 0, 0), segs=24, squash=(1.0, 0.9))
+    kface = F.Face(rig, "skirt", [g])
     rig.part("skirt", g, team=True)
+    # W2: pleats round the bell skirt, team-dark, flaring to the hem (the habit reads as cloth)
+    MW.folds(rig, "skirt", kface, [[(x, 17.0), (1.0 + (x - 1.0) * 1.2, 10.6)] for x in (-7.4, -3.2, 1.0, 5.2, 9.0)],
+             w=1.3)
+    # W2: a mended patch on the skirt's back half, team-dark (a poor friar's habit)
+    MW.panel(rig, "skirt", kface, [(-9.6, 11.4), (-5.2, 11.0), (-4.9, 15.4), (-9.3, 15.8)], depth=0.25)
     # rope belt with a hanging knotted end
     g = Geo().lathe([(12.4, -1.3), (13.4, 0), (12.4, 1.3)], (2.0, 0, 20.8), segs=24, squash=(1.0, 0.9))
     g.capsule((11.0, -8.5, 20.5), (11.6, -9.4, 10.5), 1.2)
@@ -104,7 +133,11 @@ def build(rig):
     # parchment cowl around the neck and shoulders
     g = Geo().blob((0.2, 0, 36.2), (11.6, 12.4, 4.6), p=2.4, taper=(1.12, 0.9))
     g.blob((-9.0, 0, 38.5), (4.4, 9.5, 5.2), p=2.2)
+    cface = F.Face(rig, "torso", [g])
     rig.part("torso", g, PARCH)
+    # W2: folds hanging in the cowl (parchment-dark)
+    MW.folds(rig, "torso", cface, [[(x, 35.6), (x - 0.4, 32.6)] for x in (-6.0, -1.6, 2.8)], w=1.1, team=False,
+             fill=PARCH_DK)
     # a wooden rosary on the cowl with a little cross
     g = Geo()
     for k in range(7):
@@ -112,7 +145,7 @@ def build(rig):
         g.sphere((1.2 + 12.2 * math.cos(t), 12.6 * math.sin(t) * 0.9, 33.8 - 2.2 * math.cos(t * 1.4)), 1.25, cuts=2)
     g.capsule((12.8, -2.0, 31.6), (12.8, -2.0, 26.8), 0.9)
     g.capsule((12.8, -3.8, 29.8), (12.8, -0.2, 29.8), 0.9)
-    rig.part("torso", g, "#8A6A4E", outline=0.5)
+    rig.part("torso", g, BEAD, outline=0.5)
 
     # head: bald tonsure, hair ring, rosy cheeks, big nose, happy eyes
     head = Geo().blob((2, 0, 48.0), (11.8, 11.2, 11.6), p=2.2)
@@ -135,6 +168,9 @@ def build(rig):
     # far arm hugs a prayer book; near arm swings the sling (both in team sleeves)
     B.arm_parts(rig, "l", None, hand=SKIN, team_sleeve=True, r0=4.8, r1=4.4)
     B.arm_parts(rig, "r", None, hand=SKIN, team_sleeve=True, r0=4.8, r1=4.4)
+    for s in ("r", "l"):    # W2: the habit's wide sleeves end in team-dark cuffs
+        g = Geo().blob((0.2, B.ARM_Y[s], B.HAND_Z + 3.0), (5.8, 5.8, 1.9), p=2.6)
+        look.team_part(rig, f"fore_{s}", g, outline=0.5)
     g = Geo().blob((3.0, B.ARM_Y["l"] - 3.5, B.HAND_Z + 3.0), (5.2, 2.2, 6.8), p=4.0)
     rig.part("hand_l", g, BOOK)
     g = Geo().blob((3.0, B.ARM_Y["l"] - 3.9, B.HAND_Z + 3.0), (4.6, 2.2, 6.2), p=4.0)
@@ -155,6 +191,19 @@ def build(rig):
     g = Geo().blob((x, y - 2.6, z - SLING + 1.4), (2.3, 2.0, 2.0), p=2.3)
     rig.part("rock", g, ROCK)
     rig.track("muzzle", "sling", (x, y - 1.0, z - SLING))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the habit's bell skirt (its largest
+    team field the arms leave clear, r 7.5), the habit's back behind the sling arm, the near sleeve, the cowl, a strip
+    torn from the skirt's hem."""
+    rig.damage_spot_at("habit", "skirt", -4.0, 15.5, 7.5, "cloth", team=True)
+    rig.damage_spot_at("back", "torso", -9.0, 26.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("sleeve", "arm_r", -2.0, 30.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("cowl", "torso", -8.0, 37.5, 5.0, "cloth", fill=PARCH)
+    rig.damage_spot_at("skirt", "skirt", 6.0, 11.0, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -220,10 +269,33 @@ TH_L = [0, 6, 10, 12, 8, -6, -18, -14, -10, -4, 0]
 SH_L = [0, -8, -8, -8, -6, -4, -16, -12, -4, 0, 0]
 
 
-def _attack_pose(f):
-    pose = merge(BOOK_ARM, slinger(L_A[f], L_F[f], L_W[f]), {
-        "torso": {"r": T_R[f]},
-        "head": {"r": [0, 2, 4, 6, 2, -2, -8, -6, 0, -4, 0][f]},
+# aimed lobs at flyers (queue item 44; kit_bronze_detail.aimed_hand, a sling has no measured axis): a turn of `turn`
+# degrees up swings the arm and the sling higher through the release (the cord streams up at the target), leans him
+# back and tips his head and eyes up; the feet stay planted. The wind-up keeps the base frames; the swing rises into
+# the aim and falls out of it in the follow-through.
+AIM_LEAN = 0.15           # torso r per degree of turn (positive leans back)
+AIM_ARM = (0.55, 0.75)    # upper arm and forearm: their share of the turn (world degrees); the sling takes it all
+AIM_HEAD = 0.3            # head r per degree, on top of the lean
+AIM_EYES = 0.010          # pupils z per degree
+#        read dip  back HOLD swing swing LOB  over land reach settle
+AIM_W = [0.0, 0.0, 0.0, 0.0, 0.3, 0.7, 1.0, 0.7, 0.3, 0.0, 0.0]
+#          A    A   whirl HOLD smear lead REL follow recoil A    A
+AIM_W_B = [0.0, 0.0, 0.0, 0.0, 0.4, 0.8, 1.0, 0.6, 0.25, 0.0, 0.0]
+
+
+def _aimed(pose, turn):
+    """The eyes follow the aim."""
+    if not turn:
+        return pose
+    return merge(pose, {"pupils": {"z": AIM_EYES * turn}})
+
+
+def _attack_pose(f, turn=0.0):
+    lean = AIM_LEAN * turn
+    ka, kf = AIM_ARM
+    pose = merge(BOOK_ARM, slinger(L_A[f] + ka * turn - lean, L_F[f] + kf * turn - lean, L_W[f] + turn - lean), {
+        "torso": {"r": T_R[f] + lean},
+        "head": {"r": [0, 2, 4, 6, 2, -2, -8, -6, 0, -4, 0][f] + AIM_HEAD * turn},
         "arm_l": {"r": [0, 4, 8, 10, 4, -4, -10, -6, 0, 0, 0][f]},
         "thigh_r": {"r": TH_R[f]}, "shin_r": {"r": SH_R[f]},
         "thigh_l": {"r": TH_L[f]}, "shin_l": {"r": SH_L[f]},
@@ -239,7 +311,7 @@ def _attack_pose(f):
         pose = merge(pose, F.expr("o"))
     elif f in (7, 8):
         pose = merge(pose, F.expr("yell"))
-    return pose
+    return _aimed(pose, turn)
 
 
 HR_ = (HR[0], HR[1] - 1.0, HR[2])
@@ -281,13 +353,15 @@ OB_THL = [8, 12, 0, -8, -16, -14, -6]
 OB_SHL = [-6, -8, -4, -4, -10, -6, -2]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i in (0, 1, 9, 10):
-        return _attack_pose(i)
+        return _attack_pose(i, turn)
     k = i - 2
-    pose = merge(BOOK_ARM, slinger(OB_A[k], OB_F[k], OB_W[k]), {
-        "torso": {"r": OB_T[k]},
-        "head": {"r": -0.5 * OB_T[k]},
+    lean = AIM_LEAN * turn
+    ka, kf = AIM_ARM
+    pose = merge(BOOK_ARM, slinger(OB_A[k] + ka * turn - lean, OB_F[k] + kf * turn - lean, OB_W[k] + turn - lean), {
+        "torso": {"r": OB_T[k] + lean},
+        "head": {"r": -0.5 * OB_T[k] + AIM_HEAD * turn},
         "arm_l": {"r": 0.4 * OB_T[k]},
         "thigh_r": {"r": OB_THR[k]}, "shin_r": {"r": OB_SHR[k]},
         "thigh_l": {"r": OB_THL[k]}, "shin_l": {"r": OB_SHL[k]},
@@ -301,7 +375,7 @@ def _b_pose(i):
         pose = merge(pose, F.expr("o"))
     elif k == 4:
         pose = merge(pose, F.expr("yell"))
-    return pose
+    return _aimed(pose, turn)
 
 
 OVER = dict(SWING, t0=0.0, t1=0.95, lines=2, samples=16)
@@ -349,13 +423,23 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (they go to the extras sheet); a sling has no axis, so the turn is
+    # solved on the sling's cord (the sling joint's -Z, kit_bronze_detail.aimed_hand) at the release (the impact frame:
+    # the cord streaming at the target, the stone just gone); aimdata.SPEC gives the variants their aimDeg
+    aimed_a = KD.aimed_hand(RIG, attack, _attack_pose, AIM_W, "sling", (0.0, 0.0, -1.0))
+    aimed_b = KD.aimed_hand(RIG, attack_b, _b_pose, AIM_W_B, "sling", (0.0, 0.0, -1.0))
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
     return M.check_variants(M.check_contract(cl))

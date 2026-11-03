@@ -22,15 +22,26 @@ Animation (ANIM_SPEC G6 wheeled, appendix B for a vehicle; riders get attack_alt
             stands still
   hit       vehicle: a sway and a creak, the archers duck
   die       wreck: the tower tips back, a wheel pops off, the bridge falls, the archers tumble out
+
+Detail standard (art round W2, Track MEDIEVAL): the wet hides in two tones (the ragged hems team-dark, two seams
+where the hides are sewn together), the paw whole, the drawbridge's planks in seams, the archers' kettle hats with a
+polished brim. Aimed at flyers (queue item 44): the archers' attack_alt up about 45 and 70 degrees (aimed.py on the
+front archer's bow arm; both archers turn their bows and lean back). Damage spots: the hide (r 9), the front hide,
+the drawbridge, a strip torn from the hide's hem, and two smoke emitters: one on the front wall under the bridge,
+below the archers' heads and clear beside them on every frame (DAMAGE's `fireAt` takes it for the fire), one on the
+platform.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from units import battering_ram as R
+from units import medieval_w2 as MW
 
 SLUG = "siege_belfry"
 GAIT_NAME = "wheeled"
@@ -46,6 +57,16 @@ WOOD, DARK_WOOD, IRON, STEEL, GOLD = R.WOOD, R.DARK_WOOD, R.IRON, R.STEEL, R.GOL
 PARCH, SKIN, HOSE, BOOT, HAIR = R.PARCH, R.SKIN, "#626A74", R.BOOT, R.HAIR
 BOW = "#9A8268"
 STRING = "#EDE6D6"
+STEEL_HI = "#D9DFE6"      # the archers' polished hat brims
+
+# the detail standard (art round W2): wood, iron, steel and the team hides apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.6          # matte wood and hides: hl 0.055-0.058 with the soldier's lifts
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = dict(MW.RIM_SOLDIER, lift=0.8, full_lu=0.8)
+MATERIAL_KINDS = MW.kinds({WOOD: "wood", DARK_WOOD: "wood", IRON: "iron", STEEL: "iron", STEEL_HI: "iron", GOLD: "gold",
+                           PARCH: "cloth", SKIN: "skin", HOSE: "cloth", "#4E555D": "cloth", BOOT: "leather", HAIR: "fur",
+                           BOW: "wood", STRING: "cloth", R.EYE: "glass", "team": "hide"})
 
 AXLES = (-17.0, 17.0)
 X0, X1 = -22.0, 21.0                   # the tower's back and front faces
@@ -72,6 +93,8 @@ def _archer(rig, name, x, y, front):
     g.clip((0, 0, hz + 2.6), (0, 0, -1))
     g.lathe([(0, -0.5), (7.6, -0.5), (8.0, 0.0), (7.6, 0.5), (0, 0.5)], (hx - 0.4, y, hz + 2.8), segs=20)
     rig.part(name, g, STEEL, finish="metal")
+    g = Geo().lathe([(7.5, -0.3), (8.3, 0.0), (7.5, 0.3)], (hx - 0.4, y, hz + 2.8), segs=20)
+    rig.part(name, g, STEEL_HI, finish="metal", outline=0)     # W2: the brim's polished edge
     # the bow arm: a fist and a short bow (rest pointing forward, the bow upright)
     arm = name + "_arm"
     rig.joint(arm, name, (x + 2.0, y - 4.0, z + 9.0))
@@ -91,7 +114,12 @@ def _archer(rig, name, x, y, front):
         rig.track("muzzle", arm, (x + 12.0, y - 5.0, z + 8.0))
 
 
+RIG = None
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("chassis", "body", (0, 0, R.R_WHEEL))
     rig.joint("odo", "root", (0, 0, 0))
@@ -134,6 +162,10 @@ def build(rig):
     hx, hy, hz = HINGE
     g = Geo().blob((hx + 1.2, 0.0, hz + BRIDGE / 2), (1.8, 11.4, BRIDGE / 2), p=4.0)
     rig.part("bridge", g, WOOD)
+    g = Geo()   # W2: the bridge's plank seams (the face that shows as it drops)
+    for y in (-6.0, -1.0, 4.0):
+        g.capsule((hx + 3.0, y, hz + 1.5), (hx + 3.0, y, hz + BRIDGE - 1.5), 0.45, segs=6, rings=2)
+    rig.part("bridge", g, DARK_WOOD, outline=0)
     g = Geo()
     for z in (hz + 5.0, hz + BRIDGE - 5.0):
         g.blob((hx + 3.0, 0.0, z), (0.8, 11.6, 1.4), p=3.0)
@@ -171,13 +203,16 @@ def build(rig):
     hide = Geo().blob(((X0 + X1) / 2, -13.8, 47.0), (22.6, 1.6, 19.0), p=4.0)
     hface = F.Face(rig, "hull", [hide])
     rig.part("hull", hide, team=True)
-    g = K.paw(hface, Geo(), K.scr(hface, (0.0, -15.0, 47.0)), s=2.0)
+    g = MW.paw(hface, Geo(), K.scr(hface, (0.0, -15.0, 47.0)), s=2.0)     # W2: the paw whole
     rig.part("hull", g, PARCH, highlight=False, outline=0)
+    # W2: the hides sewn together (two team-dark seams down the side)
+    MW.folds(rig, "hull", hface, [[K.scr(hface, (x, -15.0, 63.0)), K.scr(hface, (x + 0.4, -15.0, 31.0))]
+                                  for x in (-12.6, 12.4)], w=1.1)
     g = Geo()
     for x in range(-18, 19, 7):   # ragged hem
         g.blob((float(x), -14.0, 28.6), (3.0, 1.4, 2.4), p=2.0)
         g.blob((float(x) + 3.5, -14.0, 65.6), (3.0, 1.4, 2.0), p=2.0)
-    rig.part("hull", g, team=True, outline=0.5)
+    look.team_part(rig, "hull", g, outline=0.5)       # W2: the ragged hems team-dark (the hides in two tones)
     g = Geo().blob((X1 + 0.6, 0.0, 42.0), (1.4, 12.6, 15.0), p=4.0)
     rig.part("hull", g, team=True, outline=0.6)
     g = Geo()
@@ -187,6 +222,21 @@ def build(rig):
     rig.part("hull", g, DARK_WOOD, outline=0.7)
     R._wheel(rig, "wheel_bn", AXLES[0], -13.0)
     R._wheel(rig, "wheel_fn", AXLES[1], -13.0)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, vehicle with crew): the near hide (r 9), the front hide, the
+    drawbridge, a strip torn from the hide's lower hem, a low smoke emitter on the front wall under the bridge
+    (below the archers' heads and 24 lu or more beside them on every frame, `fireClear`: DAMAGE's `fireAt` takes it
+    for the fire) and one on the platform."""
+    rig.damage_spot_at("hide", "hull", -10.0, 42.0, 9.0, "hide", team=True)
+    rig.damage_spot_at("front", "hull", X1 + 1.0, 36.0, 6.0, "hide", team=True)
+    rig.damage_spot_at("bridge", "bridge", HINGE[0] - 1.0, HINGE[2] + 14.0, 5.0, "wood", fill=WOOD)
+    rig.damage_spot_at("hem", "hull", 6.0, 31.0, 9.0, "hide", kind="strip", team=True)
+    rig.damage_spot("smoke", "hull", (22.0, -8.0, 66.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("smoke_top", "hull", (-14.0, 0.0, Z_TOP + 4.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -320,13 +370,20 @@ ALT_AIM = [0, 10, 24, 18, 8]
 ALT_DRAW = [0, 0.4, 1.0, 0.0, 0.0]
 
 
-def _alt_pose(i):
+# aimed volleys at flyers (queue item 44; aimed.py on the front archer's bow arm, measured from the arm's pivot to
+# the muzzle): a turn of `turn` degrees raises both archers' bow arms and leans them back a little; the tower stands
+ALT_AIM_LEAN = 0.15       # the archers' lean back per degree of turn
+#           idle draw  full  LOOSE follow
+ALT_AIM_W = [0.0, 0.5, 1.0, 1.0, 0.7]
+
+
+def _alt_pose(i, turn=0.0):
     pose = _idle(0)
-    if i == 0:
+    if i == 0 and not turn:
         return pose
     for k, name in enumerate(("archer0", "archer1")):
-        pose[f"{name}_arm"] = {"r": ALT_AIM[i] + 4 * k}
-        pose[name] = dict(pose.get(name, {}), r=-6 * ALT_DRAW[i], z=1.2 * ALT_DRAW[i])
+        pose[f"{name}_arm"] = {"r": ALT_AIM[i] + 4 * k + turn}
+        pose[name] = dict(pose.get(name, {}), r=-6 * ALT_DRAW[i] + ALT_AIM_LEAN * turn, z=1.2 * ALT_DRAW[i])
     return pose
 
 
@@ -376,15 +433,20 @@ def _die(k):
 
 
 def clips():
+    alt = _attack_alt()
+    # the archers aimed up about 45 and 70 degrees at flyers (to the extras sheet)
+    aimed_alt = AIMED.variants(RIG, alt, _alt_pose, ALT_AIM_W, aims=("up45", "up70"))
+    for v in aimed_alt:
+        AIMED.check_timing(alt, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], WALK_DUR, loop=True, overlays=WALK_DUST),
         _attack_clip(),
         _attack_b(),
-        _attack_alt(),
+        alt,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
-    ]
+    ] + aimed_alt
     return M.check_variants(M.check_contract(cl, heavy=True))

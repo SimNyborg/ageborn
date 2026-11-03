@@ -30,6 +30,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "crossbowman"
 GAIT_NAME = "biped"
@@ -54,6 +55,20 @@ WOOD = "#7A6652"
 WOOD_LT = "#B89C78"
 STRING = "#EDE6D6"
 PARCH = "#E8DFC8"
+
+# the detail standard (art round W2): the gambeson quilted in a team-dark diamond lattice and its skirt in channels
+# (padded cloth), the mail coif in rows at a readable scale (mail), the pavise with a team-dark border and a whole
+# bear paw, a lit edge on the steel prod
+MAIL_DK = "#4C5560"
+STEEL_HI = "#D9DFE6"
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", STUBBLE: "skin", HAIR: "fur", MAIL: "iron", MAIL_DK: "iron", STEEL: "iron",
+                           STEEL_DK: "iron", STEEL_HI: "iron", HOSE: "cloth", BOOT: "leather", LEATHER: "leather",
+                           LEATHER_DK: "leather", WOOD: "wood", WOOD_LT: "wood", STRING: "cloth", PARCH: "cloth",
+                           "team": "cloth"})
 
 SH = (0.0, B.SHOULDER_Z)              # shoulder in torso space (x, z)
 G0 = (4.0, -14.5, 26.0)               # crossbow grip (trigger hand) at rest, character space
@@ -91,22 +106,24 @@ def build(rig):
     pv = Geo().blob((-12.0, 8.2, 31.0), (8.4, 1.6, 15.0), p=3.6, taper=(0.9, 1.0), rot=(0, 10, 0))
     pface = F.Face(rig, "pavise", [pv])
     rig.part("pavise", pv, team=True, outline=0.6)
-    g = K.paw(pface, Geo(), K.scr(pface, (-14.0, 7.0, 34.0)), s=1.3)
+    # W2: a team-dark border down the pavise's free edge and round its top (the part the body leaves in view)
+    MW.seam(rig, "pavise", pface, [K.scr(pface, p) for p in ((-18.6, 6.4, 18.0), (-18.8, 6.4, 40.0),
+                                                             (-16.4, 6.4, 44.0), (-11.0, 6.4, 45.0))], w=2.2, team=True)
+    g = MW.paw(pface, Geo(), K.scr(pface, (-14.0, 7.0, 34.0)), s=1.3)
     rig.part("pavise", g, PARCH, highlight=False, outline=0)
 
     # torso: a long quilted team gambeson, a leather belt, a bolt case on the near hip
     g = Geo().blob((0, 0, 27.4), (10.6, 9.8, 11.8), p=2.2, taper=(1.1, 0.94))
     tface = F.Face(rig, "torso", [g])
     rig.part("torso", g, team=True)
-    g2 = Geo()
-    for z in (24.0, 30.0):
-        c = tface.hit(5.0, z)
-        tface.stroke(g2, c, [(-6.0, 0.0), (5.0, 0.4)], 0.9, 0.35)
-    rig.part("torso", g2, PARCH, highlight=False, outline=0)
+    # W2: the gambeson quilted in a team-dark diamond lattice (padded cloth in two tones), its skirt in channels
+    MW.folds(rig, "torso", tface, MW.lattice(-9.0, 8.5, 22.0, 36.0, 5.5), w=1.1)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.6, 0, 14.8), (11.8, 10.8, 5.0), p=2.7, taper=(1.12, 1.0))
+    hface = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    MW.folds(rig, "hem", hface, [[(x + 0.4, 16.2), (x + 0.6, 10.6)] for x in (-8.4, -4.4, -0.4, 3.6, 7.6)], w=1.2)
     g = Geo().blob((0.4, 0, 20.6), (11.4, 10.4, 1.8), p=3.2)
     rig.part("torso", g, LEATHER_DK)
     g = Geo().blob((3.0, -11.6, 17.0), (3.4, 2.2, 5.6), p=3.0)   # bolt case
@@ -118,6 +135,7 @@ def build(rig):
     # mail coif round the neck and shoulders
     g = Geo().blob((0.3, 0, 37.4), (10.8, 11.4, 4.4), p=2.4)
     rig.part("torso", g, MAIL, finish="metal")
+    MW.shell_bands(rig, "torso", (0.3, 0, 37.4), (10.8, 11.4, 4.4), (35.2, 37.6, 40.0), MAIL_DK, p=2.4)   # W2: mail rows
 
     # head: a mail coif framing the face, a steel skullcap, broad nose, stubbly jaw
     head = Geo().blob((2, 0, 47.6), (11.2, 10.6, 11.0), p=2.3)
@@ -128,6 +146,9 @@ def build(rig):
             mouth_dz=-7.0, mouth_x=12.4, eye_at=(13.6, 48.8), mark_r=3.8)
     rig.part("head", head, SKIN)
     rig.part("head", coif, MAIL, finish="metal")
+    # W2: the coif in mail rows (2.4 lu apart: mail at a readable scale), cut at its face opening
+    MW.shell_bands(rig, "head", (0.5, 0, 50.0), (12.4, 11.8, 12.6), (40.0, 42.4, 44.8, 47.2, 49.6, 52.0), MAIL_DK,
+                   p=2.3, taper=(1.02, 0.88), shift=(-0.12, 0), cuts=(((7.6, 0, 50.0), (1, 0, 0.18)),))
     g = Geo().blob((10.6, -0.4, 40.2), (4.4, 6.8, 3.0), p=2.4)   # stubble on the jaw
     rig.part("head", g, STUBBLE, highlight=False, outline=0)
     rig.joint("cap", "head", CAP_C)
@@ -152,6 +173,9 @@ def build(rig):
     for sgn in (-1, 1):
         g.capsule((PROD_X, gy, gz + 1.0), (PROD_X - 4.0, gy + 11.0 * sgn, gz + 1.0 + 6.4 * sgn), 1.5, 1.0)
     rig.part("bow", g, STEEL, finish="metal")
+    g = Geo()   # W2: a lit edge along the near limb of the prod (polished steel)
+    g.capsule((PROD_X + 0.6, gy - 0.8, gz + 0.4), (PROD_X - 3.2, gy - 10.2, gz - 4.8), 0.7, 0.5, segs=8, rings=2)
+    rig.part("bow", g, STEEL_HI, finish="metal", outline=0)
     g = Geo().lathe([(2.6, -0.6), (3.2, 0.0), (2.6, 0.6)], (gx + STOCK + 2.6, gy, gz - 0.6),
                     (gx + STOCK + 2.6, gy - 0.1, gz + 0.6), segs=16, squash=(1.0, 1.5))
     rig.part("bow", g, STEEL_DK, finish="metal", outline=0.5)
@@ -180,6 +204,16 @@ def build(rig):
     g = Geo().blob((gx + FORE, gy + 2.6, gz - 0.6), (3.6, 3.0, 3.4), p=2.4)
     rig.part("gunhand", g, LEATHER)
     rig.track("muzzle", "bow", BOLT_TIP)
+    _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the gambeson's back (the
+    largest team field the crossbow arms leave clear), the pavise, the coif's mail, a strip torn from the skirt."""
+    rig.damage_spot_at("gambeson", "torso", -5.0, 28.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("pavise", "pavise", -16.0, 30.0, 6.5, "wood", team=True)
+    rig.damage_spot_at("coif", "head", -5.0, 47.4, 5.5, "metal", fill=MAIL)
+    rig.damage_spot_at("skirt", "hem", -2.0, 14.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -382,6 +416,10 @@ def clips():
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
+        # items 51/52 pose: aim (cranked and held: the shouldered aim of attack A's hold loop, its two frames
+        # reused, so it costs no pixels; the extras sheet, pipeline POSE_CLIPS)
+        M.clip("aim", [_attack_pose(3), _attack_pose(4)], [160, 160], loop=True,
+               reuse={0: ("attack", 3), 1: ("attack", 4)}),
     ] + aimed_a + aimed_b
     for v in aimed_a:
         AIMED.check_timing(attack, v)

@@ -2,8 +2,8 @@
  "frames": {
   "crossbowman_idle_00": {
    "frame": {
-    "x": 2,
-    "y": 310,
+    "x": 476,
+    "y": 2,
     "w": 80,
     "h": 92
    },
@@ -26,18 +26,18 @@
   },
   "crossbowman_idle_00_team": {
    "frame": {
-    "x": 164,
-    "y": 657,
-    "w": 48,
-    "h": 72
+    "x": 1036,
+    "y": 316,
+    "w": 52,
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
-    "y": 101,
-    "w": 48,
-    "h": 72
+    "x": 84,
+    "y": 100,
+    "w": 52,
+    "h": 73
    },
    "sourceSize": {
     "w": 239,
@@ -50,8 +50,8 @@
   },
   "crossbowman_idle_01": {
    "frame": {
-    "x": 2,
-    "y": 213,
+    "x": 313,
+    "y": 100,
     "w": 79,
     "h": 93
    },
@@ -74,18 +74,18 @@
   },
   "crossbowman_idle_01_team": {
    "frame": {
-    "x": 216,
-    "y": 657,
-    "w": 48,
-    "h": 72
+    "x": 1067,
+    "y": 156,
+    "w": 52,
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
-    "y": 100,
-    "w": 48,
-    "h": 72
+    "x": 85,
+    "y": 99,
+    "w": 52,
+    "h": 73
    },
    "sourceSize": {
     "w": 239,
@@ -98,8 +98,8 @@
   },
   "crossbowman_idle_02": {
    "frame": {
-    "x": 2,
-    "y": 114,
+    "x": 158,
+    "y": 2,
     "w": 79,
     "h": 95
    },
@@ -122,18 +122,18 @@
   },
   "crossbowman_idle_02_team": {
    "frame": {
-    "x": 568,
-    "y": 497,
-    "w": 48,
-    "h": 75
+    "x": 859,
+    "y": 170,
+    "w": 52,
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
-    "y": 96,
-    "w": 48,
-    "h": 75
+    "x": 86,
+    "y": 95,
+    "w": 52,
+    "h": 76
    },
    "sourceSize": {
     "w": 239,
@@ -146,8 +146,8 @@
   },
   "crossbowman_idle_03": {
    "frame": {
-    "x": 213,
-    "y": 2,
+    "x": 63,
+    "y": 225,
     "w": 79,
     "h": 97
    },
@@ -170,18 +170,18 @@
   },
   "crossbowman_idle_03_team": {
    "frame": {
-    "x": 280,
-    "y": 497,
-    "w": 48,
-    "h": 76
+    "x": 750,
+    "y": 182,
+    "w": 51,
+    "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
-    "y": 94,
-    "w": 48,
-    "h": 76
+    "x": 86,
+    "y": 93,
+    "w": 51,
+    "h": 77
    },
    "sourceSize": {
     "w": 239,
@@ -194,8 +194,8 @@
   },
   "crossbowman_idle_04": {
    "frame": {
-    "x": 543,
-    "y": 2,
+    "x": 153,
+    "y": 103,
     "w": 79,
     "h": 96
    },
@@ -218,18 +218,18 @@
   },
   "crossbowman_idle_04_team": {
    "frame": {
-    "x": 332,
-    "y": 497,
-    "w": 47,
-    "h": 76
+    "x": 805,
+    "y": 171,
+    "w": 50,
+    "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
-    "y": 95,
-    "w": 47,
-    "h": 76
+    "x": 85,
+    "y": 94,
+    "w": 50,
+    "h": 77
    },
    "sourceSize": {
     "w": 239,
@@ -242,8 +242,8 @@
   },
   "crossbowman_idle_05": {
    "frame": {
-    "x": 300,
-    "y": 114,
+    "x": 236,
+    "y": 299,
     "w": 79,
     "h": 94
    },
@@ -266,18 +266,18 @@
   },
   "crossbowman_idle_05_team": {
    "frame": {
-    "x": 254,
-    "y": 578,
-    "w": 48,
-    "h": 74
+    "x": 949,
+    "y": 2,
+    "w": 51,
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
-    "y": 98,
-    "w": 48,
-    "h": 74
+    "x": 84,
+    "y": 97,
+    "w": 51,
+    "h": 75
    },
    "sourceSize": {
     "w": 239,
@@ -290,8 +290,8 @@
   },
   "crossbowman_walk_00": {
    "frame": {
-    "x": 341,
-    "y": 310,
+    "x": 544,
+    "y": 98,
     "w": 59,
     "h": 90
    },
@@ -314,18 +314,18 @@
   },
   "crossbowman_walk_00_team": {
    "frame": {
-    "x": 413,
-    "y": 578,
-    "w": 50,
-    "h": 73
+    "x": 842,
+    "y": 332,
+    "w": 53,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
-    "y": 103,
-    "w": 50,
-    "h": 73
+    "x": 87,
+    "y": 102,
+    "w": 53,
+    "h": 74
    },
    "sourceSize": {
     "w": 239,
@@ -338,8 +338,8 @@
   },
   "crossbowman_walk_01": {
    "frame": {
-    "x": 66,
-    "y": 406,
+    "x": 621,
+    "y": 188,
     "w": 62,
     "h": 86
    },
@@ -362,18 +362,18 @@
   },
   "crossbowman_walk_01_team": {
    "frame": {
-    "x": 393,
-    "y": 657,
-    "w": 52,
-    "h": 71
+    "x": 1121,
+    "y": 2,
+    "w": 54,
+    "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
-    "y": 106,
-    "w": 52,
-    "h": 71
+    "x": 85,
+    "y": 105,
+    "w": 54,
+    "h": 72
    },
    "sourceSize": {
     "w": 239,
@@ -386,8 +386,8 @@
   },
   "crossbowman_walk_02": {
    "frame": {
-    "x": 168,
-    "y": 213,
+    "x": 384,
+    "y": 197,
     "w": 63,
     "h": 93
    },
@@ -410,18 +410,18 @@
   },
   "crossbowman_walk_02_team": {
    "frame": {
-    "x": 194,
-    "y": 578,
+    "x": 915,
+    "y": 162,
     "w": 56,
-    "h": 74
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 99,
+    "y": 98,
     "w": 56,
-    "h": 74
+    "h": 75
    },
    "sourceSize": {
     "w": 239,
@@ -434,8 +434,8 @@
   },
   "crossbowman_walk_03": {
    "frame": {
-    "x": 234,
-    "y": 114,
+    "x": 236,
+    "y": 200,
     "w": 62,
     "h": 95
    },
@@ -458,18 +458,18 @@
   },
   "crossbowman_walk_03_team": {
    "frame": {
-    "x": 581,
-    "y": 578,
-    "w": 52,
-    "h": 72
+    "x": 1004,
+    "y": 2,
+    "w": 55,
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
-    "y": 94,
-    "w": 52,
-    "h": 72
+    "x": 85,
+    "y": 93,
+    "w": 55,
+    "h": 73
    },
    "sourceSize": {
     "w": 239,
@@ -482,8 +482,8 @@
   },
   "crossbowman_walk_04": {
    "frame": {
-    "x": 2,
-    "y": 406,
+    "x": 572,
+    "y": 290,
     "w": 60,
     "h": 87
    },
@@ -506,18 +506,18 @@
   },
   "crossbowman_walk_04_team": {
    "frame": {
-    "x": 559,
-    "y": 657,
-    "w": 50,
-    "h": 69
+    "x": 2,
+    "y": 336,
+    "w": 53,
+    "h": 70
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
-    "y": 103,
-    "w": 50,
-    "h": 69
+    "x": 87,
+    "y": 102,
+    "w": 53,
+    "h": 70
    },
    "sourceSize": {
     "w": 239,
@@ -530,8 +530,8 @@
   },
   "crossbowman_walk_05": {
    "frame": {
-    "x": 316,
-    "y": 406,
+    "x": 687,
+    "y": 182,
     "w": 59,
     "h": 83
    },
@@ -554,18 +554,18 @@
   },
   "crossbowman_walk_05_team": {
    "frame": {
-    "x": 505,
-    "y": 657,
-    "w": 50,
-    "h": 71
+    "x": 1123,
+    "y": 155,
+    "w": 52,
+    "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
-    "y": 106,
-    "w": 50,
-    "h": 71
+    "x": 86,
+    "y": 105,
+    "w": 52,
+    "h": 72
    },
    "sourceSize": {
     "w": 239,
@@ -578,8 +578,8 @@
   },
   "crossbowman_walk_06": {
    "frame": {
-    "x": 493,
-    "y": 310,
+    "x": 607,
+    "y": 95,
     "w": 59,
     "h": 89
    },
@@ -602,18 +602,18 @@
   },
   "crossbowman_walk_06_team": {
    "frame": {
-    "x": 2,
-    "y": 657,
-    "w": 50,
-    "h": 72
+    "x": 1035,
+    "y": 79,
+    "w": 54,
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
-    "y": 99,
-    "w": 50,
-    "h": 72
+    "x": 86,
+    "y": 98,
+    "w": 54,
+    "h": 73
    },
    "sourceSize": {
     "w": 239,
@@ -626,8 +626,8 @@
   },
   "crossbowman_walk_07": {
    "frame": {
-    "x": 235,
-    "y": 213,
+    "x": 396,
+    "y": 99,
     "w": 59,
     "h": 93
    },
@@ -650,18 +650,18 @@
   },
   "crossbowman_walk_07_team": {
    "frame": {
-    "x": 467,
-    "y": 578,
-    "w": 50,
-    "h": 73
+    "x": 978,
+    "y": 81,
+    "w": 53,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
-    "y": 94,
-    "w": 50,
-    "h": 73
+    "x": 87,
+    "y": 93,
+    "w": 53,
+    "h": 74
    },
    "sourceSize": {
     "w": 239,
@@ -674,8 +674,8 @@
   },
   "crossbowman_attack_00": {
    "frame": {
-    "x": 383,
-    "y": 114,
+    "x": 302,
+    "y": 200,
     "w": 78,
     "h": 94
    },
@@ -698,18 +698,18 @@
   },
   "crossbowman_attack_00_team": {
    "frame": {
-    "x": 306,
-    "y": 578,
-    "w": 48,
-    "h": 74
+    "x": 955,
+    "y": 241,
+    "w": 51,
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
-    "y": 97,
-    "w": 48,
-    "h": 74
+    "x": 85,
+    "y": 96,
+    "w": 51,
+    "h": 75
    },
    "sourceSize": {
     "w": 239,
@@ -722,8 +722,8 @@
   },
   "crossbowman_attack_01": {
    "frame": {
-    "x": 298,
-    "y": 213,
+    "x": 400,
+    "y": 294,
     "w": 84,
     "h": 92
    },
@@ -746,18 +746,18 @@
   },
   "crossbowman_attack_01_team": {
    "frame": {
-    "x": 449,
-    "y": 657,
-    "w": 52,
-    "h": 71
+    "x": 1067,
+    "y": 233,
+    "w": 54,
+    "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
-    "y": 100,
-    "w": 52,
-    "h": 71
+    "x": 86,
+    "y": 99,
+    "w": 54,
+    "h": 72
    },
    "sourceSize": {
     "w": 239,
@@ -770,8 +770,8 @@
   },
   "crossbowman_attack_02": {
    "frame": {
-    "x": 386,
-    "y": 213,
+    "x": 451,
+    "y": 196,
     "w": 84,
     "h": 92
    },
@@ -794,17 +794,17 @@
   },
   "crossbowman_attack_02_team": {
    "frame": {
-    "x": 521,
-    "y": 578,
-    "w": 56,
+    "x": 1093,
+    "y": 79,
+    "w": 59,
     "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
+    "x": 86,
     "y": 99,
-    "w": 56,
+    "w": 59,
     "h": 72
    },
    "sourceSize": {
@@ -818,8 +818,8 @@
   },
   "crossbowman_attack_03": {
    "frame": {
-    "x": 86,
-    "y": 310,
+    "x": 146,
+    "y": 315,
     "w": 85,
     "h": 91
    },
@@ -842,17 +842,17 @@
   },
   "crossbowman_attack_03_team": {
    "frame": {
-    "x": 268,
-    "y": 657,
-    "w": 59,
+    "x": 1156,
+    "y": 78,
+    "w": 62,
     "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
+    "x": 87,
     "y": 100,
-    "w": 59,
+    "w": 62,
     "h": 71
    },
    "sourceSize": {
@@ -866,8 +866,8 @@
   },
   "crossbowman_attack_04": {
    "frame": {
-    "x": 404,
-    "y": 310,
+    "x": 560,
+    "y": 2,
     "w": 85,
     "h": 89
    },
@@ -890,17 +890,17 @@
   },
   "crossbowman_attack_04_team": {
    "frame": {
-    "x": 331,
-    "y": 657,
-    "w": 58,
+    "x": 1179,
+    "y": 2,
+    "w": 61,
     "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 88,
     "y": 100,
-    "w": 58,
+    "w": 61,
     "h": 71
    },
    "sourceSize": {
@@ -914,8 +914,8 @@
   },
   "crossbowman_attack_05": {
    "frame": {
-    "x": 453,
-    "y": 2,
+    "x": 146,
+    "y": 215,
     "w": 86,
     "h": 96
    },
@@ -938,17 +938,17 @@
   },
   "crossbowman_attack_05_team": {
    "frame": {
-    "x": 165,
-    "y": 497,
-    "w": 54,
+    "x": 834,
+    "y": 2,
+    "w": 57,
     "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 88,
     "y": 96,
-    "w": 54,
+    "w": 57,
     "h": 76
    },
    "sourceSize": {
@@ -962,8 +962,8 @@
   },
   "crossbowman_attack_06": {
    "frame": {
-    "x": 556,
-    "y": 310,
+    "x": 649,
+    "y": 2,
     "w": 78,
     "h": 87
    },
@@ -986,17 +986,17 @@
   },
   "crossbowman_attack_06_team": {
    "frame": {
-    "x": 2,
-    "y": 733,
-    "w": 49,
+    "x": 1222,
+    "y": 77,
+    "w": 55,
     "h": 69
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
+    "x": 77,
     "y": 101,
-    "w": 49,
+    "w": 55,
     "h": 69
    },
    "sourceSize": {
@@ -1010,8 +1010,8 @@
   },
   "crossbowman_attack_07": {
    "frame": {
-    "x": 175,
-    "y": 310,
+    "x": 488,
+    "y": 292,
     "w": 80,
     "h": 91
    },
@@ -1034,17 +1034,17 @@
   },
   "crossbowman_attack_07_team": {
    "frame": {
-    "x": 358,
-    "y": 578,
-    "w": 51,
+    "x": 1063,
+    "y": 2,
+    "w": 54,
     "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
-    "y": 99,
-    "w": 51,
+    "x": 80,
+    "y": 98,
+    "w": 54,
     "h": 73
    },
    "sourceSize": {
@@ -1058,8 +1058,8 @@
   },
   "crossbowman_attack_08": {
    "frame": {
-    "x": 296,
-    "y": 2,
+    "x": 73,
+    "y": 114,
     "w": 76,
     "h": 97
    },
@@ -1082,17 +1082,17 @@
   },
   "crossbowman_attack_08_team": {
    "frame": {
-    "x": 61,
-    "y": 497,
-    "w": 49,
+    "x": 751,
+    "y": 90,
+    "w": 51,
     "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 86,
+    "x": 84,
     "y": 95,
-    "w": 49,
+    "w": 51,
     "h": 77
    },
    "sourceSize": {
@@ -1106,8 +1106,8 @@
   },
   "crossbowman_attack_09": {
    "frame": {
-    "x": 85,
-    "y": 213,
+    "x": 393,
+    "y": 2,
     "w": 79,
     "h": 93
    },
@@ -1130,18 +1130,18 @@
   },
   "crossbowman_attack_09_team": {
    "frame": {
-    "x": 56,
-    "y": 657,
-    "w": 50,
-    "h": 72
+    "x": 979,
+    "y": 320,
+    "w": 53,
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
-    "y": 99,
-    "w": 50,
-    "h": 72
+    "x": 84,
+    "y": 98,
+    "w": 53,
+    "h": 73
    },
    "sourceSize": {
     "w": 239,
@@ -1154,7 +1154,7 @@
   },
   "crossbowman_attack_10": {
    "frame": {
-    "x": 376,
+    "x": 81,
     "y": 2,
     "w": 73,
     "h": 97
@@ -1178,17 +1178,17 @@
   },
   "crossbowman_attack_10_team": {
    "frame": {
-    "x": 114,
-    "y": 497,
-    "w": 47,
+    "x": 787,
+    "y": 263,
+    "w": 51,
     "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
+    "x": 85,
     "y": 95,
-    "w": 47,
+    "w": 51,
     "h": 77
    },
    "sourceSize": {
@@ -1202,8 +1202,8 @@
   },
   "crossbowman_attack_11": {
    "frame": {
-    "x": 465,
-    "y": 114,
+    "x": 319,
+    "y": 298,
     "w": 77,
     "h": 94
    },
@@ -1226,18 +1226,18 @@
   },
   "crossbowman_attack_11_team": {
    "frame": {
-    "x": 2,
-    "y": 578,
-    "w": 46,
-    "h": 75
+    "x": 868,
+    "y": 82,
+    "w": 50,
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
-    "y": 97,
-    "w": 46,
-    "h": 75
+    "x": 86,
+    "y": 96,
+    "w": 50,
+    "h": 76
    },
    "sourceSize": {
     "w": 239,
@@ -1250,8 +1250,8 @@
   },
   "crossbowman_hit_00": {
    "frame": {
-    "x": 132,
-    "y": 406,
+    "x": 670,
+    "y": 93,
     "w": 77,
     "h": 85
    },
@@ -1274,17 +1274,17 @@
   },
   "crossbowman_hit_00_team": {
    "frame": {
-    "x": 55,
-    "y": 733,
-    "w": 57,
+    "x": 1092,
+    "y": 309,
+    "w": 58,
     "h": 68
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 76,
+    "x": 75,
     "y": 104,
-    "w": 57,
+    "w": 58,
     "h": 68
    },
    "sourceSize": {
@@ -1298,8 +1298,8 @@
   },
   "crossbowman_hit_01": {
    "frame": {
-    "x": 162,
-    "y": 114,
+    "x": 241,
+    "y": 2,
     "w": 68,
     "h": 95
    },
@@ -1322,17 +1322,17 @@
   },
   "crossbowman_hit_01_team": {
    "frame": {
-    "x": 511,
-    "y": 497,
-    "w": 53,
+    "x": 922,
+    "y": 82,
+    "w": 52,
     "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 75,
+    "x": 76,
     "y": 95,
-    "w": 53,
+    "w": 52,
     "h": 75
    },
    "sourceSize": {
@@ -1346,8 +1346,8 @@
   },
   "crossbowman_hit_02": {
    "frame": {
-    "x": 85,
-    "y": 114,
+    "x": 236,
+    "y": 101,
     "w": 73,
     "h": 95
    },
@@ -1370,17 +1370,17 @@
   },
   "crossbowman_hit_02_team": {
    "frame": {
-    "x": 383,
-    "y": 497,
-    "w": 46,
+    "x": 895,
+    "y": 2,
+    "w": 50,
     "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 85,
+    "x": 81,
     "y": 95,
-    "w": 46,
+    "w": 50,
     "h": 76
    },
    "sourceSize": {
@@ -1394,8 +1394,8 @@
   },
   "crossbowman_hit_03": {
    "frame": {
-    "x": 474,
-    "y": 213,
+    "x": 459,
+    "y": 99,
     "w": 81,
     "h": 92
    },
@@ -1418,18 +1418,18 @@
   },
   "crossbowman_hit_03_team": {
    "frame": {
-    "x": 110,
-    "y": 657,
-    "w": 50,
-    "h": 72
+    "x": 1010,
+    "y": 239,
+    "w": 53,
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
-    "y": 100,
-    "w": 50,
-    "h": 72
+    "x": 85,
+    "y": 99,
+    "w": 53,
+    "h": 73
    },
    "sourceSize": {
     "w": 239,
@@ -1442,8 +1442,8 @@
   },
   "crossbowman_hit_04": {
    "frame": {
-    "x": 546,
-    "y": 114,
+    "x": 313,
+    "y": 2,
     "w": 76,
     "h": 94
    },
@@ -1466,18 +1466,18 @@
   },
   "crossbowman_hit_04_team": {
    "frame": {
-    "x": 52,
-    "y": 578,
-    "w": 46,
-    "h": 75
+    "x": 901,
+    "y": 250,
+    "w": 50,
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
-    "y": 97,
-    "w": 46,
-    "h": 75
+    "x": 85,
+    "y": 96,
+    "w": 50,
+    "h": 76
    },
    "sourceSize": {
     "w": 239,
@@ -1490,8 +1490,8 @@
   },
   "crossbowman_die_00": {
    "frame": {
-    "x": 528,
-    "y": 406,
+    "x": 63,
+    "y": 326,
     "w": 79,
     "h": 80
    },
@@ -1514,18 +1514,18 @@
   },
   "crossbowman_die_00_team": {
    "frame": {
-    "x": 116,
-    "y": 733,
-    "w": 56,
-    "h": 67
+    "x": 1125,
+    "y": 231,
+    "w": 61,
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 80,
-    "y": 101,
-    "w": 56,
-    "h": 67
+    "x": 75,
+    "y": 102,
+    "w": 61,
+    "h": 66
    },
    "sourceSize": {
     "w": 239,
@@ -1538,8 +1538,8 @@
   },
   "crossbowman_die_01": {
    "frame": {
-    "x": 213,
-    "y": 406,
+    "x": 731,
+    "y": 2,
     "w": 99,
     "h": 84
    },
@@ -1562,18 +1562,18 @@
   },
   "crossbowman_die_01_team": {
    "frame": {
-    "x": 379,
-    "y": 406,
-    "w": 58,
-    "h": 83
+    "x": 636,
+    "y": 278,
+    "w": 60,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 76,
+    "x": 74,
     "y": 82,
-    "w": 58,
-    "h": 83
+    "w": 60,
+    "h": 84
    },
    "sourceSize": {
     "w": 239,
@@ -1586,8 +1586,8 @@
   },
   "crossbowman_die_02": {
    "frame": {
-    "x": 81,
-    "y": 2,
+    "x": 2,
+    "y": 114,
     "w": 67,
     "h": 107
    },
@@ -1610,9 +1610,9 @@
   },
   "crossbowman_die_02_team": {
    "frame": {
-    "x": 223,
-    "y": 497,
-    "w": 53,
+    "x": 842,
+    "y": 252,
+    "w": 55,
     "h": 76
    },
    "rotated": false,
@@ -1620,7 +1620,7 @@
    "spriteSourceSize": {
     "x": 81,
     "y": 74,
-    "w": 53,
+    "w": 55,
     "h": 76
    },
    "sourceSize": {
@@ -1634,8 +1634,8 @@
   },
   "crossbowman_die_03": {
    "frame": {
-    "x": 259,
-    "y": 310,
+    "x": 539,
+    "y": 195,
     "w": 78,
     "h": 91
    },
@@ -1658,18 +1658,18 @@
   },
   "crossbowman_die_03_team": {
    "frame": {
-    "x": 2,
-    "y": 497,
-    "w": 55,
-    "h": 77
+    "x": 806,
+    "y": 90,
+    "w": 58,
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 72,
+    "x": 69,
     "y": 81,
-    "w": 55,
-    "h": 77
+    "w": 58,
+    "h": 76
    },
    "sourceSize": {
     "w": 239,
@@ -1706,10 +1706,10 @@
   },
   "crossbowman_die_04_team": {
    "frame": {
-    "x": 152,
-    "y": 2,
+    "x": 2,
+    "y": 225,
     "w": 57,
-    "h": 101
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
@@ -1717,7 +1717,7 @@
     "x": 65,
     "y": 94,
     "w": 57,
-    "h": 101
+    "h": 107
    },
    "sourceSize": {
     "w": 239,
@@ -1730,8 +1730,8 @@
   },
   "crossbowman_die_05": {
    "frame": {
-    "x": 176,
-    "y": 733,
+    "x": 1179,
+    "y": 153,
     "w": 99,
     "h": 66
    },
@@ -1754,10 +1754,10 @@
   },
   "crossbowman_die_05_team": {
    "frame": {
-    "x": 347,
-    "y": 733,
+    "x": 1190,
+    "y": 286,
     "w": 62,
-    "h": 52
+    "h": 54
    },
    "rotated": false,
    "trimmed": true,
@@ -1765,7 +1765,7 @@
     "x": 59,
     "y": 136,
     "w": 62,
-    "h": 52
+    "h": 54
    },
    "sourceSize": {
     "w": 239,
@@ -1778,8 +1778,8 @@
   },
   "crossbowman_die_06": {
    "frame": {
-    "x": 441,
-    "y": 406,
+    "x": 700,
+    "y": 269,
     "w": 83,
     "h": 81
    },
@@ -1802,10 +1802,10 @@
   },
   "crossbowman_die_06_team": {
    "frame": {
-    "x": 279,
-    "y": 733,
+    "x": 1190,
+    "y": 223,
     "w": 64,
-    "h": 53
+    "h": 59
    },
    "rotated": false,
    "trimmed": true,
@@ -1813,7 +1813,7 @@
     "x": 54,
     "y": 138,
     "w": 64,
-    "h": 53
+    "h": 59
    },
    "sourceSize": {
     "w": 239,
@@ -1826,8 +1826,8 @@
   },
   "crossbowman_die_07": {
    "frame": {
-    "x": 102,
-    "y": 578,
+    "x": 975,
+    "y": 161,
     "w": 88,
     "h": 74
    },
@@ -1850,10 +1850,10 @@
   },
   "crossbowman_die_07_team": {
    "frame": {
-    "x": 413,
-    "y": 733,
+    "x": 700,
+    "y": 354,
     "w": 68,
-    "h": 50
+    "h": 51
    },
    "rotated": false,
    "trimmed": true,
@@ -1861,7 +1861,7 @@
     "x": 52,
     "y": 139,
     "w": 68,
-    "h": 50
+    "h": 51
    },
    "sourceSize": {
     "w": 239,
@@ -1874,8 +1874,8 @@
   },
   "crossbowman_die_08": {
    "frame": {
-    "x": 433,
-    "y": 497,
+    "x": 901,
+    "y": 330,
     "w": 74,
     "h": 75
    },
@@ -1898,10 +1898,10 @@
   },
   "crossbowman_die_08_team": {
    "frame": {
-    "x": 485,
-    "y": 733,
+    "x": 1154,
+    "y": 344,
     "w": 64,
-    "h": 50
+    "h": 53
    },
    "rotated": false,
    "trimmed": true,
@@ -1909,7 +1909,7 @@
     "x": 52,
     "y": 140,
     "w": 64,
-    "h": 50
+    "h": 53
    },
    "sourceSize": {
     "w": 239,
@@ -2031,8 +2031,8 @@
   "image": "crossbowman.png",
   "format": "RGBA8888",
   "size": {
-   "w": 640,
-   "h": 804
+   "w": 1280,
+   "h": 408
   },
   "scale": "1.5",
   "ageborn": {

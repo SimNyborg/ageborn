@@ -533,6 +533,27 @@ def _die(k):
     return _pennon(pose, w)
 
 
+# -- items 51/52 pose: pike_set (the pike lowered, its butt grounded, braced against cavalry) ---------------------
+# Down on the far knee with the near foot planted forward, the near hand low by the butt (grounded behind the near
+# foot), the far hand up the shaft, the head at a horse's chest height (about 28 degrees up on screen). A held loop
+# that breathes (the torso and the arms only: the feet stay planted). It goes to the extras sheet (pipeline
+# POSE_CLIPS) and plays only in the battles that use it.
+SET_W = 34.0
+
+
+def _set_pose(f):
+    br = [0.0, 0.5, 1.0, 0.5][f]
+    w = SET_W + 0.8 * br
+    pose = merge(pike(-85 + 1.5 * br, -45 + 1.0 * br, w, grip=18.0), {
+        "torso": {"r": -6 + 0.6 * br},
+        "head": {"r": 4 - 0.4 * br},
+        "thigh_r": {"r": 88}, "shin_r": {"r": -92}, "foot_r": {"r": 4},
+        "thigh_l": {"r": -4}, "shin_l": {"r": -96}, "foot_l": {"r": -30},
+    }, M.body_about((0, 0, 22), z=-10.5))
+    pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.9}})
+    return _pennon(pose, w)
+
+
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
@@ -543,5 +564,6 @@ def clips():
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
+        M.clip("pike_set", [_set_pose(f) for f in range(4)], [200, 180, 200, 180], loop=True),
     ]
     return M.check_variants(M.check_contract(cl))

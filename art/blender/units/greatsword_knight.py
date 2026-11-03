@@ -28,10 +28,12 @@ import math
 from ageborn_art import face as F
 from ageborn_art import gait as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "greatsword_knight"
 GAIT_NAME = "heavy"
@@ -51,6 +53,19 @@ STEEL_LT = "#C9D0D8"
 LEATHER = "#5E4A3C"
 GOLD = "#D4A437"
 PARCH = "#E8DFC8"
+
+# the detail standard (art round W2): the surcoat per bend (its lower back half team-dark, the paw whole on the
+# light half) with pleats down its skirt, the sash team-dark, a mail skirt below the surcoat in rows (plate, mail and
+# cloth as three materials), lames on the pauldrons, the plume's trailing lobes team-dark
+MAIL = "#6B7682"
+MAIL_DK = "#4C5560"
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", MOUSTACHE: "fur", STEEL: "iron", STEEL_DK: "iron", STEEL_LT: "iron",
+                           LEATHER: "leather", GOLD: "gold", PARCH: "cloth", MAIL: "iron", MAIL_DK: "iron",
+                           "team": "cloth"})
 
 SH = (0.0, B.SHOULDER_Z)              # shoulder in torso space (x, z), before the body scale
 G0 = (6.0, -13.0, 24.0)               # grip (near hand) at rest, character space; the blade along +x
@@ -80,10 +95,13 @@ def _helm(rig, joint):
 
 
 def _plume(rig, joint):
-    g = Geo()
-    for x, z, r in ((-3.0, 69.0, 3.8), (-7.0, 71.6, 4.4), (-11.6, 71.4, 4.0), (-15.6, 69.0, 3.4), (-18.4, 66.0, 2.8)):
-        g.blob((x, 0, z), (r * 1.2, r * 0.8, r), p=2.1)
+    g, gd = Geo(), Geo()   # W2: the trailing lobes team-dark (two tones), the lobes 10% fuller (team fill in the
+    for k, (x, z, r) in enumerate(((-3.0, 69.0, 3.8), (-7.0, 71.6, 4.4), (-11.6, 71.4, 4.0), (-15.6, 69.0, 3.4),
+                                   (-18.4, 66.0, 2.8))):   # low guard of attack B, where the blade crosses the surcoat)
+        r *= 1.1
+        (gd if k >= 3 else g).blob((x, 0, z), (r * 1.2, r * 0.8, r), p=2.1)
     rig.part(joint, g, team=True)
+    look.team_part(rig, joint, gd)
 
 
 def _sword(rig, joint):
@@ -127,16 +145,24 @@ def build(rig):
     sc.clip((0, 0, 35.6), (0, 0, 1))
     sface = F.Face(rig, "torso", [sc])
     rig.part("torso", sc, team=True)
-    g = K.paw(sface, Geo(), (4.0, 28.0), s=1.15)
+    # W2: the surcoat per bend (the lower back half team-dark) under a whole paw on the light half
+    MW.panel(rig, "torso", sface, [(-10.6, 31.0), (-11.0, 24.0), (-10.2, 19.4), (7.0, 19.4)], depth=0.2)
+    g = MW.paw(sface, Geo(), (4.0, 28.0), s=1.15)
     rig.part("torso", g, PARCH, highlight=False, outline=0)
     g = Geo().blob((0.6, 0, 21.0), (12.4, 11.3, 2.2), p=3.2)
-    rig.part("torso", g, team=True, outline=0.6)
+    look.team_part(rig, "torso", g, outline=0.6)          # W2: the sash team-dark
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=10, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.8, 0, 15.6), (12.4, 11.2, 4.4), p=2.7, taper=(1.12, 1.0))
     for x, y in ((9.0, -7.0), (1.0, -11.0)):
         g.lathe([(1.6, 0), (0, 3.2)], (x, y - 0.6, 11.8), (x, y - 0.8, 15.0), segs=6)
+    hface = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    MW.folds(rig, "hem", hface, [[(x + 0.4, 15.6), (x + 0.6, 10.8)] for x in (-8.6, -4.6, -0.6, 3.4, 7.4)], w=1.3)
+    # W2: a mail skirt hanging below the surcoat, in rows
+    g = Geo().blob((0.8, 0, 10.0), (12.0, 10.9, 1.8), p=2.7, taper=(1.12, 1.0))     # below the surcoat's hem
+    rig.part("hem", g, MAIL, finish="metal", outline=0.6)
+    MW.shell_bands(rig, "hem", (0.8, 0, 10.0), (12.0, 10.9, 1.8), (9.3,), MAIL_DK, p=2.7, taper=(1.12, 1.0))
     # rounded pauldrons
     for s, y in (("r", -12.6), ("l", 12.0)):
         g = Geo().blob((0.2, y, 37.4), (7.6, 6.4, 6.0), p=2.3)
@@ -144,6 +170,9 @@ def build(rig):
         rig.part(f"arm_{s}", g, STEEL_LT if s == "r" else STEEL, finish="metal")
         g = Geo().lathe([(7.0, -0.6), (7.6, 0.0), (7.0, 0.6)], (0.2, y, 34.0), segs=20, squash=(1.0, 0.85))
         rig.part(f"arm_{s}", g, GOLD, finish="metal", outline=0.4)
+        # W2: two lames across the pauldron (the plate articulated)
+        MW.shell_bands(rig, f"arm_{s}", (0.2, y, 37.4), (7.6, 6.4, 6.0), (36.0, 38.6), STEEL_DK, w=0.8, proud=0.25,
+                       p=2.3, cuts=(((0, 0, 32.0), (0, 0, -1)),))
 
     # head: big eyes, a grey moustache, inside the armet
     head = Geo().blob((2, 0, 48.0), (11.0, 10.6, 11.0), p=2.3)
@@ -169,6 +198,16 @@ def build(rig):
     rig.joint("sword", "torso", G0)
     _sword(rig, "sword")
     rig.track("swordTip", "sword", TIP)
+    _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the surcoat (the largest team
+    field the sword arms leave clear), the near pauldron, a dent in the armet, a strip torn from the skirt."""
+    rig.damage_spot_at("surcoat", "torso", -6.0, 26.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("pauldron", "arm_r", -2.0, 38.0, 5.5, "metal", fill=STEEL_LT)
+    rig.damage_spot_at("armet", "helm", -4.0, 58.0, 5.5, "metal", fill=STEEL)
+    rig.damage_spot_at("skirt", "hem", -2.0, 14.0, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
