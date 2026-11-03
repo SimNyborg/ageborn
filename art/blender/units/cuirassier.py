@@ -27,17 +27,26 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
   hit     the horse shakes its head, eye shut, the rider rocks back and squeezes his eyes
   die     D5 unhorsed: the horse rears, the rider is thrown off the back spinning and lands flat
           behind it, the horse buckles at the knees and flops down; the rider's X eyes
+  charge  (items 51/52, extras sheet) a gallop loop with the sabre levelled over the horse's head, the
+          rider low in the saddle: the cavalry charge of a signature or formation; nothing plays it yet
+
+Art round W2: the detail standard (below), damage spots, the Parade Cuirassier skin as a Blender variant, and
+B1' (item 38 Phase B): A and C lunged 25.9 and 26.7 lu at the impact (the runtime's atlasCombat.lungeCurve), so
+the horse now travels 7 lu less on the strike frames; timing and impactAt unchanged.
 """
 import math
 
 from ageborn_art import face as F
 from ageborn_art import gait as GT
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "cuirassier"
 GAIT_NAME = "rider"
@@ -59,6 +68,32 @@ DARK = "#23262E"
 BLADE = "#C9D0D8"
 EYE = "#FAF6EE"
 NOSE = "#6E5A4E"
+BRAID = "#CFC3A6"
+COAT_LT = "#94796A"    # W2: the bay's lit planes (neck crest, chest)
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Cuirassier is the shabraque, the bay's neck, chest and legs, and the rider: a team-dark
+# band under the shabraque's brass studs and a team-dark root to the crest (the team zone in two tones), a leather
+# breastplate strap with a brass boss across the chest, creases at the throat and over the forearm and a lighter
+# plane on the neck's crest (big plain hide fields need bands and creases, W1 review), a brass-edged cuirass.
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", COAT_LT: "hide", POINTS: "hide", MANE: "fur", HOOF: "bone",
+                  STEEL: "iron", BLADE: "iron", NOSE: "hide", B.CREAM: "cloth", BRAID: "cloth", B.BRASS: "bronze",
+                  B.WOOD: "leather", B.BLACK: "leather", B.GUNWOOD: "wood", B.SKIN: "skin", B.LEATHER: "leather",
+                  "#8C96A2": "iron", "team": "cloth"}
+
+# Parade Cuirassier (DESIGN A5.8, rare): parade dress on the same model: a white charger with a pale mane and
+# grey-pink nose, a mirror-bright cuirass and helmet, gilt for the brass, a white-bronze saddle; the shabraque,
+# coat and crest stay team.
+PARADE = {COAT: "#E8E2D6", COAT_DK: "#C9C2B4", COAT_LT: "#F4F0E8", POINTS: "#B5ADA2", MANE: "#E2DCD0",
+          HOOF: "#4A4642", NOSE: "#B8A8A0", STEEL: "#E6E8EA", B.BRASS: "#E2C36E", B.WOOD: "#8A6A4E",
+          BLADE: "#E4E8EE"}
+PARADE_KINDS = {"#E8E2D6": "hide", "#C9C2B4": "hide", "#F4F0E8": "hide", "#B5ADA2": "hide", "#E2DCD0": "fur",
+                "#4A4642": "bone", "#B8A8A0": "hide", "#E6E8EA": "iron", "#E2C36E": "gold", "#8A6A4E": "leather",
+                "#E4E8EE": "iron"}
+SKINS = {"parade_cuirassier": {"palette": PARADE, "kinds": PARADE_KINDS}}
 
 # sabre: joint in the near hand (rider space, rest pose); blade modelled pointing up (+Z)
 SX, SY, SZ = 9.5, -14.0, 65.5
@@ -99,13 +134,23 @@ def build(rig):
     g = Geo()
     for x in range(-22, 18, 4):                                # braid dashes on the edge
         g.blob((x, -15.0, 29.0), (1.2, 0.6, 1.4), p=2.2, rot=(0, 30, 0))
-    rig.part("horse", g, "#CFC3A6", outline=0)
+    rig.part("horse", g, BRAID, outline=0)
+    # W2: a team-dark band under the brass studs (the shabraque in two tones)
+    g = KD.band_z((-3.5, 0, 43.5), (21.5, 13.8, 12.8), 30.8, 36.6, p=3.2, taper=(1.12, 0.92), grow=0.3)
+    look.team_part(rig, "horse", g)
     g = G.anchor(cf, Geo(), K.scr(cf, (-6.0, -14.0, 40.5)), s=1.45, w=1.7)
     rig.part("horse", g, B.CREAM, highlight=False, outline=0)
     g = Geo()
     for x in (-18, -8, 2, 12):
-        g.sphere((x, -14.6, 33.8), 1.3, cuts=3)
+        g.sphere((x, -14.9, 33.8), 1.45, cuts=3)
     rig.part("horse", g, B.BRASS, finish="metal", outline=0.8)
+    # W2: a leather breastplate strap across the chest with a brass boss, the bay's creases and lit planes
+    chest = Geo().blob((14.0, 0, 42.0), (11.4, 12.4, 11.9), p=2.2)
+    KD.surface_line(rig, "horse", chest, [(13.0, 51.0), (19.5, 46.0), (24.0, 40.0), (25.5, 34.5)], 2.6, B.LEATHER)
+    c = GW.on_surface(rig, "horse", [Geo().blob((14.0, 0, 42.0), (11.8, 12.8, 12.3), p=2.2)], 21.8, 43.2)
+    rig.part("horse", Geo().blob(c, (2.2, 1.0, 2.2), p=2.2), B.BRASS, finish="metal", outline=0.6)
+    KD.surface_line(rig, "horse", Geo().blob((14.0, 0, 42.0), (11.0, 12.0, 11.5), p=2.2),
+                    [(17.0, 33.5), (20.5, 31.0), (23.5, 30.6)], 1.0, COAT_DK)
     g = Geo().blob((-2, 0, 54.5), (11.5, 9.5, 3.6), p=2.6)   # saddle
     g.blob((-11.5, 0, 57.0), (2.6, 8.5, 4.0), p=2.4)
     rig.part("horse", g, B.WOOD)
@@ -126,6 +171,14 @@ def build(rig):
     rig.joint("hhead", "neck", (32, 0, 66), scale=1.25)
     g = Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)
     rig.part("neck", g, COAT)
+    # W2: a lighter plane along the neck's crest and two creases at the throat
+    g = Geo().capsule((19.0, -1.2, 51.5), (28.4, -1.0, 67.0), 6.2, 4.4)
+    g.clip((0, -7.4, 0), (0, -1, 0))
+    rig.part("neck", g, COAT_LT, outline=0)
+    neck = Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)
+    KD.surface_line(rig, "neck", neck, [(29.5, 47.0), (33.0, 51.5), (35.5, 55.5)], 1.0, COAT_DK)
+    neck = Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)
+    KD.surface_line(rig, "neck", neck, [(26.5, 44.5), (29.6, 48.6), (31.8, 52.0)], 1.0, COAT_DK)
     g = Geo()
     for i in range(6):
         t = i / 5
@@ -192,6 +245,9 @@ def build(rig):
     rig.part("ktorso", g, B.BRASS, finish="metal", outline=0)
     g = Geo().blob((-0.6, 0, 63.4), (10.8, 11.6, 1.8), p=3.0)
     rig.part("ktorso", g, B.WOOD)
+    # W2: the cuirass's brass-bound top edge
+    g = KD.band_z((-0.6, 0, 70.5), (10.4, 11.2, 9.4), 77.6, 79.0, p=2.6, taper=(0.9, 1.05), grow=0.35)
+    rig.part("ktorso", g, B.BRASS, finish="metal", outline=0.4)
     rig.secondary("ktails", "ktorso", (-8.0, 0, 63.0), (-15.0, 0, 55.0), max_deg=16, gain=1.1)
     g = Geo().blob((-12.0, 0, 58.5), (6.0, 9.6, 3.2), p=2.6, rot=(0, -35, 0))
     rig.part("ktails", g, team=True)
@@ -214,10 +270,13 @@ def build(rig):
     rig.part("khead", g, B.BRASS, finish="metal", outline=0.7)
     rig.secondary("crest", "khead", (-2, 0, 102), (-22, 0, 92), max_deg=14, gain=1.2)
     g = Geo()
+    root = Geo()
     for x, z, r in ((3.0, 103.0, 3.4), (-2.0, 104.0, 4.4), (-7.5, 103.0, 4.8), (-13.0, 100.0, 4.6),
                     (-17.5, 96.0, 4.0), (-21.0, 91.5, 3.2)):
         g.blob((x * 1.1, 0, 100.0 + (z - 100.0) * 1.25), (r * 1.4, r * 1.0, r * 1.25), p=2.1)
+        root.blob((x * 1.1, 0, 100.0 + (z - 100.0) * 1.25 - r * 0.62), (r * 1.3, r * 1.04, r * 0.8), p=2.1)
     rig.part("crest", g, team=True)
+    look.team_part(rig, "crest", root)       # W2: a team-dark root to the crest (two tones)
 
     # far arm: reins
     rig.joint("karm_l", "ktorso", (0, 10.5, 77))
@@ -255,6 +314,19 @@ def build(rig):
     g.clip((SX - 1.0, SY, SZ), (-1, 0, 0))
     rig.part("sabre", g, B.BRASS, finish="metal", outline=0.7)
     rig.track("sabreTip", "sabre", (SX + 7.0, SY, SZ + SABRE))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The shabraque (the largest
+    team surface, under the rider's leg), the bay's neck, the rider's cuirass and his coat tails, the crest; a torn
+    strip from the shabraque's cream edge."""
+    rig.damage_spot_at("shabraque", "horse", -12.0, 42.0, 9.0, "cloth", team=True)
+    rig.damage_spot_at("neck", "neck", 24.0, 54.0, 7.0, "hide", fill=COAT)
+    rig.damage_spot_at("cuirass", "ktorso", 1.0, 76.0, 6.0, "metal", fill=STEEL)
+    rig.damage_spot_at("crest", "crest", -10.0, 106.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "horse", -14.0, 27.0, 9.0, "cloth", kind="strip", fill=B.CREAM)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -335,10 +407,44 @@ def _walk(f, report=None):
     return sabre_at(out, IDLE_SABRE + 5.0 * post)
 
 
+# -- charge (items 51/52; the extras sheet, pipeline.POSE_CLIPS): a rotary gallop with a flight phase, 8 x 70 ms
+# at a charge's 150 lu/s, the rider low over the neck with the sabre levelled forward (the point thrust's line)
+CHARGE_SPEED = 150.0
+GALLOP = {"bl": 0.0, "br": 0.125, "fl": 0.5, "fr": 0.625}   # touchdowns
+CHARGE_GAIT = None
+
+
+def _charge_gait():
+    global CHARGE_GAIT
+    if CHARGE_GAIT is None:
+        CHARGE_GAIT = GT.Gait(8, 560, CHARGE_SPEED,
+                              GT.quad_feet(LEGS, GALLOP, x_off={"fr": 1.0, "fl": 1.0, "br": -1.0, "bl": -1.0}),
+                              0.3, lift=12.0, kick=5.0, reach=5.0, toe_off=0.0, heel_strike=0.0)
+    return CHARGE_GAIT
+
+
+def _charge(f, report=None):
+    g = _charge_gait()
+
+    def extra(ctx):
+        p = ctx["p"]
+        return merge(STANCE, {
+            "neck": {"r": -12 - 6 * math.cos(p - 0.5)}, "hhead": {"r": 8 + 4 * math.cos(p - 1.0)},
+            "rider": {"z": 1.2 * math.cos(p - 1.2)},
+            "ktorso": {"r": -18 + 2 * math.cos(p - 1.2)}, "khead": {"r": 9},
+            "karm_r": {"r": 80 - KR0}, "kfore_r": {"r": 10 - KF0},
+            "ktails": {"r": 14}, "crest": {"r": 10 + 4 * math.cos(p)},
+            "tail": {"r": 18 + 6 * math.sin(p - 1.3)}, "forelock": {"r": 10},
+        }, F.expr("yell"), {"brow": {"z": -0.8}})
+    out = GT.quad_walk(RIG, f, g, {}, trunk="horse", base_z=-5.0, bob=3.0, beats=1, pitch=5.0, roll=1.0,
+                       extra=extra, report=report)
+    return sabre_at(out, -2.0)
+
+
 # attack: 10 unique poses in the 12 heavy steps (moves.HEAVY_MELEE_MS), impact on pose 6
 ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
 #      shift  dip  coil HOLD leap  reach IMPACT skid follow settle
-A_X = [-1.0, -3.0, -6.0, -8.0, 2.0, 9.0, 13.0, 12.0, 6.0, 1.0]
+A_X = [-1.0, -3.0, -6.0, -8.0, 0.0, 4.0, 6.0, 5.0, 3.0, 1.0]       # B1': 7 lu less at the strike (was 13)
 A_Z = [0.0, -1.5, -3.0, -4.0, 5.0, 7.0, 0.0, -1.0, 0.0, 0.0]
 A_R = [2, 4, 9, 12, 10, 4, -6, -5, -2, 0]            # horse pitch (+ = forehand up)
 A_Q = [-0.02, -0.05, -0.07, -0.08, 0.06, 0.04, -0.08, 0.02, 0.0, 0.0]
@@ -421,7 +527,7 @@ VAR = {
         SAB=[40, -100, -140, -40, 10, 25, 45], TAIL=[2, 6, 10, -10, -14, -8, 4]),
     # point thrust: the arm drawn back with the blade level at his hip, then a long lunge
     "c": dict(
-        X=[-1.0, -3.0, -5.0, 2.0, 8.0, 13.0, 12.0], Z=[-0.5, -1.5, -2.5, 0.0, 1.0, -0.5, -0.5],
+        X=[-1.0, -3.0, -5.0, 0.0, 3.0, 6.0, 6.0], Z=[-0.5, -1.5, -2.5, 0.0, 1.0, -0.5, -0.5],   # B1': was 13 at the strike
         R=[2, 4, 6, 2, -2, -5, -4], Q=[-0.02, -0.04, -0.06, 0.04, 0.03, -0.08, 0.02],
         SXX=[1.0, 1.0, 0.97, 1.04, 1.04, 1.02, 1.0],
         FR=[(4, -10), (8, -20), (12, -30), (30, -50), (34, -30), (20, 0), (16, 0)],
@@ -554,5 +660,6 @@ def clips():
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
+        M.walk_clip("charge", RIG, _charge, _charge_gait(), "rider"),
     ]
     return M.check_variants(M.check_contract(cl, heavy=True))

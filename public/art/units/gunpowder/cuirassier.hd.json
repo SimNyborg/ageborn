@@ -2,8 +2,8 @@
  "frames": {
   "cuirassier_idle_00": {
    "frame": {
-    "x": 987,
-    "y": 2,
+    "x": 284,
+    "y": 418,
     "w": 247,
     "h": 343
    },
@@ -26,10 +26,10 @@
   },
   "cuirassier_idle_00_team": {
    "frame": {
-    "x": 149,
-    "y": 1077,
+    "x": 586,
+    "y": 1029,
     "w": 141,
-    "h": 239
+    "h": 240
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 357,
     "y": 202,
     "w": 141,
-    "h": 239
+    "h": 240
    },
    "sourceSize": {
     "w": 820,
@@ -50,8 +50,8 @@
   },
   "cuirassier_idle_01": {
    "frame": {
-    "x": 1508,
-    "y": 2,
+    "x": 334,
+    "y": 765,
     "w": 248,
     "h": 341
    },
@@ -74,10 +74,10 @@
   },
   "cuirassier_idle_01_team": {
    "frame": {
-    "x": 294,
-    "y": 1077,
+    "x": 1165,
+    "y": 1009,
     "w": 142,
-    "h": 237
+    "h": 238
    },
    "rotated": false,
    "trimmed": true,
@@ -85,7 +85,7 @@
     "x": 356,
     "y": 206,
     "w": 142,
-    "h": 237
+    "h": 238
    },
    "sourceSize": {
     "w": 820,
@@ -98,8 +98,8 @@
   },
   "cuirassier_idle_02": {
    "frame": {
-    "x": 262,
-    "y": 418,
+    "x": 1152,
+    "y": 2,
     "w": 250,
     "h": 332
    },
@@ -122,10 +122,10 @@
   },
   "cuirassier_idle_02_team": {
    "frame": {
-    "x": 2241,
-    "y": 1077,
+    "x": 2910,
+    "y": 1027,
     "w": 142,
-    "h": 232
+    "h": 233
    },
    "rotated": false,
    "trimmed": true,
@@ -133,7 +133,7 @@
     "x": 357,
     "y": 215,
     "w": 142,
-    "h": 232
+    "h": 233
    },
    "sourceSize": {
     "w": 820,
@@ -146,8 +146,8 @@
   },
   "cuirassier_idle_03": {
    "frame": {
-    "x": 2088,
-    "y": 418,
+    "x": 1667,
+    "y": 2,
     "w": 255,
     "h": 323
    },
@@ -170,10 +170,10 @@
   },
   "cuirassier_idle_03_team": {
    "frame": {
-    "x": 2,
-    "y": 1327,
+    "x": 3105,
+    "y": 474,
     "w": 141,
-    "h": 228
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 359,
     "y": 221,
     "w": 141,
-    "h": 228
+    "h": 229
    },
    "sourceSize": {
     "w": 820,
@@ -194,8 +194,8 @@
   },
   "cuirassier_idle_04": {
    "frame": {
-    "x": 1296,
-    "y": 418,
+    "x": 1406,
+    "y": 2,
     "w": 257,
     "h": 327
    },
@@ -218,10 +218,10 @@
   },
   "cuirassier_idle_04_team": {
    "frame": {
-    "x": 2843,
-    "y": 1077,
+    "x": 3067,
+    "y": 2,
     "w": 140,
-    "h": 229
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 359,
     "y": 218,
     "w": 140,
-    "h": 229
+    "h": 230
    },
    "sourceSize": {
     "w": 820,
@@ -242,8 +242,8 @@
   },
   "cuirassier_idle_05": {
    "frame": {
-    "x": 2272,
-    "y": 2,
+    "x": 586,
+    "y": 690,
     "w": 250,
     "h": 335
    },
@@ -266,10 +266,10 @@
   },
   "cuirassier_idle_05_team": {
    "frame": {
-    "x": 1671,
-    "y": 1077,
+    "x": 2813,
+    "y": 550,
     "w": 139,
-    "h": 234
+    "h": 235
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 359,
     "y": 209,
     "w": 139,
-    "h": 234
+    "h": 235
    },
    "sourceSize": {
     "w": 820,
@@ -290,7 +290,7 @@
   },
   "cuirassier_walk_00": {
    "frame": {
-    "x": 2781,
+    "x": 888,
     "y": 2,
     "w": 260,
     "h": 332
@@ -314,8 +314,8 @@
   },
   "cuirassier_walk_00_team": {
    "frame": {
-    "x": 440,
-    "y": 1077,
+    "x": 1452,
+    "y": 1001,
     "w": 136,
     "h": 237
    },
@@ -338,8 +338,8 @@
   },
   "cuirassier_walk_01": {
    "frame": {
-    "x": 2,
-    "y": 754,
+    "x": 1926,
+    "y": 2,
     "w": 272,
     "h": 319
    },
@@ -362,10 +362,10 @@
   },
   "cuirassier_walk_01_team": {
    "frame": {
-    "x": 1527,
-    "y": 1077,
+    "x": 2766,
+    "y": 873,
     "w": 140,
-    "h": 234
+    "h": 235
    },
    "rotated": false,
    "trimmed": true,
@@ -373,7 +373,7 @@
     "x": 358,
     "y": 226,
     "w": 140,
-    "h": 234
+    "h": 235
    },
    "sourceSize": {
     "w": 820,
@@ -386,8 +386,8 @@
   },
   "cuirassier_walk_02": {
    "frame": {
-    "x": 808,
-    "y": 754,
+    "x": 2202,
+    "y": 2,
     "w": 261,
     "h": 313
    },
@@ -410,8 +410,8 @@
   },
   "cuirassier_walk_02_team": {
    "frame": {
-    "x": 2692,
-    "y": 1077,
+    "x": 3055,
+    "y": 715,
     "w": 147,
     "h": 229
    },
@@ -434,8 +434,8 @@
   },
   "cuirassier_walk_03": {
    "frame": {
-    "x": 1836,
-    "y": 418,
+    "x": 1572,
+    "y": 333,
     "w": 248,
     "h": 326
    },
@@ -458,10 +458,10 @@
   },
   "cuirassier_walk_03_team": {
    "frame": {
-    "x": 1949,
-    "y": 1077,
+    "x": 2921,
+    "y": 2,
     "w": 142,
-    "h": 233
+    "h": 234
    },
    "rotated": false,
    "trimmed": true,
@@ -469,7 +469,7 @@
     "x": 357,
     "y": 225,
     "w": 142,
-    "h": 233
+    "h": 234
    },
    "sourceSize": {
     "w": 820,
@@ -482,8 +482,8 @@
   },
   "cuirassier_walk_04": {
    "frame": {
-    "x": 770,
-    "y": 418,
+    "x": 1100,
+    "y": 674,
     "w": 255,
     "h": 331
    },
@@ -506,8 +506,8 @@
   },
   "cuirassier_walk_04_team": {
    "frame": {
-    "x": 580,
-    "y": 1077,
+    "x": 1972,
+    "y": 976,
     "w": 136,
     "h": 237
    },
@@ -530,8 +530,8 @@
   },
   "cuirassier_walk_05": {
    "frame": {
-    "x": 278,
-    "y": 754,
+    "x": 1897,
+    "y": 653,
     "w": 266,
     "h": 319
    },
@@ -554,10 +554,10 @@
   },
   "cuirassier_walk_05_team": {
    "frame": {
-    "x": 1087,
-    "y": 1077,
+    "x": 2670,
+    "y": 633,
     "w": 139,
-    "h": 235
+    "h": 236
    },
    "rotated": false,
    "trimmed": true,
@@ -565,7 +565,7 @@
     "x": 359,
     "y": 224,
     "w": 139,
-    "h": 235
+    "h": 236
    },
    "sourceSize": {
     "w": 820,
@@ -578,8 +578,8 @@
   },
   "cuirassier_walk_06": {
    "frame": {
-    "x": 1073,
-    "y": 754,
+    "x": 2167,
+    "y": 645,
     "w": 256,
     "h": 312
    },
@@ -602,8 +602,8 @@
   },
   "cuirassier_walk_06_team": {
    "frame": {
-    "x": 2387,
-    "y": 1077,
+    "x": 2956,
+    "y": 480,
     "w": 145,
     "h": 231
    },
@@ -626,8 +626,8 @@
   },
   "cuirassier_walk_07": {
    "frame": {
-    "x": 2347,
-    "y": 418,
+    "x": 1640,
+    "y": 663,
     "w": 253,
     "h": 321
    },
@@ -650,10 +650,10 @@
   },
   "cuirassier_walk_07_team": {
    "frame": {
-    "x": 1382,
-    "y": 1077,
+    "x": 2776,
+    "y": 2,
     "w": 141,
-    "h": 234
+    "h": 235
    },
    "rotated": false,
    "trimmed": true,
@@ -661,7 +661,7 @@
     "x": 358,
     "y": 223,
     "w": 141,
-    "h": 234
+    "h": 235
    },
    "sourceSize": {
     "w": 820,
@@ -674,8 +674,8 @@
   },
   "cuirassier_attack_00": {
    "frame": {
-    "x": 1760,
-    "y": 2,
+    "x": 535,
+    "y": 347,
     "w": 253,
     "h": 339
    },
@@ -698,8 +698,8 @@
   },
   "cuirassier_attack_00_team": {
    "frame": {
-    "x": 2536,
-    "y": 1077,
+    "x": 2979,
+    "y": 240,
     "w": 152,
     "h": 230
    },
@@ -722,17 +722,17 @@
   },
   "cuirassier_attack_01": {
    "frame": {
-    "x": 1238,
+    "x": 361,
     "y": 2,
-    "w": 266,
+    "w": 268,
     "h": 341
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 339,
+    "x": 337,
     "y": 184,
-    "w": 266,
+    "w": 268,
     "h": 341
    },
    "sourceSize": {
@@ -746,8 +746,8 @@
   },
   "cuirassier_attack_01_team": {
    "frame": {
-    "x": 463,
-    "y": 1327,
+    "x": 3056,
+    "y": 948,
     "w": 165,
     "h": 225
    },
@@ -770,8 +770,8 @@
   },
   "cuirassier_attack_02": {
    "frame": {
-    "x": 1982,
-    "y": 754,
+    "x": 2467,
+    "y": 2,
     "w": 305,
     "h": 305
    },
@@ -794,10 +794,10 @@
   },
   "cuirassier_attack_02_team": {
    "frame": {
-    "x": 632,
-    "y": 1327,
+    "x": 3250,
+    "y": 468,
     "w": 183,
-    "h": 221
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
@@ -805,7 +805,7 @@
     "x": 303,
     "y": 231,
     "w": 183,
-    "h": 221
+    "h": 222
    },
    "sourceSize": {
     "w": 820,
@@ -818,18 +818,18 @@
   },
   "cuirassier_attack_03": {
    "frame": {
-    "x": 2532,
-    "y": 754,
+    "x": 1640,
+    "y": 988,
     "w": 328,
-    "h": 274
+    "h": 276
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 248,
-    "y": 247,
+    "y": 245,
     "w": 328,
-    "h": 274
+    "h": 276
    },
    "sourceSize": {
     "w": 820,
@@ -842,10 +842,10 @@
   },
   "cuirassier_attack_03_team": {
    "frame": {
-    "x": 1349,
-    "y": 1327,
+    "x": 3362,
+    "y": 2,
     "w": 193,
-    "h": 219
+    "h": 220
    },
    "rotated": false,
    "trimmed": true,
@@ -853,7 +853,7 @@
     "x": 288,
     "y": 237,
     "w": 193,
-    "h": 219
+    "h": 220
    },
    "sourceSize": {
     "w": 820,
@@ -868,7 +868,7 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 360,
+    "w": 355,
     "h": 412
    },
    "rotated": false,
@@ -876,7 +876,7 @@
    "spriteSourceSize": {
     "x": 249,
     "y": 108,
-    "w": 360,
+    "w": 355,
     "h": 412
    },
    "sourceSize": {
@@ -890,17 +890,17 @@
   },
   "cuirassier_attack_04_team": {
    "frame": {
-    "x": 2864,
-    "y": 754,
-    "w": 175,
+    "x": 840,
+    "y": 1015,
+    "w": 174,
     "h": 252
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 329,
+    "x": 325,
     "y": 186,
-    "w": 175,
+    "w": 174,
     "h": 252
    },
    "sourceSize": {
@@ -914,18 +914,18 @@
   },
   "cuirassier_attack_05": {
    "frame": {
-    "x": 646,
-    "y": 2,
-    "w": 337,
-    "h": 363
+    "x": 2,
+    "y": 806,
+    "w": 328,
+    "h": 362
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 305,
+    "x": 302,
     "y": 140,
-    "w": 337,
-    "h": 363
+    "w": 328,
+    "h": 362
    },
    "sourceSize": {
     "w": 820,
@@ -938,18 +938,18 @@
   },
   "cuirassier_attack_05_team": {
    "frame": {
-    "x": 2,
-    "y": 1077,
+    "x": 1018,
+    "y": 1015,
     "w": 143,
-    "h": 246
+    "h": 247
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 378,
-    "y": 185,
+    "x": 366,
+    "y": 184,
     "w": 143,
-    "h": 246
+    "h": 247
    },
    "sourceSize": {
     "w": 820,
@@ -962,17 +962,17 @@
   },
   "cuirassier_attack_06": {
    "frame": {
-    "x": 2604,
-    "y": 418,
-    "w": 324,
+    "x": 1824,
+    "y": 329,
+    "w": 327,
     "h": 320
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 370,
-    "y": 204,
-    "w": 324,
+    "x": 353,
+    "y": 203,
+    "w": 327,
     "h": 320
    },
    "sourceSize": {
@@ -986,18 +986,18 @@
   },
   "cuirassier_attack_06_team": {
    "frame": {
-    "x": 1888,
-    "y": 1327,
+    "x": 3559,
+    "y": 2,
     "w": 170,
-    "h": 208
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 407,
-    "y": 239,
+    "x": 390,
+    "y": 238,
     "w": 170,
-    "h": 208
+    "h": 209
    },
    "sourceSize": {
     "w": 820,
@@ -1010,18 +1010,18 @@
   },
   "cuirassier_attack_07": {
    "frame": {
-    "x": 2291,
-    "y": 754,
-    "w": 237,
-    "h": 298
+    "x": 2427,
+    "y": 633,
+    "w": 239,
+    "h": 301
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 390,
-    "y": 234,
-    "w": 237,
-    "h": 298
+    "x": 371,
+    "y": 230,
+    "w": 239,
+    "h": 301
    },
    "sourceSize": {
     "w": 820,
@@ -1034,18 +1034,18 @@
   },
   "cuirassier_attack_07_team": {
    "frame": {
-    "x": 311,
-    "y": 1327,
-    "w": 148,
-    "h": 226
+    "x": 3211,
+    "y": 2,
+    "w": 147,
+    "h": 227
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 410,
-    "y": 224,
-    "w": 148,
-    "h": 226
+    "x": 394,
+    "y": 223,
+    "w": 147,
+    "h": 227
    },
    "sourceSize": {
     "w": 820,
@@ -1058,18 +1058,18 @@
   },
   "cuirassier_attack_08": {
    "frame": {
-    "x": 1705,
-    "y": 754,
+    "x": 2415,
+    "y": 319,
     "w": 273,
-    "h": 307
+    "h": 310
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 369,
-    "y": 223,
+    "x": 362,
+    "y": 220,
     "w": 273,
-    "h": 307
+    "h": 310
    },
    "sourceSize": {
     "w": 820,
@@ -1082,18 +1082,18 @@
   },
   "cuirassier_attack_08_team": {
    "frame": {
-    "x": 1814,
-    "y": 1077,
+    "x": 2844,
+    "y": 241,
     "w": 131,
-    "h": 234
+    "h": 235
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 383,
+    "x": 376,
     "y": 212,
     "w": 131,
-    "h": 234
+    "h": 235
    },
    "sourceSize": {
     "w": 820,
@@ -1106,7 +1106,7 @@
   },
   "cuirassier_attack_09": {
    "frame": {
-    "x": 2017,
+    "x": 633,
     "y": 2,
     "w": 251,
     "h": 335
@@ -1130,18 +1130,18 @@
   },
   "cuirassier_attack_09_team": {
    "frame": {
-    "x": 2095,
-    "y": 1077,
-    "w": 142,
-    "h": 233
+    "x": 2910,
+    "y": 789,
+    "w": 141,
+    "h": 234
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 359,
+    "x": 360,
     "y": 212,
-    "w": 142,
-    "h": 233
+    "w": 141,
+    "h": 234
    },
    "sourceSize": {
     "w": 820,
@@ -1154,17 +1154,17 @@
   },
   "cuirassier_hit_00": {
    "frame": {
-    "x": 1029,
-    "y": 418,
-    "w": 263,
+    "x": 1303,
+    "y": 338,
+    "w": 265,
     "h": 329
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 335,
+    "x": 333,
     "y": 198,
-    "w": 263,
+    "w": 265,
     "h": 329
    },
    "sourceSize": {
@@ -1178,10 +1178,10 @@
   },
   "cuirassier_hit_00_team": {
    "frame": {
-    "x": 1176,
-    "y": 1327,
+    "x": 3299,
+    "y": 233,
     "w": 169,
-    "h": 220
+    "h": 221
    },
    "rotated": false,
    "trimmed": true,
@@ -1189,7 +1189,7 @@
     "x": 324,
     "y": 228,
     "w": 169,
-    "h": 220
+    "h": 221
    },
    "sourceSize": {
     "w": 820,
@@ -1202,17 +1202,17 @@
   },
   "cuirassier_hit_01": {
    "frame": {
-    "x": 1557,
-    "y": 418,
-    "w": 275,
+    "x": 1359,
+    "y": 671,
+    "w": 277,
     "h": 326
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 325,
+    "x": 323,
     "y": 201,
-    "w": 275,
+    "w": 277,
     "h": 326
    },
    "sourceSize": {
@@ -1226,8 +1226,8 @@
   },
   "cuirassier_hit_01_team": {
    "frame": {
-    "x": 1546,
-    "y": 1327,
+    "x": 3472,
+    "y": 226,
     "w": 178,
     "h": 215
    },
@@ -1250,17 +1250,17 @@
   },
   "cuirassier_hit_02": {
    "frame": {
-    "x": 516,
-    "y": 418,
-    "w": 250,
+    "x": 1047,
+    "y": 338,
+    "w": 252,
     "h": 332
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 347,
+    "x": 345,
     "y": 196,
-    "w": 250,
+    "w": 252,
     "h": 332
    },
    "sourceSize": {
@@ -1274,10 +1274,10 @@
   },
   "cuirassier_hit_02_team": {
    "frame": {
-    "x": 147,
-    "y": 1327,
+    "x": 3135,
+    "y": 236,
     "w": 160,
-    "h": 227
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
@@ -1285,7 +1285,7 @@
     "x": 336,
     "y": 220,
     "w": 160,
-    "h": 227
+    "h": 228
    },
    "sourceSize": {
     "w": 820,
@@ -1298,8 +1298,8 @@
   },
   "cuirassier_hit_03": {
    "frame": {
-    "x": 2,
-    "y": 418,
+    "x": 840,
+    "y": 679,
     "w": 256,
     "h": 332
    },
@@ -1322,10 +1322,10 @@
   },
   "cuirassier_hit_03_team": {
    "frame": {
-    "x": 720,
-    "y": 1077,
+    "x": 1311,
+    "y": 1009,
     "w": 137,
-    "h": 236
+    "h": 237
    },
    "rotated": false,
    "trimmed": true,
@@ -1333,7 +1333,7 @@
     "x": 361,
     "y": 209,
     "w": 137,
-    "h": 236
+    "h": 237
    },
    "sourceSize": {
     "w": 820,
@@ -1346,8 +1346,8 @@
   },
   "cuirassier_hit_04": {
    "frame": {
-    "x": 2526,
-    "y": 2,
+    "x": 792,
+    "y": 341,
     "w": 251,
     "h": 334
    },
@@ -1370,10 +1370,10 @@
   },
   "cuirassier_hit_04_team": {
    "frame": {
-    "x": 1230,
-    "y": 1077,
+    "x": 2692,
+    "y": 311,
     "w": 148,
-    "h": 234
+    "h": 235
    },
    "rotated": false,
    "trimmed": true,
@@ -1381,7 +1381,7 @@
     "x": 350,
     "y": 211,
     "w": 148,
-    "h": 234
+    "h": 235
    },
    "sourceSize": {
     "w": 820,
@@ -1394,8 +1394,8 @@
   },
   "cuirassier_die_00": {
    "frame": {
-    "x": 548,
-    "y": 754,
+    "x": 2155,
+    "y": 325,
     "w": 256,
     "h": 316
    },
@@ -1418,10 +1418,10 @@
   },
   "cuirassier_die_00_team": {
    "frame": {
-    "x": 1728,
-    "y": 1327,
+    "x": 3437,
+    "y": 458,
     "w": 156,
-    "h": 215
+    "h": 216
    },
    "rotated": false,
    "trimmed": true,
@@ -1429,7 +1429,7 @@
     "x": 336,
     "y": 233,
     "w": 156,
-    "h": 215
+    "h": 216
    },
    "sourceSize": {
     "w": 820,
@@ -1442,17 +1442,17 @@
   },
   "cuirassier_die_01": {
    "frame": {
-    "x": 366,
-    "y": 2,
-    "w": 276,
+    "x": 2,
+    "y": 418,
+    "w": 278,
     "h": 384
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 222,
+    "x": 220,
     "y": 142,
-    "w": 276,
+    "w": 278,
     "h": 384
    },
    "sourceSize": {
@@ -1466,18 +1466,18 @@
   },
   "cuirassier_die_01_team": {
    "frame": {
-    "x": 861,
-    "y": 1077,
-    "w": 222,
-    "h": 235
+    "x": 2539,
+    "y": 938,
+    "w": 223,
+    "h": 236
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 211,
     "y": 206,
-    "w": 222,
-    "h": 235
+    "w": 223,
+    "h": 236
    },
    "sourceSize": {
     "w": 820,
@@ -1490,8 +1490,8 @@
   },
   "cuirassier_die_02": {
    "frame": {
-    "x": 1333,
-    "y": 754,
+    "x": 2167,
+    "y": 961,
     "w": 368,
     "h": 311
    },
@@ -1514,8 +1514,8 @@
   },
   "cuirassier_die_02_team": {
    "frame": {
-    "x": 925,
-    "y": 1559,
+    "x": 3225,
+    "y": 934,
     "w": 293,
     "h": 149
    },
@@ -1538,18 +1538,18 @@
   },
   "cuirassier_die_03": {
    "frame": {
-    "x": 819,
-    "y": 1327,
+    "x": 3206,
+    "y": 707,
     "w": 353,
-    "h": 220
+    "h": 223
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 304,
+    "y": 301,
     "w": 353,
-    "h": 220
+    "h": 223
    },
    "sourceSize": {
     "w": 820,
@@ -1562,10 +1562,10 @@
   },
   "cuirassier_die_03_team": {
    "frame": {
-    "x": 1222,
-    "y": 1559,
+    "x": 334,
+    "y": 1110,
     "w": 165,
-    "h": 149
+    "h": 150
    },
    "rotated": false,
    "trimmed": true,
@@ -1573,7 +1573,7 @@
     "x": 325,
     "y": 293,
     "w": 165,
-    "h": 149
+    "h": 150
    },
    "sourceSize": {
     "w": 820,
@@ -1586,8 +1586,8 @@
   },
   "cuirassier_die_04": {
    "frame": {
-    "x": 2,
-    "y": 1559,
+    "x": 3563,
+    "y": 817,
     "w": 478,
     "h": 177
    },
@@ -1610,10 +1610,10 @@
   },
   "cuirassier_die_04_team": {
    "frame": {
-    "x": 1747,
-    "y": 1559,
+    "x": 3225,
+    "y": 1087,
     "w": 371,
-    "h": 134
+    "h": 135
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 145,
     "y": 392,
     "w": 371,
-    "h": 134
+    "h": 135
    },
    "sourceSize": {
     "w": 820,
@@ -1634,17 +1634,17 @@
   },
   "cuirassier_die_05": {
    "frame": {
-    "x": 2520,
-    "y": 1327,
-    "w": 465,
+    "x": 3597,
+    "y": 633,
+    "w": 467,
     "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 156,
+    "x": 154,
     "y": 394,
-    "w": 465,
+    "w": 467,
     "h": 180
    },
    "sourceSize": {
@@ -1658,8 +1658,8 @@
   },
   "cuirassier_die_05_team": {
    "frame": {
-    "x": 2465,
-    "y": 1559,
+    "x": 3600,
+    "y": 1135,
     "w": 362,
     "h": 129
    },
@@ -1682,17 +1682,17 @@
   },
   "cuirassier_die_06": {
    "frame": {
-    "x": 2062,
-    "y": 1327,
-    "w": 454,
+    "x": 3597,
+    "y": 445,
+    "w": 456,
     "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 160,
+    "x": 158,
     "y": 391,
-    "w": 454,
+    "w": 456,
     "h": 184
    },
    "sourceSize": {
@@ -1706,8 +1706,8 @@
   },
   "cuirassier_die_06_team": {
    "frame": {
-    "x": 1391,
-    "y": 1559,
+    "x": 3733,
+    "y": 2,
     "w": 352,
     "h": 135
    },
@@ -1730,17 +1730,17 @@
   },
   "cuirassier_die_07": {
    "frame": {
-    "x": 484,
-    "y": 1559,
-    "w": 437,
+    "x": 3654,
+    "y": 215,
+    "w": 438,
     "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 168,
+    "x": 167,
     "y": 403,
-    "w": 437,
+    "w": 438,
     "h": 171
    },
    "sourceSize": {
@@ -1754,10 +1754,10 @@
   },
   "cuirassier_die_07_team": {
    "frame": {
-    "x": 2122,
-    "y": 1559,
+    "x": 3600,
+    "y": 998,
     "w": 339,
-    "h": 134
+    "h": 133
    },
    "rotated": false,
    "trimmed": true,
@@ -1765,7 +1765,7 @@
     "x": 158,
     "y": 412,
     "w": 339,
-    "h": 134
+    "h": 133
    },
    "sourceSize": {
     "w": 820,
@@ -1891,8 +1891,8 @@
   "image": "cuirassier.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 3072,
-   "h": 1740
+   "w": 4096,
+   "h": 1276
   },
   "scale": "3",
   "ageborn": {
@@ -2124,24 +2124,24 @@
         102.8
        ],
        [
-        -25.9,
-        159.0
+        -27.9,
+        159.1
        ],
        [
-        74.8,
-        121.3
+        69.8,
+        121.5
        ],
        [
-        78.5,
-        15.0
+        71.6,
+        15.3
        ],
        [
-        45.8,
-        0.9
+        38.9,
+        1.2
        ],
        [
-        75.0,
-        76.1
+        72.0,
+        76.3
        ],
        [
         17.6,

@@ -23,9 +23,12 @@ Animation (ANIM_SPEC G1 sprint, appendix B for a club: overhead bonk, side sweep
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge
@@ -42,13 +45,31 @@ NO_RETIME = True
 
 SKIN = "#EDC6A2"
 HAIR = "#5E4D40"
+HAIR_LT = "#7E6A5A"      # W2: lighter tufts in the hair (two-tone hair, W1 review)
 TROUSER = "#E6DCC4"
-SHOE = "#2E2A2A"
+SHOE = "#3B3432"         # W2: a lit side that separates from the outline (was #2E2A2A)
 CASK = "#6E5E50"
 CASK_DK = "#46372C"
-IRON = "#3E3B3A"
+IRON = "#55504C"         # W2: a lit side on the cask's hoops (was #3E3B3A)
 SCOOP = "#6F7780"
 FRECKLE = "#B8957E"
+ROPE = "#B8A27E"
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Powder Monkey is the stocking cap, the shirt's back half, the cask and the scoop, so the
+# detail goes there: a short team waistcoat over the back of the striped shirt with team-dark piping (a team surface
+# for his marks), team-dark rings round the cap's flop and a team-dark neckerchief (the team zone in two tones),
+# lighter tufts in the hair, lighter hoops on the cask and lighter shoes (dark materials need a lit side).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.93
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
+MATERIAL_KINDS = {SKIN: "skin", _FAR(SKIN): "skin", HAIR: "fur", HAIR_LT: "fur", TROUSER: "cloth",
+                  _FAR(TROUSER): "cloth", "#D8CDB2": "cloth", "#ADA48E": "cloth", SHOE: "leather",
+                  _FAR(SHOE): "leather", CASK: "wood", CASK_DK: "wood", IRON: "iron", SCOOP: "iron",
+                  B.CREAM: "cloth", ROPE: "cloth", B.WOOD: "wood", "team": "cloth"}
+SHIRT = ((0, 0, 27.6), (10.2, 9.4, 10.4))   # the shirt's blob (centre, radii)
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand: scoop
 SC = 30.0                            # scoop length from the hand
@@ -91,11 +112,17 @@ def build(rig):
     rig.part("torso", shirt, B.CREAM)
     g = G.stripes(sf, Geo(), (31.4, 27.0, 22.6), -9.0, 12.0, 2.6)
     rig.part("torso", g, team=True, highlight=False, outline=0)
+    # W2: a short team waistcoat over the back half of the shirt (his marks' team surface), team-dark piping
+    g = KD.shell(*SHIRT, p=2.3, taper=(1.05, 0.95), grow=0.35,
+                 keep=(((1.6, 0, 0), (1, 0, 0)), ((0, 0, 36.6), (0, 0, 1)), ((0, 0, 21.0), (0, 0, -1))))
+    rig.part("torso", g, team=True)
+    g = KD.stripe_x(*SHIRT, -0.6, 1.8, z0=21.0, z1=36.6, p=2.3, taper=(1.05, 0.95), grow=0.6)
+    look.team_part(rig, "torso", g)
     g = Geo().blob((0.4, 0, 19.4), (10.6, 9.8, 1.6), p=3.0)
-    rig.part("torso", g, "#B8A27E", finish="hair")                  # rope belt
+    rig.part("torso", g, ROPE, finish="hair")                        # rope belt
     g = Geo().blob((3.0, 0, 35.0), (7.4, 8.8, 3.0), p=2.4)           # neckerchief
     g.blob((8.6, -2.0, 31.0), (2.4, 3.0, 3.6), p=2.2)
-    rig.part("torso", g, team=True)
+    look.team_part(rig, "torso", g)                                  # W2: team-dark
     # team sleeves
     for s in ("r", "l"):
         B.arm_parts(rig, s, team_sleeve=True, hand=SKIN, r0=4.0, r1=3.5, fist=4.0)
@@ -115,6 +142,13 @@ def build(rig):
                  mouth_dz=-7.4, mouth_x=13.6, mouth_shape="smile", eye_at=(14.2, 48.2), mark_r=4.5)
     rig.part("head", head, SKIN)
     rig.part("head", hair, HAIR, finish="hair")
+    refs = [Geo().blob((-6.0, 0, 46.0), (6.2, 11.0, 7.2), p=2.2)]
+    hf = F.Face(rig, "head", refs)
+    g = Geo()                                  # W2: lighter rounded tufts (two-tone hair, W1 review)
+    for (x, z), r in (((-8.4, 49.6), (2.4, 1.6, 2.2)), ((-10.2, 44.6), (2.2, 1.6, 2.4)),
+                      ((-5.6, 41.6), (2.2, 1.6, 2.0))):
+        g.blob(tuple(hf.hit(x, z)), r, p=2.2)
+    rig.part("head", g, HAIR_LT, finish="hair", outline=0)
     g = Geo()
     for dx, dz in ((0.0, 0.0), (1.6, 0.8), (1.2, -1.2), (-1.0, -0.6)):
         c = fc.hit(10.2 + dx, 44.0 + dz)
@@ -129,6 +163,15 @@ def build(rig):
     rig.secondary("cap", "head", (-6.0, 0, 58.0), (-15.0, 0, 52.0), max_deg=18, gain=1.4)
     g = Geo().capsule((-4.0, 0, 58.0), (-11.0, 0, 56.0), 6.0, 4.2).capsule((-11.0, 0, 56.0), (-15.5, 0, 51.0), 4.2, 2.4)
     rig.part("cap", g, team=True)
+    g = Geo()                                  # W2: team-dark rings round the flop (the cap in two tones)
+    for p0, p1, r0, r1, t in (((-4.0, 0, 58.0), (-11.0, 0, 56.0), 6.0, 4.2, 0.6),
+                              ((-11.0, 0, 56.0), (-15.5, 0, 51.0), 4.2, 2.4, 0.45)):
+        c = tuple(a + (b - a) * t for a, b in zip(p0, p1))
+        d = tuple(b - a for a, b in zip(p0, p1))
+        rr = r0 + (r1 - r0) * t + 0.25
+        g.lathe([(rr - 0.2, -1.0), (rr, -0.6), (rr, 0.6), (rr - 0.2, 1.0)], c,
+                tuple(a + b for a, b in zip(c, d)), segs=20)
+    look.team_part(rig, "cap", g, outline=0)
     g = Geo().sphere((-16.6, 0, 49.4), 2.8, cuts=4)
     rig.part("cap", g, B.CREAM, finish="hair", outline=0.6)
 
@@ -156,6 +199,18 @@ def build(rig):
     g = Geo().star((CUP[0] + 1.0, hy - 2.0, CUP[2] + 2.0), 4.4, 1.6, 1.0, points=6)
     rig.part("spark", g, glow=B.FIRE, outline=0)
     rig.track("bladeTip", "hand_r", CUP)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The waistcoat's back (the
+    largest team surface the scoop arm leaves clear), the stocking cap, the near trouser leg (the cask hides behind
+    him); a torn strip from the shirt's cream tail."""
+    rig.damage_spot_at("vest", "torso", -5.0, 29.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("cap", "head", -3.0, 60.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("trousers", "thigh_r", -1.0, 16.0, 5.0, "cloth", fill=TROUSER)
+    rig.damage_spot_at("tail", "torso", -6.0, 17.0, 7.0, "cloth", kind="strip", fill=B.CREAM)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -289,14 +344,16 @@ def _fx(seed, ground=18.0, point=CUP, a0=-80.0):
 
 
 def _attack_clip():
-    ov = {4: [dict(SLASH, **{"from": 3})], 5: [dict(SLASH, **{"from": 3, "t0": 0.35})],
+    ov = {4: [dict(SLASH, **{"from": 3, "band": 0.35, "lines": 4})],     # W2: hollow smears (the floors per frame)
+          5: [dict(SLASH, **{"from": 3, "t0": 0.35, "band": 0.35, "lines": 4})],
           6: [dict(SLASH, **{"from": 5, "t1": 1.0, "lines": 2})] + _fx(51)}
     return M.clip("attack", [_a_pose(f) for f in range(10)], M.SMALL_MELEE_MS, impact=M.SMALL_MELEE_IMPACT,
                   smear=4, overlays=ov, sequence=list(range(10)) + [0], extra={"holdStep": 3})
 
 
 def _attack_b():
-    ov = {4: [dict(SLASH, **{"from": 3})], 5: [dict(SLASH, **{"from": 3, "t0": 0.35})],
+    ov = {4: [dict(SLASH, **{"from": 3, "band": 0.35, "lines": 4})],
+          5: [dict(SLASH, **{"from": 3, "t0": 0.35, "band": 0.35, "lines": 4})],
           6: [dict(SLASH, **{"from": 5, "t1": 1.0, "lines": 2})] + _fx(52, a0=-40.0)}
     return M.clip("attack_b", [_b_pose(f) for f in range(10)], M.SMALL_MELEE_MS, impact=M.SMALL_MELEE_IMPACT,
                   smear=4, overlays=ov, sequence=list(range(10)) + [0], reuse={0: ("attack", 0), 9: ("attack", 9)},
