@@ -5,12 +5,5 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
-  },
-  "dv13-devlog-13-the-ship-that-attacks-after-it-dies": {
-    "length_s": 21.4,
-    "format": "devlog",
-    "hook_type": "story",
-    "experiment": "indie-angle",
-    "arm": "devlog"
   }
 }

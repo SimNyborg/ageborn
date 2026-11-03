@@ -661,6 +661,21 @@
    "hook_type": "question",
    "experiment": "indie-angle",
    "arm": "devlog"
+  },
+  {
+   "id": "18170041123471224",
+   "permalink": "https://www.instagram.com/reel/DfSjRebgcn_/",
+   "timestamp": "2026-11-03T18:42:48+0000",
+   "name": "dv13-devlog-13-the-ship-that-attacks-after-it-dies",
+   "kind": "reel",
+   "pillar": "devlog",
+   "hook": "Devlog #13: the ship that attacks after it dies (strike lands after death)",
+   "trial": false,
+   "length_s": 21.4,
+   "format": "devlog",
+   "hook_type": "story",
+   "experiment": "indie-angle",
+   "arm": "devlog"
   }
  ]
 }

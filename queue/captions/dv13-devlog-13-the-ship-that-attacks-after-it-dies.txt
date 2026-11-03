@@ -1,4 +1,0 @@
-Devlog #13: the ship that attacks after it dies 🛸💥
-My Ion Rangers shoot down the Mothership. Fight over? Not quite. Just before it died, the ship called in a strike, and a second later it lands on all four of them. Should a dead unit's last attack still count? 👇
-
-#gamedev #indiedev #indiegame #devlog #gamedesign
