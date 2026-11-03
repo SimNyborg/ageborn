@@ -113,13 +113,19 @@ def build(rig):
         g.lathe([(4.2, 0), (4.5, 0.4), (4.5, 1.6), (4.2, 2.0)], (-9.5 - 4.0 * t, 5.0, z), (-9.5 - 4.0 * t - 0.36, 5.0, z + 2.0), segs=14)
     rig.part("torso", g, BZ.AGED, finish="metal", outline=0.5)        # aged bronze bands (W1: were leather)
 
-    # linen tunic, team sash and hem; a plum clavus down the tunic front (3 lu)
+    # linen tunic, team sash, a team skirt with a team-dark band; a plum clavus down the tunic front (3 lu)
     tunic = Geo().blob((0.2, 0, 28.0), (10.2, 9.4, 11.4), p=2.4, taper=(1.1, 0.92))
     tf = F.Face(rig, "torso", [tunic])
     g = Geo()
     tf.stroke(g, tf.hit(4.0, 29.0), [(0.5, 6.0), (-0.3, -5.6)], 3.0, 0.35)
     rig.part("torso", g, BZ.PLUM, outline=0)
-    KB.tunic(rig, team=False, color=BZ.LINEN, hem_color=None, belt=None)
+    KB.tunic(rig, team=False, color=BZ.LINEN, hem_color=None, belt=None, skirt=False)
+    # the skirt team-dyed (W1 review nit 2): the team zone reads below the belt as well as on the cap, the damage
+    # marks get a team surface of their own, and the pale linen no longer fills the whole figure (its edges were most
+    # of the highlight share's 0.102); the same skirt as kit_bronze.tunic's, on the same follow-through joint
+    rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
+    g = Geo().blob((0.6, 0, 14.6), (11.6, 10.6, 5.6), p=2.4, taper=(1.16, 0.92))
+    rig.part("hem", g, team=True)
     g = Geo().blob((0.6, 0, 10.6), (11.8, 10.8, 1.8), p=3.0)
     rig.part("hem", g, team=True, outline=0.6)
     g = Geo().blob((0.6, 0, 13.6), (12.25, 11.25, 1.35), p=3.0)       # a team-dark band over it (two tones)
@@ -156,8 +162,8 @@ def build(rig):
     g = Geo().capsule((7.6, 0, 64.0), (9.6, 0, 63.1), 3.2, 2.7)          # the cap's curl in team-dark (two tones)
     g.capsule((9.6, 0, 63.1), (11.6, 0, 59.3), 2.7, 1.7)
     look.team_part(rig, "head", g, outline=0)
-    g = Geo().blob((0.2, 0, 50.6), (12.6, 12.0, 1.6), p=2.8)
-    rig.part("head", g, BZ.SAND, outline=0.6)
+    g = Geo().blob((0.2, 0, 50.6), (12.6, 12.0, 1.6), p=2.8)        # a leather band round the cap's brim
+    rig.part("head", g, LEATHER, outline=0.6)
     KB.lambda_mark(rig, "head", (-1.0, -12.2, 55.0), size=0.9)
     rig.secondary("tail", "head", (-9.0, 0, 50.0), (-14.0, 0, 40.0), max_deg=14, gain=1.2)
     g = Geo().blob((-8.4, 0, 46.0), (3.4, 8.6, 5.2), p=2.4)          # neck flap of the cap
@@ -185,7 +191,7 @@ def build(rig):
         r = 1.0 + 1.6 * (1 - abs(zc) / BOW_HALF) + 0.35
         g.capsule((hx + _bow_x(zc - 1.0), hy, hz + zc - 1.0), (hx + _bow_x(zc + 1.0), hy, hz + zc + 1.0), r,
                   segs=10, rings=2)
-    rig.part("hand_r", g, DARK_LEATHER, outline=0.4)
+    rig.part("hand_r", g, LEATHER, outline=0.4)          # (W1 review nit 2: mid leather, not dark: less glare)
     g = Geo().capsule((hx + 0.2, hy, hz - 4.0), (hx + 0.2, hy, hz + 4.0), 2.8)
     rig.part("hand_r", g, GRIP)
     g = Geo()
@@ -235,11 +241,12 @@ def build(rig):
 
 
 def _damage_spots(rig):
-    """Damage spots (queue item 40 section 3.3, Bronze soldier; never on the face or skin): the linen tunic
-    behind the bow arm (the arm and the bow cross its front in the idle and the walk), the linen skirt, the team
-    cap, the leather quiver; a strip torn from the team hem band."""
+    """Damage spots (queue item 40 section 3.3, Bronze soldier; never on the face or skin): the team skirt (the
+    largest team surface the bow arm leaves clear, r 8: the first mark goes there, not on the small cap above the
+    face), the linen tunic behind the bow arm (the arm and the bow cross its front in the idle and the walk), the
+    team cap, the leather quiver; a strip torn from the team hem band."""
+    rig.damage_spot_at("skirt", "hem", 5.0, 15.0, 8.0, "cloth", team=True)
     rig.damage_spot_at("tunic", "torso", -7.0, 31.0, 6.5, "cloth")
-    rig.damage_spot_at("skirt", "hem", 1.0, 16.5, 6.0, "cloth")
     rig.damage_spot_at("cap", "head", -1.0, 63.0, 5.5, "cloth", team=True)
     rig.damage_spot_at("quiver", "torso", -12.6, 36.0, 5.0, "hide", fill=LEATHER)
     rig.damage_spot_at("hem", "hem", -6.0, 11.5, 9.0, "cloth", kind="strip", team=True)

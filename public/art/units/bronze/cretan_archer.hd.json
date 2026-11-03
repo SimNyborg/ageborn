@@ -74,17 +74,17 @@
   },
   "cretan_archer_idle_01_team": {
    "frame": {
-    "x": 1532,
+    "x": 1538,
     "y": 484,
-    "w": 79,
+    "w": 80,
     "h": 154
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
+    "x": 192,
     "y": 195,
-    "w": 79,
+    "w": 80,
     "h": 154
    },
    "sourceSize": {
@@ -122,17 +122,17 @@
   },
   "cretan_archer_idle_02_team": {
    "frame": {
-    "x": 1298,
+    "x": 1311,
     "y": 329,
-    "w": 81,
+    "w": 82,
     "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 194,
+    "x": 193,
     "y": 189,
-    "w": 81,
+    "w": 82,
     "h": 158
    },
    "sourceSize": {
@@ -170,7 +170,7 @@
   },
   "cretan_archer_idle_03_team": {
    "frame": {
-    "x": 1117,
+    "x": 1121,
     "y": 340,
     "w": 85,
     "h": 161
@@ -218,7 +218,7 @@
   },
   "cretan_archer_idle_04_team": {
    "frame": {
-    "x": 1078,
+    "x": 1084,
     "y": 506,
     "w": 82,
     "h": 162
@@ -266,7 +266,7 @@
   },
   "cretan_archer_idle_05_team": {
    "frame": {
-    "x": 1360,
+    "x": 1366,
     "y": 491,
     "w": 80,
     "h": 158
@@ -362,7 +362,7 @@
   },
   "cretan_archer_walk_01_team": {
    "frame": {
-    "x": 1360,
+    "x": 1366,
     "y": 653,
     "w": 95,
     "h": 157
@@ -410,17 +410,17 @@
   },
   "cretan_archer_walk_02_team": {
    "frame": {
-    "x": 1206,
+    "x": 1210,
     "y": 335,
-    "w": 88,
+    "w": 97,
     "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 194,
+    "x": 185,
     "y": 193,
-    "w": 88,
+    "w": 97,
     "h": 159
    },
    "sourceSize": {
@@ -458,7 +458,7 @@
   },
   "cretan_archer_walk_03_team": {
    "frame": {
-    "x": 1164,
+    "x": 1170,
     "y": 505,
     "w": 95,
     "h": 160
@@ -506,7 +506,7 @@
   },
   "cretan_archer_walk_04_team": {
    "frame": {
-    "x": 1563,
+    "x": 1577,
     "y": 322,
     "w": 90,
     "h": 153
@@ -530,7 +530,7 @@
   },
   "cretan_archer_walk_05": {
    "frame": {
-    "x": 1263,
+    "x": 1265,
     "y": 2,
     "w": 135,
     "h": 158
@@ -554,7 +554,7 @@
   },
   "cretan_archer_walk_05_team": {
    "frame": {
-    "x": 1466,
+    "x": 1480,
     "y": 325,
     "w": 93,
     "h": 155
@@ -602,7 +602,7 @@
   },
   "cretan_archer_walk_06_team": {
    "frame": {
-    "x": 1263,
+    "x": 1269,
     "y": 498,
     "w": 93,
     "h": 158
@@ -650,7 +650,7 @@
   },
   "cretan_archer_walk_07_team": {
    "frame": {
-    "x": 1505,
+    "x": 1507,
     "y": 2,
     "w": 98,
     "h": 157
@@ -698,7 +698,7 @@
   },
   "cretan_archer_attack_00_team": {
    "frame": {
-    "x": 1029,
+    "x": 1033,
     "y": 340,
     "w": 84,
     "h": 162
@@ -746,9 +746,9 @@
   },
   "cretan_archer_attack_01_team": {
    "frame": {
-    "x": 987,
+    "x": 990,
     "y": 515,
-    "w": 87,
+    "w": 90,
     "h": 163
    },
    "rotated": false,
@@ -756,7 +756,7 @@
    "spriteSourceSize": {
     "x": 178,
     "y": 214,
-    "w": 87,
+    "w": 90,
     "h": 163
    },
    "sourceSize": {
@@ -794,7 +794,7 @@
   },
   "cretan_archer_attack_02_team": {
    "frame": {
-    "x": 1402,
+    "x": 1404,
     "y": 2,
     "w": 99,
     "h": 158
@@ -818,8 +818,8 @@
   },
   "cretan_archer_attack_03": {
    "frame": {
-    "x": 1615,
-    "y": 479,
+    "x": 1862,
+    "y": 2,
     "w": 176,
     "h": 149
    },
@@ -842,9 +842,9 @@
   },
   "cretan_archer_attack_03_team": {
    "frame": {
-    "x": 1743,
+    "x": 1745,
     "y": 2,
-    "w": 110,
+    "w": 113,
     "h": 150
    },
    "rotated": false,
@@ -852,7 +852,7 @@
    "spriteSourceSize": {
     "x": 150,
     "y": 228,
-    "w": 110,
+    "w": 113,
     "h": 150
    },
    "sourceSize": {
@@ -890,7 +890,7 @@
   },
   "cretan_archer_attack_04_team": {
    "frame": {
-    "x": 1459,
+    "x": 1465,
     "y": 652,
     "w": 106,
     "h": 154
@@ -940,7 +940,7 @@
    "frame": {
     "x": 893,
     "y": 526,
-    "w": 90,
+    "w": 93,
     "h": 166
    },
    "rotated": false,
@@ -948,7 +948,7 @@
    "spriteSourceSize": {
     "x": 174,
     "y": 191,
-    "w": 90,
+    "w": 93,
     "h": 166
    },
    "sourceSize": {
@@ -1034,7 +1034,7 @@
   },
   "cretan_archer_attack_07_team": {
    "frame": {
-    "x": 1444,
+    "x": 1450,
     "y": 491,
     "w": 84,
     "h": 157
@@ -1084,15 +1084,15 @@
    "frame": {
     "x": 1180,
     "y": 2,
-    "w": 79,
+    "w": 81,
     "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 188,
+    "x": 186,
     "y": 190,
-    "w": 79,
+    "w": 81,
     "h": 161
    },
    "sourceSize": {
@@ -1178,7 +1178,7 @@
   },
   "cretan_archer_hit_00_team": {
    "frame": {
-    "x": 1569,
+    "x": 1575,
     "y": 642,
     "w": 103,
     "h": 150
@@ -1276,7 +1276,7 @@
    "frame": {
     "x": 942,
     "y": 346,
-    "w": 83,
+    "w": 87,
     "h": 165
    },
    "rotated": false,
@@ -1284,7 +1284,7 @@
    "spriteSourceSize": {
     "x": 176,
     "y": 185,
-    "w": 83,
+    "w": 87,
     "h": 165
    },
    "sourceSize": {
@@ -1322,17 +1322,17 @@
   },
   "cretan_archer_hit_03_team": {
    "frame": {
-    "x": 1263,
+    "x": 1269,
     "y": 660,
-    "w": 87,
+    "w": 88,
     "h": 154
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 191,
+    "x": 190,
     "y": 197,
-    "w": 87,
+    "w": 88,
     "h": 154
    },
    "sourceSize": {
@@ -1370,7 +1370,7 @@
   },
   "cretan_archer_hit_04_team": {
    "frame": {
-    "x": 1383,
+    "x": 1397,
     "y": 329,
     "w": 79,
     "h": 158
@@ -1394,7 +1394,7 @@
   },
   "cretan_archer_die_00": {
    "frame": {
-    "x": 1607,
+    "x": 1609,
     "y": 2,
     "w": 132,
     "h": 154
@@ -1418,9 +1418,9 @@
   },
   "cretan_archer_die_00_team": {
    "frame": {
-    "x": 1657,
-    "y": 315,
-    "w": 91,
+    "x": 1622,
+    "y": 479,
+    "w": 93,
     "h": 146
    },
    "rotated": false,
@@ -1428,7 +1428,7 @@
    "spriteSourceSize": {
     "x": 167,
     "y": 202,
-    "w": 91,
+    "w": 93,
     "h": 146
    },
    "sourceSize": {
@@ -1466,8 +1466,8 @@
   },
   "cretan_archer_die_01_team": {
    "frame": {
-    "x": 1795,
-    "y": 577,
+    "x": 1821,
+    "y": 692,
     "w": 179,
     "h": 104
    },
@@ -1562,7 +1562,7 @@
   },
   "cretan_archer_die_03_team": {
    "frame": {
-    "x": 1752,
+    "x": 1671,
     "y": 315,
     "w": 133,
     "h": 144
@@ -1586,7 +1586,7 @@
   },
   "cretan_archer_die_04": {
    "frame": {
-    "x": 1078,
+    "x": 1084,
     "y": 672,
     "w": 145,
     "h": 139
@@ -1610,8 +1610,8 @@
   },
   "cretan_archer_die_04_team": {
    "frame": {
-    "x": 1889,
-    "y": 291,
+    "x": 1682,
+    "y": 629,
     "w": 135,
     "h": 120
    },
@@ -1634,8 +1634,8 @@
   },
   "cretan_archer_die_05": {
    "frame": {
-    "x": 1795,
-    "y": 463,
+    "x": 1821,
+    "y": 578,
     "w": 207,
     "h": 110
    },
@@ -1658,8 +1658,8 @@
   },
   "cretan_archer_die_05_team": {
    "frame": {
-    "x": 1676,
-    "y": 685,
+    "x": 1808,
+    "y": 291,
     "w": 171,
     "h": 87
    },
@@ -1706,8 +1706,8 @@
   },
   "cretan_archer_die_06_team": {
    "frame": {
-    "x": 1851,
-    "y": 685,
+    "x": 1884,
+    "y": 382,
     "w": 149,
     "h": 85
    },
@@ -1730,8 +1730,8 @@
   },
   "cretan_archer_die_07": {
    "frame": {
-    "x": 1857,
-    "y": 2,
+    "x": 1719,
+    "y": 463,
     "w": 161,
     "h": 111
    },

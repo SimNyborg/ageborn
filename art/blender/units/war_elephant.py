@@ -60,6 +60,9 @@ MOUTH = "#5A2E2E"
 SEAT = (21.0, 78.0)
 INNER_EAR = "#B7A39A"
 FAR_RING = "#5E5753"
+CREASE = "#5A534F"       # deep wrinkle creases on the near side (a 45-level step under the hide)
+FAR_CREASE = "#4C4642"
+SCUFF = "#B6AEA7"        # pale scuffs and old scars: the hide's wear
 
 # the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
 # of audit 5.1 / 5.2 (beasts: clumps, markings and value structure, or the hide reads as one dark mass at 1x).
@@ -71,6 +74,7 @@ DETAIL_STANDARD = True
 LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
               "top": 0.08, "top_t": 0.62, "team_core": 0.4}
 MATERIAL_KINDS = {HIDE: "hide", HIDE_DK: "hide", HIDE_LT: "hide", INNER_EAR: "hide", FAR_RING: "hide",
+                  CREASE: "hide", FAR_CREASE: "hide", SCUFF: "hide",
                   NAIL: "bone", IVORY: "bone", B.SAND: "cloth", B.SAND_LT: "cloth", B.WOOD: "wood",
                   B.WOOD_DK: "wood", B.BRONZE: "bronze", B.BRONZE_HI: "bronze", B.AGED: "bronze", B.VERD: "bronze",
                   B.PLUM_DK: "wood", B.LEATHER_DK: "leather", B.SKIN_DK: "skin", "team": "cloth"}
@@ -87,19 +91,26 @@ def _leg(rig, name, p0, p1, near):
     g = Geo().capsule(p1, (x1 + 0.4, y, 5.0), 7.6, 7.4)
     g.lathe([(8.4, 0), (8.2, 1.8), (7.6, 4.6), (0, 5.4)], (x1 + 0.6, y, 0.2), (x1 + 0.6, y, 5.6), segs=16)
     rig.part(f"leg_{name}2", g, col)
-    g = Geo()                                                     # wrinkle rings at knee and ankle
-    for z in (z1 + 1.5, z1 - 1.5, 9.0, 15.5):
-        g.lathe([(0, 0), (7.9, 0.2), (7.9, 0.8), (0, 1.0)], (x1 + 0.4, y, z), (x1 + 0.4, y, z + 1), segs=14)
-    rig.part(f"leg_{name}2", g, HIDE_DK if near else FAR_RING, outline=0)
+    g = Geo()       # wrinkle bands at knee and ankle (W1 review nit 6: 1.7 lu deep creases, not 1 lu hairlines)
+    for z in (z1 + 1.9, z1 - 1.9, 8.6, 12.4, 16.2):
+        g.lathe([(0, 0), (8.0, 0.2), (8.0, 1.5), (0, 1.7)], (x1 + 0.4, y, z - 0.35), (x1 + 0.4, y, z + 0.65),
+                segs=14)
+    rig.part(f"leg_{name}2", g, CREASE if near else FAR_CREASE, outline=0)
     g = Geo()                                                     # and up the thigh (W1: value structure)
     x0, _, z0 = p0
     for t in (0.42, 0.68):
         z = z0 + (z1 - z0) * t
-        r = 9.0 + (7.6 - 9.0) * t + 0.3
+        r = 9.0 + (7.6 - 9.0) * t + 0.35
         x = x0 + (x1 - x0) * t
-        g.lathe([(0, 0), (r, 0.2), (r, 0.8), (0, 1.0)], (x, y, z), (x, y, z + 1), segs=14)
-    rig.part(f"leg_{name}", g, HIDE_DK if near else FAR_RING, outline=0)
-    if near:
+        g.lathe([(0, 0), (r, 0.2), (r, 1.3), (0, 1.5)], (x, y, z - 0.25), (x, y, z + 0.75), segs=14)
+    rig.part(f"leg_{name}", g, CREASE if near else FAR_CREASE, outline=0)
+    if near:      # the hide's wear: pale scuffs across the near thigh and shin (an old warhorse of a beast)
+        x0, _, z0 = p0
+        ref = Geo().capsule(p0, p1, 9.0, 7.6)
+        KD.surface_line(rig, f"leg_{name}", ref, [(x0 + 3.4, z0 - 6.0), (x0 + 0.6, z0 - 10.4)], 0.85, SCUFF)
+        KD.surface_line(rig, f"leg_{name}", ref, [(x0 + 4.6, z0 - 12.6), (x0 + 2.6, z0 - 15.2)], 0.85, SCUFF)
+        ref = Geo().capsule(p1, (x1 + 0.4, y, 5.0), 7.6, 7.4)
+        KD.surface_line(rig, f"leg_{name}2", ref, [(x1 + 4.0, 19.6), (x1 + 1.4, 18.0)], 0.85, SCUFF)
         g = Geo()
         for dx in (-3.4, 0.0, 3.4):
             g.blob((x1 + 5.0 + dx * 0.4, y - 7.2 + abs(dx) * 0.3, 2.2), (1.9, 1.0, 1.7), p=2.2)
@@ -162,7 +173,12 @@ def build(rig):
         ref = Geo()
         for c, r, p in BODY:
             ref.blob(c, r, p=p)
-        KD.surface_line(rig, "trunk", ref, list(pts), 1.0, HIDE_DK)
+        KD.surface_line(rig, "trunk", ref, list(pts), 1.3, CREASE)
+    for pts in (((-4.0, 45.0), (-7.4, 41.4)), ((8.0, 44.6), (10.6, 41.0))):          # scuffs on the flank
+        ref = Geo()
+        for c, r, p in BODY:
+            ref.blob(c, r, p=p)
+        KD.surface_line(rig, "trunk", ref, list(pts), 0.85, SCUFF)
     # team caparison over the back: a cloth with sandstone tassels and a lambda
     g = Geo().blob((-2, 0, 64), (28.6, 18.6, 16.6), p=3.0, taper=(1.02, 0.95))
     g.clip((0, 0, 47.0), (0, 0, -1))
@@ -220,7 +236,7 @@ def build(rig):
     g = Geo()                                                     # forehead wrinkles
     for z in (74.0, 70.5):
         g.capsule((44.5, -5.0, z), (46.0, 5.0, z), 0.7)
-    rig.part("head", g, HIDE_DK, outline=0)
+    rig.part("head", g, CREASE, outline=0)
     for pts in (((40.0, 78.6), (44.0, 79.4), (48.0, 77.4)), ((41.0, 64.6), (45.0, 63.8), (48.4, 65.4))):
         ref = Geo().blob((37, 0, 69), (12, 12, 13.5), p=2.25, taper=(1.05, 0.9))     # brow and cheek folds
         ref.blob((44, 0, 60), (7.5, 8.5, 9), p=2.2)
@@ -233,9 +249,9 @@ def build(rig):
     g = Geo().blob((29.0, -14.6, 66.0), (7.6, 1.4, 9.6), p=2.2, rot=(8, 6, 0))
     rig.part("ear", g, INNER_EAR, outline=0.4)                    # pink-grey inner ear
     for pts in (((33.0, 71.0), (29.0, 72.5), (25.0, 71.0)), ((33.5, 67.0), (28.5, 65.5), (24.0, 62.5)),
-                ((32.5, 62.5), (29.5, 59.5), (27.0, 58.0))):       # veins across it
-        ref = Geo().blob((29.0, -14.6, 66.0), (7.6, 1.4, 9.6), p=2.2, rot=(8, 6, 0))
-        KD.surface_line(rig, "ear", ref, list(pts), 0.8, HIDE_DK)
+                ((32.5, 62.5), (29.5, 59.5), (27.0, 58.0)), ((32.0, 73.4), (29.5, 74.2), (26.6, 73.4))):
+        ref = Geo().blob((29.0, -14.6, 66.0), (7.6, 1.4, 9.6), p=2.2, rot=(8, 6, 0))      # veins across it
+        KD.surface_line(rig, "ear", ref, list(pts), 0.9, CREASE)
     rig.joint("brow", "head", (43, -9, 74))
     g = Geo().capsule((40.5, -10.6, 75.6), (46.0, -7.6, 73.4), 1.8, 1.4)
     rig.part("brow", g, HIDE_DK, outline=0.6)
@@ -270,8 +286,9 @@ def build(rig):
                          ("trunk3", ((49.6, 22.5, 3.7), (50.4, 18.5, 3.4)))):
         g = Geo()
         for x, z, r in rings:
-            g.lathe([(0, 0), (r, 0.2), (r, 0.8), (0, 1.0)], (x, 0, z), (x + 0.15, 0, z + 1), segs=14)
-        rig.part(joint, g, HIDE_DK, outline=0)
+            g.lathe([(0, 0), (r + 0.1, 0.2), (r + 0.1, 1.2), (0, 1.4)], (x, 0, z - 0.2), (x + 0.15, 0, z + 0.8),
+                    segs=14)
+        rig.part(joint, g, CREASE, outline=0)
     rig.track("trunkTip", "trunk3", (56.0, 0.0, 13.0))
     # tail
     rig.secondary("tail", "trunk", (-30, 0, 62), (-35, 0, 40), max_deg=14, gain=1.1)
