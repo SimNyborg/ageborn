@@ -574,6 +574,23 @@ def _aimed_share(d, prefix):
     return aimed / tot if tot else 0.0
 
 
+def _pose_share(d, prefix):
+    """The share of a sheet's packed frame area taken by the signature and formation poses of items 51/52
+    (`<pose>_02`, ..._team; pipeline.POSE_CLIPS): budgeted apart from the +2% like the aimed variants and reported
+    as their own `poseHdPx`, so the memory gate sees their cost."""
+    from .pipeline import POSE_CLIPS   # a local import: pipeline imports look
+    tot = pose = 0
+    for name, f in d["frames"].items():
+        area = f["frame"]["w"] * f["frame"]["h"]
+        tot += area
+        rest = name[len(prefix):] if name.startswith(prefix) else name
+        if any(f"{s}_" in rest for s in AIMED_SUFFIXES):
+            continue                   # an aimed variant of a pose counts as aimed
+        if any(rest.startswith(f"{c}_") for c in POSE_CLIPS):
+            pose += area
+    return pose / tot if tot else 0.0
+
+
 def checks(mod, out_dir, file_slug, stats, clip_meta, log=print, ref_slug=None):
     """The opted-in unit's checks (see the module doc). Adds stats["look"]; raises LookCheckError on a hard
     failure after the stats are written."""
@@ -605,7 +622,7 @@ def checks(mod, out_dir, file_slug, stats, clip_meta, log=print, ref_slug=None):
             hard.append(f"planted drift {walk['plantedDriftLu']} lu > 1")
     # against the reference sheet: silhouette area per frame and HD sheet pixels
     ref_name = ref_slug or file_slug
-    new_px = ref_px = aimed_px = 0
+    new_px = ref_px = aimed_px = pose_px = 0
     ratios = []
     for suffix in (".hd", ".x.hd"):
         mine = os.path.join(out_dir, f"{file_slug}{suffix}.json")
@@ -617,9 +634,12 @@ def checks(mod, out_dir, file_slug, stats, clip_meta, log=print, ref_slug=None):
         # aimed variants (item 44) are budgeted apart from the +2% (audit 6.5): their share of the packed area
         px = ad["meta"]["size"]["w"] * ad["meta"]["size"]["h"]
         aimed = px * _aimed_share(ad, f"{file_slug}_")
+        pose = px * _pose_share(ad, f"{file_slug}_")       # items 51/52 poses, budgeted apart as well
         aimed_px += aimed
-        new_px += px - aimed
-        ref_px += bd["meta"]["size"]["w"] * bd["meta"]["size"]["h"] * (1.0 - _aimed_share(bd, f"{ref_name}_"))
+        pose_px += pose
+        new_px += px - aimed - pose
+        ref_px += bd["meta"]["size"]["w"] * bd["meta"]["size"]["h"] * (
+            1.0 - _aimed_share(bd, f"{ref_name}_") - _pose_share(bd, f"{ref_name}_"))
         pre_a = f"{file_slug}_"
         pre_b = f"{ref_name}_"
         for name in a:
@@ -639,6 +659,8 @@ def checks(mod, out_dir, file_slug, stats, clip_meta, log=print, ref_slug=None):
         res["hdSheetPxVsRef"] = round(new_px / ref_px, 4)
         if aimed_px:
             res["aimedHdPx"] = int(round(aimed_px))
+        if pose_px:
+            res["poseHdPx"] = int(round(pose_px))
         if new_px > ref_px * 1.02:           # audit 5.1 rule 11: decoded memory must not grow
             hard.append(f"HD sheet pixels {new_px / ref_px:.3f} x the reference (limit 1.02)")
     hd = os.path.join(out_dir, f"{file_slug}.hd.json")
