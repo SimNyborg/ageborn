@@ -2,8 +2,8 @@
  "frames": {
   "grenadier_attack_b_03": {
    "frame": {
-    "x": 161,
-    "y": 227,
+    "x": 2,
+    "y": 198,
     "w": 151,
     "h": 187
    },
@@ -26,8 +26,8 @@
   },
   "grenadier_attack_b_03_team": {
    "frame": {
-    "x": 206,
-    "y": 423,
+    "x": 400,
+    "y": 227,
     "w": 105,
     "h": 160
    },
@@ -51,7 +51,7 @@
   "grenadier_attack_b_04": {
    "frame": {
     "x": 2,
-    "y": 227,
+    "y": 2,
     "w": 155,
     "h": 192
    },
@@ -74,17 +74,17 @@
   },
   "grenadier_attack_b_04_team": {
    "frame": {
-    "x": 315,
-    "y": 423,
-    "w": 111,
+    "x": 281,
+    "y": 201,
+    "w": 115,
     "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 201,
     "y": 215,
-    "w": 111,
+    "w": 115,
     "h": 158
    },
    "sourceSize": {
@@ -98,7 +98,7 @@
   },
   "grenadier_attack_b_05": {
    "frame": {
-    "x": 104,
+    "x": 161,
     "y": 2,
     "w": 116,
     "h": 212
@@ -122,17 +122,17 @@
   },
   "grenadier_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 423,
-    "w": 97,
+    "x": 505,
+    "y": 2,
+    "w": 98,
     "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 208,
+    "x": 207,
     "y": 196,
-    "w": 97,
+    "w": 98,
     "h": 175
    },
    "sourceSize": {
@@ -146,7 +146,7 @@
   },
   "grenadier_attack_b_06": {
    "frame": {
-    "x": 224,
+    "x": 281,
     "y": 2,
     "w": 118,
     "h": 195
@@ -170,18 +170,18 @@
   },
   "grenadier_attack_b_06_team": {
    "frame": {
-    "x": 103,
-    "y": 423,
+    "x": 157,
+    "y": 218,
     "w": 99,
-    "h": 163
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 215,
-    "y": 209,
+    "y": 210,
     "w": 99,
-    "h": 163
+    "h": 164
    },
    "sourceSize": {
     "w": 472,
@@ -194,7 +194,7 @@
   },
   "grenadier_attack_b_07": {
    "frame": {
-    "x": 2,
+    "x": 403,
     "y": 2,
     "w": 98,
     "h": 221
@@ -218,8 +218,8 @@
   },
   "grenadier_attack_b_07_team": {
    "frame": {
-    "x": 316,
-    "y": 227,
+    "x": 509,
+    "y": 181,
     "w": 88,
     "h": 179
    },
@@ -277,8 +277,8 @@
   "image": "grenadier.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 448,
-   "h": 600
+   "w": 640,
+   "h": 392
   },
   "scale": "3",
   "ageborn": {

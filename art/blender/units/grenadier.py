@@ -24,14 +24,18 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import gait as GT  # noqa: F401
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "grenadier"
 GAIT_NAME = "biped"
@@ -46,6 +50,37 @@ HAIR = "#5C4A3E"
 BOMB = "#34363C"
 SHOE = "#2F2B2B"
 CORD = "#8A7456"
+FLAP = "#5E4A3C"
+GAITER = "#38383E"      # W2: a lit side on the black gaiters (was rigs_gunpowder.BLACK)
+SEAM = "#575C64"        # W2: the cast bomb's raised seam
+PEWTER = "#C2BDB2"      # W2: pewter buttons on the pocket flap and cuffs (more brass broke the colour rule's margin)
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Grenadier is the tall mitre cap, the coat's side, the bomb and the bag: a team-dark
+# border round the mitre's team plate and a team-dark facing down the coat's front edge and over the tails' cream
+# hem (the team zone in two tones), larger brass buttons, a raised seam round the cast bomb (the big black ball
+# reads as a sphere, not a hole), and lighter gaiters.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.9     # below 0.9 the polished brass turns too saturated for the colour rule
+# (a stronger gradient and cavity than the other soldiers, and the team kind's hide breakup: his team coat, sleeves
+# and mitre fill a third of him, and as cloth they read flat: micro 4.24 over every frame)
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.5, "cavity": 0.75, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", HAIR: "fur", BOMB: "iron", SEAM: "iron", SHOE: "leather", _FAR(SHOE): "leather",
+                  GAITER: "leather", _FAR(GAITER): "leather", B.BLACK: "leather", CORD: "cloth", B.CREAM: "cloth",
+                  _FAR(B.CREAM): "cloth", B.LEATHER: "leather", FLAP: "leather", B.BRASS: "bronze",
+                  _FAR(B.BRASS): "bronze", PEWTER: "iron", B.TAN: "cloth", "team": "hide"}
+
+# Fireworks Grenadier (DESIGN A5.8, epic): the same grenadier with a firework bomb, the same model: a night-violet
+# shell with a lilac seam and gilt stars, a pink-white spark, a gilt fuse cap and a pink-white tuft on the mitre
+# (violet sits outside the colour rule's team bands). The coat, cap plate and cuffs stay as the unit's.
+FIREWORKS = {BOMB: "#5A4A7A", SEAM: "#7E6EA2", B.BRASS: "#E2C36E", B.TAN: "#E8D8C0"}
+STAR = "#E8C86A"
+TUFT = "#F6DCF0"
+FIREWORKS_KINDS = {"#5A4A7A": "ceramic", "#7E6EA2": "ceramic", "#E2C36E": "gold", "#E8D8C0": "cloth",
+                   STAR: "gold", TUFT: "cloth"}
+SKINS = {"fireworks_grenadier": {"palette": FIREWORKS, "kinds": FIREWORKS_KINDS}}
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)
@@ -58,16 +93,40 @@ def _cap(rig, joint):
     g = Geo().blob((0.0, 0, 61.0), (9.8, 10.4, 9.4), p=2.4, taper=(1.0, 0.55))
     g.clip((0, 0, 56.2), (0, 0, -1))
     rig.part(joint, g, B.BLACK)
-    plate = Geo().slab([(-2.0, 56.0), (13.2, 56.0), (12.0, 64.0), (8.6, 71.0), (3.6, 76.4), (-0.6, 76.6),
-                        (-2.0, 72.0)], 0.0, 17.4, rot=(0, -10, 0), origin=(5, 0, 56))
+    pts = [(-2.0, 56.0), (13.2, 56.0), (12.0, 64.0), (8.6, 71.0), (3.6, 76.4), (-0.6, 76.6), (-2.0, 72.0)]
+    plate = Geo().slab(pts, 0.0, 17.4, rot=(0, -10, 0), origin=(5, 0, 56))
     pf = F.Face(rig, joint, [plate])
     rig.part(joint, plate, team=True)
     g = G.anchor(pf, Geo(), K.scr(pf, (11.0, -8.7, 63.5)), s=0.95)
     rig.part(joint, g, B.CREAM, highlight=False, outline=0)
+    # W2: a team-dark border round the plate's face (the team zone in two tones): one quad per edge, from the
+    # plate's outline 2 lu in toward its centre, standing just proud of the face
+    cx_, cz_ = sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
+    inner = []
+    for x, z in pts:
+        dx, dz = cx_ - x, cz_ - z
+        d = math.hypot(dx, dz)
+        inner.append((x + 2.0 * dx / d, z + 2.0 * dz / d))
+    g = Geo()
+    for i in range(len(pts)):
+        j = (i + 1) % len(pts)
+        if pts[i][1] < 56.5 and pts[j][1] < 56.5:
+            continue                       # the bottom edge has the cream band
+        g.slab([pts[i], pts[j], inner[j], inner[i]], -8.9, 0.6, rot=(0, -10, 0), origin=(5, 0, 56))
+    look.team_part(rig, joint, g, outline=0)
+    # W2: a team-dark flaming grenade, the grenadier's badge, on the plate's upper field (the big flat team field)
+    g = Geo()
+    c = pf.hit(*K.scr(pf, (4.6, -8.7, 69.4)))
+    pf.decal(g, c, F.ellipse(0.0, -0.6, 2.3, 2.3, 14), 0.5)
+    for flame in ([(-0.9, 1.4), (0.0, 5.2), (0.9, 1.4)], [(-1.8, 1.0), (-3.0, 3.8), (-0.6, 1.8)],
+                  [(1.8, 1.0), (3.0, 3.8), (0.6, 1.8)]):
+        pf.decal(g, c, flame, 0.5)
+    look.team_part(rig, joint, g, outline=0, highlight=False)
     g = Geo().capsule((-1.0, -8.9, 56.6), (13.4, -8.9, 56.6), 1.3).capsule((13.4, -8.9, 56.6), (13.4, 8.6, 56.6), 1.3)
     rig.part(joint, g, B.CREAM, outline=0.6)
     g = Geo().sphere((0.6, 0, 77.0), 2.8, cuts=3)   # tuft
-    rig.part(joint, g, B.CREAM, finish="hair", outline=0.6)
+    tuft = TUFT if getattr(rig, "skin", None) == "fireworks_grenadier" else B.CREAM
+    rig.part(joint, g, tuft, finish="hair", outline=0.6)
 
 
 RIG = None
@@ -77,7 +136,7 @@ def build(rig):
     global RIG
     RIG = rig
     K.skeleton_v3(rig)
-    G.legs_v3(rig, B.CREAM, SHOE, stocking=B.BLACK, thigh_r=5.0)
+    G.legs_v3(rig, B.CREAM, SHOE, stocking=GAITER, thigh_r=5.0)
 
     # torso: broad team coat, cream crossbelt, brass buttons, leather belt
     g = Geo().blob((0, 0, 28.0), (12.0, 11.0, 12.2), p=2.4, taper=(1.1, 0.96))
@@ -86,6 +145,19 @@ def build(rig):
     g = Geo().blob((5.4, -1.0, 26.5), (7.2, 5.2, 10.4), p=2.6, taper=(1.08, 0.72))
     g.clip((8.2, 0, 0), (-1, 0, 0))
     rig.part("torso", g, B.CREAM)            # waistcoat front
+    g = KD.stripe_x((0, 0, 28.0), (12.0, 11.0, 12.2), 5.0, 8.6, z0=18.8, z1=37.0, p=2.4, taper=(1.1, 0.96))
+    look.team_part(rig, "torso", g)          # W2: a team-dark facing down the coat's front edge
+    # W2: a team-dark pocket flap on the coat's side with three pewter buttons (the big team field breaks up)
+    g = KD.stripe_x((0, 0, 28.0), (12.0, 11.0, 12.2), -9.6, -1.6, z0=21.8, z1=25.4, p=2.4, taper=(1.1, 0.96),
+                    grow=0.5)
+    look.team_part(rig, "torso", g)
+    coat = Geo().blob((0, 0, 28.0), (12.5, 11.5, 12.7), p=2.4, taper=(1.1, 0.96))
+    GW.studs(rig, "torso", [coat], [(-7.6, 23.6), (-5.6, 23.4), (-3.6, 23.6)], r=1.25, color=PEWTER)
+    # W2: folds down the coat's back above the pocket flap (a big plain team field needs creases, W1 review)
+    for pts in (((-3.0, 35.0), (-3.8, 30.5), (-3.2, 26.6)), ((-7.0, 34.0), (-7.8, 30.0), (-7.4, 26.6)),
+                ((-10.4, 32.0), (-11.0, 28.6), (-10.6, 26.4))):
+        GW.team_line(rig, "torso", Geo().blob((0, 0, 28.0), (12.0, 11.0, 12.2), p=2.4, taper=(1.1, 0.96)),
+                     pts, 1.3)
     g = Geo().blob((0.4, 0, 17.4), (12.0, 11.0, 2.2), p=3.0)
     rig.part("torso", g, B.LEATHER)          # belt
     g = Geo().blob((12.2, -2.6, 17.4), (1.4, 2.4, 2.0), p=2.4)
@@ -94,7 +166,7 @@ def build(rig):
     rig.part("torso", g, B.CREAM, outline=0.8)
     g = Geo()
     for z in (33.0, 28.5, 24.0):
-        g.sphere((12.6, -4.4, z), 1.2, cuts=3)
+        g.sphere((12.8, -4.4, z), 1.35, cuts=3)   # W2: 1.2 -> 1.35 lu
     rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo().blob((1.2, 0, 37.6), (7.2, 7.6, 2.4), p=2.4)
     rig.part("torso", g, B.BLACK)
@@ -102,7 +174,7 @@ def build(rig):
     g = Geo().blob((1.0, -12.4, 19.4), (5.6, 3.4, 4.8), p=3.0, taper=(1.0, 0.9))
     rig.part("hips", g, B.LEATHER)
     g = Geo().blob((1.2, -14.2, 22.0), (5.8, 1.8, 2.8), p=3.0)
-    rig.part("hips", g, "#5E4A3C")
+    rig.part("hips", g, FLAP)
     g = Geo().blob((1.6, -15.8, 21.0), (1.8, 0.9, 1.8), p=2.4)
     rig.part("hips", g, B.BRASS, finish="metal", outline=0.5)
     rig.secondary("tails", "hips", (-4.0, 0, 18.0), (-7.5, 0, 6.0), max_deg=16, gain=1.1)
@@ -111,6 +183,8 @@ def build(rig):
     rig.part("tails", g, team=True)
     g = Geo().blob((-7.2, 0, 5.2), (3.8, 10.8, 2.2), p=2.6, rot=(0, 10, 0))
     rig.part("tails", g, B.CREAM)
+    g = KD.band_z((-6.0, 0, 11.5), (5.2, 10.2, 7.8), 6.8, 9.6, p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
+    look.team_part(rig, "tails", g)          # W2: a team-dark band over the cream hem
 
     # head: face kit, a big waxed handlebar moustache, sideburns, the mitre cap
     head = G.head_geos(center=(2, 0, 49.0), nose=(14.0, -0.6, 47.2), nose_r=(3.8, 3.2, 3.6))
@@ -137,15 +211,40 @@ def build(rig):
         y = B.ARM_Y[s]
         g = Geo().blob((2.8, y - 1.4 * (1 if s == "r" else -1), B.HAND_Z + 1.0), (1.6, 1.5, 2.2), p=2.2)
         rig.part(f"hand_{s}", g, B.SKIN, outline=0.5)
+        # W2: creases across the sleeve above the elbow and the cuff (the big team sleeves of his covered-ears
+        # and throwing poses)
+        GW.team_line(rig, f"arm_{s}", Geo().capsule((0, y, B.SHOULDER_Z), (0, y, B.ELBOW_Z), 4.7, 4.4),
+                     [(-3.6, 31.2), (-0.4, 30.4), (2.8, 29.6)], 1.2)
+        GW.team_line(rig, f"fore_{s}", Geo().capsule((0, y, B.ELBOW_Z), (0, y, B.HAND_Z + 2.0), 4.4, 4.2),
+                     [(-3.2, 26.8), (0.0, 26.2), (3.0, 25.6)], 1.2)
     for s, y in (("r", -12.8), ("l", 12.2)):
         g = Geo().blob((0, y, 37.0), (6.2, 5.4, 4.8), p=2.4)
         rig.part(f"arm_{s}", g, team=True)
+        # W2: grenadier's shoulder wings: a team-dark pad with a cream lace edge, and pewter buttons on the cuffs
+        g = KD.band_z((0, y, 37.0), (6.2, 5.4, 4.8), 37.4, 42.0, p=2.4, grow=0.35)
+        look.team_part(rig, f"arm_{s}", g)
+        g = KD.band_z((0, y, 37.0), (6.2, 5.4, 4.8), 36.0, 37.4, p=2.4, grow=0.45)
+        rig.part(f"arm_{s}", g, B.CREAM, outline=0.3)
+        cuff = Geo().blob((0, y, B.HAND_Z + 3.4), (5.4, 5.4, 2.0), p=2.6)
+        GW.studs(rig, f"fore_{s}", [cuff], [(-2.0, B.HAND_Z + 3.4), (2.0, B.HAND_Z + 3.4)], r=1.25, color=PEWTER)
 
     # the bomb on its own joint in the near hand, a brass fuse cap and a sparking fuse
     rig.joint("bomb", "hand_r", BOMB_C)
     bx, by, bz = BOMB_C
     g = Geo().sphere(BOMB_C, BOMB_R, cuts=6)
     rig.part("bomb", g, BOMB, finish="gloss", outline_hex="#50535A")
+    # W2: the cast bomb's raised seam, tilted toward the camera so it reads as a ring round a sphere
+    g = Geo().lathe([(BOMB_R - 0.6, -0.9), (BOMB_R + 0.3, -0.6), (BOMB_R + 0.3, 0.6), (BOMB_R - 0.6, 0.9)],
+                    (bx, by, bz), (bx + 0.6, by - 0.5, bz + 1.0), segs=28)
+    rig.part("bomb", g, SEAM, finish="metal", outline=0.4)
+    if getattr(rig, "skin", None) == "fireworks_grenadier":
+        fc = F.Face(rig, "bomb", [Geo().sphere(BOMB_C, BOMB_R, cuts=6)])
+        g = Geo()
+        for (x, z), r in (((bx - 2.6, bz + 3.4), 2.4), ((bx + 2.8, bz - 2.6), 2.0), ((bx - 3.8, bz - 3.6), 1.7)):
+            fc.decal(g, fc.hit(x, z), [(r * math.cos(math.radians(90 + 36 * k)) * (1 if k % 2 == 0 else 0.45),
+                                       r * math.sin(math.radians(90 + 36 * k)) * (1 if k % 2 == 0 else 0.45))
+                                      for k in range(10)])
+        rig.part("bomb", g, STAR, highlight=False, outline=0)
     g = Geo().blob((bx - 3.0, by - 5.4, bz + 3.4), (1.8, 1.0, 1.6), p=2.2)   # a highlight glint
     rig.part("bomb", g, "#F4F4F0", highlight=False, outline=0)
     g = Geo().lathe([(0, 0), (2.6, 0), (2.6, 1.9), (1.7, 2.8), (0, 2.8)], (bx + 3.2, by, bz + 6.4),
@@ -159,6 +258,8 @@ def build(rig):
     g = Geo().sphere((bx + 7.0, by - 1.8, bz + 13.0), 1.5, cuts=3)
     rig.part("spark", g, glow="#FFFFFF", outline=0)
     rig.track("muzzle", "bomb", BOMB_C)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
 
     # the match cord in the far hand: a coiled cord with a glowing, smoking tip
     lx, ly, lz = HL
@@ -172,6 +273,17 @@ def build(rig):
     rig.joint("wisp", "match", (lx + 3.6, ly - 1.4, lz + 13.0), hidden=True)
     g = Geo().sphere((lx + 4.6, ly - 2.0, lz + 14.0), 1.8, cuts=3).sphere((lx + 3.2, ly - 2.0, lz + 17.0), 1.5, cuts=3)
     rig.part("wisp", g, B.SMOKE, finish="dust", outline=0.5)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The coat's back half (the
+    largest team surface the bomb arm leaves clear), the coat tails, the mitre's team plate and the bomb bag; a
+    torn strip from the tails' cream hem."""
+    rig.damage_spot_at("coat", "torso", -7.0, 29.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("tails", "tails", -6.0, 19.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("plate", "cap", 3.0, 70.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("bag", "hips", -4.5, 18.5, 5.0, "hide", fill=FLAP)
+    rig.damage_spot_at("hem", "tails", -7.0, 10.0, 8.0, "cloth", kind="strip", fill=B.CREAM)
 
 
 # -- poses ---------------------------------------------------------------------------------

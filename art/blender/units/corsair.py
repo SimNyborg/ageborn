@@ -29,14 +29,18 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import gait as GT  # noqa: F401
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "corsair"
 GAIT_NAME = "biped"
@@ -48,19 +52,56 @@ ANCHORS = {"head": (2, 66), "hitCenter": (0, 32)}
 NO_RETIME = True
 
 BEARD = "#2F2724"
-BREECH = "#4A3B2E"
-BOOT = "#2E2A2A"
+BEARD_LT = "#54463D"
+BREECH = "#76644F"     # W2: lighter than the boots (was the dark #4A3B2E)
+BOOT = "#3B3432"       # W2: a lit side that separates from the outline (was #2E2A2A)
 BLADE = "#C9D0D8"
 BLADE_DK = "#8C96A2"
 ROPE = "#B8A27E"
 STRIPE = "#5E7F72"
-HAT = "#2E2B2C"
+HAT = "#3A3637"        # W2: a mid-value lit side on the big hat (was #2E2B2C)
 FEATHER = "#F4EEDC"
+COIN = "#E2C25A"
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Corsair is the coat's back half, the sleeves, the tails, the tricorne and the boots, so
+# the detail goes there: a leather baldric over the near shoulder (down the chest with a brass buckle and down the
+# back), team-dark facings down the open front, a team-dark sash and a team-dark band over the tails' cream hem
+# (the team zone in two tones), brass buttons on the cream cuffs, tan turned-down cuffs on the boots, lighter
+# breeches and a lighter hat and boots (dark materials need a mid-value lit side, W1 review).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.93
+# a clearer light-to-shadow structure (look.SHADE), as the pilot's and W1's soldiers
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", BEARD: "fur", BEARD_LT: "fur", B.CREAM: "cloth", STRIPE: "cloth", BREECH: "cloth",
+                  _FAR(BREECH): "cloth", BOOT: "leather", _FAR(BOOT): "leather", B.TAN: "leather",
+                  _FAR(B.TAN): "leather", HAT: "cloth", FEATHER: "bone", B.LEATHER: "leather", B.BRASS: "bronze",
+                  BLADE: "iron", BLADE_DK: "iron", ROPE: "cloth", B.IRON: "iron", B.BLACK: "leather",
+                  COIN: "gold", "#2A211D": "fur", "team": "cloth"}
+
+# Ghost Corsair (DESIGN A5.8, epic): the same pirate come back as a sea ghost, the same model. Pale sea-green
+# skin, a grey-green beard and pale grey-green clothes, verdigris for the brass, a pale spectral blade; the coat,
+# sash, bandana and cockade stay team.
+GHOST = {B.SKIN: "#C8DCD6", BEARD: "#7E968F", BEARD_LT: "#9DB3AC", "#2A211D": "#748C85", B.CREAM: "#E2ECE8", STRIPE: "#8FA9A2",
+         BREECH: "#5C706B", _FAR(BREECH): CL.scale("#5C706B", 0.8), BOOT: "#3E4B48",
+         _FAR(BOOT): CL.scale("#3E4B48", 0.8),
+         B.TAN: "#9EB2AC", _FAR(B.TAN): CL.scale("#9EB2AC", 0.8), HAT: "#3C4A47", FEATHER: "#F0F6F4",
+         B.LEATHER: "#6A7C77", B.BRASS: "#9DB8AE", BLADE: "#D6EEE8", BLADE_DK: "#9AB8B1", ROPE: "#A9BBB4",
+         B.IRON: "#55646A", B.BLACK: "#34403E", COIN: "#C4D6CC"}
+GHOST_KINDS = {"#C8DCD6": "skin", "#7E968F": "fur", "#9DB3AC": "fur", "#748C85": "fur", "#E2ECE8": "cloth", "#8FA9A2": "cloth", "#5C706B": "cloth",
+               CL.scale("#5C706B", 0.8): "cloth", "#3E4B48": "leather", CL.scale("#3E4B48", 0.8): "leather",
+               "#9EB2AC": "leather", CL.scale("#9EB2AC", 0.8): "leather", "#3C4A47": "cloth", "#F0F6F4": "bone",
+               "#6A7C77": "leather", "#9DB8AE": "bronze", "#D6EEE8": "iron", "#9AB8B1": "iron", "#A9BBB4": "cloth",
+               "#55646A": "iron", "#34403E": "leather", "#C4D6CC": "gold"}
+SKINS = {"ghost_corsair": {"palette": GHOST, "kinds": GHOST_KINDS}}
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand: cutlass
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)   # far hand: grapnel
 BL = 35.0                            # blade length from the hand
 HAT_C = (1.0, 0.0, 59.6)             # tricorne pivot (it pops off in the death)
+VEST = ((-0.6, 0, 28.0), (11.9, 11.0, 11.6))   # the team coat's blob (centre, radii)
 
 
 def _hat(rig, joint):
@@ -78,7 +119,7 @@ def build(rig):
     RIG = rig
     K.skeleton_v3(rig)
     # legs (walk v3): baggy breeches, tall black boots with flared cuffs, short feet
-    G.legs_v3(rig, BREECH, BOOT, thigh_r=5.6, tall_boot=True)
+    G.legs_v3(rig, BREECH, BOOT, thigh_r=5.6, tall_boot=True, cuff=B.TAN)
     g = Geo().blob((1.6, -B.LEG_Y - 4.4, 6.6), (1.8, 1.0, 1.6), p=2.4)
     rig.part("shin_r", g, B.BRASS, finish="metal", outline=0.5)
 
@@ -93,8 +134,24 @@ def build(rig):
     vest.clip((0, 0, 37.4), (0, 0, 1))
     vest.clip((8.2, 0, 0), (1, -0.35, 0))  # open front: the shirt shows
     rig.part("torso", vest, team=True)
+    # W2: team-dark facings down the open front (the coat in two tones) and a leather baldric across the chest
+    g = KD.shell(*VEST, p=2.5, taper=(1.12, 0.94), grow=0.3,
+                 keep=(((8.2, 0, 0), (1, -0.35, 0)), ((5.0, 0, 0), (-1, 0.35, 0)), ((0, 0, 37.4), (0, 0, 1)),
+                       ((0, 0, 24.6), (0, 0, -1))))
+    look.team_part(rig, "torso", g)
+    g = GW.diag_band(*VEST, 34.0, 2.2, 5.6, p=2.5, taper=(1.12, 0.94), grow=0.6,
+                     keep=(((0, 0, 37.6), (0, 0, 1)), ((0, 0, 22.0), (0, 0, -1))))
+    rig.part("torso", g, B.LEATHER, outline=0.4)
+    g = GW.diag_band(*VEST, 146.0, 5.4, 8.8, p=2.5, taper=(1.12, 0.94), grow=0.6,
+                     keep=(((0, 0, 37.6), (0, 0, 1)), ((0, 0, 22.0), (0, 0, -1))))
+    rig.part("torso", g, B.LEATHER, outline=0.4)    # the baldric's back run (the side the arm leaves clear)
+    p = GW.on_surface(rig, "torso", [Geo().blob(VEST[0], tuple(r + 0.6 for r in VEST[1]), p=2.5,
+                                               taper=(1.12, 0.94))], 3.8, 29.6)
+    g = Geo().blob(p, (2.0, 1.0, 2.0), p=2.4)
+    g.blob((p[0], p[1] - 0.6, p[2]), (1.1, 0.8, 1.1), p=2.4)
+    rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo().blob((0.4, 0, 19.6), (12.2, 11.3, 3.2), p=3.0)
-    rig.part("torso", g, team=True)          # the sash (team, so he keeps 18% team in the jog)
+    look.team_part(rig, "torso", g)          # the sash (team-dark; team, so he keeps 18% team in the jog)
     g = Geo().blob((0.5, 0, 23.2), (12.0, 11.1, 1.7), p=3.2)
     rig.part("torso", g, B.LEATHER)
     g = Geo().blob((11.9, -3.2, 23.2), (1.7, 3.0, 2.6), p=2.4)
@@ -104,7 +161,7 @@ def build(rig):
     g = Geo().capsule((-7.0, -8.6, 19.0), (-11.8, -9.8, 9.5), 2.6, 2.0)
     g.capsule((-6.0, -9.4, 19.0), (-7.8, -10.6, 10.5), 2.2, 1.6)
     g.blob((-6.5, -8.8, 19.4), (3.0, 2.2, 3.0), p=2.2)
-    rig.part("sash", g, team=True)
+    look.team_part(rig, "sash", g)
     # long coat tails behind the legs (team, a cream hem), swinging late
     rig.secondary("tails", "hips", (-5.0, 0, 18.0), (-8.5, 0, 5.0), max_deg=16, gain=1.2)
     rig.rest_offset["tails"] = (0, 0, K.V3_LIFT + 4.5)
@@ -115,6 +172,8 @@ def build(rig):
     rig.part("tails", g, B.CREAM, highlight=False, outline=0)
     g = Geo().blob((-7.4, 0, 3.4), (4.2, 11.2, 1.9), p=2.6, rot=(0, 10, 0))
     rig.part("tails", g, B.CREAM)
+    g = KD.band_z((-6.0, 0, 11.0), (5.4, 10.8, 8.6), 4.6, 8.4, p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
+    look.team_part(rig, "tails", g)          # W2: a team-dark band over the cream hem
     g = Geo().blob((4.0, 0, 36.5), (5.6, 6.4, 2.4), p=2.4)  # open collar
     rig.part("torso", g, B.CREAM)
 
@@ -130,6 +189,11 @@ def build(rig):
             eye_at=(14.0, 50.4), mark_r=4.2)
     rig.part("head", head, B.SKIN)
     rig.part("head", beard, BEARD, finish="hair")
+    g = Geo()                                  # W2: lighter rounded tufts in the beard (two-tone hair, W1 review)
+    for c, r in (((12.2, -6.6, 40.6), (2.4, 1.6, 2.2)), ((9.2, -8.4, 43.6), (2.2, 1.6, 2.4)),
+                 ((13.6, -3.6, 37.6), (2.2, 1.6, 2.0))):
+        g.blob(c, r, p=2.2)
+    rig.part("head", g, BEARD_LT, finish="hair", outline=0)
     rig.part("head", hair, BEARD, finish="hair")
     B.moustache(rig, BEARD, cx=13.8, z=44.8)
     g = Geo().blob((13.2, 5.0, 50.2), (2.8, 3.6, 4.4), p=2.4)          # the patch (far eye)
@@ -162,6 +226,8 @@ def build(rig):
         rig.part(f"arm_{s}", g, team=True)                                  # coat sleeve
         g = Geo().blob((0, y, B.ELBOW_Z + 0.4), (5.3, 5.3, 2.2), p=2.6)   # big cream cuff
         rig.part(f"arm_{s}", g, B.CREAM)
+        cuff = Geo().blob((0, y, B.ELBOW_Z + 0.4), (5.3, 5.3, 2.2), p=2.6)   # (rig.part takes its Geo)
+        GW.studs(rig, f"arm_{s}", [cuff], [(-2.0, B.ELBOW_Z + 0.4), (2.0, B.ELBOW_Z + 0.4)], r=1.25)
         g = Geo().capsule((0, y, B.ELBOW_Z), (0, y, B.HAND_Z + 2.0), 4.0, 3.8)
         rig.part(f"fore_{s}", g, B.SKIN)
         g = Geo().blob((0, y, B.HAND_Z + 3.4), (4.6, 4.6, 1.8), p=2.6)
@@ -210,9 +276,22 @@ def build(rig):
     rig.joint("coin", "hand_l", (fx_ + 14.0, fy - 26.0, fz + 6.0), hidden=True)
     g = Geo().lathe([(0, -0.5), (3.0, -0.5), (3.0, 0.5), (0, 0.5)], (fx_ + 14.0, fy - 26.0, fz + 6.0),
                     (fx_ + 14.0, fy - 27.0, fz + 6.0), segs=16)
-    rig.part("coin", g, "#E2C25A", finish="metal", outline=0.6)
+    rig.part("coin", g, COIN, finish="metal", outline=0.6)
 
     rig.track("bladeTip", "hand_r", (hx + 8.2, hy, hz + 4 + BL - 1.5))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The coat's back half
+    (the largest team surface the cutlass arm leaves clear), the coat tails, the tricorne and the near boot; a
+    torn strip from the tails' cream hem."""
+    rig.damage_spot_at("coat", "torso", -6.0, 26.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("tails", "tails", -7.0, 13.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("hat", "hat", -5.0, 62.0, 6.0, "cloth", fill=HAT)
+    rig.damage_spot_at("boot", "shin_r", 2.0, 5.5, 5.0, "hide", fill=BOOT)
+    rig.damage_spot_at("hem", "tails", -9.0, 6.0, 8.0, "cloth", kind="strip", fill=B.CREAM)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -313,9 +392,9 @@ SLASH = {"kind": "arc", "joint": "hand_r", "inner": BLADE_IN, "outer": BLADE_TIP
 
 def _attack_clip():
     ov = {
-        4: [dict(SLASH, **{"from": 3})],
-        5: [dict(SLASH, **{"from": 3, "t0": 0.35})],
-        6: [dict(SLASH, **{"from": 5, "t0": 0.0, "t1": 1.0, "lines": 2}),
+        4: [dict(SLASH, **{"from": 3, "band": 0.35, "lines": 4})],     # W2: hollow smears (the floors per frame)
+        5: [dict(SLASH, **{"from": 3, "t0": 0.35, "band": 0.35, "lines": 4})],
+        6: [dict(SLASH, **{"from": 5, "t0": 0.0, "t1": 1.0, "lines": 3, "band": 0.6}),
             {"kind": "burst", "joint": "hand_r", "point": BLADE_TIP, "r0_lu": 6.0, "r1_lu": 12.0,
              "n": 5, "a0": -70.0, "arc": 140.0},
             {"kind": "dust", "ground": (22.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 21, "spread": 0.9}],
@@ -332,13 +411,16 @@ def _attack_clip():
 # back knee), 4 smear (rising), 5 lead, 6 IMPACT (up on his toes, the blade high in front), 7
 # overshoot, 8 recoil, 9 = A settle; the last step is A's read frame (as A)
 #        dip   coil  HOLD  smear lead  IMP   over  recoil
-BA_ = [-70, -110, -135, -60, 10, 55, 75, 30]       # cutlass upper arm, world deg
-BF_ = [-60, -120, -150, -40, 30, 70, 90, 40]
-BW_ = [-80, -140, -165, -60, 30, 62, 95, 70]
-BT = [-4, -12, -20, -10, 2, 8, 6, 0]               # torso lean (- forward)
+# B1' (item 38 Phase B, art round W2): the impact frame used to show the blade high over his own head (tip at
+# (29, 61) lu, a tossed impact); now the blade rises through the target's waist on the impact frame and the high
+# finish moves to the overshoot. Timing, impactAt and the lunge are unchanged.
+BA_ = [-70, -110, -135, -75, -25, -4, 50, 45]      # cutlass upper arm, world deg
+BF_ = [-60, -120, -150, -60, -10, 10, 66, 60]
+BW_ = [-80, -140, -165, -55, -8, 22, 62, 80]
+BT = [-4, -12, -20, -10, -4, -2, 8, 2]             # torso lean (- forward)
 BYAW = [6, 18, 30, 10, -10, -18, -16, -8]
 BX = [-0.5, -2.0, -3.0, 1.0, 5.0, 8.0, 8.5, 5.0]
-BZ = [-2.5, -5.5, -8.0, -4.0, 1.0, 2.0, 1.5, -0.5]
+BZ = [-2.5, -5.5, -8.0, -4.0, -1.0, 0.0, 2.0, 0.5]
 BQ = [-0.05, -0.1, -0.12, 0.06, 0.08, -0.08, 0.04, -0.03]
 BFEET = [((4.0, 0, 0), (-5.0, 0, 0)), ((7.0, 0, 0), (-8.0, 0, -6)), ((9.0, 0, 0), (-11.0, 0, -12)),
          ((11.0, 0, 0), (-9.0, 0, -10)), ((13.0, 0, 0), (-6.0, 0, -16)), ((14.0, 0, -12), (-4.0, 0, -22)),
@@ -374,8 +456,8 @@ RISE = dict(SLASH, t0=0.0, t1=1.0, lines=3, samples=18)
 
 def _attack_b():
     ov = {
-        4: [dict(RISE, **{"from": 3})],
-        5: [dict(RISE, **{"from": 3, "t0": 0.4})],
+        4: [dict(RISE, **{"from": 3, "band": 0.35, "lines": 4})],
+        5: [dict(RISE, **{"from": 3, "t0": 0.4, "band": 0.35, "lines": 4})],
         6: [dict(RISE, **{"from": 5, "lines": 2}),
             {"kind": "burst", "joint": "hand_r", "point": BLADE_TIP, "r0_lu": 6.0, "r1_lu": 12.0,
              "n": 5, "a0": -20.0, "arc": 140.0},
@@ -428,7 +510,7 @@ def _c_pose(i):
     return pose
 
 
-RING = dict(SLASH, t0=0.0, t1=1.0, lines=2, samples=24, band=0.4, taper=0.0)
+RING = dict(SLASH, t0=0.0, t1=1.0, lines=2, samples=24, band=0.3, taper=0.0)   # W2: was 0.4
 
 
 def _attack_c():
