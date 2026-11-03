@@ -324,7 +324,7 @@ def _damage_spots(rig):
     strip from the shabraque's cream edge."""
     rig.damage_spot_at("shabraque", "horse", -12.0, 42.0, 9.0, "cloth", team=True)
     rig.damage_spot_at("neck", "neck", 24.0, 54.0, 7.0, "hide", fill=COAT)
-    rig.damage_spot_at("cuirass", "ktorso", 1.0, 76.0, 6.0, "metal", fill=STEEL)
+    rig.damage_spot_at("cuirass", "ktorso", -10.0, 68.0, 6.0, "metal", fill=STEEL)   # the backplate, clear of the arm
     rig.damage_spot_at("crest", "crest", -10.0, 106.0, 6.0, "cloth", team=True)
     rig.damage_spot_at("hem", "horse", -14.0, 27.0, 9.0, "cloth", kind="strip", fill=B.CREAM)
 

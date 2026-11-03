@@ -73,7 +73,7 @@ DAPPLE = "#DAD4CA"     # W2: faint dapples on the white charger
 # dull-brass buttons.
 DETAIL_STANDARD = True
 # (a stronger gradient and cavity than the other riders: the white charger and the big team fields need modelling)
-LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.6, "cavity": 0.72, "rim_mix": 0.5,
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 3.0, "cavity": 0.8, "rim_mix": 0.5,
               "top": 0.08, "top_t": 0.62, "team_core": 0.4}
 MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", DAPPLE: "hide", POINTS: "hide", MANE: "fur", HOOF: "bone",
                   STEEL: "iron", BLADE: "iron", NOSE: "hide", B.CREAM: "cloth", BRAID: "cloth", BREECH: "cloth",
@@ -269,6 +269,11 @@ def build(rig):
     rig.part("crest", g, B.CREAM, finish="hair")                     # cream plume along the crown
     g = Geo().blob((3.0, -7.4, 98.0), (2.6, 1.2, 2.6), p=2.2)
     rig.part("hat", g, team=True, outline=0.5)                       # cockade
+    # W2: a gilt loop over the cockade and gilt tassels at the bicorne's points (the big team field breaks up)
+    g = Geo().capsule((3.4, -7.6, 100.4), (4.6, -7.2, 104.2), 0.95)
+    for x in (-18.4, 17.4):
+        g.blob((x, -1.0, 93.6), (2.0, 2.0, 2.8), p=2.2, taper=(1.2, 0.7))
+    rig.part("hat", g, GILT, finish="metal", outline=0.4)
     rig.joint("hat_loose", "root", (0.0, 0, 92.0), hidden=True)
     g = Geo().blob((-0.5, 0, 96.0), (19.0, 7.0, 9.2), p=2.2)
     g.clip((0, 0, 91.0), (0, 0, -1))
@@ -279,6 +284,8 @@ def build(rig):
     rig.joint("kfore_l", "karm_l", (3, 12, 68))
     g = Geo().capsule((0, 10.5, 77), (3, 12, 68), 4.0, 3.6)
     rig.part("karm_l", g, team=True)
+    GW.team_line(rig, "karm_l", Geo().capsule((0, 10.5, 77), (3, 12, 68), 4.0, 3.6),
+                 [(-2.4, 72.8), (0.6, 72.0), (4.0, 71.2)], 1.2)        # W2: a crease across the sleeve
     g = Geo().capsule((3, 12, 68), (10, 11, 65.5), 3.6, 3.4).blob((10.5, 11, 65), (3.8, 3.8, 3.8), p=2.6)
     rig.part("kfore_l", g, B.CREAM)
     # near arm: team sleeve, cream gauntlet, sabre
@@ -287,6 +294,8 @@ def build(rig):
     rig.joint("sabre", "kfore_r", (SX, SY, SZ))
     g = Geo().capsule((0, -10.5, 77), (3, -12, 68), 4.2, 3.8)
     rig.part("karm_r", g, team=True)
+    GW.team_line(rig, "karm_r", Geo().capsule((0, -10.5, 77), (3, -12, 68), 4.2, 3.8),
+                 [(-2.6, 72.8), (0.6, 72.0), (4.2, 71.2)], 1.2)        # W2: a crease across the sleeve
     g = Geo().capsule((3, -12, 68), (8.5, -13, 66), 3.8, 3.6)
     g.blob((6.8, -12.6, 66.8), (3.6, 5.0, 5.0), p=2.4)
     rig.part("kfore_r", g, B.CREAM)

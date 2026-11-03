@@ -271,7 +271,7 @@ def _damage_spots(rig):
     """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The doublet's back half
     (the largest team surface the sword arm and the targe leave clear), the kilt's pleated back, the bonnet; a torn
     strip from the kilt's hem."""
-    rig.damage_spot_at("doublet", "torso", -4.0, 30.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("doublet", "torso", -9.0, 26.0, 8.0, "cloth", team=True)   # clear of the arm in every frame
     rig.damage_spot_at("kilt", "kilt", -6.0, 17.0, 7.0, "cloth", team=True)
     rig.damage_spot_at("bonnet", "hat", 1.0, 63.5, 5.5, "cloth", team=True)
     rig.damage_spot_at("hem", "kilt", -7.0, 11.5, 8.0, "cloth", kind="strip", team=True)

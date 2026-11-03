@@ -2,18 +2,18 @@
  "frames": {
   "voltigeurs_idle_00": {
    "frame": {
-    "x": 1367,
-    "y": 240,
+    "x": 736,
+    "y": 230,
     "w": 134,
-    "h": 218
+    "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 183,
-    "y": 158,
+    "y": 156,
     "w": 134,
-    "h": 218
+    "h": 220
    },
    "sourceSize": {
     "w": 548,
@@ -26,10 +26,10 @@
   },
   "voltigeurs_idle_00_team": {
    "frame": {
-    "x": 185,
-    "y": 902,
+    "x": 1260,
+    "y": 838,
     "w": 84,
-    "h": 196
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 191,
     "y": 149,
     "w": 84,
-    "h": 196
+    "h": 195
    },
    "sourceSize": {
     "w": 548,
@@ -50,18 +50,18 @@
   },
   "voltigeurs_idle_01": {
    "frame": {
-    "x": 2,
-    "y": 471,
+    "x": 829,
+    "y": 2,
     "w": 134,
-    "h": 218
+    "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 185,
-    "y": 157,
+    "y": 155,
     "w": 134,
-    "h": 218
+    "h": 220
    },
    "sourceSize": {
     "w": 548,
@@ -74,17 +74,17 @@
   },
   "voltigeurs_idle_01_team": {
    "frame": {
-    "x": 96,
-    "y": 902,
-    "w": 85,
+    "x": 746,
+    "y": 885,
+    "w": 84,
     "h": 197
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 192,
+    "x": 193,
     "y": 147,
-    "w": 85,
+    "w": 84,
     "h": 197
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "voltigeurs_idle_02": {
    "frame": {
-    "x": 923,
-    "y": 240,
+    "x": 550,
+    "y": 2,
     "w": 136,
-    "h": 223
+    "h": 225
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 187,
-    "y": 150,
+    "y": 148,
     "w": 136,
-    "h": 223
+    "h": 225
    },
    "sourceSize": {
     "w": 548,
@@ -122,8 +122,8 @@
   },
   "voltigeurs_idle_02_team": {
    "frame": {
-    "x": 805,
-    "y": 693,
+    "x": 1204,
+    "y": 633,
     "w": 83,
     "h": 201
    },
@@ -146,18 +146,18 @@
   },
   "voltigeurs_idle_03": {
    "frame": {
-    "x": 719,
-    "y": 2,
+    "x": 131,
+    "y": 241,
     "w": 135,
-    "h": 230
+    "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 187,
-    "y": 143,
+    "y": 142,
     "w": 135,
-    "h": 230
+    "h": 231
    },
    "sourceSize": {
     "w": 548,
@@ -170,17 +170,17 @@
   },
   "voltigeurs_idle_03_team": {
    "frame": {
-    "x": 1178,
-    "y": 471,
-    "w": 83,
+    "x": 960,
+    "y": 864,
+    "w": 84,
     "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 192,
+    "x": 191,
     "y": 134,
-    "w": 83,
+    "w": 84,
     "h": 206
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "voltigeurs_idle_04": {
    "frame": {
-    "x": 858,
-    "y": 2,
+    "x": 270,
+    "y": 237,
     "w": 134,
-    "h": 229
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 186,
-    "y": 144,
+    "y": 143,
     "w": 134,
-    "h": 229
+    "h": 230
    },
    "sourceSize": {
     "w": 548,
@@ -218,18 +218,18 @@
   },
   "voltigeurs_idle_04_team": {
    "frame": {
-    "x": 1265,
-    "y": 471,
-    "w": 82,
-    "h": 206
+    "x": 1074,
+    "y": 430,
+    "w": 84,
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 192,
+    "x": 190,
     "y": 135,
-    "w": 82,
-    "h": 206
+    "w": 84,
+    "h": 205
    },
    "sourceSize": {
     "w": 548,
@@ -242,18 +242,18 @@
   },
   "voltigeurs_idle_05": {
    "frame": {
-    "x": 1063,
-    "y": 240,
+    "x": 690,
+    "y": 2,
     "w": 135,
-    "h": 223
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 183,
-    "y": 152,
+    "y": 151,
     "w": 135,
-    "h": 223
+    "h": 224
    },
    "sourceSize": {
     "w": 548,
@@ -266,8 +266,8 @@
   },
   "voltigeurs_idle_05_team": {
    "frame": {
-    "x": 717,
-    "y": 693,
+    "x": 1172,
+    "y": 845,
     "w": 84,
     "h": 201
    },
@@ -290,18 +290,18 @@
   },
   "voltigeurs_walk_00": {
    "frame": {
-    "x": 462,
-    "y": 471,
+    "x": 967,
+    "y": 2,
     "w": 167,
-    "h": 212
+    "h": 213
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 183,
-    "y": 163,
+    "y": 162,
     "w": 167,
-    "h": 212
+    "h": 213
    },
    "sourceSize": {
     "w": 548,
@@ -314,18 +314,18 @@
   },
   "voltigeurs_walk_00_team": {
    "frame": {
-    "x": 2,
-    "y": 902,
-    "w": 90,
-    "h": 197
+    "x": 1413,
+    "y": 2,
+    "w": 96,
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
+    "x": 187,
     "y": 154,
-    "w": 90,
-    "h": 197
+    "w": 96,
+    "h": 199
    },
    "sourceSize": {
     "w": 548,
@@ -338,18 +338,18 @@
   },
   "voltigeurs_walk_01": {
    "frame": {
-    "x": 2,
-    "y": 240,
+    "x": 276,
+    "y": 471,
     "w": 158,
-    "h": 227
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 189,
-    "y": 169,
+    "y": 167,
     "w": 158,
-    "h": 227
+    "h": 229
    },
    "sourceSize": {
     "w": 548,
@@ -362,17 +362,17 @@
   },
   "voltigeurs_walk_01_team": {
    "frame": {
-    "x": 1297,
-    "y": 902,
-    "w": 85,
+    "x": 1540,
+    "y": 796,
+    "w": 86,
     "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
+    "x": 197,
     "y": 159,
-    "w": 85,
+    "w": 86,
     "h": 191
    },
    "sourceSize": {
@@ -386,18 +386,18 @@
   },
   "voltigeurs_walk_02": {
    "frame": {
-    "x": 400,
-    "y": 2,
+    "x": 116,
+    "y": 478,
     "w": 156,
-    "h": 230
+    "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 190,
-    "y": 155,
+    "y": 154,
     "w": 156,
-    "h": 230
+    "h": 231
    },
    "sourceSize": {
     "w": 548,
@@ -410,18 +410,18 @@
   },
   "voltigeurs_walk_02_team": {
    "frame": {
-    "x": 1334,
-    "y": 693,
-    "w": 96,
-    "h": 199
+    "x": 1223,
+    "y": 2,
+    "w": 97,
+    "h": 201
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 190,
+    "x": 189,
     "y": 146,
-    "w": 96,
-    "h": 199
+    "w": 97,
+    "h": 201
    },
    "sourceSize": {
     "w": 548,
@@ -434,18 +434,18 @@
   },
   "voltigeurs_walk_03": {
    "frame": {
-    "x": 1202,
-    "y": 240,
+    "x": 574,
+    "y": 459,
     "w": 161,
-    "h": 220
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 189,
-    "y": 146,
+    "y": 144,
     "w": 161,
-    "h": 220
+    "h": 222
    },
    "sourceSize": {
     "w": 548,
@@ -458,8 +458,8 @@
   },
   "voltigeurs_walk_03_team": {
    "frame": {
-    "x": 439,
-    "y": 693,
+    "x": 1103,
+    "y": 639,
     "w": 97,
     "h": 202
    },
@@ -482,18 +482,18 @@
   },
   "voltigeurs_walk_04": {
    "frame": {
-    "x": 286,
-    "y": 471,
+    "x": 739,
+    "y": 454,
     "w": 172,
-    "h": 212
+    "h": 213
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 178,
-    "y": 163,
+    "y": 162,
     "w": 172,
-    "h": 212
+    "h": 213
    },
    "sourceSize": {
     "w": 548,
@@ -506,17 +506,17 @@
   },
   "voltigeurs_walk_04_team": {
    "frame": {
-    "x": 1434,
-    "y": 693,
-    "w": 86,
+    "x": 861,
+    "y": 883,
+    "w": 87,
     "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
+    "x": 196,
     "y": 154,
-    "w": 86,
+    "w": 87,
     "h": 199
    },
    "sourceSize": {
@@ -530,18 +530,18 @@
   },
   "voltigeurs_walk_05": {
    "frame": {
-    "x": 560,
-    "y": 2,
+    "x": 2,
+    "y": 715,
     "w": 155,
-    "h": 230
+    "h": 232
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 170,
+    "y": 168,
     "w": 155,
-    "h": 230
+    "h": 232
    },
    "sourceSize": {
     "w": 548,
@@ -554,10 +554,10 @@
   },
   "voltigeurs_walk_05_team": {
    "frame": {
-    "x": 362,
-    "y": 1103,
+    "x": 1675,
+    "y": 201,
     "w": 85,
-    "h": 185
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
@@ -565,7 +565,7 @@
     "x": 197,
     "y": 161,
     "w": 85,
-    "h": 185
+    "h": 186
    },
    "sourceSize": {
     "w": 548,
@@ -581,15 +581,15 @@
     "x": 2,
     "y": 2,
     "w": 151,
-    "h": 234
+    "h": 235
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 157,
+    "y": 156,
     "w": 151,
-    "h": 234
+    "h": 235
    },
    "sourceSize": {
     "w": 548,
@@ -602,18 +602,18 @@
   },
   "voltigeurs_walk_06_team": {
    "frame": {
-    "x": 1386,
-    "y": 902,
-    "w": 95,
-    "h": 190
+    "x": 1440,
+    "y": 816,
+    "w": 96,
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 190,
+    "x": 189,
     "y": 148,
-    "w": 95,
-    "h": 190
+    "w": 96,
+    "h": 191
    },
    "sourceSize": {
     "w": 548,
@@ -626,18 +626,18 @@
   },
   "voltigeurs_walk_07": {
    "frame": {
-    "x": 599,
-    "y": 240,
+    "x": 438,
+    "y": 696,
     "w": 158,
-    "h": 223
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 147,
+    "y": 146,
     "w": 158,
-    "h": 223
+    "h": 224
    },
    "sourceSize": {
     "w": 548,
@@ -650,10 +650,10 @@
   },
   "voltigeurs_walk_07_team": {
    "frame": {
-    "x": 682,
-    "y": 902,
+    "x": 1291,
+    "y": 619,
     "w": 95,
-    "h": 193
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
@@ -661,7 +661,7 @@
     "x": 189,
     "y": 138,
     "w": 95,
-    "h": 193
+    "h": 194
    },
    "sourceSize": {
     "w": 548,
@@ -674,18 +674,18 @@
   },
   "voltigeurs_attack_00": {
    "frame": {
-    "x": 761,
-    "y": 240,
+    "x": 574,
+    "y": 231,
     "w": 158,
-    "h": 223
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 182,
-    "y": 151,
+    "y": 150,
     "w": 158,
-    "h": 223
+    "h": 224
    },
    "sourceSize": {
     "w": 548,
@@ -698,8 +698,8 @@
   },
   "voltigeurs_attack_00_team": {
    "frame": {
-    "x": 1242,
-    "y": 693,
+    "x": 1330,
+    "y": 207,
     "w": 88,
     "h": 200
    },
@@ -722,18 +722,18 @@
   },
   "voltigeurs_attack_01": {
    "frame": {
-    "x": 500,
-    "y": 902,
+    "x": 1513,
+    "y": 2,
     "w": 178,
-    "h": 193
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 185,
-    "y": 186,
+    "y": 184,
     "w": 178,
-    "h": 193
+    "h": 195
    },
    "sourceSize": {
     "w": 548,
@@ -746,17 +746,17 @@
   },
   "voltigeurs_attack_01_team": {
    "frame": {
-    "x": 1191,
-    "y": 1103,
-    "w": 99,
+    "x": 1764,
+    "y": 191,
+    "w": 103,
     "h": 183
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 195,
+    "x": 191,
     "y": 177,
-    "w": 99,
+    "w": 103,
     "h": 183
    },
    "sourceSize": {
@@ -770,18 +770,18 @@
   },
   "voltigeurs_attack_02": {
    "frame": {
-    "x": 1024,
-    "y": 902,
+    "x": 1488,
+    "y": 405,
     "w": 173,
-    "h": 191
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 187,
-    "y": 189,
+    "y": 188,
     "w": 173,
-    "h": 191
+    "h": 192
    },
    "sourceSize": {
     "w": 548,
@@ -794,8 +794,8 @@
   },
   "voltigeurs_attack_02_team": {
    "frame": {
-    "x": 907,
-    "y": 902,
+    "x": 1558,
+    "y": 201,
     "w": 113,
     "h": 192
    },
@@ -818,18 +818,18 @@
   },
   "voltigeurs_attack_03": {
    "frame": {
-    "x": 451,
-    "y": 1103,
+    "x": 1695,
+    "y": 2,
     "w": 176,
-    "h": 184
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 188,
-    "y": 196,
+    "y": 195,
     "w": 176,
-    "h": 184
+    "h": 185
    },
    "sourceSize": {
     "w": 548,
@@ -842,8 +842,8 @@
   },
   "voltigeurs_attack_03_team": {
    "frame": {
-    "x": 631,
-    "y": 1103,
+    "x": 1874,
+    "y": 191,
     "w": 124,
     "h": 184
    },
@@ -866,18 +866,18 @@
   },
   "voltigeurs_attack_04": {
    "frame": {
-    "x": 881,
-    "y": 1103,
+    "x": 1630,
+    "y": 795,
     "w": 177,
-    "h": 183
+    "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 188,
-    "y": 197,
+    "y": 196,
     "w": 177,
-    "h": 183
+    "h": 184
    },
    "sourceSize": {
     "w": 548,
@@ -890,8 +890,8 @@
   },
   "voltigeurs_attack_04_team": {
    "frame": {
-    "x": 1062,
-    "y": 1103,
+    "x": 1764,
+    "y": 379,
     "w": 125,
     "h": 183
    },
@@ -914,8 +914,8 @@
   },
   "voltigeurs_attack_05": {
    "frame": {
-    "x": 892,
-    "y": 693,
+    "x": 1252,
+    "y": 415,
     "w": 232,
     "h": 200
    },
@@ -938,10 +938,10 @@
   },
   "voltigeurs_attack_05_team": {
    "frame": {
-    "x": 1128,
-    "y": 693,
+    "x": 1216,
+    "y": 210,
     "w": 110,
-    "h": 200
+    "h": 201
    },
    "rotated": false,
    "trimmed": true,
@@ -949,7 +949,7 @@
     "x": 190,
     "y": 171,
     "w": 110,
-    "h": 200
+    "h": 201
    },
    "sourceSize": {
     "w": 548,
@@ -962,18 +962,18 @@
   },
   "voltigeurs_attack_06": {
    "frame": {
-    "x": 2,
-    "y": 1103,
+    "x": 1613,
+    "y": 601,
     "w": 257,
-    "h": 189
+    "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 165,
-    "y": 189,
+    "y": 188,
     "w": 257,
-    "h": 189
+    "h": 190
    },
    "sourceSize": {
     "w": 548,
@@ -986,10 +986,10 @@
   },
   "voltigeurs_attack_06_team": {
    "frame": {
-    "x": 263,
-    "y": 1103,
+    "x": 1665,
+    "y": 397,
     "w": 95,
-    "h": 188
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
@@ -997,7 +997,7 @@
     "x": 173,
     "y": 180,
     "w": 95,
-    "h": 188
+    "h": 189
    },
    "sourceSize": {
     "w": 548,
@@ -1010,18 +1010,18 @@
   },
   "voltigeurs_attack_07": {
    "frame": {
-    "x": 1256,
-    "y": 2,
+    "x": 161,
+    "y": 713,
     "w": 273,
-    "h": 228
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 188,
-    "y": 141,
+    "y": 140,
     "w": 273,
-    "h": 228
+    "h": 229
    },
    "sourceSize": {
     "w": 548,
@@ -1034,10 +1034,10 @@
   },
   "voltigeurs_attack_07_team": {
    "frame": {
-    "x": 1351,
-    "y": 471,
+    "x": 1047,
+    "y": 219,
     "w": 80,
-    "h": 206
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
@@ -1045,7 +1045,7 @@
     "x": 199,
     "y": 131,
     "w": 80,
-    "h": 206
+    "h": 207
    },
    "sourceSize": {
     "w": 548,
@@ -1058,18 +1058,18 @@
   },
   "voltigeurs_attack_08": {
    "frame": {
-    "x": 633,
-    "y": 471,
+    "x": 874,
+    "y": 226,
     "w": 169,
-    "h": 211
+    "h": 213
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 196,
-    "y": 155,
+    "y": 153,
     "w": 169,
-    "h": 211
+    "h": 213
    },
    "sourceSize": {
     "w": 548,
@@ -1082,17 +1082,17 @@
   },
   "voltigeurs_attack_08_team": {
    "frame": {
-    "x": 1201,
-    "y": 902,
-    "w": 92,
+    "x": 1516,
+    "y": 601,
+    "w": 93,
     "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 207,
+    "x": 206,
     "y": 145,
-    "w": 92,
+    "w": 93,
     "h": 191
    },
    "sourceSize": {
@@ -1106,18 +1106,18 @@
   },
   "voltigeurs_attack_09": {
    "frame": {
-    "x": 164,
-    "y": 240,
+    "x": 408,
+    "y": 236,
     "w": 162,
-    "h": 226
+    "h": 227
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 201,
-    "y": 150,
+    "y": 149,
     "w": 162,
-    "h": 226
+    "h": 227
    },
    "sourceSize": {
     "w": 548,
@@ -1130,8 +1130,8 @@
   },
   "voltigeurs_attack_09_team": {
    "frame": {
-    "x": 540,
-    "y": 693,
+    "x": 1162,
+    "y": 427,
     "w": 86,
     "h": 202
    },
@@ -1154,18 +1154,18 @@
   },
   "voltigeurs_attack_10": {
    "frame": {
-    "x": 463,
-    "y": 240,
+    "x": 438,
+    "y": 467,
     "w": 132,
-    "h": 224
+    "h": 225
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 195,
-    "y": 150,
+    "y": 149,
     "w": 132,
-    "h": 224
+    "h": 225
    },
    "sourceSize": {
     "w": 548,
@@ -1178,18 +1178,18 @@
   },
   "voltigeurs_attack_10_team": {
    "frame": {
-    "x": 630,
-    "y": 693,
-    "w": 83,
-    "h": 202
+    "x": 1324,
+    "y": 2,
+    "w": 85,
+    "h": 201
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 200,
     "y": 141,
-    "w": 83,
-    "h": 202
+    "w": 85,
+    "h": 201
    },
    "sourceSize": {
     "w": 548,
@@ -1202,18 +1202,18 @@
   },
   "voltigeurs_hit_00": {
    "frame": {
-    "x": 126,
-    "y": 693,
+    "x": 960,
+    "y": 654,
     "w": 139,
-    "h": 204
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 142,
-    "y": 170,
+    "y": 168,
     "w": 139,
-    "h": 204
+    "h": 206
    },
    "sourceSize": {
     "w": 548,
@@ -1226,18 +1226,18 @@
   },
   "voltigeurs_hit_00_team": {
    "frame": {
-    "x": 759,
-    "y": 1103,
-    "w": 118,
-    "h": 184
+    "x": 1875,
+    "y": 2,
+    "w": 119,
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 150,
+    "x": 149,
     "y": 161,
-    "w": 118,
-    "h": 184
+    "w": 119,
+    "h": 185
    },
    "sourceSize": {
     "w": 548,
@@ -1250,18 +1250,18 @@
   },
   "voltigeurs_hit_01": {
    "frame": {
-    "x": 1130,
+    "x": 157,
     "y": 2,
     "w": 122,
-    "h": 229
+    "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 139,
-    "y": 143,
+    "y": 141,
     "w": 122,
-    "h": 229
+    "h": 231
    },
    "sourceSize": {
     "w": 548,
@@ -1274,8 +1274,8 @@
   },
   "voltigeurs_hit_01_team": {
    "frame": {
-    "x": 2,
-    "y": 693,
+    "x": 1048,
+    "y": 864,
     "w": 120,
     "h": 205
    },
@@ -1298,18 +1298,18 @@
   },
   "voltigeurs_hit_02": {
    "frame": {
-    "x": 157,
-    "y": 2,
+    "x": 2,
+    "y": 241,
     "w": 125,
-    "h": 231
+    "h": 233
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 167,
-    "y": 143,
+    "y": 141,
     "w": 125,
-    "h": 231
+    "h": 233
    },
    "sourceSize": {
     "w": 548,
@@ -1322,10 +1322,10 @@
   },
   "voltigeurs_hit_02_team": {
    "frame": {
-    "x": 1079,
-    "y": 471,
+    "x": 861,
+    "y": 671,
     "w": 95,
-    "h": 207
+    "h": 208
    },
    "rotated": false,
    "trimmed": true,
@@ -1333,7 +1333,7 @@
     "x": 172,
     "y": 133,
     "w": 95,
-    "h": 207
+    "h": 208
    },
    "sourceSize": {
     "w": 548,
@@ -1346,18 +1346,18 @@
   },
   "voltigeurs_hit_03": {
    "frame": {
-    "x": 140,
-    "y": 471,
+    "x": 600,
+    "y": 685,
     "w": 142,
-    "h": 216
+    "h": 218
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 159,
+    "y": 157,
     "w": 142,
-    "h": 216
+    "h": 218
    },
    "sourceSize": {
     "w": 548,
@@ -1370,17 +1370,17 @@
   },
   "voltigeurs_hit_03_team": {
    "frame": {
-    "x": 409,
-    "y": 902,
-    "w": 87,
+    "x": 1348,
+    "y": 817,
+    "w": 88,
     "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 190,
+    "x": 189,
     "y": 149,
-    "w": 87,
+    "w": 88,
     "h": 194
    },
    "sourceSize": {
@@ -1394,18 +1394,18 @@
   },
   "voltigeurs_hit_04": {
    "frame": {
-    "x": 330,
-    "y": 240,
+    "x": 417,
+    "y": 2,
     "w": 129,
-    "h": 226
+    "h": 227
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 185,
-    "y": 149,
+    "y": 148,
     "w": 129,
-    "h": 226
+    "h": 227
    },
    "sourceSize": {
     "w": 548,
@@ -1418,8 +1418,8 @@
   },
   "voltigeurs_hit_04_team": {
    "frame": {
-    "x": 269,
-    "y": 693,
+    "x": 1131,
+    "y": 219,
     "w": 81,
     "h": 204
    },
@@ -1442,18 +1442,18 @@
   },
   "voltigeurs_die_00": {
    "frame": {
-    "x": 273,
-    "y": 902,
+    "x": 1422,
+    "y": 205,
     "w": 132,
-    "h": 194
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 140,
-    "y": 178,
+    "y": 176,
     "w": 132,
-    "h": 194
+    "h": 196
    },
    "sourceSize": {
     "w": 548,
@@ -1466,18 +1466,18 @@
   },
   "voltigeurs_die_00_team": {
    "frame": {
-    "x": 1294,
-    "y": 1103,
-    "w": 118,
-    "h": 176
+    "x": 1893,
+    "y": 379,
+    "w": 119,
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 147,
     "y": 169,
-    "w": 118,
-    "h": 176
+    "w": 119,
+    "h": 177
    },
    "sourceSize": {
     "w": 548,
@@ -1490,18 +1490,18 @@
   },
   "voltigeurs_die_01": {
    "frame": {
-    "x": 286,
-    "y": 2,
+    "x": 2,
+    "y": 478,
     "w": 110,
-    "h": 231
+    "h": 233
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 136,
-    "y": 136,
+    "y": 134,
     "w": 110,
-    "h": 231
+    "h": 233
    },
    "sourceSize": {
     "w": 548,
@@ -1514,18 +1514,18 @@
   },
   "voltigeurs_die_01_team": {
    "frame": {
-    "x": 806,
-    "y": 471,
-    "w": 110,
-    "h": 211
+    "x": 746,
+    "y": 671,
+    "w": 111,
+    "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 141,
     "y": 126,
-    "w": 110,
-    "h": 211
+    "w": 111,
+    "h": 210
    },
    "sourceSize": {
     "w": 548,
@@ -1538,18 +1538,18 @@
   },
   "voltigeurs_die_02": {
    "frame": {
-    "x": 996,
+    "x": 283,
     "y": 2,
     "w": 130,
-    "h": 229
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 170,
-    "y": 143,
+    "y": 142,
     "w": 130,
-    "h": 229
+    "h": 230
    },
    "sourceSize": {
     "w": 548,
@@ -1562,8 +1562,8 @@
   },
   "voltigeurs_die_02_team": {
    "frame": {
-    "x": 354,
-    "y": 693,
+    "x": 1138,
+    "y": 2,
     "w": 81,
     "h": 204
    },
@@ -1586,8 +1586,8 @@
   },
   "voltigeurs_die_03": {
    "frame": {
-    "x": 920,
-    "y": 471,
+    "x": 915,
+    "y": 443,
     "w": 155,
     "h": 207
    },
@@ -1610,10 +1610,10 @@
   },
   "voltigeurs_die_03_team": {
    "frame": {
-    "x": 781,
-    "y": 902,
+    "x": 1390,
+    "y": 619,
     "w": 122,
-    "h": 192
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 212,
     "y": 152,
     "w": 122,
-    "h": 192
+    "h": 193
    },
    "sourceSize": {
     "w": 548,
@@ -1634,9 +1634,9 @@
   },
   "voltigeurs_die_04": {
    "frame": {
-    "x": 2,
-    "y": 1296,
-    "w": 201,
+    "x": 438,
+    "y": 924,
+    "w": 203,
     "h": 141
    },
    "rotated": false,
@@ -1644,7 +1644,7 @@
    "spriteSourceSize": {
     "x": 227,
     "y": 220,
-    "w": 201,
+    "w": 203,
     "h": 141
    },
    "sourceSize": {
@@ -1658,18 +1658,18 @@
   },
   "voltigeurs_die_04_team": {
    "frame": {
-    "x": 383,
-    "y": 1296,
+    "x": 179,
+    "y": 946,
     "w": 191,
-    "h": 119
+    "h": 122
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 247,
-    "y": 228,
+    "y": 227,
     "w": 191,
-    "h": 119
+    "h": 122
    },
    "sourceSize": {
     "w": 548,
@@ -1682,9 +1682,9 @@
   },
   "voltigeurs_die_05": {
    "frame": {
-    "x": 207,
-    "y": 1296,
-    "w": 172,
+    "x": 2,
+    "y": 951,
+    "w": 173,
     "h": 124
    },
    "rotated": false,
@@ -1692,7 +1692,7 @@
    "spriteSourceSize": {
     "x": 235,
     "y": 275,
-    "w": 172,
+    "w": 173,
     "h": 124
    },
    "sourceSize": {
@@ -1706,10 +1706,10 @@
   },
   "voltigeurs_die_05_team": {
    "frame": {
-    "x": 1232,
-    "y": 1296,
+    "x": 1630,
+    "y": 983,
     "w": 147,
-    "h": 91
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
@@ -1717,7 +1717,7 @@
     "x": 269,
     "y": 282,
     "w": 147,
-    "h": 91
+    "h": 92
    },
    "sourceSize": {
     "w": 548,
@@ -1730,8 +1730,8 @@
   },
   "voltigeurs_die_06": {
    "frame": {
-    "x": 698,
-    "y": 1296,
+    "x": 1811,
+    "y": 795,
     "w": 200,
     "h": 108
    },
@@ -1754,8 +1754,8 @@
   },
   "voltigeurs_die_06_team": {
    "frame": {
-    "x": 578,
-    "y": 1296,
+    "x": 1893,
+    "y": 560,
     "w": 116,
     "h": 114
    },
@@ -1778,18 +1778,18 @@
   },
   "voltigeurs_die_07": {
    "frame": {
-    "x": 902,
-    "y": 1296,
+    "x": 1811,
+    "y": 907,
     "w": 184,
-    "h": 105
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 235,
-    "y": 281,
+    "y": 280,
     "w": 184,
-    "h": 105
+    "h": 106
    },
    "sourceSize": {
     "w": 548,
@@ -1802,17 +1802,17 @@
   },
   "voltigeurs_die_07_team": {
    "frame": {
-    "x": 1090,
-    "y": 1296,
-    "w": 138,
+    "x": 1874,
+    "y": 678,
+    "w": 139,
     "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 263,
+    "x": 262,
     "y": 272,
-    "w": 138,
+    "w": 139,
     "h": 92
    },
    "sourceSize": {
@@ -1935,8 +1935,8 @@
   "image": "voltigeurs.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 1440
+   "w": 2048,
+   "h": 1084
   },
   "scale": "3",
   "ageborn": {

@@ -279,8 +279,8 @@ def _damage_spots(rig):
     """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The coat's back half (the
     largest team surface the bomb arm leaves clear), the coat tails, the mitre's team plate and the bomb bag; a
     torn strip from the tails' cream hem."""
-    rig.damage_spot_at("coat", "torso", -7.0, 29.0, 8.0, "cloth", team=True)
-    rig.damage_spot_at("tails", "tails", -6.0, 19.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("coat", "torso", -8.0, 24.0, 8.0, "cloth", team=True)     # below the arm in every frame
+    rig.damage_spot_at("tails", "tails", -10.0, 18.0, 7.0, "cloth", team=True)
     rig.damage_spot_at("plate", "cap", 3.0, 70.0, 6.0, "cloth", team=True)
     rig.damage_spot_at("bag", "hips", -4.5, 18.5, 5.0, "hide", fill=FLAP)
     rig.damage_spot_at("hem", "tails", -7.0, 10.0, 8.0, "cloth", kind="strip", fill=B.CREAM)

@@ -252,13 +252,15 @@ def build(rig):
 
 
 def _damage_spots(rig):
-    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The coat's back half (the
-    largest team surface the musket and the near arm leave clear), the coat tails, the shako's team body; a torn
-    strip from the coat skirt's team hem."""
-    rig.damage_spot_at("coat", "torso", -6.0, 30.0, 8.0, "cloth", team=True)
-    rig.damage_spot_at("tails", "tails", -6.0, 14.0, 7.0, "cloth", team=True)
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. Placed where the posed frames
+    show them (the probe's camera rays in idle, walk and both shots, W1 lesson 4): the coat skirt's front flap
+    (the largest team surface the musket and the near arm leave clear), the coat's back edge behind the arm, the
+    coat tails, the shako's team body; a torn strip from the skirt's back hem."""
+    rig.damage_spot_at("coat", "hips", 8.0, 16.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("back", "torso", -10.0, 26.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("tails", "tails", -8.0, 14.0, 7.0, "cloth", team=True)
     rig.damage_spot_at("shako", "hat", -4.0, 64.0, 6.0, "cloth", team=True)
-    rig.damage_spot_at("hem", "hips", -6.0, 15.0, 8.0, "cloth", kind="strip", team=True)
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

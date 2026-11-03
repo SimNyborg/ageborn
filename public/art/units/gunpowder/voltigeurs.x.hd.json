@@ -2,18 +2,18 @@
  "frames": {
   "voltigeurs_attack_b_01": {
    "frame": {
-    "x": 506,
-    "y": 2,
+    "x": 1209,
+    "y": 445,
     "w": 173,
-    "h": 209
+    "h": 211
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 166,
+    "y": 164,
     "w": 173,
-    "h": 209
+    "h": 211
    },
    "sourceSize": {
     "w": 548,
@@ -26,18 +26,18 @@
   },
   "voltigeurs_attack_b_01_team": {
    "frame": {
-    "x": 184,
-    "y": 443,
-    "w": 92,
-    "h": 191
+    "x": 705,
+    "y": 465,
+    "w": 93,
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 191,
+    "x": 190,
     "y": 156,
-    "w": 92,
-    "h": 191
+    "w": 93,
+    "h": 192
    },
    "sourceSize": {
     "w": 548,
@@ -50,18 +50,18 @@
   },
   "voltigeurs_attack_b_02": {
    "frame": {
-    "x": 102,
-    "y": 234,
+    "x": 1648,
+    "y": 422,
     "w": 175,
-    "h": 201
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 174,
+    "y": 172,
     "w": 175,
-    "h": 201
+    "h": 203
    },
    "sourceSize": {
     "w": 548,
@@ -74,17 +74,17 @@
   },
   "voltigeurs_attack_b_02_team": {
    "frame": {
-    "x": 386,
-    "y": 443,
-    "w": 99,
+    "x": 2982,
+    "y": 192,
+    "w": 100,
     "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 190,
+    "x": 189,
     "y": 164,
-    "w": 99,
+    "w": 100,
     "h": 186
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "voltigeurs_attack_b_03": {
    "frame": {
-    "x": 549,
-    "y": 234,
+    "x": 2412,
+    "y": 405,
     "w": 178,
-    "h": 195
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 179,
-    "y": 180,
+    "y": 179,
     "w": 178,
-    "h": 195
+    "h": 196
    },
    "sourceSize": {
     "w": 548,
@@ -122,8 +122,8 @@
   },
   "voltigeurs_attack_b_03_team": {
    "frame": {
-    "x": 489,
-    "y": 443,
+    "x": 141,
+    "y": 475,
     "w": 108,
     "h": 183
    },
@@ -146,18 +146,18 @@
   },
   "voltigeurs_attack_b_04": {
    "frame": {
-    "x": 2,
-    "y": 443,
+    "x": 2518,
+    "y": 203,
     "w": 178,
-    "h": 195
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 179,
-    "y": 180,
+    "y": 179,
     "w": 178,
-    "h": 195
+    "h": 196
    },
    "sourceSize": {
     "w": 548,
@@ -170,8 +170,8 @@
   },
   "voltigeurs_attack_b_04_team": {
    "frame": {
-    "x": 601,
-    "y": 443,
+    "x": 253,
+    "y": 475,
     "w": 108,
     "h": 183
    },
@@ -194,18 +194,18 @@
   },
   "voltigeurs_attack_b_05": {
    "frame": {
-    "x": 273,
-    "y": 2,
+    "x": 705,
+    "y": 235,
     "w": 229,
-    "h": 225
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 182,
-    "y": 160,
+    "y": 159,
     "w": 229,
-    "h": 225
+    "h": 226
    },
    "sourceSize": {
     "w": 548,
@@ -218,17 +218,17 @@
   },
   "voltigeurs_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 234,
-    "w": 96,
+    "x": 1607,
+    "y": 2,
+    "w": 95,
     "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 188,
+    "x": 189,
     "y": 150,
-    "w": 96,
+    "w": 95,
     "h": 205
    },
    "sourceSize": {
@@ -242,18 +242,18 @@
   },
   "voltigeurs_attack_b_06": {
    "frame": {
-    "x": 281,
-    "y": 234,
+    "x": 2208,
+    "y": 2,
     "w": 264,
-    "h": 197
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 158,
-    "y": 178,
+    "y": 177,
     "w": 264,
-    "h": 197
+    "h": 198
    },
    "sourceSize": {
     "w": 548,
@@ -266,8 +266,8 @@
   },
   "voltigeurs_attack_b_06_team": {
    "frame": {
-    "x": 280,
-    "y": 443,
+    "x": 2965,
+    "y": 2,
     "w": 102,
     "h": 186
    },
@@ -290,18 +290,18 @@
   },
   "voltigeurs_attack_b_07": {
    "frame": {
-    "x": 2,
+    "x": 705,
     "y": 2,
     "w": 267,
-    "h": 228
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 175,
-    "y": 147,
+    "y": 146,
     "w": 267,
-    "h": 228
+    "h": 229
    },
    "sourceSize": {
     "w": 548,
@@ -314,10 +314,10 @@
   },
   "voltigeurs_attack_b_07_team": {
    "frame": {
-    "x": 683,
-    "y": 2,
+    "x": 1474,
+    "y": 426,
     "w": 82,
-    "h": 206
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
@@ -325,7 +325,1351 @@
     "x": 188,
     "y": 137,
     "w": 82,
-    "h": 206
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_01": {
+   "frame": {
+    "x": 1796,
+    "y": 209,
+    "w": 159,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 178,
+    "w": 159,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_01_team": {
+   "frame": {
+    "x": 2784,
+    "y": 2,
+    "w": 85,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 171,
+    "w": 85,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_02": {
+   "frame": {
+    "x": 1657,
+    "y": 211,
+    "w": 135,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 177,
+    "w": 135,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_02_team": {
+   "frame": {
+    "x": 1706,
+    "y": 2,
+    "w": 87,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 169,
+    "w": 87,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_03": {
+   "frame": {
+    "x": 1959,
+    "y": 207,
+    "w": 129,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 179,
+    "w": 129,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_03_team": {
+   "frame": {
+    "x": 2198,
+    "y": 207,
+    "w": 86,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 171,
+    "w": 86,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_04": {
+   "frame": {
+    "x": 2071,
+    "y": 412,
+    "w": 129,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 180,
+    "w": 129,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_04_team": {
+   "frame": {
+    "x": 2204,
+    "y": 411,
+    "w": 87,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 173,
+    "w": 87,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_05": {
+   "frame": {
+    "x": 976,
+    "y": 2,
+    "w": 173,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 161,
+    "w": 173,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_05_team": {
+   "frame": {
+    "x": 1116,
+    "y": 445,
+    "w": 89,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 160,
+    "w": 89,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_06": {
+   "frame": {
+    "x": 365,
+    "y": 475,
+    "w": 299,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 196,
+    "w": 299,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_06_team": {
+   "frame": {
+    "x": 2987,
+    "y": 382,
+    "w": 128,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 189,
+    "w": 128,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_07": {
+   "frame": {
+    "x": 141,
+    "y": 239,
+    "w": 281,
+    "h": 232
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 137,
+    "w": 281,
+    "h": 232
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up45_07_team": {
+   "frame": {
+    "x": 1319,
+    "y": 2,
+    "w": 82,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 129,
+    "w": 82,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_01": {
+   "frame": {
+    "x": 1797,
+    "y": 2,
+    "w": 145,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 178,
+    "w": 145,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_01_team": {
+   "frame": {
+    "x": 802,
+    "y": 465,
+    "w": 89,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 170,
+    "w": 89,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_02": {
+   "frame": {
+    "x": 2089,
+    "y": 2,
+    "w": 115,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 179,
+    "w": 115,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_02_team": {
+   "frame": {
+    "x": 2092,
+    "y": 207,
+    "w": 102,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 172,
+    "w": 102,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_03": {
+   "frame": {
+    "x": 938,
+    "y": 459,
+    "w": 108,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 181,
+    "w": 108,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_03_team": {
+   "frame": {
+    "x": 2476,
+    "y": 2,
+    "w": 106,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 174,
+    "w": 106,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_04": {
+   "frame": {
+    "x": 2405,
+    "y": 204,
+    "w": 109,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 183,
+    "w": 109,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_04_team": {
+   "frame": {
+    "x": 2674,
+    "y": 2,
+    "w": 106,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 176,
+    "w": 106,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 134,
+    "h": 266
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 115,
+    "w": 134,
+    "h": 266
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_05_team": {
+   "frame": {
+    "x": 1405,
+    "y": 2,
+    "w": 106,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 165,
+    "w": 106,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_06": {
+   "frame": {
+    "x": 3119,
+    "y": 372,
+    "w": 316,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 201,
+    "w": 316,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_06_team": {
+   "frame": {
+    "x": 3215,
+    "y": 190,
+    "w": 147,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 197,
+    "w": 147,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_07": {
+   "frame": {
+    "x": 140,
+    "y": 2,
+    "w": 285,
+    "h": 233
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 136,
+    "w": 285,
+    "h": 233
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_up70_07_team": {
+   "frame": {
+    "x": 1288,
+    "y": 221,
+    "w": 84,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 128,
+    "w": 84,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_01": {
+   "frame": {
+    "x": 1116,
+    "y": 226,
+    "w": 168,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 160,
+    "w": 168,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_01_team": {
+   "frame": {
+    "x": 2594,
+    "y": 403,
+    "w": 86,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 153,
+    "w": 86,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_02": {
+   "frame": {
+    "x": 1376,
+    "y": 215,
+    "w": 145,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 168,
+    "w": 145,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_02_team": {
+   "frame": {
+    "x": 2700,
+    "y": 201,
+    "w": 85,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 160,
+    "w": 85,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_03": {
+   "frame": {
+    "x": 1946,
+    "y": 2,
+    "w": 139,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 174,
+    "w": 139,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_03_team": {
+   "frame": {
+    "x": 2873,
+    "y": 2,
+    "w": 88,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 167,
+    "w": 88,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_04": {
+   "frame": {
+    "x": 1827,
+    "y": 414,
+    "w": 139,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 174,
+    "w": 139,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_04_team": {
+   "frame": {
+    "x": 2890,
+    "y": 193,
+    "w": 88,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 167,
+    "w": 88,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_05": {
+   "frame": {
+    "x": 938,
+    "y": 235,
+    "w": 174,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 155,
+    "w": 174,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_05_team": {
+   "frame": {
+    "x": 1560,
+    "y": 422,
+    "w": 84,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 148,
+    "w": 84,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_06": {
+   "frame": {
+    "x": 2684,
+    "y": 403,
+    "w": 299,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 185,
+    "w": 299,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_06_team": {
+   "frame": {
+    "x": 3086,
+    "y": 190,
+    "w": 125,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 177,
+    "w": 125,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_07": {
+   "frame": {
+    "x": 429,
+    "y": 2,
+    "w": 272,
+    "h": 230
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 145,
+    "w": 272,
+    "h": 230
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up45_07_team": {
+   "frame": {
+    "x": 1386,
+    "y": 426,
+    "w": 84,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 137,
+    "w": 84,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_01": {
+   "frame": {
+    "x": 1153,
+    "y": 2,
+    "w": 162,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 160,
+    "w": 162,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_01_team": {
+   "frame": {
+    "x": 2586,
+    "y": 2,
+    "w": 84,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 152,
+    "w": 84,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_02": {
+   "frame": {
+    "x": 1525,
+    "y": 213,
+    "w": 128,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 170,
+    "w": 128,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_02_team": {
+   "frame": {
+    "x": 2789,
+    "y": 195,
+    "w": 97,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 162,
+    "w": 97,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_03": {
+   "frame": {
+    "x": 2288,
+    "y": 204,
+    "w": 113,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 178,
+    "w": 113,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_03_team": {
+   "frame": {
+    "x": 3388,
+    "y": 2,
+    "w": 101,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 171,
+    "w": 101,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_04": {
+   "frame": {
+    "x": 2295,
+    "y": 405,
+    "w": 113,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 178,
+    "w": 113,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_04_team": {
+   "frame": {
+    "x": 3388,
+    "y": 187,
+    "w": 101,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 171,
+    "w": 101,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_05": {
+   "frame": {
+    "x": 2,
+    "y": 272,
+    "w": 135,
+    "h": 239
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 136,
+    "w": 135,
+    "h": 239
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_05_team": {
+   "frame": {
+    "x": 1970,
+    "y": 412,
+    "w": 97,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 152,
+    "w": 97,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_06": {
+   "frame": {
+    "x": 3071,
+    "y": 2,
+    "w": 313,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 191,
+    "w": 313,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_06_team": {
+   "frame": {
+    "x": 3439,
+    "y": 372,
+    "w": 139,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 184,
+    "w": 139,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_07": {
+   "frame": {
+    "x": 426,
+    "y": 239,
+    "w": 275,
+    "h": 230
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 145,
+    "w": 275,
+    "h": 230
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_up70_07_team": {
+   "frame": {
+    "x": 1515,
+    "y": 2,
+    "w": 88,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 137,
+    "w": 88,
+    "h": 207
    },
    "sourceSize": {
     "w": 548,
@@ -365,6 +1709,118 @@
    "voltigeurs_attack_08_team",
    "voltigeurs_attack_09_team",
    "voltigeurs_attack_10_team"
+  ],
+  "attack_up45": [
+   "voltigeurs_attack_00",
+   "voltigeurs_attack_up45_01",
+   "voltigeurs_attack_up45_02",
+   "voltigeurs_attack_up45_03",
+   "voltigeurs_attack_up45_04",
+   "voltigeurs_attack_up45_05",
+   "voltigeurs_attack_up45_06",
+   "voltigeurs_attack_up45_06",
+   "voltigeurs_attack_up45_07",
+   "voltigeurs_attack_08",
+   "voltigeurs_attack_09",
+   "voltigeurs_attack_10"
+  ],
+  "attack_up45_team": [
+   "voltigeurs_attack_00_team",
+   "voltigeurs_attack_up45_01_team",
+   "voltigeurs_attack_up45_02_team",
+   "voltigeurs_attack_up45_03_team",
+   "voltigeurs_attack_up45_04_team",
+   "voltigeurs_attack_up45_05_team",
+   "voltigeurs_attack_up45_06_team",
+   "voltigeurs_attack_up45_06_team",
+   "voltigeurs_attack_up45_07_team",
+   "voltigeurs_attack_08_team",
+   "voltigeurs_attack_09_team",
+   "voltigeurs_attack_10_team"
+  ],
+  "attack_up70": [
+   "voltigeurs_attack_00",
+   "voltigeurs_attack_up70_01",
+   "voltigeurs_attack_up70_02",
+   "voltigeurs_attack_up70_03",
+   "voltigeurs_attack_up70_04",
+   "voltigeurs_attack_up70_05",
+   "voltigeurs_attack_up70_06",
+   "voltigeurs_attack_up70_06",
+   "voltigeurs_attack_up70_07",
+   "voltigeurs_attack_08",
+   "voltigeurs_attack_09",
+   "voltigeurs_attack_10"
+  ],
+  "attack_up70_team": [
+   "voltigeurs_attack_00_team",
+   "voltigeurs_attack_up70_01_team",
+   "voltigeurs_attack_up70_02_team",
+   "voltigeurs_attack_up70_03_team",
+   "voltigeurs_attack_up70_04_team",
+   "voltigeurs_attack_up70_05_team",
+   "voltigeurs_attack_up70_06_team",
+   "voltigeurs_attack_up70_06_team",
+   "voltigeurs_attack_up70_07_team",
+   "voltigeurs_attack_08_team",
+   "voltigeurs_attack_09_team",
+   "voltigeurs_attack_10_team"
+  ],
+  "attack_b_up45": [
+   "voltigeurs_attack_00",
+   "voltigeurs_attack_b_up45_01",
+   "voltigeurs_attack_b_up45_02",
+   "voltigeurs_attack_b_up45_03",
+   "voltigeurs_attack_b_up45_04",
+   "voltigeurs_attack_b_up45_05",
+   "voltigeurs_attack_b_up45_06",
+   "voltigeurs_attack_b_up45_06",
+   "voltigeurs_attack_b_up45_07",
+   "voltigeurs_attack_08",
+   "voltigeurs_attack_09",
+   "voltigeurs_attack_10"
+  ],
+  "attack_b_up45_team": [
+   "voltigeurs_attack_00_team",
+   "voltigeurs_attack_b_up45_01_team",
+   "voltigeurs_attack_b_up45_02_team",
+   "voltigeurs_attack_b_up45_03_team",
+   "voltigeurs_attack_b_up45_04_team",
+   "voltigeurs_attack_b_up45_05_team",
+   "voltigeurs_attack_b_up45_06_team",
+   "voltigeurs_attack_b_up45_06_team",
+   "voltigeurs_attack_b_up45_07_team",
+   "voltigeurs_attack_08_team",
+   "voltigeurs_attack_09_team",
+   "voltigeurs_attack_10_team"
+  ],
+  "attack_b_up70": [
+   "voltigeurs_attack_00",
+   "voltigeurs_attack_b_up70_01",
+   "voltigeurs_attack_b_up70_02",
+   "voltigeurs_attack_b_up70_03",
+   "voltigeurs_attack_b_up70_04",
+   "voltigeurs_attack_b_up70_05",
+   "voltigeurs_attack_b_up70_06",
+   "voltigeurs_attack_b_up70_06",
+   "voltigeurs_attack_b_up70_07",
+   "voltigeurs_attack_08",
+   "voltigeurs_attack_09",
+   "voltigeurs_attack_10"
+  ],
+  "attack_b_up70_team": [
+   "voltigeurs_attack_00_team",
+   "voltigeurs_attack_b_up70_01_team",
+   "voltigeurs_attack_b_up70_02_team",
+   "voltigeurs_attack_b_up70_03_team",
+   "voltigeurs_attack_b_up70_04_team",
+   "voltigeurs_attack_b_up70_05_team",
+   "voltigeurs_attack_b_up70_06_team",
+   "voltigeurs_attack_b_up70_06_team",
+   "voltigeurs_attack_b_up70_07_team",
+   "voltigeurs_attack_08_team",
+   "voltigeurs_attack_09_team",
+   "voltigeurs_attack_10_team"
   ]
  },
  "meta": {
@@ -373,8 +1829,8 @@
   "image": "voltigeurs.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 640
+   "w": 3584,
+   "h": 660
   },
   "scale": "3",
   "ageborn": {
@@ -504,6 +1960,414 @@
       "atLu": [
        41.8,
        7.9
+      ]
+     }
+    },
+    "attack_up45": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      50,
+      54,
+      160,
+      70,
+      70,
+      60,
+      60,
+      56,
+      50,
+      50,
+      70
+     ],
+     "durationMs": 790,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4734,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        40.3,
+        40.7
+       ],
+       [
+        40.5,
+        37.6
+       ],
+       [
+        31.9,
+        48.0
+       ],
+       [
+        29.9,
+        50.9
+       ],
+       [
+        30.2,
+        50.4
+       ],
+       [
+        25.6,
+        55.4
+       ],
+       [
+        12.3,
+        53.2
+       ],
+       [
+        38.2,
+        47.3
+       ],
+       [
+        50.4,
+        37.8
+       ],
+       [
+        49.9,
+        31.3
+       ],
+       [
+        35.1,
+        51.5
+       ]
+      ]
+     },
+     "muzzle": [
+      25.6,
+      55.4
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 5,
+      "atLu": [
+       25.6,
+       55.4
+      ]
+     }
+    },
+    "attack_up70": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      50,
+      54,
+      160,
+      70,
+      70,
+      60,
+      60,
+      56,
+      50,
+      50,
+      70
+     ],
+     "durationMs": 790,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4734,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        40.3,
+        40.7
+       ],
+       [
+        33.8,
+        44.9
+       ],
+       [
+        16.2,
+        59.5
+       ],
+       [
+        10.1,
+        62.9
+       ],
+       [
+        10.2,
+        62.2
+       ],
+       [
+        6.7,
+        67.6
+       ],
+       [
+        -4.7,
+        59.5
+       ],
+       [
+        34.4,
+        52.9
+       ],
+       [
+        50.4,
+        37.8
+       ],
+       [
+        49.9,
+        31.3
+       ],
+       [
+        35.1,
+        51.5
+       ]
+      ]
+     },
+     "muzzle": [
+      6.7,
+      67.6
+     ],
+     "aimDeg": 70.1,
+     "release": {
+      "frame": 5,
+      "atLu": [
+       6.7,
+       67.6
+      ]
+     }
+    },
+    "attack_b_up45": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      50,
+      54,
+      160,
+      70,
+      70,
+      60,
+      60,
+      56,
+      50,
+      50,
+      70
+     ],
+     "durationMs": 790,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4734,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        40.3,
+        40.7
+       ],
+       [
+        45.3,
+        28.5
+       ],
+       [
+        36.8,
+        39.2
+       ],
+       [
+        33.4,
+        40.7
+       ],
+       [
+        33.4,
+        40.7
+       ],
+       [
+        26.9,
+        47.9
+       ],
+       [
+        8.0,
+        50.5
+       ],
+       [
+        29.0,
+        50.4
+       ],
+       [
+        50.4,
+        37.8
+       ],
+       [
+        49.9,
+        31.3
+       ],
+       [
+        35.1,
+        51.5
+       ]
+      ]
+     },
+     "muzzle": [
+      26.9,
+      47.9
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 5,
+      "atLu": [
+       26.9,
+       47.9
+      ]
+     }
+    },
+    "attack_b_up70": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      50,
+      54,
+      160,
+      70,
+      70,
+      60,
+      60,
+      56,
+      50,
+      50,
+      70
+     ],
+     "durationMs": 790,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4734,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        40.3,
+        40.7
+       ],
+       [
+        41.8,
+        36.3
+       ],
+       [
+        24.0,
+        50.3
+       ],
+       [
+        16.4,
+        51.6
+       ],
+       [
+        16.4,
+        51.6
+       ],
+       [
+        10.9,
+        59.0
+       ],
+       [
+        -7.5,
+        54.6
+       ],
+       [
+        24.8,
+        54.7
+       ],
+       [
+        50.4,
+        37.8
+       ],
+       [
+        49.9,
+        31.3
+       ],
+       [
+        35.1,
+        51.5
+       ]
+      ]
+     },
+     "muzzle": [
+      10.9,
+      59.0
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 5,
+      "atLu": [
+       10.9,
+       59.0
       ]
      }
     }
