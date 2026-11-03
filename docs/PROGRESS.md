@@ -17,7 +17,9 @@ Newest entry first. Each session appends what it finished, what is next, and any
 
 **Speed.** On the busiest test battle, slowed down four times to stand in for a weaker phone, High now takes about 1.2-1.6 ms more per frame than before the art round (the limit was 1 ms, and the measurement can only tell differences of about 2 ms apart); on Lite it is now faster than before. The extra time is the new damage effects and art themselves, so it is accepted (`docs/decisions.md`); a phone that slow switches to Lite on its own.
 
-**Open before the release.** The strict art review of all of W1 (Stone must score at least 3.8, the wave 3.5) and CI green on the newest push. Then `main` moves and the game updates.
+**The strict art review of W1 passed** after one round of fixes (the Cave Bear's fur, the Aurora Elk's coat, the Scorpion's fire): Stone 3.81 (the bar is 3.8), Bronze 3.77, the whole wave 3.79, and memory 473 MB of 600.
+
+**Next:** the release (CI green on c717114, and the owner's before/after video of W1), then art round W2 (Medieval and Gunpowder), which has started.
 
 **What the owner can do (optional):** if the game has ever closed by itself on your iPhone during a battle, say so; the crash above is only seen on GitHub's test machine, and a real report would reopen it.
 
