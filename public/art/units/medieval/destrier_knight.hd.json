@@ -2,18 +2,18 @@
  "frames": {
   "destrier_knight_idle_00": {
    "frame": {
-    "x": 1487,
-    "y": 2,
+    "x": 299,
+    "y": 331,
     "w": 322,
-    "h": 319
+    "h": 322
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 286,
-    "y": 152,
+    "y": 149,
     "w": 322,
-    "h": 319
+    "h": 322
    },
    "sourceSize": {
     "w": 736,
@@ -26,8 +26,8 @@
   },
   "destrier_knight_idle_00_team": {
    "frame": {
-    "x": 2,
-    "y": 1662,
+    "x": 1396,
+    "y": 1551,
     "w": 279,
     "h": 247
    },
@@ -50,18 +50,18 @@
   },
   "destrier_knight_idle_01": {
    "frame": {
-    "x": 2218,
-    "y": 2,
+    "x": 2,
+    "y": 1431,
     "w": 322,
-    "h": 316
+    "h": 319
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 287,
-    "y": 156,
+    "y": 153,
     "w": 322,
-    "h": 316
+    "h": 319
    },
    "sourceSize": {
     "w": 736,
@@ -74,8 +74,8 @@
   },
   "destrier_knight_idle_01_team": {
    "frame": {
-    "x": 572,
-    "y": 1662,
+    "x": 1761,
+    "y": 1140,
     "w": 281,
     "h": 246
    },
@@ -98,18 +98,18 @@
   },
   "destrier_knight_idle_02": {
    "frame": {
-    "x": 1011,
-    "y": 751,
+    "x": 685,
+    "y": 966,
     "w": 327,
-    "h": 309
+    "h": 312
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 287,
-    "y": 166,
+    "y": 163,
     "w": 327,
-    "h": 309
+    "h": 312
    },
    "sourceSize": {
     "w": 736,
@@ -122,8 +122,8 @@
   },
   "destrier_knight_idle_02_team": {
    "frame": {
-    "x": 876,
-    "y": 1913,
+    "x": 1967,
+    "y": 1640,
     "w": 287,
     "h": 239
    },
@@ -146,18 +146,18 @@
   },
   "destrier_knight_idle_03": {
    "frame": {
-    "x": 2,
-    "y": 1065,
+    "x": 1298,
+    "y": 319,
     "w": 336,
-    "h": 302
+    "h": 305
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 284,
-    "y": 173,
+    "y": 170,
     "w": 336,
-    "h": 302
+    "h": 305
    },
    "sourceSize": {
     "w": 736,
@@ -170,8 +170,8 @@
   },
   "destrier_knight_idle_03_team": {
    "frame": {
-    "x": 302,
-    "y": 2160,
+    "x": 2930,
+    "y": 2,
     "w": 293,
     "h": 235
    },
@@ -194,18 +194,18 @@
   },
   "destrier_knight_idle_04": {
    "frame": {
-    "x": 2067,
-    "y": 751,
+    "x": 1003,
+    "y": 1282,
     "w": 338,
-    "h": 306
+    "h": 309
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 282,
-    "y": 169,
+    "y": 166,
     "w": 338,
-    "h": 306
+    "h": 309
    },
    "sourceSize": {
     "w": 736,
@@ -218,8 +218,8 @@
   },
   "destrier_knight_idle_04_team": {
    "frame": {
-    "x": 1761,
-    "y": 1913,
+    "x": 2588,
+    "y": 814,
     "w": 291,
     "h": 236
    },
@@ -242,18 +242,18 @@
   },
   "destrier_knight_idle_05": {
    "frame": {
-    "x": 669,
-    "y": 431,
+    "x": 332,
+    "y": 657,
     "w": 330,
-    "h": 313
+    "h": 316
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 284,
-    "y": 159,
+    "y": 156,
     "w": 330,
-    "h": 313
+    "h": 316
    },
    "sourceSize": {
     "w": 736,
@@ -266,8 +266,8 @@
   },
   "destrier_knight_idle_05_team": {
    "frame": {
-    "x": 298,
-    "y": 1913,
+    "x": 2640,
+    "y": 2,
     "w": 286,
     "h": 242
    },
@@ -290,18 +290,18 @@
   },
   "destrier_knight_walk_00": {
    "frame": {
-    "x": 2,
-    "y": 751,
+    "x": 958,
+    "y": 322,
     "w": 336,
-    "h": 310
+    "h": 313
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 273,
-    "y": 166,
+    "y": 163,
     "w": 336,
-    "h": 310
+    "h": 313
    },
    "sourceSize": {
     "w": 736,
@@ -314,8 +314,8 @@
   },
   "destrier_knight_walk_00_team": {
    "frame": {
-    "x": 857,
-    "y": 1662,
+    "x": 2022,
+    "y": 888,
     "w": 275,
     "h": 246
    },
@@ -338,18 +338,18 @@
   },
   "destrier_knight_walk_01": {
    "frame": {
-    "x": 342,
-    "y": 1065,
+    "x": 1606,
+    "y": 2,
     "w": 352,
-    "h": 301
+    "h": 304
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 265,
-    "y": 175,
+    "y": 172,
     "w": 352,
-    "h": 301
+    "h": 304
    },
    "sourceSize": {
     "w": 736,
@@ -362,8 +362,8 @@
   },
   "destrier_knight_walk_01_team": {
    "frame": {
-    "x": 1971,
-    "y": 1662,
+    "x": 2301,
+    "y": 817,
     "w": 283,
     "h": 244
    },
@@ -386,18 +386,18 @@
   },
   "destrier_knight_walk_02": {
    "frame": {
-    "x": 1721,
-    "y": 1065,
+    "x": 1962,
+    "y": 2,
     "w": 347,
-    "h": 291
+    "h": 294
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 270,
-    "y": 187,
+    "y": 184,
     "w": 347,
-    "h": 291
+    "h": 294
    },
    "sourceSize": {
     "w": 736,
@@ -410,8 +410,8 @@
   },
   "destrier_knight_walk_02_team": {
    "frame": {
-    "x": 2,
-    "y": 2160,
+    "x": 2763,
+    "y": 248,
     "w": 296,
     "h": 235
    },
@@ -434,18 +434,18 @@
   },
   "destrier_knight_walk_03": {
    "frame": {
-    "x": 1049,
-    "y": 1065,
+    "x": 1341,
+    "y": 628,
     "w": 328,
-    "h": 298
+    "h": 301
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 282,
-    "y": 179,
+    "y": 176,
     "w": 328,
-    "h": 298
+    "h": 301
    },
    "sourceSize": {
     "w": 736,
@@ -458,8 +458,8 @@
   },
   "destrier_knight_walk_03_team": {
    "frame": {
-    "x": 2056,
-    "y": 1913,
+    "x": 2600,
+    "y": 506,
     "w": 290,
     "h": 236
    },
@@ -482,18 +482,18 @@
   },
   "destrier_knight_walk_04": {
    "frame": {
-    "x": 677,
-    "y": 751,
+    "x": 669,
+    "y": 1296,
     "w": 330,
-    "h": 309
+    "h": 312
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 279,
-    "y": 166,
+    "y": 163,
     "w": 330,
-    "h": 309
+    "h": 312
    },
    "sourceSize": {
     "w": 736,
@@ -506,8 +506,8 @@
   },
   "destrier_knight_walk_04_team": {
    "frame": {
-    "x": 1136,
-    "y": 1662,
+    "x": 2023,
+    "y": 567,
     "w": 275,
     "h": 246
    },
@@ -530,18 +530,18 @@
   },
   "destrier_knight_walk_05": {
    "frame": {
-    "x": 698,
-    "y": 1065,
+    "x": 1016,
+    "y": 950,
     "w": 347,
-    "h": 299
+    "h": 302
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 271,
-    "y": 173,
+    "y": 170,
     "w": 347,
-    "h": 299
+    "h": 302
    },
    "sourceSize": {
     "w": 736,
@@ -554,8 +554,8 @@
   },
   "destrier_knight_walk_05_team": {
    "frame": {
-    "x": 285,
-    "y": 1662,
+    "x": 1679,
+    "y": 1551,
     "w": 283,
     "h": 246
    },
@@ -578,18 +578,18 @@
   },
   "destrier_knight_walk_06": {
    "frame": {
-    "x": 2,
-    "y": 1371,
+    "x": 1367,
+    "y": 933,
     "w": 343,
-    "h": 287
+    "h": 289
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 275,
-    "y": 184,
+    "y": 182,
     "w": 343,
-    "h": 287
+    "h": 289
    },
    "sourceSize": {
     "w": 736,
@@ -602,8 +602,8 @@
   },
   "destrier_knight_walk_06_team": {
    "frame": {
-    "x": 1461,
-    "y": 1913,
+    "x": 2335,
+    "y": 1065,
     "w": 296,
     "h": 237
    },
@@ -626,18 +626,18 @@
   },
   "destrier_knight_walk_07": {
    "frame": {
-    "x": 1381,
-    "y": 1065,
+    "x": 1638,
+    "y": 310,
     "w": 336,
-    "h": 292
+    "h": 295
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 275,
-    "y": 177,
+    "y": 174,
     "w": 336,
-    "h": 292
+    "h": 295
    },
    "sourceSize": {
     "w": 736,
@@ -650,8 +650,8 @@
   },
   "destrier_knight_walk_07_team": {
    "frame": {
-    "x": 1167,
-    "y": 1913,
+    "x": 2232,
+    "y": 1387,
     "w": 290,
     "h": 238
    },
@@ -674,8 +674,8 @@
   },
   "destrier_knight_attack_00": {
    "frame": {
-    "x": 281,
-    "y": 2,
+    "x": 2,
+    "y": 431,
     "w": 293,
     "h": 346
    },
@@ -698,9 +698,9 @@
   },
   "destrier_knight_attack_00_team": {
    "frame": {
-    "x": 1415,
-    "y": 1662,
-    "w": 263,
+    "x": 1966,
+    "y": 1390,
+    "w": 262,
     "h": 246
    },
    "rotated": false,
@@ -708,7 +708,7 @@
    "spriteSourceSize": {
     "x": 280,
     "y": 146,
-    "w": 263,
+    "w": 262,
     "h": 246
    },
    "sourceSize": {
@@ -722,8 +722,8 @@
   },
   "destrier_knight_attack_01": {
    "frame": {
-    "x": 1742,
-    "y": 751,
+    "x": 1016,
+    "y": 639,
     "w": 321,
     "h": 307
    },
@@ -746,9 +746,9 @@
   },
   "destrier_knight_attack_01_team": {
    "frame": {
-    "x": 599,
-    "y": 2160,
-    "w": 285,
+    "x": 3227,
+    "y": 2,
+    "w": 284,
     "h": 230
    },
    "rotated": false,
@@ -756,7 +756,7 @@
    "spriteSourceSize": {
     "x": 273,
     "y": 165,
-    "w": 285,
+    "w": 284,
     "h": 230
    },
    "sourceSize": {
@@ -770,18 +770,18 @@
   },
   "destrier_knight_attack_02": {
    "frame": {
-    "x": 349,
-    "y": 1371,
+    "x": 2,
+    "y": 1754,
     "w": 339,
-    "h": 283
+    "h": 286
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 268,
-    "y": 185,
+    "y": 182,
     "w": 339,
-    "h": 283
+    "h": 286
    },
    "sourceSize": {
     "w": 736,
@@ -794,8 +794,8 @@
   },
   "destrier_knight_attack_02_team": {
    "frame": {
-    "x": 2106,
-    "y": 2160,
+    "x": 2883,
+    "y": 746,
     "w": 303,
     "h": 224
    },
@@ -818,18 +818,18 @@
   },
   "destrier_knight_attack_03": {
    "frame": {
-    "x": 692,
-    "y": 1371,
+    "x": 1673,
+    "y": 609,
     "w": 346,
-    "h": 272
+    "h": 275
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 262,
-    "y": 193,
+    "y": 190,
     "w": 346,
-    "h": 272
+    "h": 275
    },
    "sourceSize": {
     "w": 736,
@@ -842,8 +842,8 @@
   },
   "destrier_knight_attack_03_team": {
    "frame": {
-    "x": 307,
-    "y": 2399,
+    "x": 3199,
+    "y": 468,
     "w": 311,
     "h": 221
    },
@@ -866,18 +866,18 @@
   },
   "destrier_knight_attack_04": {
    "frame": {
-    "x": 1813,
+    "x": 537,
     "y": 2,
     "w": 401,
-    "h": 318
+    "h": 321
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 270,
-    "y": 147,
+    "y": 144,
     "w": 401,
-    "h": 318
+    "h": 321
    },
    "sourceSize": {
     "w": 736,
@@ -890,8 +890,8 @@
   },
   "destrier_knight_attack_04_team": {
    "frame": {
-    "x": 1531,
-    "y": 1371,
+    "x": 2313,
+    "y": 2,
     "w": 323,
     "h": 253
    },
@@ -914,18 +914,18 @@
   },
   "destrier_knight_attack_05": {
    "frame": {
-    "x": 1342,
-    "y": 751,
+    "x": 996,
+    "y": 1612,
     "w": 396,
-    "h": 307
+    "h": 310
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 288,
-    "y": 149,
+    "y": 146,
     "w": 396,
-    "h": 307
+    "h": 310
    },
    "sourceSize": {
     "w": 736,
@@ -938,8 +938,8 @@
   },
   "destrier_knight_attack_05_team": {
    "frame": {
-    "x": 1858,
-    "y": 1371,
+    "x": 345,
+    "y": 1752,
     "w": 317,
     "h": 249
    },
@@ -962,18 +962,18 @@
   },
   "destrier_knight_attack_06": {
    "frame": {
-    "x": 2072,
-    "y": 1065,
+    "x": 1345,
+    "y": 1256,
     "w": 412,
-    "h": 289
+    "h": 291
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 298,
-    "y": 178,
+    "y": 176,
     "w": 412,
-    "h": 289
+    "h": 291
    },
    "sourceSize": {
     "w": 736,
@@ -986,8 +986,8 @@
   },
   "destrier_knight_attack_06_team": {
    "frame": {
-    "x": 1181,
-    "y": 2160,
+    "x": 2258,
+    "y": 1629,
     "w": 309,
     "h": 227
    },
@@ -1010,18 +1010,18 @@
   },
   "destrier_knight_attack_07": {
    "frame": {
-    "x": 1336,
-    "y": 431,
+    "x": 332,
+    "y": 977,
     "w": 349,
-    "h": 312
+    "h": 315
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 320,
-    "y": 164,
+    "y": 161,
     "w": 349,
-    "h": 312
+    "h": 315
    },
    "sourceSize": {
     "w": 736,
@@ -1034,8 +1034,8 @@
   },
   "destrier_knight_attack_07_team": {
    "frame": {
-    "x": 2179,
-    "y": 1371,
+    "x": 1714,
+    "y": 888,
     "w": 304,
     "h": 248
    },
@@ -1058,18 +1058,18 @@
   },
   "destrier_knight_attack_08": {
    "frame": {
-    "x": 1689,
-    "y": 431,
+    "x": 666,
+    "y": 647,
     "w": 346,
-    "h": 312
+    "h": 315
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 300,
-    "y": 162,
+    "y": 159,
     "w": 346,
-    "h": 312
+    "h": 315
    },
    "sourceSize": {
     "w": 736,
@@ -1082,8 +1082,8 @@
   },
   "destrier_knight_attack_08_team": {
    "frame": {
-    "x": 2258,
-    "y": 1662,
+    "x": 2302,
+    "y": 567,
     "w": 294,
     "h": 243
    },
@@ -1106,18 +1106,18 @@
   },
   "destrier_knight_attack_09": {
    "frame": {
-    "x": 342,
-    "y": 751,
+    "x": 1271,
+    "y": 2,
     "w": 331,
-    "h": 310
+    "h": 313
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 286,
-    "y": 163,
+    "y": 160,
     "w": 331,
-    "h": 310
+    "h": 313
    },
    "sourceSize": {
     "w": 736,
@@ -1130,8 +1130,8 @@
   },
   "destrier_knight_attack_09_team": {
    "frame": {
-    "x": 588,
-    "y": 1913,
+    "x": 1679,
+    "y": 1801,
     "w": 284,
     "h": 241
    },
@@ -1154,17 +1154,17 @@
   },
   "destrier_knight_hit_00": {
    "frame": {
-    "x": 2,
-    "y": 431,
-    "w": 322,
+    "x": 942,
+    "y": 2,
+    "w": 325,
     "h": 316
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 268,
+    "x": 265,
     "y": 155,
-    "w": 322,
+    "w": 325,
     "h": 316
    },
    "sourceSize": {
@@ -1178,8 +1178,8 @@
   },
   "destrier_knight_hit_00_team": {
    "frame": {
-    "x": 2,
-    "y": 2399,
+    "x": 2894,
+    "y": 487,
     "w": 301,
     "h": 224
    },
@@ -1202,17 +1202,17 @@
   },
   "destrier_knight_hit_01": {
    "frame": {
-    "x": 1160,
-    "y": 2,
-    "w": 323,
+    "x": 2,
+    "y": 1107,
+    "w": 326,
     "h": 320
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 258,
+    "x": 255,
     "y": 151,
-    "w": 323,
+    "w": 326,
     "h": 320
    },
    "sourceSize": {
@@ -1226,8 +1226,8 @@
   },
   "destrier_knight_hit_01_team": {
    "frame": {
-    "x": 1494,
-    "y": 2160,
+    "x": 2526,
+    "y": 1306,
     "w": 299,
     "h": 225
    },
@@ -1250,8 +1250,8 @@
   },
   "destrier_knight_hit_02": {
    "frame": {
-    "x": 2039,
-    "y": 431,
+    "x": 669,
+    "y": 1612,
     "w": 323,
     "h": 311
    },
@@ -1274,8 +1274,8 @@
   },
   "destrier_knight_hit_02_team": {
    "frame": {
-    "x": 888,
-    "y": 2160,
+    "x": 3227,
+    "y": 236,
     "w": 289,
     "h": 228
    },
@@ -1299,17 +1299,17 @@
   "destrier_knight_hit_03": {
    "frame": {
     "x": 328,
-    "y": 431,
+    "y": 1431,
     "w": 337,
-    "h": 314
+    "h": 317
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 283,
-    "y": 160,
+    "y": 157,
     "w": 337,
-    "h": 314
+    "h": 317
    },
    "sourceSize": {
     "w": 736,
@@ -1322,8 +1322,8 @@
   },
   "destrier_knight_hit_03_team": {
    "frame": {
-    "x": 1682,
-    "y": 1662,
+    "x": 2046,
+    "y": 1138,
     "w": 285,
     "h": 245
    },
@@ -1346,18 +1346,18 @@
   },
   "destrier_knight_hit_04": {
    "frame": {
-    "x": 1003,
-    "y": 431,
+    "x": 625,
+    "y": 327,
     "w": 329,
-    "h": 313
+    "h": 316
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 284,
-    "y": 160,
+    "y": 157,
     "w": 329,
-    "h": 313
+    "h": 316
    },
    "sourceSize": {
     "w": 736,
@@ -1370,8 +1370,8 @@
   },
   "destrier_knight_hit_04_team": {
    "frame": {
-    "x": 2,
-    "y": 1913,
+    "x": 2467,
+    "y": 259,
     "w": 292,
     "h": 243
    },
@@ -1394,17 +1394,17 @@
   },
   "destrier_knight_die_00": {
    "frame": {
-    "x": 832,
-    "y": 2,
-    "w": 324,
+    "x": 2,
+    "y": 781,
+    "w": 326,
     "h": 322
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
+    "x": 268,
     "y": 146,
-    "w": 324,
+    "w": 326,
     "h": 322
    },
    "sourceSize": {
@@ -1418,8 +1418,8 @@
   },
   "destrier_knight_die_00_team": {
    "frame": {
-    "x": 1797,
-    "y": 2160,
+    "x": 2635,
+    "y": 1054,
     "w": 305,
     "h": 224
    },
@@ -1444,15 +1444,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 275,
+    "w": 277,
     "h": 425
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 151,
+    "x": 149,
     "y": 45,
-    "w": 275,
+    "w": 277,
     "h": 425
    },
    "sourceSize": {
@@ -1466,7 +1466,7 @@
   },
   "destrier_knight_die_01_team": {
    "frame": {
-    "x": 578,
+    "x": 283,
     "y": 2,
     "w": 250,
     "h": 325
@@ -1490,8 +1490,8 @@
   },
   "destrier_knight_die_02": {
    "frame": {
-    "x": 1042,
-    "y": 1371,
+    "x": 1978,
+    "y": 300,
     "w": 485,
     "h": 263
    },
@@ -1514,8 +1514,8 @@
   },
   "destrier_knight_die_02_team": {
    "frame": {
-    "x": 561,
-    "y": 2627,
+    "x": 2829,
+    "y": 1368,
     "w": 322,
     "h": 161
    },
@@ -1538,8 +1538,8 @@
   },
   "destrier_knight_die_03": {
    "frame": {
-    "x": 622,
-    "y": 2399,
+    "x": 2944,
+    "y": 974,
     "w": 457,
     "h": 217
    },
@@ -1562,17 +1562,17 @@
   },
   "destrier_knight_die_03_team": {
    "frame": {
-    "x": 1443,
-    "y": 2627,
-    "w": 202,
+    "x": 1967,
+    "y": 1883,
+    "w": 203,
     "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 245,
+    "x": 244,
     "y": 261,
-    "w": 202,
+    "w": 203,
     "h": 152
    },
    "sourceSize": {
@@ -1586,17 +1586,17 @@
   },
   "destrier_knight_die_04": {
    "frame": {
-    "x": 1083,
-    "y": 2399,
-    "w": 565,
+    "x": 2258,
+    "y": 1860,
+    "w": 566,
     "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 79,
+    "x": 78,
     "y": 324,
-    "w": 565,
+    "w": 566,
     "h": 179
    },
    "sourceSize": {
@@ -1610,8 +1610,8 @@
   },
   "destrier_knight_die_04_team": {
    "frame": {
-    "x": 379,
-    "y": 2798,
+    "x": 3155,
+    "y": 1368,
     "w": 409,
     "h": 120
    },
@@ -1634,17 +1634,17 @@
   },
   "destrier_knight_die_05": {
    "frame": {
-    "x": 1652,
-    "y": 2399,
-    "w": 558,
+    "x": 2944,
+    "y": 1195,
+    "w": 560,
     "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 86,
+    "x": 84,
     "y": 335,
-    "w": 558,
+    "w": 560,
     "h": 169
    },
    "sourceSize": {
@@ -1658,8 +1658,8 @@
   },
   "destrier_knight_die_05_team": {
    "frame": {
-    "x": 2035,
-    "y": 2627,
+    "x": 3190,
+    "y": 827,
     "w": 390,
     "h": 125
    },
@@ -1682,17 +1682,17 @@
   },
   "destrier_knight_die_06": {
    "frame": {
-    "x": 2,
-    "y": 2627,
-    "w": 555,
+    "x": 2571,
+    "y": 1535,
+    "w": 557,
     "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
+    "x": 87,
     "y": 332,
-    "w": 555,
+    "w": 557,
     "h": 167
    },
    "sourceSize": {
@@ -1706,8 +1706,8 @@
   },
   "destrier_knight_die_06_team": {
    "frame": {
-    "x": 1649,
-    "y": 2627,
+    "x": 3199,
+    "y": 693,
     "w": 382,
     "h": 130
    },
@@ -1730,17 +1730,17 @@
   },
   "destrier_knight_die_07": {
    "frame": {
-    "x": 887,
-    "y": 2627,
-    "w": 552,
+    "x": 2828,
+    "y": 1706,
+    "w": 553,
     "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 91,
     "y": 344,
-    "w": 552,
+    "w": 553,
     "h": 156
    },
    "sourceSize": {
@@ -1754,8 +1754,8 @@
   },
   "destrier_knight_die_07_team": {
    "frame": {
-    "x": 2,
-    "y": 2798,
+    "x": 3132,
+    "y": 1533,
     "w": 373,
     "h": 121
    },
@@ -1891,8 +1891,8 @@
   "image": "destrier_knight.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2560,
-   "h": 2924
+   "w": 3584,
+   "h": 2044
   },
   "scale": "3",
   "ageborn": {

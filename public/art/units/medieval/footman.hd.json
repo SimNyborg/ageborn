@@ -2,8 +2,8 @@
  "frames": {
   "footman_idle_00": {
    "frame": {
-    "x": 1053,
-    "y": 2,
+    "x": 274,
+    "y": 476,
     "w": 138,
     "h": 229
    },
@@ -26,8 +26,8 @@
   },
   "footman_idle_00_team": {
    "frame": {
-    "x": 832,
-    "y": 1098,
+    "x": 2521,
+    "y": 2,
     "w": 95,
     "h": 172
    },
@@ -50,8 +50,8 @@
   },
   "footman_idle_01": {
    "frame": {
-    "x": 764,
-    "y": 2,
+    "x": 248,
+    "y": 240,
     "w": 135,
     "h": 232
    },
@@ -74,8 +74,8 @@
   },
   "footman_idle_01_team": {
    "frame": {
-    "x": 931,
-    "y": 1098,
+    "x": 2305,
+    "y": 549,
     "w": 91,
     "h": 171
    },
@@ -98,8 +98,8 @@
   },
   "footman_idle_02": {
    "frame": {
-    "x": 233,
-    "y": 2,
+    "x": 2,
+    "y": 527,
     "w": 130,
     "h": 239
    },
@@ -122,8 +122,8 @@
   },
   "footman_idle_02_team": {
    "frame": {
-    "x": 101,
-    "y": 1098,
+    "x": 2326,
+    "y": 2,
     "w": 86,
     "h": 176
    },
@@ -146,7 +146,7 @@
   },
   "footman_idle_03": {
    "frame": {
-    "x": 903,
+    "x": 250,
     "y": 2,
     "w": 146,
     "h": 229
@@ -170,8 +170,8 @@
   },
   "footman_idle_03_team": {
    "frame": {
-    "x": 791,
-    "y": 912,
+    "x": 2088,
+    "y": 186,
     "w": 87,
     "h": 180
    },
@@ -194,18 +194,18 @@
   },
   "footman_idle_04": {
    "frame": {
-    "x": 2,
-    "y": 500,
+    "x": 852,
+    "y": 220,
     "w": 186,
-    "h": 208
+    "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 171,
-    "y": 146,
+    "y": 144,
     "w": 186,
-    "h": 208
+    "h": 210
    },
    "sourceSize": {
     "w": 514,
@@ -218,8 +218,8 @@
   },
   "footman_idle_04_team": {
    "frame": {
-    "x": 504,
-    "y": 912,
+    "x": 1991,
+    "y": 188,
     "w": 93,
     "h": 181
    },
@@ -242,8 +242,8 @@
   },
   "footman_idle_05": {
    "frame": {
-    "x": 300,
-    "y": 270,
+    "x": 553,
+    "y": 2,
     "w": 148,
     "h": 224
    },
@@ -266,8 +266,8 @@
   },
   "footman_idle_05_team": {
    "frame": {
-    "x": 732,
-    "y": 1098,
+    "x": 2517,
+    "y": 180,
     "w": 96,
     "h": 172
    },
@@ -290,18 +290,18 @@
   },
   "footman_walk_00": {
    "frame": {
-    "x": 2,
-    "y": 712,
+    "x": 1362,
+    "y": 418,
     "w": 136,
-    "h": 196
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 155,
-    "y": 159,
+    "y": 156,
     "w": 136,
-    "h": 196
+    "h": 199
    },
    "sourceSize": {
     "w": 514,
@@ -314,17 +314,17 @@
   },
   "footman_walk_00_team": {
    "frame": {
-    "x": 411,
-    "y": 912,
-    "w": 89,
+    "x": 1987,
+    "y": 377,
+    "w": 88,
     "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 178,
+    "x": 179,
     "y": 149,
-    "w": 89,
+    "w": 88,
     "h": 182
    },
    "sourceSize": {
@@ -338,18 +338,18 @@
   },
   "footman_walk_01": {
    "frame": {
-    "x": 983,
-    "y": 712,
+    "x": 1741,
+    "y": 200,
     "w": 150,
-    "h": 186
+    "h": 188
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 140,
-    "y": 169,
+    "y": 167,
     "w": 150,
-    "h": 186
+    "h": 188
    },
    "sourceSize": {
     "w": 514,
@@ -362,8 +362,8 @@
   },
   "footman_walk_01_team": {
    "frame": {
-    "x": 2,
-    "y": 1098,
+    "x": 2279,
+    "y": 184,
     "w": 95,
     "h": 177
    },
@@ -386,18 +386,18 @@
   },
   "footman_walk_02": {
    "frame": {
-    "x": 1276,
-    "y": 500,
+    "x": 1207,
+    "y": 418,
     "w": 151,
-    "h": 198
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 141,
-    "y": 156,
+    "y": 154,
     "w": 151,
-    "h": 198
+    "h": 200
    },
    "sourceSize": {
     "w": 514,
@@ -410,10 +410,10 @@
   },
   "footman_walk_02_team": {
    "frame": {
-    "x": 882,
-    "y": 912,
+    "x": 2172,
+    "y": 370,
     "w": 98,
-    "h": 179
+    "h": 178
    },
    "rotated": false,
    "trimmed": true,
@@ -421,7 +421,7 @@
     "x": 178,
     "y": 147,
     "w": 98,
-    "h": 179
+    "h": 178
    },
    "sourceSize": {
     "w": 514,
@@ -434,18 +434,18 @@
   },
   "footman_walk_03": {
    "frame": {
-    "x": 529,
-    "y": 500,
+    "x": 1042,
+    "y": 220,
     "w": 145,
-    "h": 206
+    "h": 208
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 147,
-    "y": 141,
+    "y": 139,
     "w": 145,
-    "h": 206
+    "h": 208
    },
    "sourceSize": {
     "w": 514,
@@ -458,17 +458,17 @@
   },
   "footman_walk_03_team": {
    "frame": {
-    "x": 1233,
-    "y": 712,
-    "w": 98,
+    "x": 1788,
+    "y": 392,
+    "w": 97,
     "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 178,
+    "x": 179,
     "y": 131,
-    "w": 98,
+    "w": 97,
     "h": 184
    },
    "sourceSize": {
@@ -482,18 +482,18 @@
   },
   "footman_walk_04": {
    "frame": {
-    "x": 608,
-    "y": 712,
+    "x": 1502,
+    "y": 406,
     "w": 136,
-    "h": 191
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 155,
-    "y": 159,
+    "y": 156,
     "w": 136,
-    "h": 191
+    "h": 194
    },
    "sourceSize": {
     "w": 514,
@@ -506,8 +506,8 @@
   },
   "footman_walk_04_team": {
    "frame": {
-    "x": 122,
-    "y": 912,
+    "x": 1889,
+    "y": 392,
     "w": 94,
     "h": 182
    },
@@ -530,18 +530,18 @@
   },
   "footman_walk_05": {
    "frame": {
-    "x": 984,
-    "y": 912,
+    "x": 2084,
+    "y": 2,
     "w": 143,
-    "h": 178
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 146,
-    "y": 169,
+    "y": 167,
     "w": 143,
-    "h": 178
+    "h": 180
    },
    "sourceSize": {
     "w": 514,
@@ -554,8 +554,8 @@
   },
   "footman_walk_05_team": {
    "frame": {
-    "x": 1120,
-    "y": 1098,
+    "x": 2494,
+    "y": 549,
     "w": 94,
     "h": 169
    },
@@ -578,18 +578,18 @@
   },
   "footman_walk_06": {
    "frame": {
-    "x": 748,
-    "y": 712,
+    "x": 1642,
+    "y": 406,
     "w": 142,
-    "h": 190
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 149,
-    "y": 156,
+    "y": 154,
     "w": 142,
-    "h": 190
+    "h": 192
    },
    "sourceSize": {
     "w": 514,
@@ -602,8 +602,8 @@
   },
   "footman_walk_06_team": {
    "frame": {
-    "x": 601,
-    "y": 912,
+    "x": 1995,
+    "y": 563,
     "w": 92,
     "h": 180
    },
@@ -626,18 +626,18 @@
   },
   "footman_walk_07": {
    "frame": {
-    "x": 678,
-    "y": 500,
+    "x": 1190,
+    "y": 2,
     "w": 137,
-    "h": 203
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 154,
-    "y": 141,
+    "y": 139,
     "w": 137,
-    "h": 203
+    "h": 205
    },
    "sourceSize": {
     "w": 514,
@@ -650,17 +650,17 @@
   },
   "footman_walk_07_team": {
    "frame": {
-    "x": 697,
-    "y": 912,
-    "w": 90,
+    "x": 2079,
+    "y": 373,
+    "w": 89,
     "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 178,
+    "x": 179,
     "y": 131,
-    "w": 90,
+    "w": 89,
     "h": 180
    },
    "sourceSize": {
@@ -674,8 +674,8 @@
   },
   "footman_attack_00": {
    "frame": {
-    "x": 130,
-    "y": 270,
+    "x": 522,
+    "y": 233,
     "w": 166,
     "h": 225
    },
@@ -698,8 +698,8 @@
   },
   "footman_attack_00_team": {
    "frame": {
-    "x": 1252,
-    "y": 912,
+    "x": 2179,
+    "y": 186,
     "w": 96,
     "h": 178
    },
@@ -722,17 +722,17 @@
   },
   "footman_attack_01": {
    "frame": {
-    "x": 192,
-    "y": 500,
-    "w": 141,
+    "x": 1043,
+    "y": 2,
+    "w": 143,
     "h": 208
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
+    "x": 155,
     "y": 146,
-    "w": 141,
+    "w": 143,
     "h": 208
    },
    "sourceSize": {
@@ -746,10 +746,10 @@
   },
   "footman_attack_01_team": {
    "frame": {
-    "x": 1361,
-    "y": 1098,
+    "x": 1642,
+    "y": 602,
     "w": 126,
-    "h": 165
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
@@ -757,7 +757,7 @@
     "x": 147,
     "y": 159,
     "w": 126,
-    "h": 165
+    "h": 164
    },
    "sourceSize": {
     "w": 514,
@@ -770,18 +770,18 @@
   },
   "footman_attack_02": {
    "frame": {
-    "x": 142,
-    "y": 712,
+    "x": 1494,
+    "y": 208,
     "w": 243,
-    "h": 192
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 44,
-    "y": 164,
+    "y": 162,
     "w": 243,
-    "h": 192
+    "h": 194
    },
    "sourceSize": {
     "w": 514,
@@ -794,9 +794,9 @@
   },
   "footman_attack_02_team": {
    "frame": {
-    "x": 1218,
-    "y": 1098,
-    "w": 139,
+    "x": 2571,
+    "y": 356,
+    "w": 138,
     "h": 165
    },
    "rotated": false,
@@ -804,7 +804,7 @@
    "spriteSourceSize": {
     "x": 142,
     "y": 155,
-    "w": 139,
+    "w": 138,
     "h": 165
    },
    "sourceSize": {
@@ -818,18 +818,18 @@
   },
   "footman_attack_03": {
    "frame": {
-    "x": 1022,
-    "y": 500,
+    "x": 1331,
+    "y": 2,
     "w": 250,
-    "h": 199
+    "h": 202
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 35,
-    "y": 159,
+    "y": 156,
     "w": 250,
-    "h": 199
+    "h": 202
    },
    "sourceSize": {
     "w": 514,
@@ -842,8 +842,8 @@
   },
   "footman_attack_03_team": {
    "frame": {
-    "x": 488,
-    "y": 1098,
+    "x": 2378,
+    "y": 182,
     "w": 135,
     "h": 174
    },
@@ -866,18 +866,18 @@
   },
   "footman_attack_04": {
    "frame": {
-    "x": 452,
-    "y": 270,
+    "x": 546,
+    "y": 462,
     "w": 264,
-    "h": 217
+    "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 22,
-    "y": 142,
+    "y": 139,
     "w": 264,
-    "h": 217
+    "h": 220
    },
    "sourceSize": {
     "w": 514,
@@ -890,8 +890,8 @@
   },
   "footman_attack_04_team": {
    "frame": {
-    "x": 1431,
-    "y": 500,
+    "x": 1394,
+    "y": 208,
     "w": 96,
     "h": 197
    },
@@ -914,18 +914,18 @@
   },
   "footman_attack_05": {
    "frame": {
-    "x": 880,
-    "y": 270,
+    "x": 705,
+    "y": 2,
     "w": 334,
-    "h": 212
+    "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 31,
-    "y": 145,
+    "y": 143,
     "w": 334,
-    "h": 212
+    "h": 214
    },
    "sourceSize": {
     "w": 514,
@@ -938,10 +938,10 @@
   },
   "footman_attack_05_team": {
    "frame": {
-    "x": 894,
-    "y": 712,
+    "x": 1804,
+    "y": 2,
     "w": 85,
-    "h": 188
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
@@ -949,7 +949,7 @@
     "x": 191,
     "y": 135,
     "w": 85,
-    "h": 188
+    "h": 187
    },
    "sourceSize": {
     "w": 514,
@@ -962,18 +962,18 @@
   },
   "footman_attack_06": {
    "frame": {
-    "x": 191,
-    "y": 1098,
+    "x": 2274,
+    "y": 368,
     "w": 293,
-    "h": 175
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 186,
-    "y": 177,
+    "y": 175,
     "w": 293,
-    "h": 175
+    "h": 177
    },
    "sourceSize": {
     "w": 514,
@@ -986,9 +986,9 @@
   },
   "footman_attack_06_team": {
    "frame": {
-    "x": 774,
-    "y": 1279,
-    "w": 100,
+    "x": 2713,
+    "y": 345,
+    "w": 99,
     "h": 154
    },
    "rotated": false,
@@ -996,7 +996,7 @@
    "spriteSourceSize": {
     "x": 194,
     "y": 168,
-    "w": 100,
+    "w": 99,
     "h": 154
    },
    "sourceSize": {
@@ -1010,18 +1010,18 @@
   },
   "footman_attack_07": {
    "frame": {
-    "x": 1218,
-    "y": 270,
+    "x": 814,
+    "y": 451,
     "w": 197,
-    "h": 209
+    "h": 211
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 198,
-    "y": 150,
+    "y": 148,
     "w": 197,
-    "h": 209
+    "h": 211
    },
    "sourceSize": {
     "w": 514,
@@ -1034,8 +1034,8 @@
   },
   "footman_attack_07_team": {
    "frame": {
-    "x": 1335,
-    "y": 712,
+    "x": 1788,
+    "y": 580,
     "w": 83,
     "h": 183
    },
@@ -1058,18 +1058,18 @@
   },
   "footman_attack_08": {
    "frame": {
-    "x": 389,
-    "y": 712,
+    "x": 1585,
+    "y": 2,
     "w": 215,
-    "h": 191
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 191,
-    "y": 164,
+    "y": 161,
     "w": 215,
-    "h": 191
+    "h": 194
    },
    "sourceSize": {
     "w": 514,
@@ -1082,8 +1082,8 @@
   },
   "footman_attack_08_team": {
    "frame": {
-    "x": 1026,
-    "y": 1098,
+    "x": 2400,
+    "y": 549,
     "w": 90,
     "h": 171
    },
@@ -1106,18 +1106,18 @@
   },
   "footman_attack_09": {
    "frame": {
-    "x": 337,
-    "y": 500,
+    "x": 1015,
+    "y": 434,
     "w": 188,
-    "h": 206
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 151,
+    "y": 148,
     "w": 188,
-    "h": 206
+    "h": 209
    },
    "sourceSize": {
     "w": 514,
@@ -1130,8 +1130,8 @@
   },
   "footman_attack_09_team": {
    "frame": {
-    "x": 316,
-    "y": 912,
+    "x": 1989,
+    "y": 2,
     "w": 91,
     "h": 182
    },
@@ -1154,7 +1154,7 @@
   },
   "footman_attack_10": {
    "frame": {
-    "x": 1329,
+    "x": 400,
     "y": 2,
     "w": 149,
     "h": 227
@@ -1178,8 +1178,8 @@
   },
   "footman_attack_10_team": {
    "frame": {
-    "x": 1352,
-    "y": 912,
+    "x": 2231,
+    "y": 2,
     "w": 91,
     "h": 178
    },
@@ -1202,17 +1202,17 @@
   },
   "footman_hit_00": {
    "frame": {
-    "x": 2,
-    "y": 270,
-    "w": 124,
+    "x": 416,
+    "y": 468,
+    "w": 126,
     "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 145,
+    "x": 143,
     "y": 131,
-    "w": 124,
+    "w": 126,
     "h": 226
    },
    "sourceSize": {
@@ -1226,8 +1226,8 @@
   },
   "footman_hit_00_team": {
    "frame": {
-    "x": 514,
-    "y": 1279,
+    "x": 1502,
+    "y": 604,
     "w": 122,
     "h": 155
    },
@@ -1250,17 +1250,17 @@
   },
   "footman_hit_01": {
    "frame": {
-    "x": 638,
+    "x": 122,
     "y": 2,
-    "w": 122,
+    "w": 124,
     "h": 234
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 143,
+    "x": 141,
     "y": 124,
-    "w": 122,
+    "w": 124,
     "h": 234
    },
    "sourceSize": {
@@ -1274,10 +1274,10 @@
   },
   "footman_hit_01_team": {
    "frame": {
-    "x": 171,
-    "y": 1279,
+    "x": 2873,
+    "y": 2,
     "w": 120,
-    "h": 157
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
@@ -1285,7 +1285,7 @@
     "x": 132,
     "y": 173,
     "w": 120,
-    "h": 157
+    "h": 156
    },
    "sourceSize": {
     "w": 514,
@@ -1298,17 +1298,17 @@
   },
   "footman_hit_02": {
    "frame": {
-    "x": 122,
-    "y": 2,
-    "w": 107,
+    "x": 2,
+    "y": 270,
+    "w": 109,
     "h": 253
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 165,
+    "x": 163,
     "y": 103,
-    "w": 107,
+    "w": 109,
     "h": 253
    },
    "sourceSize": {
@@ -1322,10 +1322,10 @@
   },
   "footman_hit_02_team": {
    "frame": {
-    "x": 627,
-    "y": 1098,
+    "x": 2416,
+    "y": 2,
     "w": 101,
-    "h": 173
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
@@ -1333,7 +1333,7 @@
     "x": 155,
     "y": 145,
     "w": 101,
-    "h": 173
+    "h": 174
    },
    "sourceSize": {
     "w": 514,
@@ -1346,8 +1346,8 @@
   },
   "footman_hit_03": {
    "frame": {
-    "x": 720,
-    "y": 270,
+    "x": 692,
+    "y": 230,
     "w": 156,
     "h": 217
    },
@@ -1370,8 +1370,8 @@
   },
   "footman_hit_03_team": {
    "frame": {
-    "x": 1447,
-    "y": 912,
+    "x": 2214,
+    "y": 552,
     "w": 87,
     "h": 178
    },
@@ -1394,8 +1394,8 @@
   },
   "footman_hit_04": {
    "frame": {
-    "x": 500,
-    "y": 2,
+    "x": 136,
+    "y": 513,
     "w": 134,
     "h": 234
    },
@@ -1418,8 +1418,8 @@
   },
   "footman_hit_04_team": {
    "frame": {
-    "x": 220,
-    "y": 912,
+    "x": 1895,
+    "y": 191,
     "w": 92,
     "h": 182
    },
@@ -1442,17 +1442,17 @@
   },
   "footman_die_00": {
    "frame": {
-    "x": 1195,
-    "y": 2,
-    "w": 130,
+    "x": 387,
+    "y": 235,
+    "w": 131,
     "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 130,
+    "x": 129,
     "y": 123,
-    "w": 130,
+    "w": 131,
     "h": 229
    },
    "sourceSize": {
@@ -1466,8 +1466,8 @@
   },
   "footman_die_00_team": {
    "frame": {
-    "x": 640,
-    "y": 1279,
+    "x": 2592,
+    "y": 525,
     "w": 130,
     "h": 154
    },
@@ -1514,9 +1514,9 @@
   },
   "footman_die_01_team": {
    "frame": {
-    "x": 1131,
-    "y": 912,
-    "w": 117,
+    "x": 2091,
+    "y": 557,
+    "w": 119,
     "h": 178
    },
    "rotated": false,
@@ -1524,7 +1524,7 @@
    "spriteSourceSize": {
     "x": 116,
     "y": 135,
-    "w": 117,
+    "w": 119,
     "h": 178
    },
    "sourceSize": {
@@ -1538,8 +1538,8 @@
   },
   "footman_die_02": {
    "frame": {
-    "x": 367,
-    "y": 2,
+    "x": 115,
+    "y": 270,
     "w": 129,
     "h": 239
    },
@@ -1562,8 +1562,8 @@
   },
   "footman_die_02_team": {
    "frame": {
-    "x": 1137,
-    "y": 712,
+    "x": 1893,
+    "y": 2,
     "w": 92,
     "h": 185
    },
@@ -1586,18 +1586,18 @@
   },
   "footman_die_03": {
    "frame": {
-    "x": 819,
-    "y": 500,
+    "x": 1191,
+    "y": 211,
     "w": 199,
-    "h": 201
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 147,
+    "y": 145,
     "w": 199,
-    "h": 201
+    "h": 203
    },
    "sourceSize": {
     "w": 514,
@@ -1610,8 +1610,8 @@
   },
   "footman_die_03_team": {
    "frame": {
-    "x": 2,
-    "y": 912,
+    "x": 1875,
+    "y": 580,
     "w": 116,
     "h": 182
    },
@@ -1634,18 +1634,18 @@
   },
   "footman_die_04": {
    "frame": {
-    "x": 878,
-    "y": 1279,
+    "x": 2620,
+    "y": 2,
     "w": 249,
-    "h": 153
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 211,
-    "y": 197,
+    "y": 194,
     "w": 249,
-    "h": 153
+    "h": 156
    },
    "sourceSize": {
     "w": 514,
@@ -1658,8 +1658,8 @@
   },
   "footman_die_04_team": {
    "frame": {
-    "x": 2,
-    "y": 1279,
+    "x": 2617,
+    "y": 178,
     "w": 165,
     "h": 163
    },
@@ -1682,8 +1682,8 @@
   },
   "footman_die_05": {
    "frame": {
-    "x": 295,
-    "y": 1279,
+    "x": 2786,
+    "y": 162,
     "w": 215,
     "h": 156
    },
@@ -1706,8 +1706,8 @@
   },
   "footman_die_05_team": {
    "frame": {
-    "x": 522,
-    "y": 1446,
+    "x": 2726,
+    "y": 604,
     "w": 166,
     "h": 122
    },
@@ -1730,8 +1730,8 @@
   },
   "footman_die_06": {
    "frame": {
-    "x": 255,
-    "y": 1446,
+    "x": 1207,
+    "y": 622,
     "w": 263,
     "h": 126
    },
@@ -1754,8 +1754,8 @@
   },
   "footman_die_06_team": {
    "frame": {
-    "x": 1033,
-    "y": 1446,
+    "x": 814,
+    "y": 666,
     "w": 186,
     "h": 95
    },
@@ -1778,8 +1778,8 @@
   },
   "footman_die_07": {
    "frame": {
-    "x": 1131,
-    "y": 1279,
+    "x": 2816,
+    "y": 322,
     "w": 239,
     "h": 145
    },
@@ -1802,8 +1802,8 @@
   },
   "footman_die_07_team": {
    "frame": {
-    "x": 692,
-    "y": 1446,
+    "x": 2896,
+    "y": 604,
     "w": 147,
     "h": 122
    },
@@ -1826,8 +1826,8 @@
   },
   "footman_die_08": {
    "frame": {
-    "x": 2,
-    "y": 1446,
+    "x": 2816,
+    "y": 471,
     "w": 249,
     "h": 129
    },
@@ -1850,8 +1850,8 @@
   },
   "footman_die_08_team": {
    "frame": {
-    "x": 843,
-    "y": 1446,
+    "x": 1015,
+    "y": 647,
     "w": 186,
     "h": 104
    },
@@ -1981,8 +1981,8 @@
   "image": "footman.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 1580
+   "w": 3072,
+   "h": 768
   },
   "scale": "3",
   "ageborn": {

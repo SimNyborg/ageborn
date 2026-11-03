@@ -2,7 +2,7 @@
  "frames": {
   "war_hound_attack_b_01": {
    "frame": {
-    "x": 148,
+    "x": 282,
     "y": 2,
     "w": 80,
     "h": 78
@@ -26,17 +26,17 @@
   },
   "war_hound_attack_b_01_team": {
    "frame": {
-    "x": 68,
-    "y": 102,
-    "w": 55,
+    "x": 248,
+    "y": 133,
+    "w": 66,
     "h": 55
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 74,
+    "x": 63,
     "y": 80,
-    "w": 55,
+    "w": 66,
     "h": 55
    },
    "sourceSize": {
@@ -51,7 +51,7 @@
   "war_hound_attack_b_02": {
    "frame": {
     "x": 2,
-    "y": 2,
+    "y": 119,
     "w": 62,
     "h": 96
    },
@@ -74,17 +74,17 @@
   },
   "war_hound_attack_b_02_team": {
    "frame": {
-    "x": 328,
-    "y": 2,
-    "w": 53,
+    "x": 323,
+    "y": 84,
+    "w": 57,
     "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 71,
+    "x": 67,
     "y": 68,
-    "w": 53,
+    "w": 57,
     "h": 66
    },
    "sourceSize": {
@@ -98,8 +98,8 @@
   },
   "war_hound_attack_b_03": {
    "frame": {
-    "x": 68,
-    "y": 2,
+    "x": 98,
+    "y": 177,
     "w": 76,
     "h": 86
    },
@@ -122,17 +122,17 @@
   },
   "war_hound_attack_b_03_team": {
    "frame": {
-    "x": 2,
-    "y": 102,
-    "w": 62,
+    "x": 178,
+    "y": 132,
+    "w": 66,
     "h": 56
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
+    "x": 73,
     "y": 78,
-    "w": 62,
+    "w": 66,
     "h": 56
    },
    "sourceSize": {
@@ -146,8 +146,8 @@
   },
   "war_hound_attack_b_04": {
    "frame": {
-    "x": 652,
-    "y": 2,
+    "x": 2,
+    "y": 57,
     "w": 97,
     "h": 58
    },
@@ -170,9 +170,9 @@
   },
   "war_hound_attack_b_04_team": {
    "frame": {
-    "x": 639,
-    "y": 102,
-    "w": 68,
+    "x": 252,
+    "y": 84,
+    "w": 67,
     "h": 45
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 74,
     "y": 88,
-    "w": 68,
+    "w": 67,
     "h": 45
    },
    "sourceSize": {
@@ -194,8 +194,8 @@
   },
   "war_hound_attack_b_05": {
    "frame": {
-    "x": 232,
-    "y": 2,
+    "x": 2,
+    "y": 219,
     "w": 92,
     "h": 66
    },
@@ -218,17 +218,17 @@
   },
   "war_hound_attack_b_05_team": {
    "frame": {
-    "x": 391,
-    "y": 102,
-    "w": 57,
+    "x": 178,
+    "y": 243,
+    "w": 62,
     "h": 50
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 79,
+    "x": 74,
     "y": 86,
-    "w": 57,
+    "w": 62,
     "h": 50
    },
    "sourceSize": {
@@ -242,7 +242,7 @@
   },
   "war_hound_attack_c_01": {
    "frame": {
-    "x": 385,
+    "x": 105,
     "y": 2,
     "w": 87,
     "h": 62
@@ -266,17 +266,17 @@
   },
   "war_hound_attack_c_01_team": {
    "frame": {
-    "x": 582,
-    "y": 102,
-    "w": 53,
+    "x": 308,
+    "y": 239,
+    "w": 59,
     "h": 46
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 72,
+    "x": 66,
     "y": 87,
-    "w": 53,
+    "w": 59,
     "h": 46
    },
    "sourceSize": {
@@ -290,8 +290,8 @@
   },
   "war_hound_attack_c_02": {
    "frame": {
-    "x": 127,
-    "y": 102,
+    "x": 68,
+    "y": 119,
     "w": 90,
     "h": 54
    },
@@ -314,17 +314,17 @@
   },
   "war_hound_attack_c_02_team": {
    "frame": {
-    "x": 711,
-    "y": 102,
-    "w": 53,
+    "x": 248,
+    "y": 192,
+    "w": 60,
     "h": 43
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 69,
+    "x": 62,
     "y": 89,
-    "w": 53,
+    "w": 60,
     "h": 43
    },
    "sourceSize": {
@@ -338,7 +338,7 @@
   },
   "war_hound_attack_c_03": {
    "frame": {
-    "x": 566,
+    "x": 196,
     "y": 2,
     "w": 82,
     "h": 59
@@ -362,8 +362,8 @@
   },
   "war_hound_attack_c_03_team": {
    "frame": {
-    "x": 221,
-    "y": 102,
+    "x": 318,
+    "y": 154,
     "w": 63,
     "h": 54
    },
@@ -386,8 +386,8 @@
   },
   "war_hound_attack_c_04": {
    "frame": {
-    "x": 288,
-    "y": 102,
+    "x": 2,
+    "y": 2,
     "w": 99,
     "h": 51
    },
@@ -410,10 +410,10 @@
   },
   "war_hound_attack_c_04_team": {
    "frame": {
-    "x": 512,
-    "y": 102,
+    "x": 178,
+    "y": 192,
     "w": 66,
-    "h": 48
+    "h": 47
    },
    "rotated": false,
    "trimmed": true,
@@ -421,7 +421,7 @@
     "x": 73,
     "y": 91,
     "w": 66,
-    "h": 48
+    "h": 47
    },
    "sourceSize": {
     "w": 202,
@@ -434,8 +434,8 @@
   },
   "war_hound_attack_c_05": {
    "frame": {
-    "x": 476,
-    "y": 2,
+    "x": 162,
+    "y": 68,
     "w": 86,
     "h": 60
    },
@@ -458,17 +458,17 @@
   },
   "war_hound_attack_c_05_team": {
    "frame": {
-    "x": 452,
-    "y": 102,
-    "w": 56,
+    "x": 244,
+    "y": 243,
+    "w": 60,
     "h": 50
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 76,
+    "x": 72,
     "y": 88,
-    "w": 56,
+    "w": 60,
     "h": 50
    },
    "sourceSize": {
@@ -541,8 +541,8 @@
   "image": "war_hound.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 160
+   "w": 384,
+   "h": 296
   },
   "scale": "1.5",
   "ageborn": {

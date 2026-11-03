@@ -25,10 +25,12 @@ import math
 
 from ageborn_art import face as F
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "brigand"
 GAIT_NAME = "biped"
@@ -51,6 +53,17 @@ STEEL = "#A7B0BB"
 GRIP = "#4A3A30"
 GOLD = "#D4A437"
 
+# the detail standard (art round W2): the hood's face opening rolled in a team-dark facing and the cape's points
+# team-dark (the hood in two tones); the patched vest as leather (darker stitches round its patches, a second
+# patch, laces across its open front); the tunic's skirt in pleats; the sack's burlap with a stitched seam
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", HAIR: "fur", VEST: "leather", VEST_DK: "leather", HOSE: "cloth",
+                           BOOT: "leather", PARCH: "cloth", SACK: "cloth", STEEL: "iron", GRIP: "leather",
+                           GOLD: "gold", "team": "cloth"})
+
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand (dagger)
 BLADE = 19.0
 TIP = (HR[0], HR[1] - 0.6, HR[2] + 4.2 + BLADE)
@@ -71,7 +84,9 @@ def build(rig):
     rig.secondary("sack", "torso", (-6.0, 4.0, 38.0), (-14.0, 4.0, 26.0), max_deg=16, gain=1.3)
     g = Geo().blob((-13.0, 4.5, 31.0), (8.6, 8.0, 9.8), p=2.2)
     g.blob((-12.0, 4.5, 40.5), (4.0, 4.0, 3.0), p=2.2)
+    sface = F.Face(rig, "sack", [g])
     rig.part("sack", g, SACK)
+    MW.seam(rig, "sack", sface, [(-19.0, 36.0), (-20.5, 30.0), (-19.6, 24.0)], fill=VEST_DK, w=1.0)   # W2: burlap seam
     g = Geo().lathe([(4.2, 0), (4.6, 0.4), (4.6, 1.4), (4.2, 1.8)], (-12.0, 4.5, 38.4), segs=16)
     rig.part("sack", g, VEST_DK, outline=0.5)
     g = Geo().lathe([(0, -0.5), (2.4, -0.4), (2.6, 0.0), (2.4, 0.4), (0, 0.5)], (-6.6, -2.0, 35.0),
@@ -91,13 +106,25 @@ def build(rig):
     g2 = Geo()
     c = vface.hit(3.0, 26.0)
     vface.decal(g2, c, [(-1.8, -1.6), (1.8, -1.6), (1.8, 1.6), (-1.8, 1.6)], 0.4)
+    MW.field(g2, vface, [(-7.6, 31.4), (-3.8, 31.8), (-3.6, 28.2), (-7.4, 27.8)], depth=0.4)   # W2: a second patch
     rig.part("torso", g2, SACK, highlight=False, outline=0.3)
+    # W2: darker stitches round both patches and laces across the vest's open front (stitched leather)
+    for pts in ([(0.8, 23.9), (5.2, 23.9), (5.2, 28.1), (0.8, 28.1), (0.8, 23.9)],
+                [(-8.2, 27.2), (-3.0, 27.6), (-3.0, 32.4), (-8.2, 32.0), (-8.2, 27.2)]):
+        MW.seam(rig, "torso", vface, pts, fill=VEST_DK, w=0.8)
+    g = Geo()
+    for z in (24.0, 28.0, 32.0):
+        g.capsule((9.2, -5.2, z + 1.6), (10.4, -2.0, z - 1.6), 0.6, segs=8, rings=2)
+        g.capsule((9.2, -5.2, z - 1.6), (10.4, -2.0, z + 1.6), 0.6, segs=8, rings=2)
+    rig.part("torso", g, VEST_DK, outline=0)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.6, 0, 15.2), (11.2, 10.2, 4.6), p=2.7, taper=(1.12, 1.0))
     for x, y in ((8.0, -7.0), (-2.0, -10.0)):
         g.lathe([(1.6, 0), (0, 3.2)], (x, y - 0.6, 11.4), (x, y - 0.8, 14.6), segs=6)
+    hface = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    MW.folds(rig, "hem", hface, [[(x + 0.4, 16.0), (x + 0.6, 11.4)] for x in (-8.0, -4.6, 1.6, 5.0)], w=1.2)
     g = Geo().blob((0.4, 0, 20.6), (11.4, 10.4, 1.8), p=3.2)
     rig.part("torso", g, VEST_DK)
 
@@ -111,13 +138,21 @@ def build(rig):
     mask.clip((0, 0, 46.0), (0, 0, 1))
     K.face2(rig, [head, hood, mask], SKIN, cx=11.6, cz=49.4, eye_r=(3.4, 3.1, 3.6), brow=HAIR, brow_w=1.1,
             mouth_dz=-7.4, mouth_x=12.6, eye_at=(13.4, 49.6), mark_r=3.6, mouth_w=4.0)
+    rim = MW.cut_loop(hood, (6.6, 0, 50.0), (1, 0, 0.22))
+    hood_face = F.Face(rig, "head", [hood])
     rig.part("head", head, SKIN)
     rig.part("head", hood, team=True)
     rig.part("head", mask, PARCH)
+    # W2: the hood's face opening in a team-dark facing and two creases down its side (the cloth gathering)
+    MW.piping(rig, "head", rim, 1.2)
+    MW.folds(rig, "head", hood_face, [[(0.4, 56.5), (-1.4, 51.5), (-3.2, 46.2)],
+                                      [(-5.2, 57.0), (-7.6, 52.0), (-9.8, 47.2)]], w=1.3)
     g = Geo().blob((0.5, 0, 38.0), (11.6, 12.2, 4.6), p=2.6, taper=(1.1, 0.9))   # short shoulder cape
-    for x, y in ((8.0, -6.0), (1.0, -11.0), (-7.0, -9.0)):
-        g.lathe([(3.0, 0), (0, -4.0)], (x, y, 35.0), segs=8)
     rig.part("torso", g, team=True)
+    g = Geo()   # W2: the cape's three points team-dark (two tones), a little longer so they read as points
+    for x, y in ((8.0, -6.0), (1.0, -11.0), (-7.0, -9.0)):
+        g.lathe([(3.0, 0), (0, -4.8)], (x, y, 35.2), segs=8)
+    look.team_part(rig, "torso", g)
     rig.secondary("tip", "head", (-6.0, 0, 60.0), (-12.0, 0, 56.0), max_deg=16, gain=1.2)
 
     # arms: team sleeves, a leather bracer, bare hands
@@ -139,6 +174,16 @@ def build(rig):
     rig.joint("sack_loose", "root", (0, 0, 30), hidden=True)
     g = Geo().blob((0.0, 4.0, 30.0), (8.6, 8.0, 9.8), p=2.2)
     rig.part("sack_loose", g, SACK)
+    _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the hood (the largest team
+    field the dagger arm leaves clear), the vest's leather, the cape, a strip torn from the tunic's skirt."""
+    rig.damage_spot_at("hood", "head", -4.0, 52.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("vest", "torso", -4.0, 25.0, 6.0, "hide", fill=VEST)
+    rig.damage_spot_at("cape", "torso", -2.0, 39.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("skirt", "hem", -2.0, 14.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

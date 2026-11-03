@@ -2,8 +2,8 @@
  "frames": {
   "pikeman_attack_b_02": {
    "frame": {
-    "x": 889,
-    "y": 2,
+    "x": 384,
+    "y": 219,
     "w": 122,
     "h": 103
    },
@@ -26,9 +26,9 @@
   },
   "pikeman_attack_b_02_team": {
    "frame": {
-    "x": 556,
-    "y": 222,
-    "w": 99,
+    "x": 456,
+    "y": 2,
+    "w": 52,
     "h": 86
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 101,
     "y": 88,
-    "w": 99,
+    "w": 52,
     "h": 86
    },
    "sourceSize": {
@@ -74,18 +74,18 @@
   },
   "pikeman_attack_b_03_team": {
    "frame": {
-    "x": 357,
-    "y": 222,
-    "w": 81,
-    "h": 88
+    "x": 272,
+    "y": 220,
+    "w": 56,
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
     "y": 83,
-    "w": 81,
-    "h": 88
+    "w": 56,
+    "h": 90
    },
    "sourceSize": {
     "w": 294,
@@ -98,17 +98,17 @@
   },
   "pikeman_attack_b_04": {
    "frame": {
-    "x": 406,
-    "y": 2,
-    "w": 124,
+    "x": 255,
+    "y": 111,
+    "w": 125,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
+    "x": 114,
     "y": 86,
-    "w": 124,
+    "w": 125,
     "h": 105
    },
    "sourceSize": {
@@ -122,18 +122,18 @@
   },
   "pikeman_attack_b_04_team": {
    "frame": {
-    "x": 150,
-    "y": 222,
-    "w": 95,
-    "h": 92
+    "x": 136,
+    "y": 116,
+    "w": 48,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 110,
     "y": 83,
-    "w": 95,
-    "h": 92
+    "w": 48,
+    "h": 91
    },
    "sourceSize": {
     "w": 294,
@@ -146,17 +146,17 @@
   },
   "pikeman_attack_b_05": {
    "frame": {
-    "x": 534,
-    "y": 2,
-    "w": 129,
+    "x": 2,
+    "y": 116,
+    "w": 130,
     "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 125,
+    "x": 124,
     "y": 93,
-    "w": 129,
+    "w": 130,
     "h": 104
    },
    "sourceSize": {
@@ -170,18 +170,18 @@
   },
   "pikeman_attack_b_05_team": {
    "frame": {
-    "x": 350,
-    "y": 116,
-    "w": 100,
-    "h": 101
+    "x": 406,
+    "y": 2,
+    "w": 46,
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 120,
     "y": 89,
-    "w": 100,
-    "h": 101
+    "w": 46,
+    "h": 87
    },
    "sourceSize": {
     "w": 294,
@@ -218,18 +218,18 @@
   },
   "pikeman_attack_b_06_team": {
    "frame": {
-    "x": 1083,
-    "y": 116,
-    "w": 105,
-    "h": 94
+    "x": 2,
+    "y": 527,
+    "w": 49,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 125,
     "y": 102,
-    "w": 105,
-    "h": 94
+    "w": 49,
+    "h": 74
    },
    "sourceSize": {
     "w": 294,
@@ -242,17 +242,17 @@
   },
   "pikeman_attack_b_07": {
    "frame": {
-    "x": 667,
-    "y": 2,
-    "w": 120,
+    "x": 384,
+    "y": 111,
+    "w": 119,
     "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 130,
+    "x": 131,
     "y": 95,
-    "w": 120,
+    "w": 119,
     "h": 104
    },
    "sourceSize": {
@@ -266,18 +266,18 @@
   },
   "pikeman_attack_b_07_team": {
    "frame": {
-    "x": 791,
-    "y": 2,
-    "w": 94,
-    "h": 104
+    "x": 448,
+    "y": 326,
+    "w": 43,
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 128,
     "y": 92,
-    "w": 94,
-    "h": 104
+    "w": 43,
+    "h": 85
    },
    "sourceSize": {
     "w": 294,
@@ -290,8 +290,8 @@
   },
   "pikeman_attack_b_08": {
    "frame": {
-    "x": 944,
-    "y": 116,
+    "x": 2,
+    "y": 429,
     "w": 135,
     "h": 94
    },
@@ -314,18 +314,18 @@
   },
   "pikeman_attack_b_08_team": {
    "frame": {
-    "x": 442,
-    "y": 222,
-    "w": 110,
-    "h": 87
+    "x": 399,
+    "y": 518,
+    "w": 47,
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
     "y": 95,
-    "w": 110,
-    "h": 87
+    "w": 47,
+    "h": 81
    },
    "sourceSize": {
     "w": 294,
@@ -338,17 +338,17 @@
   },
   "pikeman_attack_c_01": {
    "frame": {
-    "x": 2,
-    "y": 222,
-    "w": 144,
+    "x": 141,
+    "y": 428,
+    "w": 145,
     "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 120,
+    "x": 119,
     "y": 98,
-    "w": 144,
+    "w": 145,
     "h": 92
    },
    "sourceSize": {
@@ -362,18 +362,18 @@
   },
   "pikeman_attack_c_01_team": {
    "frame": {
-    "x": 917,
-    "y": 222,
-    "w": 106,
-    "h": 84
+    "x": 450,
+    "y": 415,
+    "w": 45,
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 115,
     "y": 94,
-    "w": 106,
-    "h": 84
+    "w": 45,
+    "h": 81
    },
    "sourceSize": {
     "w": 294,
@@ -386,10 +386,10 @@
   },
   "pikeman_attack_c_02": {
    "frame": {
-    "x": 554,
-    "y": 116,
+    "x": 272,
+    "y": 326,
     "w": 128,
-    "h": 97
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
@@ -397,7 +397,7 @@
     "x": 101,
     "y": 96,
     "w": 128,
-    "h": 97
+    "h": 98
    },
    "sourceSize": {
     "w": 294,
@@ -410,18 +410,18 @@
   },
   "pikeman_attack_c_02_team": {
    "frame": {
-    "x": 454,
-    "y": 116,
-    "w": 96,
-    "h": 100
+    "x": 290,
+    "y": 518,
+    "w": 56,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 98,
     "y": 94,
-    "w": 96,
-    "h": 100
+    "w": 56,
+    "h": 84
    },
    "sourceSize": {
     "w": 294,
@@ -435,16 +435,16 @@
   "pikeman_attack_c_03": {
    "frame": {
     "x": 2,
-    "y": 116,
-    "w": 129,
+    "y": 224,
+    "w": 130,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 94,
     "y": 99,
-    "w": 129,
+    "w": 130,
     "h": 102
    },
    "sourceSize": {
@@ -458,18 +458,18 @@
   },
   "pikeman_attack_c_03_team": {
    "frame": {
-    "x": 135,
-    "y": 116,
-    "w": 104,
-    "h": 102
+    "x": 141,
+    "y": 524,
+    "w": 62,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
     "y": 98,
-    "w": 104,
-    "h": 102
+    "w": 62,
+    "h": 78
    },
    "sourceSize": {
     "w": 294,
@@ -506,18 +506,18 @@
   },
   "pikeman_attack_c_04_team": {
    "frame": {
-    "x": 243,
-    "y": 116,
-    "w": 103,
-    "h": 102
+    "x": 332,
+    "y": 220,
+    "w": 43,
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 112,
     "y": 88,
-    "w": 103,
-    "h": 102
+    "w": 43,
+    "h": 89
    },
    "sourceSize": {
     "w": 294,
@@ -530,18 +530,18 @@
   },
   "pikeman_attack_c_05": {
    "frame": {
-    "x": 1015,
-    "y": 2,
+    "x": 136,
+    "y": 220,
     "w": 132,
-    "h": 102
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 126,
-    "y": 90,
+    "y": 89,
     "w": 132,
-    "h": 102
+    "h": 103
    },
    "sourceSize": {
     "w": 294,
@@ -554,18 +554,18 @@
   },
   "pikeman_attack_c_05_team": {
    "frame": {
-    "x": 249,
-    "y": 222,
-    "w": 104,
-    "h": 90
+    "x": 188,
+    "y": 115,
+    "w": 39,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 123,
     "y": 85,
-    "w": 104,
-    "h": 90
+    "w": 39,
+    "h": 91
    },
    "sourceSize": {
     "w": 294,
@@ -578,18 +578,18 @@
   },
   "pikeman_attack_c_06": {
    "frame": {
-    "x": 659,
-    "y": 222,
+    "x": 290,
+    "y": 428,
     "w": 155,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 127,
-    "y": 101,
+    "y": 100,
     "w": 155,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 294,
@@ -602,9 +602,9 @@
   },
   "pikeman_attack_c_06_team": {
    "frame": {
-    "x": 1131,
-    "y": 222,
-    "w": 113,
+    "x": 207,
+    "y": 524,
+    "w": 46,
     "h": 76
    },
    "rotated": false,
@@ -612,7 +612,7 @@
    "spriteSourceSize": {
     "x": 126,
     "y": 96,
-    "w": 113,
+    "w": 46,
     "h": 76
    },
    "sourceSize": {
@@ -626,8 +626,8 @@
   },
   "pikeman_attack_c_07": {
    "frame": {
-    "x": 686,
-    "y": 116,
+    "x": 136,
+    "y": 327,
     "w": 126,
     "h": 97
    },
@@ -650,18 +650,18 @@
   },
   "pikeman_attack_c_07_team": {
    "frame": {
-    "x": 818,
-    "y": 222,
-    "w": 95,
-    "h": 85
+    "x": 404,
+    "y": 326,
+    "w": 40,
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 129,
     "y": 88,
-    "w": 95,
-    "h": 85
+    "w": 40,
+    "h": 86
    },
    "sourceSize": {
     "w": 294,
@@ -674,17 +674,17 @@
   },
   "pikeman_attack_c_08": {
    "frame": {
-    "x": 816,
-    "y": 116,
-    "w": 124,
+    "x": 2,
+    "y": 330,
+    "w": 125,
     "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 120,
+    "x": 119,
     "y": 95,
-    "w": 124,
+    "w": 125,
     "h": 95
    },
    "sourceSize": {
@@ -698,18 +698,18 @@
   },
   "pikeman_attack_c_08_team": {
    "frame": {
-    "x": 1027,
-    "y": 222,
-    "w": 100,
-    "h": 81
+    "x": 350,
+    "y": 518,
+    "w": 45,
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 115,
     "y": 92,
-    "w": 100,
-    "h": 81
+    "w": 45,
+    "h": 83
    },
    "sourceSize": {
     "w": 294,
@@ -781,8 +781,8 @@
   "image": "pikeman.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 316
+   "w": 512,
+   "h": 604
   },
   "scale": "1.5",
   "ageborn": {
