@@ -1,0 +1,2298 @@
+{
+ "frames": {
+  "destrier_knight@chess_knight_idle_00": {
+   "frame": {
+    "x": 153,
+    "y": 169,
+    "w": 161,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 74,
+    "w": 161,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_00_team": {
+   "frame": {
+    "x": 2754,
+    "y": 259,
+    "w": 140,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 71,
+    "w": 140,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_01": {
+   "frame": {
+    "x": 486,
+    "y": 167,
+    "w": 162,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 76,
+    "w": 162,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_01_team": {
+   "frame": {
+    "x": 2751,
+    "y": 131,
+    "w": 141,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 72,
+    "w": 141,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_02": {
+   "frame": {
+    "x": 1339,
+    "y": 163,
+    "w": 164,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 81,
+    "w": 164,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_02_team": {
+   "frame": {
+    "x": 3322,
+    "y": 253,
+    "w": 144,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 78,
+    "w": 144,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_03": {
+   "frame": {
+    "x": 1845,
+    "y": 2,
+    "w": 168,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 142,
+    "y": 85,
+    "w": 168,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_03_team": {
+   "frame": {
+    "x": 3490,
+    "y": 125,
+    "w": 147,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 81,
+    "w": 147,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_04": {
+   "frame": {
+    "x": 1672,
+    "y": 2,
+    "w": 169,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 83,
+    "w": 169,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_04_team": {
+   "frame": {
+    "x": 3340,
+    "y": 126,
+    "w": 146,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 79,
+    "w": 146,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_05": {
+   "frame": {
+    "x": 1000,
+    "y": 164,
+    "w": 165,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 142,
+    "y": 78,
+    "w": 165,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_idle_05_team": {
+   "frame": {
+    "x": 3175,
+    "y": 255,
+    "w": 143,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 74,
+    "w": 143,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_00": {
+   "frame": {
+    "x": 1163,
+    "y": 2,
+    "w": 169,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 81,
+    "w": 169,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_00_team": {
+   "frame": {
+    "x": 2901,
+    "y": 2,
+    "w": 138,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 78,
+    "w": 138,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_01": {
+   "frame": {
+    "x": 1874,
+    "y": 159,
+    "w": 177,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 86,
+    "w": 177,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_01_team": {
+   "frame": {
+    "x": 3193,
+    "y": 2,
+    "w": 142,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 82,
+    "w": 142,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_02": {
+   "frame": {
+    "x": 2223,
+    "y": 154,
+    "w": 174,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 92,
+    "w": 174,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_02_team": {
+   "frame": {
+    "x": 3470,
+    "y": 249,
+    "w": 148,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 88,
+    "w": 148,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_03": {
+   "frame": {
+    "x": 2055,
+    "y": 157,
+    "w": 164,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 88,
+    "w": 164,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_03_team": {
+   "frame": {
+    "x": 3488,
+    "y": 2,
+    "w": 146,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 84,
+    "w": 146,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_04": {
+   "frame": {
+    "x": 1169,
+    "y": 163,
+    "w": 166,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 81,
+    "w": 166,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_04_team": {
+   "frame": {
+    "x": 2898,
+    "y": 258,
+    "w": 138,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 78,
+    "w": 138,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_05": {
+   "frame": {
+    "x": 2017,
+    "y": 2,
+    "w": 174,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 85,
+    "w": 174,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_05_team": {
+   "frame": {
+    "x": 2896,
+    "y": 131,
+    "w": 142,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 81,
+    "w": 142,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_06": {
+   "frame": {
+    "x": 2401,
+    "y": 152,
+    "w": 172,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 91,
+    "w": 172,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_06_team": {
+   "frame": {
+    "x": 1709,
+    "y": 319,
+    "w": 148,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 87,
+    "w": 148,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_07": {
+   "frame": {
+    "x": 2195,
+    "y": 2,
+    "w": 169,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 87,
+    "w": 169,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_walk_07_team": {
+   "frame": {
+    "x": 3339,
+    "y": 2,
+    "w": 145,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 83,
+    "w": 145,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_00": {
+   "frame": {
+    "x": 2,
+    "y": 219,
+    "w": 147,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 62,
+    "w": 147,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_00_team": {
+   "frame": {
+    "x": 3040,
+    "y": 258,
+    "w": 131,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 73,
+    "w": 131,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_01": {
+   "frame": {
+    "x": 1709,
+    "y": 161,
+    "w": 161,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 81,
+    "w": 161,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_01_team": {
+   "frame": {
+    "x": 1507,
+    "y": 321,
+    "w": 143,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 82,
+    "w": 143,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_02": {
+   "frame": {
+    "x": 2577,
+    "y": 152,
+    "w": 170,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 91,
+    "w": 170,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_02_team": {
+   "frame": {
+    "x": 3622,
+    "y": 247,
+    "w": 152,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 87,
+    "w": 152,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_03": {
+   "frame": {
+    "x": 2577,
+    "y": 299,
+    "w": 173,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 95,
+    "w": 173,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_03_team": {
+   "frame": {
+    "x": 821,
+    "y": 327,
+    "w": 156,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 91,
+    "w": 156,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_04": {
+   "frame": {
+    "x": 274,
+    "y": 2,
+    "w": 201,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 72,
+    "w": 201,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_04_team": {
+   "frame": {
+    "x": 2578,
+    "y": 2,
+    "w": 162,
+    "h": 127
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 68,
+    "w": 162,
+    "h": 127
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_05": {
+   "frame": {
+    "x": 1507,
+    "y": 162,
+    "w": 198,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 73,
+    "w": 198,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_05_team": {
+   "frame": {
+    "x": 2055,
+    "y": 312,
+    "w": 158,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 69,
+    "w": 158,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_06": {
+   "frame": {
+    "x": 2368,
+    "y": 2,
+    "w": 206,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 88,
+    "w": 206,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_06_team": {
+   "frame": {
+    "x": 1169,
+    "y": 324,
+    "w": 155,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 84,
+    "w": 155,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_07": {
+   "frame": {
+    "x": 821,
+    "y": 165,
+    "w": 175,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 80,
+    "w": 175,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_07_team": {
+   "frame": {
+    "x": 2744,
+    "y": 2,
+    "w": 153,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 76,
+    "w": 153,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_08": {
+   "frame": {
+    "x": 986,
+    "y": 2,
+    "w": 173,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 150,
+    "y": 79,
+    "w": 173,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_08_team": {
+   "frame": {
+    "x": 3042,
+    "y": 129,
+    "w": 147,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 156,
+    "y": 76,
+    "w": 147,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_09": {
+   "frame": {
+    "x": 1336,
+    "y": 2,
+    "w": 166,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 80,
+    "w": 166,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_attack_09_team": {
+   "frame": {
+    "x": 3193,
+    "y": 128,
+    "w": 143,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 76,
+    "w": 143,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_hit_00": {
+   "frame": {
+    "x": 819,
+    "y": 2,
+    "w": 163,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 77,
+    "w": 163,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_hit_00_team": {
+   "frame": {
+    "x": 1000,
+    "y": 326,
+    "w": 151,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 86,
+    "w": 151,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_hit_01": {
+   "frame": {
+    "x": 318,
+    "y": 167,
+    "w": 164,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 127,
+    "y": 75,
+    "w": 164,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_hit_01_team": {
+   "frame": {
+    "x": 3641,
+    "y": 119,
+    "w": 150,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 85,
+    "w": 150,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_hit_02": {
+   "frame": {
+    "x": 1506,
+    "y": 2,
+    "w": 162,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 80,
+    "w": 162,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_hit_02_team": {
+   "frame": {
+    "x": 1328,
+    "y": 324,
+    "w": 145,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 83,
+    "w": 145,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_hit_03": {
+   "frame": {
+    "x": 646,
+    "y": 2,
+    "w": 169,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 78,
+    "w": 169,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_hit_03_team": {
+   "frame": {
+    "x": 1874,
+    "y": 315,
+    "w": 143,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 74,
+    "w": 143,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_hit_04": {
+   "frame": {
+    "x": 652,
+    "y": 165,
+    "w": 165,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 142,
+    "y": 78,
+    "w": 165,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_hit_04_team": {
+   "frame": {
+    "x": 3043,
+    "y": 2,
+    "w": 146,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 75,
+    "w": 146,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_00": {
+   "frame": {
+    "x": 479,
+    "y": 2,
+    "w": 163,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 73,
+    "w": 163,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_00_team": {
+   "frame": {
+    "x": 3638,
+    "y": 2,
+    "w": 153,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 85,
+    "w": 153,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 139,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 22,
+    "w": 139,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_01_team": {
+   "frame": {
+    "x": 145,
+    "y": 2,
+    "w": 125,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 33,
+    "w": 125,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_02": {
+   "frame": {
+    "x": 2223,
+    "y": 305,
+    "w": 243,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 103,
+    "w": 243,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_02_team": {
+   "frame": {
+    "x": 652,
+    "y": 328,
+    "w": 162,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 40,
+    "y": 114,
+    "w": 162,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_03": {
+   "frame": {
+    "x": 3795,
+    "y": 2,
+    "w": 229,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 125,
+    "w": 229,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_03_team": {
+   "frame": {
+    "x": 2470,
+    "y": 301,
+    "w": 102,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 130,
+    "w": 102,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_04": {
+   "frame": {
+    "x": 153,
+    "y": 335,
+    "w": 283,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 162,
+    "w": 283,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_04_team": {
+   "frame": {
+    "x": 3865,
+    "y": 374,
+    "w": 205,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 34,
+    "y": 172,
+    "w": 205,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_05": {
+   "frame": {
+    "x": 3795,
+    "y": 115,
+    "w": 280,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 167,
+    "w": 280,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_05_team": {
+   "frame": {
+    "x": 3665,
+    "y": 374,
+    "w": 196,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 37,
+    "y": 177,
+    "w": 196,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_06": {
+   "frame": {
+    "x": 3795,
+    "y": 204,
+    "w": 279,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 166,
+    "w": 279,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_06_team": {
+   "frame": {
+    "x": 3470,
+    "y": 371,
+    "w": 191,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 175,
+    "w": 191,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_07": {
+   "frame": {
+    "x": 3778,
+    "y": 292,
+    "w": 277,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 172,
+    "w": 277,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  },
+  "destrier_knight@chess_knight_die_07_team": {
+   "frame": {
+    "x": 440,
+    "y": 332,
+    "w": 187,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 40,
+    "y": 181,
+    "w": 187,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 368,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.51087,
+    "y": 0.90079
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "destrier_knight@chess_knight_idle_00",
+   "destrier_knight@chess_knight_idle_01",
+   "destrier_knight@chess_knight_idle_02",
+   "destrier_knight@chess_knight_idle_03",
+   "destrier_knight@chess_knight_idle_04",
+   "destrier_knight@chess_knight_idle_05"
+  ],
+  "idle_team": [
+   "destrier_knight@chess_knight_idle_00_team",
+   "destrier_knight@chess_knight_idle_01_team",
+   "destrier_knight@chess_knight_idle_02_team",
+   "destrier_knight@chess_knight_idle_03_team",
+   "destrier_knight@chess_knight_idle_04_team",
+   "destrier_knight@chess_knight_idle_05_team"
+  ],
+  "walk": [
+   "destrier_knight@chess_knight_walk_00",
+   "destrier_knight@chess_knight_walk_01",
+   "destrier_knight@chess_knight_walk_02",
+   "destrier_knight@chess_knight_walk_03",
+   "destrier_knight@chess_knight_walk_04",
+   "destrier_knight@chess_knight_walk_05",
+   "destrier_knight@chess_knight_walk_06",
+   "destrier_knight@chess_knight_walk_07"
+  ],
+  "walk_team": [
+   "destrier_knight@chess_knight_walk_00_team",
+   "destrier_knight@chess_knight_walk_01_team",
+   "destrier_knight@chess_knight_walk_02_team",
+   "destrier_knight@chess_knight_walk_03_team",
+   "destrier_knight@chess_knight_walk_04_team",
+   "destrier_knight@chess_knight_walk_05_team",
+   "destrier_knight@chess_knight_walk_06_team",
+   "destrier_knight@chess_knight_walk_07_team"
+  ],
+  "attack": [
+   "destrier_knight@chess_knight_attack_00",
+   "destrier_knight@chess_knight_attack_01",
+   "destrier_knight@chess_knight_attack_02",
+   "destrier_knight@chess_knight_attack_03",
+   "destrier_knight@chess_knight_attack_04",
+   "destrier_knight@chess_knight_attack_05",
+   "destrier_knight@chess_knight_attack_06",
+   "destrier_knight@chess_knight_attack_07",
+   "destrier_knight@chess_knight_attack_08",
+   "destrier_knight@chess_knight_attack_08",
+   "destrier_knight@chess_knight_attack_09",
+   "destrier_knight@chess_knight_attack_09"
+  ],
+  "attack_team": [
+   "destrier_knight@chess_knight_attack_00_team",
+   "destrier_knight@chess_knight_attack_01_team",
+   "destrier_knight@chess_knight_attack_02_team",
+   "destrier_knight@chess_knight_attack_03_team",
+   "destrier_knight@chess_knight_attack_04_team",
+   "destrier_knight@chess_knight_attack_05_team",
+   "destrier_knight@chess_knight_attack_06_team",
+   "destrier_knight@chess_knight_attack_07_team",
+   "destrier_knight@chess_knight_attack_08_team",
+   "destrier_knight@chess_knight_attack_08_team",
+   "destrier_knight@chess_knight_attack_09_team",
+   "destrier_knight@chess_knight_attack_09_team"
+  ],
+  "hit": [
+   "destrier_knight@chess_knight_hit_00",
+   "destrier_knight@chess_knight_hit_01",
+   "destrier_knight@chess_knight_hit_02",
+   "destrier_knight@chess_knight_hit_03",
+   "destrier_knight@chess_knight_hit_04"
+  ],
+  "hit_team": [
+   "destrier_knight@chess_knight_hit_00_team",
+   "destrier_knight@chess_knight_hit_01_team",
+   "destrier_knight@chess_knight_hit_02_team",
+   "destrier_knight@chess_knight_hit_03_team",
+   "destrier_knight@chess_knight_hit_04_team"
+  ],
+  "die": [
+   "destrier_knight@chess_knight_die_00",
+   "destrier_knight@chess_knight_die_01",
+   "destrier_knight@chess_knight_die_01",
+   "destrier_knight@chess_knight_die_02",
+   "destrier_knight@chess_knight_die_03",
+   "destrier_knight@chess_knight_die_04",
+   "destrier_knight@chess_knight_die_04",
+   "destrier_knight@chess_knight_die_05",
+   "destrier_knight@chess_knight_die_05",
+   "destrier_knight@chess_knight_die_06",
+   "destrier_knight@chess_knight_die_06",
+   "destrier_knight@chess_knight_die_07"
+  ],
+  "die_team": [
+   "destrier_knight@chess_knight_die_00_team",
+   "destrier_knight@chess_knight_die_01_team",
+   "destrier_knight@chess_knight_die_01_team",
+   "destrier_knight@chess_knight_die_02_team",
+   "destrier_knight@chess_knight_die_03_team",
+   "destrier_knight@chess_knight_die_04_team",
+   "destrier_knight@chess_knight_die_04_team",
+   "destrier_knight@chess_knight_die_05_team",
+   "destrier_knight@chess_knight_die_05_team",
+   "destrier_knight@chess_knight_die_06_team",
+   "destrier_knight@chess_knight_die_06_team",
+   "destrier_knight@chess_knight_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "destrier_knight@chess_knight.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 4096,
+   "h": 440
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.destrier_knight@chess_knight",
+   "name": "Destrier Knight",
+   "heightLu": 118,
+   "widthLu": 125.2,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    188.0,
+    227.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     112
+    ],
+    "hitCenter": [
+     0,
+     50
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "rider",
+   "skinOf": "unit.destrier_knight",
+   "skin": "chess_knight",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900,
+     "anchorsLu": {
+      "lanceTip": [
+       [
+        90.2,
+        115.6
+       ],
+       [
+        90.4,
+        115.5
+       ],
+       [
+        92.7,
+        110.8
+       ],
+       [
+        94.9,
+        106.2
+       ],
+       [
+        94.8,
+        106.2
+       ],
+       [
+        92.4,
+        110.9
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      92,
+      93,
+      93,
+      92,
+      92,
+      93,
+      93,
+      92
+     ],
+     "durationMs": 740,
+     "gait": "rider",
+     "gaitSpeedLuPerS": 75.0,
+     "cycleMs": 740,
+     "anchorsLu": {
+      "lanceTip": [
+       [
+        90.7,
+        112.8
+       ],
+       [
+        93.7,
+        104.1
+       ],
+       [
+        93.7,
+        97.8
+       ],
+       [
+        91.0,
+        106.6
+       ],
+       [
+        90.7,
+        112.8
+       ],
+       [
+        94.1,
+        104.3
+       ],
+       [
+        94.3,
+        98.0
+       ],
+       [
+        91.5,
+        106.7
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 74.8,
+     "strideLu": 55.4,
+     "plantedDriftLu": 0.21,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "bl",
+       "atLu": [
+        -3.6,
+        2.3
+       ]
+      },
+      {
+       "step": 0,
+       "foot": "fr",
+       "atLu": [
+        31.6,
+        -3.0
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "br",
+       "atLu": [
+        -5.8,
+        -1.2
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "fl",
+       "atLu": [
+        33.8,
+        0.5
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "lanceTip": [
+       [
+        76.6,
+        130.2
+       ],
+       [
+        85.1,
+        114.9
+       ],
+       [
+        89.6,
+        90.3
+       ],
+       [
+        90.0,
+        69.0
+       ],
+       [
+        115.5,
+        69.4
+       ],
+       [
+        120.9,
+        68.1
+       ],
+       [
+        117.6,
+        59.7
+       ],
+       [
+        114.6,
+        59.5
+       ],
+       [
+        105.7,
+        92.9
+       ],
+       [
+        93.6,
+        110.8
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "lanceTip": [
+       [
+        82.9,
+        117.7
+       ],
+       [
+        79.1,
+        119.5
+       ],
+       [
+        87.1,
+        115.3
+       ],
+       [
+        95.0,
+        107.1
+       ],
+       [
+        92.1,
+        111.3
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      7
+     ],
+     "durationsMs": [
+      60,
+      70,
+      80,
+      80,
+      60,
+      70,
+      80,
+      90,
+      90,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 990,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 740,
+       "offsetLu": [
+        0,
+        42.5
+       ],
+       "scale": 1.565
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 820,
+       "offsetLu": [
+        0,
+        64.9
+       ],
+       "loops": 2,
+       "scale": 1.251
+      }
+     ],
+     "hideUnitAtMs": 990,
+     "anchorsLu": {
+      "lanceTip": [
+       [
+        84.4,
+        121.4
+       ],
+       [
+        5.4,
+        162.3
+       ],
+       [
+        -9.6,
+        60.0
+       ],
+       [
+        70.6,
+        41.6
+       ],
+       [
+        11.2,
+        38.1
+       ],
+       [
+        6.8,
+        34.5
+       ],
+       [
+        5.0,
+        36.1
+       ],
+       [
+        4.0,
+        31.8
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

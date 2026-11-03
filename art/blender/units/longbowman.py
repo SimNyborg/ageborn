@@ -1,9 +1,12 @@
 """Longbowman: Medieval Age ranged (DESIGN A5.3). Longbow, arrow, ~68 lu.
 
-Look (A11): a wiry archer in a team hood with a long liripipe tail (a parchment bear paw on
-its side), a leather jerkin over a team tunic, slate hose and cuffed boots, a leather quiver
-of big parchment-fletched arrows on his back, a bracer on the bow arm, and a longbow as tall
-as he is, held diagonally in the near hand. He carries a spare arrow in the draw hand.
+Look (A11): a wiry archer in a team hood with a long liripipe tail, a leather jerkin over a
+team tunic, slate hose and cuffed boots, a leather quiver of big parchment-fletched arrows on
+his back, a bracer on the bow arm, and a longbow as tall as he is, held diagonally in the near
+hand. He carries a spare arrow in the draw hand. Detail standard (art round W2): the hood's
+face opening edged team-dark, a dagged collar, the liripipe's end team-dark, the jerkin's
+stitched panels, the skirt in pleats and a yew bow with a pale sapwood back; damage spots on
+the hood, collar, jerkin and skirt; aimed volleys at flyers (attack_up70, attack_b_up45/up70).
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    lifts the spare arrow and squints down the shaft (checks it is straight), blink
@@ -24,8 +27,11 @@ from ageborn_art import face as F
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
+from ageborn_art import aimed
+from ageborn_art import look
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "longbowman"
 GAIT_NAME = "biped"
@@ -49,6 +55,36 @@ STRING = "#EDE6D6"
 PARCH = "#E8DFC8"
 STEEL = "#A7B0BB"
 GOLD = "#D4A437"
+
+# the detail standard (art round W2): the hood in two tones (a team-dark band round the face opening, the dagged
+# collar's points and the liripipe's tail), the jerkin as leather (a darker stitched seam and lacing down its front),
+# the tunic's skirt in pleats, the bow as wood with a lighter back and horn tips, a gold-trimmed bracer
+LEATHER_DK = "#4A3C30"    # the jerkin's seam and lacing
+BOW_BACK = "#D2BC98"      # the stave's lighter back (two-tone wood)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", HAIR: "fur", LEATHER: "leather", DARK_LEATHER: "leather",
+                           LEATHER_DK: "leather", HOSE: "cloth", SLEEVE: "cloth", BOOT: "leather", WOOD: "wood",
+                           BOW_BACK: "wood", GRIP: "leather", STRING: "cloth", PARCH: "cloth", STEEL: "iron",
+                           GOLD: "gold", "team": "cloth"})
+
+# Greenwood Archer (DESIGN A5.8, rare: "moss and leaf greens, hood and leaf trim"): the jerkin moss, the hose and the
+# quiver forest green, the sleeves leaf green, the feather and the fletching pale leaf, and a trim of leaves round the
+# hood's face opening and the collar; the hood, its tail and the skirt stay team.
+LEAF = "#6E8E3E"          # hue 87: just outside the A11 orange-yellow team band (350-81)
+LEAF_DK = "#4C6A2E"
+# the greens sit at hue 83-99 (outside the band); the wood and the parchment inside it keep saturation <= 0.38
+GREEN = {LEATHER: "#5C6B45", DARK_LEATHER: "#434E32", LEATHER_DK: "#353E28", HOSE: "#4F6046", SLEEVE: "#789152",
+         PARCH: "#D3DCB0", BOOT: "#4A3F30", WOOD: "#A08C68", BOW_BACK: "#C7B184"}
+SKINS = {"greenwood_archer": {
+    "palette": MW.skin_palette(GREEN),
+    "kinds": dict({v: k for v, k in ((GREEN[LEATHER], "leather"), (GREEN[DARK_LEATHER], "leather"),
+                                     (GREEN[LEATHER_DK], "leather"), (GREEN[HOSE], "cloth"), (GREEN[SLEEVE], "cloth"),
+                                     (GREEN[PARCH], "cloth"), (GREEN[BOOT], "leather"), (GREEN[WOOD], "wood"),
+                                     (GREEN[BOW_BACK], "wood"))}, **{LEAF: "cloth", LEAF_DK: "cloth"})}}
+SKINS["greenwood_archer"]["kinds"] = MW.kinds(SKINS["greenwood_archer"]["kinds"])
 
 HL = (0.0, B.ARM_Y["r"] - 1.5, B.HAND_Z)   # bow hand (near side, so bow and arrow read)
 BOW_HALF = 34.0                       # grip to tip
@@ -97,14 +133,21 @@ def build(rig):
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.6, 0, 14.8), (11.4, 10.4, 4.8), p=2.7, taper=(1.12, 1.0))
+    hem_face = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    # W2: the tunic's skirt below the belt in pleats (team-dark folds; authored space, the hem sits 2.6 lu higher)
+    MW.folds(rig, "hem", hem_face, [[(x, 15.8), (x + 0.5, 10.6)] for x in (-8.0, -4.0, 0.0, 4.0, 8.0)], w=1.3)
     g = Geo().blob((0.4, 0, 28.5), (10.8, 9.9, 8.4), p=2.8, taper=(1.02, 0.94))
     g.clip((0, 0, 36.0), (0, 0, 1))
+    jerkin_face = F.Face(rig, "torso", [g])
     rig.part("torso", g, LEATHER)
     g = Geo().blob((0.4, 0, 20.4), (11.4, 10.4, 1.8), p=3.2)
     rig.part("torso", g, DARK_LEATHER)
     g = Geo().blob((11.3, -2.2, 20.4), (1.2, 2.0, 2.0), p=3.0)
     rig.part("torso", g, GOLD, finish="metal", outline=0.8)
+    # W2: the jerkin as leather: two darker stitched panel seams down its side (the strap crosses its front)
+    for pts in (((-7.0, 34.4), (-6.6, 30.0), (-7.0, 25.8)), ((-0.8, 34.8), (-0.4, 30.0), (-0.8, 25.6))):
+        MW.seam(rig, "torso", jerkin_face, list(pts), fill=LEATHER_DK, w=1.3)
     # quiver strap across the chest
     g = Geo().capsule((9.4, -3.0, 22.5), (4.0, -9.0, 35.5), 1.3)
     rig.part("torso", g, DARK_LEATHER, outline=0.8)
@@ -117,18 +160,31 @@ def build(rig):
     hood.blob((-1.0, 0, 64.5), (6.0, 5.0, 3.6), p=2.2, rot=(0, -20, 0))  # hood point
     K.face2(rig, [head, hood], SKIN, cx=11.8, cz=48.4, eye_r=(3.7, 3.4, 4.3), brow=HAIR,
             mouth_dz=-6.8, mouth_x=12.6, eye_at=(13.6, 48.6), mark_r=4.0, mouth_w=5.0)
+    hood_face = F.Face(rig, "head", [hood])
+    rim = MW.cut_loop(hood, (6.8, 0, 50.0), (1, 0, 0.22))
     rig.part("head", head, SKIN)
     g = Geo().blob((11.6, -0.4, 39.2), (3.2, 3.4, 3.2), p=2.2)
     rig.part("head", g, HAIR, finish="hair")
     rig.part("head", hood, team=True)
-    g = Geo().blob((0.5, 0, 38.2), (11.0, 11.6, 4.2), p=2.6, taper=(1.1, 0.9))  # hood collar
-    g.lathe([(3.4, 0), (0, -4.4)], (8.0, -5.0, 35.2), segs=10)
-    g.lathe([(3.0, 0), (0, -4.0)], (1.0, -10.5, 35.6), segs=10)
+    # W2: the hood's face opening rolled in a team-dark facing (the hood in two tones) and two creases down its side
+    # below the feather (the cloth gathering toward the collar)
+    MW.piping(rig, "head", rim, 1.2)
+    MW.folds(rig, "head", hood_face, [[(0.6, 57.0), (-1.2, 52.0), (-3.0, 46.6)],
+                                      [(-5.0, 57.4), (-7.4, 52.4), (-9.6, 47.6)]], w=1.3)
+    if getattr(rig, "skin", None) == "greenwood_archer":
+        _leaves(rig, hood_face, rim)
+    # the hood's collar with a dagged edge: five team points hanging over the jerkin, splayed a little outward
+    g = Geo().blob((0.5, 0, 38.2), (11.0, 11.6, 4.2), p=2.6, taper=(1.1, 0.9))
+    for a in (22, 56, 90, 124, 158):
+        c, s = math.cos(math.radians(a)), math.sin(math.radians(a))
+        p0 = (0.5 + 9.2 * c, -9.7 * s, 35.6)
+        g.lathe([(3.3, 0), (0, 5.0)], p0, (p0[0] + 0.35 * c, p0[1] - 0.35 * s, p0[2] - 1.0), segs=10)
     rig.part("torso", g, team=True)
     rig.secondary("tail", "head", (-10.0, 0, 55.0), (-24.0, 0, 44.0), max_deg=18, gain=1.3)
     g = Geo().capsule((-10.0, 0, 55.0), (-17.0, 0, 50.5), 3.6, 2.6)
-    g.capsule((-17.0, 0, 50.5), (-24.0, 0, 44.0), 2.6, 1.6)
     rig.part("tail", g, team=True)
+    g = Geo().capsule((-17.0, 0, 50.5), (-24.0, 0, 44.0), 2.6, 1.6)   # the liripipe's end, team-dark
+    look.team_part(rig, "tail", g)
     # a jaunty parchment feather on the hood (a follow-through secondary)
     rig.secondary("feather", "head", (-2.0, -9.0, 58.5), (-12.0, -9.0, 63.0), max_deg=16, gain=1.2)
     g = Geo().blob((-6.0, -9.6, 60.5), (7.2, 1.0, 2.1), p=2.0, rot=(0, 28, 0))
@@ -148,7 +204,20 @@ def build(rig):
         r0 = 0.9 + 1.4 * (1 - abs(z0) / BOW_HALF)
         r1 = 0.9 + 1.4 * (1 - abs(z1) / BOW_HALF)
         g.capsule((hx + _bow_x(z0), hy, hz + z0), (hx + _bow_x(z1), hy, hz + z1), r0, r1, segs=10, rings=2)
+    bow_face = F.Face(rig, "hand_r", [g])
     rig.part("hand_r", g, WOOD)
+    # W2: a yew self bow in two woods: the pale sapwood back (the side toward the foe) along each limb
+    g = Geo()
+    for i in range(1, n - 1):
+        z0 = -BOW_HALF + 2 * BOW_HALF * i / n
+        z1 = -BOW_HALF + 2 * BOW_HALF * (i + 1) / n
+        r = 0.9 + 1.4 * (1 - abs(z0 + z1) / (2 * BOW_HALF))
+        p0 = K.scr(bow_face, (hx + _bow_x(z0) + 0.5 * r, hy, hz + z0))
+        p1 = K.scr(bow_face, (hx + _bow_x(z1) + 0.5 * r, hy, hz + z1))
+        m = ((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2)
+        bow_face.stroke(g, bow_face.hit(*m), [(p0[0] - m[0], p0[1] - m[1]), (p1[0] - m[0], p1[1] - m[1])],
+                        0.8 * r, 0.3)
+    rig.part("hand_r", g, BOW_BACK, outline=0, highlight=False)
     g = Geo().capsule((hx + 0.2, hy, hz - 4.0), (hx + 0.2, hy, hz + 4.0), 2.8)
     rig.part("hand_r", g, GRIP)
     g = Geo()
@@ -193,6 +262,35 @@ def build(rig):
     rig.part("arrow_hand", g, PARCH, outline=0.6)
     # the arrow spawns where its head rests at full draw
     rig.track("muzzle", "hand_r", (ax0 + ARROW + 3, hy - AY, hz + AZ))
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier): the hood tears (the largest team field the bow and the
+    arms leave clear), the collar and the jerkin scuff, and a strip hangs from the skirt."""
+    rig.damage_spot_at("hood", "head", -4.0, 53.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("collar", "torso", 1.0, 40.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("jerkin", "torso", -4.0, 29.5, 6.0, "hide", fill=LEATHER)
+    rig.damage_spot_at("skirt", "hem", 0.0, 15.0, 8.0, "cloth", kind="strip", team=True)
+
+
+def _leaves(rig, face, rim):
+    """Greenwood Archer: a garland of leaves on the hood's facing, down the near half of the face opening in two
+    greens, each leaf tipped 30 degrees off the rim (a herringbone)."""
+    from mathutils import Vector
+    arc = sorted((Vector(p) for p in rim if p[1] < 0.0), key=lambda p: -p.z)   # brow to chin, camera side
+    geos = {LEAF: Geo(), LEAF_DK: Geo()}
+    n = 7
+    for k in range(n):
+        i = round((k + 0.5) * (len(arc) - 1) / n)
+        t = arc[min(i + 1, len(arc) - 1)] - arc[max(i - 1, 0)]
+        ang = math.atan2(t.dot(face.up), t.dot(face.right)) + math.radians(-30 if k % 2 else 30)
+        d = face.right * math.cos(ang) + face.up * math.sin(ang)
+        c = arc[i] - face.view * 1.4
+        geos[LEAF_DK if k % 2 else LEAF].capsule(tuple(c - d * 1.6), tuple(c + d * 1.9), 1.3, 0.45, segs=10, rings=2)
+    for fill, g in geos.items():
+        rig.part("head", g, fill, outline=0.5)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -239,13 +337,13 @@ def spare(show=True, r=0.0):
 
 def _idle(f):
     # breathing; on 2-4 he lifts the spare arrow up to his eye and squints down the shaft
-    look = [0.0, 0.3, 1.0, 1.0, 0.4, 0.0][f]
+    peek = [0.0, 0.3, 1.0, 1.0, 0.4, 0.0][f]
 
     def extra(ctx):
-        return merge(B.arm("l", -78 + 88 * look, -62 + 150 * look), {
+        return merge(B.arm("l", -78 + 88 * peek, -62 + 150 * peek), {
             "arm_r": {"r": 2 * ctx["lag"]}, "hand_r": {"r": -3 * ctx["lag"]},
-            "head": {"r": -4 * look}, "arrow_hand": {"r": 70 * look},
-            "brow": {"z": -0.6 * look}})
+            "head": {"r": -4 * peek}, "arrow_hand": {"r": 70 * peek},
+            "brow": {"z": -0.6 * peek}})
     base = {k: v for k, v in STANCE.items() if k not in ("arm_l", "fore_l")}
     pose = M.idle_v2(f, merge(base, spare()), frames=6, extra=extra, blink=5,
                      face_blink=F.expr("blink"))
@@ -354,10 +452,10 @@ AIM_B = 9.0
 B_KNEEL = [0.0, 0.85, 1.0, 1.0, 1.0, 1.0, 1.0, 0.45, 0.0]
 
 
-def _b_pose(f):
+def _b_pose(f, turn=0.0):
     if f in (0, 8):
         return _attack_pose(f)
-    return _attack_pose(f, aim=AIM_B, kneel=B_KNEEL[f])
+    return _attack_pose(f, aim=AIM_B + turn, kneel=B_KNEEL[f])
 
 
 def _attack_b():
@@ -405,14 +503,38 @@ def _die(k):
     return pose
 
 
+# aimed volleys at flyers (queue item 44, ageborn_art/aimed.py): the bow arm, the bow and the nocked arrow turn up
+# together (the draw hand follows the nock by IK), weighted in over the raise and the draw and out over the string's
+# vibration; the release (aimdata's BOW: the frame before the loose, 3) is fully aimed. A already shoots 44 degrees
+# up (its own up45), so it gets up70 only; B, kneeling and nearly level (19 degrees), gets both.
+AIM_W = [0.0, 0.55, 0.85, 1.0, 1.0, 0.9, 0.75, 0.0, 0.0]
+
+
+def _aimed(clip, pose, aims):
+    out = aimed.variants(RIG, clip, pose, AIM_W, aims=aims)
+    # the twang rings and the loose burst ride the bow hand, not the arrow: turn them with the bow as well
+    base = aimed._drawn(RIG, pose(3, 0.0), "arrow", (1.0, 0.0, 0.0))
+    for v in out:
+        turn = aimed._wrap(aimed.TARGETS[v.name.rsplit("_", 1)[1]] - base)
+        v.overlays2 = aimed._turn_overlays(clip.overlays2, turn, AIM_W, "hand_r")
+    return out
+
+
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    aimed_a = _aimed(attack, lambda f, t: _attack_pose(f, aim=AIM + t), ("up70",))
+    aimed_b = _aimed(attack_b, _b_pose, ("up45", "up70"))
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        aimed.check_timing(attack, v)
+    for v in aimed_b:
+        aimed.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl, attack_ms=799, attack_impact_at=0.5419))
