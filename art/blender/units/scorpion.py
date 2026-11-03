@@ -264,13 +264,21 @@ def build(rig):
 
 def _damage_spots(rig):
     """Damage spots (queue item 40 section 3.3, vehicle with a crewman): the team drape, the plum torsion housing,
-    the crewman's team tunic, a strip torn from the drape's edge, and smoke rising from the housing's top."""
+    the crewman's team tunic, a strip torn from the drape's edge, and two smoke emitters on the housing. The first
+    sits on the housing's lower front (about 28 lu at rest, at most 38 lu on the recoil frames), below the crouched
+    crewman's head on every frame (his head dips to 35.6 lu in the walk while the frame bobs 4 lu up): DAMAGE's
+    `fireAt` takes it for the stage-3 fire and the ignite flare, which so burn on the machine, 60 lu clear of his
+    hands (W1 review S2: with only the top emitter the fire fell back to the hull by his hands). The second, on the
+    housing's top, keeps the smoke rising clear above the machine where it reads (from the low one alone it rises
+    behind the frame and the bow arms)."""
     rig.damage_spot_at("drape", "cart", -25.0, 12.0, 6.0, "cloth", team=True)
     rig.damage_spot_at("housing", "frame", 32.0, 33.0, 5.0, "wood", fill=B.PLUM)
     rig.damage_spot_at("tunic", "torso", -2.0, 27.0, 6.0, "cloth", team=True)
     rig.damage_spot_at("hem", "cart", -26.0, 5.0, 8.0, "cloth", kind="strip", team=True)
+    rig.damage_spot_at("smoke", "frame", 31.0, 28.5, 5.0, "smoke", kind="emit", fill=B.PLUM)
     tx, _, tz = TRUN
-    rig.damage_spot("smoke", "frame", (HOUSING_X - 1.0, -3.0, tz + 14.4), 5.0, "smoke", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("smoke_top", "frame", (HOUSING_X - 1.0, -3.0, tz + 14.4), 5.0, "smoke", kind="emit",
+                    normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------

@@ -8,7 +8,7 @@ export const UNIT_SHEET_PIXELS: Readonly<Record<string, readonly [number, number
   'bronze/belly_bowman': [2007040, 288768, 527360, 76800],
   'bronze/bronze_colossus': [8798208, 3174400, 2252800, 849920],
   'bronze/bronze_colossus@obsidian_colossus': [8798208, 3174400, 2252800, 849920],
-  'bronze/cretan_archer': [1671168, 343040, 440832, 96256],
+  'bronze/cretan_archer': [1671168, 343040, 445440, 96256],
   'bronze/discus_thrower': [1572864, 970752, 409600, 268800],
   'bronze/hoplite': [2617344, 843776, 688128, 225280],
   'bronze/hoplite@marble_hoplite': [2617344, 843776, 688128, 225280],

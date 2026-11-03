@@ -26,9 +26,9 @@
   },
   "cretan_archer_attack_b_01_team": {
    "frame": {
-    "x": 445,
+    "x": 448,
     "y": 193,
-    "w": 91,
+    "w": 93,
     "h": 164
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 174,
     "y": 191,
-    "w": 91,
+    "w": 93,
     "h": 164
    },
    "sourceSize": {
@@ -122,9 +122,9 @@
   },
   "cretan_archer_attack_b_03_team": {
    "frame": {
-    "x": 476,
+    "x": 480,
     "y": 371,
-    "w": 106,
+    "w": 109,
     "h": 145
    },
    "rotated": false,
@@ -132,7 +132,7 @@
    "spriteSourceSize": {
     "x": 154,
     "y": 210,
-    "w": 106,
+    "w": 109,
     "h": 145
    },
    "sourceSize": {
@@ -146,7 +146,7 @@
   },
   "cretan_archer_attack_b_04": {
    "frame": {
-    "x": 269,
+    "x": 272,
     "y": 193,
     "w": 172,
     "h": 166
@@ -172,7 +172,7 @@
    "frame": {
     "x": 368,
     "y": 371,
-    "w": 104,
+    "w": 108,
     "h": 146
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 153,
     "y": 207,
-    "w": 104,
+    "w": 108,
     "h": 146
    },
    "sourceSize": {
@@ -220,7 +220,7 @@
    "frame": {
     "x": 174,
     "y": 193,
-    "w": 91,
+    "w": 94,
     "h": 167
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 173,
     "y": 186,
-    "w": 91,
+    "w": 94,
     "h": 167
    },
    "sourceSize": {
@@ -266,7 +266,7 @@
   },
   "cretan_archer_attack_b_06_team": {
    "frame": {
-    "x": 540,
+    "x": 545,
     "y": 193,
     "w": 89,
     "h": 164
