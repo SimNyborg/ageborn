@@ -33,6 +33,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "squire_pair"
 GAIT_NAME = "biped"
@@ -56,6 +57,17 @@ WOOD_DK = "#8A7158"
 PARCH = "#E8DFC8"
 IRON = "#7C8590"
 
+# the detail standard (art round W2): the gambeson quilted in team-dark channels down its body and skirt (padded
+# cloth in two tones), the buckler quartered (two team-dark quarters), a polished band round the pot helmet's crown
+STEEL_HI = "#D9DFE6"
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", FRECKLE: "skin", HAIR: "fur", STEEL: "iron", STEEL_DK: "iron",
+                           STEEL_HI: "iron", HOSE: "cloth", BOOT: "leather", LEATHER: "leather", WOOD: "wood",
+                           WOOD_DK: "wood", PARCH: "cloth", IRON: "iron", "team": "cloth"})
+
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand (practice sword)
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)   # far hand (buckler)
 BLADE = 30.0
@@ -69,6 +81,11 @@ def _helm(rig, joint):
     g = Geo().blob((1.0, 0.0, 55.6), (13.2, 13.0, 11.6), p=2.1)
     g.clip((0, 0, 52.6), (0, 0, -1))
     rig.part(joint, g, STEEL, finish="metal")
+    # W2: a polished band round the crown (the bowl's own shape 0.35 lu proud, cut to 1.6 lu)
+    g = Geo().blob((1.0, 0.0, 55.6), (13.55, 13.35, 11.95), p=2.1)
+    g.clip((0, 0, 62.4), (0, 0, 1))
+    g.clip((0, 0, 60.8), (0, 0, -1))
+    rig.part(joint, g, STEEL_HI, finish="metal", outline=0.4)
     g = Geo().lathe([(12.6, -1.0), (13.8, -0.4), (13.8, 0.6), (12.6, 1.2)], (1.2, 0.0, 53.0), segs=28)
     rig.part(joint, g, STEEL_DK, finish="metal", outline=0.6)
     g = Geo()
@@ -106,18 +123,14 @@ def build(rig):
     g = Geo().blob((0, 0, 28.0), (10.6, 9.8, 11.8), p=2.2, taper=(1.1, 0.95))
     tface = F.Face(rig, "torso", [g])
     rig.part("torso", g, team=True)
-    # quilting: two rows of stitched lines on the chest (parchment strokes)
-    g2 = Geo()
-    for z in (25.0, 31.0):
-        c = tface.hit(6.0, z)
-        tface.stroke(g2, c, [(-6.0, 0.0), (5.0, 0.4)], 1.0, 0.35)
-    c = tface.hit(5.0, 28.0)
-    tface.stroke(g2, c, [(0.0, -7.0), (0.3, 7.0)], 1.0, 0.35)
-    rig.part("torso", g2, PARCH, highlight=False, outline=0)
+    # W2: the gambeson quilted in team-dark channels (padded cloth in two tones), down the body and the skirt
+    MW.folds(rig, "torso", tface, [[(x, 36.0), (x + 0.4, 22.6)] for x in (-8.0, -4.4, -0.8, 2.8, 6.4)], w=1.2)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.6, 0, 15.2), (11.6, 10.6, 4.6), p=2.7, taper=(1.12, 1.0))
+    hface = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    MW.folds(rig, "hem", hface, [[(x + 0.4, 16.0), (x + 0.6, 11.0)] for x in (-8.0, -4.4, -0.8, 2.8, 6.4)], w=1.2)
     g = Geo().lathe([(11.0, -1.0), (11.8, 0.0), (11.0, 1.0)], (0.5, 0, 20.6), segs=24, squash=(1.0, 0.92))
     g.capsule((10.6, -4.0, 20.2), (11.4, -5.0, 13.0), 0.9)
     g.sphere((11.4, -5.0, 13.0), 1.4, cuts=2)
@@ -162,9 +175,27 @@ def build(rig):
                     (bx, by - 1.0, bz), segs=24)
     rig.part("hand_l", g, WOOD_DK)
     g = Geo().lathe([(0, -0.6), (6.3, -0.6), (6.3, 0.6), (0, 0.8)], (bx, by - 0.6, bz), (bx, by - 1.6, bz), segs=24)
+    bface = F.Face(rig, "hand_l", [g])
     rig.part("hand_l", g, team=True, outline=0.6)
+    # W2: the buckler quartered (two team-dark quarters: the round shield's heraldry in two tones)
+    cx, cz = K.scr(bface, (bx, by - 1.4, bz))
+    for a0 in (90, 270):
+        MW.panel(rig, "hand_l", bface, [(cx, cz)] + [(cx + 5.9 * math.cos(math.radians(a0 + 15 * k)),
+                                                      cz + 5.9 * math.sin(math.radians(a0 + 15 * k))) for k in range(7)])
     g = Geo().blob((bx, by - 1.8, bz), (2.6, 1.6, 2.6), p=2.2)
     rig.part("hand_l", g, IRON, finish="metal", outline=0.7)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the gambeson's front (the
+    largest team field the sword arm leaves clear), the buckler, a dent in the pot helmet, a strip torn from the
+    skirt."""
+    rig.damage_spot_at("gambeson", "torso", -3.0, 28.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("buckler", "hand_l", -0.5, 26.8, 5.0, "wood", team=True)
+    rig.damage_spot_at("helmet", "helm", -4.0, 62.0, 5.5, "metal", fill=STEEL)
+    rig.damage_spot_at("skirt", "hem", -2.0, 14.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -326,22 +357,24 @@ def _attack_b():
 
 # -- attack C: rising slash ---------------------------------------------------------------------------
 # 0 = A read, 1 crouch, 2 deeper, 3 HOLD (crouched low, the sword trailing behind his knee), 4 smear
-# (sweeping up), 5 lead-in, 6 IMPACT (a rising cut ending high in front, up on his toes), 7 overshoot,
-# 8 recoil, 9-10 = A settle
+# (sweeping up), 5 lead-in (the blade rising toward the foe), 6 IMPACT (the contact: the arm out and the blade
+# cutting up through the foe's chest), 7 the high finish in front, up on his toes, 8 recoil, 9-10 = A settle.
+# Item 38 B1': the impact step used to show the high finish (the tip at 71 lu over his own head, 10 lu ahead), so
+# the contact was never drawn; the steps, their durations and impactAt are unchanged.
 #        crouch deeper HOLD smear lead  IMP  over recoil
-OC_A = [-70, -110, -140, -80, -10, 36, 48, 10]
-OC_F = [-60, -110, -150, -50, 20, 64, 76, 40]
-OC_W = [-40, -120, -165, -40, 40, 80, 92, 50]
-OC_BL = [(-40, 0), (-30, 10), (-24, 16), (-50, -10), (-70, -30), (-90, -50), (-92, -54), (-70, -30)]
-OC_T = [-4, -10, -14, -8, 0, 6, 8, 2]
-OC_TZ = [6, 14, 22, 8, -6, -16, -18, -8]
-OC_X = [0.0, -1.0, -1.5, 2.0, 5.0, 8.0, 8.5, 5.0]
-OC_Z = [-2.5, -5.0, -6.5, -4.0, -1.0, 1.5, 1.0, -0.5]
+OC_A = [-70, -110, -140, -80, -45, -12, 36, 22]
+OC_F = [-60, -110, -150, -50, -20, 4, 64, 52]
+OC_W = [-40, -120, -165, -40, -10, 18, 80, 72]
+OC_BL = [(-40, 0), (-30, 10), (-24, 16), (-50, -10), (-65, -25), (-80, -40), (-92, -54), (-80, -40)]
+OC_T = [-4, -10, -14, -8, -6, -6, 8, 4]
+OC_TZ = [6, 14, 22, 8, -4, -12, -18, -10]
+OC_X = [0.0, -1.0, -1.5, 2.0, 5.5, 8.0, 8.5, 6.0]
+OC_Z = [-2.5, -5.0, -6.5, -4.0, -1.5, -1.5, 1.5, 0.0]
 OC_Q = [-0.06, -0.10, -0.08, 0.06, 0.08, -0.12, 0.04, -0.03]
-OC_THR = [10, 22, 30, 28, 24, 18, 16, 10]
-OC_SHR = [-16, -34, -46, -34, -20, -10, -8, -6]
-OC_THL = [-6, -14, -20, -22, -20, -16, -14, -8]
-OC_SHL = [-14, -26, -36, -22, -10, -4, -4, -4]
+OC_THR = [10, 22, 30, 28, 26, 22, 16, 12]
+OC_SHR = [-16, -34, -46, -34, -24, -16, -8, -6]
+OC_THL = [-6, -14, -20, -22, -22, -20, -14, -10]
+OC_SHL = [-14, -26, -36, -22, -12, -6, -4, -4]
 
 
 def _c_pose(i):
@@ -352,9 +385,9 @@ def _c_pose(i):
         "torso": {"r": OC_T[k], "rz": OC_TZ[k]}, "head": {"r": -0.4 * OC_T[k], "rz": -0.5 * OC_TZ[k]},
         "thigh_r": {"r": OC_THR[k]}, "shin_r": {"r": OC_SHR[k]},
         "thigh_l": {"r": OC_THL[k]}, "shin_l": {"r": OC_SHL[k]},
-        "helm": {"r": [2, 4, 6, 0, -6, -10, -6, 0][k]},
+        "helm": {"r": [2, 4, 6, 0, -4, -8, -6, 0][k]},
     }, M.body_about((0, 0, 22), x=OC_X[k], z=OC_Z[k], q=OC_Q[k]))
-    if k == 5:
+    if k == 6:
         pose = merge(pose, {"foot_r": {"r": -14}, "foot_l": {"r": -16}})
     if k in (3, 4):
         pose["hand_r"]["sz"] = 1.15
@@ -375,7 +408,8 @@ def _attack_c():
         5: [dict(RISE, **{"from": 3})],
         6: [dict(RISE, t0=0.4, t1=1.0, lines=2, **{"from": 5}),
             {"kind": "burst", "joint": "hand_r", "point": SWORD_TIP, "r0_lu": 5.0, "r1_lu": 10.0,
-             "n": 5, "a0": 20.0, "arc": 120.0}],
+             "n": 5, "a0": -60.0, "arc": 120.0}],
+        7: [dict(RISE, t0=0.3, t1=1.0, lines=2, **{"from": 6})],
     }
     reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
     return M.clip("attack_c", [_c_pose(i) for i in range(11)], M.SMALL_MELEE_MS,

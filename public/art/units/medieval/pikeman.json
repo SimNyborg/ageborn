@@ -2,17 +2,17 @@
  "frames": {
   "pikeman_idle_00": {
    "frame": {
-    "x": 96,
+    "x": 97,
     "y": 234,
-    "w": 86,
+    "w": 87,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 110,
+    "x": 109,
     "y": 87,
-    "w": 86,
+    "w": 87,
     "h": 105
    },
    "sourceSize": {
@@ -26,18 +26,18 @@
   },
   "pikeman_idle_00_team": {
    "frame": {
-    "x": 431,
-    "y": 726,
-    "w": 80,
-    "h": 81
+    "x": 260,
+    "y": 635,
+    "w": 52,
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 104,
     "y": 94,
-    "w": 80,
-    "h": 81
+    "w": 52,
+    "h": 83
    },
    "sourceSize": {
     "w": 294,
@@ -52,15 +52,15 @@
    "frame": {
     "x": 464,
     "y": 122,
-    "w": 86,
+    "w": 87,
     "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 111,
+    "x": 110,
     "y": 86,
-    "w": 86,
+    "w": 87,
     "h": 106
    },
    "sourceSize": {
@@ -74,18 +74,18 @@
   },
   "pikeman_idle_01_team": {
    "frame": {
-    "x": 515,
-    "y": 726,
-    "w": 78,
-    "h": 81
+    "x": 316,
+    "y": 635,
+    "w": 50,
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
     "y": 93,
-    "w": 78,
-    "h": 81
+    "w": 50,
+    "h": 83
    },
    "sourceSize": {
     "w": 294,
@@ -98,17 +98,17 @@
   },
   "pikeman_idle_02": {
    "frame": {
-    "x": 554,
+    "x": 555,
     "y": 122,
-    "w": 86,
+    "w": 87,
     "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 112,
+    "x": 111,
     "y": 85,
-    "w": 86,
+    "w": 87,
     "h": 106
    },
    "sourceSize": {
@@ -122,18 +122,18 @@
   },
   "pikeman_idle_02_team": {
    "frame": {
-    "x": 254,
-    "y": 637,
-    "w": 78,
-    "h": 84
+    "x": 572,
+    "y": 544,
+    "w": 48,
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
     "y": 89,
-    "w": 78,
-    "h": 84
+    "w": 48,
+    "h": 86
    },
    "sourceSize": {
     "w": 294,
@@ -148,15 +148,15 @@
    "frame": {
     "x": 2,
     "y": 234,
-    "w": 90,
+    "w": 91,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 111,
+    "x": 110,
     "y": 85,
-    "w": 90,
+    "w": 91,
     "h": 105
    },
    "sourceSize": {
@@ -170,18 +170,18 @@
   },
   "pikeman_idle_03_team": {
    "frame": {
-    "x": 665,
+    "x": 197,
     "y": 544,
-    "w": 81,
-    "h": 85
+    "w": 49,
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
     "y": 87,
-    "w": 81,
-    "h": 85
+    "w": 49,
+    "h": 87
    },
    "sourceSize": {
     "w": 294,
@@ -194,17 +194,17 @@
   },
   "pikeman_idle_04": {
    "frame": {
-    "x": 188,
+    "x": 95,
     "y": 122,
-    "w": 89,
+    "w": 90,
     "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 110,
+    "x": 109,
     "y": 84,
-    "w": 89,
+    "w": 90,
     "h": 107
    },
    "sourceSize": {
@@ -218,18 +218,18 @@
   },
   "pikeman_idle_04_team": {
    "frame": {
-    "x": 87,
-    "y": 637,
-    "w": 80,
-    "h": 85
+    "x": 143,
+    "y": 544,
+    "w": 50,
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 105,
     "y": 88,
-    "w": 80,
-    "h": 85
+    "w": 50,
+    "h": 87
    },
    "sourceSize": {
     "w": 294,
@@ -244,15 +244,15 @@
    "frame": {
     "x": 2,
     "y": 122,
-    "w": 88,
+    "w": 89,
     "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 109,
+    "x": 108,
     "y": 84,
-    "w": 88,
+    "w": 89,
     "h": 108
    },
    "sourceSize": {
@@ -266,18 +266,18 @@
   },
   "pikeman_idle_05_team": {
    "frame": {
-    "x": 87,
-    "y": 726,
-    "w": 80,
-    "h": 82
+    "x": 102,
+    "y": 635,
+    "w": 50,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 104,
     "y": 92,
-    "w": 80,
-    "h": 82
+    "w": 50,
+    "h": 84
    },
    "sourceSize": {
     "w": 294,
@@ -290,7 +290,7 @@
   },
   "pikeman_walk_00": {
    "frame": {
-    "x": 413,
+    "x": 554,
     "y": 234,
     "w": 99,
     "h": 102
@@ -314,18 +314,18 @@
   },
   "pikeman_walk_00_team": {
    "frame": {
-    "x": 417,
-    "y": 637,
-    "w": 69,
-    "h": 84
+    "x": 56,
+    "y": 635,
+    "w": 42,
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
+    "x": 111,
     "y": 93,
-    "w": 69,
-    "h": 84
+    "w": 42,
+    "h": 85
    },
    "sourceSize": {
     "w": 294,
@@ -338,7 +338,7 @@
   },
   "pikeman_walk_01": {
    "frame": {
-    "x": 281,
+    "x": 189,
     "y": 122,
     "w": 89,
     "h": 107
@@ -362,17 +362,17 @@
   },
   "pikeman_walk_01_team": {
    "frame": {
-    "x": 248,
-    "y": 726,
-    "w": 60,
+    "x": 486,
+    "y": 635,
+    "w": 39,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 113,
     "y": 98,
-    "w": 60,
+    "w": 39,
     "h": 82
    },
    "sourceSize": {
@@ -386,7 +386,7 @@
   },
   "pikeman_walk_02": {
    "frame": {
-    "x": 86,
+    "x": 87,
     "y": 2,
     "w": 85,
     "h": 114
@@ -410,18 +410,18 @@
   },
   "pikeman_walk_02_team": {
    "frame": {
-    "x": 373,
-    "y": 726,
-    "w": 54,
-    "h": 82
+    "x": 669,
+    "y": 544,
+    "w": 38,
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 98,
+    "x": 115,
     "y": 91,
-    "w": 54,
-    "h": 82
+    "w": 38,
+    "h": 86
    },
    "sourceSize": {
     "w": 294,
@@ -434,7 +434,7 @@
   },
   "pikeman_walk_03": {
    "frame": {
-    "x": 263,
+    "x": 264,
     "y": 2,
     "w": 93,
     "h": 112
@@ -458,18 +458,18 @@
   },
   "pikeman_walk_03_team": {
    "frame": {
-    "x": 417,
+    "x": 301,
     "y": 544,
-    "w": 61,
-    "h": 86
+    "w": 42,
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 112,
     "y": 85,
-    "w": 61,
-    "h": 86
+    "w": 42,
+    "h": 87
    },
    "sourceSize": {
     "w": 294,
@@ -506,18 +506,18 @@
   },
   "pikeman_walk_04_team": {
    "frame": {
-    "x": 345,
-    "y": 544,
-    "w": 68,
-    "h": 87
+    "x": 547,
+    "y": 447,
+    "w": 41,
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
+    "x": 111,
     "y": 93,
-    "w": 68,
-    "h": 87
+    "w": 41,
+    "h": 89
    },
    "sourceSize": {
     "w": 294,
@@ -530,7 +530,7 @@
   },
   "pikeman_walk_05": {
    "frame": {
-    "x": 644,
+    "x": 646,
     "y": 122,
     "w": 86,
     "h": 106
@@ -554,17 +554,17 @@
   },
   "pikeman_walk_05_team": {
    "frame": {
-    "x": 597,
-    "y": 726,
-    "w": 61,
+    "x": 591,
+    "y": 635,
+    "w": 39,
     "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 114,
     "y": 98,
-    "w": 61,
+    "w": 39,
     "h": 81
    },
    "sourceSize": {
@@ -578,7 +578,7 @@
   },
   "pikeman_walk_06": {
    "frame": {
-    "x": 175,
+    "x": 176,
     "y": 2,
     "w": 84,
     "h": 114
@@ -602,18 +602,18 @@
   },
   "pikeman_walk_06_team": {
    "frame": {
-    "x": 312,
-    "y": 726,
-    "w": 57,
-    "h": 82
+    "x": 347,
+    "y": 544,
+    "w": 38,
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 115,
     "y": 91,
-    "w": 57,
-    "h": 82
+    "w": 38,
+    "h": 87
    },
    "sourceSize": {
     "w": 294,
@@ -626,7 +626,7 @@
   },
   "pikeman_walk_07": {
    "frame": {
-    "x": 360,
+    "x": 361,
     "y": 2,
     "w": 91,
     "h": 112
@@ -650,18 +650,18 @@
   },
   "pikeman_walk_07_team": {
    "frame": {
-    "x": 490,
-    "y": 637,
-    "w": 64,
-    "h": 84
+    "x": 624,
+    "y": 544,
+    "w": 41,
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 112,
     "y": 85,
-    "w": 64,
-    "h": 84
+    "w": 41,
+    "h": 86
    },
    "sourceSize": {
     "w": 294,
@@ -698,18 +698,18 @@
   },
   "pikeman_attack_00_team": {
    "frame": {
-    "x": 2,
-    "y": 726,
-    "w": 81,
-    "h": 82
+    "x": 711,
+    "y": 544,
+    "w": 51,
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 103,
     "y": 91,
-    "w": 81,
-    "h": 82
+    "w": 51,
+    "h": 85
    },
    "sourceSize": {
     "w": 294,
@@ -746,18 +746,18 @@
   },
   "pikeman_attack_01_team": {
    "frame": {
-    "x": 330,
-    "y": 812,
-    "w": 98,
-    "h": 77
+    "x": 529,
+    "y": 635,
+    "w": 58,
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
     "y": 98,
-    "w": 98,
-    "h": 77
+    "w": 58,
+    "h": 81
    },
    "sourceSize": {
     "w": 294,
@@ -770,7 +770,7 @@
   },
   "pikeman_attack_02": {
    "frame": {
-    "x": 562,
+    "x": 564,
     "y": 343,
     "w": 126,
     "h": 96
@@ -794,18 +794,18 @@
   },
   "pikeman_attack_02_team": {
    "frame": {
-    "x": 432,
-    "y": 812,
-    "w": 96,
-    "h": 77
+    "x": 417,
+    "y": 635,
+    "w": 65,
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 81,
     "y": 100,
-    "w": 96,
-    "h": 77
+    "w": 65,
+    "h": 82
    },
    "sourceSize": {
     "w": 294,
@@ -818,7 +818,7 @@
   },
   "pikeman_attack_03": {
    "frame": {
-    "x": 215,
+    "x": 323,
     "y": 447,
     "w": 129,
     "h": 91
@@ -842,18 +842,18 @@
   },
   "pikeman_attack_03_team": {
    "frame": {
-    "x": 92,
-    "y": 895,
-    "w": 92,
-    "h": 71
+    "x": 161,
+    "y": 724,
+    "w": 70,
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 73,
     "y": 106,
-    "w": 92,
-    "h": 71
+    "w": 70,
+    "h": 73
    },
    "sourceSize": {
     "w": 294,
@@ -866,7 +866,7 @@
   },
   "pikeman_attack_04": {
    "frame": {
-    "x": 186,
+    "x": 188,
     "y": 234,
     "w": 130,
     "h": 104
@@ -890,18 +890,18 @@
   },
   "pikeman_attack_04_team": {
    "frame": {
-    "x": 587,
+    "x": 137,
     "y": 447,
-    "w": 90,
-    "h": 90
+    "w": 43,
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
     "y": 87,
-    "w": 90,
-    "h": 90
+    "w": 43,
+    "h": 92
    },
    "sourceSize": {
     "w": 294,
@@ -914,18 +914,18 @@
   },
   "pikeman_attack_05": {
    "frame": {
-    "x": 609,
+    "x": 416,
     "y": 234,
     "w": 134,
-    "h": 101
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 122,
-    "y": 93,
+    "y": 92,
     "w": 134,
-    "h": 101
+    "h": 102
    },
    "sourceSize": {
     "w": 294,
@@ -938,18 +938,18 @@
   },
   "pikeman_attack_05_team": {
    "frame": {
-    "x": 2,
-    "y": 544,
-    "w": 96,
-    "h": 89
+    "x": 456,
+    "y": 447,
+    "w": 37,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 124,
     "y": 88,
-    "w": 96,
-    "h": 89
+    "w": 37,
+    "h": 91
    },
    "sourceSize": {
     "w": 294,
@@ -962,18 +962,18 @@
   },
   "pikeman_attack_06": {
    "frame": {
-    "x": 482,
+    "x": 389,
     "y": 544,
     "w": 179,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 105,
+    "y": 104,
     "w": 179,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 294,
@@ -986,18 +986,18 @@
   },
   "pikeman_attack_06_team": {
    "frame": {
-    "x": 220,
-    "y": 812,
-    "w": 106,
-    "h": 77
+    "x": 49,
+    "y": 724,
+    "w": 45,
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 132,
+    "x": 129,
     "y": 101,
-    "w": 106,
-    "h": 77
+    "w": 45,
+    "h": 76
    },
    "sourceSize": {
     "w": 294,
@@ -1013,15 +1013,15 @@
     "x": 203,
     "y": 343,
     "w": 129,
-    "h": 98
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 131,
-    "y": 96,
+    "y": 95,
     "w": 129,
-    "h": 98
+    "h": 99
    },
    "sourceSize": {
     "w": 294,
@@ -1034,18 +1034,18 @@
   },
   "pikeman_attack_07_team": {
    "frame": {
-    "x": 348,
+    "x": 691,
     "y": 447,
-    "w": 96,
-    "h": 91
+    "w": 39,
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 134,
+    "x": 132,
     "y": 91,
-    "w": 96,
-    "h": 91
+    "w": 39,
+    "h": 88
    },
    "sourceSize": {
     "w": 294,
@@ -1058,18 +1058,18 @@
   },
   "pikeman_attack_08": {
    "frame": {
-    "x": 448,
+    "x": 184,
     "y": 447,
     "w": 135,
-    "h": 90
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 128,
-    "y": 101,
+    "y": 100,
     "w": 135,
-    "h": 90
+    "h": 91
    },
    "sourceSize": {
     "w": 294,
@@ -1082,18 +1082,18 @@
   },
   "pikeman_attack_08_team": {
    "frame": {
-    "x": 2,
-    "y": 812,
-    "w": 108,
-    "h": 79
+    "x": 634,
+    "y": 635,
+    "w": 42,
+    "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 126,
     "y": 97,
-    "w": 108,
-    "h": 79
+    "w": 42,
+    "h": 80
    },
    "sourceSize": {
     "w": 294,
@@ -1106,17 +1106,17 @@
   },
   "pikeman_attack_09": {
    "frame": {
-    "x": 439,
+    "x": 440,
     "y": 343,
-    "w": 119,
+    "w": 120,
     "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 121,
+    "x": 120,
     "y": 95,
-    "w": 119,
+    "w": 120,
     "h": 97
    },
    "sourceSize": {
@@ -1130,18 +1130,18 @@
   },
   "pikeman_attack_09_team": {
    "frame": {
-    "x": 645,
-    "y": 637,
-    "w": 100,
-    "h": 82
+    "x": 370,
+    "y": 635,
+    "w": 43,
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
     "y": 93,
-    "w": 100,
-    "h": 82
+    "w": 43,
+    "h": 83
    },
    "sourceSize": {
     "w": 294,
@@ -1156,15 +1156,15 @@
    "frame": {
     "x": 336,
     "y": 343,
-    "w": 99,
+    "w": 100,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 113,
+    "x": 112,
     "y": 93,
-    "w": 99,
+    "w": 100,
     "h": 98
    },
    "sourceSize": {
@@ -1178,18 +1178,18 @@
   },
   "pikeman_attack_10_team": {
    "frame": {
-    "x": 558,
-    "y": 637,
-    "w": 83,
-    "h": 83
+    "x": 210,
+    "y": 635,
+    "w": 46,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 108,
     "y": 91,
-    "w": 83,
-    "h": 83
+    "w": 46,
+    "h": 84
    },
    "sourceSize": {
     "w": 294,
@@ -1202,17 +1202,17 @@
   },
   "pikeman_hit_00": {
    "frame": {
-    "x": 320,
+    "x": 322,
     "y": 234,
-    "w": 89,
+    "w": 90,
     "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
+    "x": 100,
     "y": 90,
-    "w": 89,
+    "w": 90,
     "h": 103
    },
    "sourceSize": {
@@ -1226,18 +1226,18 @@
   },
   "pikeman_hit_00_team": {
    "frame": {
-    "x": 2,
-    "y": 895,
-    "w": 86,
-    "h": 72
+    "x": 235,
+    "y": 724,
+    "w": 60,
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 96,
     "y": 106,
-    "w": 86,
-    "h": 72
+    "w": 60,
+    "h": 73
    },
    "sourceSize": {
     "w": 294,
@@ -1250,17 +1250,17 @@
   },
   "pikeman_hit_01": {
    "frame": {
-    "x": 546,
+    "x": 548,
     "y": 2,
-    "w": 82,
+    "w": 83,
     "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
+    "x": 100,
     "y": 83,
-    "w": 82,
+    "w": 83,
     "h": 110
    },
    "sourceSize": {
@@ -1274,18 +1274,18 @@
   },
   "pikeman_hit_01_team": {
    "frame": {
-    "x": 619,
-    "y": 812,
-    "w": 81,
-    "h": 74
+    "x": 98,
+    "y": 724,
+    "w": 59,
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 96,
     "y": 104,
-    "w": 81,
-    "h": 74
+    "w": 59,
+    "h": 75
    },
    "sourceSize": {
     "w": 294,
@@ -1300,15 +1300,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 80,
+    "w": 81,
     "h": 116
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
+    "x": 107,
     "y": 76,
-    "w": 80,
+    "w": 81,
     "h": 116
    },
    "sourceSize": {
@@ -1322,18 +1322,18 @@
   },
   "pikeman_hit_02_team": {
    "frame": {
-    "x": 171,
-    "y": 726,
-    "w": 73,
-    "h": 82
+    "x": 156,
+    "y": 635,
+    "w": 50,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 103,
     "y": 92,
-    "w": 73,
-    "h": 82
+    "w": 50,
+    "h": 84
    },
    "sourceSize": {
     "w": 294,
@@ -1346,17 +1346,17 @@
   },
   "pikeman_hit_03": {
    "frame": {
-    "x": 516,
+    "x": 657,
     "y": 234,
-    "w": 89,
+    "w": 90,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 112,
+    "x": 111,
     "y": 89,
-    "w": 89,
+    "w": 90,
     "h": 102
    },
    "sourceSize": {
@@ -1370,18 +1370,18 @@
   },
   "pikeman_hit_03_team": {
    "frame": {
-    "x": 336,
-    "y": 637,
-    "w": 77,
-    "h": 84
+    "x": 250,
+    "y": 544,
+    "w": 47,
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
     "y": 90,
-    "w": 77,
-    "h": 84
+    "w": 47,
+    "h": 87
    },
    "sourceSize": {
     "w": 294,
@@ -1394,17 +1394,17 @@
   },
   "pikeman_hit_04": {
    "frame": {
-    "x": 374,
+    "x": 282,
     "y": 122,
-    "w": 86,
+    "w": 87,
     "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 110,
+    "x": 109,
     "y": 84,
-    "w": 86,
+    "w": 87,
     "h": 107
    },
    "sourceSize": {
@@ -1418,18 +1418,18 @@
   },
   "pikeman_hit_04_team": {
    "frame": {
-    "x": 171,
-    "y": 637,
-    "w": 79,
-    "h": 84
+    "x": 2,
+    "y": 635,
+    "w": 50,
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 105,
     "y": 90,
-    "w": 79,
-    "h": 84
+    "w": 50,
+    "h": 85
    },
    "sourceSize": {
     "w": 294,
@@ -1442,17 +1442,17 @@
   },
   "pikeman_die_00": {
    "frame": {
-    "x": 102,
-    "y": 544,
-    "w": 99,
+    "x": 592,
+    "y": 447,
+    "w": 95,
     "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 119,
+    "x": 123,
     "y": 103,
-    "w": 99,
+    "w": 95,
     "h": 88
    },
    "sourceSize": {
@@ -1466,18 +1466,18 @@
   },
   "pikeman_die_00_team": {
    "frame": {
-    "x": 532,
-    "y": 812,
-    "w": 83,
-    "h": 77
+    "x": 2,
+    "y": 724,
+    "w": 43,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 121,
+    "x": 119,
     "y": 99,
-    "w": 83,
-    "h": 77
+    "w": 43,
+    "h": 78
    },
    "sourceSize": {
     "w": 294,
@@ -1490,17 +1490,17 @@
   },
   "pikeman_die_01": {
    "frame": {
-    "x": 94,
+    "x": 373,
     "y": 122,
-    "w": 90,
+    "w": 87,
     "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 127,
+    "x": 130,
     "y": 81,
-    "w": 90,
+    "w": 87,
     "h": 107
    },
    "sourceSize": {
@@ -1514,18 +1514,18 @@
   },
   "pikeman_die_01_team": {
    "frame": {
-    "x": 137,
-    "y": 447,
-    "w": 74,
-    "h": 92
+    "x": 694,
+    "y": 343,
+    "w": 39,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 129,
+    "x": 127,
     "y": 81,
-    "w": 74,
-    "h": 92
+    "w": 39,
+    "h": 94
    },
    "sourceSize": {
     "w": 294,
@@ -1538,17 +1538,17 @@
   },
   "pikeman_die_02": {
    "frame": {
-    "x": 455,
+    "x": 456,
     "y": 2,
-    "w": 87,
+    "w": 88,
     "h": 112
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 114,
+    "x": 113,
     "y": 78,
-    "w": 87,
+    "w": 88,
     "h": 112
    },
    "sourceSize": {
@@ -1562,18 +1562,18 @@
   },
   "pikeman_die_02_team": {
    "frame": {
-    "x": 2,
-    "y": 637,
-    "w": 81,
-    "h": 85
+    "x": 497,
+    "y": 447,
+    "w": 46,
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
     "y": 86,
-    "w": 81,
-    "h": 85
+    "w": 46,
+    "h": 90
    },
    "sourceSize": {
     "w": 294,
@@ -1586,7 +1586,7 @@
   },
   "pikeman_die_03": {
    "frame": {
-    "x": 632,
+    "x": 635,
     "y": 2,
     "w": 110,
     "h": 108
@@ -1610,9 +1610,9 @@
   },
   "pikeman_die_03_team": {
    "frame": {
-    "x": 114,
-    "y": 812,
-    "w": 102,
+    "x": 680,
+    "y": 635,
+    "w": 69,
     "h": 78
    },
    "rotated": false,
@@ -1620,7 +1620,7 @@
    "spriteSourceSize": {
     "x": 74,
     "y": 93,
-    "w": 102,
+    "w": 69,
     "h": 78
    },
    "sourceSize": {
@@ -1634,17 +1634,17 @@
   },
   "pikeman_die_04": {
    "frame": {
-    "x": 205,
+    "x": 2,
     "y": 544,
-    "w": 136,
+    "w": 137,
     "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 45,
+    "x": 44,
     "y": 93,
-    "w": 136,
+    "w": 137,
     "h": 87
    },
    "sourceSize": {
@@ -1658,18 +1658,18 @@
   },
   "pikeman_die_04_team": {
    "frame": {
-    "x": 188,
-    "y": 895,
-    "w": 125,
-    "h": 59
+    "x": 212,
+    "y": 806,
+    "w": 87,
+    "h": 49
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 40,
-    "y": 115,
-    "w": 125,
-    "h": 59
+    "y": 125,
+    "w": 87,
+    "h": 49
    },
    "sourceSize": {
     "w": 294,
@@ -1682,8 +1682,8 @@
   },
   "pikeman_die_05": {
    "frame": {
-    "x": 465,
-    "y": 895,
+    "x": 2,
+    "y": 806,
     "w": 127,
     "h": 53
    },
@@ -1706,18 +1706,18 @@
   },
   "pikeman_die_05_team": {
    "frame": {
-    "x": 163,
-    "y": 971,
-    "w": 108,
-    "h": 49
+    "x": 608,
+    "y": 724,
+    "w": 73,
+    "h": 54
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 46,
-    "y": 148,
-    "w": 108,
-    "h": 49
+    "y": 143,
+    "w": 73,
+    "h": 54
    },
    "sourceSize": {
     "w": 294,
@@ -1730,10 +1730,10 @@
   },
   "pikeman_die_06": {
    "frame": {
-    "x": 2,
-    "y": 971,
+    "x": 447,
+    "y": 724,
     "w": 157,
-    "h": 49
+    "h": 56
    },
    "rotated": false,
    "trimmed": true,
@@ -1741,7 +1741,7 @@
     "x": 28,
     "y": 130,
     "w": 157,
-    "h": 49
+    "h": 56
    },
    "sourceSize": {
     "w": 294,
@@ -1754,18 +1754,18 @@
   },
   "pikeman_die_06_team": {
    "frame": {
-    "x": 441,
-    "y": 971,
-    "w": 103,
-    "h": 42
+    "x": 587,
+    "y": 806,
+    "w": 61,
+    "h": 40
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 56,
-    "y": 144,
-    "w": 103,
-    "h": 42
+    "y": 140,
+    "w": 61,
+    "h": 40
    },
    "sourceSize": {
     "w": 294,
@@ -1778,8 +1778,8 @@
   },
   "pikeman_die_07": {
    "frame": {
-    "x": 317,
-    "y": 895,
+    "x": 299,
+    "y": 724,
     "w": 144,
     "h": 58
    },
@@ -1802,18 +1802,18 @@
   },
   "pikeman_die_07_team": {
    "frame": {
-    "x": 596,
-    "y": 895,
-    "w": 114,
-    "h": 53
+    "x": 133,
+    "y": 806,
+    "w": 75,
+    "h": 51
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 43,
     "y": 136,
-    "w": 114,
-    "h": 53
+    "w": 75,
+    "h": 51
    },
    "sourceSize": {
     "w": 294,
@@ -1826,18 +1826,18 @@
   },
   "pikeman_die_08": {
    "frame": {
-    "x": 275,
-    "y": 971,
-    "w": 162,
-    "h": 46
+    "x": 303,
+    "y": 806,
+    "w": 163,
+    "h": 48
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 11,
+    "x": 10,
     "y": 140,
-    "w": 162,
-    "h": 46
+    "w": 163,
+    "h": 48
    },
    "sourceSize": {
     "w": 294,
@@ -1850,18 +1850,18 @@
   },
   "pikeman_die_08_team": {
    "frame": {
-    "x": 548,
-    "y": 971,
-    "w": 150,
-    "h": 41
+    "x": 470,
+    "y": 806,
+    "w": 113,
+    "h": 42
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 6,
-    "y": 147,
-    "w": 150,
-    "h": 41
+    "y": 145,
+    "w": 113,
+    "h": 42
    },
    "sourceSize": {
     "w": 294,
@@ -1982,7 +1982,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 768,
-   "h": 1024
+   "h": 864
   },
   "scale": "1.5",
   "ageborn": {

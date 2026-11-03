@@ -27,10 +27,12 @@ import math
 
 from ageborn_art import face as F
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "pikeman"
 GAIT_NAME = "biped"
@@ -51,6 +53,22 @@ LEATHER = "#6B5647"
 WOOD = "#B89C78"
 GOLD = "#D4A437"
 PARCH = "#E8DFC8"
+
+# the detail standard (art round W2): the landsknecht's puffed sleeves and breeches slashed in two tones (team-dark
+# slashes: padded cloth that reads as cloth), the padded jack quilted where it shows, a polished band along the
+# breastplate's top edge and a lit ridge on the morion's comb (plate with a clear highlight band), the plume's
+# trailing lobes team-dark. The pennon is wine with the parchment paw: a team pennon on the pike made the team
+# layer's box (the runtime's torso proxy, atlasCombat.lungeCurve) run out along the pike, so the drive read as a
+# 32 lu lunge of the body (item 38 B1': over the 25 lu the stand-off can carry); a team sash round the waist, the
+# field sign of the period, carries the team on the body instead
+STEEL_HI = "#D9DFE6"
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", HAIR: "fur", STEEL: "iron", STEEL_HI: "iron", SLATE: "iron", WINE: "cloth",
+                           BOOT: "leather", LEATHER: "leather", WOOD: "wood", GOLD: "gold", PARCH: "cloth",
+                           "team": "cloth"})
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # rear (near) hand holds the pike
 BUTT, TIP = -20.0, 74.0              # along the pike from the rear hand
@@ -75,16 +93,21 @@ def _morion(rig, joint):
     pts = [(-8.0, 61.0), (-5.0, 67.5), (2.0, 70.0), (8.0, 66.5), (9.5, 61.0)]
     g = Geo().slab([(x + 1.0, z) for x, z in pts], 0.0, 2.8)
     rig.part(joint, g, STEEL, finish="metal")
+    g = Geo()   # W2: the comb's lit ridge (a polished edge along its crest, on the camera side)
+    for (x0, z0), (x1, z1) in zip(pts[:-1], pts[1:]):
+        g.capsule((x0 + 1.0, -0.9, z0 - 0.5), (x1 + 1.0, -0.9, z1 - 0.5), 0.75, segs=8, rings=2)
+    rig.part(joint, g, STEEL_HI, finish="metal", outline=0)
     g = Geo().blob((1.5, 0, 55.0), (12.1, 11.7, 1.2), p=2.8)
     rig.part(joint, g, GOLD, finish="metal", outline=0.6)
 
 
 def _plume(rig, joint):
-    g = Geo()
-    for x, z, r in ((-6.0, 65.0, 3.4), (-9.5, 67.0, 3.8), (-13.5, 66.2, 3.4), (-16.8, 63.6, 2.8),
-                    (-18.6, 60.4, 2.2)):
-        g.blob((x, 0, z), (r * 1.2, r * 0.8, r), p=2.1)
+    g, gd = Geo(), Geo()   # W2: the trailing lobes team-dark (two tones)
+    for k, (x, z, r) in enumerate(((-6.0, 65.0, 3.4), (-9.5, 67.0, 3.8), (-13.5, 66.2, 3.4), (-16.8, 63.6, 2.8),
+                                   (-18.6, 60.4, 2.2))):
+        (gd if k >= 3 else g).blob((x, 0, z), (r * 1.2, r * 0.8, r), p=2.1)
     rig.part(joint, g, team=True)
+    look.team_part(rig, joint, gd)
 
 
 RIG = None
@@ -98,26 +121,43 @@ def build(rig):
 
     # torso: team doublet, slate breastplate, belt; team breeches puff at the hips
     g = Geo().blob((0, 0, 27.5), (10.8, 9.8, 12.0), p=2.3, taper=(1.12, 0.92))
+    jack = F.Face(rig, "torso", [g])
     rig.part("torso", g, team=True)
+    # W2: the padded jack quilted in a team-dark lattice where it shows behind the breastplate (padded cloth)
+    MW.folds(rig, "torso", jack, [[(-10.5, 31.0), (-4.0, 24.0)], [(-10.0, 35.0), (-1.5, 26.0)],
+                                  [(-10.5, 26.0), (-4.0, 33.0)], [(-7.5, 23.0), (-1.0, 30.0)]], w=1.1)
     g = Geo().blob((1.4, 0, 29.0), (10.6, 9.4, 8.8), p=2.6, taper=(0.96, 1.0))
     g.clip((0, 0, 21.5), (0, 0, -1))
     g.clip((0, 0, 36.8), (0, 0, 1))
     rig.part("torso", g, SLATE, finish="metal")
     g = Geo().capsule((10.2, -1.5, 34.0), (11.6, -1.5, 23.5), 1.0)  # breastplate ridge
     rig.part("torso", g, STEEL, finish="metal", outline=0.6)
+    # W2: a polished band along the breastplate's top edge (its own shape 0.35 lu proud, cut to 1.5 lu)
+    g = Geo().blob((1.4, 0, 29.0), (10.95, 9.75, 9.15), p=2.6, taper=(0.96, 1.0))
+    g.clip((0, 0, 36.6), (0, 0, 1))
+    g.clip((0, 0, 35.1), (0, 0, -1))
+    rig.part("torso", g, STEEL_HI, finish="metal", outline=0.4)
     for side, dy in (("r", -1), ("l", 1)):   # breastplate rivets
         g = Geo()
         for z in (24.0, 28.0, 32.0):
             g.sphere((9.4, dy * 5.8, z), 1.1, cuts=2)
         rig.part("torso", g, STEEL, finish="metal", outline=0)
-    g = Geo().blob((0.4, 0, 20.6), (11.6, 10.6, 1.9), p=3.2)
-    rig.part("torso", g, LEATHER)
-    g = Geo().blob((11.5, -2.2, 20.6), (1.3, 2.1, 2.1), p=3.0)
-    rig.part("torso", g, GOLD, finish="metal", outline=0.8)
+    # W2: a team sash round the waist for a belt (the field sign pikemen wore: the team on the body now that the
+    # pennon is wine), knotted at the near hip with its two ends hanging (a follow-through joint)
+    g = Geo().blob((0.4, 0, 20.6), (11.9, 10.9, 2.6), p=3.0)
+    rig.part("torso", g, team=True)
+    g = Geo().blob((6.2, -9.8, 20.4), (2.6, 1.9, 2.4), p=2.2)
+    look.team_part(rig, "torso", g, outline=0.6)
+    rig.secondary("sash", "hips", (6.2, -10.4, 19.4), (7.2, -11.2, 12.4), max_deg=14, gain=1.2)
+    g = Geo().capsule((6.8, -10.6, 19.0), (8.0, -11.2, 12.6), 1.5, 1.1)
+    g.capsule((5.4, -10.6, 19.0), (4.4, -11.0, 13.6), 1.4, 1.0)
+    rig.part("sash", g, team=True, outline=0.6)
     for s in ("r", "l"):
         y = B.LEG_Y * B.SIDE_Y[s]
         g = Geo().blob((0.8, y * 1.1, 17.4), (6.6, 5.6, 5.4), p=2.2)
+        face = F.Face(rig, f"thigh_{s}", [g])
         rig.part(f"thigh_{s}", g, team=True)
+        _slashes(rig, f"thigh_{s}", face, (0.8, y * 1.1 - 5.0, 17.4), 3.2, 4.0)
 
     # head: big eyes, a short beard, the steel morion on its own joint (it rolls off in the death)
     head = Geo().blob((2, 0, 48.6), (11.4, 10.8, 11.2), p=2.3)
@@ -145,7 +185,9 @@ def build(rig):
         y = B.ARM_Y[s]
         B.arm_parts(rig, s, SLATE, hand=LEATHER, cuff=LEATHER)
         g = Geo().blob((0.3, y * 1.02, 33.2), (6.4, 5.8, 6.6), p=2.2)
+        face = F.Face(rig, f"arm_{s}", [g])
         rig.part(f"arm_{s}", g, team=True)
+        _slashes(rig, f"arm_{s}", face, (0.3, y * 1.02 - 5.2, 33.2), 3.3, 4.6)
 
     # the pike on the rear hand, modelled along +X (rest direction 0): a big leaf head
     hx, hy, hz = HR
@@ -181,10 +223,36 @@ def build(rig):
     pts = [(0.0, 0.0), (-17.0, -1.0), (-12.5, -5.4), (-17.0, -9.8), (0.0, -10.4)]
     pen = Geo().slab([(px0 + x, hz - 0.8 + z) for x, z in pts], PY, 1.2)
     pface = F.Face(rig, "pennon", [pen])
-    rig.part("pennon", pen, team=True, outline=0.8)
-    g = K.paw(pface, Geo(), K.scr(pface, (px0 - 6.0, PY - 0.7, hz - 6.2)), s=0.95)
+    rig.part("pennon", pen, WINE, outline=0.8)
+    g = MW.paw(pface, Geo(), K.scr(pface, (px0 - 6.0, PY - 0.7, hz - 6.2)), s=0.95)
     rig.part("pennon", g, PARCH, highlight=False, outline=0)
     rig.track("pikeTip", "hand_r", (hx + TIP, PY, hz))
+    _damage_spots(rig)
+
+
+def _slashes(rig, joint, face, front, dx, half):
+    """Three team-dark slashes down a puffed sleeve or breeches puff (the landsknecht's slashed cloth), on the side
+    the camera sees: `front` is the puff's surface point toward the camera, `dx` the slashes' spacing, `half` their
+    half length (lu)."""
+    x, y, z = front
+    lines = []
+    for k in (-1, 0, 1):
+        top = K.scr(face, (x + k * dx + 0.6, y, z + half))
+        bot = K.scr(face, (x + k * dx - 0.4, y, z - half))
+        lines.append([top, bot])
+    MW.folds(rig, joint, face, lines, w=1.5)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the padded jack's back (the
+    largest team field the pike arms leave clear), the near sleeve's and breeches' puffs, dents in the breastplate and
+    the morion, and a strip torn from the breeches."""
+    rig.damage_spot_at("jack", "torso", -7.0, 29.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("sleeve", "arm_r", -2.0, 31.5, 6.0, "cloth", team=True)
+    rig.damage_spot_at("breeches", "thigh_r", -0.5, 15.5, 6.5, "cloth", team=True)
+    rig.damage_spot_at("breastplate", "torso", 6.0, 30.0, 6.0, "metal", fill=SLATE)
+    rig.damage_spot_at("morion", "helm", -2.0, 60.0, 5.5, "metal", fill=STEEL)
+    rig.damage_spot_at("strip", "thigh_r", 0.5, 12.5, 6.0, "cloth", kind="strip", team=True)
 
 
 

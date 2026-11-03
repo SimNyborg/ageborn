@@ -31,6 +31,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "flailman"
 GAIT_NAME = "biped"
@@ -52,6 +53,16 @@ IRON = "#6F7883"
 IRON_LT = "#A3ACB6"
 PARCH = "#E8DFC8"
 
+# the detail standard (art round W2): the padded jack quilted in team-dark rolls round his belly (padded cloth in
+# two tones, the rolls following the belly's curve), its skirt in channels, stitched panels on the leather cap
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", BEARD: "fur", LEATHER: "leather", LEATHER_DK: "leather", HOSE: "cloth",
+                           BOOT: "leather", WOOD: "wood", IRON: "iron", IRON_LT: "iron", PARCH: "cloth",
+                           "team": "cloth"})
+
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand (flail haft)
 HAFT = 25.0
 CHAIN = 12.0
@@ -64,7 +75,11 @@ CAP_C = (1.0, 0.0, 55.0)
 def _cap(rig, joint):
     g = Geo().blob((1.0, 0.0, 56.4), (12.2, 12.0, 10.4), p=2.3)
     g.clip((0, 0, 54.4), (0, 0, -1))
+    face = F.Face(rig, joint, [g])
     rig.part(joint, g, LEATHER)
+    # W2: the cap sewn from leather panels (two darker stitched seams up its side to the knob)
+    for pts in (((-6.0, 57.0), (-4.6, 61.6), (-1.6, 65.0)), ((3.4, 57.2), (3.0, 62.0), (1.6, 65.4))):
+        MW.seam(rig, joint, face, list(pts), fill=LEATHER_DK, w=1.1)
     g = Geo().lathe([(12.0, 0), (12.6, 0.4), (12.6, 2.6), (12.0, 3.0)], (1.0, 0.0, 54.2), segs=28)
     rig.part(joint, g, team=True, outline=0.6)
     g = Geo()
@@ -96,10 +111,15 @@ def build(rig):
         c = tface.hit(x, 28.0)
         tface.stroke(g2, c, [(0.0, -7.0), (0.4, 7.5)], 1.0, 0.35)
     rig.part("torso", g2, LEATHER_DK, highlight=False, outline=0)
+    # W2: quilted rolls round the belly (team-dark, bowed with its curve)
+    MW.folds(rig, "torso", tface, [[(-10.0, z + 1.2), (-3.0, z - 0.4), (4.0, z - 0.6), (11.0, z + 0.6)]
+                                   for z in (24.0, 28.5, 33.0)], w=1.2)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.8, 0, 15.2), (12.4, 11.0, 4.6), p=2.7, taper=(1.12, 1.0))
+    hface = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    MW.folds(rig, "hem", hface, [[(x + 0.4, 16.0), (x + 0.6, 11.0)] for x in (-8.5, -4.5, -0.5, 3.5, 7.5)], w=1.2)
     g = Geo().blob((0.8, 0, 20.4), (13.0, 11.6, 2.2), p=3.2)
     rig.part("torso", g, LEATHER_DK)
     g = Geo().blob((13.6, -2.0, 20.4), (1.6, 2.8, 2.8), p=3.0)
@@ -158,6 +178,15 @@ def build(rig):
     rig.part("flail_loose", g, WOOD)
     g = Geo().sphere((22.0, -10.0, 30.0), BALL_R, cuts=3)
     rig.part("flail_loose", g, IRON, finish="metal")
+    _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the padded jack's belly (the
+    largest team field the flail arm leaves clear), the leather cap, a strip torn from the jack's skirt."""
+    rig.damage_spot_at("jack", "torso", -3.0, 27.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("cap", "cap", -3.0, 60.0, 5.0, "hide", fill=LEATHER)
+    rig.damage_spot_at("skirt", "hem", -2.0, 14.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -302,16 +331,18 @@ def _attack_b():
 
 # -- attack C: rising underhand swing ---------------------------------------------------------------
 # 0 = A read, 1 crouch, 2 deeper, 3 HOLD (crouched, the haft down and back, the ball hanging low behind
-# his heel), 4 smear (scooping up), 5 lead, 6 IMPACT (the ball whipped up to head height in front),
-# 7 over, 8 recoil, 9-10 = A settle
+# his heel), 4 smear (scooping up), 5 lead (the ball swinging up in front), 6 IMPACT (the contact: the ball at
+# the foe's chest in front), 7 the ball whipped on up to head height, 8 recoil, 9-10 = A settle.
+# Item 38 B1': the impact step used to show the ball already at head height (73 lu, 35 lu ahead), past the foe;
+# the steps, their durations and impactAt are unchanged.
 #        crouch deeper HOLD smear lead IMP  over recoil
-OC_A = [-90, -120, -140, -100, -40, 20, 30, -10]
-OC_F = [-100, -140, -160, -90, -10, 50, 60, 20]
-OC_W = [-120, -150, -170, -80, 10, 60, 70, 40]
-OC_C = [-110, -150, -175, -100, 0, 50, 70, 0]
-OC_T = [-6, -12, -16, -8, 2, 8, 9, 3]
-OC_X = [0.0, -1.0, -1.5, 2.0, 5.0, 7.5, 8.0, 5.0]
-OC_Z = [-2.5, -5.0, -6.5, -4.0, -1.0, 1.0, 0.5, -0.5]
+OC_A = [-90, -120, -140, -100, -70, -45, 20, 0]
+OC_F = [-100, -140, -160, -90, -50, -10, 50, 30]
+OC_W = [-120, -150, -170, -80, -20, 50, 60, 50]
+OC_C = [-110, -150, -175, -100, -60, -40, 50, 20]
+OC_T = [-6, -12, -16, -8, -2, 2, 8, 4]
+OC_X = [0.0, -1.0, -1.5, 2.0, 4.5, 6.5, 8.0, 6.0]
+OC_Z = [-2.5, -5.0, -6.5, -4.0, -1.5, -0.5, 1.0, 0.0]
 OC_Q = [-0.06, -0.10, -0.08, 0.06, 0.08, -0.12, 0.04, -0.03]
 OC_THR = [10, 22, 30, 28, 24, 18, 16, 10]
 OC_SHR = [-16, -34, -46, -34, -20, -10, -8, -6]
@@ -328,7 +359,7 @@ def _c_pose(i):
         "thigh_r": {"r": OC_THR[k]}, "shin_r": {"r": OC_SHR[k]},
         "thigh_l": {"r": OC_THL[k]}, "shin_l": {"r": OC_SHL[k]},
     }, M.body_about((0, 0, 22), x=OC_X[k], z=OC_Z[k], q=OC_Q[k]))
-    if k == 5:
+    if k == 6:
         pose = merge(pose, {"foot_r": {"r": -12}, "foot_l": {"r": -14}})
     if k in (1, 2):
         pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.9}})
@@ -344,7 +375,8 @@ def _attack_c():
         5: [dict(SWEEP, **{"from": 4})],
         6: [dict(SWEEP, t0=0.4, t1=1.0, lines=2, **{"from": 5}),
             {"kind": "burst", "joint": "chain", "point": BALL, "r0_lu": 6.0, "r1_lu": 12.0, "n": 5,
-             "a0": 0.0, "arc": 140.0}],
+             "a0": -50.0, "arc": 120.0}],
+        7: [dict(SWEEP, t0=0.3, t1=1.0, lines=2, **{"from": 6})],
     }
     reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
     return M.clip("attack_c", [_c_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
