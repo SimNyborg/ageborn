@@ -2,7 +2,7 @@
  "frames": {
   "destrier_knight_attack_b_01": {
    "frame": {
-    "x": 904,
+    "x": 2,
     "y": 470,
     "w": 283,
     "h": 357
@@ -26,8 +26,8 @@
   },
   "destrier_knight_attack_b_01_team": {
    "frame": {
-    "x": 274,
-    "y": 1523,
+    "x": 2708,
+    "y": 549,
     "w": 264,
     "h": 251
    },
@@ -50,17 +50,17 @@
   },
   "destrier_knight_attack_b_02": {
    "frame": {
-    "x": 1264,
+    "x": 1267,
     "y": 2,
-    "w": 250,
+    "w": 252,
     "h": 434
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 232,
+    "x": 230,
     "y": 27,
-    "w": 250,
+    "w": 252,
     "h": 434
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "destrier_knight_attack_b_02_team": {
    "frame": {
-    "x": 169,
-    "y": 881,
+    "x": 687,
+    "y": 465,
     "w": 217,
     "h": 324
    },
@@ -100,15 +100,15 @@
    "frame": {
     "x": 329,
     "y": 2,
-    "w": 260,
+    "w": 262,
     "h": 464
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 187,
+    "x": 185,
     "y": 0,
-    "w": 260,
+    "w": 262,
     "h": 464
    },
    "sourceSize": {
@@ -122,7 +122,7 @@
   },
   "destrier_knight_attack_b_03_team": {
    "frame": {
-    "x": 1191,
+    "x": 289,
     "y": 470,
     "w": 227,
     "h": 357
@@ -146,17 +146,17 @@
   },
   "destrier_knight_attack_b_04": {
    "frame": {
-    "x": 593,
+    "x": 595,
     "y": 2,
-    "w": 325,
+    "w": 326,
     "h": 459
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
+    "x": 269,
     "y": 6,
-    "w": 325,
+    "w": 326,
     "h": 459
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "destrier_knight_attack_b_04_team": {
    "frame": {
-    "x": 1218,
-    "y": 1220,
+    "x": 2708,
+    "y": 290,
     "w": 292,
     "h": 255
    },
@@ -194,8 +194,8 @@
   },
   "destrier_knight_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 470,
+    "x": 1523,
+    "y": 2,
     "w": 387,
     "h": 407
    },
@@ -218,9 +218,9 @@
   },
   "destrier_knight_attack_b_05_team": {
    "frame": {
-    "x": 1125,
-    "y": 1523,
-    "w": 318,
+    "x": 3004,
+    "y": 257,
+    "w": 317,
     "h": 242
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 308,
     "y": 149,
-    "w": 318,
+    "w": 317,
     "h": 242
    },
    "sourceSize": {
@@ -242,18 +242,18 @@
   },
   "destrier_knight_attack_b_06": {
    "frame": {
-    "x": 605,
-    "y": 1220,
+    "x": 2309,
+    "y": 302,
     "w": 395,
-    "h": 286
+    "h": 289
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 305,
-    "y": 195,
+    "y": 192,
     "w": 395,
-    "h": 286
+    "h": 289
    },
    "sourceSize": {
     "w": 736,
@@ -266,9 +266,9 @@
   },
   "destrier_knight_attack_b_06_team": {
    "frame": {
-    "x": 2,
-    "y": 1778,
-    "w": 310,
+    "x": 3267,
+    "y": 503,
+    "w": 309,
     "h": 232
    },
    "rotated": false,
@@ -276,7 +276,7 @@
    "spriteSourceSize": {
     "x": 321,
     "y": 185,
-    "w": 310,
+    "w": 309,
     "h": 232
    },
    "sourceSize": {
@@ -290,18 +290,18 @@
   },
   "destrier_knight_attack_b_07": {
    "frame": {
-    "x": 1073,
-    "y": 881,
+    "x": 1779,
+    "y": 413,
     "w": 336,
-    "h": 316
+    "h": 320
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 305,
-    "y": 162,
+    "y": 158,
     "w": 336,
-    "h": 316
+    "h": 320
    },
    "sourceSize": {
     "w": 736,
@@ -314,8 +314,8 @@
   },
   "destrier_knight_attack_b_07_team": {
    "frame": {
-    "x": 834,
-    "y": 1523,
+    "x": 2976,
+    "y": 549,
     "w": 287,
     "h": 245
    },
@@ -338,8 +338,8 @@
   },
   "destrier_knight_attack_c_01": {
    "frame": {
-    "x": 649,
-    "y": 470,
+    "x": 1267,
+    "y": 440,
     "w": 251,
     "h": 401
    },
@@ -362,8 +362,8 @@
   },
   "destrier_knight_attack_c_01_team": {
    "frame": {
-    "x": 1004,
-    "y": 1220,
+    "x": 2672,
+    "y": 2,
     "w": 210,
     "h": 284
    },
@@ -386,8 +386,8 @@
   },
   "destrier_knight_attack_c_02": {
    "frame": {
-    "x": 393,
-    "y": 470,
+    "x": 1523,
+    "y": 413,
     "w": 252,
     "h": 405
    },
@@ -410,8 +410,8 @@
   },
   "destrier_knight_attack_c_02_team": {
    "frame": {
-    "x": 2,
-    "y": 1220,
+    "x": 2119,
+    "y": 325,
     "w": 186,
     "h": 299
    },
@@ -434,8 +434,8 @@
   },
   "destrier_knight_attack_c_03": {
    "frame": {
-    "x": 390,
-    "y": 881,
+    "x": 925,
+    "y": 455,
     "w": 334,
     "h": 321
    },
@@ -458,17 +458,17 @@
   },
   "destrier_knight_attack_c_03_team": {
    "frame": {
-    "x": 643,
-    "y": 1778,
-    "w": 256,
+    "x": 3325,
+    "y": 235,
+    "w": 255,
     "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
+    "x": 199,
     "y": 165,
-    "w": 256,
+    "w": 255,
     "h": 226
    },
    "sourceSize": {
@@ -482,7 +482,7 @@
   },
   "destrier_knight_attack_c_04": {
    "frame": {
-    "x": 922,
+    "x": 925,
     "y": 2,
     "w": 338,
     "h": 449
@@ -506,8 +506,8 @@
   },
   "destrier_knight_attack_c_04_team": {
    "frame": {
-    "x": 2,
-    "y": 881,
+    "x": 520,
+    "y": 470,
     "w": 163,
     "h": 335
    },
@@ -554,8 +554,8 @@
   },
   "destrier_knight_attack_c_05_team": {
    "frame": {
-    "x": 2,
-    "y": 1523,
+    "x": 2886,
+    "y": 2,
     "w": 268,
     "h": 251
    },
@@ -578,18 +578,18 @@
   },
   "destrier_knight_attack_c_06": {
    "frame": {
-    "x": 192,
-    "y": 1220,
+    "x": 2259,
+    "y": 2,
     "w": 409,
-    "h": 293
+    "h": 296
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 290,
-    "y": 176,
+    "y": 173,
     "w": 409,
-    "h": 293
+    "h": 296
    },
    "sourceSize": {
     "w": 736,
@@ -602,8 +602,8 @@
   },
   "destrier_knight_attack_c_06_team": {
    "frame": {
-    "x": 316,
-    "y": 1778,
+    "x": 3158,
+    "y": 2,
     "w": 323,
     "h": 229
    },
@@ -626,18 +626,18 @@
   },
   "destrier_knight_attack_c_07": {
    "frame": {
-    "x": 728,
-    "y": 881,
+    "x": 1914,
+    "y": 2,
     "w": 341,
-    "h": 316
+    "h": 319
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 296,
-    "y": 159,
+    "y": 156,
     "w": 341,
-    "h": 316
+    "h": 319
    },
    "sourceSize": {
     "w": 736,
@@ -650,8 +650,8 @@
   },
   "destrier_knight_attack_c_07_team": {
    "frame": {
-    "x": 542,
-    "y": 1523,
+    "x": 2309,
+    "y": 595,
     "w": 288,
     "h": 246
    },
@@ -737,8 +737,8 @@
   "image": "destrier_knight.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 2012
+   "w": 3584,
+   "h": 844
   },
   "scale": "3",
   "ageborn": {

@@ -31,8 +31,10 @@ from ageborn_art import gait as G  # noqa: F401
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
+from ageborn_art import look
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "footman"
 GAIT_NAME = "biped"
@@ -54,6 +56,29 @@ BOOT = "#7F6A58"
 GOLD = "#D4A437"
 PARCH = "#E8DFC8"
 
+# the detail standard (art round W2, ageborn_art/look.py): mail, plate and padded cloth read as three materials (mail
+# rows on the shoulders and sleeves, a polished band on the kettle hat, pleats down the tabard), the team zones in two
+# tones (a team-dark chief on the kite shield, the tabard's back half per pale, the plume's tail, the pleats)
+MAIL_DK = "#4C5560"       # the mail rows: the rings' shadowed lower edges (22 levels under the mail)
+STEEL_HI = "#D9DFE6"      # the kettle hat's polished band and rolled brim edge (the plate's highlight band)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", HAIR: "fur", MAIL: "iron", MAIL_DK: "iron", STEEL: "iron", STEEL_DK: "iron",
+                           STEEL_HI: "iron", WINE: "cloth", LEATHER: "leather", BOOT: "leather", GOLD: "gold",
+                           PARCH: "cloth", "team": "cloth"})
+
+# Tin Can (DESIGN A5.8, rare: "dented bucket armour"): the kettle hat becomes an upturned tin bucket with a rolled rim,
+# two ribs, a wire handle and dents (the plume pushed through its bottom), and the mail becomes dented tin plate; the
+# tabard, the kite shield and the plume stay team.
+TIN = "#B8C0C8"
+TIN_DK = "#7C8590"
+TIN_HI = "#E3E8ED"
+SKINS = {"tin_can": {
+    "palette": {MAIL: TIN, MAIL_DK: TIN_DK, STEEL_HI: TIN_HI},
+    "kinds": {TIN: "iron", TIN_DK: "iron", TIN_HI: "iron"}}}
+
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand (shield)
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)   # far hand (sword)
 BLADE = 44.0
@@ -62,6 +87,8 @@ HELM_C = (1.5, 0.0, 59.2)             # helmet pivot (it pops off in the death)
 
 def _helm(rig, joint, off=(0.0, 0.0, 1.2)):
     """Kettle hat: steel cap, wide riveted brim, gold knob. `off` shifts the geometry."""
+    if getattr(rig, "skin", None) == "tin_can":
+        return _bucket(rig, joint, off)
     ox, oy, oz = off
     g = Geo().blob((1.5 + ox, oy, 55.0 + oz), (12.4, 12.2, 9.4), p=2.4)
     g.clip((0, 0, 54.2 + oz), (0, 0, -1))
@@ -82,14 +109,57 @@ def _helm(rig, joint, off=(0.0, 0.0, 1.2)):
     rig.part(joint, g, STEEL, finish="metal", outline=0.6)
     g = Geo().capsule((1.5 + ox, oy, 64.2 + oz), (1.5 + ox, oy, 66.2 + oz), 2.2)
     rig.part(joint, g, GOLD, finish="metal", outline=0.8)
+    # W2: the plate's highlight band (a polished strip round the dome above the dark band) and a rolled, polished
+    # edge round the brim, so the hat reads as plate beside the mail rows and the tabard's pleats
+    g = Geo().lathe([(11.7, 0), (12.05, 0.3), (11.85, 1.4), (11.45, 1.7)], (1.6 + ox, oy, 58.3 + oz), segs=28,
+                    squash=(1.0, 0.985))
+    rig.part(joint, g, STEEL_HI, finish="metal", outline=0)
+    g = Geo().lathe([(16.4, -0.95), (17.6, -0.6), (17.95, 0.0), (17.6, 0.6), (16.4, 0.95)], (2.0 + ox, oy, 54.8 + oz),
+                    segs=28, squash=(1.0, 0.92), rot=(0, -6, 0))
+    rig.part(joint, g, STEEL_HI, finish="metal", outline=0.5)
+
+
+def _bucket(rig, joint, off):
+    """Tin Can: an upturned tin bucket for a helmet (open end over the brows): a rolled rim, two ribs, two dents on
+    the near side and a wire handle hanging from rivet ears, the plume pushed through its bottom."""
+    ox, oy, oz = off
+    cx, cz = 1.5 + ox, 52.6 + oz
+    body = Geo().lathe([(12.9, 0.0), (12.9, 0.8), (12.35, 6.0), (11.7, 11.2), (11.3, 12.6), (0, 12.8)], (cx, oy, cz),
+                       segs=32)
+    bface = F.Face(rig, joint, [body])
+    rig.part(joint, body, STEEL, finish="metal")
+    g = Geo().lathe([(12.5, -1.0), (13.7, -0.65), (14.0, 0.0), (13.7, 0.65), (12.5, 1.0)], (cx, oy, cz + 0.4), segs=32)
+    rig.part(joint, g, STEEL_HI, finish="metal", outline=0.5)           # rolled rim
+    g = Geo()
+    for dz, r in ((4.4, 12.55), (8.7, 12.0)):                           # two ribs
+        g.lathe([(r - 0.1, 0), (r + 0.4, 0.3), (r + 0.4, 1.0), (r - 0.1, 1.3)], (cx, oy, cz + dz), segs=32)
+    rig.part(joint, g, STEEL_DK, finish="metal", outline=0)
+    g, gl = Geo(), Geo()                                                # dents: a dark dish with a lit lower lip
+    for (x, z, rx, rz) in ((cx - 4.0, cz + 7.0, 2.6, 1.9), (cx + 5.2, cz + 2.6, 2.0, 1.4)):
+        c = bface.hit(x, z)
+        bface.decal(g, c, F.ellipse(0, 0.2, rx, rz, 14), 0.3)
+        bface.decal(gl, c, F.ellipse(0, -rz * 0.55, rx * 0.8, rz * 0.4, 12, 200, 340), 0.35)
+    rig.part(joint, g, STEEL_DK, highlight=False, outline=0)
+    rig.part(joint, gl, STEEL_HI, highlight=False, outline=0)
+    g = Geo()                                                           # rivet ears and the wire handle
+    for x in (cx + 12.4, cx - 12.4):
+        g.sphere((x, oy - 2.6, cz + 8.2), 1.5, cuts=2)
+    rig.part(joint, g, GOLD, finish="metal", outline=0.5)
+    pts = [(cx + 12.6, oy - 3.0, cz + 8.2), (cx + 9.0, oy - 11.8, cz + 4.2), (cx + 2.0, oy - 14.6, cz + 2.0),
+           (cx - 5.0, oy - 13.8, cz + 2.6), (cx - 10.4, oy - 9.6, cz + 5.4), (cx - 12.6, oy - 3.0, cz + 8.2)]
+    g = Geo()
+    for a, b in zip(pts, pts[1:]):
+        g.capsule(a, b, 0.95, 0.95)
+    rig.part(joint, g, STEEL_DK, finish="metal", outline=0.5)
 
 
 def _plume(rig, joint):
-    g = Geo()
-    for x, z, r in ((0.5, 67.8, 3.6), (-3.8, 70.2, 4.2), (-8.4, 70.6, 4.0), (-12.6, 69.0, 3.4),
-                    (-15.8, 66.6, 2.7)):
-        g.blob((x, 0, z + 1.2), (r * 1.2, r * 0.8, r), p=2.1)
+    g, gd = Geo(), Geo()
+    for k, (x, z, r) in enumerate(((0.5, 67.8, 3.6), (-3.8, 70.2, 4.2), (-8.4, 70.6, 4.0), (-12.6, 69.0, 3.4),
+                                   (-15.8, 66.6, 2.7))):
+        (g if k < 3 else gd).blob((x, 0, z + 1.2), (r * 1.2, r * 0.8, r), p=2.1)
     rig.part(joint, g, team=True)
+    look.team_part(rig, joint, gd)     # W2: the plume's tail team-dark (the plume in two tones)
 
 
 def _sword(rig, joint, base):
@@ -135,14 +205,22 @@ def build(rig):
     c = tface.hit(9.5, 29.0)
     tface.stroke(g, c, [(0.0, 5.0), (0.6, -6.0)], 1.8, 0.4)
     rig.part("torso", g, PARCH, highlight=False, outline=0)
-    g = K.paw(tface, Geo(), (3.0, 29.0), s=1.05)
+    g = MW.paw(tface, Geo(), (3.0, 29.0), s=1.05)
     rig.part("torso", g, PARCH, highlight=False, outline=0)
+    # W2: the tabard per pale (its back half team-dark: heraldry in two tones, the half the shield leaves clear) and
+    # pleats down its skirt below the belt (team-dark folds: the cloth reads as cloth)
+    MW.panel(rig, "torso", tface, [(-1.0, 35.6), (-6.0, 35.0), (-9.0, 33.0), (-10.6, 28.0), (-10.2, 22.5),
+                                   (-8.5, 18.5), (-5.0, 16.0), (-1.0, 15.6)], depth=0.2)
+    MW.folds(rig, "torso", tface, [[(x, 18.8), (x + 0.5, 15.0)] for x in (-6.6, -2.4, 1.8, 6.0, 9.6)], w=1.3)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.6, 0, 15.5), (12.2, 11.0, 4.6), p=2.8, taper=(1.12, 1.0))
     for x, y in ((9.0, -7.0), (2.0, -11.0), (-6.0, -9.5)):   # tabard slits (notches)
         g.lathe([(1.6, 0), (0, 3.2)], (x, y - 0.6, 11.4), (x, y - 0.8, 14.6), segs=6)
+    hface = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    # W2: the pleats run on down the hem to its parchment band
+    MW.folds(rig, "hem", hface, [[(x + 0.5, 15.2), (x + 0.7, 12.6)] for x in (-6.6, -2.4, 1.8, 6.0, 9.6)], w=1.3)
     g = Geo().blob((0.6, 0, 11.4), (12.0, 10.8, 1.4), p=3.0)
     rig.part("hem", g, PARCH)
     g = Geo().blob((0.4, 0, 20.8), (12.2, 11.1, 1.9), p=3.2)
@@ -160,6 +238,13 @@ def build(rig):
     for s, y in (("r", -12.0), ("l", 11.5)):
         g = Geo().blob((0, y, 36.8), (6.6, 5.8, 5.4), p=2.4)
         rig.part(f"arm_{s}", g, MAIL, finish="metal")
+        # W2: mail rows round the mail shoulders and down the sleeves (the rings' shadowed edges, 2.4 lu apart:
+        # mail at game scale, beside the hat's polished band and the tabard's pleats)
+        MW.mail_rows(rig, f"arm_{s}", (0, y, 32.6), (0, y, 40.2),
+                     lambda t: 6.6 * max(0.05, 1 - abs((32.6 + 7.6 * t - 36.8) / 5.4) ** 2.4) ** (1 / 2.4),
+                     MAIL_DK, squash=(1.0, 5.8 / 6.6))
+        MW.mail_rows(rig, f"arm_{s}", (0, y, 28.2), (0, y, 32.2), 4.1, MAIL_DK, step=2.0)
+        MW.mail_rows(rig, f"fore_{s}", (0, y, 25.8), (0, y, 28.2), 3.95, MAIL_DK, step=2.0)
 
     # head: big, moustache, hair; the kettle hat sits on its own joint
     head = Geo().blob((2, 0, 48.5), (11.6, 11.0, 11.4), p=2.3)
@@ -210,10 +295,27 @@ def build(rig):
     for dx, dz in ((-9.1, 9.2), (0.0, 13.2), (9.1, 9.2), (-6.0, -2.4), (6.0, -2.4)):
         g.sphere((sx + dx, sy - 1.3, sz + dz), 1.15, cuts=2)
     rig.part("hand_r", g, STEEL, finish="metal", outline=0)
-    g = K.paw(sface, Geo(), K.scr(sface, (sx, sy - 1.6, sz + 1.0)), s=1.55)
+    g = MW.paw(sface, Geo(), K.scr(sface, (sx, sy - 1.6, sz + 1.0)), s=1.55)
     rig.part("hand_r", g, PARCH, highlight=False, outline=0)
+    # W2: a team-dark chief across the shield's top behind the boss (the kite shield's heraldry in two tones)
+    MW.panel(rig, "hand_r", sface, [K.scr(sface, (sx + dx, sy - 1.6, sz + dz)) for dx, dz in
+                                    ((-6.6, 6.6), (6.6, 6.6), (6.0, 10.8), (3.4, 12.6), (-3.4, 12.6), (-6.0, 10.8))],
+             depth=0.2)
     g = Geo().blob((sx, sy - 1.8, sz + 9.2), (2.2, 1.5, 2.2), p=2.2)
     rig.part("hand_r", g, GOLD, finish="metal", outline=0.8)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig, K.scr(sface, (sx - 4.0, sy - 1.6, sz + 10.0)))
+
+
+def _damage_spots(rig, shield_xz):
+    """Damage spots (item 40 section 3.3, soldier; never on the face or skin): the kite shield's face (its biggest
+    team surface, which the sword arm leaves clear; on the chief beside the boss so the ray meets team), the tabard's
+    back half, the plume, a dent in the kettle hat, a strip torn from the tabard's hem."""
+    rig.damage_spot_at("shield", "hand_r", shield_xz[0], shield_xz[1], 7.5, "wood", team=True)
+    rig.damage_spot_at("tabard", "torso", -6.5, 27.0, 6.5, "cloth", team=True)
+    rig.damage_spot_at("plume", "plume", -8.0, 71.6, 5.0, "cloth", team=True)
+    rig.damage_spot_at("helmet", "helm", -4.0, 63.0, 5.5, "metal", fill=STEEL)
+    rig.damage_spot_at("hem", "hem", -6.0, 14.0, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

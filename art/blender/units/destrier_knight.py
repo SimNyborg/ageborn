@@ -30,9 +30,11 @@ import math
 from ageborn_art import face as F
 from ageborn_art import gait as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "destrier_knight"
 GAIT_NAME = "rider"
@@ -58,6 +60,38 @@ GOLD = "#D4A437"
 EYE = "#FAF6EE"
 LEATHER = "#5E4E42"
 NOSE = "#BFA99A"
+LIP = "#8A7A70"
+
+# the detail standard (art round W2): the pilot's mount recipe (War Chariot) on the white destrier: a lit crest
+# and darker dapples on the neck, the mane in two tones; the caparison in two tones (a team-dark border above the
+# hem, folds hanging from it); the knight's plate with polished bands, lames on the pauldrons and a poleyn, the
+# tabard's skirt in pleats, the shield per pale, the plume's back lobes and the pennant's tails team-dark
+COAT_LT = "#F3EEE5"       # the neck's lit crest
+DAPPLE = "#D3C9B9"        # dapples on the neck (a dapple-grey destrier)
+MANE_LT = "#6F7480"       # lighter clumps in the mane (two tones)
+STEEL_HI = "#D3D9E0"      # the plate's polished bands
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_BEAST
+LOOK_SHADE = MW.SHADE_MOUNT
+LOOK_RIM = MW.RIM_BEAST
+MATERIAL_KINDS = MW.kinds({COAT: "hide", COAT_DK: "hide", COAT_LT: "hide", DAPPLE: "hide", MANE: "fur", MANE_LT: "fur", TAIL: "fur",
+                           HOOF: "bone", SLATE: "iron", STEEL: "iron", STEEL_HI: "iron", DARK: "skin", WINE: "wood",
+                           PARCH: "cloth", GOLD: "gold", EYE: "skin", LEATHER: "leather", NOSE: "skin", LIP: "skin",
+                           "team": "cloth"})
+
+# Chess Knight (DESIGN A5.8, epic): a chess-set knight, an ebony horse and ivory plate with checker trim. The coat
+# is a polished ebony with a mid-value lit side (W1: dark coats need one), the mane, tail and fetlock feathering
+# ivory (light bands on the dark legs), the plate ivory, and the caparison's hem ivory with ebony checks.
+EBONY = "#5E5558"         # value 0.37: with the top light the lit side reaches about 0.45
+EBONY_DK = "#463F42"
+IVORY = "#ECE6DA"
+CHESS = {COAT: EBONY, COAT_LT: "#7A7073", DAPPLE: "#564D50", NOSE: "#5C5456", LIP: "#2E2A2C", HOOF: "#2E2A2C", COAT_DK: IVORY,
+         MANE: "#E3DCCD", MANE_LT: "#F4F0E8", TAIL: "#E3DCCD", SLATE: "#D6D0C3", STEEL: IVORY, STEEL_HI: "#FAF8F3",
+         LEATHER: EBONY_DK, PARCH: IVORY}
+SKINS = {"chess_knight": {
+    "palette": MW.skin_palette(CHESS),
+    "kinds": MW.kinds({EBONY: "wood", "#7A7073": "wood", "#564D50": "wood", "#5C5456": "skin", "#2E2A2C": "bone", IVORY: "bone",
+                       "#E3DCCD": "fur", "#F4F0E8": "fur", "#D6D0C3": "bone", "#FAF8F3": "bone", EBONY_DK: "leather"})}}
 
 # lance: joint in the far hand; shaft along +Z (rest), tip at LANCE_TIP lu
 LX, LY, LZ = 10.5, 14.0, 65.0
@@ -120,9 +154,17 @@ def build(rig):
     cface = F.Face(rig, "horse", [cap])
     rig.part("horse", cap, team=True)
     g = Geo().blob((0.5, 0, 30.4), (29.4, 14.9, 2.4), p=3.2)
+    hem_face = F.Face(rig, "horse", [g])
     rig.part("horse", g, PARCH)
+    # W2: the caparison in two tones: a team-dark border along the top of the hem (it rises toward the ends as the
+    # hem curves round the barrel) and folds hanging from it, clear of the paw
+    MW.seam(rig, "horse", cface, [(x, 30.7 + 0.006 * x * x) for x in (-26, -18, -9, 0, 9, 18, 26)], w=3.2, team=True)
+    MW.folds(rig, "horse", cface, [[(x, 32.6 + 0.006 * x * x), (x + 0.4, 41.0)] for x in (-24, -19, -3, 4, 13, 22)],
+             w=1.4)
+    if getattr(rig, "skin", None) == "chess_knight":
+        _checks(rig, hem_face)
     # a big parchment bear paw on the flank
-    g = K.paw(cface, Geo(), K.scr(cface, (-8.0, -14.4, 43.0)), s=1.7)
+    g = MW.paw(cface, Geo(), K.scr(cface, (-8.0, -14.4, 43.0)), s=1.7)
     rig.part("horse", g, PARCH, highlight=False, outline=0)
     g = Geo()
     for x in (-20, -7, 7, 20):
@@ -136,12 +178,25 @@ def build(rig):
     rig.joint("neck", "horse", (21, 0, 49))
     rig.joint("hhead", "neck", (32, 0, 66), scale=1.25)
     g = Geo().capsule((20, 0, 46), (31, 0, 64), 9.0, 6.8)
+    nface = F.Face(rig, "neck", [g])
     rig.part("neck", g, COAT)
+    # W2: the neck's lit crest below the mane (a thin shell on the surface: the lit top plane) and a few dapples
+    # where the caparison and the head leave the neck clear
+    g = Geo().capsule((20.0, -4.5, 54.6), (25.2, -4.2, 62.6), 2.5, 1.9)
+    rig.part("neck", g, COAT_LT, finish="gloss", outline=0)
+    g = Geo()
+    for x, z, r in ((24.5, 54.6, 1.7), (28.0, 57.0, 1.6), (26.0, 60.6, 1.4)):
+        nface.decal(g, nface.hit(x, z), F.ellipse(0, 0, r, r * 0.92, 12), 0.35)
+    rig.part("neck", g, DAPPLE, outline=0, highlight=False)
     g = Geo()
     for i in range(5):
         t = i / 4
         g.blob((17 + 12 * t, 0, 57 + 14 * t), (5.2, 3.2, 5.0 - 0.9 * i * 0.5), p=2.2, rot=(0, -35, 0))
     rig.part("neck", g, MANE, finish="hair")
+    g = Geo()   # W2: lighter clumps on the mane's near side (two tones, rounded, 4 lu)
+    for t in (0.08, 0.36, 0.64, 0.92):
+        g.blob((17 + 12 * t, -2.9, 56.4 + 14 * t), (4.0, 1.1, 1.8), p=2.2, rot=(0, -35, 0))
+    rig.part("neck", g, MANE_LT, finish="hair", outline=0)
     head = Geo().blob((38, 0, 63), (12.5, 6.4, 7.2), p=2.4, rot=(0, 40, 0))
     head.blob((46.0, 0, 55.2), (6.8, 6.0, 5.8), p=2.2)
     head.blob((33.0, 0, 62.0), (6.2, 6.6, 6.0), p=2.2)                # round cheek (jaw)
@@ -191,6 +246,11 @@ def build(rig):
     g = Geo().capsule((-1, -8.5, 58), (8, -11.5, 52), 5.2, 4.6).capsule((8, -11.5, 52), (7, -11.5, 40), 4.4, 4.0)
     g.blob((9.5, -11.5, 38.0), (5.8, 4.2, 3.0), p=2.8)
     rig.part("rider", g, SLATE, finish="metal")
+    # W2: a poleyn over the knee and a polished band down the greave (plate with a clear highlight band)
+    g = Geo().blob((9.0, -14.6, 52.2), (3.6, 2.4, 3.6), p=2.2)
+    rig.part("rider", g, STEEL, finish="metal", outline=0.5)
+    g = Geo().capsule((11.2, -14.0, 48.6), (10.3, -13.8, 41.6), 1.0, 0.9)
+    rig.part("rider", g, STEEL_HI, finish="metal", outline=0)
     g = Geo().capsule((5.0, -12.2, 51.0), (9.0, -12.2, 36.0), 0.8)   # stirrup leather
     rig.part("rider", g, LEATHER, outline=0.4)
     g = Geo().lathe([(2.6, 0), (3.0, 0.4), (3.0, 1.4), (2.6, 1.8)], (9.5, -12.0, 34.6), segs=12)
@@ -199,12 +259,20 @@ def build(rig):
     rig.part("ktorso", g, SLATE, finish="metal")
     g = Geo().blob((-0.4, 0, 64.8), (10.2, 11.2, 8.4), p=2.8, taper=(1.12, 0.9))
     g.blob((-0.4, 0, 72.5), (9.8, 10.6, 5.0), p=2.6)
+    tface = F.Face(rig, "ktorso", [g])
     rig.part("ktorso", g, team=True)
+    # W2: the tabard's skirt below the belt in pleats (team-dark folds; screen lu before the rider's 1.2x)
+    MW.folds(rig, "ktorso", tface, [[(x, 59.2), (x + 0.3, 55.8)] for x in (-7.5, -4.0, -0.5, 3.0, 6.5)], w=1.2)
     g = Geo().blob((-0.4, 0, 63.2), (10.6, 11.6, 1.8), p=3.0)
     rig.part("ktorso", g, WINE)
     # great helm: slit that wraps to the near side, two glowing eye dots, gold cross trim
     g = Geo().blob((0.5, 0, 88), (9.6, 9.4, 10.8), p=3.2, taper=(1.05, 0.92))
     rig.part("khead", g, STEEL, finish="metal")
+    # W2: a polished brow band round the helm above the slit (the helm's own shape, 0.35 lu proud, cut to 1.6 lu)
+    g = Geo().blob((0.5, 0, 88), (9.95, 9.75, 11.15), p=3.2, taper=(1.05, 0.92))
+    g.clip((0, 0, 93.6), (0, 0, 1))
+    g.clip((0, 0, 92.0), (0, 0, -1))
+    rig.part("khead", g, STEEL_HI, finish="metal", outline=0.5)
     g = Geo().capsule((10.0, 4.0, 89.5), (9.9, -4.5, 89.5), 1.7).capsule((9.9, -4.5, 89.5), (7.0, -9.4, 89.5), 1.7)
     rig.part("khead", g, DARK, outline=0)
     g = Geo().sphere((10.4, -3.4, 89.6), 1.2, cuts=3).sphere((9.2, -7.4, 89.6), 1.2, cuts=3)
@@ -212,11 +280,12 @@ def build(rig):
     g = Geo().capsule((10.2, -1.0, 99.0), (10.4, -1.0, 92.0), 1.1).capsule((10.3, -1.0, 87.5), (10.4, -1.0, 81.5), 1.1)
     rig.part("khead", g, GOLD, finish="metal", outline=0.9)
     rig.secondary("plume", "khead", (-2, 0, 99), (-20, 0, 97), max_deg=10, gain=1.0)
-    g = Geo()
-    for x, z, r in ((0, 99.5, 4.6), (-4, 104, 5.4), (-9.5, 106, 5.4), (-15, 104.5, 4.8),
-                    (-19, 100, 4.0), (-21.5, 95, 3.2)):
-        g.blob((x, 0, z), (r * 1.15, r * 0.9, r), p=2.1)
+    g, gd = Geo(), Geo()   # W2: the plume's trailing lobes team-dark (two tones)
+    for k, (x, z, r) in enumerate(((0, 99.5, 4.6), (-4, 104, 5.4), (-9.5, 106, 5.4), (-15, 104.5, 4.8),
+                                   (-19, 100, 4.0), (-21.5, 95, 3.2))):
+        (gd if k >= 3 else g).blob((x, 0, z), (r * 1.15, r * 0.9, r), p=2.1)
     rig.part("plume", g, team=True)
+    look.team_part(rig, "plume", gd)
 
     # far arm: holds the lance, carried across the horse's neck
     rig.joint("karm_l", "ktorso", (0, 10.5, 77))
@@ -249,9 +318,12 @@ def build(rig):
     pz = LZ + LANCE_TIP - 14.0
     rig.secondary("pennant", "lance", (LX, LY - 0.5, pz), (LX - 11.5, LY - 0.5, pz - 3.3),
                   max_deg=14, gain=1.2, rot_gain=0.0)
-    pts = [(0.0, 0.0), (-11.7, -0.6), (-8.4, -3.3), (-11.7, -6.1), (0.0, -6.7)]
-    g = Geo().slab([(LX + x, pz + z) for x, z in pts], LY - 0.5, 1.2)
+    hoist = [(0.0, 0.0), (-5.6, -0.3), (-5.6, -6.4), (0.0, -6.7)]
+    fly = [(-5.6, -0.3), (-11.7, -0.6), (-8.4, -3.3), (-11.7, -6.1), (-5.6, -6.4)]   # W2: the tails team-dark
+    g = Geo().slab([(LX + x, pz + z) for x, z in hoist], LY - 0.5, 1.2)
     rig.part("pennant", g, team=True, outline=0.8)
+    g = Geo().slab([(LX + x, pz + z) for x, z in fly], LY - 0.5, 1.2)
+    look.team_part(rig, "pennant", g, outline=0.8)
 
     # near arm: the big heater shield (team face, parchment chevron, steel rim)
     rig.joint("karm_r", "ktorso", (0, -10.5, 77))
@@ -271,20 +343,48 @@ def build(rig):
     sh = Geo().blob((sx, sy, sz + 0.5), (9.5, 1.5, 12.6), p=3.2, taper=(0.17, 1.0), rot=rot)
     sf = F.Face(rig, "shield", [sh])
     rig.part("shield", sh, team=True, outline=0.8)
-    g = K.paw(sf, Geo(), K.scr(sf, (sx, sy - 1.6, sz + 1.0)), s=1.7)
+    # W2: the shield per pale (its back half team-dark), the paw laid over both halves
+    c8, s8 = math.cos(math.radians(rot[2])), math.sin(math.radians(rot[2]))
+    MW.panel(rig, "shield", sf, [K.scr(sf, (sx + c8 * dx + 1.5 * s8, sy + s8 * dx - 1.5 * c8, sz + 0.5 + dz))
+                                 for dx, dz in PALE], depth=0.2)
+    g = MW.paw(sf, Geo(), K.scr(sf, (sx, sy - 1.6, sz + 1.0)), s=1.7)
     rig.part("shield", g, PARCH, highlight=False, outline=0)
     g = Geo().blob((sx, sy - 1.8, sz + 9.6), (2.2, 1.5, 2.2), p=2.2)
     rig.part("shield", g, GOLD, finish="metal", outline=0.8)
-    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
-    # the knight's helm, shield face and tabard (low at the back, clear of the shield arm), the caparison and
-    # the horse's neck; a strip torn from the caparison's hem; the horse breathes hard at the last stage
-    rig.damage_spot_at("helm", "khead", -2.0, 100.0, 6.0, "metal", fill="#8D97A3")
-    rig.damage_spot_at("shield", "shield", 8.0, 66.0, 6.0, "wood", team=True)
-    rig.damage_spot_at("tabard", "ktorso", -10.0, 64.0, 5.0, "cloth", team=True)
-    rig.damage_spot_at("caparison", "horse", 22.0, 42.0, 6.0, "cloth", team=True)
-    rig.damage_spot_at("neck", "neck", 24.0, 52.0, 6.0, "hide", fill="#E3DACB")
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+# the shield's back half (dx, dz from the face's centre, in the shield's own plane): inside its tapered rim
+PALE = [(0.0, 11.4), (-5.6, 11.4), (-6.9, 10.0), (-7.0, 8.0), (-6.3, 4.0), (-5.1, 0.0), (-3.8, -4.0), (-2.3, -8.0),
+        (-1.0, -11.0), (0.0, -11.6)]
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin. The knight's
+    helm, shield face and tabard (low at the back, clear of the shield arm), the caparison (the largest team field:
+    W1's r 7-9) and the horse's neck; a strip torn from the caparison's hem; the horse breathes hard at the last
+    stage."""
+    rig.damage_spot_at("helm", "khead", -2.0, 100.0, 6.0, "metal", fill=STEEL)
+    rig.damage_spot_at("shield", "shield", 0.5, 70.0, 7.0, "wood", team=True)
+    rig.damage_spot_at("tabard", "ktorso", -10.0, 64.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("caparison", "horse", 22.0, 42.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("neck", "neck", 24.0, 52.0, 6.0, "hide", fill=COAT)
     rig.damage_spot_at("hem", "horse", -18.0, 32.0, 10.0, "cloth", kind="strip", team=True)
     rig.damage_spot("breath", "hhead", (51.0, -3.0, 56.0), 4.0, "breath", kind="emit", normal=(1, 0, 0))
+
+
+def _checks(rig, face):
+    """Chess Knight: the caparison's hem in ebony checks on ivory (two rows of 2.1 lu squares, following the hem as
+    it rises round the barrel)."""
+    g = Geo()
+    for k in range(-12, 13):
+        x = 2.1 * k
+        for row, z in ((0, 27.6), (1, 25.5)):
+            if (k + row) % 2 == 0:
+                face.decal(g, face.hit(x, z + 0.006 * x * x), [(-1.05, -1.05), (1.05, -1.05), (1.05, 1.05), (-1.05, 1.05)],
+                           0.3)
+    rig.part("horse", g, EBONY_DK, outline=0, highlight=False)
 
 
 
