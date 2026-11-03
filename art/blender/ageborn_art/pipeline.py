@@ -36,7 +36,9 @@ class _ExtraClips(tuple):
 
 
 # attack variants and second attackers go into the lazily loaded extras sheet (ANIM_SPEC P4)
-EXTRA_CLIPS = _ExtraClips(("attack_b", "attack_c", "attack_alt"))   # and every aimed variant (W0)
+# items 51/52: signature and formation poses, rendered with their unit, kept out of the core sheet
+POSE_CLIPS = ("kneel_fire", "square", "charge", "wheel_back", "aim", "pike_set", "shield_lock")
+EXTRA_CLIPS = _ExtraClips(("attack_b", "attack_c", "attack_alt") + POSE_CLIPS)   # and every aimed variant (W0)
 
 
 def walk_metrics(tracks, clip, planted_tol=1.0):
