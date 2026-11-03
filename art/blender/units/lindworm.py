@@ -21,15 +21,25 @@ Animation (ANIM_SPEC G4, appendix B for a breath weapon: rear-and-breathe, low s
   attack_c  REARED POUR: rears up on its hind legs with the head high, then pours the fire down
   hit       beast: the head recoils, the frills flatten
   die       slumps onto its belly, the neck falls flat, smoke puffs, X eyes
+
+Detail standard (art round W2, Track MEDIEVAL): the long neck and tail banded in darker scale rows (the big plain
+fields read as scaled hide), rows of lighter plates over the haunch, the caparison in two tones (a team-dark border
+above its fringe) with its paw whole, the back frills team-dark. Damage spots: the caparison (r 9), the neck's
+scales, the tail fin, a strip torn from the caparison's fringe, smoke curling from the nostrils (breath) and a smoke
+emitter low on the haunch, below the head and clear beside it on every frame (DAMAGE's `fireAt`).
+Bone Wyrm (legendary skin): a skeletal dragon in bleached bone with dark rib bands down its flank and dark
+sockets round the eyes; the fire stays ghost green.
 """
 import math
 
 from ageborn_art import face as F
 from ageborn_art import gait as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "lindworm"
 GAIT_NAME = "quad"
@@ -53,6 +63,27 @@ PARCH = "#E8DFC8"
 FIRE = "#8FE39A"
 FIRE_CORE = "#E8FFE6"
 SMOKE = "#B9C2B8"
+SCALE_RING = "#5F5874"    # the neck's and tail's scale rows (between the scale and its dark)
+RIDGE = "#BDB396"
+
+# the detail standard (art round W2): the beast's lifts; scales, belly plates, bone and the team harness apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_BEAST
+LOOK_SHADE = MW.SHADE_BEAST
+LOOK_RIM = MW.RIM_BEAST
+MATERIAL_KINDS = MW.kinds({SCALE_C: "hide", SCALE_DK: "hide", SCALE_LT: "hide", SCALE_RING: "hide", BELLY: "bone",
+                           RIDGE: "bone", FANG: "bone", CLAW: "bone", EYEC: "glass", MOUTH: "skin", PARCH: "cloth",
+                           FIRE: "energy", FIRE_CORE: "energy", SMOKE: "cloth", "#2A2018": "skin", "team": "cloth"})
+
+# Bone Wyrm (legendary skin, DESIGN A5.8): a skeletal dragon: bleached bone hide, dark rib bands down the flank and
+# dark sockets round the eyes (geometry the skin adds), grey-brown scale rows; the breath stays ghost green. The bone
+# hide takes the hide's blotchy texture (weathered bone; the pores alone left the pale sheet under the micro floor)
+BONE, BONE_DK, BONE_LT, SOCKET = "#E2D8C0", "#B8AB90", "#F2ECDC", "#6E6252"
+SKINS = {"bone_wyrm": {
+    "palette": MW.skin_palette({SCALE_C: BONE, SCALE_DK: BONE_DK, SCALE_LT: BONE_LT, SCALE_RING: "#A3967C",
+                                BELLY: "#CFC4A8", RIDGE: "#9E9178"}),
+    "kinds": MW.kinds({BONE: "hide", BONE_DK: "hide", BONE_LT: "hide", "#A3967C": "bone", "#CFC4A8": "bone",
+                       "#9E9178": "bone", SOCKET: "bone"})}}
 
 BODY_SCALE = 1.25
 NECK = dict(base=(18.0, 0.0, 48.0), l=(30.0, 26.0), ang=(64.0, 30.0), r=(9.0, 7.0))
@@ -78,6 +109,11 @@ def _neck(rig):
     rig.joint("nh", "n2", (X2, 0.0, Z2))
     rig.part("n1", Geo().capsule((X0, 0, Z0), (X1, 0, Z1), r0 + 2.0, r0), SCALE_C)
     rig.part("n2", Geo().capsule((X1, 0, Z1), (X2, 0, Z2), r0, r1), SCALE_C)
+    # W2: the neck banded in scale rows (the long plain field reads as scaled hide)
+    MW.mail_rows(rig, "n1", (X0, 0, Z0), (X1, 0, Z1), lambda t: r0 + 2.0 - 2.0 * t, SCALE_RING, step=2.8, w=1.0,
+                 bulge=0.35, finish="metal")
+    MW.mail_rows(rig, "n2", (X1, 0, Z1), (X2, 0, Z2), lambda t: r0 + (r1 - r0) * t, SCALE_RING, step=2.8, w=1.0,
+                 bulge=0.35, finish="metal")
     g = Geo()
     for t in (0.2, 0.5, 0.8):
         g.blob((X0 + (X1 - X0) * t + 4.4 * math.sin(A1), -r0 * 0.5, Z0 + (Z1 - Z0) * t - 4.4 * math.cos(A1)),
@@ -109,6 +145,9 @@ def _neck(rig):
     rig.joint("pupils", "nh", (ex + 1.0, -6.8, ez))
     rig.part("pupils", pup, "#2A2018", outline=0)
     fc.eye_marks([(ex + 0.4, ez)], 2.7, SCALE_C)
+    if getattr(rig, "skin", None) == "bone_wyrm":   # the skull's dark socket round the eye
+        g = Geo().blob((ex - 0.2, -5.6, ez), (4.4, 1.4, 3.8), p=2.2)
+        rig.part("nh", g, SOCKET, outline=0)
     rig.joint("brow", "nh", (ex, -5.0, ez + 3.0))
     g = Geo().capsule((hx + 5.0, -5.0, ez + 3.0), (hx + 11.0, -4.4, ez + 1.6), 1.3, 0.9)
     rig.part("brow", g, SCALE_DK, outline=0.5)
@@ -151,6 +190,13 @@ def _neck(rig):
     for dx, dz, r in ((40.0, 8.0, 4.0), (32.0, -9.0, 3.4), (46.0, -5.0, 3.0)):
         g.sphere((sx + dx, 0.0, sz + dz), r, cuts=2)
     rig.part("flame", g, glow=FIRE, outline=0)
+    g = Geo()   # W2: licks of the white core curling out through the gout (the fire reads as flames, not a cone)
+    for dx, dz, ang, ln in ((12.0, 3.0, 18.0, 14.0), (20.0, -4.0, -16.0, 13.0), (27.0, 5.5, 24.0, 11.0),
+                            (33.0, -6.0, -22.0, 10.0)):
+        a = math.radians(ang)
+        g.lathe([(1.6, 0), (2.2, ln * 0.35), (0, ln)], (sx + dx, -3.0, sz + dz),
+                (sx + dx + math.cos(a), -3.0, sz + dz + math.sin(a)), segs=10)
+    rig.part("flame", g, glow=FIRE_CORE, outline=0)
     rig.joint("smoke", "nh", (hx + 22.0, 0, hz + 2.0), hidden=True)
     g = Geo()
     for dx, dz, r in ((2.0, 3.0, 2.4), (5.0, 7.0, 3.0), (3.0, 11.0, 3.4)):
@@ -201,6 +247,11 @@ def build(rig):
     rig.joint("tail3", "tail2", (-74.0, 0, 12.0))
     rig.part("tail1", Geo().capsule((-32.0, 0, 30.0), (-54.0, 0, 22.0), 11.0, 7.8), SCALE_C)
     rig.part("tail2", Geo().capsule((-54.0, 0, 22.0), (-74.0, 0, 12.0), 7.8, 4.8), SCALE_C)
+    # W2: the tail banded in scale rows too
+    MW.mail_rows(rig, "tail1", (-36.0, 0, 28.5), (-54.0, 0, 22.0), lambda t: 10.6 - 2.8 * t, SCALE_RING, step=2.9,
+                 w=1.0, bulge=0.35, finish="metal")
+    MW.mail_rows(rig, "tail2", (-54.0, 0, 22.0), (-72.0, 0, 13.0), lambda t: 7.8 - 3.0 * t, SCALE_RING, step=2.9,
+                 w=0.9, bulge=0.3, finish="metal")
     rig.part("tail3", Geo().capsule((-74.0, 0, 12.0), (-92.0, 0, 7.0), 4.8, 2.0), SCALE_C)
     g = Geo().slab([(-86.0, 8.0), (-100.0, 17.0), (-96.0, 6.0), (-101.0, -3.0)], 0.0, 1.6)
     rig.part("tail3", g, team=True, outline=0.7)
@@ -211,25 +262,46 @@ def build(rig):
     # a long, low body, a ridged pale belly, team back frills
     g = Geo().blob((-2.0, 0, 34.0), (38.0, 19.0, 16.0), p=2.3)
     g.blob((16.0, 0, 38.0), (16.0, 17.0, 14.0), p=2.2)
+    gb = Geo().blob((2.0, -4.0, 23.0), (32.0, 15.0, 6.4), p=2.4)
+    bodyface = F.Face(rig, "trunk", [g, gb])     # W2: the flank's surface, to lay plates and ribs on
     rig.part("trunk", g, SCALE_C)
-    g = Geo().blob((2.0, -4.0, 23.0), (32.0, 15.0, 6.4), p=2.4)
-    rig.part("trunk", g, BELLY, outline=0.6)
+    rig.part("trunk", gb, BELLY, outline=0.6)
     g = Geo()
     for x in range(-30, 30, 7):
         g.capsule((float(x), -15.6, 20.0), (float(x) + 1.0, -16.4, 25.0), 0.7)
-    rig.part("trunk", g, "#BDB396", outline=0)
+    rig.part("trunk", g, RIDGE, outline=0)
     g = Geo()
     for x, z in ((-16.0, 40.0), (-4.0, 44.0), (8.0, 42.0), (-10.0, 30.0), (2.0, 32.0), (-26.0, 34.0)):
         g.blob((x, -17.8, z), (3.0, 1.0, 2.2), p=2.4)
     rig.part("trunk", g, SCALE_DK, outline=0)
+    g = Geo()   # W2: rows of lighter plates over the haunch behind the caparison (staggered, overlapping)
+    for row, z in enumerate((42.0, 37.5, 33.0, 28.5)):
+        for x in (-38.0, -33.0):
+            c = bodyface.hit(x + (2.5 if row % 2 else 0.0), z)
+            g.blob((c.x, c.y, c.z), (2.6, 1.3, 2.0), p=2.3)
+    rig.part("trunk", g, SCALE_LT, outline=0)
+    if getattr(rig, "skin", None) == "bone_wyrm":   # dark rib bands down the flank, the skeleton showing through
+        g = Geo()
+        for x in (-20.0, -12.0, -4.0, 4.0, 12.0):
+            a, b = bodyface.hit(x, 29.0), bodyface.hit(x - 2.4, 20.5)
+            g.capsule((a.x, a.y, a.z), (b.x, b.y, b.z), 1.3, 1.0, segs=10, rings=2)
+        rig.part("trunk", g, SOCKET, outline=0)
     # a team war caparison over the shoulders with a parchment paw and a fringe
     cap = Geo().blob((0.0, 0, 44.0), (30.0, 20.6, 14.0), p=3.0)
     cap.clip((0, 0, 30.0), (0, 0, -1))
     cap.clip((-28.0, 0, 0), (-1, 0, 0))
     cface = F.Face(rig, "trunk", [cap])
     rig.part("trunk", cap, team=True)
-    g = K.paw(cface, Geo(), K.scr(cface, (4.0, -20.0, 40.0)), s=2.0)
+    g = MW.paw(cface, Geo(), K.scr(cface, (4.0, -20.0, 40.0)), s=2.0)    # W2: the paw whole
     rig.part("trunk", g, PARCH, highlight=False, outline=0)
+    # W2: the caparison in two tones: a team-dark border above its fringe
+    MW.seam(rig, "trunk", cface, [K.scr(cface, (x, -20.6, 32.6 + 0.004 * x * x)) for x in range(-26, 27, 4)], w=2.8,
+            team=True)
+    # its rear third team-dark (per pale) and folds hanging down it (drapery: the big field reads as cloth)
+    MW.panel(rig, "trunk", cface, [K.scr(cface, (x, -20.6, z)) for x, z in ((-12.0, 54.0), (-12.0, 34.0), (-27.0, 35.0),
+                                                                           (-27.0, 50.0))], depth=0.3)
+    MW.folds(rig, "trunk", cface, [[K.scr(cface, (x, -20.6, 54.0 - 0.12 * abs(x))), K.scr(cface, (x + 0.6, -20.6, 35.0))]
+                                   for x in (-20.0, -6.0, 16.0, 24.0)], w=1.4)
     g = Geo()
     for x in range(-26, 26, 5):
         g.lathe([(1.6, 0), (2.0, -1.8), (0, -4.6)], (x, -20.6, 30.2), segs=8)
@@ -238,11 +310,29 @@ def build(rig):
     for i, x in enumerate((-30.0, -20.0)):   # back frills behind the caparison
         z = 50.0 - (i * 2.0)
         g.slab([(x - 5.0, z - 1.0), (x + 5.0, z), (x - 2.0, z + 10.0)], 0.0, 2.0)
-    rig.part("trunk", g, team=True, outline=0.8)
+    look.team_part(rig, "trunk", g, outline=0.8)     # W2: team-dark (the harness's team in two tones)
     _neck(rig)
     for name, x, y in (("leg_fr", 18.0, -12.0), ("leg_br", -22.0, -12.0)):
         _leg(rig, name, x, y)
         _leg_ik(name, x, y)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+SPOTS = {"caparison": (-14.0, 50.0), "neck": (30.0, 80.0), "fin": (-121.0, 14.0), "hem": (10.0, 38.0)}   # screen lu
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, beast; the body x 1.25, the head x 1.45): the caparison behind its paw
+    (its largest team field, r 9), the neck's scales, the tail fin, a strip torn from the caparison's fringe, smoke
+    curling from the nostrils (breath) and a smoke emitter low on the haunch, below the head and clear beside it on
+    every frame (DAMAGE's `fireAt`)."""
+    rig.damage_spot_at("caparison", "trunk", *SPOTS["caparison"], 9.0, "cloth", team=True)
+    rig.damage_spot_at("neck", "n1", *SPOTS["neck"], 6.0, "hide")
+    rig.damage_spot_at("fin", "tail3", *SPOTS["fin"], 5.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "trunk", *SPOTS["hem"], 10.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("breath", "nh", (X2 + 22.4, -1.6, Z2 + 1.6), 4.0, "breath", kind="emit", normal=(1, 0, 0))
+    rig.damage_spot("smoke", "trunk", (-30.0, -12.0, 24.0), 7.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------

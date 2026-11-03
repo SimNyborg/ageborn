@@ -2,8 +2,8 @@
  "frames": {
   "ursa_paladin_attack_b_01": {
    "frame": {
-    "x": 2,
-    "y": 269,
+    "x": 534,
+    "y": 263,
     "w": 181,
     "h": 249
    },
@@ -26,17 +26,17 @@
   },
   "ursa_paladin_attack_b_01_team": {
    "frame": {
-    "x": 611,
-    "y": 522,
-    "w": 96,
+    "x": 1733,
+    "y": 189,
+    "w": 97,
     "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 181,
+    "x": 180,
     "y": 91,
-    "w": 96,
+    "w": 97,
     "h": 175
    },
    "sourceSize": {
@@ -50,7 +50,7 @@
   },
   "ursa_paladin_attack_b_02": {
    "frame": {
-    "x": 187,
+    "x": 2,
     "y": 269,
     "w": 186,
     "h": 245
@@ -74,17 +74,17 @@
   },
   "ursa_paladin_attack_b_02_team": {
    "frame": {
-    "x": 915,
-    "y": 522,
-    "w": 97,
+    "x": 1942,
+    "y": 2,
+    "w": 98,
     "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 183,
+    "x": 182,
     "y": 106,
-    "w": 97,
+    "w": 98,
     "h": 166
    },
    "sourceSize": {
@@ -98,8 +98,8 @@
   },
   "ursa_paladin_attack_b_03": {
    "frame": {
-    "x": 377,
-    "y": 269,
+    "x": 192,
+    "y": 268,
     "w": 191,
     "h": 243
    },
@@ -122,17 +122,17 @@
   },
   "ursa_paladin_attack_b_03_team": {
    "frame": {
-    "x": 1016,
-    "y": 522,
-    "w": 99,
+    "x": 1942,
+    "y": 172,
+    "w": 100,
     "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 183,
+    "x": 182,
     "y": 112,
-    "w": 99,
+    "w": 100,
     "h": 165
    },
    "sourceSize": {
@@ -146,7 +146,7 @@
   },
   "ursa_paladin_attack_b_04": {
    "frame": {
-    "x": 190,
+    "x": 189,
     "y": 2,
     "w": 169,
     "h": 262
@@ -170,8 +170,8 @@
   },
   "ursa_paladin_attack_b_04_team": {
    "frame": {
-    "x": 1306,
-    "y": 269,
+    "x": 1342,
+    "y": 260,
     "w": 90,
     "h": 188
    },
@@ -194,18 +194,18 @@
   },
   "ursa_paladin_attack_b_05": {
    "frame": {
-    "x": 906,
+    "x": 734,
     "y": 2,
     "w": 169,
-    "h": 255
+    "h": 256
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 171,
-    "y": 64,
+    "y": 63,
     "w": 169,
-    "h": 255
+    "h": 256
    },
    "sourceSize": {
     "w": 406,
@@ -218,18 +218,18 @@
   },
   "ursa_paladin_attack_b_05_team": {
    "frame": {
-    "x": 141,
-    "y": 522,
+    "x": 1436,
+    "y": 193,
     "w": 90,
-    "h": 185
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 187,
-    "y": 73,
+    "y": 72,
     "w": 90,
-    "h": 185
+    "h": 186
    },
    "sourceSize": {
     "w": 406,
@@ -242,18 +242,18 @@
   },
   "ursa_paladin_attack_b_06": {
    "frame": {
-    "x": 802,
-    "y": 269,
+    "x": 956,
+    "y": 261,
     "w": 188,
-    "h": 226
+    "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 177,
-    "y": 103,
+    "y": 98,
     "w": 188,
-    "h": 226
+    "h": 231
    },
    "sourceSize": {
     "w": 406,
@@ -266,18 +266,18 @@
   },
   "ursa_paladin_attack_b_06_team": {
    "frame": {
-    "x": 1239,
-    "y": 522,
-    "w": 122,
-    "h": 151
+    "x": 1834,
+    "y": 178,
+    "w": 101,
+    "h": 155
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 194,
-    "y": 120,
-    "w": 122,
-    "h": 151
+    "x": 193,
+    "y": 116,
+    "w": 101,
+    "h": 155
    },
    "sourceSize": {
     "w": 406,
@@ -290,18 +290,18 @@
   },
   "ursa_paladin_attack_b_07": {
    "frame": {
-    "x": 1258,
+    "x": 907,
     "y": 2,
     "w": 170,
-    "h": 252
+    "h": 255
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 179,
-    "y": 75,
+    "y": 72,
     "w": 170,
-    "h": 252
+    "h": 255
    },
    "sourceSize": {
     "w": 406,
@@ -314,18 +314,18 @@
   },
   "ursa_paladin_attack_b_07_team": {
    "frame": {
-    "x": 808,
-    "y": 522,
-    "w": 103,
-    "h": 170
+    "x": 1846,
+    "y": 2,
+    "w": 92,
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 194,
-    "y": 93,
-    "w": 103,
-    "h": 170
+    "x": 193,
+    "y": 91,
+    "w": 92,
+    "h": 172
    },
    "sourceSize": {
     "w": 406,
@@ -338,7 +338,7 @@
   },
   "ursa_paladin_attack_c_01": {
    "frame": {
-    "x": 363,
+    "x": 362,
     "y": 2,
     "w": 168,
     "h": 261
@@ -362,8 +362,8 @@
   },
   "ursa_paladin_attack_c_01_team": {
    "frame": {
-    "x": 505,
-    "y": 522,
+    "x": 1627,
+    "y": 189,
     "w": 102,
     "h": 180
    },
@@ -386,17 +386,17 @@
   },
   "ursa_paladin_attack_c_02": {
    "frame": {
-    "x": 535,
+    "x": 534,
     "y": 2,
-    "w": 193,
+    "w": 196,
     "h": 257
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
+    "x": 105,
     "y": 59,
-    "w": 193,
+    "w": 196,
     "h": 257
    },
    "sourceSize": {
@@ -410,18 +410,18 @@
   },
   "ursa_paladin_attack_c_02_team": {
    "frame": {
-    "x": 2,
-    "y": 522,
-    "w": 135,
-    "h": 185
+    "x": 1434,
+    "y": 2,
+    "w": 136,
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 102,
     "y": 71,
-    "w": 135,
-    "h": 185
+    "w": 136,
+    "h": 187
    },
    "sourceSize": {
     "w": 406,
@@ -434,17 +434,17 @@
   },
   "ursa_paladin_attack_c_03": {
    "frame": {
-    "x": 572,
-    "y": 269,
-    "w": 226,
+    "x": 719,
+    "y": 263,
+    "w": 233,
     "h": 238
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 61,
+    "x": 53,
     "y": 75,
-    "w": 226,
+    "w": 233,
     "h": 238
    },
    "sourceSize": {
@@ -458,18 +458,18 @@
   },
   "ursa_paladin_attack_c_03_team": {
    "frame": {
-    "x": 332,
-    "y": 522,
-    "w": 169,
-    "h": 180
+    "x": 1574,
+    "y": 2,
+    "w": 170,
+    "h": 183
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 51,
+    "x": 50,
     "y": 79,
-    "w": 169,
-    "h": 180
+    "w": 170,
+    "h": 183
    },
    "sourceSize": {
     "w": 406,
@@ -484,7 +484,7 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 184,
+    "w": 183,
     "h": 263
    },
    "rotated": false,
@@ -492,7 +492,7 @@
    "spriteSourceSize": {
     "x": 137,
     "y": 55,
-    "w": 184,
+    "w": 183,
     "h": 263
    },
    "sourceSize": {
@@ -506,18 +506,18 @@
   },
   "ursa_paladin_attack_c_04_team": {
    "frame": {
-    "x": 1188,
-    "y": 269,
-    "w": 114,
-    "h": 191
+    "x": 387,
+    "y": 267,
+    "w": 115,
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 139,
+    "x": 138,
     "y": 64,
-    "w": 114,
-    "h": 191
+    "w": 115,
+    "h": 193
    },
    "sourceSize": {
     "w": 406,
@@ -530,7 +530,7 @@
   },
   "ursa_paladin_attack_c_05": {
    "frame": {
-    "x": 1079,
+    "x": 1255,
     "y": 2,
     "w": 175,
     "h": 254
@@ -554,8 +554,8 @@
   },
   "ursa_paladin_attack_c_05_team": {
    "frame": {
-    "x": 235,
-    "y": 522,
+    "x": 1530,
+    "y": 193,
     "w": 93,
     "h": 184
    },
@@ -578,8 +578,8 @@
   },
   "ursa_paladin_attack_c_06": {
    "frame": {
-    "x": 994,
-    "y": 269,
+    "x": 1148,
+    "y": 261,
     "w": 190,
     "h": 224
    },
@@ -602,17 +602,17 @@
   },
   "ursa_paladin_attack_c_06_team": {
    "frame": {
-    "x": 1119,
-    "y": 522,
-    "w": 116,
+    "x": 1834,
+    "y": 341,
+    "w": 117,
     "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
+    "x": 192,
     "y": 123,
-    "w": 116,
+    "w": 117,
     "h": 152
    },
    "sourceSize": {
@@ -626,7 +626,7 @@
   },
   "ursa_paladin_attack_c_07": {
    "frame": {
-    "x": 732,
+    "x": 1081,
     "y": 2,
     "w": 170,
     "h": 255
@@ -650,17 +650,17 @@
   },
   "ursa_paladin_attack_c_07_team": {
    "frame": {
-    "x": 711,
-    "y": 522,
-    "w": 93,
+    "x": 1748,
+    "y": 2,
+    "w": 94,
     "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 192,
+    "x": 191,
     "y": 91,
-    "w": 93,
+    "w": 94,
     "h": 172
    },
    "sourceSize": {
@@ -737,8 +737,8 @@
   "image": "ursa_paladin.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 712
+   "w": 2048,
+   "h": 516
   },
   "scale": "1.25",
   "ageborn": {

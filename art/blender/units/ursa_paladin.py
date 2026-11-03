@@ -29,16 +29,27 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
   hit     beast: the bear shakes its head, eyes squeezed, the paladin rocks back
   die     D5 unhorsed: the bear rears, the paladin is thrown off the back spinning and lands
           flat behind it, the bear flops down on its belly, X eyes and tongue
+
+Detail standard (art round W2, Track MEDIEVAL; W1's bear lessons): the near shoulder and haunch one lighter value
+plane under shingled rounded tufts, darker lower legs and paws, two-tone claws; the barding in two tones (a team-dark
+border above the hem with folds hanging from it) and its paw whole; a polished band round the great helm, the plume's
+trailing lobes and the banner's tails team-dark. B1' (attack B): the banner stays upright through the bite and smash
+(it leaned forward with the paladin and the team layer's box ran out 27.4 lu at the impact). Damage spots: the
+barding (r 9), the tabard, the banner, a dent in the helm, a strip torn from the barding's hem, the bear's breath.
+Panda Paladin (legendary skin): a white panda with black legs, ears and eye patches, a bamboo banner pole.
 """
 import math
 
 from ageborn_art import face as F
 from ageborn_art import gait as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
+from units import stone_w1 as W1
 
 SLUG = "ursa_paladin"
 GAIT_NAME = "rider"
@@ -68,6 +79,50 @@ PARCH = "#E8DFC8"
 GOLD = "#D4A437"
 POLE = "#6B5647"
 
+# the detail standard (art round W2; W1's Cave Bear lessons): one lighter value plane on the near shoulder and haunch
+# under rounded shingled tufts with lit middles, darker lower legs and paws, two-tone claws
+FUR_PLANE = "#8A7262"     # the near shoulder and haunch (15 levels over the fur)
+FUR_MID = "#9A8270"       # the tufts' lit middles (on the near shoulder and haunch planes)
+FUR_TUFT = "#8E7765"      # the tufts on the plain fur (neck, cheek ruff, belly fringe)
+SOCK = "#5E4C40"          # the lower legs and paws
+CLAW_DK = "#8C8274"       # the claws' dark roots
+EAR = "#7B6452"           # the ears (the fur's tone; their own hex so a skin can colour them)
+BANNER_POLE = "#6B5648"   # the banner's pole (the haft's tone; a skin's bamboo)
+WINE_DK = "#6E2039"       # the cape's folds
+STEEL_HI = "#E4E9EE"      # the great helm's polished band
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.65         # over the beasts' 1.45, a brighter rim: the bear and barding are big matte fields
+LOOK_SHADE = MW.SHADE_MOUNT
+LOOK_RIM = dict(MW.RIM_BEAST, lift=0.85, full_lu=0.85)
+MATERIAL_KINDS = MW.kinds({FUR: "fur", FUR_DARK: "fur", FUR_PLANE: "fur", FUR_MID: "fur", FUR_TUFT: "fur", SOCK: "fur",
+                           EAR: "fur",
+                           MUZZLE: "fur", NOSE: "hide", MOUTH: "skin", TOOTH: "bone", CLAW: "bone", CLAW_DK: "bone",
+                           EYE: "skin", PUPIL: "skin", STEEL: "iron", STEEL_DARK: "iron", STEEL_HI: "iron", DARK: "skin",
+                           WINE: "cloth", WINE_DK: "cloth", PARCH: "cloth", GOLD: "gold", POLE: "wood",
+                           BANNER_POLE: "wood",
+                           "#CF8E86": "skin", "team": "cloth"})   # (the tongue)
+
+# Panda Paladin (legendary skin, DESIGN A5.8): a white panda with black legs, ears and eye patches (geometry the skin
+# adds round the eyes) and a bamboo banner pole with nodes; the paladin, the barding and the banner stay as they are
+PANDA_W, PANDA_K, PANDA_K2 = "#EEEAE2", "#3A3737", "#4A4646"
+BAMBOO, BAMBOO_DK = "#8AA86A", "#6A8450"
+SKINS = {"panda_paladin": {
+    "palette": MW.skin_palette({FUR: PANDA_W, FUR_DARK: PANDA_K, FUR_PLANE: PANDA_K2, FUR_MID: "#5A5555", SOCK: PANDA_K,
+                                FUR_TUFT: "#D6D2CA", EAR: PANDA_K, MUZZLE: "#E0DCD4", CLAW_DK: "#6E6A64",
+                                BANNER_POLE: BAMBOO}),
+    "kinds": MW.kinds({PANDA_W: "fur", PANDA_K: "fur", PANDA_K2: "fur", "#5A5555": "fur", "#D6D2CA": "fur",
+                       "#E0DCD4": "fur",
+                       "#6E6A64": "bone", BAMBOO: "wood", BAMBOO_DK: "wood"})}}
+TUFT = {"shape": "lock", "lean": 0.12, "flat": 0.55, "inset": 0.45}
+SHINGLE = {"dx": 6.4, "dz": 5.0, "length": (5.4, 7.0), "r": (1.4, 1.65), "jit": 1.3, "jit_z": 1.9}
+
+
+def _clumps(rig, joint, coat, spots, side, fill):
+    """Rounded locks at `spots` laid on `coat` (W1.tufts) as one part of `fill`, without an interior line."""
+    _, lobes = W1.tufts(coat, spots, side, lean=TUFT["lean"], flat=TUFT["flat"], cap=0, shape=TUFT["shape"],
+                        inset=TUFT["inset"])
+    rig.part(joint, lobes, fill, finish="hair", outline=0)
+
 P = (-4.0, 0.0, 104.0)      # the paladin's seat (rider pivot, scale 1.5)
 RS = 1.5
 
@@ -89,6 +144,7 @@ def _bear_leg(rig, name, x, y, front):
     rig.joint(name, "bear", (x, y, 70))
     x2 = x + (3 if front else -7)
     rig.joint(f"{name}2", name, (x2, y, 36))
+    near = y < 0
     if front:
         g = Geo().capsule((x, y, 72), (x2, y, 36), 14.5, 11.0)
         g.blob((x2 - 5, y, 40), (8.0, 10.0, 8.5), p=2.2)                  # elbow
@@ -96,7 +152,17 @@ def _bear_leg(rig, name, x, y, front):
         g = Geo().capsule((x, y, 74), (x2, y, 36), 17.0, 10.0)
         g.blob((x + 2, y, 66), (18.0, 15.0, 16.0), p=2.2)                 # haunch
         g.blob((x2 - 4, y, 38), (7.0, 9.0, 7.5), p=2.2)                   # hock
-    rig.part(name, g, FUR, finish="hair")
+    coat = W1.Coat([g]) if near else None
+    rig.part(name, g, FUR_PLANE if near else FUR, finish="hair")         # W2: the near shoulder and haunch plane
+    if near:   # W2: shingled rounded tufts over the plane (lit middles), its lit top left smooth
+        if front:
+            spots = W1.fan(W1.shingles(x - 12.0, x + 12.0, 62.0, 42.0, tilt=lambda px, pz: 4.0 + 0.4 * (px - x),
+                                       seed=31, **SHINGLE))
+        else:
+            spots = W1.fan(W1.shingles(x - 14.0, x + 12.0, 64.0, 42.0, tilt=lambda px, pz: -10.0 + 0.4 * (px - x),
+                                       seed=32, **SHINGLE))
+        spots = [sp for sp in spots if sp[1] < 60.0 or sp[0] < x - 8.0 or sp[0] > x + 9.0]
+        _clumps(rig, name, coat, spots, -1, FUR_MID)
     g = Geo()
     for dz in (0.0, 5.5):                                                  # fur tufts
         g.lathe([(3.4, 0), (0, 6.0)], (x2 - 8, y - 5.5, 38 + dz), (x2 - 14, y - 6.0, 36 + dz), segs=8)
@@ -104,11 +170,13 @@ def _bear_leg(rig, name, x, y, front):
     fx = x2 + (1 if front else 5)
     g = Geo().capsule((x2, y, 36), (fx, y, 9), 11.0, 9.6)
     g.blob((fx + 4, y, 6.0), (14.5, 11.5, 6.8), p=2.4, taper=(1.05, 0.9))  # paw
-    rig.part(f"{name}2", g, FUR, finish="hair")
-    g = Geo()
+    rig.part(f"{name}2", g, SOCK, finish="hair")                         # W2: darker lower legs and paws
+    g, gt = Geo(), Geo()   # W2: two-tone claws (dark roots, ivory tips)
     for dy in (-6.0, -2.0, 2.0, 6.0):
-        g.lathe([(2.4, 0), (1.8, 2.6), (0, 6.5)], (fx + 16.0, y + dy, 4.4), (fx + 22.0, y + dy, 1.2), segs=8)
-    rig.part(f"{name}2", g, CLAW, outline=0.8)
+        g.lathe([(2.4, 0), (1.9, 2.6)], (fx + 16.0, y + dy, 4.4), (fx + 22.0, y + dy, 1.2), segs=8)
+        gt.lathe([(1.95, 0), (1.4, 1.4), (0, 4.0)], (fx + 18.15, y + dy, 3.25), (fx + 22.0, y + dy, 1.2), segs=8)
+    rig.part(f"{name}2", g, CLAW_DK, outline=0.6)
+    rig.part(f"{name}2", gt, CLAW, outline=0)
 
 
 RIG = None
@@ -137,7 +205,11 @@ def build(rig):
     # barrel with a shoulder hump, stub tail
     g = Geo().blob((-2, 0, 74), (52, 29, 31), p=2.3, taper=(0.92, 1.0))
     g.blob((26, 0, 88), (26, 25, 22), p=2.2)
+    body_coat = W1.Coat([g])
     rig.part("bear", g, FUR, finish="hair")
+    # W2: a shaggy fringe of rounded tufts along the belly under the barding (lit middles, between the legs)
+    _clumps(rig, "bear", body_coat, W1.fan(W1.shingles(-30.0, 22.0, 56.0, 50.0, tilt=lambda px, pz: -4.0, seed=34,
+                                                        **SHINGLE)), -1, FUR_TUFT)
     rig.secondary("tail", "bear", (-52, 0, 82), (-60, 0, 76), max_deg=18, gain=1.0)
     g = Geo().blob((-56, 0, 80), (7, 6, 6), p=2.2)
     rig.part("tail", g, FUR_DARK, finish="hair")
@@ -146,8 +218,21 @@ def build(rig):
     bard.clip((0, 0, 60), (0, 0, -1))
     bf = F.Face(rig, "bear", [bard])
     rig.part("bear", bard, team=True)
-    g = K.paw(bf, Geo(), K.scr(bf, (-14.0, -31.0, 80.0)), s=3.0)
+    g = MW.paw(bf, Geo(), K.scr(bf, (-14.0, -31.0, 80.0)), s=3.0)       # W2: the paw whole
     rig.part("bear", g, PARCH, highlight=False, outline=0)
+    # W2: the barding in two tones: a team-dark border above the hem (rising to the ends round the barrel) and folds
+    # hanging from it
+    MW.seam(rig, "bear", bf, [K.scr(bf, (x, -31.0, 66.0 + 0.0022 * x * x)) for x in range(-44, 37, 8)], w=3.4,
+            team=True)
+    # the barding per pale (its rear third team-dark: heraldry in two tones, the big field divided) and long folds
+    # hanging down its flank (drapery: the field reads as cloth)
+    MW.panel(rig, "bear", bf, [K.scr(bf, (x, -31.0, z)) for x, z in ((-29.0, 98.0), (-29.0, 69.0), (-46.0, 71.0),
+                                                                     (-46.0, 92.0))], depth=0.3)
+    MW.folds(rig, "bear", bf, [[K.scr(bf, (x, -31.0, 92.0 - 0.1 * abs(x))), K.scr(bf, (x + 1.0, -31.0, 63.0))]
+                                for x in (-38.0, -22.0, -4.0, 10.0, 24.0)], w=1.5)
+    # a diapered field (a team-dark lattice over the light part, under the paw): the big field reads as woven cloth
+    MW.folds(rig, "bear", bf, [[K.scr(bf, (a[0], -31.0, a[1])), K.scr(bf, (b[0], -31.0, b[1]))]
+                                for a, b in MW.lattice(-27.0, 36.0, 70.0, 99.0, 9.0)], w=1.0)
     # fur tufts along the back of the hump and the rump (silhouette notches)
     g = Geo()
     for x, z in ((34, 108), (22, 111), (-34, 104), (-46, 98)):
@@ -168,16 +253,31 @@ def build(rig):
     rig.joint("neck", "bear", (44, 0, 88))
     rig.joint("bhead", "neck", (58, 0, 88))
     g = Geo().capsule((40, 0, 84), (58, 0, 88), 20, 17)
+    neck_coat = W1.Coat([g])
     rig.part("neck", g, FUR, finish="hair")
+    # W2: rounded shingled tufts down the neck's near side (lit middles), the ruff the barding leaves in view
+    _clumps(rig, "neck", neck_coat, W1.fan(W1.shingles(40.0, 60.0, 100.0, 72.0, tilt=lambda px, pz: 8.0, seed=33,
+                                                        **SHINGLE)), -1, FUR_TUFT)
     head_g = Geo().blob((68, 0, 90), (19.5, 18.5, 17.5), p=2.2)
+    ears = Geo()
     for sgn in (-1, 1):
-        head_g.blob((60, sgn * 13.5, 105.5), (5.6, 3.6, 5.6), p=2.2)
+        ears.blob((60, sgn * 13.5, 105.5), (5.6, 3.6, 5.6), p=2.2)
     head_g.blob((60, 0, 80), (15.0, 20.0, 12.0), p=2.2)                  # cheek ruff
     eyes = Geo()
     for y in (-10.0, 7.0):
         eyes.blob((80.5, y, 94.5), (4.0, 3.6, 4.2))
     bface = F.Face(rig, "bhead", [head_g, eyes])
+    head_coat = W1.Coat([head_g])
     rig.part("bhead", head_g, FUR, finish="hair")
+    rig.part("bhead", ears, EAR, finish="hair")
+    # W2: the cheek ruff in rounded tufts (lit middles) under the eye, flowing back
+    _clumps(rig, "bhead", head_coat, W1.fan(W1.shingles(52.0, 70.0, 88.0, 72.0, tilt=lambda px, pz: -14.0, seed=35,
+                                                         **SHINGLE)), -1, FUR_TUFT)
+    if getattr(rig, "skin", None) == "panda_paladin":   # the panda's black eye patches round the eyes
+        g = Geo()
+        for y, s in ((-10.0, 1.0), (7.0, 0.9)):
+            g.blob((80.0, y, 93.5), (6.2 * s, 4.0, 7.4 * s), p=2.0, rot=(0, -24, 0))
+        rig.part("bhead", g, PANDA_K, finish="hair", outline=0)
     g = Geo()
     for sgn in (-1, 1):
         g.blob((61, sgn * 13.5 - sgn * 1.2 - 1.2, 105.0), (3.2, 1.6, 3.2), p=2.2)
@@ -229,10 +329,17 @@ def build(rig):
     # cape from the shoulders (follow-through)
     rig.secondary("cape", "torso", R(-6, 0, 20), R(-18, 0, -4), max_deg=14, gain=1.0)
     g = Geo().blob(R(-10, 0, 8), (5.5, 13.5, 14.5), p=2.4, taper=(1.35, 0.9), rot=(0, -26, 0))
+    cape_face = F.Face(rig, "cape", [g])
     rig.part("cape", g, WINE)
+    # W2: folds down the cape (darker wine lines: the cloth reads as cloth)
+    MW.folds(rig, "cape", cape_face, [[K.scr(cape_face, R(x0, -12.0, 18.0)), K.scr(cape_face, R(x1, -12.0, -2.0))]
+                                      for x0, x1 in ((-6.0, -12.0), (-9.5, -16.5), (-13.0, -21.0))], w=1.2, team=False,
+             fill=WINE_DK)
     # torso: steel plate, team tabard with a parchment cross, gold belt
     g = Geo().blob(R(0, 0, 12), (9.8, 10.4, 11.6), p=2.4, taper=(0.95, 1.08))
     rig.part("torso", g, STEEL, finish="metal")
+    MW.shell_bands(rig, "torso", R(0, 0, 12), (9.8, 10.4, 11.6), (R(0, 0, 18.6)[2],), STEEL_HI, w=1.3, proud=0.22, p=2.4,
+                   taper=(0.95, 1.08))   # W2: the breastplate's polished band above the tabard
     g = Geo().blob(R(0.6, 0, 7.8), (10.6, 11.2, 9.8), p=2.8, taper=(1.12, 0.94))
     g.clip(R(0, 0, 16.5), (0, 0, 1))
     rig.part("torso", g, team=True)
@@ -243,9 +350,14 @@ def build(rig):
     for s, y in (("r", -11.5), ("l", 11.5)):
         g = Geo().blob(R(0, y, 21.5), (7.2, 6.0, 5.6), p=2.4)
         rig.part("torso", g, STEEL, finish="metal")
+        # W2: two lames across each pauldron (the plate articulated, dark grooves)
+        MW.shell_bands(rig, "torso", R(0, y, 21.5), (7.2, 6.0, 5.6), (R(0, 0, 20.4)[2], R(0, 0, 23.0)[2]), STEEL_DARK,
+                       w=0.8, proud=0.22, p=2.4, cuts=((R(0, 0, 17.0), (0, 0, -1)),))
     # great helm with a gold crown crest, eye slit with glowing eyes, team plume
     g = Geo().blob(R(1.5, 0, 33), (10.0, 9.8, 11.2), p=3.0, taper=(1.05, 0.92))
     rig.part("head", g, STEEL, finish="metal")
+    MW.shell_bands(rig, "head", R(1.5, 0, 33), (10.0, 9.8, 11.2), (R(0, 0, 38.6)[2],), STEEL_HI, w=1.4, proud=0.25,
+                   p=3.0, taper=(1.05, 0.92))   # W2: the helm's polished band (plate's highlight band)
     g = Geo().capsule(R(11.0, 4.0, 34.5), R(10.9, -4.5, 34.5), 1.7).capsule(R(10.9, -4.5, 34.5), R(8.0, -9.4, 34.5), 1.7)
     rig.part("head", g, DARK, outline=0)
     g = Geo().sphere(R(11.4, -3.4, 34.6), 1.25, cuts=3).sphere(R(10.2, -7.4, 34.6), 1.25, cuts=3)
@@ -258,11 +370,12 @@ def build(rig):
     g.lathe([(9.9, -1.2), (10.3, 0), (9.9, 1.2)], R(1.5, 0, 42.2), R(1.5, 0, 43.2), segs=24, squash=(1.0, 0.97))
     rig.part("head", g, GOLD, finish="metal", outline=0.8)
     rig.secondary("plume", "head", R(-2, 0, 45), R(-20, 0, 42), max_deg=12, gain=1.0)
-    g = Geo()
-    for x, z, r in ((-1, 46, 4.6), (-5, 50, 5.4), (-10.5, 51.5, 5.2), (-16, 49.5, 4.6), (-20, 45, 3.8),
-                    (-22, 40, 3.0)):
-        g.blob(R(x, 0, z), (r * 1.15, r * 0.9, r), p=2.1)
+    g, gd = Geo(), Geo()   # W2: the plume's trailing lobes team-dark (two tones)
+    for k, (x, z, r) in enumerate(((-1, 46, 4.6), (-5, 50, 5.4), (-10.5, 51.5, 5.2), (-16, 49.5, 4.6), (-20, 45, 3.8),
+                                   (-22, 40, 3.0))):
+        (gd if k >= 3 else g).blob(R(x, 0, z), (r * 1.15, r * 0.9, r), p=2.1)
     rig.part("plume", g, team=True)
+    look.team_part(rig, "plume", gd)
 
     # arms (rest hanging): far arm holds the banner, near arm the warhammer
     for s, y in (("r", -12.5), ("l", 12.0)):
@@ -279,7 +392,12 @@ def build(rig):
     # banner on a tall pole in the far hand; the cloth hangs back from the top and swings
     x, y, z = R(0, 12.0, 5)
     g = Geo().capsule((x, y, z - 22), (x, y, z + 66), 1.4)
-    rig.part("hand_l", g, POLE, outline=0.8)
+    rig.part("hand_l", g, BANNER_POLE, outline=0.8)
+    if getattr(rig, "skin", None) == "panda_paladin":   # the bamboo's nodes
+        g = Geo()
+        for dz in (-12.0, 8.0, 28.0, 48.0):
+            g.lathe([(1.5, -0.6), (1.9, 0.0), (1.5, 0.6)], (x, y, z + dz), (x, y, z + dz + 1.0), segs=12)
+        rig.part("hand_l", g, BAMBOO_DK, outline=0)
     g = Geo().lathe([(0, 0), (2.8, 1.5), (0, 7.0)], (x, y, z + 66), (x, y, z + 74), segs=10)
     rig.part("hand_l", g, GOLD, finish="metal", outline=0.8)
     g = Geo().capsule((x - 1, y, z + 62), (x - 23, y, z + 62), 1.2)
@@ -288,6 +406,14 @@ def build(rig):
     pts = [(-1, 62), (-23, 62), (-23, 32), (-17, 36), (-12, 30), (-7, 36), (-1, 32)]
     g = Geo().slab([(x + px, z + pz) for px, pz in pts], y - 0.5, 1.4)
     rig.part("banner", g, team=True, outline=0.8)
+    g = Geo()   # W2: the banner's tails team-dark (a band across its lower edge)
+    for (ax, az), (bx, bz) in (((-23, 38.6), (-23, 32)), ((-17, 36), (-12, 30)), ((-12, 30), (-7, 36)),
+                               ((-7, 36), (-1, 32)), ((-23, 32), (-17, 36))):
+        g.capsule((x + ax, y - 1.3, z + az), (x + bx, y - 1.3, z + bz), 1.3, segs=8, rings=2)
+    g.capsule((x - 23, y - 1.3, z + 37.0), (x - 1, y - 1.3, z + 37.0), 1.3, segs=8, rings=2)
+    for (ax, az), (bx, bz) in (((-22.2, 61.2), (-1.8, 61.2)), ((-22.2, 61.2), (-22.2, 38.0)), ((-1.8, 61.2), (-1.8, 38.0))):
+        g.capsule((x + ax, y - 1.3, z + az), (x + bx, y - 1.3, z + bz), 0.9, segs=8, rings=2)   # and a border
+    look.team_part(rig, "banner", g, outline=0)
     g = Geo().blob((x - 12, y - 1.8, z + 49), (5.8, 0.8, 5.8), p=2.0)
     rig.part("banner", g, PARCH, outline=0.6)
     g = Geo()
@@ -311,6 +437,23 @@ def build(rig):
         g.blob((x + dx, y - 1, hz), (1.4, 6.9, 7.3), p=3.0)
     rig.part("hand_r", g, GOLD, finish="metal", outline=0.8)
     rig.track("hammerHead", "hand_r", (x, y - 1, hz))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+SPOT_TABARD, SPOT_BANNER, SPOT_HELM = (2.0, 112.0), (-22.0, 180.0), (-2.5, 155.0)   # screen lu at rest (rider x 1.5)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, rider; never on a face or skin): the barding's flank behind the paw
+    (its largest team field, r 9), the paladin's tabard, the banner, a dent in the great helm, a strip torn from the
+    barding's hem, the bear's breath from its nose."""
+    rig.damage_spot_at("barding", "bear", -34.0, 76.0, 9.0, "cloth", team=True)
+    rig.damage_spot_at("tabard", "torso", *SPOT_TABARD, 6.0, "cloth", team=True)
+    rig.damage_spot_at("banner", "banner", *SPOT_BANNER, 6.0, "cloth", team=True)
+    rig.damage_spot_at("helm", "head", *SPOT_HELM, 6.0, "metal", fill=STEEL)
+    rig.damage_spot_at("hem", "bear", 0.0, 64.0, 12.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("breath", "bhead", (98.0, -1.0, 86.0), 5.0, "breath", kind="emit", normal=(1, 0, 0))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -486,7 +629,9 @@ def _b_pose(i):
     if i in (0, 8, 9):
         return _attack_pose(i)
     k = i - 1
-    pose = merge(hammer(OB_HA[k], OB_HF[k], OB_HW[k]), banner(-50, 20, 94), {
+    # B1': the banner stays upright (as at rest, 91 degrees on screen) while the paladin leans into the smash; leaning
+    # with him it carried the team layer's box 27.4 lu forward at the impact
+    pose = merge(hammer(OB_HA[k], OB_HF[k], OB_HW[k]), banner(-50, 20, 91 - OB_TR[k] - OB_BR[k]), {
         "leg_fr": {"r": OB_PAW[k][0]}, "leg_fr2": {"r": OB_PAW[k][1]},
         "leg_fl": {"r": OB_PAW[k][0] - 4}, "leg_fl2": {"r": OB_PAW[k][1]},
         "leg_br": {"r": OB_HIND[k]}, "leg_bl": {"r": OB_HIND[k] - 2},

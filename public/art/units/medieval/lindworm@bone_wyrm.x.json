@@ -1,0 +1,959 @@
+{
+ "frames": {
+  "lindworm@bone_wyrm_attack_b_01": {
+   "frame": {
+    "x": 1191,
+    "y": 452,
+    "w": 312,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 214,
+    "w": 312,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_01_team": {
+   "frame": {
+    "x": 1960,
+    "y": 135,
+    "w": 262,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 229,
+    "w": 262,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_02": {
+   "frame": {
+    "x": 1641,
+    "y": 144,
+    "w": 315,
+    "h": 130
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 241,
+    "w": 315,
+    "h": 130
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_02_team": {
+   "frame": {
+    "x": 2252,
+    "y": 133,
+    "w": 277,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 245,
+    "w": 277,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_03": {
+   "frame": {
+    "x": 773,
+    "y": 493,
+    "w": 349,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 157,
+    "y": 253,
+    "w": 349,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_03_team": {
+   "frame": {
+    "x": 1700,
+    "y": 471,
+    "w": 286,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 152,
+    "y": 249,
+    "w": 286,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_04": {
+   "frame": {
+    "x": 1316,
+    "y": 2,
+    "w": 343,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 234,
+    "w": 343,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_04_team": {
+   "frame": {
+    "x": 2252,
+    "y": 370,
+    "w": 265,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 238,
+    "w": 265,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_05": {
+   "frame": {
+    "x": 462,
+    "y": 172,
+    "w": 397,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 208,
+    "w": 397,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_05_team": {
+   "frame": {
+    "x": 1990,
+    "y": 467,
+    "w": 258,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 224,
+    "w": 258,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 180,
+    "w": 456,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 200,
+    "w": 456,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_06_team": {
+   "frame": {
+    "x": 1927,
+    "y": 2,
+    "w": 271,
+    "h": 129
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 219,
+    "w": 271,
+    "h": 129
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 445,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 191,
+    "w": 445,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_b_07_team": {
+   "frame": {
+    "x": 1663,
+    "y": 2,
+    "w": 260,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 153,
+    "y": 211,
+    "w": 260,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_01": {
+   "frame": {
+    "x": 1191,
+    "y": 249,
+    "w": 260,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 173,
+    "w": 260,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_01_team": {
+   "frame": {
+    "x": 1920,
+    "y": 278,
+    "w": 219,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 192,
+    "w": 219,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_02": {
+   "frame": {
+    "x": 1095,
+    "y": 2,
+    "w": 217,
+    "h": 243
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 149,
+    "w": 217,
+    "h": 243
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_02_team": {
+   "frame": {
+    "x": 1507,
+    "y": 383,
+    "w": 189,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 179,
+    "w": 189,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_03": {
+   "frame": {
+    "x": 897,
+    "y": 2,
+    "w": 194,
+    "h": 305
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 97,
+    "w": 194,
+    "h": 305
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_03_team": {
+   "frame": {
+    "x": 1455,
+    "y": 144,
+    "w": 182,
+    "h": 235
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 168,
+    "w": 182,
+    "h": 235
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_04": {
+   "frame": {
+    "x": 2,
+    "y": 348,
+    "w": 307,
+    "h": 237
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 137,
+    "w": 307,
+    "h": 237
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_04_team": {
+   "frame": {
+    "x": 1700,
+    "y": 278,
+    "w": 216,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 190,
+    "w": 216,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_05": {
+   "frame": {
+    "x": 773,
+    "y": 337,
+    "w": 414,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 155,
+    "y": 210,
+    "w": 414,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_05_team": {
+   "frame": {
+    "x": 2202,
+    "y": 2,
+    "w": 263,
+    "h": 127
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 220,
+    "w": 263,
+    "h": 127
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_06": {
+   "frame": {
+    "x": 313,
+    "y": 348,
+    "w": 456,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 235,
+    "w": 456,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_06_team": {
+   "frame": {
+    "x": 313,
+    "y": 501,
+    "w": 287,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 237,
+    "w": 287,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_07": {
+   "frame": {
+    "x": 451,
+    "y": 2,
+    "w": 442,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 156,
+    "y": 236,
+    "w": 442,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm@bone_wyrm_attack_c_07_team": {
+   "frame": {
+    "x": 2252,
+    "y": 255,
+    "w": 280,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 237,
+    "w": 280,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 710,
+    "h": 403
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "lindworm@bone_wyrm_attack_00",
+   "lindworm@bone_wyrm_attack_b_01",
+   "lindworm@bone_wyrm_attack_b_02",
+   "lindworm@bone_wyrm_attack_b_03",
+   "lindworm@bone_wyrm_attack_b_04",
+   "lindworm@bone_wyrm_attack_b_05",
+   "lindworm@bone_wyrm_attack_b_06",
+   "lindworm@bone_wyrm_attack_b_07",
+   "lindworm@bone_wyrm_attack_08",
+   "lindworm@bone_wyrm_attack_08",
+   "lindworm@bone_wyrm_attack_09",
+   "lindworm@bone_wyrm_attack_09"
+  ],
+  "attack_b_team": [
+   "lindworm@bone_wyrm_attack_00_team",
+   "lindworm@bone_wyrm_attack_b_01_team",
+   "lindworm@bone_wyrm_attack_b_02_team",
+   "lindworm@bone_wyrm_attack_b_03_team",
+   "lindworm@bone_wyrm_attack_b_04_team",
+   "lindworm@bone_wyrm_attack_b_05_team",
+   "lindworm@bone_wyrm_attack_b_06_team",
+   "lindworm@bone_wyrm_attack_b_07_team",
+   "lindworm@bone_wyrm_attack_08_team",
+   "lindworm@bone_wyrm_attack_08_team",
+   "lindworm@bone_wyrm_attack_09_team",
+   "lindworm@bone_wyrm_attack_09_team"
+  ],
+  "attack_c": [
+   "lindworm@bone_wyrm_attack_00",
+   "lindworm@bone_wyrm_attack_c_01",
+   "lindworm@bone_wyrm_attack_c_02",
+   "lindworm@bone_wyrm_attack_c_03",
+   "lindworm@bone_wyrm_attack_c_04",
+   "lindworm@bone_wyrm_attack_c_05",
+   "lindworm@bone_wyrm_attack_c_06",
+   "lindworm@bone_wyrm_attack_c_07",
+   "lindworm@bone_wyrm_attack_08",
+   "lindworm@bone_wyrm_attack_08",
+   "lindworm@bone_wyrm_attack_09",
+   "lindworm@bone_wyrm_attack_09"
+  ],
+  "attack_c_team": [
+   "lindworm@bone_wyrm_attack_00_team",
+   "lindworm@bone_wyrm_attack_c_01_team",
+   "lindworm@bone_wyrm_attack_c_02_team",
+   "lindworm@bone_wyrm_attack_c_03_team",
+   "lindworm@bone_wyrm_attack_c_04_team",
+   "lindworm@bone_wyrm_attack_c_05_team",
+   "lindworm@bone_wyrm_attack_c_06_team",
+   "lindworm@bone_wyrm_attack_c_07_team",
+   "lindworm@bone_wyrm_attack_08_team",
+   "lindworm@bone_wyrm_attack_08_team",
+   "lindworm@bone_wyrm_attack_09_team",
+   "lindworm@bone_wyrm_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "lindworm@bone_wyrm.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2560,
+   "h": 616
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.lindworm@bone_wyrm",
+   "name": "Lindworm",
+   "heightLu": 130,
+   "widthLu": 241.9,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    316.0,
+    352.0
+   ],
+   "anchorsLu": {
+    "head": [
+     54,
+     125
+    ],
+    "hitCenter": [
+     0,
+     45
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "quad",
+   "skinOf": "unit.lindworm",
+   "skin": "bone_wyrm",
+   "extrasOf": "lindworm@bone_wyrm",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "breath": [
+       [
+        179.8,
+        99.4
+       ],
+       [
+        188.9,
+        30.3
+       ],
+       [
+        176.3,
+        -18.5
+       ],
+       [
+        169.5,
+        -52.4
+       ],
+       [
+        171.6,
+        -13.4
+       ],
+       [
+        181.7,
+        30.0
+       ],
+       [
+        196.2,
+        64.3
+       ],
+       [
+        188.8,
+        83.2
+       ],
+       [
+        189.3,
+        37.9
+       ],
+       [
+        181.7,
+        79.6
+       ]
+      ]
+     },
+     "holdStep": 3,
+     "omni": true,
+     "release": {
+      "frame": 6,
+      "atLu": [
+       196.2,
+       64.3
+      ]
+     }
+    },
+    "attack_c": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "breath": [
+       [
+        179.8,
+        99.4
+       ],
+       [
+        152.7,
+        139.5
+       ],
+       [
+        107.8,
+        187.2
+       ],
+       [
+        79.1,
+        223.4
+       ],
+       [
+        151.8,
+        137.2
+       ],
+       [
+        191.9,
+        57.9
+       ],
+       [
+        201.1,
+        16.8
+       ],
+       [
+        194.4,
+        10.8
+       ],
+       [
+        189.3,
+        37.9
+       ],
+       [
+        181.7,
+        79.6
+       ]
+      ]
+     },
+     "holdStep": 3,
+     "omni": true,
+     "release": {
+      "frame": 6,
+      "atLu": [
+       201.1,
+       16.8
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

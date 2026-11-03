@@ -2,17 +2,17 @@
  "frames": {
   "lindworm_idle_00": {
    "frame": {
-    "x": 1182,
-    "y": 1234,
-    "w": 594,
+    "x": 2753,
+    "y": 320,
+    "w": 602,
     "h": 342
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 324,
+    "x": 316,
     "y": 393,
-    "w": 594,
+    "w": 602,
     "h": 342
    },
    "sourceSize": {
@@ -26,8 +26,8 @@
   },
   "lindworm_idle_00_team": {
    "frame": {
-    "x": 3473,
-    "y": 2540,
+    "x": 512,
+    "y": 2854,
     "w": 506,
     "h": 272
    },
@@ -50,17 +50,17 @@
   },
   "lindworm_idle_01": {
    "frame": {
-    "x": 3151,
-    "y": 2,
-    "w": 593,
+    "x": 2559,
+    "y": 999,
+    "w": 594,
     "h": 371
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 329,
+    "x": 328,
     "y": 362,
-    "w": 593,
+    "w": 594,
     "h": 371
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "lindworm_idle_01_team": {
    "frame": {
-    "x": 2240,
-    "y": 1915,
+    "x": 1486,
+    "y": 3375,
     "w": 484,
     "h": 305
    },
@@ -98,17 +98,17 @@
   },
   "lindworm_idle_02": {
    "frame": {
-    "x": 2029,
-    "y": 2,
-    "w": 582,
+    "x": 1812,
+    "y": 1412,
+    "w": 583,
     "h": 388
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 333,
+    "x": 332,
     "y": 342,
-    "w": 582,
+    "w": 583,
     "h": 388
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "lindworm_idle_02_team": {
    "frame": {
-    "x": 1674,
-    "y": 1582,
+    "x": 2089,
+    "y": 2982,
     "w": 475,
     "h": 324
    },
@@ -146,17 +146,17 @@
   },
   "lindworm_idle_03": {
    "frame": {
-    "x": 1546,
-    "y": 502,
-    "w": 573,
+    "x": 2,
+    "y": 1944,
+    "w": 574,
     "h": 362
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 332,
+    "x": 331,
     "y": 366,
-    "w": 573,
+    "w": 574,
     "h": 362
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "lindworm_idle_03_team": {
    "frame": {
-    "x": 1753,
-    "y": 1915,
+    "x": 1486,
+    "y": 3684,
     "w": 483,
     "h": 309
    },
@@ -194,17 +194,17 @@
   },
   "lindworm_idle_04": {
    "frame": {
-    "x": 1722,
-    "y": 875,
-    "w": 586,
+    "x": 2,
+    "y": 1235,
+    "w": 596,
     "h": 349
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 331,
+    "x": 321,
     "y": 381,
-    "w": 586,
+    "w": 596,
     "h": 349
    },
    "sourceSize": {
@@ -218,18 +218,18 @@
   },
   "lindworm_idle_04_team": {
    "frame": {
-    "x": 2968,
-    "y": 2540,
+    "x": 2093,
+    "y": 2703,
     "w": 501,
-    "h": 273
+    "h": 275
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 313,
-    "y": 422,
+    "y": 420,
     "w": 501,
-    "h": 273
+    "h": 275
    },
    "sourceSize": {
     "w": 1420,
@@ -242,17 +242,17 @@
   },
   "lindworm_idle_05": {
    "frame": {
-    "x": 1780,
-    "y": 1234,
-    "w": 605,
+    "x": 2,
+    "y": 892,
+    "w": 611,
     "h": 339
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 318,
+    "x": 312,
     "y": 394,
-    "w": 605,
+    "w": 611,
     "h": 339
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "lindworm_idle_05_team": {
    "frame": {
-    "x": 1031,
-    "y": 2833,
+    "x": 568,
+    "y": 2582,
     "w": 514,
     "h": 268
    },
@@ -290,17 +290,17 @@
   },
   "lindworm_walk_00": {
    "frame": {
-    "x": 2906,
-    "y": 875,
-    "w": 586,
+    "x": 602,
+    "y": 1439,
+    "w": 588,
     "h": 348
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 328,
+    "x": 326,
     "y": 384,
-    "w": 586,
+    "w": 588,
     "h": 348
    },
    "sourceSize": {
@@ -314,8 +314,8 @@
   },
   "lindworm_walk_00_team": {
    "frame": {
-    "x": 1381,
-    "y": 2233,
+    "x": 2,
+    "y": 3521,
     "w": 492,
     "h": 300
    },
@@ -338,17 +338,17 @@
   },
   "lindworm_walk_01": {
    "frame": {
-    "x": 597,
-    "y": 1234,
-    "w": 581,
+    "x": 1194,
+    "y": 1473,
+    "w": 582,
     "h": 344
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 328,
+    "x": 327,
     "y": 387,
-    "w": 581,
+    "w": 582,
     "h": 344
    },
    "sourceSize": {
@@ -362,8 +362,8 @@
   },
   "lindworm_walk_01_team": {
    "frame": {
-    "x": 2,
-    "y": 2540,
+    "x": 993,
+    "y": 3434,
     "w": 489,
     "h": 289
    },
@@ -387,16 +387,16 @@
   "lindworm_walk_02": {
    "frame": {
     "x": 2,
-    "y": 875,
-    "w": 546,
+    "y": 2310,
+    "w": 562,
     "h": 355
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 353,
+    "x": 337,
     "y": 386,
-    "w": 546,
+    "w": 562,
     "h": 355
    },
    "sourceSize": {
@@ -410,8 +410,8 @@
   },
   "lindworm_walk_02_team": {
    "frame": {
-    "x": 495,
-    "y": 2540,
+    "x": 2454,
+    "y": 3310,
     "w": 472,
     "h": 288
    },
@@ -434,17 +434,17 @@
   },
   "lindworm_walk_03": {
    "frame": {
-    "x": 2,
-    "y": 502,
-    "w": 550,
+    "x": 1740,
+    "y": 2033,
+    "w": 551,
     "h": 369
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 347,
+    "x": 346,
     "y": 375,
-    "w": 550,
+    "w": 551,
     "h": 369
    },
    "sourceSize": {
@@ -458,8 +458,8 @@
   },
   "lindworm_walk_03_team": {
    "frame": {
-    "x": 2869,
-    "y": 2233,
+    "x": 2930,
+    "y": 3296,
     "w": 460,
     "h": 290
    },
@@ -482,17 +482,17 @@
   },
   "lindworm_walk_04": {
    "frame": {
-    "x": 985,
-    "y": 502,
-    "w": 557,
+    "x": 2977,
+    "y": 1913,
+    "w": 569,
     "h": 365
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 352,
+    "x": 340,
     "y": 374,
-    "w": 557,
+    "w": 569,
     "h": 365
    },
    "sourceSize": {
@@ -506,8 +506,8 @@
   },
   "lindworm_walk_04_team": {
    "frame": {
-    "x": 1981,
-    "y": 2540,
+    "x": 993,
+    "y": 3727,
     "w": 477,
     "h": 281
    },
@@ -530,17 +530,17 @@
   },
   "lindworm_walk_05": {
    "frame": {
-    "x": 2312,
-    "y": 875,
-    "w": 590,
+    "x": 1278,
+    "y": 783,
+    "w": 597,
     "h": 348
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 330,
+    "x": 323,
     "y": 392,
-    "w": 590,
+    "w": 597,
     "h": 348
    },
    "sourceSize": {
@@ -554,18 +554,18 @@
   },
   "lindworm_walk_05_team": {
    "frame": {
-    "x": 524,
-    "y": 2833,
+    "x": 1586,
+    "y": 2659,
     "w": 503,
-    "h": 269
+    "h": 270
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 314,
-    "y": 432,
+    "y": 431,
     "w": 503,
-    "h": 269
+    "h": 270
    },
    "sourceSize": {
     "w": 1420,
@@ -578,17 +578,17 @@
   },
   "lindworm_walk_06": {
    "frame": {
-    "x": 2,
-    "y": 1582,
-    "w": 600,
+    "x": 2753,
+    "y": 666,
+    "w": 601,
     "h": 329
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 321,
+    "x": 320,
     "y": 402,
-    "w": 600,
+    "w": 601,
     "h": 329
    },
    "sourceSize": {
@@ -602,8 +602,8 @@
   },
   "lindworm_walk_06_team": {
    "frame": {
-    "x": 1471,
-    "y": 2540,
+    "x": 2,
+    "y": 2669,
     "w": 506,
     "h": 283
    },
@@ -626,17 +626,17 @@
   },
   "lindworm_walk_07": {
    "frame": {
-    "x": 2845,
-    "y": 1234,
-    "w": 587,
+    "x": 1218,
+    "y": 1135,
+    "w": 590,
     "h": 334
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 329,
+    "x": 326,
     "y": 393,
-    "w": 587,
+    "w": 590,
     "h": 334
    },
    "sourceSize": {
@@ -650,8 +650,8 @@
   },
   "lindworm_walk_07_team": {
    "frame": {
-    "x": 883,
-    "y": 2233,
+    "x": 511,
+    "y": 3130,
     "w": 494,
     "h": 300
    },
@@ -674,17 +674,17 @@
   },
   "lindworm_attack_00": {
    "frame": {
-    "x": 552,
-    "y": 875,
-    "w": 581,
+    "x": 2,
+    "y": 1588,
+    "w": 585,
     "h": 352
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 327,
+    "x": 323,
     "y": 379,
-    "w": 581,
+    "w": 585,
     "h": 352
    },
    "sourceSize": {
@@ -698,8 +698,8 @@
   },
   "lindworm_attack_00_team": {
    "frame": {
-    "x": 2372,
-    "y": 2233,
+    "x": 2,
+    "y": 3227,
     "w": 493,
     "h": 290
    },
@@ -722,17 +722,17 @@
   },
   "lindworm_attack_01": {
    "frame": {
-    "x": 2615,
-    "y": 2,
-    "w": 532,
+    "x": 2295,
+    "y": 2323,
+    "w": 533,
     "h": 376
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 334,
+    "x": 333,
     "y": 356,
-    "w": 532,
+    "w": 533,
     "h": 376
    },
    "sourceSize": {
@@ -746,8 +746,8 @@
   },
   "lindworm_attack_01_team": {
    "frame": {
-    "x": 2389,
-    "y": 1234,
+    "x": 2931,
+    "y": 3590,
     "w": 452,
     "h": 336
    },
@@ -770,10 +770,10 @@
   },
   "lindworm_attack_02": {
    "frame": {
-    "x": 1526,
-    "y": 2,
+    "x": 1586,
+    "y": 2933,
     "w": 499,
-    "h": 396
+    "h": 406
    },
    "rotated": false,
    "trimmed": true,
@@ -781,7 +781,7 @@
     "x": 339,
     "y": 336,
     "w": 499,
-    "h": 396
+    "h": 406
    },
    "sourceSize": {
     "w": 1420,
@@ -794,8 +794,8 @@
   },
   "lindworm_attack_02_team": {
    "frame": {
-    "x": 556,
-    "y": 502,
+    "x": 3157,
+    "y": 999,
     "w": 425,
     "h": 366
    },
@@ -818,10 +818,10 @@
   },
   "lindworm_attack_03": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 1110,
+    "y": 2566,
     "w": 472,
-    "h": 496
+    "h": 516
    },
    "rotated": false,
    "trimmed": true,
@@ -829,7 +829,7 @@
     "x": 345,
     "y": 237,
     "w": 472,
-    "h": 496
+    "h": 516
    },
    "sourceSize": {
     "w": 1420,
@@ -842,8 +842,8 @@
   },
   "lindworm_attack_03_team": {
    "frame": {
-    "x": 1127,
-    "y": 2,
+    "x": 3040,
+    "y": 2755,
     "w": 395,
     "h": 398
    },
@@ -866,17 +866,17 @@
   },
   "lindworm_attack_04": {
    "frame": {
-    "x": 478,
-    "y": 2,
-    "w": 645,
+    "x": 2100,
+    "y": 320,
+    "w": 649,
     "h": 406
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 336,
+    "x": 332,
     "y": 326,
-    "w": 645,
+    "w": 649,
     "h": 406
    },
    "sourceSize": {
@@ -890,8 +890,8 @@
   },
   "lindworm_attack_04_team": {
    "frame": {
-    "x": 1281,
-    "y": 1915,
+    "x": 2568,
+    "y": 2982,
     "w": 468,
     "h": 310
    },
@@ -914,17 +914,17 @@
   },
   "lindworm_attack_05": {
    "frame": {
-    "x": 2633,
-    "y": 1582,
-    "w": 825,
+    "x": 1800,
+    "y": 2,
+    "w": 829,
     "h": 314
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 314,
+    "x": 310,
     "y": 418,
-    "w": 825,
+    "w": 829,
     "h": 314
    },
    "sourceSize": {
@@ -938,8 +938,8 @@
   },
   "lindworm_attack_05_team": {
    "frame": {
-    "x": 2058,
-    "y": 2833,
+    "x": 568,
+    "y": 2328,
     "w": 538,
     "h": 250
    },
@@ -962,17 +962,17 @@
   },
   "lindworm_attack_06": {
    "frame": {
-    "x": 2728,
-    "y": 1915,
-    "w": 907,
+    "x": 2,
+    "y": 2,
+    "w": 910,
     "h": 303
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 305,
+    "x": 302,
     "y": 456,
-    "w": 907,
+    "w": 910,
     "h": 303
    },
    "sourceSize": {
@@ -986,8 +986,8 @@
   },
   "lindworm_attack_06_team": {
    "frame": {
-    "x": 2,
-    "y": 3107,
+    "x": 2399,
+    "y": 1730,
     "w": 574,
     "h": 228
    },
@@ -1010,17 +1010,17 @@
   },
   "lindworm_attack_07": {
    "frame": {
-    "x": 2,
-    "y": 2233,
-    "w": 877,
+    "x": 916,
+    "y": 2,
+    "w": 880,
     "h": 303
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 312,
+    "x": 309,
     "y": 467,
-    "w": 877,
+    "w": 880,
     "h": 303
    },
    "sourceSize": {
@@ -1034,8 +1034,8 @@
   },
   "lindworm_attack_07_team": {
    "frame": {
-    "x": 580,
-    "y": 3107,
+    "x": 1780,
+    "y": 1804,
     "w": 567,
     "h": 225
    },
@@ -1058,17 +1058,17 @@
   },
   "lindworm_attack_08": {
    "frame": {
-    "x": 2,
-    "y": 1915,
-    "w": 789,
+    "x": 2633,
+    "y": 2,
+    "w": 801,
     "h": 314
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 329,
+    "x": 317,
     "y": 419,
-    "w": 789,
+    "w": 801,
     "h": 314
    },
    "sourceSize": {
@@ -1082,8 +1082,8 @@
   },
   "lindworm_attack_08_team": {
    "frame": {
-    "x": 2600,
-    "y": 2833,
+    "x": 1651,
+    "y": 2406,
     "w": 529,
     "h": 249
    },
@@ -1106,17 +1106,17 @@
   },
   "lindworm_attack_09": {
    "frame": {
-    "x": 3496,
-    "y": 875,
-    "w": 587,
+    "x": 1879,
+    "y": 1061,
+    "w": 592,
     "h": 347
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 330,
+    "x": 325,
     "y": 384,
-    "w": 587,
+    "w": 592,
     "h": 347
    },
    "sourceSize": {
@@ -1130,18 +1130,18 @@
   },
   "lindworm_attack_09_team": {
    "frame": {
-    "x": 971,
-    "y": 2540,
+    "x": 1022,
+    "y": 3086,
     "w": 496,
-    "h": 284
+    "h": 285
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 317,
-    "y": 423,
+    "y": 422,
     "w": 496,
-    "h": 284
+    "h": 285
    },
    "sourceSize": {
     "w": 1420,
@@ -1154,17 +1154,17 @@
   },
   "lindworm_hit_00": {
    "frame": {
-    "x": 2700,
-    "y": 502,
-    "w": 565,
+    "x": 1170,
+    "y": 1821,
+    "w": 566,
     "h": 355
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 316,
+    "x": 315,
     "y": 374,
-    "w": 565,
+    "w": 566,
     "h": 355
    },
    "sourceSize": {
@@ -1178,8 +1178,8 @@
   },
   "lindworm_hit_00_team": {
    "frame": {
-    "x": 2153,
-    "y": 1582,
+    "x": 1974,
+    "y": 3343,
     "w": 476,
     "h": 318
    },
@@ -1202,18 +1202,18 @@
   },
   "lindworm_hit_01": {
    "frame": {
-    "x": 3269,
-    "y": 502,
-    "w": 554,
-    "h": 355
+    "x": 2351,
+    "y": 1962,
+    "w": 555,
+    "h": 357
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 313,
+    "x": 312,
     "y": 373,
-    "w": 554,
-    "h": 355
+    "w": 555,
+    "h": 357
    },
    "sourceSize": {
     "w": 1420,
@@ -1226,8 +1226,8 @@
   },
   "lindworm_hit_01_team": {
    "frame": {
-    "x": 1202,
-    "y": 1582,
+    "x": 2459,
+    "y": 3602,
     "w": 468,
     "h": 325
    },
@@ -1250,17 +1250,17 @@
   },
   "lindworm_hit_02": {
    "frame": {
-    "x": 2123,
-    "y": 502,
-    "w": 573,
+    "x": 591,
+    "y": 1791,
+    "w": 575,
     "h": 357
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 322,
+    "x": 320,
     "y": 373,
-    "w": 573,
+    "w": 575,
     "h": 357
    },
    "sourceSize": {
@@ -1274,8 +1274,8 @@
   },
   "lindworm_hit_02_team": {
    "frame": {
-    "x": 795,
-    "y": 1915,
+    "x": 1973,
+    "y": 3684,
     "w": 482,
     "h": 313
    },
@@ -1298,17 +1298,17 @@
   },
   "lindworm_hit_03": {
    "frame": {
-    "x": 2,
-    "y": 1234,
-    "w": 591,
+    "x": 617,
+    "y": 1091,
+    "w": 597,
     "h": 344
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 328,
+    "x": 322,
     "y": 388,
-    "w": 591,
+    "w": 597,
     "h": 344
    },
    "sourceSize": {
@@ -1322,8 +1322,8 @@
   },
   "lindworm_hit_03_team": {
    "frame": {
-    "x": 2462,
-    "y": 2540,
+    "x": 2832,
+    "y": 2476,
     "w": 502,
     "h": 275
    },
@@ -1346,17 +1346,17 @@
   },
   "lindworm_hit_04": {
    "frame": {
-    "x": 1137,
-    "y": 875,
-    "w": 581,
+    "x": 2475,
+    "y": 1374,
+    "w": 585,
     "h": 352
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 329,
+    "x": 325,
     "y": 379,
-    "w": 581,
+    "w": 585,
     "h": 352
    },
    "sourceSize": {
@@ -1370,8 +1370,8 @@
   },
   "lindworm_hit_04_team": {
    "frame": {
-    "x": 1877,
-    "y": 2233,
+    "x": 498,
+    "y": 3521,
     "w": 491,
     "h": 291
    },
@@ -1394,17 +1394,17 @@
   },
   "lindworm_die_00": {
    "frame": {
-    "x": 3436,
-    "y": 1234,
-    "w": 613,
+    "x": 657,
+    "y": 754,
+    "w": 617,
     "h": 333
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 313,
+    "x": 309,
     "y": 395,
-    "w": 613,
+    "w": 617,
     "h": 333
    },
    "sourceSize": {
@@ -1418,8 +1418,8 @@
   },
   "lindworm_die_00_team": {
    "frame": {
-    "x": 2,
-    "y": 2833,
+    "x": 3064,
+    "y": 1374,
     "w": 518,
     "h": 270
    },
@@ -1442,17 +1442,17 @@
   },
   "lindworm_die_01": {
    "frame": {
-    "x": 606,
-    "y": 1582,
-    "w": 592,
+    "x": 1955,
+    "y": 730,
+    "w": 600,
     "h": 327
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 340,
+    "x": 332,
     "y": 410,
-    "w": 592,
+    "w": 600,
     "h": 327
    },
    "sourceSize": {
@@ -1466,8 +1466,8 @@
   },
   "lindworm_die_01_team": {
    "frame": {
-    "x": 1549,
-    "y": 2833,
+    "x": 2,
+    "y": 2956,
     "w": 505,
     "h": 267
    },
@@ -1490,17 +1490,17 @@
   },
   "lindworm_die_02": {
    "frame": {
-    "x": 3333,
-    "y": 2233,
-    "w": 646,
+    "x": 1441,
+    "y": 320,
+    "w": 655,
     "h": 289
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 330,
+    "x": 321,
     "y": 453,
-    "w": 646,
+    "w": 655,
     "h": 289
    },
    "sourceSize": {
@@ -1514,10 +1514,10 @@
   },
   "lindworm_die_02_team": {
    "frame": {
-    "x": 1151,
-    "y": 3107,
+    "x": 1110,
+    "y": 2343,
     "w": 537,
-    "h": 220
+    "h": 219
    },
    "rotated": false,
    "trimmed": true,
@@ -1525,7 +1525,7 @@
     "x": 312,
     "y": 491,
     "w": 537,
-    "h": 220
+    "h": 219
    },
    "sourceSize": {
     "w": 1420,
@@ -1538,17 +1538,17 @@
   },
   "lindworm_die_03": {
    "frame": {
-    "x": 2373,
-    "y": 3107,
-    "w": 748,
+    "x": 2,
+    "y": 309,
+    "w": 752,
     "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 276,
+    "x": 272,
     "y": 545,
-    "w": 748,
+    "w": 752,
     "h": 198
    },
    "sourceSize": {
@@ -1562,8 +1562,8 @@
   },
   "lindworm_die_03_team": {
    "frame": {
-    "x": 2340,
-    "y": 3339,
+    "x": 1333,
+    "y": 613,
     "w": 618,
     "h": 166
    },
@@ -1586,17 +1586,17 @@
   },
   "lindworm_die_04": {
    "frame": {
-    "x": 3133,
-    "y": 2833,
-    "w": 650,
+    "x": 675,
+    "y": 516,
+    "w": 654,
     "h": 234
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 324,
+    "x": 320,
     "y": 518,
-    "w": 650,
+    "w": 654,
     "h": 234
    },
    "sourceSize": {
@@ -1610,8 +1610,8 @@
   },
   "lindworm_die_04_team": {
    "frame": {
-    "x": 2,
-    "y": 3339,
+    "x": 2910,
+    "y": 2282,
     "w": 537,
     "h": 190
    },
@@ -1634,17 +1634,17 @@
   },
   "lindworm_die_05": {
    "frame": {
-    "x": 1692,
-    "y": 3107,
-    "w": 677,
+    "x": 758,
+    "y": 309,
+    "w": 679,
     "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 300,
+    "x": 298,
     "y": 546,
-    "w": 677,
+    "w": 679,
     "h": 203
    },
    "sourceSize": {
@@ -1658,8 +1658,8 @@
   },
   "lindworm_die_05_team": {
    "frame": {
-    "x": 1195,
-    "y": 3339,
+    "x": 2977,
+    "y": 1730,
     "w": 572,
     "h": 179
    },
@@ -1682,17 +1682,17 @@
   },
   "lindworm_die_06": {
    "frame": {
-    "x": 3125,
-    "y": 3107,
-    "w": 665,
+    "x": 2,
+    "y": 511,
+    "w": 669,
     "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 307,
+    "x": 303,
     "y": 551,
-    "w": 665,
+    "w": 669,
     "h": 194
    },
    "sourceSize": {
@@ -1706,8 +1706,8 @@
   },
   "lindworm_die_06_team": {
    "frame": {
-    "x": 1771,
-    "y": 3339,
+    "x": 580,
+    "y": 2152,
     "w": 565,
     "h": 172
    },
@@ -1730,17 +1730,17 @@
   },
   "lindworm_die_07": {
    "frame": {
-    "x": 543,
-    "y": 3339,
-    "w": 648,
+    "x": 2,
+    "y": 709,
+    "w": 651,
     "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 315,
+    "x": 312,
     "y": 560,
-    "w": 648,
+    "w": 651,
     "h": 179
    },
    "sourceSize": {
@@ -1754,8 +1754,8 @@
   },
   "lindworm_die_07_team": {
    "frame": {
-    "x": 2962,
-    "y": 3339,
+    "x": 1149,
+    "y": 2180,
     "w": 550,
     "h": 159
    },
@@ -1891,8 +1891,8 @@
   "image": "lindworm.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 4096,
-   "h": 3532
+   "w": 3584,
+   "h": 4012
   },
   "scale": "3",
   "ageborn": {
