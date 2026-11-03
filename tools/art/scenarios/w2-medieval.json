@@ -1,0 +1,403 @@
+{
+ "med_a_phone": {
+  "query": "left=medieval&right=medieval&seed=41",
+  "bars": false,
+  "vp": "phone",
+  "tags": [
+   "before",
+   "after"
+  ],
+  "range": [
+   60,
+   156
+  ],
+  "every": 4,
+  "spawns": [
+   [
+    0,
+    "footman",
+    830,
+    0
+   ],
+   [
+    0,
+    "pikeman",
+    812,
+    0
+   ],
+   [
+    0,
+    "longbowman",
+    760,
+    0
+   ],
+   [
+    0,
+    "destrier_knight",
+    790,
+    20
+   ],
+   [
+    1,
+    "squire_pair",
+    830,
+    0
+   ],
+   [
+    1,
+    "flailman",
+    815,
+    0
+   ],
+   [
+    1,
+    "crossbowman",
+    760,
+    0
+   ],
+   [
+    1,
+    "greatsword_knight",
+    795,
+    20
+   ]
+  ]
+ },
+ "med_b_phone": {
+  "query": "left=medieval&right=medieval&seed=42",
+  "bars": false,
+  "vp": "phone",
+  "tags": [
+   "before",
+   "after"
+  ],
+  "range": [
+   60,
+   156
+  ],
+  "every": 4,
+  "spawns": [
+   [
+    0,
+    "brigand",
+    830,
+    0
+   ],
+   [
+    0,
+    "warhammer_sergeant",
+    815,
+    0
+   ],
+   [
+    0,
+    "yeoman_archer",
+    765,
+    0
+   ],
+   [
+    0,
+    "friar",
+    745,
+    0
+   ],
+   [
+    0,
+    "battering_ram",
+    800,
+    20
+   ],
+   [
+    1,
+    "kennel_master",
+    790,
+    0
+   ],
+   [
+    1,
+    "herald",
+    760,
+    0
+   ],
+   [
+    1,
+    "footman",
+    830,
+    0
+   ],
+   [
+    1,
+    "mangonel_cart",
+    700,
+    10
+   ]
+  ]
+ },
+ "med_c_phone": {
+  "query": "left=medieval&right=medieval&seed=43",
+  "bars": false,
+  "vp": "phone",
+  "tags": [
+   "before",
+   "after"
+  ],
+  "range": [
+   60,
+   166
+  ],
+  "every": 4,
+  "spawns": [
+   [
+    0,
+    "ursa_paladin",
+    830,
+    0
+   ],
+   [
+    0,
+    "alchemist",
+    760,
+    0
+   ],
+   [
+    0,
+    "siege_belfry",
+    790,
+    10
+   ],
+   [
+    1,
+    "lindworm",
+    830,
+    0
+   ],
+   [
+    1,
+    "destrier_knight",
+    800,
+    10
+   ],
+   [
+    1,
+    "crossbowman",
+    760,
+    0
+   ]
+  ]
+ },
+ "med_air_phone": {
+  "query": "left=medieval&right=bronze&seed=44",
+  "bars": false,
+  "vp": "phone",
+  "tags": [
+   "before",
+   "after"
+  ],
+  "range": [
+   60,
+   166
+  ],
+  "every": 4,
+  "spawns": [
+   [
+    0,
+    "longbowman",
+    830,
+    0
+   ],
+   [
+    0,
+    "crossbowman",
+    805,
+    0
+   ],
+   [
+    0,
+    "friar",
+    780,
+    0
+   ],
+   [
+    0,
+    "herald",
+    760,
+    0
+   ],
+   [
+    0,
+    "alchemist",
+    740,
+    0
+   ],
+   [
+    1,
+    "balloon_admiral",
+    860,
+    0
+   ],
+   [
+    1,
+    "repair_drone",
+    900,
+    20
+   ]
+  ]
+ },
+ "med_a_desktop_stills": {
+  "query": "left=medieval&right=medieval&seed=41",
+  "bars": false,
+  "vp": "desktop",
+  "tags": [
+   "before",
+   "after"
+  ],
+  "range": [
+   80,
+   110
+  ],
+  "every": 30,
+  "spawns": [
+   [
+    0,
+    "footman",
+    830,
+    0
+   ],
+   [
+    0,
+    "pikeman",
+    812,
+    0
+   ],
+   [
+    0,
+    "longbowman",
+    760,
+    0
+   ],
+   [
+    0,
+    "destrier_knight",
+    790,
+    20
+   ],
+   [
+    1,
+    "squire_pair",
+    830,
+    0
+   ],
+   [
+    1,
+    "flailman",
+    815,
+    0
+   ],
+   [
+    1,
+    "crossbowman",
+    760,
+    0
+   ],
+   [
+    1,
+    "greatsword_knight",
+    795,
+    20
+   ]
+  ]
+ },
+ "med_c_desktop_stills": {
+  "query": "left=medieval&right=medieval&seed=43",
+  "bars": false,
+  "vp": "desktop",
+  "tags": [
+   "before",
+   "after"
+  ],
+  "range": [
+   80,
+   110
+  ],
+  "every": 30,
+  "spawns": [
+   [
+    0,
+    "ursa_paladin",
+    830,
+    0
+   ],
+   [
+    0,
+    "alchemist",
+    760,
+    0
+   ],
+   [
+    0,
+    "siege_belfry",
+    790,
+    10
+   ],
+   [
+    1,
+    "lindworm",
+    830,
+    0
+   ],
+   [
+    1,
+    "destrier_knight",
+    800,
+    10
+   ],
+   [
+    1,
+    "crossbowman",
+    760,
+    0
+   ]
+  ]
+ },
+ "dmg_ram_phone": {
+  "query": "left=medieval&right=medieval&seed=45",
+  "bars": true,
+  "vp": "phone",
+  "tags": [
+   "after"
+  ],
+  "range": [
+   50,
+   450
+  ],
+  "every": 8,
+  "track": 0,
+  "trackWidth": 520,
+  "spawns": [
+   [
+    0,
+    "battering_ram",
+    830,
+    0
+   ],
+   [
+    1,
+    "pikeman",
+    830,
+    0
+   ],
+   [
+    1,
+    "pikeman",
+    815,
+    0
+   ],
+   [
+    1,
+    "longbowman",
+    770,
+    0
+   ]
+  ]
+ }
+}
