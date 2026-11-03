@@ -2,7 +2,7 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
-## 2026-11-02: Art round W0 and W1 built (every Stone and Bronze troop, their skins, visible damage), Amber and Dust that feel precious, a calmer Home; not live yet (cloud session, branch `main-ipy06f`, draft PR #13)
+## 2026-11-02 and 03: Art round W0 and W1 (every Stone and Bronze troop, their skins, visible damage), Amber and Dust that feel precious, a calmer Home; **live since 2026-11-03 19:14 UTC** (`main` c717114; cloud session, branch `main-ipy06f`, draft PR #13)
 
 **What a player will see once it is released.**
 
@@ -19,7 +19,9 @@ Newest entry first. Each session appends what it finished, what is next, and any
 
 **The strict art review of W1 passed** after one round of fixes (the Cave Bear's fur, the Aurora Elk's coat, the Scorpion's fire): Stone 3.81 (the bar is 3.8), Bronze 3.77, the whole wave 3.79, and memory 473 MB of 600.
 
-**Next:** the release (CI green on c717114, and the owner's before/after video of W1), then art round W2 (Medieval and Gunpowder), which has started.
+**Released:** CI passed on c717114 (Chromium, WebKit, the iPhone profile and Firefox), the owner got the before/after video of W1, and `main` was fast-forwarded to c717114; GitHub Pages deployed it at 19:14 UTC on 2026-11-03.
+
+**Next:** art round W2 (Medieval and Gunpowder; the Medieval starters are done), and the design pass for queue items 51 and 52 (a signature for every troop, counters, and troops that work together in formations).
 
 **What the owner can do (optional):** if the game has ever closed by itself on your iPhone during a battle, say so; the crash above is only seen on GitHub's test machine, and a real report would reopen it.
 
