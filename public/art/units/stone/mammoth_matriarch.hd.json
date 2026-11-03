@@ -98,7 +98,7 @@
   },
   "mammoth_matriarch_idle_02": {
    "frame": {
-    "x": 1457,
+    "x": 1456,
     "y": 2,
     "w": 334,
     "h": 442
@@ -146,7 +146,7 @@
   },
   "mammoth_matriarch_idle_03": {
    "frame": {
-    "x": 1122,
+    "x": 1121,
     "y": 2,
     "w": 331,
     "h": 447
@@ -242,7 +242,7 @@
   },
   "mammoth_matriarch_walk_01": {
    "frame": {
-    "x": 1857,
+    "x": 1856,
     "y": 1340,
     "w": 339,
     "h": 423
@@ -338,7 +338,7 @@
   },
   "mammoth_matriarch_walk_03": {
    "frame": {
-    "x": 463,
+    "x": 462,
     "y": 1340,
     "w": 360,
     "h": 427
@@ -530,7 +530,7 @@
   },
   "mammoth_matriarch_walk_07": {
    "frame": {
-    "x": 1512,
+    "x": 1511,
     "y": 1340,
     "w": 341,
     "h": 423
@@ -578,7 +578,7 @@
   },
   "mammoth_matriarch_walk_08": {
    "frame": {
-    "x": 2200,
+    "x": 2199,
     "y": 1340,
     "w": 344,
     "h": 422
@@ -626,7 +626,7 @@
   },
   "mammoth_matriarch_walk_09": {
    "frame": {
-    "x": 827,
+    "x": 826,
     "y": 1340,
     "w": 347,
     "h": 426
@@ -818,7 +818,7 @@
   },
   "mammoth_matriarch_attack_01": {
    "frame": {
-    "x": 2134,
+    "x": 2133,
     "y": 2,
     "w": 340,
     "h": 439
@@ -866,7 +866,7 @@
   },
   "mammoth_matriarch_attack_02": {
    "frame": {
-    "x": 1178,
+    "x": 1177,
     "y": 1340,
     "w": 330,
     "h": 424
@@ -962,7 +962,7 @@
   },
   "mammoth_matriarch_attack_04": {
    "frame": {
-    "x": 395,
+    "x": 394,
     "y": 2,
     "w": 325,
     "h": 450
@@ -1010,7 +1010,7 @@
   },
   "mammoth_matriarch_attack_05": {
    "frame": {
-    "x": 724,
+    "x": 723,
     "y": 2,
     "w": 394,
     "h": 449
@@ -1060,15 +1060,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 389,
+    "w": 388,
     "h": 454
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 221,
+    "x": 222,
     "y": 109,
-    "w": 389,
+    "w": 388,
     "h": 454
    },
    "sourceSize": {
@@ -1394,7 +1394,7 @@
   },
   "mammoth_matriarch_hit_03": {
    "frame": {
-    "x": 1795,
+    "x": 1794,
     "y": 2,
     "w": 335,
     "h": 440
@@ -1540,15 +1540,15 @@
    "frame": {
     "x": 2,
     "y": 1340,
-    "w": 457,
+    "w": 456,
     "h": 427
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 127,
+    "x": 128,
     "y": 132,
-    "w": 457,
+    "w": 456,
     "h": 427
    },
    "sourceSize": {

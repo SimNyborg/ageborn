@@ -75,9 +75,13 @@ TUSK_HI = "#FBF7EC"       # the polished tusk tips (lighter tip)
 ROPE = "#56412F"          # dark rope lashings on the howdah's rim and post tops
 
 DETAIL_STANDARD = True
-LOOK_HIGHLIGHT = 1.6   # over the beasts' 1.45; not higher: the team highlight's white overlay is 0.30 x this (0.5 hides team)
+# over the beasts' 1.45; 1.65 at most: the team highlight's white overlay is 0.30 x this (0.5 hides team). W1 art gate
+# (nit 3, all-frames highlight 0.049 against the floor 0.05): 1.6 -> 1.65 adds only 0.0002 (its rolled-over die frames
+# show the plain dark far side), so the top rim is a little brighter and wider as well (0.56 / 0.65 lu -> 0.68 /
+# 0.75 lu): +0.0018 over every frame
+LOOK_HIGHLIGHT = 1.65
 LOOK_SHADE = W1.SHADE_MOUNT
-LOOK_RIM = W1.RIM_BEAST
+LOOK_RIM = dict(W1.RIM_BEAST, lift=0.68, full_lu=0.75)
 MATERIAL_KINDS = W1.kinds({FUR: "fur", FUR_DK: "fur", FUR_LT: "fur", SHAG: "fur", SKIN_DK: "hide", NAIL: "bone",
                            IVORY: "bone", TUSK_HI: "bone", BAND: "leather", WOOD: "wood", WOOD_DK: "wood", BONE: "bone",
                            KID: "skin", KID_HAIR: "fur", ROCK: "stone", ROPE: "leather", "team": "hide"})
@@ -413,10 +417,12 @@ def build(rig):
 def _damage_spots(rig):
     """Damage spots (queue item 40 section 3.3, rider: the mammoth as a beast, the riders as Stone soldiers): the
     team caparison tears (its broad free field round the sun disc) and a strip hangs from its hem, scuffs on the
-    near shoulder and haunch, a crack in the near tusk, the front rider's team tunic; breath from the trunk's tip."""
+    near knees, a crack in the near tusk, the front rider's team tunic; breath from the trunk's tip. W1 art gate
+    (nit 5, hurt reads faintly on the dark hide): the scuffs moved from the shaggy locks of the upper legs, where they
+    were lost, to the smooth skin of the knees between the locks and the bead anklets."""
     rig.damage_spot_at("caparison", "trunk", -20.0, 90.0, 9.0, "hide", team=True)
-    rig.damage_spot_at("shoulder", "leg_fr", 30.0, 58.0, 8.0, "hide")
-    rig.damage_spot_at("haunch", "leg_br", -30.0, 56.0, 8.0, "hide")
+    rig.damage_spot_at("knee_f", "leg_fr2", 29.6, 31.0, 7.0, "hide")
+    rig.damage_spot_at("knee_b", "leg_br2", -28.6, 28.0, 7.0, "hide")
     rig.damage_spot_at("tusk", "head", 72.0, 80.0, 6.0, "stone", fill=IVORY)
     rig.damage_spot_at("rider", "kid_f", 4.0, 133.0, 5.0, "hide", team=True)
     rig.damage_spot_at("hem", "trunk", 4.0, 78.0, 12.0, "hide", kind="strip", team=True)

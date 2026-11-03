@@ -2,7 +2,7 @@
  "frames": {
   "mammoth_matriarch@frost_matriarch_attack_b_01": {
    "frame": {
-    "x": 1068,
+    "x": 1067,
     "y": 2,
     "w": 392,
     "h": 439
@@ -194,7 +194,7 @@
   },
   "mammoth_matriarch@frost_matriarch_attack_c_01": {
    "frame": {
-    "x": 1464,
+    "x": 1463,
     "y": 2,
     "w": 336,
     "h": 434
@@ -292,15 +292,15 @@
    "frame": {
     "x": 695,
     "y": 2,
-    "w": 369,
+    "w": 368,
     "h": 444
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 216,
+    "x": 217,
     "y": 114,
-    "w": 369,
+    "w": 368,
     "h": 444
    },
    "sourceSize": {
@@ -386,7 +386,7 @@
   },
   "mammoth_matriarch@frost_matriarch_attack_alt_01": {
    "frame": {
-    "x": 1804,
+    "x": 1803,
     "y": 2,
     "w": 343,
     "h": 431
@@ -434,7 +434,7 @@
   },
   "mammoth_matriarch@frost_matriarch_attack_alt_02": {
    "frame": {
-    "x": 2151,
+    "x": 2150,
     "y": 2,
     "w": 343,
     "h": 431
@@ -482,7 +482,7 @@
   },
   "mammoth_matriarch@frost_matriarch_attack_alt_03": {
    "frame": {
-    "x": 2498,
+    "x": 2497,
     "y": 2,
     "w": 343,
     "h": 431
@@ -530,7 +530,7 @@
   },
   "mammoth_matriarch@frost_matriarch_attack_alt_04": {
    "frame": {
-    "x": 2845,
+    "x": 2844,
     "y": 2,
     "w": 343,
     "h": 431
@@ -578,7 +578,7 @@
   },
   "mammoth_matriarch@frost_matriarch_attack_alt_up45_02": {
    "frame": {
-    "x": 3192,
+    "x": 3191,
     "y": 2,
     "w": 343,
     "h": 431
