@@ -1,0 +1,7 @@
+{"lead": 0.05, "lines": [
+ {"key": "l0", "text": "I filmed this fight on Friday. Then I filmed it again today.", "gap": 0.35},
+ {"key": "l1", "text": "Every swing, every hit, every number lands on the same frame. Not one pixel is different.", "gap": 0.4},
+ {"key": "l2", "text": "That's because my game never rolls real dice. Every random choice comes from a fixed seed.", "gap": 0.4},
+ {"key": "l3", "text": "So I can replay any battle exactly, and test a balance change on the very same fight.", "gap": 0.4},
+ {"key": "l4", "text": "Would you want to rewatch your own battles?", "gap": 0.3}
+]}

@@ -1,0 +1,4 @@
+Devlog #14: I filmed the same fight twice 🎥🚂
+Friday on the left, today on the right. Every swing, every hit and every number lands on the same frame, and not one pixel is different. My game never rolls real dice: every random choice comes from a fixed seed. So I can replay any battle exactly and test a balance change on the very same fight. Would you want to rewatch your own battles? 👇
+
+#gamedev #indiedev #indiegame #devlog #gamedesign
