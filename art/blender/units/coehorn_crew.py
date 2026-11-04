@@ -24,14 +24,18 @@ Animation (ANIM_SPEC G1 jog for both men, appendix B for artillery: aimed shot, 
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import gait as GT
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "coehorn_crew"
 GAIT_NAME = "biped"
@@ -42,9 +46,30 @@ FEET = (280, 262)
 ANCHORS = {"head": (2, 64), "hitCenter": (-8, 30), "muzzle": (2, 40)}  # shells leave over the gunner's head
 NO_RETIME = True
 
-SHOE = "#2E2A2A"
-MORTAR = "#5E5850"
-BED = "#5A4A3C"
+SHOE = "#3B3432"         # W2: a lit side that separates from the outline (was #2E2A2A)
+GAITER = "#38383E"       # W2: a lit side on the black gaiters (was rigs_gunpowder.BLACK)
+MORTAR = "#6A645C"       # W2: the coehorn's metal with a lit side (was #5E5850)
+BED = "#6A5646"          # W2: the bed's wood with a lit side (was #5A4A3C)
+HAIR_LT = "#76665A"      # W2: lighter tufts in the gunner's hair
+FLASK = "#8C7C64"
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Coehorn Crew is the gunner's coat and cap, the mate's waistcoat and cap and the little
+# mortar on its bed: brass buttons and a team-dark skirt band on the gunner's coat, team-dark wings, a team-dark cap
+# on the mate (the team zones in two tones), iron straps and brass trunnion caps on the bed, a lighter mortar, bed,
+# gaiters and shoes (dark materials need a lit side), lighter tufts in the gunner's hair. The smoke of item 40 rises
+# from the mortar's bed, low and ahead of both men's heads on every frame (a soldier family smokes, it never burns).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.93
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", B.HAIR: "fur", HAIR_LT: "fur", B.CREAM: "cloth", _FAR(B.CREAM): "cloth",
+                  GAITER: "leather", _FAR(GAITER): "leather", SHOE: "leather", _FAR(SHOE): "leather",
+                  B.BLACK: "leather", B.BRASS: "bronze", _FAR(B.BRASS): "bronze", B.LEATHER: "leather",
+                  FLASK: "bone", MORTAR: "iron", BED: "wood", B.WOOD: "wood", B.IRON: "iron",
+                  "team": "cloth"}
+COAT = ((0, 0, 28.0), (10.6, 9.8, 11.4))     # the gunner's coat blob (centre, radii)
 MATE_X = -30.0                       # the mate's hips (character space)
 MORT = (14.0, 0.0, 18.0)             # the mortar sits in front of the gunner (carried height)
 MOUTH = (MORT[0] + 3.0, MORT[1], MORT[2] + 8.0)
@@ -80,7 +105,7 @@ def _mate(rig):
         g = Geo().capsule((mx, y, K.V3_THIGH_Z - 1.0), (mx + 0.5, y, K.V3_KNEE_Z - 0.6), 4.0, 3.6)
         rig.part(f"m_thigh_{s}", g, C.scale(B.CREAM, k))
         g = Geo().capsule((mx + 0.5, y, K.V3_KNEE_Z - 0.6), (mx + 1.0, y, K.V3_ANKLE_Z + 0.4), 3.4, 3.2)
-        rig.part(f"m_shin_{s}", g, C.scale(B.BLACK, k))
+        rig.part(f"m_shin_{s}", g, C.scale(GAITER, k))
         g = Geo().blob((mx + 2.5, y, 2.3), (3.8, 3.8, 2.3), p=2.8, taper=(1.02, 0.86))
         rig.part(f"m_foot_{s}", g, C.scale(SHOE, k), finish="gloss")
     g = Geo().blob((mx, 0, 26.0), (8.8, 8.2, 9.0), p=2.4, taper=(1.05, 0.95))
@@ -98,7 +123,7 @@ def _mate(rig):
     g = Geo().blob((mx + 0.6, 0, 46.0), (8.8, 8.6, 5.0), p=2.4)
     g.clip((0, 0, 44.4), (0, 0, -1))
     g.blob((mx - 6.0, 0, 47.8), (2.8, 2.8, 2.4), p=2.2)
-    rig.part("m_head", g, team=True)                                 # knitted cap
+    look.team_part(rig, "m_head", g)                                 # knitted cap (W2: team-dark)
     # arms holding the poles / the linstock
     for s, y in (("r", -9.4), ("l", 9.0)):
         rig.joint(f"m_arm_{s}", "m_torso", (mx, y, 31.0))
@@ -119,7 +144,7 @@ def build(rig):
     global RIG
     RIG = rig
     K.skeleton_v3(rig)
-    G.legs_v3(rig, B.CREAM, SHOE, stocking=B.BLACK, gaiter_buttons=B.BRASS, thigh_r=4.4)
+    G.legs_v3(rig, B.CREAM, SHOE, stocking=GAITER, gaiter_buttons=B.BRASS, thigh_r=4.4)
 
     coat = Geo().blob((0, 0, 28.0), (10.6, 9.8, 11.4), p=2.4, taper=(1.06, 0.95))
     coat.blob((0, 0, 18.8), (10.2, 9.4, 4.6), p=2.6)
@@ -127,9 +152,14 @@ def build(rig):
     g = Geo().capsule((1.0, -10.0, 37.0), (10.4, 1.0, 22.0), 1.6)
     rig.part("torso", g, B.CREAM, outline=0.6)                       # crossbelt
     g = Geo().blob((-6.0, 9.0, 21.0), (2.4, 2.0, 4.0), p=2.4, rot=(0, 20, 0))
-    rig.part("torso", g, "#8C7C64", outline=0.5)                     # powder flask
+    rig.part("torso", g, FLASK, outline=0.5)                         # powder flask
     g = Geo().blob((0.4, 0, 19.8), (10.6, 9.8, 1.6), p=3.0)
     rig.part("torso", g, B.LEATHER)
+    # W2: brass buttons down the coat's front and a team-dark band round the coat's skirt
+    GW.studs(rig, "torso", [Geo().blob(*COAT, p=2.4, taper=(1.06, 0.95))], [(9.6, 33.0), (10.2, 28.6), (9.8, 24.2)],
+             r=1.35)
+    g = KD.band_z((0, 0, 18.8), (10.2, 9.4, 4.6), 14.4, 16.6, p=2.6)
+    look.team_part(rig, "torso", g)
 
     head = G.head_geos(center=(2, 0, 48.6), nose=(14.2, -0.6, 47.0))
     hair = Geo().blob((-5.6, 0, 47.0), (6.0, 10.6, 6.6), p=2.2)
@@ -137,12 +167,20 @@ def build(rig):
             eye_r=(3.8, 3.6, 4.5), brow=B.HAIR, mouth_dz=-8.4, mouth_x=13.6, eye_at=(14.0, 50.2), mark_r=4.2)
     rig.part("head", head, B.SKIN)
     rig.part("head", hair, B.HAIR, finish="hair")
+    hf = F.Face(rig, "head", [Geo().blob((-5.6, 0, 47.0), (6.0, 10.6, 6.6), p=2.2)])
+    g = Geo()                                  # W2: lighter rounded tufts (two-tone hair, W1 review)
+    for (hx_, hz_), r in (((-8.0, 49.2), (2.3, 1.6, 2.2)), ((-9.8, 44.6), (2.2, 1.6, 2.3)),
+                          ((-5.4, 42.2), (2.1, 1.6, 2.0))):
+        g.blob(tuple(hf.hit(hx_, hz_)), r, p=2.2)
+    rig.part("head", g, HAIR_LT, finish="hair", outline=0)
     rig.joint("hat", "head", HAT_C)
     _cap(rig, "hat")
     rig.joint("hat_loose", "root", HAT_C, hidden=True)
     _cap(rig, "hat_loose")
     for s in ("r", "l"):
         B.arm_parts(rig, s, team_sleeve=True, cuff=B.CREAM)
+        g = Geo().blob((0, B.ARM_Y[s] * 1.02, 37.0), (5.6, 5.0, 4.4), p=2.4)
+        look.team_part(rig, f"arm_{s}", g)                           # W2: team-dark wings
 
     _mate(rig)
 
@@ -154,6 +192,15 @@ def build(rig):
     for y in (-7.0, 7.0):
         g.capsule((mx - 12.0, y, mz - 1.0), (mx + 12.0, y, mz - 1.0), 1.0)       # carrying poles
     rig.part("mortar", g, BED, outline=0.6)
+    # W2: two iron straps round the bed and brass caps on the trunnions
+    g = Geo()
+    for dx in (-5.0, 5.0):
+        g.blob((mx + dx, my, mz - 2.0), (0.8, 6.3, 2.9), p=3.0)
+    rig.part("mortar", g, B.IRON, finish="metal", outline=0.3)
+    g = Geo()
+    for y in (-4.9, 4.9):
+        g.blob((mx - 0.6, y, mz + 0.8), (1.6, 0.7, 1.6), p=2.4)
+    rig.part("mortar", g, B.BRASS, finish="metal", outline=0.4)
     ax = (math.cos(math.radians(55)), 0, math.sin(math.radians(55)))
     p0 = (mx - ax[0] * 3.0, my, mz + 0.5 - ax[2] * 3.0)
     p1 = (mx + ax[0] * 8.0, my, mz + 0.5 + ax[2] * 8.0)
@@ -170,6 +217,24 @@ def build(rig):
     g = Geo().blob((mouth[0] + ax[0] * 3.0, my - 2, mouth[2] + ax[2] * 3.0), (2.4, 1.6, 3.6), p=2.0, rot=(0, -35, 0))
     rig.part("flash", g, glow=B.FLASH_CORE, outline=0)
     G.smoke_cloud(rig, "root", (mouth[0] + 6.0, -14.0, mouth[2] + 10.0), size=1.0)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig, mouth)
+
+
+def _damage_spots(rig, mouth):
+    """Damage spots (queue item 40 section 3.3: two soldiers with a small machine): never on faces or skin. The
+    gunner's coat skirt and the mate's waistcoat (team, clear of their arms in every frame), the mortar's bed
+    (wood), a strip from the mate's cream shirt; two smoke emitters on the mortar for stages 2 and 3 (a soldier
+    family smokes but does not burn: DAMAGE's fire is the vehicles'). The first sits on the bed's front end, low in
+    every clip and about 24 lu ahead of the gunner's head, so the smoke rises in front of the mortar, clear of the
+    crew's faces; the second, at the mouth, keeps the smoke rising above the little gun."""
+    rig.damage_spot_at("coat", "torso", 3.0, 18.0, 7.0, "cloth", team=True)     # clear of the arms in every frame
+    rig.damage_spot_at("mate", "m_torso", -36.0, 22.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("bed", "mortar", 6.0, 14.0, 5.0, "wood", fill=BED)
+    rig.damage_spot_at("shirt", "m_torso", -30.0, 17.0, 6.0, "cloth", kind="strip", fill=B.CREAM)
+    rig.damage_spot_at("smoke", "mortar", 32.0, 19.0, 5.0, "smoke", kind="emit", fill=BED)
+    rig.damage_spot("smoke_top", "mortar", (mouth[0], 0.0, mouth[2] + 1.5), 5.0, "smoke", kind="emit",
+                    normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------

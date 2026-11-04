@@ -2,7 +2,7 @@
  "frames": {
   "bagpiper_attack_b_02": {
    "frame": {
-    "x": 161,
+    "x": 158,
     "y": 2,
     "w": 68,
     "h": 109
@@ -26,18 +26,18 @@
   },
   "bagpiper_attack_b_02_team": {
    "frame": {
-    "x": 121,
-    "y": 225,
-    "w": 48,
-    "h": 71
+    "x": 234,
+    "y": 84,
+    "w": 50,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
     "y": 156,
-    "w": 48,
-    "h": 71
+    "w": 50,
+    "h": 78
    },
    "sourceSize": {
     "w": 283,
@@ -50,8 +50,8 @@
   },
   "bagpiper_attack_b_03": {
    "frame": {
-    "x": 82,
-    "y": 2,
+    "x": 2,
+    "y": 115,
     "w": 75,
     "h": 109
    },
@@ -74,18 +74,18 @@
   },
   "bagpiper_attack_b_03_team": {
    "frame": {
-    "x": 63,
-    "y": 225,
-    "w": 54,
-    "h": 73
+    "x": 230,
+    "y": 2,
+    "w": 55,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 111,
     "y": 156,
-    "w": 54,
-    "h": 73
+    "w": 55,
+    "h": 78
    },
    "sourceSize": {
     "w": 283,
@@ -122,18 +122,18 @@
   },
   "bagpiper_attack_b_04_team": {
    "frame": {
-    "x": 2,
-    "y": 225,
-    "w": 57,
-    "h": 73
+    "x": 289,
+    "y": 2,
+    "w": 55,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 110,
     "y": 156,
-    "w": 57,
-    "h": 73
+    "w": 55,
+    "h": 78
    },
    "sourceSize": {
     "w": 283,
@@ -146,7 +146,7 @@
   },
   "bagpiper_attack_b_05": {
    "frame": {
-    "x": 78,
+    "x": 81,
     "y": 115,
     "w": 73,
     "h": 105
@@ -170,18 +170,18 @@
   },
   "bagpiper_attack_b_05_team": {
    "frame": {
-    "x": 56,
-    "y": 302,
-    "w": 53,
-    "h": 67
+    "x": 234,
+    "y": 166,
+    "w": 50,
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 119,
     "y": 159,
-    "w": 53,
-    "h": 67
+    "w": 50,
+    "h": 75
    },
    "sourceSize": {
     "w": 283,
@@ -194,7 +194,7 @@
   },
   "bagpiper_attack_b_06": {
    "frame": {
-    "x": 155,
+    "x": 158,
     "y": 115,
     "w": 72,
     "h": 100
@@ -218,10 +218,10 @@
   },
   "bagpiper_attack_b_06_team": {
    "frame": {
-    "x": 173,
-    "y": 225,
+    "x": 288,
+    "y": 163,
     "w": 51,
-    "h": 68
+    "h": 72
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 128,
     "y": 165,
     "w": 51,
-    "h": 68
+    "h": 72
    },
    "sourceSize": {
     "w": 283,
@@ -242,8 +242,8 @@
   },
   "bagpiper_attack_b_07": {
    "frame": {
-    "x": 2,
-    "y": 115,
+    "x": 82,
+    "y": 2,
     "w": 72,
     "h": 106
    },
@@ -266,18 +266,18 @@
   },
   "bagpiper_attack_b_07_team": {
    "frame": {
-    "x": 2,
-    "y": 302,
-    "w": 50,
-    "h": 68
+    "x": 288,
+    "y": 84,
+    "w": 49,
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 128,
     "y": 162,
-    "w": 50,
-    "h": 68
+    "w": 49,
+    "h": 75
    },
    "sourceSize": {
     "w": 283,
@@ -323,8 +323,8 @@
   "image": "bagpiper.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 256,
-   "h": 372
+   "w": 384,
+   "h": 244
   },
   "scale": "1.5",
   "ageborn": {

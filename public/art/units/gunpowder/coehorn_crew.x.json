@@ -2,18 +2,18 @@
  "frames": {
   "coehorn_crew_attack_b_02": {
    "frame": {
-    "x": 113,
+    "x": 114,
     "y": 2,
     "w": 97,
-    "h": 89
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 137,
+    "y": 136,
     "w": 97,
-    "h": 89
+    "h": 91
    },
    "sourceSize": {
     "w": 393,
@@ -27,7 +27,7 @@
   "coehorn_crew_attack_b_02_team": {
    "frame": {
     "x": 95,
-    "y": 188,
+    "y": 192,
     "w": 76,
     "h": 87
    },
@@ -50,18 +50,18 @@
   },
   "coehorn_crew_attack_b_03": {
    "frame": {
-    "x": 214,
+    "x": 215,
     "y": 2,
     "w": 97,
-    "h": 89
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 137,
+    "y": 136,
     "w": 97,
-    "h": 89
+    "h": 91
    },
    "sourceSize": {
     "w": 393,
@@ -75,7 +75,7 @@
   "coehorn_crew_attack_b_03_team": {
    "frame": {
     "x": 175,
-    "y": 188,
+    "y": 192,
     "w": 76,
     "h": 87
    },
@@ -99,17 +99,17 @@
   "coehorn_crew_attack_b_04": {
    "frame": {
     "x": 2,
-    "y": 95,
+    "y": 97,
     "w": 97,
-    "h": 89
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 137,
+    "y": 136,
     "w": 97,
-    "h": 89
+    "h": 91
    },
    "sourceSize": {
     "w": 393,
@@ -123,7 +123,7 @@
   "coehorn_crew_attack_b_04_team": {
    "frame": {
     "x": 2,
-    "y": 279,
+    "y": 283,
     "w": 76,
     "h": 87
    },
@@ -147,17 +147,17 @@
   "coehorn_crew_attack_b_05": {
    "frame": {
     "x": 103,
-    "y": 95,
+    "y": 97,
     "w": 97,
-    "h": 89
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 137,
+    "y": 136,
     "w": 97,
-    "h": 89
+    "h": 91
    },
    "sourceSize": {
     "w": 393,
@@ -171,7 +171,7 @@
   "coehorn_crew_attack_b_05_team": {
    "frame": {
     "x": 82,
-    "y": 279,
+    "y": 283,
     "w": 76,
     "h": 87
    },
@@ -195,17 +195,17 @@
   "coehorn_crew_attack_b_06": {
    "frame": {
     "x": 204,
-    "y": 95,
-    "w": 105,
-    "h": 87
+    "y": 97,
+    "w": 106,
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
-    "y": 137,
-    "w": 105,
-    "h": 87
+    "x": 197,
+    "y": 136,
+    "w": 106,
+    "h": 88
    },
    "sourceSize": {
     "w": 393,
@@ -219,7 +219,7 @@
   "coehorn_crew_attack_b_06_team": {
    "frame": {
     "x": 162,
-    "y": 279,
+    "y": 283,
     "w": 89,
     "h": 85
    },
@@ -244,16 +244,16 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 107,
-    "h": 89
+    "w": 108,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
-    "y": 137,
-    "w": 107,
-    "h": 89
+    "x": 197,
+    "y": 136,
+    "w": 108,
+    "h": 91
    },
    "sourceSize": {
     "w": 393,
@@ -267,7 +267,7 @@
   "coehorn_crew_attack_b_07_team": {
    "frame": {
     "x": 2,
-    "y": 188,
+    "y": 192,
     "w": 89,
     "h": 87
    },
@@ -324,7 +324,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 320,
-   "h": 368
+   "h": 372
   },
   "scale": "1.5",
   "ageborn": {

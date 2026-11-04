@@ -2,8 +2,8 @@
  "frames": {
   "wall_gunner_attack_b_01": {
    "frame": {
-    "x": 823,
-    "y": 2,
+    "x": 225,
+    "y": 398,
     "w": 216,
     "h": 189
    },
@@ -26,17 +26,17 @@
   },
   "wall_gunner_attack_b_01_team": {
    "frame": {
-    "x": 838,
-    "y": 209,
-    "w": 89,
+    "x": 102,
+    "y": 582,
+    "w": 96,
     "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
+    "x": 195,
     "y": 187,
-    "w": 89,
+    "w": 96,
     "h": 160
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "wall_gunner_attack_b_02": {
    "frame": {
-    "x": 607,
-    "y": 2,
+    "x": 445,
+    "y": 398,
     "w": 212,
     "h": 193
    },
@@ -74,18 +74,18 @@
   },
   "wall_gunner_attack_b_02_team": {
    "frame": {
-    "x": 744,
-    "y": 209,
-    "w": 90,
-    "h": 162
+    "x": 2,
+    "y": 582,
+    "w": 96,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 200,
+    "x": 197,
     "y": 184,
-    "w": 90,
-    "h": 162
+    "w": 96,
+    "h": 163
    },
    "sourceSize": {
     "w": 616,
@@ -98,8 +98,8 @@
   },
   "wall_gunner_attack_b_03": {
    "frame": {
-    "x": 1043,
-    "y": 2,
+    "x": 655,
+    "y": 192,
     "w": 219,
     "h": 188
    },
@@ -122,17 +122,17 @@
   },
   "wall_gunner_attack_b_03_team": {
    "frame": {
-    "x": 931,
-    "y": 209,
-    "w": 92,
+    "x": 757,
+    "y": 384,
+    "w": 96,
     "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 200,
     "y": 190,
-    "w": 92,
+    "w": 96,
     "h": 157
    },
    "sourceSize": {
@@ -146,8 +146,8 @@
   },
   "wall_gunner_attack_b_04": {
    "frame": {
-    "x": 2,
-    "y": 209,
+    "x": 655,
+    "y": 2,
     "w": 221,
     "h": 186
    },
@@ -170,17 +170,17 @@
   },
   "wall_gunner_attack_b_04_team": {
    "frame": {
-    "x": 1027,
-    "y": 209,
-    "w": 95,
+    "x": 202,
+    "y": 591,
+    "w": 99,
     "h": 155
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
+    "x": 198,
     "y": 192,
-    "w": 95,
+    "w": 99,
     "h": 155
    },
    "sourceSize": {
@@ -195,7 +195,7 @@
   "wall_gunner_attack_b_05": {
    "frame": {
     "x": 2,
-    "y": 2,
+    "y": 183,
     "w": 285,
     "h": 203
    },
@@ -218,17 +218,17 @@
   },
   "wall_gunner_attack_b_05_team": {
    "frame": {
-    "x": 564,
-    "y": 209,
-    "w": 84,
+    "x": 514,
+    "y": 206,
+    "w": 92,
     "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 198,
     "y": 174,
-    "w": 84,
+    "w": 92,
     "h": 171
    },
    "sourceSize": {
@@ -242,8 +242,8 @@
   },
   "wall_gunner_attack_b_06": {
    "frame": {
-    "x": 227,
-    "y": 209,
+    "x": 2,
+    "y": 2,
     "w": 333,
     "h": 177
    },
@@ -266,17 +266,17 @@
   },
   "wall_gunner_attack_b_06_team": {
    "frame": {
-    "x": 1126,
-    "y": 209,
-    "w": 115,
+    "x": 305,
+    "y": 595,
+    "w": 117,
     "h": 148
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 152,
+    "x": 150,
     "y": 201,
-    "w": 115,
+    "w": 117,
     "h": 148
    },
    "sourceSize": {
@@ -290,7 +290,7 @@
   },
   "wall_gunner_attack_b_07": {
    "frame": {
-    "x": 291,
+    "x": 339,
     "y": 2,
     "w": 312,
     "h": 200
@@ -314,18 +314,114 @@
   },
   "wall_gunner_attack_b_07_team": {
    "frame": {
-    "x": 652,
-    "y": 209,
-    "w": 88,
+    "x": 661,
+    "y": 384,
+    "w": 92,
     "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 188,
+    "x": 184,
     "y": 177,
-    "w": 88,
+    "w": 92,
     "h": 168
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.38636,
+    "y": 0.79295
+   }
+  },
+  "wall_gunner_aim_00": {
+   "frame": {
+    "x": 291,
+    "y": 206,
+    "w": 219,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 189,
+    "w": 219,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.38636,
+    "y": 0.79295
+   }
+  },
+  "wall_gunner_aim_00_team": {
+   "frame": {
+    "x": 762,
+    "y": 545,
+    "w": 96,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 190,
+    "w": 96,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.38636,
+    "y": 0.79295
+   }
+  },
+  "wall_gunner_aim_01": {
+   "frame": {
+    "x": 2,
+    "y": 390,
+    "w": 219,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 190,
+    "w": 219,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.38636,
+    "y": 0.79295
+   }
+  },
+  "wall_gunner_aim_01_team": {
+   "frame": {
+    "x": 661,
+    "y": 556,
+    "w": 97,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 190,
+    "w": 97,
+    "h": 158
    },
    "sourceSize": {
     "w": 616,
@@ -365,6 +461,14 @@
    "wall_gunner_attack_08_team",
    "wall_gunner_attack_09_team",
    "wall_gunner_attack_10_team"
+  ],
+  "aim": [
+   "wall_gunner_aim_00",
+   "wall_gunner_aim_01"
+  ],
+  "aim_team": [
+   "wall_gunner_aim_00_team",
+   "wall_gunner_aim_01_team"
   ]
  },
  "meta": {
@@ -373,8 +477,8 @@
   "image": "wall_gunner.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 400
+   "w": 896,
+   "h": 748
   },
   "scale": "3",
   "ageborn": {
@@ -504,6 +608,31 @@
       "atLu": [
        57.6,
        32.3
+      ]
+     }
+    },
+    "aim": {
+     "frames": 2,
+     "loop": true,
+     "sequence": [
+      0,
+      1
+     ],
+     "durationsMs": [
+      460,
+      460
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        63.7,
+        27.4
+       ],
+       [
+        63.7,
+        27.0
+       ]
       ]
      }
     }

@@ -21,13 +21,17 @@ Animation (ANIM_SPEC G1 march, appendix B for a drum: roll and boom, cross-stick
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "drummer_boy"
 GAIT_NAME = "biped"
@@ -40,8 +44,32 @@ NO_RETIME = True
 
 SKIN = "#EDC6A2"
 HAIR = "#5E4D40"
-SHOE = "#2E2A2A"
-STICK = "#D9C9A8"
+HAIR_LT = "#7E6A5A"      # W2: lighter tufts in the hair (two-tone hair)
+SHOE = "#3B3432"         # W2: a lit side that separates from the outline (was #2E2A2A)
+GAITER = "#38383E"       # W2: a lit side on the black gaiters (was rigs_gunpowder.BLACK)
+STICK = "#A88E6C"        # W2: mid wood (pale sticks, cords and drumskin put the sheets at highlight 0.11-0.12)
+DRUMSKIN = "#D8D0BE"     # W2: two steps darker (was #EFE9DA)
+CORD = "#D3C6A6"         # W2: linen cords on the shell (were the bright cream)
+HOOP = "#7E6450"         # W2: the drum's hoops in a mid wood
+CREAM = "#E2D8C1"        # W2: his cream a step duller than the palette's #EFE6CF (lace bars, hoops, sling,
+                         # trousers and cuffs: on the small boy they took the highlight share over 0.10)
+CHEEK = "#E8A99A"
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Drummer Boy is the shako, the coatee with its lace bars, the big side drum and the
+# sticks: a team-dark band round the shako, team-dark wings and a team-dark band over the tails (the team zone in
+# two tones), brass buttons at the ends of the lace bars, a team-dark lower shell and brass lugs on the drum, wider
+# cords, lighter tufts in the hair and lighter gaiters and shoes (dark materials need a lit side).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.45      # W2: the small boy is mostly light details (lace, cords, drum, sticks)
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
+MATERIAL_KINDS = {SKIN: "skin", HAIR: "fur", HAIR_LT: "fur", CREAM: "cloth", _FAR(CREAM): "cloth",
+                  GAITER: "leather", _FAR(GAITER): "leather", SHOE: "leather", _FAR(SHOE): "leather",
+                  B.BLACK: "leather", B.BRASS: "bronze", _FAR(B.BRASS): "bronze", STICK: "wood", DRUMSKIN: "hide",
+                  CORD: "cloth", CHEEK: "skin", HOOP: "wood", "team": "cloth"}
+COAT = ((0, 0, 27.6), (10.2, 9.4, 10.6))   # the coatee's blob (centre, radii)
 DRUM_C = (9.0, -14.0, 20.0)          # drum centre (torso space, at the near hip)
 DRUM_R, DRUM_H = 8.0, 9.0
 HAT_C = (1.0, 0.0, 56.0)
@@ -62,9 +90,13 @@ def _shako(rig, joint):
     g = Geo()
     for a, b in (((x + 8.6, -5.0, z + 2.0), (x + 3.4, -9.4, z + 0.6)), ((x + 3.4, -9.4, z + 0.6), (x - 3.0, -9.2, z + 2.6))):
         g.capsule(a, b, 0.75)
-    rig.part(joint, g, B.CREAM, outline=0.4)
+    rig.part(joint, g, CREAM, outline=0.4)
     g = Geo().sphere((x + 6.0, y, z + 13.4), 3.2, cuts=4)
     rig.part(joint, g, team=True, outline=0.8)
+    # W2: a team-dark band round the shako's body (the team zone in two tones)
+    g = Geo().lathe([(9.1, 0), (9.65, 0.3), (9.85, 2.2), (9.35, 2.5)], (x, y, z + 2.6), (x, y, z + 13.8),
+                    segs=24, squash=(1.0, 0.94))
+    look.team_part(rig, joint, g, outline=0.4)
 
 
 def _drum(rig, joint):
@@ -76,26 +108,38 @@ def _drum(rig, joint):
     g = Geo().lathe([(DRUM_R, 0), (DRUM_R + 0.2, DRUM_H * 0.5), (DRUM_R, DRUM_H)], p0, p1, segs=24)
     df = F.Face(rig, joint, [g])
     rig.part(joint, g, team=True)
+    # W2: the shell's lower half in team-dark (two tones) and brass lugs round the shell
+    g = Geo().lathe([(DRUM_R + 0.25, 0.4), (DRUM_R + 0.4, DRUM_H * 0.45), (DRUM_R + 0.25, DRUM_H * 0.47)], p0, p1,
+                    segs=24)
+    look.team_part(rig, joint, g, outline=0)
+    g = Geo()
+    for i in range(8):
+        a = 2 * math.pi * (i + 0.5) / 8
+        r = DRUM_R + 0.5
+        c = (x + r * math.cos(a) * ax[2], y + r * math.sin(a), z - r * math.cos(a) * ax[0])
+        g.sphere(c, 1.25, cuts=2)
+    rig.part(joint, g, B.BRASS, finish="metal", outline=0.3)
     g = Geo()
     for t in (0.0, 1.0):
         c = (p0[0] + (p1[0] - p0[0]) * t, y, p0[2] + (p1[2] - p0[2]) * t)
         g.lathe([(DRUM_R + 0.4, -0.9), (DRUM_R + 0.9, 0), (DRUM_R + 0.4, 0.9)],
                 (c[0] - ax[0] * 0.9, y, c[2] - ax[2] * 0.9), (c[0] + ax[0] * 0.9, y, c[2] + ax[2] * 0.9), segs=24)
-    rig.part(joint, g, B.CREAM, outline=0.5)                         # cream hoops
+    rig.part(joint, g, HOOP, finish="matte", outline=0.5)          # W2: wooden hoops (cream ones were the drum's
+                                                                   # brightest rings: highlight over 0.10)
     g = Geo().lathe([(0, 0), (DRUM_R - 0.3, 0), (DRUM_R - 0.3, 0.4), (0, 0.4)], p1,
                     (p1[0] + ax[0] * 0.4, y, p1[2] + ax[2] * 0.4), segs=24)
-    rig.part(joint, g, "#EFE9DA", finish="matte", outline=0.4)      # the skin
+    rig.part(joint, g, DRUMSKIN, finish="matte", outline=0.4)       # the skin
     # zigzag cords on the shell (decal)
     pts = []
     for i in range(7):
         u = -6.4 + i * 2.1
         pts.append((u, 3.0 if i % 2 == 0 else -3.0))
     c = df.hit(*K.scr(df, (x, y - DRUM_R, z)))
-    df.stroke(g2 := Geo(), c, pts, 0.8, 0.4)
-    rig.part(joint, g2, B.CREAM, outline=0, highlight=False)
+    df.stroke(g2 := Geo(), c, pts, 1.2, 0.4)                       # W2: 0.8 -> 1.2 lu (it reads at game scale)
+    rig.part(joint, g2, CORD, outline=0, highlight=False)
     # the sling up to the far shoulder
     g = Geo().capsule((x - 2.0, y + 2.0, z + 4.0), (-2.0, 10.0, 37.0), 1.1)
-    rig.part(joint, g, B.CREAM, outline=0.5)
+    rig.part(joint, g, CREAM, outline=0.5)
 
 
 RIG = None
@@ -105,28 +149,32 @@ def build(rig):
     global RIG
     RIG = rig
     K.skeleton_v3(rig, head=(1, 0, 36))
-    G.legs_v3(rig, B.CREAM, SHOE, stocking=B.BLACK, gaiter_buttons=B.BRASS, thigh_r=4.4)
+    G.legs_v3(rig, CREAM, SHOE, stocking=GAITER, gaiter_buttons=B.BRASS, thigh_r=4.4)
 
     coat = Geo().blob((0, 0, 27.6), (10.2, 9.4, 10.6), p=2.4, taper=(1.06, 0.95))
     coat.blob((0, 0, 18.6), (9.8, 9.0, 4.4), p=2.6)
     cf = F.Face(rig, "torso", [coat])
     rig.part("torso", coat, team=True)
     g = G.stripes(cf, Geo(), (32.0, 28.6, 25.2, 21.8), 5.0, 12.4, 1.4)
-    rig.part("torso", g, B.CREAM, highlight=False, outline=0)        # drummer's lace bars
+    rig.part("torso", g, CREAM, highlight=False, outline=0)        # drummer's lace bars
+    GW.studs(rig, "torso", [Geo().blob(*COAT, p=2.4, taper=(1.06, 0.95))],
+             [(4.6, 32.0), (4.6, 28.6), (4.6, 25.2), (4.6, 21.8)], r=1.25)   # W2: a brass button at each bar's end
     g = Geo().blob((0.4, 0, 19.6), (10.6, 9.8, 1.6), p=3.0)
-    rig.part("torso", g, B.CREAM)
+    rig.part("torso", g, CREAM)
     g = Geo().blob((2.6, 0, 35.4), (6.6, 7.6, 2.4), p=2.4)
-    rig.part("torso", g, B.CREAM)
+    rig.part("torso", g, CREAM)
     # short coat tails
     rig.secondary("tails", "hips", (-4.0, 0, 18.0), (-7.0, 0, 9.0), max_deg=14, gain=1.1)
     rig.rest_offset["tails"] = (0, 0, K.V3_LIFT + 4.0)
     g = Geo().blob((-5.0, 0, 13.4), (4.6, 9.4, 5.6), p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
     rig.part("tails", g, team=True)
+    g = KD.band_z((-5.0, 0, 13.4), (4.6, 9.4, 5.6), 8.0, 10.4, p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
+    look.team_part(rig, "tails", g)          # W2: a team-dark band over the tails' hem
 
     for s in ("r", "l"):
-        B.arm_parts(rig, s, team_sleeve=True, cuff=B.CREAM, hand=SKIN, r0=4.0, r1=3.5, fist=4.0)
+        B.arm_parts(rig, s, team_sleeve=True, cuff=CREAM, hand=SKIN, r0=4.0, r1=3.5, fist=4.0)
         g = Geo().blob((0, B.ARM_Y[s], 37.0), (5.4, 4.8, 4.2), p=2.4)
-        rig.part(f"arm_{s}", g, team=True)
+        look.team_part(rig, f"arm_{s}", g)                           # W2: team-dark wings
         # a drumstick from each fist (modelled pointing up, w_rest 90)
         hx, hy, hz = 0.0, B.ARM_Y[s], B.HAND_Z
         g = Geo().capsule((hx + 0.4, hy - 0.4, hz - 2.0), (hx + 0.6, hy - 0.4, hz + SL), 0.9, 0.7)
@@ -142,14 +190,32 @@ def build(rig):
             mouth_dz=-7.4, mouth_x=13.6, mouth_shape="smile", eye_at=(14.2, 48.2), mark_r=4.4)
     rig.part("head", head, SKIN)
     rig.part("head", hair, HAIR, finish="hair")
+    hf = F.Face(rig, "head", [Geo().blob((-6.0, 0, 46.0), (6.2, 11.0, 7.2), p=2.2)])
+    g = Geo()                                  # W2: lighter rounded tufts (two-tone hair, W1 review)
+    for (x, z), r in (((-8.4, 49.6), (2.4, 1.6, 2.2)), ((-10.2, 44.6), (2.2, 1.6, 2.4)),
+                      ((-5.6, 41.6), (2.2, 1.6, 2.0))):
+        g.blob(tuple(hf.hit(x, z)), r, p=2.2)
+    rig.part("head", g, HAIR_LT, finish="hair", outline=0)
     g = Geo().blob((11.0, -7.0, 43.6), (2.2, 1.0, 1.8), p=2.2)
-    rig.part("head", g, "#E8A99A", outline=0, highlight=False)       # round cheek
+    rig.part("head", g, CHEEK, outline=0, highlight=False)          # round cheek
     rig.joint("hat", "head", HAT_C)
     _shako(rig, "hat")
 
     rig.joint("drum", "torso", DRUM_C)
     _drum(rig, "drum")
     rig.track("muzzle", "drum", (DRUM_C[0] + 6.0, DRUM_C[1], DRUM_C[2] + 4.0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The coatee's back half (the
+    largest team surface the sticks and the drum leave clear), the drum's team shell, the shako; a torn strip from
+    the coat tails."""
+    rig.damage_spot_at("coat", "torso", -6.0, 24.0, 7.0, "cloth", team=True)     # below the arm in every frame
+    rig.damage_spot_at("drum", "drum", 9.0, 12.0, 5.0, "wood", team=True)
+    rig.damage_spot_at("shako", "hat", -3.0, 62.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("tails", "tails", -6.0, 13.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -222,14 +288,16 @@ def _a_pose(f):
 RING_PT = (DRUM_C[0] + 8.0, DRUM_C[1], DRUM_C[2] + 4.0)
 
 
+BOOM = "#DCCDA6"   # W2: the boom's rings a warm mid cream (#FFF4D6 rings over a dark outline were a third of the
+                   # highlight share on the boom frames)
+
+
 def _ov():
     return {
-        6: [{"kind": "rings", "joint": "drum", "point": RING_PT, "radii_lu": (7.0, 12.0, 17.0), "a0": -70.0,
-             "a1": 70.0, "color": "#FFF4D6"},
-            {"kind": "burst", "joint": "drum", "point": (DRUM_C[0] + 2.0, DRUM_C[1], DRUM_C[2] + 6.0),
-             "r0_lu": 4.0, "r1_lu": 9.0, "n": 5, "a0": 30.0, "arc": 120.0, "color": "#FFF4D6"}],
-        7: [{"kind": "rings", "joint": "drum", "point": RING_PT, "radii_lu": (14.0, 20.0), "a0": -60.0,
-             "a1": 60.0, "color": "#FFF4D6"}],
+        6: [{"kind": "rings", "joint": "drum", "point": RING_PT, "radii_lu": (8.0, 15.0), "a0": -70.0,
+             "a1": 70.0, "color": BOOM}],     # W2: the rings alone carry the boom (the burst over the drum was noise)
+        7: [{"kind": "rings", "joint": "drum", "point": RING_PT, "radii_lu": (17.0,), "a0": -60.0,
+             "a1": 60.0, "color": BOOM}],
     }
 
 
