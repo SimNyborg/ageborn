@@ -53,7 +53,8 @@ SHOE = "#3B3432"      # W2: a lit side that separates from the outline (was #2F2
 BAG = "#6E5646"
 BREECH = "#76644F"    # W2: lighter breeches (was the dark #4A3B2E)
 SAW = "#B6BCC4"
-HAT = "#3A3637"       # W2: a mid-value lit side on the black bicorne (was rigs_gunpowder.BLACK)
+HAT = "#423D3D"       # W2: a mid-value lit side on the black bicorne (was rigs_gunpowder.BLACK)
+TRIM = "#D2C9B4"      # W2: the bicorne's lace a dull cream (bright cream on the dark hat was the extras' top highlight)
 
 # the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
 # What a player sees of the Field Surgeon is the bicorne, the coat with its apron and strap, the doctor's bag and the
@@ -67,13 +68,13 @@ LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0,
 _FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
 MATERIAL_KINDS = {B.SKIN: "skin", HAIR: "fur", HAIR_DK: "fur", B.CREAM: "cloth", _FAR(B.CREAM): "cloth",
                   BREECH: "cloth", _FAR(BREECH): "cloth", SHOE: "leather", _FAR(SHOE): "leather", HAT: "cloth",
-                  BAG: "leather", SAW: "iron", B.BRASS: "bronze", B.LEATHER: "leather", B.GUNWOOD: "wood",
+                  TRIM: "cloth", BAG: "leather", SAW: "iron", B.BRASS: "bronze", B.LEATHER: "leather", B.GUNWOOD: "wood",
                   B.GUNMETAL: "iron", B.IRON: "iron", "team": "cloth"}
 
 
 def _hat(rig, joint):
     """The bicorne (rigs_gunpowder.bicorne, a lighter black) with a team-dark band round its base (W2)."""
-    B.bicorne(rig, joint=joint, c=HAT_C, scale=0.98, trim=B.CREAM, color=HAT)
+    B.bicorne(rig, joint=joint, c=HAT_C, scale=0.98, trim=TRIM, color=HAT)
     x, y, z = HAT_C
     k = 0.98
     g = KD.band_z((x, y, z + 4.0 * k), (16.5 * k, 3.4 * k, 8.4 * k), z - 0.5 * k, z + 2.4 * k, p=2.5,

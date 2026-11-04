@@ -2,8 +2,8 @@
  "frames": {
   "grenadier_attack_b_03": {
    "frame": {
-    "x": 119,
-    "y": 103,
+    "x": 183,
+    "y": 2,
     "w": 76,
     "h": 94
    },
@@ -26,8 +26,8 @@
   },
   "grenadier_attack_b_03_team": {
    "frame": {
-    "x": 254,
-    "y": 2,
+    "x": 55,
+    "y": 117,
     "w": 53,
     "h": 81
    },
@@ -50,8 +50,8 @@
   },
   "grenadier_attack_b_04": {
    "frame": {
-    "x": 118,
-    "y": 2,
+    "x": 119,
+    "y": 104,
     "w": 78,
     "h": 97
    },
@@ -74,8 +74,8 @@
   },
   "grenadier_attack_b_04_team": {
    "frame": {
-    "x": 254,
-    "y": 87,
+    "x": 201,
+    "y": 100,
     "w": 58,
     "h": 80
    },
@@ -98,10 +98,10 @@
   },
   "grenadier_attack_b_05": {
    "frame": {
-    "x": 55,
+    "x": 56,
     "y": 2,
     "w": 59,
-    "h": 106
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
@@ -109,7 +109,7 @@
     "x": 101,
     "y": 94,
     "w": 59,
-    "h": 106
+    "h": 110
    },
    "sourceSize": {
     "w": 236,
@@ -122,8 +122,8 @@
   },
   "grenadier_attack_b_05_team": {
    "frame": {
-    "x": 199,
-    "y": 103,
+    "x": 263,
+    "y": 96,
     "w": 50,
     "h": 88
    },
@@ -146,8 +146,8 @@
   },
   "grenadier_attack_b_06": {
    "frame": {
-    "x": 55,
-    "y": 112,
+    "x": 119,
+    "y": 2,
     "w": 60,
     "h": 98
    },
@@ -170,17 +170,17 @@
   },
   "grenadier_attack_b_06_team": {
    "frame": {
-    "x": 200,
-    "y": 2,
-    "w": 50,
+    "x": 2,
+    "y": 117,
+    "w": 49,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 107,
+    "x": 108,
     "y": 105,
-    "w": 50,
+    "w": 49,
     "h": 82
    },
    "sourceSize": {
@@ -196,15 +196,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 49,
+    "w": 50,
     "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
+    "x": 105,
     "y": 88,
-    "w": 49,
+    "w": 50,
     "h": 111
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "grenadier_attack_b_07_team": {
    "frame": {
-    "x": 2,
-    "y": 117,
+    "x": 263,
+    "y": 2,
     "w": 45,
     "h": 90
    },
@@ -278,14 +278,14 @@
   "format": "RGBA8888",
   "size": {
    "w": 320,
-   "h": 212
+   "h": 204
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.grenadier",
    "name": "Grenadier",
    "heightLu": 76,
-   "widthLu": 39.0,
+   "widthLu": 41.5,
    "pxPerLu": 1.23,
    "feetPx": [
     121.0,

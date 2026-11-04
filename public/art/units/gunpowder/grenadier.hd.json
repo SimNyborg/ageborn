@@ -2,17 +2,17 @@
  "frames": {
   "grenadier_idle_00": {
    "frame": {
-    "x": 1157,
+    "x": 881,
     "y": 2,
-    "w": 111,
+    "w": 117,
     "h": 212
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
+    "x": 195,
     "y": 186,
-    "w": 111,
+    "w": 117,
     "h": 212
    },
    "sourceSize": {
@@ -26,8 +26,8 @@
   },
   "grenadier_idle_00_team": {
    "frame": {
-    "x": 2485,
-    "y": 2,
+    "x": 2116,
+    "y": 174,
     "w": 88,
     "h": 168
    },
@@ -50,17 +50,17 @@
   },
   "grenadier_idle_01": {
    "frame": {
-    "x": 1150,
-    "y": 222,
-    "w": 107,
+    "x": 716,
+    "y": 445,
+    "w": 115,
     "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 195,
     "y": 184,
-    "w": 107,
+    "w": 115,
     "h": 214
    },
    "sourceSize": {
@@ -74,7 +74,7 @@
   },
   "grenadier_idle_01_team": {
    "frame": {
-    "x": 2316,
+    "x": 2023,
     "y": 175,
     "w": 89,
     "h": 169
@@ -98,17 +98,17 @@
   },
   "grenadier_idle_02": {
    "frame": {
-    "x": 718,
-    "y": 2,
-    "w": 110,
+    "x": 349,
+    "y": 228,
+    "w": 117,
     "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 204,
+    "x": 197,
     "y": 176,
-    "w": 110,
+    "w": 117,
     "h": 220
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "grenadier_idle_02_team": {
    "frame": {
-    "x": 1941,
-    "y": 361,
+    "x": 1709,
+    "y": 551,
     "w": 89,
     "h": 174
    },
@@ -146,17 +146,17 @@
   },
   "grenadier_idle_03": {
    "frame": {
-    "x": 459,
-    "y": 229,
-    "w": 107,
+    "x": 232,
+    "y": 230,
+    "w": 113,
     "h": 223
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 197,
     "y": 171,
-    "w": 107,
+    "w": 113,
     "h": 223
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "grenadier_idle_03_team": {
    "frame": {
-    "x": 1835,
-    "y": 184,
+    "x": 1618,
+    "y": 560,
     "w": 87,
     "h": 177
    },
@@ -194,17 +194,17 @@
   },
   "grenadier_idle_04": {
    "frame": {
-    "x": 451,
-    "y": 2,
-    "w": 110,
+    "x": 222,
+    "y": 474,
+    "w": 116,
     "h": 223
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 196,
     "y": 173,
-    "w": 110,
+    "w": 116,
     "h": 223
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "grenadier_idle_04_team": {
    "frame": {
-    "x": 1919,
-    "y": 2,
+    "x": 1654,
+    "y": 371,
     "w": 86,
     "h": 176
    },
@@ -242,17 +242,17 @@
   },
   "grenadier_idle_05": {
    "frame": {
-    "x": 932,
-    "y": 224,
-    "w": 107,
+    "x": 598,
+    "y": 447,
+    "w": 114,
     "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
+    "x": 194,
     "y": 180,
-    "w": 107,
+    "w": 114,
     "h": 217
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "grenadier_idle_05_team": {
    "frame": {
-    "x": 2185,
-    "y": 2,
+    "x": 1834,
+    "y": 362,
     "w": 86,
     "h": 172
    },
@@ -290,8 +290,8 @@
   },
   "grenadier_walk_00": {
    "frame": {
-    "x": 832,
-    "y": 446,
+    "x": 954,
+    "y": 432,
     "w": 112,
     "h": 208
    },
@@ -314,17 +314,17 @@
   },
   "grenadier_walk_00_team": {
    "frame": {
-    "x": 2275,
+    "x": 1985,
     "y": 2,
-    "w": 96,
+    "w": 94,
     "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 204,
     "y": 198,
-    "w": 96,
+    "w": 94,
     "h": 169
    },
    "sourceSize": {
@@ -338,17 +338,17 @@
   },
   "grenadier_walk_01": {
    "frame": {
-    "x": 720,
-    "y": 449,
-    "w": 101,
+    "x": 1128,
+    "y": 2,
+    "w": 103,
     "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
+    "x": 197,
     "y": 193,
-    "w": 101,
+    "w": 103,
     "h": 204
    },
    "sourceSize": {
@@ -362,17 +362,17 @@
   },
   "grenadier_walk_01_team": {
    "frame": {
-    "x": 2422,
-    "y": 346,
-    "w": 85,
+    "x": 2191,
+    "y": 2,
+    "w": 82,
     "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
+    "x": 202,
     "y": 203,
-    "w": 85,
+    "w": 82,
     "h": 167
    },
    "sourceSize": {
@@ -386,17 +386,17 @@
   },
   "grenadier_walk_02": {
    "frame": {
-    "x": 1057,
+    "x": 775,
     "y": 2,
-    "w": 96,
+    "w": 102,
     "h": 216
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 196,
     "y": 179,
-    "w": 96,
+    "w": 102,
     "h": 216
    },
    "sourceSize": {
@@ -410,7 +410,7 @@
   },
   "grenadier_walk_02_team": {
    "frame": {
-    "x": 2009,
+    "x": 1809,
     "y": 2,
     "w": 78,
     "h": 175
@@ -434,17 +434,17 @@
   },
   "grenadier_walk_03": {
    "frame": {
-    "x": 832,
-    "y": 224,
-    "w": 96,
+    "x": 492,
+    "y": 447,
+    "w": 102,
     "h": 218
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 196,
     "y": 170,
-    "w": 96,
+    "w": 102,
     "h": 218
    },
    "sourceSize": {
@@ -458,8 +458,8 @@
   },
   "grenadier_walk_03_team": {
    "frame": {
-    "x": 90,
-    "y": 474,
+    "x": 1565,
+    "y": 378,
     "w": 85,
     "h": 178
    },
@@ -482,8 +482,8 @@
   },
   "grenadier_walk_04": {
    "frame": {
-    "x": 1379,
-    "y": 216,
+    "x": 1152,
+    "y": 210,
     "w": 117,
     "h": 201
    },
@@ -506,17 +506,17 @@
   },
   "grenadier_walk_04_team": {
    "frame": {
-    "x": 2217,
-    "y": 178,
-    "w": 95,
+    "x": 1925,
+    "y": 180,
+    "w": 94,
     "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 204,
     "y": 198,
-    "w": 95,
+    "w": 94,
     "h": 170
    },
    "sourceSize": {
@@ -530,7 +530,7 @@
   },
   "grenadier_walk_05": {
    "frame": {
-    "x": 1514,
+    "x": 1358,
     "y": 2,
     "w": 117,
     "h": 190
@@ -554,8 +554,8 @@
   },
   "grenadier_walk_05_team": {
    "frame": {
-    "x": 2509,
-    "y": 174,
+    "x": 954,
+    "y": 644,
     "w": 100,
     "h": 165
    },
@@ -578,17 +578,17 @@
   },
   "grenadier_walk_06": {
    "frame": {
-    "x": 1394,
-    "y": 2,
-    "w": 116,
+    "x": 1070,
+    "y": 426,
+    "w": 118,
     "h": 201
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
+    "x": 199,
     "y": 186,
-    "w": 116,
+    "w": 118,
     "h": 201
    },
    "sourceSize": {
@@ -602,17 +602,17 @@
   },
   "grenadier_walk_06_team": {
    "frame": {
-    "x": 2577,
-    "y": 2,
-    "w": 109,
+    "x": 2087,
+    "y": 520,
+    "w": 108,
     "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 204,
+    "x": 205,
     "y": 194,
-    "w": 109,
+    "w": 108,
     "h": 164
    },
    "sourceSize": {
@@ -626,17 +626,17 @@
   },
   "grenadier_walk_07": {
    "frame": {
-    "x": 1261,
-    "y": 218,
-    "w": 114,
+    "x": 835,
+    "y": 438,
+    "w": 115,
     "h": 211
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
+    "x": 198,
     "y": 175,
-    "w": 114,
+    "w": 115,
     "h": 211
    },
    "sourceSize": {
@@ -650,17 +650,17 @@
   },
   "grenadier_walk_07_team": {
    "frame": {
-    "x": 2375,
+    "x": 2083,
     "y": 2,
-    "w": 106,
+    "w": 104,
     "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 205,
     "y": 183,
-    "w": 106,
+    "w": 104,
     "h": 168
    },
    "sourceSize": {
@@ -674,17 +674,17 @@
   },
   "grenadier_attack_00": {
    "frame": {
-    "x": 947,
-    "y": 2,
-    "w": 106,
+    "x": 661,
+    "y": 224,
+    "w": 112,
     "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 196,
     "y": 179,
-    "w": 106,
+    "w": 112,
     "h": 217
    },
    "sourceSize": {
@@ -698,7 +698,7 @@
   },
   "grenadier_attack_00_team": {
    "frame": {
-    "x": 2091,
+    "x": 1891,
     "y": 2,
     "w": 90,
     "h": 174
@@ -722,17 +722,17 @@
   },
   "grenadier_attack_01": {
    "frame": {
-    "x": 1283,
-    "y": 433,
-    "w": 115,
+    "x": 1002,
+    "y": 2,
+    "w": 122,
     "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 195,
     "y": 185,
-    "w": 115,
+    "w": 122,
     "h": 210
    },
    "sourceSize": {
@@ -746,8 +746,8 @@
   },
   "grenadier_attack_01_team": {
    "frame": {
-    "x": 2320,
-    "y": 348,
+    "x": 1985,
+    "y": 536,
     "w": 98,
     "h": 168
    },
@@ -770,17 +770,17 @@
   },
   "grenadier_attack_02": {
    "frame": {
-    "x": 343,
-    "y": 2,
-    "w": 104,
+    "x": 2,
+    "y": 474,
+    "w": 111,
     "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 196,
     "y": 172,
-    "w": 104,
+    "w": 111,
     "h": 224
    },
    "sourceSize": {
@@ -794,8 +794,8 @@
   },
   "grenadier_attack_02_team": {
    "frame": {
-    "x": 1831,
-    "y": 2,
+    "x": 1640,
+    "y": 189,
     "w": 84,
     "h": 178
    },
@@ -818,8 +818,8 @@
   },
   "grenadier_attack_03": {
    "frame": {
-    "x": 570,
-    "y": 228,
+    "x": 342,
+    "y": 457,
     "w": 146,
     "h": 222
    },
@@ -842,8 +842,8 @@
   },
   "grenadier_attack_03_team": {
    "frame": {
-    "x": 948,
-    "y": 445,
+    "x": 1559,
+    "y": 2,
     "w": 78,
     "h": 183
    },
@@ -866,7 +866,7 @@
   },
   "grenadier_attack_04": {
    "frame": {
-    "x": 565,
+    "x": 276,
     "y": 2,
     "w": 149,
     "h": 222
@@ -890,8 +890,8 @@
   },
   "grenadier_attack_04_team": {
    "frame": {
-    "x": 1754,
-    "y": 189,
+    "x": 1537,
+    "y": 576,
     "w": 77,
     "h": 181
    },
@@ -938,7 +938,7 @@
   },
   "grenadier_attack_05_team": {
    "frame": {
-    "x": 1635,
+    "x": 1479,
     "y": 2,
     "w": 76,
     "h": 185
@@ -962,17 +962,17 @@
   },
   "grenadier_attack_06": {
    "frame": {
-    "x": 1627,
+    "x": 1391,
     "y": 196,
-    "w": 123,
+    "w": 131,
     "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 213,
+    "x": 205,
     "y": 206,
-    "w": 123,
+    "w": 131,
     "h": 189
    },
    "sourceSize": {
@@ -986,17 +986,17 @@
   },
   "grenadier_attack_06_team": {
    "frame": {
-    "x": 2706,
-    "y": 167,
-    "w": 116,
+    "x": 2442,
+    "y": 327,
+    "w": 115,
     "h": 150
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 217,
+    "x": 218,
     "y": 213,
-    "w": 116,
+    "w": 115,
     "h": 150
    },
    "sourceSize": {
@@ -1010,17 +1010,17 @@
   },
   "grenadier_attack_07": {
    "frame": {
-    "x": 1500,
-    "y": 207,
-    "w": 123,
+    "x": 1403,
+    "y": 616,
+    "w": 130,
     "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 215,
+    "x": 208,
     "y": 207,
-    "w": 123,
+    "w": 130,
     "h": 190
    },
    "sourceSize": {
@@ -1034,17 +1034,17 @@
   },
   "grenadier_attack_07_team": {
    "frame": {
-    "x": 2742,
-    "y": 497,
-    "w": 115,
+    "x": 2324,
+    "y": 327,
+    "w": 114,
     "h": 151
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 220,
+    "x": 221,
     "y": 214,
-    "w": 115,
+    "w": 114,
     "h": 151
    },
    "sourceSize": {
@@ -1058,17 +1058,17 @@
   },
   "grenadier_attack_08": {
    "frame": {
-    "x": 459,
-    "y": 456,
-    "w": 107,
+    "x": 1273,
+    "y": 206,
+    "w": 114,
     "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 195,
     "y": 205,
-    "w": 107,
+    "w": 114,
     "h": 195
    },
    "sourceSize": {
@@ -1082,8 +1082,8 @@
   },
   "grenadier_attack_08_team": {
    "frame": {
-    "x": 2648,
-    "y": 336,
+    "x": 835,
+    "y": 653,
     "w": 92,
     "h": 157
    },
@@ -1106,17 +1106,17 @@
   },
   "grenadier_attack_09": {
    "frame": {
-    "x": 1043,
-    "y": 444,
-    "w": 102,
+    "x": 1039,
+    "y": 216,
+    "w": 109,
     "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 195,
     "y": 194,
-    "w": 102,
+    "w": 109,
     "h": 206
    },
    "sourceSize": {
@@ -1130,8 +1130,8 @@
   },
   "grenadier_attack_09_team": {
    "frame": {
-    "x": 2613,
-    "y": 170,
+    "x": 2129,
+    "y": 346,
     "w": 89,
     "h": 162
    },
@@ -1154,17 +1154,17 @@
   },
   "grenadier_attack_10": {
    "frame": {
-    "x": 1043,
-    "y": 223,
-    "w": 103,
+    "x": 666,
+    "y": 2,
+    "w": 105,
     "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 200,
+    "x": 198,
     "y": 181,
-    "w": 103,
+    "w": 105,
     "h": 217
    },
    "sourceSize": {
@@ -1178,17 +1178,17 @@
   },
   "grenadier_attack_10_team": {
    "frame": {
-    "x": 2123,
-    "y": 180,
-    "w": 90,
+    "x": 1802,
+    "y": 540,
+    "w": 88,
     "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 204,
     "y": 189,
-    "w": 90,
+    "w": 88,
     "h": 172
    },
    "sourceSize": {
@@ -1202,17 +1202,17 @@
   },
   "grenadier_attack_11": {
    "frame": {
-    "x": 832,
+    "x": 548,
     "y": 2,
-    "w": 111,
+    "w": 114,
     "h": 218
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
+    "x": 196,
     "y": 178,
-    "w": 111,
+    "w": 114,
     "h": 218
    },
    "sourceSize": {
@@ -1226,8 +1226,8 @@
   },
   "grenadier_attack_11_team": {
    "frame": {
-    "x": 2124,
-    "y": 356,
+    "x": 1894,
+    "y": 538,
     "w": 87,
     "h": 171
    },
@@ -1250,8 +1250,8 @@
   },
   "grenadier_hit_00": {
    "frame": {
-    "x": 570,
-    "y": 454,
+    "x": 1235,
+    "y": 2,
     "w": 119,
     "h": 200
    },
@@ -1274,8 +1274,8 @@
   },
   "grenadier_hit_00_team": {
    "frame": {
-    "x": 2690,
-    "y": 2,
+    "x": 2208,
+    "y": 173,
     "w": 112,
     "h": 161
    },
@@ -1298,8 +1298,8 @@
   },
   "grenadier_hit_01": {
    "frame": {
-    "x": 232,
-    "y": 230,
+    "x": 152,
+    "y": 2,
     "w": 120,
     "h": 224
    },
@@ -1322,8 +1322,8 @@
   },
   "grenadier_hit_01_team": {
    "frame": {
-    "x": 1659,
-    "y": 389,
+    "x": 1526,
+    "y": 191,
     "w": 110,
     "h": 183
    },
@@ -1346,17 +1346,17 @@
   },
   "grenadier_hit_02": {
    "frame": {
-    "x": 356,
-    "y": 230,
-    "w": 99,
+    "x": 117,
+    "y": 474,
+    "w": 101,
     "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
+    "x": 191,
     "y": 172,
-    "w": 99,
+    "w": 101,
     "h": 224
    },
    "sourceSize": {
@@ -1370,8 +1370,8 @@
   },
   "grenadier_hit_02_team": {
    "frame": {
-    "x": 2,
-    "y": 474,
+    "x": 1070,
+    "y": 631,
     "w": 84,
     "h": 179
    },
@@ -1394,17 +1394,17 @@
   },
   "grenadier_hit_03": {
    "frame": {
-    "x": 1272,
-    "y": 2,
-    "w": 118,
+    "x": 910,
+    "y": 218,
+    "w": 125,
     "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
+    "x": 194,
     "y": 186,
-    "w": 118,
+    "w": 125,
     "h": 210
    },
    "sourceSize": {
@@ -1418,8 +1418,8 @@
   },
   "grenadier_hit_03_team": {
    "frame": {
-    "x": 2409,
-    "y": 174,
+    "x": 2029,
+    "y": 348,
     "w": 96,
     "h": 168
    },
@@ -1442,17 +1442,17 @@
   },
   "grenadier_hit_04": {
    "frame": {
-    "x": 720,
-    "y": 226,
-    "w": 108,
+    "x": 429,
+    "y": 2,
+    "w": 115,
     "h": 219
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 195,
     "y": 177,
-    "w": 108,
+    "w": 115,
     "h": 219
    },
    "sourceSize": {
@@ -1466,8 +1466,8 @@
   },
   "grenadier_hit_04_team": {
    "frame": {
-    "x": 2034,
-    "y": 361,
+    "x": 1744,
+    "y": 362,
     "w": 86,
     "h": 174
    },
@@ -1490,8 +1490,8 @@
   },
   "grenadier_die_00": {
    "frame": {
-    "x": 1715,
-    "y": 2,
+    "x": 1449,
+    "y": 389,
     "w": 112,
     "h": 183
    },
@@ -1514,8 +1514,8 @@
   },
   "grenadier_die_00_team": {
    "frame": {
-    "x": 2648,
-    "y": 497,
+    "x": 2461,
+    "y": 165,
     "w": 90,
     "h": 154
    },
@@ -1538,8 +1538,8 @@
   },
   "grenadier_die_01": {
    "frame": {
-    "x": 1926,
-    "y": 182,
+    "x": 1728,
+    "y": 183,
     "w": 193,
     "h": 175
    },
@@ -1562,10 +1562,10 @@
   },
   "grenadier_die_01_team": {
    "frame": {
-    "x": 2511,
-    "y": 343,
+    "x": 2324,
+    "y": 165,
     "w": 133,
-    "h": 162
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
@@ -1573,7 +1573,7 @@
     "x": 154,
     "y": 174,
     "w": 133,
-    "h": 162
+    "h": 158
    },
    "sourceSize": {
     "w": 472,
@@ -1586,8 +1586,8 @@
   },
   "grenadier_die_02": {
    "frame": {
-    "x": 1150,
-    "y": 440,
+    "x": 777,
+    "y": 222,
     "w": 129,
     "h": 212
    },
@@ -1610,8 +1610,8 @@
   },
   "grenadier_die_02_team": {
    "frame": {
-    "x": 2215,
-    "y": 356,
+    "x": 1924,
+    "y": 362,
     "w": 101,
     "h": 170
    },
@@ -1634,8 +1634,8 @@
   },
   "grenadier_die_03": {
    "frame": {
-    "x": 1773,
-    "y": 374,
+    "x": 1641,
+    "y": 2,
     "w": 164,
     "h": 177
    },
@@ -1658,17 +1658,17 @@
   },
   "grenadier_die_03_team": {
    "frame": {
-    "x": 2744,
-    "y": 321,
-    "w": 160,
+    "x": 2199,
+    "y": 512,
+    "w": 159,
     "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 160,
     "y": 179,
-    "w": 160,
+    "w": 159,
     "h": 140
    },
    "sourceSize": {
@@ -1706,10 +1706,10 @@
   },
   "grenadier_die_04_team": {
    "frame": {
-    "x": 152,
-    "y": 2,
+    "x": 470,
+    "y": 225,
     "w": 187,
-    "h": 224
+    "h": 218
    },
    "rotated": false,
    "trimmed": true,
@@ -1717,7 +1717,7 @@
     "x": 162,
     "y": 181,
     "w": 187,
-    "h": 224
+    "h": 218
    },
    "sourceSize": {
     "w": 472,
@@ -1730,8 +1730,8 @@
   },
   "grenadier_die_05": {
    "frame": {
-    "x": 1402,
-    "y": 421,
+    "x": 1192,
+    "y": 415,
     "w": 253,
     "h": 197
    },
@@ -1754,10 +1754,10 @@
   },
   "grenadier_die_05_team": {
    "frame": {
-    "x": 232,
-    "y": 458,
+    "x": 1192,
+    "y": 616,
     "w": 207,
-    "h": 194
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
@@ -1765,7 +1765,7 @@
     "x": 141,
     "y": 190,
     "w": 207,
-    "h": 194
+    "h": 191
    },
    "sourceSize": {
     "w": 472,
@@ -1778,10 +1778,10 @@
   },
   "grenadier_die_06": {
    "frame": {
-    "x": 2806,
+    "x": 2277,
     "y": 2,
     "w": 250,
-    "h": 157
+    "h": 159
    },
    "rotated": false,
    "trimmed": true,
@@ -1789,7 +1789,7 @@
     "x": 110,
     "y": 243,
     "w": 250,
-    "h": 157
+    "h": 159
    },
    "sourceSize": {
     "w": 472,
@@ -1802,10 +1802,10 @@
   },
   "grenadier_die_06_team": {
    "frame": {
-    "x": 2861,
-    "y": 163,
+    "x": 598,
+    "y": 668,
     "w": 198,
-    "h": 143
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
@@ -1813,7 +1813,7 @@
     "x": 158,
     "y": 251,
     "w": 198,
-    "h": 143
+    "h": 142
    },
    "sourceSize": {
     "w": 472,
@@ -1826,10 +1826,10 @@
   },
   "grenadier_die_07": {
    "frame": {
-    "x": 1941,
-    "y": 539,
+    "x": 2087,
+    "y": 688,
     "w": 258,
-    "h": 108
+    "h": 116
    },
    "rotated": false,
    "trimmed": true,
@@ -1837,7 +1837,7 @@
     "x": 109,
     "y": 284,
     "w": 258,
-    "h": 108
+    "h": 116
    },
    "sourceSize": {
     "w": 472,
@@ -1850,8 +1850,8 @@
   },
   "grenadier_die_07_team": {
    "frame": {
-    "x": 2861,
-    "y": 465,
+    "x": 1802,
+    "y": 716,
     "w": 206,
     "h": 94
    },
@@ -1874,10 +1874,10 @@
   },
   "grenadier_die_08": {
    "frame": {
-    "x": 2203,
-    "y": 531,
+    "x": 342,
+    "y": 683,
     "w": 247,
-    "h": 105
+    "h": 112
    },
    "rotated": false,
    "trimmed": true,
@@ -1885,7 +1885,7 @@
     "x": 123,
     "y": 286,
     "w": 247,
-    "h": 105
+    "h": 112
    },
    "sourceSize": {
     "w": 472,
@@ -1898,8 +1898,8 @@
   },
   "grenadier_die_08_team": {
    "frame": {
-    "x": 2861,
-    "y": 563,
+    "x": 2349,
+    "y": 656,
     "w": 203,
     "h": 90
    },
@@ -2031,15 +2031,15 @@
   "image": "grenadier.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 3072,
-   "h": 656
+   "w": 2560,
+   "h": 812
   },
   "scale": "3",
   "ageborn": {
    "visualId": "unit.grenadier",
    "name": "Grenadier",
    "heightLu": 76,
-   "widthLu": 39.0,
+   "widthLu": 41.5,
    "pxPerLu": 2.46,
    "feetPx": [
     242,
@@ -2381,7 +2381,7 @@
         0,
         27.4
        ],
-       "scale": 0.488
+       "scale": 0.519
       },
       {
        "id": "fx.ko_stars",
@@ -2391,7 +2391,7 @@
         41.8
        ],
        "loops": 2,
-       "scale": 0.698
+       "scale": 0.72
       }
      ],
      "hideUnitAtMs": 695,

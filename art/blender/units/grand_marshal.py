@@ -462,8 +462,9 @@ SIN = (SX + 3.0, SY, SZ + SABRE * 0.45)
 CUT = {"kind": "arc", "joint": "sabre", "inner": SIN, "outer": TIP, "color": BLADE, "taper": 0.2,
        "white": 0.3, "t0": 0.0, "t1": 0.95, "lines": 3, "samples": 18}
 # W2: hollow smears (the outer band of the swept area and four speed lines): a filled crescent the size of the
-# charger is one flat field, so the smear frames fell under the cavalry floors (micro 2.4 on B's sweep)
-HOLLOW = {"band": 0.4, "lines": 4}
+# charger is one flat field, so the smear frames fell under the cavalry floors (micro 2.4 on B's sweep; 3.1 with
+# band 0.4)
+HOLLOW = {"band": 0.28, "lines": 4}
 
 
 def _attack_clip():

@@ -101,7 +101,7 @@
     "x": 161,
     "y": 2,
     "w": 116,
-    "h": 212
+    "h": 219
    },
    "rotated": false,
    "trimmed": true,
@@ -109,7 +109,7 @@
     "x": 203,
     "y": 188,
     "w": 116,
-    "h": 212
+    "h": 219
    },
    "sourceSize": {
     "w": 472,
@@ -122,7 +122,7 @@
   },
   "grenadier@fireworks_grenadier_attack_b_05_team": {
    "frame": {
-    "x": 505,
+    "x": 507,
     "y": 2,
     "w": 98,
     "h": 175
@@ -171,16 +171,16 @@
   "grenadier@fireworks_grenadier_attack_b_06_team": {
    "frame": {
     "x": 157,
-    "y": 218,
-    "w": 99,
+    "y": 225,
+    "w": 98,
     "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 215,
+    "x": 216,
     "y": 210,
-    "w": 99,
+    "w": 98,
     "h": 164
    },
    "sourceSize": {
@@ -196,15 +196,15 @@
    "frame": {
     "x": 403,
     "y": 2,
-    "w": 98,
+    "w": 100,
     "h": 221
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 212,
+    "x": 210,
     "y": 177,
-    "w": 98,
+    "w": 100,
     "h": 221
    },
    "sourceSize": {
@@ -285,7 +285,7 @@
    "visualId": "unit.grenadier@fireworks_grenadier",
    "name": "Grenadier",
    "heightLu": 76,
-   "widthLu": 39.0,
+   "widthLu": 41.5,
    "pxPerLu": 2.46,
    "feetPx": [
     242,

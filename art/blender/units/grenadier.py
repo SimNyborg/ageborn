@@ -63,8 +63,9 @@ PEWTER = "#C2BDB2"      # W2: pewter buttons on the pocket flap and cuffs (more 
 DETAIL_STANDARD = True
 LOOK_HIGHLIGHT = 0.9     # below 0.9 the polished brass turns too saturated for the colour rule
 # (a stronger gradient and cavity than the other soldiers, and the team kind's hide breakup: his team coat, sleeves
-# and mitre fill a third of him, and as cloth they read flat: micro 4.24 over every frame)
-LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.5, "cavity": 0.75, "rim_mix": 0.5,
+# and mitre fill a third of him, and as cloth they read flat: micro 4.24 over every frame; gradient 2.5 and cavity
+# 0.75 still left attack B's crouched frames, which show the mitre plate and the coat's back, at 4.29)
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.9, "cavity": 0.85, "rim_mix": 0.5,
               "top": 0.08, "top_t": 0.62, "team_core": 0.4}
 _FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
 MATERIAL_KINDS = {B.SKIN: "skin", HAIR: "fur", BOMB: "iron", SEAM: "iron", SHOE: "leather", _FAR(SHOE): "leather",
@@ -160,6 +161,12 @@ def build(rig):
                      pts, 1.3)
     g = Geo().blob((0.4, 0, 17.4), (12.0, 11.0, 2.2), p=3.0)
     rig.part("torso", g, B.LEATHER)          # belt
+    # W2: a black cartridge pouch with a pewter badge on the back hip (the crouched bowl of attack B shows the
+    # coat's back; a plain team field there fell under the floors)
+    g = Geo().blob((-10.0, -6.6, 19.4), (3.6, 3.0, 3.0), p=3.0)
+    rig.part("torso", g, B.BLACK, finish="gloss")
+    g = Geo().blob((-10.4, -9.2, 19.6), (1.5, 0.8, 1.5), p=2.4)
+    rig.part("torso", g, PEWTER, finish="metal", outline=0.4)
     g = Geo().blob((12.2, -2.6, 17.4), (1.4, 2.4, 2.0), p=2.4)
     rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo().capsule((0.5, 10.4, 38.0), (11.8, 0.0, 27.0), 2.2).capsule((11.8, 0.0, 27.0), (4.0, -11.4, 17.5), 2.2)
@@ -279,8 +286,8 @@ def _damage_spots(rig):
     """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The coat's back half (the
     largest team surface the bomb arm leaves clear), the coat tails, the mitre's team plate and the bomb bag; a
     torn strip from the tails' cream hem."""
-    rig.damage_spot_at("coat", "torso", -8.0, 24.0, 8.0, "cloth", team=True)     # below the arm in every frame
-    rig.damage_spot_at("tails", "tails", -10.0, 18.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("coat", "torso", -9.0, 27.0, 8.0, "cloth", team=True)     # clear of the arm in every frame
+    rig.damage_spot_at("tails", "tails", -10.0, 12.0, 7.0, "cloth", team=True)
     rig.damage_spot_at("plate", "cap", 3.0, 70.0, 6.0, "cloth", team=True)
     rig.damage_spot_at("bag", "hips", -4.5, 18.5, 5.0, "hide", fill=FLAP)
     rig.damage_spot_at("hem", "tails", -7.0, 10.0, 8.0, "cloth", kind="strip", fill=B.CREAM)
@@ -413,8 +420,8 @@ def _attack_clip():
              "r0_lu": 4.0, "r1_lu": 8.5, "n": 7, "color": "#FFE7B0"}],
         4: [SPARK_FIZZ],
         5: [{"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0), "outer": BOMB_TOP,
-             "color": "#6A6E78", "taper": 0.3, "white": 0.45, "t0": 0.0, "t1": 1.0, "lines": 3,
-             "samples": 16, "from": 3}],
+             "color": "#6A6E78", "taper": 0.3, "white": 0.45, "t0": 0.0, "t1": 1.0, "lines": 4,
+             "samples": 16, "from": 3, "band": 0.4}],     # W2: hollow (a filled sweep is one flat field)
         6: [{"kind": "dust", "ground": (12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 41, "spread": 0.8}],
     }
     poses = [_attack_pose(f) for f in range(4)] + [_fizz(_attack_pose(3))] + [_attack_pose(f) for f in range(4, 11)]
@@ -464,8 +471,8 @@ def _attack_b():
              "r0_lu": 4.0, "r1_lu": 8.5, "n": 7, "color": "#FFE7B0"}],
         4: [SPARK_FIZZ],
         5: [{"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0), "outer": BOMB_TOP,
-             "color": "#6A6E78", "taper": 0.3, "white": 0.45, "t0": 0.0, "t1": 1.0, "lines": 3,
-             "samples": 16, "from": 3}],
+             "color": "#6A6E78", "taper": 0.3, "white": 0.45, "t0": 0.0, "t1": 1.0, "lines": 4,
+             "samples": 16, "from": 3, "band": 0.4}],     # W2: hollow (a filled sweep is one flat field)
         6: [{"kind": "dust", "ground": (14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 42, "spread": 0.8}],
     }
     poses = [_attack_pose(f) for f in range(3)] + [_b_pose(k) for k in range(5)] + \

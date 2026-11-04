@@ -75,12 +75,13 @@ MATERIAL_KINDS = {B.SKIN: "skin", HAIR: "fur", B.CREAM: "cloth", _FAR(B.CREAM): 
 
 # Toy Soldier (DESIGN A5.8, rare): a painted wooden toy of the same Fusilier, the same model: porcelain-pale
 # painted skin with rosy cheeks, glossy black paint, ivory paint for the cream, bright gilt paint for the brass, a
-# brown painted musket and a brass wind-up key in his back. The coat, shako and pompom stay team.
-TOY = {B.SKIN: "#E6D3C3", HAIR: "#3A332E", B.CREAM: "#E4DBC9", _FAR(B.CREAM): CL.scale("#E4DBC9", 0.8),
+# brown painted musket and a brass wind-up key in his back. The coat, shako and pompom stay team. W2: the porcelain
+# and the ivory a step darker (#DDC9B8, #DCD3C0): at #E6D3C3 / #E4DBC9 they put the extras sheet at highlight 0.102.
+TOY = {B.SKIN: "#DDC9B8", HAIR: "#3A332E", B.CREAM: "#DCD3C0", _FAR(B.CREAM): CL.scale("#DCD3C0", 0.8),
        GAITER: "#2C2C34", _FAR(GAITER): CL.scale("#2C2C34", 0.8), SHOE: "#26262C", _FAR(SHOE): CL.scale("#26262C", 0.8),
        B.BLACK: "#24242A", B.BRASS: "#CBB384", _FAR(B.BRASS): CL.scale("#CBB384", 0.8), B.WOOD: "#4A3A34",
        B.GUNWOOD: "#7E625A", B.GUNMETAL: "#7A7F88", B.STEEL: "#C4CAD2"}
-TOY_KINDS = {"#E6D3C3": "ceramic", "#3A332E": "ceramic", "#E4DBC9": "ceramic", CL.scale("#E4DBC9", 0.8): "ceramic",
+TOY_KINDS = {"#DDC9B8": "ceramic", "#3A332E": "ceramic", "#DCD3C0": "ceramic", CL.scale("#DCD3C0", 0.8): "ceramic",
              "#2C2C34": "ceramic", CL.scale("#2C2C34", 0.8): "ceramic", "#26262C": "ceramic",
              CL.scale("#26262C", 0.8): "ceramic", "#24242A": "ceramic", "#CBB384": "gold",
              CL.scale("#CBB384", 0.8): "gold", "#4A3A34": "wood", "#7E625A": "wood", "#7A7F88": "iron",
