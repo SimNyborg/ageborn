@@ -26,12 +26,15 @@ import math
 
 from ageborn_art import face as F
 from ageborn_art import gait as GT
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "hussar"
 GAIT_NAME = "rider"
@@ -53,6 +56,29 @@ DARK = "#23262E"
 BLADE = "#C9D0D8"
 EYE = "#FAF6EE"
 NOSE = "#6E5A4E"
+BRAID = "#CFC3A6"
+COAT_LT = "#CDCAC4"    # W2: the grey's lit planes (neck crest)
+DAPPLE = "#A29E98"     # W2: the grey's dapples (darker rings of 3 lu and more)
+BUSBY = "#3A3634"      # W2: the fur busby with a lit side (was #2B2826)
+BUSBY_LT = "#524D4A"   # W2: lighter fur tufts on the busby
+FLEECE = "#3E3A38"     # W2: the black sheepskin with a lit side (was #2E2B2A)
+FUR_TRIM = "#3A3230"
+BOOT = "#3A3638"       # W2: the rider's boots with a lit side (was rigs_gunpowder.BLACK)
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Hussar is the dappled grey, the shabraque, the dolman with its cord bars, the slung
+# pelisse and the busby: a team-dark band under the shabraque's studs and a team-dark pelisse over the team dolman
+# (the team zones in two tones), a leather breastplate strap with a brass boss, darker dapples, throat creases and a
+# lighter neck crest on the grey (big plain hide fields need markings and creases, W1 review), wider cord bars,
+# larger braid dashes and studs, fur tufts on a lighter busby, a lighter sheepskin and boots.
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", COAT_LT: "hide", DAPPLE: "hide", POINTS: "hide", MANE: "fur",
+                  HOOF: "bone", STEEL: "iron", BLADE: "iron", NOSE: "hide", B.CREAM: "cloth", BRAID: "cloth",
+                  B.BRASS: "bronze", B.WOOD: "leather", B.BLACK: "leather", BOOT: "leather", B.GUNWOOD: "wood",
+                  B.SKIN: "skin", B.LEATHER: "leather", BUSBY: "fur", BUSBY_LT: "fur", FLEECE: "fur", FUR_TRIM: "fur",
+                  "#8C96A2": "iron", "team": "cloth"}
 
 # sabre: joint in the near hand (rider space, rest pose); blade modelled pointing up (+Z)
 SX, SY, SZ = 9.5, -14.0, 65.5
@@ -91,17 +117,33 @@ def build(rig):
     g.blob((-24.4, 0, 40.0), (2.2, 14.2, 10.0), p=3.2)
     rig.part("horse", g, B.CREAM)
     g = Geo()
-    for x in range(-22, 18, 4):                                # braid dashes on the edge
-        g.blob((x, -15.0, 29.0), (1.2, 0.6, 1.4), p=2.2, rot=(0, 30, 0))
-    rig.part("horse", g, "#CFC3A6", outline=0)
+    for x in range(-22, 18, 4):                                # braid dashes on the edge (W2: larger)
+        g.blob((x, -15.2, 29.0), (1.5, 0.7, 1.7), p=2.2, rot=(0, 30, 0))
+    rig.part("horse", g, BRAID, outline=0)
+    # W2: a team-dark band under the brass studs (the shabraque in two tones)
+    g = KD.band_z((-3.5, 0, 43.5), (21.5, 13.8, 12.8), 30.8, 36.6, p=3.2, taper=(1.12, 0.92), grow=0.3)
+    look.team_part(rig, "horse", g)
     g = G.anchor(cf, Geo(), K.scr(cf, (-6.0, -14.0, 40.5)), s=1.45, w=1.7)
     rig.part("horse", g, B.CREAM, highlight=False, outline=0)
     g = Geo()
     for x in (-18, -8, 2, 12):
-        g.sphere((x, -14.6, 33.8), 1.3, cuts=3)
+        g.sphere((x, -14.9, 33.8), 1.45, cuts=3)
     rig.part("horse", g, B.BRASS, finish="metal", outline=0.8)
+    # W2: a leather breastplate strap across the chest with a brass boss, the grey's creases and dapples
+    chest = Geo().blob((14.0, 0, 42.0), (11.4, 12.4, 11.9), p=2.2)
+    KD.surface_line(rig, "horse", chest, [(13.0, 51.0), (19.5, 46.0), (24.0, 40.0), (25.5, 34.5)], 2.6, B.LEATHER)
+    c = GW.on_surface(rig, "horse", [Geo().blob((14.0, 0, 42.0), (11.8, 12.8, 12.3), p=2.2)], 21.8, 43.2)
+    rig.part("horse", Geo().blob(c, (2.2, 1.0, 2.2), p=2.2), B.BRASS, finish="metal", outline=0.6)
+    KD.surface_line(rig, "horse", Geo().blob((14.0, 0, 42.0), (11.0, 12.0, 11.5), p=2.2),
+                    [(17.0, 33.5), (20.5, 31.0), (23.5, 30.6)], 1.0, COAT_DK)
+    hf = F.Face(rig, "horse", [Geo().blob((0, 0, 41), (25, 11.5, 12), p=2.3)])
+    g = Geo()
+    for (x, z), r in (((-25.0, 36.0), 1.7), ((-22.0, 31.0), 1.5), ((-27.5, 31.5), 1.4), ((17.0, 36.0), 1.6),
+                      ((21.0, 33.0), 1.4)):
+        hf.decal(g, hf.hit(x, z), F.ellipse(0.0, 0.0, r, r * 0.85, 10))
+    rig.part("horse", g, DAPPLE, highlight=False, outline=0)
     g = Geo().blob((-2, 0, 55.5), (12.5, 10.5, 3.8), p=2.6)  # sheepskin
-    rig.part("horse", g, "#2E2B2A", finish="hair")
+    rig.part("horse", g, FLEECE, finish="hair")
     g = Geo().blob((-2, 0, 54.5), (11.5, 9.5, 3.6), p=2.6)   # saddle
     g.blob((-11.5, 0, 57.0), (2.6, 8.5, 4.0), p=2.4)
     rig.part("horse", g, B.WOOD)
@@ -122,6 +164,17 @@ def build(rig):
     rig.joint("hhead", "neck", (32, 0, 66), scale=1.25)
     g = Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)
     rig.part("neck", g, COAT)
+    # W2: a lighter plane along the neck's crest, two creases at the throat and dapples down the neck
+    g = Geo().capsule((19.0, -1.2, 51.5), (28.4, -1.0, 67.0), 6.2, 4.4)
+    g.clip((0, -7.4, 0), (0, -1, 0))
+    rig.part("neck", g, COAT_LT, outline=0)
+    for pts in ([(29.5, 47.0), (33.0, 51.5), (35.5, 55.5)], [(26.5, 44.5), (29.6, 48.6), (31.8, 52.0)]):
+        KD.surface_line(rig, "neck", Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8), pts, 1.0, COAT_DK)
+    fc = F.Face(rig, "neck", [Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)])
+    g = Geo()
+    for (x, z), r in (((22.5, 52.0), 1.6), ((25.0, 56.5), 1.4), ((20.5, 47.0), 1.7), ((27.0, 50.5), 1.3)):
+        fc.decal(g, fc.hit(x, z), F.ellipse(0.0, 0.0, r, r * 0.85, 10))
+    rig.part("neck", g, DAPPLE, highlight=False, outline=0)
     g = Geo()
     for i in range(6):
         t = i / 5
@@ -170,7 +223,7 @@ def build(rig):
     g = Geo().capsule((8, -11.5, 53), (7, -11.5, 40), 4.8, 4.2)
     g.blob((9.5, -11.5, 38.0), (5.8, 4.2, 3.0), p=2.8)
     g.blob((7.6, -11.5, 53.0), (5.6, 5.0, 2.4), p=2.6)        # boot top
-    rig.part("rider", g, B.BLACK, finish="gloss")
+    rig.part("rider", g, BOOT, finish="gloss")
     g = Geo().lathe([(2.6, 0), (3.0, 0.4), (3.0, 1.4), (2.6, 1.8)], (9.5, -12.0, 34.6), segs=12)
     rig.part("rider", g, STEEL, finish="metal", outline=0.4)   # stirrup
     # torso: team coat, steel cuirass with brass rivets and a glint, coat tails
@@ -178,15 +231,15 @@ def build(rig):
     rig.part("ktorso", g, team=True)
     g = Geo()
     for z in (75.0, 72.0, 69.0, 66.0):
-        g.capsule((7.8, -6.0, z), (9.4, 3.0, z), 0.75)
+        g.capsule((7.8, -6.0, z), (9.4, 3.0, z), 0.95)       # W2: 0.75 -> 0.95 (the bars read at game scale)
     rig.part("ktorso", g, B.CREAM, outline=0.4)                     # laced cord bars
     # the pelisse slung over the near shoulder: team with a dark fur trim, swinging late
     rig.secondary("pelisse", "ktorso", (-2.0, -11.0, 79.0), (-8.0, -12.0, 66.0), max_deg=16, gain=1.3)
     g = Geo().blob((-5.0, -12.0, 71.0), (5.6, 3.0, 9.0), p=2.4, rot=(0, -20, 0))
-    rig.part("pelisse", g, team=True)
+    look.team_part(rig, "pelisse", g)                                # W2: team-dark over the team dolman
     g = Geo().blob((-7.6, -12.6, 63.4), (5.0, 3.2, 1.8), p=2.4, rot=(0, -20, 0))
     g.blob((-1.0, -12.6, 79.4), (5.0, 3.4, 1.8), p=2.4)
-    rig.part("pelisse", g, "#3A3230", finish="hair", outline=0.5)
+    rig.part("pelisse", g, FUR_TRIM, finish="hair", outline=0.5)
     g = Geo().blob((-0.6, 0, 63.4), (10.8, 11.6, 1.8), p=3.0)
     rig.part("ktorso", g, B.WOOD)
     rig.secondary("ktails", "ktorso", (-8.0, 0, 63.0), (-15.0, 0, 55.0), max_deg=16, gain=1.1)
@@ -205,7 +258,15 @@ def build(rig):
     rig.part("khead", g, MANE, finish="hair")
     g = Geo().lathe([(0, 0), (9.0, 0), (9.8, 6.0), (9.6, 13.0), (0, 13.4)], (0.4, 0, 90.0), (0.4, 0, 103.4),
                     segs=24, squash=(1.0, 0.95))
-    rig.part("khead", g, "#2B2826", finish="hair")                    # black fur busby
+    rig.part("khead", g, BUSBY, finish="hair")                        # black fur busby
+    ref = Geo().lathe([(0, 0), (9.0, 0), (9.8, 6.0), (9.6, 13.0), (0, 13.4)], (0.4, 0, 90.0), (0.4, 0, 103.4),
+                      segs=24, squash=(1.0, 0.95))
+    fb = F.Face(rig, "khead", [ref])
+    g = Geo()                                                        # W2: lighter fur tufts (two tones)
+    for (fx, fz), r in (((5.0, 99.0), (2.4, 1.4, 2.0)), ((-2.0, 101.4), (2.4, 1.4, 2.0)), ((1.6, 94.6), (2.2, 1.4, 2.0)),
+                        ((-6.0, 96.0), (2.2, 1.4, 2.0))):
+        g.blob(tuple(fb.hit(fx, fz)), r, p=2.2)
+    rig.part("khead", g, BUSBY_LT, finish="hair", outline=0)
     rig.secondary("crest", "khead", (-6, 0, 101), (-18, 0, 92), max_deg=16, gain=1.4)
     g = Geo().capsule((-5.0, 0, 101.0), (-12.0, 0, 97.0), 4.4, 3.4).capsule((-12.0, 0, 97.0), (-17.0, 0, 91.0), 3.4, 2.0)
     rig.part("crest", g, team=True)                                  # the team busby bag
@@ -248,6 +309,19 @@ def build(rig):
     g.clip((SX - 1.0, SY, SZ), (-1, 0, 0))
     rig.part("sabre", g, B.BRASS, finish="metal", outline=0.7)
     rig.track("sabreTip", "sabre", (SX + 7.0, SY, SZ + SABRE))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on faces or skin. The shabraque (the largest team
+    surface, under the rider's leg), the grey's neck, the pelisse over his near shoulder (the dolman hides behind
+    the sabre arm), the busby; a torn strip from the shabraque's cream edge."""
+    rig.damage_spot_at("shabraque", "horse", -12.0, 42.0, 9.0, "cloth", team=True)
+    rig.damage_spot_at("neck", "neck", 24.0, 54.0, 7.0, "hide", fill=COAT)
+    rig.damage_spot_at("pelisse", "pelisse", -8.0, 70.0, 6.0, "cloth", team=True)   # the dolman hides under the arm
+    rig.damage_spot_at("busby", "khead", -2.0, 108.0, 5.0, "hide", fill=BUSBY)
+    rig.damage_spot_at("hem", "horse", -14.0, 27.0, 9.0, "cloth", kind="strip", fill=B.CREAM)
 
 
 # -- poses ---------------------------------------------------------------------------------

@@ -22,13 +22,17 @@ Animation (ANIM_SPEC G2 tiptoe, appendix B for a caster: watch swing, two-hand f
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "mesmerist"
 GAIT_NAME = "biped"
@@ -40,11 +44,30 @@ ANCHORS = {"head": (2, 72), "hitCenter": (0, 34), "muzzle": (18, 34)}
 NO_RETIME = True
 
 HAIR = "#3B302A"
-TROUSER = "#4E4A50"
-SHOE = "#26242A"
-HAT = "#26242A"
+HAIR_LT = "#5A4A40"      # W2: lighter tufts in the hair and goatee (two-tone hair)
+TROUSER = "#5A5660"      # W2: the striped trousers with a lit side (was #4E4A50)
+STRIPE = "#7A7680"       # W2: the trousers' pinstripes, wider (they read at game scale)
+SHOE = "#38363C"         # W2: a lit side that separates from the outline (was #26242A)
+HAT = "#3A3840"          # W2: the top hat at a mid value with a lit side (was #26242A)
+LID = "#E3B996"
+DIAL = "#F4EEDC"
 VIOLET = "#D8C8F0"
 WATCH = "#C8B88A"
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Mesmerist is the tall top hat, the frock coat and its long tails, the cream lapels and
+# waistcoat, the striped trousers and the watch: a team-dark hat band and team-dark wings and a team-dark band over
+# the tails' cream hem (the team zone in two tones), brass buttons on the waistcoat, wider pinstripes, lighter tufts
+# in the hair and goatee, a lighter hat, trousers and shoes (dark materials need a lit side).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.93
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", LID: "skin", HAIR: "fur", HAIR_LT: "fur", TROUSER: "cloth", _FAR(TROUSER): "cloth",
+                  STRIPE: "cloth", SHOE: "leather", _FAR(SHOE): "leather", HAT: "cloth", VIOLET: "cloth",
+                  WATCH: "bronze", DIAL: "ceramic", B.CREAM: "cloth", B.BRASS: "bronze", B.BLACK: "leather",
+                  "team": "cloth"}
 HAT_C = (1.0, 0.0, 57.5)
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
 CHAIN = 9.0
@@ -60,7 +83,7 @@ def _hat(rig, joint):
                     (x, y, z + 0.6), segs=28, squash=(1.0, 0.9))
     rig.part(joint, g, HAT, finish="gloss", outline=0.6)
     g = Geo().lathe([(8.5, 0), (9.0, 0.3), (9.0, 3.2), (8.5, 3.5)], (x, y, z + 0.6), segs=24, squash=(1.0, 0.94))
-    rig.part(joint, g, team=True)
+    look.team_part(rig, joint, g)                                    # the hat band (W2: team-dark)
     g = Geo().capsule((x - 4.0, -8.6, z + 3.0), (x - 9.0, -8.0, z + 13.0), 1.8, 0.8)
     rig.part(joint, g, VIOLET, outline=0.5)
 
@@ -70,7 +93,7 @@ def _watch(rig, joint, c):
     g = Geo().lathe([(0, -1.0), (4.0, -1.0), (4.6, 0), (4.0, 1.0), (0, 1.0)], (x, y + 0.8, z), (x, y - 0.8, z), segs=20)
     rig.part(joint, g, WATCH, finish="metal", outline=0.7)
     g = Geo().lathe([(0, -0.2), (3.4, -0.2), (3.4, 0.2), (0, 0.2)], (x, y - 1.0, z), (x, y - 1.3, z), segs=20)
-    rig.part(joint, g, "#F4EEDC", outline=0)
+    rig.part(joint, g, DIAL, outline=0)
     g = Geo().capsule((x, y - 1.5, z), (x + 0.6, y - 1.5, z + 2.6), 0.35).capsule((x, y - 1.5, z), (x + 1.8, y - 1.5, z - 0.6), 0.35)
     rig.part(joint, g, B.BLACK, outline=0, highlight=False)
     g = Geo().capsule((x, y, z + 4.6), (HR[0] + 0.6, HR[1] - 0.6, HR[2] - 1.0), 0.45)
@@ -86,8 +109,10 @@ def build(rig):
     K.skeleton_v3(rig)
     G.legs_v3(rig, TROUSER, SHOE, stocking=TROUSER, thigh_r=4.0, buckle=False)
     for s, y in (("r", -B.LEG_Y), ("l", B.LEG_Y)):
-        g = Geo().capsule((1.4, y - (3.5 if s == "r" else -3.5), 17.5), (1.6, y - (3.4 if s == "r" else -3.4), 6.0), 0.4)
-        rig.part(f"thigh_{s}", g, "#6E6A72", outline=0, highlight=False)   # pinstripe
+        g = Geo()
+        for dx in (-1.6, 1.8):
+            g.capsule((dx, y - (3.5 if s == "r" else -3.5), 17.5), (dx + 0.2, y - (3.4 if s == "r" else -3.4), 6.0), 0.6)
+        rig.part(f"thigh_{s}", g, STRIPE, outline=0, highlight=False)   # pinstripes (W2: two, wider)
 
     coat = Geo().blob((0, 0, 29.0), (10.6, 9.8, 12.4), p=2.4, taper=(1.12, 0.92))
     coat.blob((0, 0, 19.0), (10.2, 9.4, 4.8), p=2.6)
@@ -95,6 +120,8 @@ def build(rig):
     g = Geo().blob((8.0, -0.4, 28.0), (3.2, 5.2, 8.6), p=2.6)
     g.clip((7.0, 0, 0), (-1, 0, 0))
     rig.part("torso", g, B.CREAM, outline=0.6)                       # waistcoat
+    GW.studs(rig, "torso", [Geo().blob((8.0, -0.4, 28.0), (3.2, 5.2, 8.6), p=2.6)], [(10.6, 30.4), (10.8, 26.8)],
+             r=1.25)                                                 # W2: brass buttons on the waistcoat
     g = Geo().capsule((10.2, -3.0, 25.6), (10.4, 2.4, 22.6), 0.5)
     rig.part("torso", g, WATCH, finish="metal", outline=0)           # watch chain
     g = Geo().blob((6.0, -4.6, 33.0), (2.4, 2.6, 5.4), p=2.4, rot=(0, -25, 0))
@@ -109,6 +136,8 @@ def build(rig):
     rig.part("tails", g, team=True)
     g = Geo().blob((-5.6, 0, 7.6), (3.4, 10.2, 1.6), p=2.6, rot=(0, 12, 0))
     rig.part("tails", g, B.CREAM, outline=0.5)
+    g = KD.band_z((-4.6, 0, 14.0), (5.2, 10.0, 8.4), 9.0, 11.6, p=2.6, taper=(0.65, 1.0), rot=(0, 12, 0))
+    look.team_part(rig, "tails", g)          # W2: a team-dark band over the cream hem
 
     head = G.head_geos(center=(2, 0, 49.0), r=(11.2, 10.6, 11.8), nose=(14.2, -0.6, 47.6), nose_r=(3.0, 2.6, 3.6))
     hair = Geo().blob((-5.4, 0, 47.0), (5.6, 10.2, 6.0), p=2.2)
@@ -119,10 +148,17 @@ def build(rig):
     rig.part("head", head, B.SKIN)
     rig.part("head", hair, HAIR, finish="hair")
     rig.part("head", goatee, HAIR, finish="hair")
+    hf = F.Face(rig, "head", [Geo().blob((-5.4, 0, 47.0), (5.6, 10.2, 6.0), p=2.2)])
+    g = Geo()                                  # W2: lighter rounded tufts (two-tone hair, W1 review)
+    for (hx_, hz_), r in (((-7.8, 49.0), (2.3, 1.6, 2.2)), ((-9.4, 44.6), (2.2, 1.6, 2.3)),
+                          ((-5.2, 42.4), (2.1, 1.6, 2.0))):
+        g.blob(tuple(hf.hit(hx_, hz_)), r, p=2.2)
+    g.blob((12.6, -2.6, 38.4), (1.4, 1.0, 2.0), p=2.2)
+    rig.part("head", g, HAIR_LT, finish="hair", outline=0)
     B.moustache(rig, HAIR, cx=13.8, z=45.0)
     # heavy half-lids (the hypnotic look), part of the head
     g = Geo().blob((13.2, -4.4, 52.6), (2.8, 3.6, 1.6), p=2.2)
-    rig.part("head", g, "#E3B996", outline=0.4)
+    rig.part("head", g, LID, outline=0.4)
     rig.joint("hat", "head", HAT_C)
     _hat(rig, "hat")
     rig.joint("hat_loose", "root", HAT_C, hidden=True)
@@ -131,7 +167,7 @@ def build(rig):
     for s in ("r", "l"):
         B.arm_parts(rig, s, team_sleeve=True, cuff=B.CREAM, r0=3.9, r1=3.4, fist=3.8)
         g = Geo().blob((0, B.ARM_Y[s], 37.0), (5.0, 4.6, 4.0), p=2.4)
-        rig.part(f"arm_{s}", g, team=True)
+        look.team_part(rig, f"arm_{s}", g)                           # W2: team-dark wings
     # the watch on its own joint hanging from the near hand
     rig.joint("watch", "hand_r", (HR[0] + 0.6, HR[1] - 0.6, HR[2] - 1.0))
     _watch(rig, "watch", WATCH_C)
@@ -144,6 +180,18 @@ def build(rig):
             g.star((at[0] + dx, at[1] - 2.0, at[2] + dz), r * 1.6, r * 0.6, 0.8, points=4)
         rig.part(name, g, glow=VIOLET, outline=0)
     rig.track("muzzle", "watch", WATCH_C)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The frock coat's back half
+    (the largest team surface the watch arm leaves clear), the coat tails, the top hat; a torn strip from the tails'
+    cream hem."""
+    rig.damage_spot_at("coat", "torso", -6.0, 24.0, 8.0, "cloth", team=True)     # below the arm in every frame
+    rig.damage_spot_at("tails", "tails", -6.0, 15.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("hat", "hat", -1.0, 68.0, 5.5, "cloth", fill=HAT)
+    rig.damage_spot_at("hem", "tails", -7.0, 9.0, 8.0, "cloth", kind="strip", fill=B.CREAM)
 
 
 # -- poses ---------------------------------------------------------------------------------

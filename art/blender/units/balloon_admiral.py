@@ -34,10 +34,12 @@ import math
 from ageborn_art import face as F
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "balloon_admiral"
 GAIT_NAME = "fly"
@@ -52,9 +54,104 @@ NO_RETIME = True
 WICKER = "#B89E7E"
 WICKER_DK = "#8F785C"
 ROPE = "#D8CCB0"
+NET = "#8C7A62"          # W2: the rope net over the envelope (a mid rope brown that reads on team and cream)
 SAND = "#C8B89A"
 HAIR = "#ECE8E0"
-BOMB = "#34363C"
+BOMB = "#45474E"         # W2: the bombs with a lit side (was #34363C)
+PATCH = "#D9CBA8"
+HAT = "#3A3637"          # W2: the bicorne at a mid value with a lit side (was rigs_gunpowder.BLACK)
+FUSE = "#F4F4F0"
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Balloon Admiral is the big envelope, the gondola and the admiral: a team-dark lower
+# envelope (a darker belly for a flyer, and the team gores in two tones), team-dark seams round the envelope, larger
+# grommets, brass buttons, a lighter bicorne and lighter bombs (dark materials need a lit side). Item 40's smoke
+# rises from the gondola's wicker side, below the admiral's head on every frame, and from the envelope's flank (a
+# flyer smokes, it never burns).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.93
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {WICKER: "wood", WICKER_DK: "wood", ROPE: "cloth", SAND: "cloth", HAIR: "fur", BOMB: "iron",
+                  PATCH: "cloth", HAT: "cloth", FUSE: "cloth", B.CREAM: "cloth", B.BRASS: "bronze", B.WOOD: "wood",
+                  B.TAN: "cloth", B.BLACK: "leather", B.SKIN: "skin", NET: "cloth", "team": "cloth"}
+
+# Pufferfish Balloon (DESIGN A5.8, legendary): the same balloon as a puffed-up pufferfish: a pale sand belly for the
+# cream gores with darker sand spots, rows of short spines over the envelope, two big round eyes and a pursed mouth
+# at its front, little side fins, gilt for the brass; the team gores, rail band, pennant and the admiral's coat stay
+# team.
+PUFF_BELLY = "#EDE0BC"
+PUFF_SPOT = "#B8A27A"
+PUFF_SPINE = "#D8C69C"
+PUFF_EYE = "#FAF6EE"
+PUFF_PUPIL = "#23262E"
+PUFF_LIP = "#C98C7C"
+PUFFER = {B.CREAM: PUFF_BELLY, B.BRASS: "#E2C36E", PATCH: "#E4D6AE"}
+PUFFER_KINDS = {PUFF_BELLY: "hide", PUFF_SPOT: "hide", PUFF_SPINE: "bone", PUFF_EYE: "glass", PUFF_PUPIL: "glass",
+                PUFF_LIP: "hide", "#E2C36E": "gold", "#E4D6AE": "cloth"}
+SKINS = {"pufferfish_balloon": {"palette": PUFFER, "kinds": PUFFER_KINDS}}
+
+
+def _on_env(a_deg, z, lift=0.4):
+    """The point on the envelope's surface at the angle a (degrees; -90 faces the camera) and the height z, and the
+    outward direction there."""
+    prof = _envelope_profile()
+    r = 0.0
+    for (r0, z0), (r1, z1) in zip(prof, prof[1:]):
+        if z0 <= z <= z1:
+            r = r0 + (r1 - r0) * (z - z0) / max(z1 - z0, 1e-6)
+            break
+    a = math.radians(a_deg)
+    d = (math.cos(a), math.sin(a), 0.0)
+    return ((r + lift) * d[0], (r + lift) * d[1], z), d
+
+
+def _pufferfish(rig):
+    """The Pufferfish Balloon's own parts (skin only): spines, eyes, a mouth, side fins, belly spots."""
+    g = Geo()
+    for z in (ENV_C - 34, ENV_C - 22, ENV_C - 6, ENV_C + 10, ENV_C + 26, ENV_C + 42, ENV_C + 52):   # W2: 7 rows
+        for a in range(-180, 1, 30):
+            a2 = a + (15 if (z // 16) % 2 else 0)
+            p, d = _on_env(a2, z, lift=-0.4)
+            q = (p[0] + d[0] * 4.6, p[1] + d[1] * 4.6, p[2] + 1.2)
+            g.lathe([(1.5, 0), (0.9, 2.4), (0, 4.8)], p, q, segs=8)
+    rig.part("envelope", g, PUFF_SPINE, outline=0.5)
+    for (a, z, rr) in ((-38, ENV_C + 14, 7.2),):
+        p, d = _on_env(a, z, lift=0.2)
+        e = Geo().blob(p, (rr * 0.5, rr * 0.5, rr), p=2.2, rot=(0, 0, a + 90))
+        rig.part("envelope", e, PUFF_EYE, outline=0.7)
+        p2, _ = _on_env(a + 6, z - 1.0, lift=1.6)
+        rig.part("envelope", Geo().sphere(p2, rr * 0.48, cuts=3), PUFF_PUPIL, outline=0)
+    p, d = _on_env(-14, ENV_C - 6, lift=0.6)
+    rig.part("envelope", Geo().blob(p, (2.6, 2.6, 2.2), p=2.2, rot=(0, 0, -14 + 90)), PUFF_LIP, outline=0.6)
+    g = Geo()
+    for a in (-120, -60):
+        p, d = _on_env(a, ENV_C - 14, lift=0.0)
+        g.blob((p[0] + d[0] * 3.0, p[1] + d[1] * 3.0, p[2] - 2.0), (5.6, 1.0, 3.2), p=2.2, rot=(0, 30, a + 90))
+    rig.part("envelope", g, PUFF_SPINE, outline=0.6)
+    ef = F.Face(rig, "envelope", [Geo().lathe(_envelope_profile(), segs=36)])
+    g = Geo()
+    for x, z, r in ((-22.0, ENV_C - 26, 2.6), (8.0, ENV_C - 30, 2.2), (-6.0, ENV_C - 20, 2.4),
+                    (20.0, ENV_C - 22, 2.0), (-30.0, ENV_C - 12, 2.2), (14.0, ENV_C - 12, 2.0),
+                    (-12.0, ENV_C - 34, 2.0), (26.0, ENV_C - 34, 1.8)):
+        c = ef.hit(*K.scr(ef, (x, -40.0, z)))
+        ef.decal(g, c, F.ellipse(0.0, 0.0, r, r, 10), 0.5)
+    rig.part("envelope", g, PUFF_SPOT, highlight=False, outline=0)
+
+def _net(rig):
+    """W2: the gas balloon's rope net over the upper envelope, diamonds from the belly band to the crown (the big
+    smooth envelope read flat: micro 3.36, edge 0.45 against the flyers' 3.6 and 0.48)."""
+    rows = [ENV_C + 4.0 + 8.0 * j for j in range(7)]
+    g = Geo()
+    for j, (z0, z1) in enumerate(zip(rows, rows[1:])):
+        off = 10.0 if j % 2 else 0.0
+        for a in range(-200, 21, 20):
+            a0 = a + off
+            p0 = _on_env(a0, z0, lift=0.45)[0]
+            for a1 in (a0 - 10.0, a0 + 10.0):
+                g.capsule(p0, _on_env(a1, z1, lift=0.45)[0], 0.55)
+    rig.part("envelope", g, NET, outline=0, highlight=False)
+
 
 ENV_C = 118.0            # envelope: widest ring height
 NECK_Z = 74.0
@@ -91,15 +188,31 @@ def build(rig):
                     (0, 0, ENV_C + 3), segs=36)
     rig.part("envelope", g, B.CREAM, outline=0.6)                    # belly band
     g = Geo()
-    for a in range(0, 360, 30):                                      # brass grommets on the band
+    for a in range(0, 360, 30):                                      # brass grommets on the band (W2: larger)
         r = math.radians(a)
-        g.sphere((44.8 * math.cos(r), 44.8 * math.sin(r), ENV_C + 2), 1.1, cuts=2)
+        g.sphere((44.9 * math.cos(r), 44.9 * math.sin(r), ENV_C + 2), 1.4, cuts=2)
     rig.part("envelope", g, B.BRASS, finish="metal", outline=0)
+    # W2: a team-dark lower envelope under the cream gores (a darker belly; the team gores in two tones) and
+    # team-dark seams round the envelope
+    g = Geo().lathe([(r * 1.006, z) for r, z in prof], segs=36)
+    g.clip((0, 0, ENV_C - 14.0), (0, 0, 1))
+    g.clip((0, 0, NECK_Z + 7.0), (0, 0, -1))
+    look.team_part(rig, "envelope", g, outline=0)
+    for z in (ENV_C + 24.0, ENV_C + 44.0):
+        pts = []
+        for a in range(-178, 1, 8):
+            pts.append(_on_env(a, z, lift=0.3)[0])
+        g = Geo()
+        for p0, p1 in zip(pts, pts[1:]):
+            g.capsule(p0, p1, 0.75)
+        look.team_part(rig, "envelope", g, outline=0, highlight=False)
+    if getattr(rig, "skin", None) is None:
+        _net(rig)
     # a stitched patch on the near side, high up
     g = Geo()
     c = ef.hit(*K.scr(ef, (-14.0, -36.0, ENV_C + 30)))
     ef.decal(g, c, [(-5.0, 4.4), (5.2, 4.8), (4.8, -4.6), (-5.4, -4.2)], 0.5)
-    rig.part("envelope", g, "#D9CBA8", highlight=False, outline=0)
+    rig.part("envelope", g, PATCH, highlight=False, outline=0)
     g = Geo()
     for u, v in ((-4.2, 3.6), (4.4, 4.0), (4.0, -3.8), (-4.6, -3.4)):
         ef.stroke(g, c - ef.view * 0.3, [(u * 0.8, v * 1.1), (u * 1.1, v * 0.8)], 0.8, 0.3)
@@ -190,8 +303,8 @@ def build(rig):
     g.clip(P(7.6, 0, 0), (-1, 0, 0))
     rig.part("torso", g, B.CREAM)
     g = Geo()
-    for z in (32.0, 27.5):
-        g.sphere(P(11.6, -2.8, z), 1.0, cuts=3)
+    for z in (32.0, 27.5, 23.0):
+        g.sphere(P(11.6, -3.0, z), 1.3, cuts=3)      # W2: 1.0 -> 1.3 lu, three (they read at game scale)
     rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo().blob(P(1.2, 0, 37.2), (6.8, 7.2, 2.4), p=2.4)
     rig.part("torso", g, B.CREAM)
@@ -208,7 +321,7 @@ def build(rig):
     g = Geo().blob(P(13.4, -4.0, 43.8), (3.0, 5.0, 2.2), p=2.2, rot=(24, 0, 0))    # walrus moustache
     g.blob(P(13.4, 3.0, 43.8), (3.0, 5.0, 2.2), p=2.2, rot=(-24, 0, 0))
     rig.part("head", g, HAIR, finish="hair")
-    B.bicorne(rig, joint="head", c=P(0.5, 0, 57.5), scale=1.2)
+    B.bicorne(rig, joint="head", c=P(0.5, 0, 57.5), scale=1.2, color=HAT)
     # epaulettes and the near arm with the telescope
     rig.joint("arm_r", "torso", P(0, -12.5, 36))
     rig.joint("fore_r", "arm_r", P(0, -12.5, 28))
@@ -242,7 +355,7 @@ def build(rig):
     g = Geo().sphere(b2, 5.6, cuts=5)
     rig.part("bomb2", g, BOMB, finish="gloss", outline_hex="#50535A")
     g = Geo().blob((b2[0] - 2.0, b2[1] - 4.4, b2[2] + 2.0), (1.4, 0.6, 1.2), p=2.2)
-    rig.part("bomb2", g, "#F4F4F0", highlight=False, outline=0)
+    rig.part("bomb2", g, FUSE, highlight=False, outline=0)
     g = Geo().capsule((b2[0] + 3.0, b2[1], b2[2] + 4.0), (b2[0] + 4.4, b2[1], b2[2] + 6.6), 0.7)
     rig.part("bomb2", g, B.TAN, outline=0)
     rig.joint("fuse2", "bomb2", (b2[0] + 4.6, b2[1] - 1.0, b2[2] + 7.0))
@@ -267,13 +380,33 @@ def build(rig):
     g = Geo().sphere((bx, by - 2, bz - 4.0), 5.6, cuts=5)
     rig.part("bomb", g, BOMB, finish="gloss", outline_hex="#50535A")
     g = Geo().blob((bx - 2.0, by - 6.4, bz - 2.0), (1.4, 0.6, 1.2), p=2.2)
-    rig.part("bomb", g, "#F4F4F0", highlight=False, outline=0)
+    rig.part("bomb", g, FUSE, highlight=False, outline=0)
     g = Geo().capsule((bx + 2.0, by - 2, bz), (bx + 3.2, by - 2, bz + 2.6), 0.7)
     rig.part("bomb", g, B.TAN, outline=0)
     rig.joint("fuse", "bomb", (bx + 3.4, by - 4, bz + 3.0))
     g = Geo().star((bx + 3.4, by - 4, bz + 3.0), 3.2, 1.2, 1.0, points=6)
     rig.part("fuse", g, glow=B.FIRE, outline=0)
     rig.track("muzzle", "bomb", (bx, by, bz - 4.0))
+    if getattr(rig, "skin", None) == "pufferfish_balloon":
+        _pufferfish(rig)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, a flyer with a crewman): never on his face or skin. The envelope's
+    team gores (twice, its largest surface), the gondola's wicker, the admiral's coat, a strip from the pennant; two
+    smoke emitters for stages 2 and 3 (a flyer smokes but does not burn: DAMAGE's fire is the vehicles'). The first
+    sits on the gondola's wicker side, below the admiral's head on every frame, so the smoke never starts at his
+    face; the second, on the envelope's flank, keeps the smoke reading high on the balloon."""
+    rig.damage_spot_at("envelope", "envelope", -26.0, 140.0, 9.0, "cloth", team=True)
+    rig.damage_spot_at("envelope_low", "envelope", 18.0, 100.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("gondola", "gondola", -8.0, 18.0, 6.0, "wood", fill=WICKER)
+    rig.damage_spot_at("coat", "torso", -6.0, 34.0, 6.0, "cloth", team=True)     # clear of the arms in every frame
+    rig.damage_spot_at("pennant", "pennant", -14.0, 190.0, 6.0, "cloth", kind="strip", team=True)
+    rig.damage_spot_at("smoke", "gondola", 12.0, 23.0, 5.0, "smoke", kind="emit", fill=WICKER)
+    p, d = _on_env(-150, ENV_C + 10, lift=0.5)
+    rig.damage_spot("smoke_top", "envelope", p, 7.0, "smoke", kind="emit", normal=d)
 
 
 # -- poses ---------------------------------------------------------------------------------

@@ -2,17 +2,17 @@
  "frames": {
   "balloon_admiral_attack_b_01": {
    "frame": {
-    "x": 194,
+    "x": 424,
     "y": 2,
-    "w": 198,
+    "w": 200,
     "h": 395
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 167,
+    "x": 166,
     "y": 133,
-    "w": 198,
+    "w": 200,
     "h": 395
    },
    "sourceSize": {
@@ -26,17 +26,17 @@
   },
   "balloon_admiral_attack_b_01_team": {
    "frame": {
-    "x": 187,
-    "y": 420,
-    "w": 191,
+    "x": 628,
+    "y": 397,
+    "w": 195,
     "h": 348
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 174,
+    "x": 170,
     "y": 139,
-    "w": 191,
+    "w": 195,
     "h": 348
    },
    "sourceSize": {
@@ -50,17 +50,17 @@
   },
   "balloon_admiral_attack_b_02": {
    "frame": {
-    "x": 396,
+    "x": 628,
     "y": 2,
-    "w": 200,
+    "w": 202,
     "h": 391
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 166,
+    "x": 165,
     "y": 136,
-    "w": 200,
+    "w": 202,
     "h": 391
    },
    "sourceSize": {
@@ -74,17 +74,17 @@
   },
   "balloon_admiral_attack_b_02_team": {
    "frame": {
-    "x": 382,
+    "x": 211,
     "y": 420,
-    "w": 193,
+    "w": 197,
     "h": 346
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 173,
+    "x": 169,
     "y": 142,
-    "w": 193,
+    "w": 197,
     "h": 346
    },
    "sourceSize": {
@@ -98,17 +98,17 @@
   },
   "balloon_admiral_attack_b_03": {
    "frame": {
-    "x": 600,
+    "x": 216,
     "y": 2,
-    "w": 202,
+    "w": 204,
     "h": 389
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 165,
+    "x": 164,
     "y": 140,
-    "w": 202,
+    "w": 204,
     "h": 389
    },
    "sourceSize": {
@@ -122,18 +122,18 @@
   },
   "balloon_admiral_attack_b_03_team": {
    "frame": {
-    "x": 579,
-    "y": 420,
-    "w": 195,
-    "h": 343
+    "x": 412,
+    "y": 401,
+    "w": 196,
+    "h": 342
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 172,
-    "y": 147,
-    "w": 195,
-    "h": 343
+    "x": 171,
+    "y": 148,
+    "w": 196,
+    "h": 342
    },
    "sourceSize": {
     "w": 456,
@@ -146,7 +146,7 @@
   },
   "balloon_admiral_attack_b_04": {
    "frame": {
-    "x": 806,
+    "x": 834,
     "y": 2,
     "w": 204,
     "h": 387
@@ -170,18 +170,18 @@
   },
   "balloon_admiral_attack_b_04_team": {
    "frame": {
-    "x": 983,
+    "x": 1021,
     "y": 420,
-    "w": 196,
-    "h": 340
+    "w": 198,
+    "h": 339
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 172,
+    "x": 170,
     "y": 152,
-    "w": 196,
-    "h": 340
+    "w": 198,
+    "h": 339
    },
    "sourceSize": {
     "w": 456,
@@ -194,17 +194,17 @@
   },
   "balloon_admiral_attack_b_05": {
    "frame": {
-    "x": 2,
+    "x": 1042,
     "y": 2,
-    "w": 188,
+    "w": 190,
     "h": 414
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 172,
+    "x": 171,
     "y": 110,
-    "w": 188,
+    "w": 190,
     "h": 414
    },
    "sourceSize": {
@@ -218,17 +218,17 @@
   },
   "balloon_admiral_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 420,
-    "w": 181,
+    "x": 834,
+    "y": 393,
+    "w": 183,
     "h": 371
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 179,
+    "x": 177,
     "y": 114,
-    "w": 181,
+    "w": 183,
     "h": 371
    },
    "sourceSize": {
@@ -242,17 +242,17 @@
   },
   "balloon_admiral_attack_b_06": {
    "frame": {
-    "x": 1014,
+    "x": 2,
     "y": 2,
-    "w": 208,
+    "w": 210,
     "h": 378
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 162,
+    "x": 161,
     "y": 136,
-    "w": 208,
+    "w": 210,
     "h": 378
    },
    "sourceSize": {
@@ -266,17 +266,17 @@
   },
   "balloon_admiral_attack_b_06_team": {
    "frame": {
-    "x": 778,
-    "y": 420,
-    "w": 201,
+    "x": 2,
+    "y": 384,
+    "w": 205,
     "h": 341
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 169,
+    "x": 165,
     "y": 137,
-    "w": 201,
+    "w": 205,
     "h": 341
    },
    "sourceSize": {
@@ -322,14 +322,14 @@
   "format": "RGBA8888",
   "size": {
    "w": 1280,
-   "h": 796
+   "h": 768
   },
   "scale": "2.5",
   "ageborn": {
    "visualId": "unit.balloon_admiral",
    "name": "Balloon Admiral",
    "heightLu": 200,
-   "widthLu": 89.3,
+   "widthLu": 90.2,
    "pxPerLu": 2.05,
    "feetPx": [
     266,

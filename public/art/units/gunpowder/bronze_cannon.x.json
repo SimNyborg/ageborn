@@ -2,8 +2,8 @@
  "frames": {
   "bronze_cannon_attack_b_01": {
    "frame": {
-    "x": 837,
-    "y": 2,
+    "x": 258,
+    "y": 321,
     "w": 125,
     "h": 94
    },
@@ -26,8 +26,8 @@
   },
   "bronze_cannon_attack_b_01_team": {
    "frame": {
-    "x": 245,
-    "y": 141,
+    "x": 387,
+    "y": 319,
     "w": 89,
     "h": 87
    },
@@ -50,8 +50,8 @@
   },
   "bronze_cannon_attack_b_02": {
    "frame": {
-    "x": 705,
-    "y": 2,
+    "x": 126,
+    "y": 321,
     "w": 128,
     "h": 95
    },
@@ -74,8 +74,8 @@
   },
   "bronze_cannon_attack_b_02_team": {
    "frame": {
-    "x": 2,
-    "y": 141,
+    "x": 411,
+    "y": 2,
     "w": 92,
     "h": 88
    },
@@ -98,7 +98,7 @@
   },
   "bronze_cannon_attack_b_03": {
    "frame": {
-    "x": 338,
+    "x": 2,
     "y": 141,
     "w": 143,
     "h": 86
@@ -122,8 +122,8 @@
   },
   "bronze_cannon_attack_b_03_team": {
    "frame": {
-    "x": 598,
-    "y": 141,
+    "x": 402,
+    "y": 118,
     "w": 107,
     "h": 84
    },
@@ -146,18 +146,18 @@
   },
   "bronze_cannon_attack_b_04": {
    "frame": {
-    "x": 98,
-    "y": 141,
+    "x": 126,
+    "y": 231,
     "w": 143,
-    "h": 87
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 143,
-    "y": 88,
+    "y": 89,
     "w": 143,
-    "h": 87
+    "h": 86
    },
    "sourceSize": {
     "w": 393,
@@ -170,8 +170,8 @@
   },
   "bronze_cannon_attack_b_04_team": {
    "frame": {
-    "x": 485,
-    "y": 141,
+    "x": 2,
+    "y": 338,
     "w": 109,
     "h": 84
    },
@@ -218,8 +218,8 @@
   },
   "bronze_cannon_attack_b_05_team": {
    "frame": {
-    "x": 581,
-    "y": 2,
+    "x": 2,
+    "y": 231,
     "w": 120,
     "h": 103
    },
@@ -242,8 +242,8 @@
   },
   "bronze_cannon_attack_b_06": {
    "frame": {
-    "x": 411,
-    "y": 2,
+    "x": 232,
+    "y": 118,
     "w": 166,
     "h": 109
    },
@@ -266,8 +266,8 @@
   },
   "bronze_cannon_attack_b_06_team": {
    "frame": {
-    "x": 709,
-    "y": 141,
+    "x": 273,
+    "y": 231,
     "w": 105,
     "h": 84
    },
@@ -314,8 +314,8 @@
   },
   "bronze_cannon_attack_b_07_team": {
    "frame": {
-    "x": 818,
-    "y": 141,
+    "x": 382,
+    "y": 231,
     "w": 100,
     "h": 84
    },
@@ -371,8 +371,8 @@
   "image": "bronze_cannon.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1024,
-   "h": 232
+   "w": 512,
+   "h": 424
   },
   "scale": "1.5",
   "ageborn": {

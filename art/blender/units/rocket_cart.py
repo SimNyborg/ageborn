@@ -25,12 +25,15 @@ Animation (ANIM_SPEC G6 wheeled, appendix B for artillery: aimed shot, quick sho
 import math
 
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from units import battering_ram as R
+from units import gunpowder_w2 as GW
 
 SLUG = "rocket_cart"
 GAIT_NAME = "wheeled"
@@ -46,6 +49,21 @@ WOOD, DARK_WOOD, IRON, STEEL, GOLD = R.WOOD, R.DARK_WOOD, R.IRON, R.STEEL, R.GOL
 PARCH, ROPE, SKIN, HOSE, BOOT, HAIR = R.PARCH, R.ROPE, R.SKIN, "#626A74", R.BOOT, R.HAIR
 LEATHER = "#6B5647"
 STONE = "#8C8A86"
+HOSE_FAR = "#4E555D"
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Rocket Cart is the team planked side, the rack with its rockets, the wheels, the pennant
+# and the gunner: a team-dark bottom plank and a team-dark seam on the near side and a team-dark rack board (the team
+# zones in two tones), a team-dark cap on the gunner. Item 40's fire and smoke come from the bed's front beam, below
+# and well ahead of the gunner's head on every frame (W1 lesson 5); more smoke rises from the rack's rear.
+# (The wheels and the wood, iron and crew colours come from the Battering Ram's script, units/battering_ram.py.)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.93
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {WOOD: "wood", DARK_WOOD: "wood", IRON: "iron", STEEL: "iron", GOLD: "gold", PARCH: "cloth",
+                  ROPE: "cloth", SKIN: "skin", HOSE: "cloth", HOSE_FAR: "cloth", BOOT: "leather", HAIR: "fur",
+                  LEATHER: "leather", STONE: "stone", "#E4DCC8": "cloth", "#3E3B3A": "iron", "team": "cloth"}
 
 AXLES = (-20.0, 20.0)
 PIVOT = (-6.0, 0.0, 34.0)             # the rack's pivot on the cart bed
@@ -99,7 +117,7 @@ def build(rig):
         g.capsule((x, -8.4, pz + 1.0), (x, 8.4, pz + 1.0), 1.1)
     rig.part("arm", g, IRON, finish="metal", outline=0.6)
     g = Geo().blob((px + RACK * 0.4, -9.6, pz + 1.0), (RACK * 0.55, 1.0, 2.6), p=3.0)
-    rig.part("arm", g, team=True, outline=0.5)                      # team rack side board
+    look.team_part(rig, "arm", g, outline=0.5)                      # team rack side board (W2: team-dark)
     for k, tip in enumerate(TIPS):
         n = f"r{k}"
         rig.joint(n, "arm", (px, tip[1], tip[2] - 3.0))
@@ -132,9 +150,9 @@ def build(rig):
         rig.joint(n, "chassis", (CREW_X, y, 23.0))
         rig.joint(n + "2", n, (CREW_X + 1.0, y, 12.5))
         g = Geo().capsule((CREW_X, y, 24.0), (CREW_X + 1.0, y, 12.5), 3.4, 3.0)
-        rig.part(n, g, HOSE if side == "r" else "#4E555D")
+        rig.part(n, g, HOSE if side == "r" else HOSE_FAR)
         g = Geo().capsule((CREW_X + 1.0, y, 12.5), (CREW_X + 1.5, y, 3.8), 3.0, 2.7)
-        rig.part(n + "2", g, HOSE if side == "r" else "#4E555D")
+        rig.part(n + "2", g, HOSE if side == "r" else HOSE_FAR)
         g = Geo().blob((CREW_X + 3.8, y, 2.4), (5.2, 3.4, 2.6), p=2.8, taper=(1.02, 0.85))
         g.blob((CREW_X + 1.6, y, 5.0), (3.6, 3.4, 2.3), p=2.6)
         rig.part(n + "2", g, BOOT)
@@ -156,7 +174,7 @@ def build(rig):
     g = Geo().blob((hx0 - 1.0, hy0, hz0 + 3.0), (6.8, 6.6, 5.2), p=2.4)
     g.clip((0, 0, hz0 + 1.6), (0, 0, -1))
     g.blob((hx0 - 6.0, hy0, hz0 + 4.4), (3.0, 3.0, 2.4), p=2.2)
-    rig.part("crew_head", g, team=True)                               # knitted team cap
+    look.team_part(rig, "crew_head", g)                               # knitted cap (W2: team-dark)
     # the linstock: a forked staff with a glowing match
     g = Geo().capsule((CREW_X + 13.6, -9.0, 26.0), (CREW_X + 13.6, -9.0, 46.0), 0.9)
     rig.part("crew_arm", g, WOOD, outline=0.5)
@@ -167,6 +185,11 @@ def build(rig):
     pl = Geo().blob((0.0, -12.6, 30.0), (30.0, 1.6, 6.4), p=3.6)
     pf = F.Face(rig, "hull", [pl])
     rig.part("hull", pl, team=True)
+    # W2: a team-dark bottom plank and a team-dark seam between the upper planks (the side in two tones)
+    g = KD.band_z((0.0, -12.6, 30.0), (30.0, 1.6, 6.4), 23.4, 26.4, p=3.6, grow=0.25)
+    look.team_part(rig, "hull", g)
+    GW.team_line(rig, "hull", Geo().blob((0.0, -12.6, 30.0), (30.0, 1.6, 6.4), p=3.6),
+                 [(-28.0, 31.6), (28.0, 31.6)], 1.2, tone=look.TEAM_DARK)
     g = G.anchor(pf, Geo(), K.scr(pf, (6.0, -14.0, 30.0)), s=0.9)
     rig.part("hull", g, PARCH, highlight=False, outline=0)
     g = Geo()
@@ -183,6 +206,24 @@ def build(rig):
     rig.part("winch", g, WOOD, outline=0.6)
     R._wheel(rig, "wheel_bn", AXLES[0], -14.0)
     R._wheel(rig, "wheel_fn", AXLES[1], -14.0)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, a wooden machine with a crewman): never on his face or skin. The
+    near side's team planks (twice), the gunner's team coat, a strip from the pennant; two smoke emitters. The first
+    sits on the bed's front beam (about 25 lu at rest, at most about 33 lu when the cart rears on its back wheels),
+    70 lu ahead of the gunner and below his head on every frame, so DAMAGE's `fireAt` puts the stage-3 fire and the
+    ignite flare on the cart (W1 lesson 5); the second, at the rack's rear, is the backblast's smoke above the
+    rack."""
+    rig.damage_spot_at("planks", "hull", 16.0, 28.0, 6.0, "wood", team=True)
+    rig.damage_spot_at("planks_mid", "hull", 2.0, 25.0, 5.0, "wood", team=True)   # the rear is behind the crew
+    rig.damage_spot_at("coat", "crew", CREW_X + 2.5, 30.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("pennant", "pennant", -34.0, 69.0, 6.0, "cloth", kind="strip", team=True)
+    rig.damage_spot_at("smoke", "hull", 30.0, 25.0, 5.0, "smoke", kind="emit", fill=DARK_WOOD)
+    px, py, pz = PIVOT
+    rig.damage_spot("smoke_top", "arm", (px - 4.0, 0.0, pz + 6.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------
