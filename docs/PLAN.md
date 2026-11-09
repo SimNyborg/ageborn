@@ -201,3 +201,7 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-11-09: owner connected ElevenLabs on a paid plan; narration switches to the owner's chosen voice Steve
   (tested: works, 5.3 s line, downloads allowed). DV14 posted 07:49 UTC after five days without posts (worker
   restarts); DV15 scheduled for the evening.
+- 2026-11-09 evening: three Reels after five silent days: DV14 (same fight twice) 144 reach in 13 h with 51 % skip,
+  the lowest skip of any post so far; DV15 (riders, old voice by mistake) 117 with 53 %; DV16 (air against air, the
+  first post with expressive Steve v4) 111 in 7.5 h, 67.5 % skip but 40 % watch. Followers 155 (+2). Too early to
+  judge the new voice; compare DV16 and the next Steve posts with DV13-DV15 over the week.
