@@ -8,6 +8,14 @@ kind="$1"; key="$2"; pillar="$3"; hook="$4"
 log=state/last-post.log
 exec >>"$log" 2>&1
 echo "=== $(date -u +%FT%TZ) $kind $key"
+# Instagram fetches the file from raw.githubusercontent.com: the committed, pushed file must match the local one.
+f=$([[ "$kind" == reel ]] && echo "queue/reels/$key.mp4" || echo "queue/stories/$key.jpg")
+git add -f "$f" queue/captions/ queue/reels/ 2>/dev/null; git commit -qm "Studio: stage $key for posting" 2>/dev/null; git push -q origin social-media
+raw="https://raw.githubusercontent.com/SimNyborg/ageborn/social-media/$f"
+for i in 1 2 3 4 5 6 7 8 9 10; do
+  [ "$(curl -s "$raw" | sha1sum | cut -c1-40)" == "$(sha1sum < "$f" | cut -c1-40)" ] && break
+  echo "raw copy not current yet ($i)"; sleep 60
+done
 if [[ "$kind" == reel ]]; then
   if python3 tools/ig.py media 10 | grep -q "$(head -1 queue/captions/$key.txt | cut -c1-40)"; then echo "already live, skipping"; exit 0; fi
   out=$(python3 tools/ig.py reel "queue/reels/$key.mp4" "queue/captions/$key.txt" --cover "queue/reels/$key-cover.jpg" | tail -1)
