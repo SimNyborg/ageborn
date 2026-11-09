@@ -691,6 +691,22 @@
    "hook_type": "story",
    "experiment": "indie-angle",
    "arm": "devlog"
+  },
+  {
+   "id": "18155313949590956",
+   "permalink": "https://www.instagram.com/reel/DfhHMMQlPub/",
+   "timestamp": "2026-11-09T10:26:07+0000",
+   "name": "dv15-devlog-15-the-riders-jump-down",
+   "kind": "reel",
+   "pillar": "devlog",
+   "hook": "Devlog #15: the riders jump down (first Reel narrated by ElevenLabs Steve)",
+   "trial": false,
+   "length_s": 19.0,
+   "format": "devlog",
+   "hook_type": "story",
+   "experiment": "indie-angle",
+   "arm": "devlog",
+   "voice": "elevenlabs-steve"
   }
  ]
 }
