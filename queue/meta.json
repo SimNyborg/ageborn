@@ -5,5 +5,13 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
+  },
+  "dv16-devlog-16-air-against-air": {
+    "length_s": 21.8,
+    "format": "devlog",
+    "hook_type": "problem",
+    "experiment": "indie-angle",
+    "arm": "devlog",
+    "voice": "elevenlabs-steve-v4"
   }
 }
