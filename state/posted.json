@@ -676,6 +676,21 @@
    "hook_type": "story",
    "experiment": "indie-angle",
    "arm": "devlog"
+  },
+  {
+   "id": "18014887856969144",
+   "permalink": "https://www.instagram.com/reel/Dfg1U70gVEo/",
+   "timestamp": "2026-11-09T07:49:58+0000",
+   "name": "dv14-devlog-14-i-filmed-the-same-fight-twice",
+   "kind": "reel",
+   "pillar": "devlog",
+   "hook": "Devlog #14: I filmed the same fight twice (determinism, side by side)",
+   "trial": false,
+   "length_s": 32.4,
+   "format": "devlog",
+   "hook_type": "story",
+   "experiment": "indie-angle",
+   "arm": "devlog"
   }
  ]
 }
