@@ -86,10 +86,12 @@ watched), share_rate, eng_rate, reach. Followers per post are not available from
 ## Content direction (from the first week)
 
 Owner note 2026-11-09, voice: the owner's Claude account is now connected to ElevenLabs on a paid plan. Narrate
-with "Steve - Warm, Expressive, British" (voice_id 33aGKIlf0SKhTTaSWPVO, eleven_multilingual_v2) through the
-ElevenLabs connector: one generation per line (about 78 credits per take, two takes by default; use the first unless
-it is flawed), download from elevenlabsusercontent.com (allowed in the environment) into work/<id>/lines/, then build
-narration.wav and offsets.json from those files. Kokoro bm_george is the fallback if the connector is down.
+with "Steve - Warm, Expressive, British" (voice_id 33aGKIlf0SKhTTaSWPVO) through the ElevenLabs connector.
+Owner note 2026-11-09: use eleven_v4 with the WHOLE script in ONE take and audio tags ([curious], [leaning in,
+surprised], [laughs softly], "..." pauses); per-line eleven_multilingual_v2 sounded mechanical and was rejected.
+The owner liked the v4 takes (light British, small laughs, dramatic pauses). Get line offsets with the connector's
+transcription (eleven_scribe_v1 word timings), download from elevenlabsusercontent.com, write narration.wav and
+offsets.json by hand. Kokoro bm_george is the fallback if the connector is down.
 
 Owner note 2026-11-01, mix: most Reels must be developer videos (devlogs and before/after: a real development
 question, story first, the game getting better). Balance-test duels are the exception: at most 3 a week, never two
