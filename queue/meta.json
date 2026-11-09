@@ -6,7 +6,7 @@
     "experiment": "indie-angle",
     "arm": "devlog"
   },
-  "dv16-devlog-16-air-against-air": {
+  "dv16-air-against-air-v2": {
     "length_s": 21.8,
     "format": "devlog",
     "hook_type": "problem",
