@@ -198,3 +198,6 @@ what we believe, how sure we are, and what we post next because of it.
   ship whose last strike lands after it dies, found in DV10's event log) went out 18:42 UTC. DV14 (the same fight
   filmed twice, pixel-identical: determinism) is queued and scheduled for 2026-11-04 midday, made a day ahead as a
   buffer against restarts. Rule: keep one scheduled post a day ahead at all times.
+- 2026-11-09: owner connected ElevenLabs on a paid plan; narration switches to the owner's chosen voice Steve
+  (tested: works, 5.3 s line, downloads allowed). DV14 posted 07:49 UTC after five days without posts (worker
+  restarts); DV15 scheduled for the evening.
