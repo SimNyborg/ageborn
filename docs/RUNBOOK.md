@@ -122,6 +122,11 @@ no intro shots; 8-12 s; a question on screen in the first second; short end card
 `shots/duel.mjs` + `reels/duel.mjs` make "1 Legendary vs N" duels in this format: scout with
 `tools/scout.ts`, add a `shots/rN.mjs` + `reels/rN.mjs` pair, record, make, frame-check.
 
+Incident 2026-11-09: Instagram fetches every video from raw.githubusercontent.com. DV15 was re-narrated but the new
+file was not pushed, so Instagram published the old Kokoro version (the owner heard the old voice). And a URL that was
+fetched before the push stays cached as 404. tools/post_item.sh now pushes first and waits until the raw copy matches
+the local file; if a URL was already requested too early, rename the file.
+
 ## Daily Story (owner request 2026-10-16)
 
 One Story a day, around 15:30-17:30 Copenhagen (between the two grid Reels), jittered, scheduled by the

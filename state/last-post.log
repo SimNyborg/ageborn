@@ -8,3 +8,75 @@ error: the following files have local modifications:
     queue/reels/dv15-devlog-15-the-riders-jump-down.mp4
 (use --cached to keep the file, or -f to force removal)
 done
+=== 2026-11-09T13:21:33Z reel dv16-devlog-16-air-against-air
+Container 17963987640239598 failed: {"status_code": "ERROR", "status": "ERROR", "id": "17963987640239598"}
+
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+  File "/usr/lib/python3.13/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+=== 2026-11-09T13:22:26Z reel dv16-devlog-16-air-against-air
+Container 17963987664239598 failed: {"status_code": "ERROR", "status": "ERROR", "id": "17963987664239598"}
+
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+  File "/usr/lib/python3.13/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+=== 2026-11-09T13:23:48Z reel dv16-devlog-16-air-against-air
+On branch social-media
+Your branch is up to date with 'origin/social-media'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   state/last-post.log
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	studio/shots/ftest.mjs
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Container 17963987772239598 failed: {"status_code": "ERROR", "status": "ERROR", "id": "17963987772239598"}
+
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+  File "/usr/lib/python3.13/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+=== 2026-11-09T13:24:14Z reel dv16-air-against-air-v2
+On branch social-media
+Your branch is ahead of 'origin/social-media' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   state/last-post.log
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	studio/shots/ftest.mjs
+
+no changes added to commit (use "git add" and/or "git commit -a")
+{"id": "18106283741632955", "permalink": "https://www.instagram.com/reel/Dfhbo3Dkou4/", "timestamp": "2026-11-09T13:24:46+0000"}
+done
