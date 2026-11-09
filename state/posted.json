@@ -707,6 +707,22 @@
    "experiment": "indie-angle",
    "arm": "devlog",
    "voice": "elevenlabs-steve"
+  },
+  {
+   "id": "18106283741632955",
+   "permalink": "https://www.instagram.com/reel/Dfhbo3Dkou4/",
+   "timestamp": "2026-11-09T13:24:46+0000",
+   "name": "dv16-air-against-air-v2",
+   "kind": "reel",
+   "pillar": "devlog",
+   "hook": "Devlog #16: air against air (first post with expressive Steve v4 narration)",
+   "trial": false,
+   "length_s": 21.8,
+   "format": "devlog",
+   "hook_type": "problem",
+   "experiment": "indie-angle",
+   "arm": "devlog",
+   "voice": "elevenlabs-steve-v4"
   }
  ]
 }
