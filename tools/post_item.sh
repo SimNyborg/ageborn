@@ -27,7 +27,7 @@ d = json.load(open("state/posted.json"))
 d["posted"].append({"id": r["id"], "permalink": r.get("permalink"), "timestamp": r.get("timestamp"), "name": key, "kind": kind, "pillar": pillar, "hook": hook, "trial": False, **meta})
 json.dump(d, open("state/posted.json", "w"), indent=1)
 PY
-if [[ "$kind" == reel ]]; then git rm -q "queue/reels/$key.mp4" "queue/reels/$key-cover.jpg" "queue/captions/$key.txt"; else git rm -q "queue/stories/$key.jpg"; fi
+if [[ "$kind" == reel ]]; then git rm -qf "queue/reels/$key.mp4" "queue/reels/$key-cover.jpg" "queue/captions/$key.txt"; else git rm -qf "queue/stories/$key.jpg"; fi
 git add queue/meta.json state/posted.json
 git commit -qm "Studio: posted $key" && git push -q origin social-media
 echo "done"

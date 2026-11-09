@@ -1,3 +1,10 @@
 === 2026-11-09T07:49:28Z reel dv14-devlog-14-i-filmed-the-same-fight-twice
 {"id": "18014887856969144", "permalink": "https://www.instagram.com/reel/Dfg1U70gVEo/", "timestamp": "2026-11-09T07:49:58+0000"}
 done
+=== 2026-11-09T10:25:36Z reel dv15-devlog-15-the-riders-jump-down
+{"id": "18155313949590956", "permalink": "https://www.instagram.com/reel/DfhHMMQlPub/", "timestamp": "2026-11-09T10:26:07+0000"}
+error: the following files have local modifications:
+    queue/reels/dv15-devlog-15-the-riders-jump-down-cover.jpg
+    queue/reels/dv15-devlog-15-the-riders-jump-down.mp4
+(use --cached to keep the file, or -f to force removal)
+done
