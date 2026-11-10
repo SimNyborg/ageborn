@@ -22,13 +22,23 @@ Animation (ANIM_SPEC G1 stomp, appendix B for a spear-like thrust weapon):
             target's belly, rising onto his toes
   hit       light: the head snaps back, the goggles bounce
   die       D1 fling and spin: the cap and goggles pop off, the drill flies, X eyes and tongue
+
+Detail standard (art round W3, Track INDUSTRIAL): a tunnel engineer's kit. The bib's cog whole (conforming) with brass
+rivets at its corners; a team-dark patch on the overalls' side (cream thread) and one on the near knee; soot on the
+shirt and the trousers; the back boiler riveted with a soot-black crown; the hose ringed; the drill's barrel riveted,
+a polished band down its bit; the skull cap's crown in team-dark panels. Damage spots (posed frames measured): the
+overalls' side (r 7.5), the cap's crown, the bib, the near trouser leg, a strip from the overalls' hem; steam from the
+back boiler's vent and sparks at the drill's barrel.
 """
+import math
+
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
 from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "steam_driller"
 GAIT_NAME = "biped"
@@ -47,6 +57,22 @@ CAP_C = (1.0, 0.0, 57.0)
 RUBBER = "#3E3B3C"
 BEARD = "#4A3A2E"
 STEEL = "#A9B0B8"
+SOOT_CLOTH = "#A39E94"     # W3: soot on the cream shirt
+THREAD = "#CFC6B2"
+STEEL_HI = "#C8CDD3"       # the bit's polished band
+RUBBER_LT = "#57534F"      # the hose's rings
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, rubber, iron, brass and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", BEARD: "fur", I.CREAM: "cloth", I.CREAM_DK: "cloth", KI.CREAM: "cloth",
+                           SOOT_CLOTH: "cloth", THREAD: "cloth", RUBBER: "polymer", RUBBER_LT: "polymer",
+                           I.LEATHER: "leather", I.LEATHER_DK: "leather", I.BOOT: "leather", I.COAL: "leather",
+                           I.IRON: "iron", I.IRON_DK: "iron", I.IRON_LT: "iron", STEEL: "iron", STEEL_HI: "iron",
+                           I.BRASS: "bronze", I.BRASS_LT: "bronze", I.GLASS: "glass", I.STEAM: "cloth",
+                           "team": "cloth"})
 
 
 def _drill(rig, joint, fist):
@@ -72,6 +98,14 @@ def _drill(rig, joint, fist):
         z = z0 + 2.5 + k * 3.6
         g.capsule((cx - 2.3, cy - 0.6, z), (cx + 2.3, cy - 0.6, z + 2.0), 0.6)
     rig.part(joint, g, I.IRON_DK, finish="metal", outline=0)
+    # W3: rivets round the barrel's waist and a polished band down the bit
+    g = Geo()
+    for a in (-60.0, -20.0, 20.0, 60.0):
+        t = math.radians(a)
+        g.sphere((cx + 4.75 * math.sin(t), cy - 4.75 * math.cos(t), cz + 7.0), 0.6, cuts=2)
+    rig.part(joint, g, I.IRON_LT, finish="metal", outline=0.3)
+    g = Geo().capsule((cx + 0.9, cy - 1.95, z0 + 1.0), (cx + 0.6, cy - 1.3, z0 + BIT_L * 0.82), 0.42, segs=8, rings=2)
+    rig.part(joint, g, STEEL_HI, finish="metal", outline=0)
     return (cx, cy, z0 + BIT_L)
 
 
@@ -86,8 +120,9 @@ def build(rig):
     I.overalls(rig, hem_z=13.0)
     bib = Geo().blob((6.4, 0, 30.0), (4.9, 7.9, 6.5), p=3.2)
     bface = F.Face(rig, "torso", [bib])
-    g = KI.cog(bface, Geo(), (10.8, 28.0), s=0.95)
+    g = IW.cog(bface, Geo(), (10.8, 28.0), s=0.95)     # W3: the cog whole (conforming)
     rig.part("torso", g, KI.CREAM, highlight=False, outline=0)
+    _work_clothes(rig)
     # a dark rubber apron over the front of the legs (hem well above the soles)
     rig.secondary("apron", "hips", (8.0, 0, 18.0), (9.0, 0, 11.0), max_deg=18, gain=1.2)
     g = Geo().blob((10.4, 0, 15.0), (1.8, 8.4, 5.4), p=2.6)
@@ -102,11 +137,19 @@ def build(rig):
     rig.part("boiler", g, I.BRASS_LT, finish="metal", outline=0.4)
     g = Geo().capsule((-11.0, 1.0, 37.0), (-11.0, 1.0, 41.0), 1.4)
     rig.part("boiler", g, I.COAL, outline=0.5)                           # vent stack
+    bface2 = F.Face(rig, "boiler", [Geo().capsule((-11.0, 1.0, 22.0), (-11.0, 1.0, 36.0), 5.4)])
+    IW.rivets(rig, "boiler", bface2, IW.rivet_line((-14.4, 27.6), (-14.4, 31.6), 3), r=0.7, fill=I.IRON_LT)
+    IW.soot(rig, "boiler", bface2, [(-11.0, 37.6, 3.0, 1.6)], fill="#2E2D30")
     I.steam_puff(rig, "boiler", (-11.0, 1.0, 44.0), size=1.4, name="vent")
     rig.secondary("hose", "torso", (-6.0, -8.0, 24.0), (2.0, -12.0, 15.0), max_deg=24, gain=1.4)
     g = Geo().capsule((-6.0, -8.0, 24.0), (-2.0, -11.0, 17.0), 1.6)
     g.capsule((-2.0, -11.0, 17.0), (3.0, -12.0, 17.5), 1.6)
     rig.part("hose", g, RUBBER, finish="gloss", outline=0.5)
+    g = Geo()   # W3: the hose ringed (a wire-wound hose)
+    for t in (0.2, 0.45, 0.7):
+        c = (-6.0 + 4.0 * t, -8.0 - 3.0 * t, 24.0 - 7.0 * t)
+        g.lathe([(1.6, -0.35), (1.85, 0), (1.6, 0.35)], c, (c[0] + 0.5, c[1] - 0.4, c[2] - 0.9), segs=12)
+    rig.part("hose", g, RUBBER_LT, outline=0)
 
     face = KI.head_face(rig, brow=BEARD, brow_angry=True, mouth_dz=-9.0, mouth_w=5.8)
     g = Geo().blob((9.0, 0, 41.0), (6.2, 9.4, 4.4), p=2.2)               # short beard
@@ -130,6 +173,38 @@ def build(rig):
     KI.loose(rig, "drill_loose", FIST, lambda j: _drill(rig, j, FIST))
     rig.track("drillTip", "drill", tip)
     I.fuse_spark(rig, "drill", (tip[0] + 0.5, tip[1] - 2.0, tip[2] + 1.0), size=2.2, name="sparks", hidden=True)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _work_clothes(rig):
+    """W3: the overalls and the shirt worn (rivets at the bib's corners, a patch on the side and the near knee, soot);
+    the surfaces rebuilt for the ray casts (rigs_industrial.overalls)."""
+    shirt = Geo().blob((0, 0, 28.0), (10.4, 9.4, 11.4), p=2.4, taper=(1.06, 0.94))
+    low = Geo().blob((0.6, 0, 22.0), (11.0, 10.2, 8.6), p=2.8, taper=(1.05, 0.92))
+    low.clip((0, 0, 30.5), (0, 0, 1))
+    bib = Geo().blob((6.4, 0, 30.0), (4.8, 7.8, 6.4), p=3.2)
+    face = F.Face(rig, "torso", [shirt, low, bib])
+    IW.rivets(rig, "torso", face, [(6.4, 36.2), (11.2, 35.6)], r=0.9, fill=I.BRASS_LT)
+    IW.patch(rig, "torso", face, [(-8.6, 20.0), (-3.0, 19.6), (-2.6, 24.2), (-8.2, 24.4)], team=True, stitch=THREAD)
+    IW.soot(rig, "torso", face, [(-2.6, 33.4, 2.0, 1.4), (-6.4, 30.4, 1.4, 1.0)], fill=SOOT_CLOTH)
+    ly = -I.LEG_Y
+    thigh = Geo().capsule((0, ly, KI.V3_THIGH_Z), (0.5, ly, KI.V3_KNEE_Z), 4.6, 4.2)
+    IW.patch(rig, "thigh_r", F.Face(rig, "thigh_r", [thigh]), [(-3.2, 12.8), (1.6, 12.6), (1.8, 16.6), (-3.0, 16.8)],
+             team=True, stitch=THREAD)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames: the
+    overalls' side (the biggest team field the drill and the arms leave clear, r 7.5), the cap's crown, the back
+    boiler's iron (the bib hides behind the drill: 0% seen), the near trouser leg, a strip torn from the overalls' hem;
+    steam from the back boiler's vent and sparks at the drill's barrel."""
+    rig.damage_spot_at("overalls", "torso", -2.0, 22.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("cap", "hat", -1.0, 61.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("boiler", "boiler", -11.0, 31.0, 5.0, "metal", fill="#454A51")
+    rig.damage_spot_at("leg", "thigh_r", -1.6, 18.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hips", 6.0, 12.6, 7.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("vent", "boiler", (-11.0, 1.0, 42.0), 4.0, "steam", kind="emit", normal=(0, 0, 1))
 
 
 def _cap(rig, joint):
@@ -138,6 +213,11 @@ def _cap(rig, joint):
     g.clip((x, y, z - 2.0), (0, 0, -1))
     rig.part(joint, g, team=True)
     I.goggles(rig, at=(x + 9.0, 0, z + 0.4), joint=joint, rim=I.BRASS_LT)
+    crown = Geo().blob((x - 0.6, y, z + 0.8), (12.0, 11.4, 6.4), p=2.4)    # W3: the crown in team-dark panels
+    crown.clip((x, y, z - 2.0), (0, 0, -1))
+    cface = F.Face(rig, joint, [crown])
+    IW.folds(rig, joint, cface, [[(x - 1.2, z + 7.0), (x - 8.6, z + 1.2)], [(x - 0.6, z + 7.2), (x - 0.2, z + 0.4)]],
+             w=0.9, team=True)
 
 
 def grip(a, f, w, la=None, lf=None, lean=0.0):
@@ -280,10 +360,12 @@ def _b_pose(i):
 def _attack_b():
     arc = {"kind": "arc", "joint": "drill", "inner": (FIST[0], FIST[1], FIST[2] + BODY_L * 0.6), "outer": TIP,
            "color": STEEL, "white": 0.35, "taper": 0.15, "lines": 3}
+    # W3: two-tone arcs, the frame-5 arc from 4 (a wide flat crescent held the extras' micro at 2.0 on frame 5)
     ov = {
-        4: [dict(arc, **{"from": 3, "t0": 0.0, "t1": 0.95})],
-        5: [dict(arc, **{"from": 3, "t0": 0.35, "t1": 1.0})],
-        6: [dict(arc, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2}), _spin(TIP)] + _sparks(63, a0=10.0),
+        4: IW.smear_two_tone(dict(arc, **{"from": 3, "t0": 0.0, "t1": 0.95}), band=0.5),
+        5: IW.smear_two_tone(dict(arc, **{"from": 4, "t0": 0.15, "t1": 1.0}), band=0.5),
+        6: IW.smear_two_tone(dict(arc, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2}), band=0.5) + [_spin(TIP)]
+        + _sparks(63, a0=10.0),
     }
     reuse = {0: ("attack", 0), 1: ("attack", 1), 9: ("attack", 9), 10: ("attack", 10)}
     return M.clip("attack_b", [_b_pose(i) for i in range(11)], M.SMALL_MELEE_MS,

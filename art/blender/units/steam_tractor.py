@@ -20,6 +20,14 @@ Animation (ANIM_SPEC G6 wheeled):
   attack_b  BLADE SLAM: the front rears up with the blade raised high, then slams down (ground dust)
   hit       vehicle: a suspension bounce, the driver ducks
   die       wreck: the boiler bursts a steam cloud, the front wheel rolls off, it slumps nose-down
+
+Detail standard (art round W3, Track INDUSTRIAL): riveted steel, brass and soot. The team boiler in plates (team-dark
+seams with rivet rows between the brass bands) with its cog whole (conforming) and soot round the smokebox and under
+the stack; the tender in riveted plates with coal heaped in it; the canopy's team-dark fringe; the plough blade's
+hazard bands laid conforming, its edge polished and scratched; a soot band round the stack's crown. Damage spots
+(vehicle; posed frames measured): the boiler's side (r 9), the tender, the canopy, the blade; a smoke emitter at the
+smokebox (low and well ahead of the driver, so the fire `fireAt` picks never starts on his face) and a second at the
+stack's crown.
 """
 import math
 
@@ -29,6 +37,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "steam_tractor"
 GAIT_NAME = "wheeled"
@@ -54,6 +63,20 @@ BLADE_TIP = (60.0, -10.0, 6.0)
 STACK = (34.0, 0.0, 44.0)
 HULL_DK = I.IRON_DK
 SOOT = "#2F2D2E"
+SOOT_IRON = "#3B3A3D"      # W3: soot on the boiler and the stack
+IRON_HI = "#AEB5BD"        # the blade's polished edge and scratches
+COAL_LUMP = "#3A393F"      # the coal in the tender
+
+# the detail standard (art round W3): a machine's lifts (big forms, a deeper core); iron, brass, cream paint and the
+# team paint apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.0           # (1.2 put the highlight share at 0.101-0.102: the brass rivet rows and the polished blade shine)
+LOOK_SHADE = IW.SHADE_BIG
+LOOK_RIM = dict(IW.RIM_SOLDIER, lift=0.6)
+MATERIAL_KINDS = IW.kinds({I.IRON: "iron", I.IRON_DK: "iron", I.IRON_LT: "iron", IRON_HI: "iron", SOOT: "iron",
+                           SOOT_IRON: "iron", COAL_LUMP: "stone", I.BRASS: "bronze", I.BRASS_LT: "bronze",
+                           I.CREAM: "ceramic", I.SKIN: "skin", I.HAIR: "fur", I.DENIM: "cloth", I.STEAM: "cloth",
+                           "team": "iron"})
 
 
 def _wheel(rig, name, x, y, r, spokes, far=False):
@@ -98,8 +121,9 @@ def build(rig):
     for x in (2.0, 18.0, 32.0):
         g.lathe([(11.2, -0.9), (11.6, 0), (11.2, 0.9)], (x, 0, 30.0), (x + 1.2, 0, 30.0), segs=24)
     rig.part("hull", g, I.BRASS_LT, finish="metal", outline=0.4)
-    g = KI.cog(boiler_face, Geo(), (10.0, 30.0), s=1.0)
+    g = IW.cog(boiler_face, Geo(), (10.0, 30.0), s=1.0)     # W3: the cog whole (conforming)
     rig.part("hull", g, I.CREAM, highlight=False, outline=0)
+    _boiler_detail(rig, boiler_face)
     g = Geo().lathe([(0, 0), (11.4, 0), (11.6, 2.0), (0, 3.0)], (40.0, 0, 30.0), (43.0, 0, 30.0), segs=24)
     rig.part("hull", g, SOOT, finish="metal", outline=0.8)
     # the frame under the boiler, the tender and the canopy
@@ -110,12 +134,15 @@ def build(rig):
     g = Geo()
     I.rivets(g, [(-22.0 + dx, -13.4, z) for dx in (-9, -3, 3, 9) for z in (22.0, 38.0)], r=0.9)
     rig.part("hull", g, I.IRON_LT, finish="metal", outline=0)
+    _tender_detail(rig)
     g = Geo()
     for x in (-32.0, -12.0):
         g.capsule((x, -10.0, 42.0), (x, -10.0, 60.0), 1.0)
     rig.part("hull", g, I.IRON_DK, finish="metal", outline=0.4)
     g = Geo().blob((-21.0, 0, 61.0), (16.0, 14.0, 2.0), p=3.0)
     rig.part("hull", g, team=True)                                      # canopy
+    g = Geo().blob((-21.0, 0, 59.6), (16.4, 14.4, 0.9), p=3.0)          # W3: its team-dark fringe
+    IW.team_dark(rig, "hull", g, outline=0.4)
     # the driver
     hx, hy, hz = -20.0, -4.0, 50.0
     rig.joint("driver", "hull", (hx, hy, hz))
@@ -134,6 +161,11 @@ def build(rig):
     g = Geo().capsule((sx, sy, sz - 6.0), (sx, sy, sz + 18.0), 3.8, 3.4)
     g.lathe([(0, 0), (3.6, 0), (6.4, 5.0), (6.6, 6.6), (0, 6.6)], (sx, sy, sz + 16.0), (sx, sy, sz + 22.6), segs=18)
     rig.part("hull", g, SOOT, finish="metal", outline=0.8)
+    g = Geo()   # W3: a brass ring round the stack's foot and a riveted band below the crown
+    g.lathe([(3.9, -0.6), (4.3, 0), (3.9, 0.6)], (sx, sy, sz + 1.0), (sx, sy, sz + 2.0), segs=16)
+    rig.part("hull", g, I.BRASS_LT, finish="metal", outline=0.3)
+    g = Geo().lathe([(3.6, -0.7), (3.95, 0), (3.6, 0.7)], (sx, sy, sz + 12.0), (sx, sy, sz + 13.0), segs=16)
+    rig.part("hull", g, I.IRON_LT, finish="metal", outline=0.3)
     I.steam_puff(rig, "hull", (sx + 1.0, sy, sz + 30.0), size=1.8, name="puff", color=I.SMOKE)
     g = Geo().blob((14.0, 0, 42.0), (4.0, 4.0, 3.0), p=2.4)
     rig.part("hull", g, I.BRASS, finish="metal", outline=0.6)
@@ -159,9 +191,19 @@ def build(rig):
     blade = Geo().blob((bx + 10.0, 0, bz - 2.0), (3.0, 16.0, 9.0), p=3.0, rot=(0, -18, 30))
     bface = F.Face(rig, "blade", [Geo().blob((bx + 10.0, 0, bz - 2.0), (3.0, 16.0, 9.0), p=3.0, rot=(0, -18, 30))])
     rig.part("blade", blade, I.IRON, finish="metal", outline=0.8)
-    g = Geo()
-    KI.stripes(bface, g, (bx + 10.0, bz - 2.0), 12.0, 7.0, n=3)
+    g = Geo()   # W3: the hazard bands laid conforming (flat decals sank into the curved blade)
+    w, h, n, x0, z0 = 12.0, 7.0, 3, bx + 4.0, bz - 5.5
+    for k in range(n):
+        a = x0 + k * w / n
+        b = a + w / n * 0.5
+        IW.field(g, bface, [(a, z0), (b, z0), (min(b + 0.6 * h, x0 + w), z0 + h), (min(a + 0.6 * h, x0 + w), z0 + h)],
+                 0.4)
     rig.part("blade", g, I.CREAM, highlight=False, outline=0)
+    g = Geo()   # its edge polished and scratched
+    IW.ribbon(g, bface, [(bx + 5.0, bz - 9.4), (bx + 12.0, bz - 8.0), (bx + 17.0, bz - 5.6)], 0.9, 0.45)
+    for pts in ([(bx + 6.0, bz + 3.6), (bx + 9.0, bz + 2.2)], [(bx + 12.4, bz + 4.4), (bx + 14.2, bz + 2.4)]):
+        IW.ribbon(g, bface, pts, 0.55, 0.45)
+    rig.part("blade", g, IRON_HI, outline=0, highlight=False)
     rig.track("bladeTip", "blade", BLADE_TIP)
     # near wheels last
     _wheel(rig, "rear_n", REAR_X, NY, R_REAR, SPOKES)
@@ -173,6 +215,50 @@ def build(rig):
         g.sphere((10.0 + dx, -16.0, 44.0 + dz), r, cuts=4)
     rig.part("burst", g, I.STEAM, finish="dust", outline=0.6)
     rig.track("_foot", "odo", (0, 0, 0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _boiler_detail(rig, face):
+    """W3: the boiler in plates: team-dark seams lathed round it between the brass bands with rivet rows beside them,
+    soot round the smokebox and up under the stack (the big team field reads as riveted plate)."""
+    g = Geo()
+    for x in (6.6, 25.0):
+        g.lathe([(11.05, -0.55), (11.3, 0), (11.05, 0.55)], (x, 0, 30.0), (x + 1.0, 0, 30.0), segs=24)
+    IW.team_dark(rig, "hull", g, outline=0)
+    pts = []
+    for x in (5.4, 27.4):
+        pts += IW.rivet_line((x, 22.0), (x, 38.0), 5)
+    pts += IW.rivet_line((-3.6, 21.6), (-3.6, 30.0), 3)
+    IW.rivets(rig, "hull", face, pts, r=0.85, fill=I.BRASS_LT)
+    IW.soot(rig, "hull", face, [(36.6, 26.0, 2.2, 4.6), (33.0, 37.6, 3.0, 1.6), (36.8, 34.0, 1.6, 2.4)],
+            fill=SOOT_IRON)
+
+
+def _tender_detail(rig):
+    """W3: the tender's plates (darker seams across the riveted iron) and the coal heaped in it."""
+    tender = Geo().blob((-22.0, 0, 30.0), (12.0, 13.0, 12.0), p=4.0)
+    face = F.Face(rig, "hull", [tender])
+    IW.seam(rig, "hull", face, [(-33.0, 30.0), (-11.0, 30.0)], fill=HULL_DK, w=0.8)
+    IW.seam(rig, "hull", face, [(-22.0, 19.4), (-22.0, 40.6)], fill=HULL_DK, w=0.8)
+    g = Geo()
+    for dx, dy, dz, r in ((-6.0, -6.0, 42.0, 3.0), (-1.0, -8.0, 42.6, 2.6), (4.0, -5.0, 41.8, 2.8), (-3.0, -1.0, 43.0, 3.0),
+                          (2.0, 3.0, 42.4, 2.6), (7.0, -9.0, 41.6, 2.2)):
+        g.blob((-22.0 + dx, dy, dz), (r, r * 0.9, r * 0.7), p=2.0)
+    rig.part("hull", g, COAL_LUMP, outline=0.4)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, vehicle with a driver), measured in the posed frames: the boiler's
+    side (its team plate, r 9), the tender, the canopy, the blade; a smoke emitter at the smokebox, low and well ahead
+    of the driver (DAMAGE's `fireAt` burns the first clear one), and a second at the stack's crown so the smoke reads
+    above the machine."""
+    rig.damage_spot_at("boiler", "hull", 22.0, 34.0, 9.0, "metal", team=True)
+    rig.damage_spot_at("tender", "hull", -27.0, 40.0, 6.0, "metal", fill=I.IRON)
+    rig.damage_spot_at("canopy", "hull", -24.0, 68.5, 5.0, "metal", team=True)
+    rig.damage_spot_at("blade", "blade", 67.0, 12.5, 5.0, "metal", fill=I.IRON)
+    rig.damage_spot("smokebox", "hull", (41.0, -6.0, 26.0), 7.0, "smoke", kind="emit", normal=(1, 0, 0))
+    rig.damage_spot("stack", "hull", (STACK[0], 0.0, STACK[2] + 22.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 WHEELS_REAR = ("rear_n", "rear_f")
