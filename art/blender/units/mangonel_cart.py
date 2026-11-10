@@ -22,6 +22,13 @@ Animation (ANIM_SPEC G6 wheeled, appendix B for artillery: aimed shot, quick sho
             rears the whole cart up on its back wheels
   hit       vehicle: a suspension bounce, the crewman ducks
   die       wreck: the arm snaps, a wheel pops off, the crewman is knocked flat, X eyes
+
+Detail standard (art round W2, Track MEDIEVAL): the near side's team planks in two tones (the plank between the
+battens at the back team-dark, plank seams along the side), the paw whole, a grain line along the throwing arm, the
+stone with a lit top. Damage spots: the planks (r 9), the crewman's tunic, the arm, a strip torn from the planks'
+lower edge, and two smoke emitters: a low one on the bed at the back, below the crewman's head on every frame (also
+when he dives aside in attack B: DAMAGE's `fireAt` takes it for the fire), and one on the crossbar so the smoke
+reads above the cart.
 """
 import math
 
@@ -31,6 +38,7 @@ from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from units import battering_ram as R
+from units import medieval_w2 as MW
 
 SLUG = "mangonel_cart"
 GAIT_NAME = "wheeled"
@@ -46,6 +54,18 @@ WOOD, DARK_WOOD, IRON, STEEL, GOLD = R.WOOD, R.DARK_WOOD, R.IRON, R.STEEL, R.GOL
 PARCH, ROPE, SKIN, HOSE, BOOT, HAIR = R.PARCH, R.ROPE, R.SKIN, "#626A74", R.BOOT, R.HAIR
 LEATHER = "#6B5647"
 STONE = "#8C8A86"
+STONE_LT = "#ABA9A4"      # the stone's lit top
+WOOD_DK = "#7E6A54"       # the throwing arm's grain line
+
+# the detail standard (art round W2): wood, iron, rope, leather, stone and the team planks apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = MW.RIM_SOLDIER
+MATERIAL_KINDS = MW.kinds({WOOD: "wood", DARK_WOOD: "wood", WOOD_DK: "wood", IRON: "iron", STEEL: "iron", GOLD: "gold",
+                           PARCH: "cloth", ROPE: "cloth", SKIN: "skin", HOSE: "cloth", "#4E555D": "cloth",
+                           BOOT: "leather", HAIR: "fur", LEATHER: "leather", STONE: "stone", STONE_LT: "stone",
+                           R.EYE: "glass", "team": "hide"})
 
 AXLES = (-20.0, 20.0)
 PIVOT = (-6.0, 0.0, 30.0)             # the throwing arm's pivot in the torsion drum
@@ -107,6 +127,8 @@ def build(rig):
     px, py, pz = PIVOT
     g = Geo().capsule((px - 3.0, py, pz), (CUP[0] - 3.0, py, pz), 2.6, 2.0)
     rig.part("arm", g, WOOD)
+    g = Geo().capsule((px + 1.0, py - 2.2, pz + 0.6), (CUP[0] - 6.0, py - 1.7, pz + 0.4), 0.5, 0.4, segs=8, rings=2)
+    rig.part("arm", g, WOOD_DK, outline=0)     # W2: a grain line along the arm
     g = Geo()
     for x in (px + 6.0, px + 18.0):
         g.lathe([(2.8, -0.7), (3.2, 0), (2.8, 0.7)], (x, py, pz), (x + 0.1, py, pz), segs=14)
@@ -117,6 +139,8 @@ def build(rig):
     rig.joint("stone", "arm", (CUP[0], py, pz + 4.0))
     g = Geo().blob((CUP[0], py - 0.4, pz + 5.4), (4.2, 4.0, 3.8), p=2.2)
     rig.part("stone", g, STONE)
+    g = Geo().blob((CUP[0] - 0.6, py - 1.4, pz + 7.4), (2.6, 2.4, 1.4), p=2.2)
+    rig.part("stone", g, STONE_LT, outline=0)   # W2: the stone's lit top (a second value on the rock)
     rig.track("muzzle", "arm", (CUP[0], py, pz + 5.0))
     rig.track("_foot", "odo", (0, 0, 0))
 
@@ -156,7 +180,12 @@ def build(rig):
     pl = Geo().blob((0.0, -12.6, 30.0), (30.0, 1.6, 6.4), p=3.6)
     pf = F.Face(rig, "hull", [pl])
     rig.part("hull", pl, team=True)
-    g = K.paw(pf, Geo(), K.scr(pf, (6.0, -14.0, 30.0)), s=1.4)
+    # W2: the planks in two tones: the plank between the back battens team-dark, seams along the side
+    MW.panel(rig, "hull", pf, [K.scr(pf, (x, -14.0, z)) for x, z in ((-21.0, 25.0), (-9.0, 25.0), (-9.0, 35.0),
+                                                                     (-21.0, 35.0))], depth=0.3)
+    MW.folds(rig, "hull", pf, [[K.scr(pf, (x0, -14.0, z)), K.scr(pf, (x1, -14.0, z))]
+                               for z in (27.4, 32.6) for x0, x1 in ((-28.0, -21.0), (-7.0, 21.0))], w=0.9)
+    g = MW.paw(pf, Geo(), K.scr(pf, (6.0, -14.0, 30.0)), s=1.4)       # W2: the paw whole
     rig.part("hull", g, PARCH, highlight=False, outline=0)
     g = Geo()
     for x in (-22.0, -8.0, 22.0):
@@ -172,6 +201,22 @@ def build(rig):
     rig.part("winch", g, WOOD, outline=0.6)
     R._wheel(rig, "wheel_bn", AXLES[0], -14.0)
     R._wheel(rig, "wheel_fn", AXLES[1], -14.0)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, vehicle with a crewman): the team planks (r 9), the crewman's team
+    tunic, the throwing arm, a strip torn from the planks' lower edge, a low smoke emitter on the bed at the back
+    (below the crewman's head on every frame, also when he dives aside in attack B: DAMAGE's `fireAt` takes it for
+    the fire) and a high one on the crossbar."""
+    rig.damage_spot_at("planks", "hull", -15.0, 30.0, 9.0, "wood", team=True)
+    rig.damage_spot_at("tunic", "crew", CREW_X + 2.0, 30.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("arm", "arm", PIVOT[0] + 20.0, PIVOT[2] + 2.0, 5.0, "wood", fill=WOOD)
+    rig.damage_spot_at("hem", "hull", 12.0, 25.0, 9.0, "wood", kind="strip", team=True)
+    rig.damage_spot("smoke", "hull", (-26.0, -8.0, 26.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("smoke_top", "hull", (CROSSBAR[0], 0.0, CROSSBAR[2] + 3.0), 6.0, "smoke", kind="emit",
+                    normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------

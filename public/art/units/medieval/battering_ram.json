@@ -26,7 +26,7 @@
   },
   "battering_ram_idle_00_team": {
    "frame": {
-    "x": 1387,
+    "x": 1252,
     "y": 552,
     "w": 130,
     "h": 96
@@ -74,7 +74,7 @@
   },
   "battering_ram_idle_01_team": {
    "frame": {
-    "x": 401,
+    "x": 405,
     "y": 656,
     "w": 130,
     "h": 95
@@ -122,7 +122,7 @@
   },
   "battering_ram_idle_02_team": {
    "frame": {
-    "x": 792,
+    "x": 667,
     "y": 656,
     "w": 131,
     "h": 94
@@ -218,7 +218,7 @@
   },
   "battering_ram_idle_04_team": {
    "frame": {
-    "x": 927,
+    "x": 802,
     "y": 656,
     "w": 131,
     "h": 94
@@ -266,18 +266,18 @@
   },
   "battering_ram_idle_05_team": {
    "frame": {
-    "x": 1252,
-    "y": 552,
+    "x": 270,
+    "y": 656,
     "w": 131,
-    "h": 96
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 75,
-    "y": 66,
+    "y": 67,
     "w": 131,
-    "h": 96
+    "h": 95
    },
    "sourceSize": {
     "w": 300,
@@ -362,7 +362,7 @@
   },
   "battering_ram_walk_01_team": {
    "frame": {
-    "x": 584,
+    "x": 442,
     "y": 851,
     "w": 130,
     "h": 87
@@ -458,7 +458,7 @@
   },
   "battering_ram_walk_03_team": {
    "frame": {
-    "x": 1197,
+    "x": 1072,
     "y": 656,
     "w": 127,
     "h": 94
@@ -650,7 +650,7 @@
   },
   "battering_ram_walk_07_team": {
    "frame": {
-    "x": 264,
+    "x": 133,
     "y": 656,
     "w": 133,
     "h": 95
@@ -794,18 +794,18 @@
   },
   "battering_ram_attack_02_team": {
    "frame": {
-    "x": 442,
+    "x": 576,
     "y": 851,
     "w": 138,
-    "h": 87
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 68,
-    "y": 73,
+    "y": 74,
     "w": 138,
-    "h": 87
+    "h": 86
    },
    "sourceSize": {
     "w": 300,
@@ -890,8 +890,8 @@
   },
   "battering_ram_attack_04_team": {
    "frame": {
-    "x": 2,
-    "y": 656,
+    "x": 1386,
+    "y": 552,
     "w": 127,
     "h": 96
    },
@@ -1034,18 +1034,18 @@
   },
   "battering_ram_attack_07_team": {
    "frame": {
-    "x": 535,
+    "x": 1203,
     "y": 656,
     "w": 125,
-    "h": 95
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 82,
-    "y": 66,
+    "y": 67,
     "w": 125,
-    "h": 95
+    "h": 94
    },
    "sourceSize": {
     "w": 300,
@@ -1130,7 +1130,7 @@
   },
   "battering_ram_attack_09_team": {
    "frame": {
-    "x": 1328,
+    "x": 1332,
     "y": 656,
     "w": 130,
     "h": 93
@@ -1226,7 +1226,7 @@
   },
   "battering_ram_hit_01_team": {
    "frame": {
-    "x": 664,
+    "x": 539,
     "y": 656,
     "w": 124,
     "h": 95
@@ -1274,7 +1274,7 @@
   },
   "battering_ram_hit_02_team": {
    "frame": {
-    "x": 133,
+    "x": 2,
     "y": 656,
     "w": 127,
     "h": 96
@@ -1370,7 +1370,7 @@
   },
   "battering_ram_hit_04_team": {
    "frame": {
-    "x": 1062,
+    "x": 937,
     "y": 656,
     "w": 131,
     "h": 94

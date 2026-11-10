@@ -2,8 +2,8 @@
  "frames": {
   "footman@tin_can_attack_b_02": {
    "frame": {
-    "x": 310,
-    "y": 2,
+    "x": 135,
+    "y": 163,
     "w": 54,
     "h": 136
    },
@@ -26,8 +26,8 @@
   },
   "footman@tin_can_attack_b_02_team": {
    "frame": {
-    "x": 216,
-    "y": 470,
+    "x": 350,
+    "y": 327,
     "w": 52,
     "h": 91
    },
@@ -50,8 +50,8 @@
   },
   "footman@tin_can_attack_b_03": {
    "frame": {
-    "x": 2,
-    "y": 163,
+    "x": 265,
+    "y": 252,
     "w": 81,
     "h": 118
    },
@@ -74,8 +74,8 @@
   },
   "footman@tin_can_attack_b_03_team": {
    "frame": {
-    "x": 113,
-    "y": 285,
+    "x": 575,
+    "y": 2,
     "w": 51,
     "h": 97
    },
@@ -98,8 +98,8 @@
   },
   "footman@tin_can_attack_b_04": {
    "frame": {
-    "x": 177,
-    "y": 2,
+    "x": 2,
+    "y": 163,
     "w": 129,
     "h": 155
    },
@@ -122,8 +122,8 @@
   },
   "footman@tin_can_attack_b_04_team": {
    "frame": {
-    "x": 109,
-    "y": 493,
+    "x": 135,
+    "y": 303,
     "w": 46,
     "h": 101
    },
@@ -170,8 +170,8 @@
   },
   "footman@tin_can_attack_b_05_team": {
    "frame": {
-    "x": 211,
-    "y": 373,
+    "x": 59,
+    "y": 322,
     "w": 49,
     "h": 93
    },
@@ -194,8 +194,8 @@
   },
   "footman@tin_can_attack_b_06": {
    "frame": {
-    "x": 368,
-    "y": 95,
+    "x": 446,
+    "y": 2,
     "w": 125,
     "h": 103
    },
@@ -218,8 +218,8 @@
   },
   "footman@tin_can_attack_b_06_team": {
    "frame": {
-    "x": 393,
-    "y": 483,
+    "x": 821,
+    "y": 182,
     "w": 59,
     "h": 81
    },
@@ -242,8 +242,8 @@
   },
   "footman@tin_can_attack_b_07": {
    "frame": {
-    "x": 87,
-    "y": 163,
+    "x": 266,
+    "y": 127,
     "w": 78,
     "h": 118
    },
@@ -266,8 +266,8 @@
   },
   "footman@tin_can_attack_b_07_team": {
    "frame": {
-    "x": 264,
-    "y": 373,
+    "x": 630,
+    "y": 2,
     "w": 52,
     "h": 91
    },
@@ -290,8 +290,8 @@
   },
   "footman@tin_can_attack_b_08": {
    "frame": {
-    "x": 2,
-    "y": 285,
+    "x": 564,
+    "y": 109,
     "w": 107,
     "h": 97
    },
@@ -314,8 +314,8 @@
   },
   "footman@tin_can_attack_b_08_team": {
    "frame": {
-    "x": 326,
-    "y": 404,
+    "x": 766,
+    "y": 188,
     "w": 51,
     "h": 84
    },
@@ -338,8 +338,8 @@
   },
   "footman@tin_can_attack_c_01": {
    "frame": {
-    "x": 111,
-    "y": 386,
+    "x": 464,
+    "y": 109,
     "w": 96,
     "h": 98
    },
@@ -362,8 +362,8 @@
   },
   "footman@tin_can_attack_c_01_team": {
    "frame": {
-    "x": 326,
-    "y": 311,
+    "x": 749,
+    "y": 2,
     "w": 54,
     "h": 89
    },
@@ -386,8 +386,8 @@
   },
   "footman@tin_can_attack_c_02": {
    "frame": {
-    "x": 2,
-    "y": 493,
+    "x": 459,
+    "y": 323,
     "w": 103,
     "h": 95
    },
@@ -410,8 +410,8 @@
   },
   "footman@tin_can_attack_c_02_team": {
    "frame": {
-    "x": 384,
-    "y": 395,
+    "x": 807,
+    "y": 2,
     "w": 65,
     "h": 84
    },
@@ -434,8 +434,8 @@
   },
   "footman@tin_can_attack_c_03": {
    "frame": {
-    "x": 416,
-    "y": 202,
+    "x": 566,
+    "y": 323,
     "w": 92,
     "h": 94
    },
@@ -458,8 +458,8 @@
   },
   "footman@tin_can_attack_c_03_team": {
    "frame": {
-    "x": 326,
-    "y": 492,
+    "x": 800,
+    "y": 95,
     "w": 63,
     "h": 83
    },
@@ -482,8 +482,8 @@
   },
   "footman@tin_can_attack_c_04": {
    "frame": {
-    "x": 300,
-    "y": 202,
+    "x": 348,
+    "y": 111,
     "w": 112,
     "h": 105
    },
@@ -506,8 +506,8 @@
   },
   "footman@tin_can_attack_c_04_team": {
    "frame": {
-    "x": 159,
-    "y": 488,
+    "x": 2,
+    "y": 322,
     "w": 53,
     "h": 94
    },
@@ -530,8 +530,8 @@
   },
   "footman@tin_can_attack_c_05": {
    "frame": {
-    "x": 177,
-    "y": 161,
+    "x": 323,
+    "y": 2,
     "w": 119,
     "h": 105
    },
@@ -554,8 +554,8 @@
   },
   "footman@tin_can_attack_c_05_team": {
    "frame": {
-    "x": 272,
-    "y": 468,
+    "x": 575,
+    "y": 210,
     "w": 50,
     "h": 91
    },
@@ -578,8 +578,8 @@
   },
   "footman@tin_can_attack_c_06": {
    "frame": {
-    "x": 368,
-    "y": 2,
+    "x": 629,
+    "y": 210,
     "w": 133,
     "h": 89
    },
@@ -602,8 +602,8 @@
   },
   "footman@tin_can_attack_c_06_team": {
    "frame": {
-    "x": 456,
-    "y": 395,
+    "x": 821,
+    "y": 267,
     "w": 52,
     "h": 80
    },
@@ -626,8 +626,8 @@
   },
   "footman@tin_can_attack_c_07": {
    "frame": {
-    "x": 2,
-    "y": 386,
+    "x": 350,
+    "y": 220,
     "w": 105,
     "h": 103
    },
@@ -650,8 +650,8 @@
   },
   "footman@tin_can_attack_c_07_team": {
    "frame": {
-    "x": 416,
-    "y": 300,
+    "x": 406,
+    "y": 327,
     "w": 45,
     "h": 91
    },
@@ -674,8 +674,8 @@
   },
   "footman@tin_can_attack_c_08": {
    "frame": {
-    "x": 169,
-    "y": 270,
+    "x": 459,
+    "y": 220,
     "w": 112,
     "h": 99
    },
@@ -698,8 +698,8 @@
   },
   "footman@tin_can_attack_c_08_team": {
    "frame": {
-    "x": 465,
-    "y": 300,
+    "x": 725,
+    "y": 303,
     "w": 45,
     "h": 87
    },
@@ -710,6 +710,198 @@
     "y": 75,
     "w": 45,
     "h": 87
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman@tin_can_shield_lock_00": {
+   "frame": {
+    "x": 193,
+    "y": 252,
+    "w": 68,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 58,
+    "w": 68,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman@tin_can_shield_lock_00_team": {
+   "frame": {
+    "x": 738,
+    "y": 95,
+    "w": 58,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 80,
+    "w": 58,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman@tin_can_shield_lock_01": {
+   "frame": {
+    "x": 177,
+    "y": 2,
+    "w": 69,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 57,
+    "w": 69,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman@tin_can_shield_lock_01_team": {
+   "frame": {
+    "x": 675,
+    "y": 97,
+    "w": 59,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 81,
+    "w": 59,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman@tin_can_shield_lock_02": {
+   "frame": {
+    "x": 193,
+    "y": 127,
+    "w": 69,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 57,
+    "w": 69,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman@tin_can_shield_lock_02_team": {
+   "frame": {
+    "x": 662,
+    "y": 303,
+    "w": 59,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 82,
+    "w": 59,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman@tin_can_shield_lock_03": {
+   "frame": {
+    "x": 250,
+    "y": 2,
+    "w": 69,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 57,
+    "w": 69,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman@tin_can_shield_lock_03_team": {
+   "frame": {
+    "x": 686,
+    "y": 2,
+    "w": 59,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 81,
+    "w": 59,
+    "h": 89
    },
    "sourceSize": {
     "w": 257,
@@ -773,6 +965,18 @@
    "footman@tin_can_attack_c_08_team",
    "footman@tin_can_attack_09_team",
    "footman@tin_can_attack_10_team"
+  ],
+  "shield_lock": [
+   "footman@tin_can_shield_lock_00",
+   "footman@tin_can_shield_lock_01",
+   "footman@tin_can_shield_lock_02",
+   "footman@tin_can_shield_lock_03"
+  ],
+  "shield_lock_team": [
+   "footman@tin_can_shield_lock_00_team",
+   "footman@tin_can_shield_lock_01_team",
+   "footman@tin_can_shield_lock_02_team",
+   "footman@tin_can_shield_lock_03_team"
   ]
  },
  "meta": {
@@ -781,8 +985,8 @@
   "image": "footman@tin_can.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 512,
-   "h": 600
+   "w": 896,
+   "h": 420
   },
   "scale": "1.5",
   "ageborn": {
@@ -975,6 +1179,43 @@
        [
         36.6,
         81.6
+       ]
+      ]
+     }
+    },
+    "shield_lock": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      220,
+      180,
+      220,
+      180
+     ],
+     "durationMs": 800,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -9.5,
+        85.9
+       ],
+       [
+        -7.0,
+        86.6
+       ],
+       [
+        -4.4,
+        87.1
+       ],
+       [
+        -7.0,
+        86.6
        ]
       ]
      }

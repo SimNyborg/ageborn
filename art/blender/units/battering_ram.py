@@ -22,14 +22,23 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
   hit     vehicle: a suspension bounce, the crewman ducks with his eyes squeezed
   die     D7 wreck: a hop, the hull tips back and sags, a front wheel pops off, the log
           drops, and the crewman pops out of the back with X eyes
+
+Detail standard (art round W2, Track MEDIEVAL): the roof's hides in two tones (the hides between the second and
+third ribs from each end team-dark, a patchwork the stitched seams cross), the paw whole, the valance's scallops
+team-dark, knots in the log, a polished brow on the steel ram's head. Damage spots: the roof (r 9), the rear pusher's
+tunic, the ram's head, a strip torn from the valance, and two smoke emitters on the roof: a low one on its front half,
+below the peeking crewman's head and clear beside it on every frame (DAMAGE's `fireAt` takes it for the fire), and one
+on the ridge so the smoke reads above the shed.
 """
 import math
 
 from ageborn_art import face as F
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "battering_ram"
 GAIT_NAME = "wheeled"
@@ -55,6 +64,16 @@ SKIN = "#EBC4A0"
 HOSE = "#8E2A4A"
 BOOT = "#5E4E42"
 HAIR = "#4A3B31"
+STEEL_HI = "#D9DFE6"      # the ram head's polished brow
+
+# the detail standard (art round W2): wood, iron, steel and the team hides apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = dict(MW.RIM_SOLDIER, lift=0.66, full_lu=0.72)   # the wood and hides measured hl 0.064 (floor 0.06)
+MATERIAL_KINDS = MW.kinds({WOOD: "wood", DARK_WOOD: "wood", LOG: "wood", IRON: "iron", STEEL: "iron", STEEL_HI: "iron",
+                           GOLD: "gold", PARCH: "cloth", ROPE: "cloth", EYE: "glass", SKIN: "skin", HOSE: "cloth",
+                           BOOT: "leather", HAIR: "fur", "team": "hide"})
 
 R_WHEEL = 15.3
 AXLES = (-25.0, 22.0)
@@ -119,7 +138,11 @@ def build(rig):
     roof.clip((0, 0, 38.0), (0, 0, -1))
     rf = F.Face(rig, "hull", [roof])
     rig.part("hull", roof, team=True)
-    g = K.paw(rf, Geo(), K.scr(rf, (0.0, -19.5, 58.0)), s=2.0)
+    # W2: the roof's hides in two tones: the hides between the second and third ribs from each end team-dark
+    for x0, x1 in ((-22.6, -9.4), (9.4, 22.6)):
+        MW.panel(rig, "hull", rf, [K.scr(rf, (x, -19.0, z)) for x, z in ((x0, 40.0), (x1, 40.0), (x1, 66.0),
+                                                                         (x0, 66.0))], depth=0.3)
+    g = MW.paw(rf, Geo(), K.scr(rf, (0.0, -19.5, 58.0)), s=2.0)     # W2: the paw whole
     rig.part("hull", g, PARCH, highlight=False, outline=0)
     g = Geo()   # stitched seams between the ribs (short parchment dashes)
     for x in (-16.0, 16.0):
@@ -129,9 +152,11 @@ def build(rig):
     rig.part("hull", g, PARCH, highlight=False, outline=0)
     # scalloped team valance hanging from the near eave
     g = Geo().blob((-2.0, -21.4, 36.2), (37.5, 1.2, 3.4), p=3.0)
+    gd = Geo()
     for x in range(-34, 33, 8):
-        g.blob((x + 2.0, -21.4, 32.6), (3.8, 1.2, 2.6), p=2.0)
+        gd.blob((x + 2.0, -21.4, 32.6), (3.8, 1.2, 2.6), p=2.0)
     rig.part("hull", g, team=True, outline=0.8)
+    look.team_part(rig, "hull", gd, outline=0.8)      # W2: the scallops team-dark (the valance in two tones)
     g = Geo()
     for x in (-24.0, -8.0, 8.0, 24.0):   # ribs over the near half of the roof
         k = (1 - abs((x - RC) / RX) ** RP) ** (1 / RP)
@@ -175,11 +200,17 @@ def build(rig):
     for x in (-50.0, -30.0, 26.0):
         g.lathe([(6.9, -1.6), (7.3, 0), (6.9, 1.6)], (x, 0, LOG_Z), (x + 1, 0, LOG_Z), segs=18)
     rig.part("ram", g, IRON, finish="metal", outline=0.8)
+    g = Geo()   # W2: knots in the log (the wood reads as a trunk)
+    for x, z, r in ((-41.0, 38.6, 1.9), (-12.0, 36.0, 1.6), (12.0, 38.4, 1.4)):
+        g.blob((x, -6.1, z), (r, 0.9, r * 0.8), p=2.0)
+    rig.part("ram", g, DARK_WOOD, outline=0)
     hx, hz = HEAD_X, LOG_Z
     g = Geo().blob((hx, 0, hz + 1.0), (10.5, 8.4, 9.0), p=2.4, taper=(0.9, 1.0))
     g.blob((hx + 8.5, 0, hz - 2.0), (6.0, 6.2, 5.6), p=2.3)          # snout
     g.lathe([(7.4, 0), (7.8, 3.5), (7.2, 5.0)], (hx - 12.0, 0, hz), (hx - 7.0, 0, hz), segs=18)  # collar
     rig.part("ram", g, STEEL, finish="metal")
+    g = Geo().capsule((hx - 9.0, -2.4, hz + 8.6), (hx + 5.0, -2.8, hz + 7.4), 1.2, 0.9, segs=10, rings=2)
+    rig.part("ram", g, STEEL_HI, finish="metal", outline=0)    # W2: the polished brow (plate's highlight band)
     g = Geo()
     for sgn in (-1.0, 1.0):  # curled horns: spheres along a spiral beside the head
         for k in range(9):
@@ -247,6 +278,21 @@ def build(rig):
     # near wheels last so they sit in front
     _wheel(rig, "wheel_bn", AXLES[0], -15.0)
     _wheel(rig, "wheel_fn", AXLES[1], -15.0)
+    if getattr(rig, "skin", None) is None and rig.name == SLUG:   # the Mangonel and the Belfry reuse this kit
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, vehicle with a crew): the roof's largest light hide (r 9), the rear
+    pusher's team tunic, a dent in the steel ram's head, a strip torn from the valance, a low smoke emitter on the
+    roof's front half (below the peeking crewman's head and 24 lu or more beside it on every frame, `fireClear`:
+    DAMAGE's `fireAt` takes it for the fire) and a high one on the ridge."""
+    rig.damage_spot_at("roof", "hull", -32.0, 52.0, 9.0, "hide", team=True)
+    rig.damage_spot_at("tunic", "c2_body", -51.0, 30.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("ramhead", "ram", HEAD_X + 10.0, LOG_Z - 1.0, 5.0, "metal", fill=STEEL)
+    rig.damage_spot_at("valance", "hull", 6.0, 27.0, 9.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("smoke", "hull", (22.0, -20.0, 46.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("smoke_top", "hull", (8.0, 0.0, 76.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------

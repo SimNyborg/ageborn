@@ -2,17 +2,17 @@
  "frames": {
   "siege_belfry_attack_b_01": {
    "frame": {
-    "x": 1309,
+    "x": 3384,
     "y": 2,
-    "w": 195,
+    "w": 196,
     "h": 319
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
+    "x": 192,
     "y": 206,
-    "w": 195,
+    "w": 196,
     "h": 319
    },
    "sourceSize": {
@@ -26,9 +26,9 @@
   },
   "siege_belfry_attack_b_01_team": {
    "frame": {
-    "x": 825,
-    "y": 340,
-    "w": 178,
+    "x": 494,
+    "y": 334,
+    "w": 177,
     "h": 248
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 183,
     "y": 206,
-    "w": 178,
+    "w": 177,
     "h": 248
    },
    "sourceSize": {
@@ -50,17 +50,17 @@
   },
   "siege_belfry_attack_b_02": {
    "frame": {
-    "x": 1508,
+    "x": 805,
     "y": 2,
-    "w": 210,
+    "w": 211,
     "h": 315
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 173,
+    "x": 172,
     "y": 210,
-    "w": 210,
+    "w": 211,
     "h": 315
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "siege_belfry_attack_b_02_team": {
    "frame": {
-    "x": 632,
-    "y": 340,
+    "x": 805,
+    "y": 321,
     "w": 189,
     "h": 250
    },
@@ -98,17 +98,17 @@
   },
   "siege_belfry_attack_b_03": {
    "frame": {
-    "x": 1722,
-    "y": 2,
-    "w": 218,
+    "x": 270,
+    "y": 307,
+    "w": 220,
     "h": 312
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 162,
+    "x": 160,
     "y": 213,
-    "w": 218,
+    "w": 220,
     "h": 312
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "siege_belfry_attack_b_03_team": {
    "frame": {
-    "x": 1675,
-    "y": 340,
+    "x": 3384,
+    "y": 325,
     "w": 195,
     "h": 245
    },
@@ -146,17 +146,17 @@
   },
   "siege_belfry_attack_b_04": {
    "frame": {
-    "x": 270,
+    "x": 552,
     "y": 2,
-    "w": 247,
+    "w": 249,
     "h": 328
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 190,
+    "x": 188,
     "y": 197,
-    "w": 247,
+    "w": 249,
     "h": 328
    },
    "sourceSize": {
@@ -170,7 +170,7 @@
   },
   "siege_belfry_attack_b_04_team": {
    "frame": {
-    "x": 450,
+    "x": 2,
     "y": 340,
     "w": 178,
     "h": 255
@@ -218,8 +218,8 @@
   },
   "siege_belfry_attack_b_05_team": {
    "frame": {
-    "x": 284,
-    "y": 340,
+    "x": 998,
+    "y": 333,
     "w": 162,
     "h": 262
    },
@@ -242,8 +242,8 @@
   },
   "siege_belfry_attack_b_06": {
    "frame": {
-    "x": 2,
-    "y": 340,
+    "x": 270,
+    "y": 2,
     "w": 278,
     "h": 301
    },
@@ -266,18 +266,18 @@
   },
   "siege_belfry_attack_b_06_team": {
    "frame": {
-    "x": 1874,
-    "y": 340,
+    "x": 3168,
+    "y": 333,
     "w": 158,
-    "h": 227
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 230,
-    "y": 243,
+    "y": 244,
     "w": 158,
-    "h": 227
+    "h": 226
    },
    "sourceSize": {
     "w": 566,
@@ -290,7 +290,7 @@
   },
   "siege_belfry_attack_alt_01": {
    "frame": {
-    "x": 521,
+    "x": 1020,
     "y": 2,
     "w": 193,
     "h": 327
@@ -314,8 +314,8 @@
   },
   "siege_belfry_attack_alt_01_team": {
    "frame": {
-    "x": 1007,
-    "y": 340,
+    "x": 1164,
+    "y": 333,
     "w": 163,
     "h": 248
    },
@@ -338,7 +338,7 @@
   },
   "siege_belfry_attack_alt_02": {
    "frame": {
-    "x": 718,
+    "x": 1217,
     "y": 2,
     "w": 193,
     "h": 327
@@ -362,8 +362,8 @@
   },
   "siege_belfry_attack_alt_02_team": {
    "frame": {
-    "x": 1174,
-    "y": 340,
+    "x": 1331,
+    "y": 333,
     "w": 163,
     "h": 248
    },
@@ -386,7 +386,7 @@
   },
   "siege_belfry_attack_alt_03": {
    "frame": {
-    "x": 915,
+    "x": 1414,
     "y": 2,
     "w": 193,
     "h": 327
@@ -410,8 +410,8 @@
   },
   "siege_belfry_attack_alt_03_team": {
    "frame": {
-    "x": 1341,
-    "y": 340,
+    "x": 1498,
+    "y": 333,
     "w": 163,
     "h": 248
    },
@@ -434,7 +434,7 @@
   },
   "siege_belfry_attack_alt_04": {
    "frame": {
-    "x": 1112,
+    "x": 1611,
     "y": 2,
     "w": 193,
     "h": 327
@@ -458,8 +458,392 @@
   },
   "siege_belfry_attack_alt_04_team": {
    "frame": {
-    "x": 1508,
-    "y": 340,
+    "x": 1665,
+    "y": 333,
+    "w": 163,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 209,
+    "w": 163,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up45_01": {
+   "frame": {
+    "x": 1808,
+    "y": 2,
+    "w": 193,
+    "h": 327
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 201,
+    "w": 193,
+    "h": 327
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up45_01_team": {
+   "frame": {
+    "x": 1832,
+    "y": 333,
+    "w": 163,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 209,
+    "w": 163,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up45_02": {
+   "frame": {
+    "x": 2005,
+    "y": 2,
+    "w": 193,
+    "h": 327
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 201,
+    "w": 193,
+    "h": 327
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up45_02_team": {
+   "frame": {
+    "x": 1999,
+    "y": 333,
+    "w": 163,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 209,
+    "w": 163,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up45_03": {
+   "frame": {
+    "x": 2202,
+    "y": 2,
+    "w": 193,
+    "h": 327
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 201,
+    "w": 193,
+    "h": 327
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up45_03_team": {
+   "frame": {
+    "x": 2166,
+    "y": 333,
+    "w": 163,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 209,
+    "w": 163,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up45_04": {
+   "frame": {
+    "x": 2399,
+    "y": 2,
+    "w": 193,
+    "h": 327
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 201,
+    "w": 193,
+    "h": 327
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up45_04_team": {
+   "frame": {
+    "x": 2333,
+    "y": 333,
+    "w": 163,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 209,
+    "w": 163,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up70_01": {
+   "frame": {
+    "x": 2596,
+    "y": 2,
+    "w": 193,
+    "h": 327
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 201,
+    "w": 193,
+    "h": 327
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up70_01_team": {
+   "frame": {
+    "x": 2500,
+    "y": 333,
+    "w": 163,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 209,
+    "w": 163,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up70_02": {
+   "frame": {
+    "x": 2793,
+    "y": 2,
+    "w": 193,
+    "h": 327
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 201,
+    "w": 193,
+    "h": 327
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up70_02_team": {
+   "frame": {
+    "x": 2667,
+    "y": 333,
+    "w": 163,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 209,
+    "w": 163,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up70_03": {
+   "frame": {
+    "x": 2990,
+    "y": 2,
+    "w": 193,
+    "h": 327
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 201,
+    "w": 193,
+    "h": 327
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up70_03_team": {
+   "frame": {
+    "x": 2834,
+    "y": 333,
+    "w": 163,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 209,
+    "w": 163,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up70_04": {
+   "frame": {
+    "x": 3187,
+    "y": 2,
+    "w": 193,
+    "h": 327
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 201,
+    "w": 193,
+    "h": 327
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.88772
+   }
+  },
+  "siege_belfry_attack_alt_up70_04_team": {
+   "frame": {
+    "x": 3001,
+    "y": 333,
     "w": 163,
     "h": 248
    },
@@ -525,6 +909,38 @@
    "siege_belfry_attack_alt_03_team",
    "siege_belfry_attack_alt_04_team",
    "siege_belfry_idle_00_team"
+  ],
+  "attack_alt_up45": [
+   "siege_belfry_idle_00",
+   "siege_belfry_attack_alt_up45_01",
+   "siege_belfry_attack_alt_up45_02",
+   "siege_belfry_attack_alt_up45_03",
+   "siege_belfry_attack_alt_up45_04",
+   "siege_belfry_idle_00"
+  ],
+  "attack_alt_up45_team": [
+   "siege_belfry_idle_00_team",
+   "siege_belfry_attack_alt_up45_01_team",
+   "siege_belfry_attack_alt_up45_02_team",
+   "siege_belfry_attack_alt_up45_03_team",
+   "siege_belfry_attack_alt_up45_04_team",
+   "siege_belfry_idle_00_team"
+  ],
+  "attack_alt_up70": [
+   "siege_belfry_idle_00",
+   "siege_belfry_attack_alt_up70_01",
+   "siege_belfry_attack_alt_up70_02",
+   "siege_belfry_attack_alt_up70_03",
+   "siege_belfry_attack_alt_up70_04",
+   "siege_belfry_idle_00"
+  ],
+  "attack_alt_up70_team": [
+   "siege_belfry_idle_00_team",
+   "siege_belfry_attack_alt_up70_01_team",
+   "siege_belfry_attack_alt_up70_02_team",
+   "siege_belfry_attack_alt_up70_03_team",
+   "siege_belfry_attack_alt_up70_04_team",
+   "siege_belfry_idle_00_team"
   ]
  },
  "meta": {
@@ -533,8 +949,8 @@
   "image": "siege_belfry.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2048,
-   "h": 644
+   "w": 3584,
+   "h": 624
   },
   "scale": "3",
   "ageborn": {
@@ -770,6 +1186,174 @@
       "atLu": [
        16.8,
        100.2
+      ]
+     }
+    },
+    "attack_alt_up45": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      0
+     ],
+     "durationsMs": [
+      100,
+      140,
+      220,
+      140,
+      160,
+      240
+     ],
+     "durationMs": 1000,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.46,
+     "aimOf": "attack_alt",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        17.2,
+        96.8
+       ],
+       [
+        16.6,
+        101.4
+       ],
+       [
+        14.4,
+        105.7
+       ],
+       [
+        13.6,
+        104.7
+       ],
+       [
+        15.8,
+        102.1
+       ]
+      ],
+      "bridgeTip": [
+       [
+        22.0,
+        86.3
+       ],
+       [
+        22.0,
+        86.3
+       ],
+       [
+        22.0,
+        86.3
+       ],
+       [
+        22.0,
+        86.3
+       ],
+       [
+        22.0,
+        86.3
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "muzzle": [
+      13.6,
+      104.7
+     ],
+     "aimDeg": 44.9,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       13.6,
+       104.7
+      ]
+     }
+    },
+    "attack_alt_up70": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      0
+     ],
+     "durationsMs": [
+      100,
+      140,
+      220,
+      140,
+      160,
+      240
+     ],
+     "durationMs": 1000,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.46,
+     "aimOf": "attack_alt",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        17.2,
+        96.8
+       ],
+       [
+        15.5,
+        103.2
+       ],
+       [
+        10.6,
+        108.0
+       ],
+       [
+        9.9,
+        107.0
+       ],
+       [
+        13.9,
+        104.4
+       ]
+      ],
+      "bridgeTip": [
+       [
+        22.0,
+        86.3
+       ],
+       [
+        22.0,
+        86.3
+       ],
+       [
+        22.0,
+        86.3
+       ],
+       [
+        22.0,
+        86.3
+       ],
+       [
+        22.0,
+        86.3
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "muzzle": [
+      9.9,
+      107.0
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       9.9,
+       107.0
       ]
      }
     }

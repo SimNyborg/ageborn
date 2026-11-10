@@ -30,6 +30,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import medieval_w2 as MW
 
 SLUG = "yeoman_archer"
 GAIT_NAME = "biped"
@@ -55,6 +56,18 @@ STRING = "#EDE6D6"
 PARCH = "#E8DFC8"
 STEEL = "#A7B0BB"
 GOLD = "#D4A437"
+
+# the detail standard (art round W2): the tabard per fess (its lower half team-dark) under a whole bear paw, pleats
+# down its skirt, the great bow in two woods (a yew self bow's pale sapwood back)
+BOW_BACK = "#C4AC86"      # under the Longbowman's: the great bow is long and a paler back over-lights him
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+LOOK_RIM = dict(MW.RIM_SOLDIER, lift=0.42)   # the pale bow and feather already light him (highlight share 0.10)
+MATERIAL_KINDS = MW.kinds({SKIN: "skin", HAIR: "fur", LEATHER: "leather", DARK_LEATHER: "leather", HOSE: "cloth",
+                           SLEEVE: "cloth", FELT: "cloth", BEARD: "fur", BOOT: "leather", WOOD: "wood",
+                           BOW_BACK: "wood", GRIP: "leather", STRING: "cloth", PARCH: "cloth", STEEL: "iron",
+                           GOLD: "gold", "team": "cloth"})
 
 HL = (0.0, B.ARM_Y["r"] - 1.5, B.HAND_Z)   # bow hand (near side, so bow and arrow read)
 BOW_HALF = 40.0                       # grip to tip
@@ -114,12 +127,16 @@ def build(rig):
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
     rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.6, 0, 14.8), (11.4, 10.4, 4.8), p=2.7, taper=(1.12, 1.0))
+    hface = F.Face(rig, "hem", [g])
     rig.part("hem", g, team=True)
+    MW.folds(rig, "hem", hface, [[(x, 15.8), (x + 0.5, 10.6)] for x in (-8.0, -4.0, 0.0, 4.0, 8.0)], w=1.3)
     g = Geo().blob((0.4, 0, 28.5), (10.8, 9.9, 8.4), p=2.8, taper=(1.02, 0.94))
     g.clip((0, 0, 36.0), (0, 0, 1))
     tface = F.Face(rig, "torso", [g])
     rig.part("torso", g, team=True)
-    g = K.paw(tface, Geo(), (4.0, 28.0), s=1.0)
+    # W2: the tabard per fess (its lower half team-dark), the paw whole over both halves
+    MW.panel(rig, "torso", tface, [(-10.2, 27.0), (10.0, 27.0), (10.4, 22.4), (-10.4, 22.4)], depth=0.2)
+    g = MW.paw(tface, Geo(), (4.0, 28.0), s=1.0)
     rig.part("torso", g, PARCH, highlight=False, outline=0)
     g = Geo().blob((0.4, 0, 20.4), (11.4, 10.4, 1.8), p=3.2)
     rig.part("torso", g, DARK_LEATHER)
@@ -175,7 +192,20 @@ def build(rig):
         r0 = 0.9 + 1.4 * (1 - abs(z0) / BOW_HALF)
         r1 = 0.9 + 1.4 * (1 - abs(z1) / BOW_HALF)
         g.capsule((hx + _bow_x(z0), hy, hz + z0), (hx + _bow_x(z1), hy, hz + z1), r0, r1, segs=10, rings=2)
+    bow_face = F.Face(rig, "hand_r", [g])
     rig.part("hand_r", g, WOOD)
+    # W2: a yew self bow in two woods: the pale sapwood back (the side toward the foe) along each limb
+    g = Geo()
+    for i in range(1, n - 1):
+        z0 = -BOW_HALF + 2 * BOW_HALF * i / n
+        z1 = -BOW_HALF + 2 * BOW_HALF * (i + 1) / n
+        r = 0.9 + 1.4 * (1 - abs(z0 + z1) / (2 * BOW_HALF))
+        p0 = K.scr(bow_face, (hx + _bow_x(z0) + 0.5 * r, hy, hz + z0))
+        p1 = K.scr(bow_face, (hx + _bow_x(z1) + 0.5 * r, hy, hz + z1))
+        m = ((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2)
+        bow_face.stroke(g, bow_face.hit(*m), [(p0[0] - m[0], p0[1] - m[1]), (p1[0] - m[0], p1[1] - m[1])],
+                        0.8 * r, 0.3)
+    rig.part("hand_r", g, BOW_BACK, outline=0, highlight=False)
     g = Geo().capsule((hx + 0.2, hy, hz - 4.0), (hx + 0.2, hy, hz + 4.0), 2.8)
     rig.part("hand_r", g, GRIP)
     g = Geo()
@@ -220,6 +250,15 @@ def build(rig):
     rig.part("arrow_hand", g, PARCH, outline=0.6)
     # the arrow spawns where its head rests at full draw
     rig.track("muzzle", "hand_r", (ax0 + ARROW + 3, hy - AY, hz + AZ))
+    _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin): the tabard (the largest team
+    field the bow arm leaves clear), the felt hat's crown, a strip torn from the skirt."""
+    rig.damage_spot_at("tabard", "torso", -4.0, 28.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("hat", "hat", -3.0, 61.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("skirt", "hem", 0.0, 15.0, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

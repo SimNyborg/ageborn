@@ -2,7 +2,7 @@
  "frames": {
   "yeoman_archer_attack_b_01": {
    "frame": {
-    "x": 159,
+    "x": 2,
     "y": 2,
     "w": 99,
     "h": 107
@@ -26,8 +26,8 @@
   },
   "yeoman_archer_attack_b_01_team": {
    "frame": {
-    "x": 326,
-    "y": 116,
+    "x": 115,
+    "y": 114,
     "w": 51,
     "h": 78
    },
@@ -50,7 +50,7 @@
   },
   "yeoman_archer_attack_b_02": {
    "frame": {
-    "x": 407,
+    "x": 188,
     "y": 2,
     "w": 91,
     "h": 93
@@ -74,18 +74,18 @@
   },
   "yeoman_archer_attack_b_02_team": {
    "frame": {
-    "x": 269,
-    "y": 116,
+    "x": 58,
+    "y": 114,
     "w": 53,
-    "h": 79
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 91,
-    "y": 119,
+    "y": 120,
     "w": 53,
-    "h": 79
+    "h": 78
    },
    "sourceSize": {
     "w": 239,
@@ -98,7 +98,7 @@
   },
   "yeoman_archer_attack_b_03": {
    "frame": {
-    "x": 502,
+    "x": 283,
     "y": 2,
     "w": 91,
     "h": 87
@@ -122,7 +122,7 @@
   },
   "yeoman_archer_attack_b_03_team": {
    "frame": {
-    "x": 429,
+    "x": 360,
     "y": 116,
     "w": 58,
     "h": 75
@@ -146,7 +146,7 @@
   },
   "yeoman_archer_attack_b_04": {
    "frame": {
-    "x": 76,
+    "x": 105,
     "y": 2,
     "w": 79,
     "h": 108
@@ -170,8 +170,8 @@
   },
   "yeoman_archer_attack_b_04_team": {
    "frame": {
-    "x": 100,
-    "y": 116,
+    "x": 523,
+    "y": 2,
     "w": 53,
     "h": 84
    },
@@ -194,7 +194,7 @@
   },
   "yeoman_archer_attack_b_05": {
    "frame": {
-    "x": 2,
+    "x": 378,
     "y": 2,
     "w": 70,
     "h": 110
@@ -218,8 +218,8 @@
   },
   "yeoman_archer_attack_b_05_team": {
    "frame": {
-    "x": 157,
-    "y": 116,
+    "x": 580,
+    "y": 2,
     "w": 52,
     "h": 84
    },
@@ -242,7 +242,7 @@
   },
   "yeoman_archer_attack_b_06": {
    "frame": {
-    "x": 262,
+    "x": 452,
     "y": 2,
     "w": 67,
     "h": 106
@@ -266,8 +266,8 @@
   },
   "yeoman_archer_attack_b_06_team": {
    "frame": {
-    "x": 213,
-    "y": 116,
+    "x": 2,
+    "y": 114,
     "w": 52,
     "h": 80
    },
@@ -290,8 +290,8 @@
   },
   "yeoman_archer_attack_b_07": {
    "frame": {
-    "x": 333,
-    "y": 2,
+    "x": 286,
+    "y": 93,
     "w": 70,
     "h": 100
    },
@@ -314,8 +314,8 @@
   },
   "yeoman_archer_attack_b_07_team": {
    "frame": {
-    "x": 381,
-    "y": 116,
+    "x": 484,
+    "y": 112,
     "w": 44,
     "h": 78
    },
@@ -338,8 +338,8 @@
   },
   "yeoman_archer_attack_b_09": {
    "frame": {
-    "x": 2,
-    "y": 116,
+    "x": 188,
+    "y": 99,
     "w": 94,
     "h": 85
    },
@@ -362,7 +362,7 @@
   },
   "yeoman_archer_attack_b_09_team": {
    "frame": {
-    "x": 491,
+    "x": 422,
     "y": 116,
     "w": 58,
     "h": 74
@@ -418,7 +418,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 640,
-   "h": 204
+   "h": 196
   },
   "scale": "1.5",
   "ageborn": {
