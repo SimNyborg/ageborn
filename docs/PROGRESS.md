@@ -2,6 +2,33 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-11-10: Art round W3 (every Industrial and Modern troop and their skins) and the W2 review's fixes; W4 and the world wave started; W3 **live since 2026-11-10 23:07 UTC** (`main` 4a87933; cloud session, branch `main-ipy06f`, draft PR #14)
+
+**What a player sees now.**
+
+- **Every Industrial and Modern troop is redrawn to the detail standard** (41 troops and summons): riveted plates, brass and soot on the Industrial machines, webbing, pouches and two-tone uniforms on the Modern soldiers, and plate seams, bolts and lit tops on the tanks and aircraft.
+- **Eight more skins are real variants of their unit:** Chimney Sweep, Teapot Golem and Circus Train; Desert Raider, Arctic Rifleman, Tin Tankette, Shark Mouth and an Origami Fortress folded from flat paper planes.
+- **Hurt troops show it (item 40):** vehicles and aircraft burn and smoke clear of their crews, and the clockwork troops spark and steam.
+- **Shooters aim at flyers (item 44):**
+  - Aimed up: the Carbineer, Harpoon Gunner, Flare Spotter, Bandmaster, Spark Scientist, Armoured Car, Rifleman, Bazooka Trooper, Radio Operator, SMG Squad, Combat Medic and Ghillie Sniper.
+  - Aimed down: the Sky Fortress's waist gunner, the Gyrocopter, the Armoured Train's and Land Dreadnought's second gunners, and the Armoured Car.
+  - The Rifle Grenadier's rifle is drawn at the angle its grenade leaves.
+- **W2's fixes:**
+  - The Pufferfish Balloon now reads as a pufferfish, and the Lindworm has a scaled neck, a quilted blanket and a layered breath.
+  - Six Medieval attack sheets meet the detail floors.
+  - The Toy Soldier, Fireworks Grenadier and Greenwood Archer have clearer signs.
+  - The horses lost their grit.
+
+**The strict art review of W3 passed:** Modern 3.79, Industrial 3.78, the wave 3.79 over 49 items (2.67 before); each of the ten starters 3.83; no blockers. Its one should, the Origami Fortress, was fixed before the release. It now scores 3.83; its flat paper planes sit under two detail floors on purpose, an exception for this skin only. W2 re-checked at 3.79. Memory stays under the budget: 462 MB in the test war, 554 MB of 600 in the reviewer's worst case through Modern, and W3 adds no peak memory.
+
+**Released:** CI green on 4a87933 (Chromium, WebKit, the iPhone profile and Firefox); `main` fast-forwarded; GitHub Pages deployed it at 23:07 UTC.
+
+**Under way:** art round W4 (all 43 Future and Cosmic troops and their 8 skins; the Future starters and commons are done) and world wave A (the turrets, forts, bases, base skins, decorations and scenes of Stone and Bronze; its six-item pilot is with the reviewer, with numbers on what a sharper world tier would cost in memory).
+
+**Hiccups today:** the account's weekly usage limit stopped every agent from about 20:30 to 21:00 UTC, and the container restarted at about 23:02 UTC; each time the agents were resumed from where they stood, and nothing was lost.
+
+**What the owner can do:** answer the open questions on items 51 and 52 (unique troops and formations) and item 53 (which ElevenLabs plan you have, and whether its monthly credits may be used for the game's music and sounds).
+
 ## 2026-11-03 to 10: Art round W2 (every Medieval and Gunpowder troop and their skins), the design for unique troops and formations (items 51 and 52), art round W3 started; W2 **live since 2026-11-10 13:07 UTC** (`main` 8d21bdc; cloud session, branch `main-ipy06f`, draft PR #14)
 
 **What a player sees now.**
