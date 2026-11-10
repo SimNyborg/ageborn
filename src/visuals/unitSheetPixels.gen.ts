@@ -162,7 +162,7 @@ export const UNIT_SHEET_PIXELS: Readonly<Record<string, readonly [number, number
   'modern/rifleman@arctic_rifleman': [2283520, 2076672, 606208, 548864],
   'modern/sandbag_carrier': [1794048, 947200, 479232, 250880],
   'modern/sky_fortress': [6277120, 2480128, 1634304, 645120],
-  'modern/sky_fortress@origami_fortress': [6277120, 2480128, 1648640, 645120],
+  'modern/sky_fortress@origami_fortress': [6328320, 2422784, 1648640, 647168],
   'modern/smg_squad': [1633280, 1249280, 442368, 343040],
   'modern/sticky_bomber': [1753088, 737280, 469504, 196608],
   'modern/tankette': [6512640, 2691072, 1745920, 681984],

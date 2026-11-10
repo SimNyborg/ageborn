@@ -26,7 +26,7 @@
   },
   "gyrocopter@shark_mouth_attack_b_00_team": {
    "frame": {
-    "x": 670,
+    "x": 671,
     "y": 276,
     "w": 91,
     "h": 50
@@ -122,7 +122,7 @@
   },
   "gyrocopter@shark_mouth_attack_b_02_team": {
    "frame": {
-    "x": 670,
+    "x": 671,
     "y": 383,
     "w": 95,
     "h": 46
@@ -172,7 +172,7 @@
    "frame": {
     "x": 2,
     "y": 379,
-    "w": 93,
+    "w": 94,
     "h": 44
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 96,
     "y": 145,
-    "w": 93,
+    "w": 94,
     "h": 44
    },
    "sourceSize": {
@@ -218,7 +218,7 @@
   },
   "gyrocopter@shark_mouth_attack_b_04_team": {
    "frame": {
-    "x": 670,
+    "x": 671,
     "y": 330,
     "w": 93,
     "h": 49
@@ -266,7 +266,7 @@
   },
   "gyrocopter@shark_mouth_attack_down_00_team": {
    "frame": {
-    "x": 490,
+    "x": 491,
     "y": 324,
     "w": 84,
     "h": 76
@@ -410,7 +410,7 @@
   },
   "gyrocopter@shark_mouth_attack_down_03_team": {
    "frame": {
-    "x": 578,
+    "x": 579,
     "y": 356,
     "w": 88,
     "h": 71
@@ -508,7 +508,7 @@
    "frame": {
     "x": 414,
     "y": 324,
-    "w": 72,
+    "w": 73,
     "h": 81
    },
    "rotated": false,
@@ -516,7 +516,7 @@
    "spriteSourceSize": {
     "x": 120,
     "y": 122,
-    "w": 72,
+    "w": 73,
     "h": 81
    },
    "sourceSize": {
@@ -698,7 +698,7 @@
   },
   "gyrocopter@shark_mouth_attack_b_down_04_team": {
    "frame": {
-    "x": 578,
+    "x": 579,
     "y": 278,
     "w": 83,
     "h": 74

@@ -172,7 +172,7 @@
    "frame": {
     "x": 469,
     "y": 915,
-    "w": 185,
+    "w": 186,
     "h": 87
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 193,
     "y": 290,
-    "w": 185,
+    "w": 186,
     "h": 87
    },
    "sourceSize": {
@@ -506,9 +506,9 @@
   },
   "gyrocopter@shark_mouth_attack_b_down_00_team": {
    "frame": {
-    "x": 1074,
-    "y": 585,
-    "w": 143,
+    "x": 714,
+    "y": 696,
+    "w": 146,
     "h": 161
    },
    "rotated": false,
@@ -516,7 +516,7 @@
    "spriteSourceSize": {
     "x": 240,
     "y": 244,
-    "w": 143,
+    "w": 146,
     "h": 161
    },
    "sourceSize": {
@@ -602,8 +602,8 @@
   },
   "gyrocopter@shark_mouth_attack_b_down_02_team": {
    "frame": {
-    "x": 714,
-    "y": 696,
+    "x": 1074,
+    "y": 585,
     "w": 146,
     "h": 161
    },

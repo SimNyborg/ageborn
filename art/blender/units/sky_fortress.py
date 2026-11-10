@@ -110,17 +110,124 @@ RIDGE = "#EFEAE0"          # a crease's lit ridge
 PAPER_PAL = _far({R.OLIVE: PAPER, R.OLIVE_LT: PAPER_LT, SEAM: PAPER_DK, SOOT: PAPER_DK, CHIP: PAPER_LT,
                   R.GUNMETAL: "#8F9296", STEEL_DK: "#77797D", BOMB: "#9C9789", R.GLASS: "#C3D2D6", WINDOW: "#7C8285",
                   R.SIGNAL: "#B9877F"})
-PAPER_KINDS = MW.kinds({PAPER: "ceramic", PAPER_LT: "ceramic", PAPER_DK: "ceramic", "#8F9296": "ceramic",
-                        "#77797D": "ceramic", "#9C9789": "ceramic", "#C3D2D6": "glass", "#7C8285": "ceramic",
-                        "#B9877F": "ceramic", FOLD: "ceramic", RIDGE: "ceramic"})
+# W3 review (the Origami Fortress should: "faceted fold shading, flat planes that each take one value"): the airframe is
+# folded from a few large flat planes (flat-shaded blobs of few cuts, six-sided nacelles, plates), so each plane takes
+# one value of the cel light and the folds between them catch it (the edge highlight lights the convex folds); the
+# paper keeps only a faint grain ("polymer", 3%) instead of the ceramic speckle, and the painted creases that ran over
+# the old round shading make way for the real folds. Crisp paper points break the outline inside the old extents: the
+# wing tips, the fin's tip, the tailplane's tips, the nose folded to a point and pointed spinners.
+PAPER_KINDS = MW.kinds({PAPER: "leather", PAPER_LT: "leather", PAPER_DK: "leather", "#8F9296": "polymer",
+                        "#77797D": "polymer", "#9C9789": "polymer", "#C3D2D6": "glass", "#7C8285": "polymer",
+                        "#B9877F": "polymer", FOLD: "polymer", RIDGE: "polymer", "team": "leather"})
 SKINS = {"origami_fortress": {"palette": PAPER_PAL, "kinds": PAPER_KINDS}}
+PAPER_CUTS = 2          # the fuselage's planes: a 3 x 3 grid per side of the blob's cube, long strips along it
+PAPER_FIN = [(-52, FUS_Z + 6), (-68, FUS_Z + 7), (-74, FUS_Z + 42), (-63, FUS_Z + 38.5), (-54, FUS_Z + 16)]
+
+
+def _air(paper, center, radii, p=2.0, taper=(1.0, 1.0), shift=(0.0, 0.0), cuts=PAPER_CUTS):
+    """An airframe blob: the plain bomber's smooth one, or the Origami Fortress's folded from a few flat planes."""
+    if paper:
+        return Geo().blob(center, radii, p=p, cuts=cuts, taper=taper, shift=shift, smooth=False)
+    return Geo().blob(center, radii, p=p, taper=taper, shift=shift)
+
+
+def _flat(g):
+    """Every face of a Geo flat-shaded (a paper plane takes one value)."""
+    for f in g.bm.faces:
+        f.smooth = False
+    return g
+
+
+def _plate(pts, z, t):
+    """A flat paper plate: the outline `pts` (x, y) at height z, t lu thick."""
+    return Geo().slab(pts, -z, t, rot=(-90.0, 0.0, 0.0))
+
+
+def _fold_plate(pts, z, t, a, b, deg):
+    """A paper plate (`_plate`) turned `deg` degrees about the fold line from a to b ((x, y) at height z): one half of
+    a folded wing, its fold a crisp ridge between two planes."""
+    from mathutils import Matrix, Vector
+    g = _plate(pts, z, t)
+    p0 = Vector((a[0], a[1], z))
+    rot = Matrix.Rotation(math.radians(deg), 4, (Vector((b[0], b[1], z)) - p0).normalized())
+    for v in g.bm.verts:
+        v.co = p0 + (rot @ (v.co - p0))
+    return g
+
+
+# W3 review: the paper wings folded once along a diagonal, from the root's trailing corner to the tip's leading corner;
+# the inner half (toward the leading edge) is turned up a little, so the fold is a lit ridge and each half one tone
+# and a flap folded down along its trailing edge (a second fold across the wing)
+WING_NEAR = {"front": [(-5.0, -1.0), (29.0, -1.0), (28.0, -64.0)],
+             "rear": [(4.0, -18.2), (28.0, -64.0), (22.0, -71.0), (4.0, -71.0)],
+             "flap": [(-5.0, -1.0), (4.0, -18.2), (4.0, -71.0), (-4.0, -71.0)],
+             "fold": ((-5.0, -1.0), (28.0, -64.0)), "flap_fold": ((4.0, -18.2), (4.0, -71.0))}
+WING_FAR = {k: [(x, -y) for x, y in v] for k, v in WING_NEAR.items()}
+
+
+def _paper_wing(rig, w, z, t, colors, outline, sign=1.0):
+    a, b = w["fold"]
+    rig.part("plane", _fold_plate(w["front"], z, t, a, b, -7.0 * sign), colors[0], outline=outline)
+    rig.part("plane", _plate(w["rear"], z, t), colors[1], outline=outline)
+    a, b = w["flap_fold"]
+    rig.part("plane", _fold_plate(w["flap"], z, t, a, b, 9.0 * sign), colors[2], outline=outline)
+
+
+def _split(geo, pred):
+    """The faces of a closed Geo split in two Geos by `pred(face centre)`: (the faces it accepts, the others). The
+    cut runs along the planes' own edges, so a team or paper area ends on a fold."""
+    import bmesh
+    bmesh.ops.recalc_face_normals(geo.bm, faces=geo.bm.faces[:])
+    out = []
+    for want in (True, False):
+        g = Geo()
+        g.bm.free()
+        g.bm = geo.bm.copy()
+        drop = [f for f in g.bm.faces if bool(pred(f.calc_center_median())) != want]
+        bmesh.ops.delete(g.bm, geom=drop, context="FACES")
+        out.append(g)
+    geo.bm.free()
+    return out
+
+
+# the folded planes' own values: a plane takes its tone (team) or paper colour by how squarely it faces the light,
+# lit (n.l above 0.8), turned (0.45-0.8) or away, on top of the cel light, so each fold shows a clear value step at 1x
+PLANE_NL = (0.8, 0.45)
+TEAM_TONES = (1.0, 0.84, 0.70)
+PAPER_TONES = (PAPER_LT, PAPER, PAPER_DK)
+
+
+def _planes(obj, mats):
+    """Gives each face of a part one of three materials by how squarely it faces the light (PLANE_NL)."""
+    from ageborn_art import config as C
+    me = obj.data
+    me.materials.clear()
+    for m in mats:
+        me.materials.append(m)
+    lx, ly, lz = C.LIGHT_DIR
+    for poly in me.polygons:
+        n = poly.normal
+        nl = n.x * lx + n.y * ly + n.z * lz
+        poly.material_index = 0 if nl > PLANE_NL[0] else (1 if nl > PLANE_NL[1] else 2)
+    return obj
+
+
+def _paper_shell(grow, keep):
+    """The paper fuselage's painted band (KD.shell of the folded body): the same planes grown by `grow` lu."""
+    g = _air(True, FUS["center"], tuple(r + grow for r in FUS["radii"]), p=FUS["p"], taper=FUS["taper"],
+             shift=FUS["shift"])
+    for point, normal in keep:
+        g.clip(point, normal)
+    return g
 
 
 def _engine_pts(ex, ey):
     return (ex + 10.0, ey, ENG_Z)
 
 
-def _fus():
+def _fus(paper=False):
+    if paper:
+        return _air(True, FUS["center"], FUS["radii"], p=FUS["p"], taper=FUS["taper"], shift=FUS["shift"])
     return Geo().blob(FUS["center"], FUS["radii"], p=FUS["p"], taper=FUS["taper"], shift=FUS["shift"])
 
 
@@ -135,38 +242,54 @@ def build(rig):
     rig.joint("odo", "root", (0, 0, 0))
     rig.joint("plane", "body", (0, 0, FUS_Z))
     # far wing and its engines
-    g = Geo().blob((12.0, 36.0, FUS_Z - 7.0), (17.0, 36.0, 2.6), p=3.0)
-    rig.part("plane", g, R.OLIVE_LT, outline=0.6)
+    if paper:   # W3 review: a flat paper wing folded once along a diagonal
+        _paper_wing(rig, WING_FAR, FUS_Z - 7.0, 2.4, (PAPER, PAPER_DK, PAPER_DK), 0.6, sign=-1.0)
+    else:
+        g = Geo().blob((12.0, 36.0, FUS_Z - 7.0), (17.0, 36.0, 2.6), p=3.0)
+        rig.part("plane", g, R.OLIVE_LT, outline=0.6)
     # fuselage: team top, olive belly, a chevron and rivets
-    fus = Geo().blob((0.0, 0, FUS_Z), (LEN, 14.0, 15.0), p=2.6, taper=(0.62, 1.0), shift=(-0.1, 0))
-    fus.clip((0, 0, FUS_Z - 3.0), (0, 0, -1))
-    fface = F.Face(rig, "plane", [fus])
-    rig.part("plane", fus, team=True)
+    if paper:   # W3 review: folded from long flat planes, the team paper ending on the lower fold, each plane one tone
+        from ageborn_art import materials as MAT
+        fus, belly_planes = _split(_fus(True), lambda c: c.z > FUS_Z - 4.0)
+        fface = F.Face(rig, "plane", [fus])
+        _planes(rig.part("plane", fus, team=True), [look.team(t) for t in TEAM_TONES])
+    else:
+        fus = Geo().blob((0.0, 0, FUS_Z), (LEN, 14.0, 15.0), p=2.6, taper=(0.62, 1.0), shift=(-0.1, 0))
+        fus.clip((0, 0, FUS_Z - 3.0), (0, 0, -1))
+        fface = F.Face(rig, "plane", [fus])
+        rig.part("plane", fus, team=True)
     g = KM.chevron(fface, Geo(), (-6.0, FUS_Z + 3.0), s=1.6, n=2, w=2.2, gap=3.4)
     rig.part("plane", g, KM.CREAM, highlight=False, outline=0)
-    g = Geo().blob((0.0, 0, FUS_Z), (LEN, 14.0, 15.0), p=2.6, taper=(0.62, 1.0), shift=(-0.1, 0))
-    g.clip((0, 0, FUS_Z - 3.0), (0, 0, 1))
-    rig.part("plane", g, R.OLIVE)
+    if paper:
+        _planes(rig.part("plane", belly_planes, R.OLIVE), [MAT.toon(c) for c in PAPER_TONES])
+    else:
+        g = Geo().blob((0.0, 0, FUS_Z), (LEN, 14.0, 15.0), p=2.6, taper=(0.62, 1.0), shift=(-0.1, 0))
+        g.clip((0, 0, FUS_Z - 3.0), (0, 0, 1))
+        rig.part("plane", g, R.OLIVE)
     # W3: a team-dark cheat line along the fuselage above the belly, team panel seams across it, a row of windows
-    keep = [((0, 0, FUS_Z + 1.6), (0, 0, 1)), ((0, 0, FUS_Z - 3.0), (0, 0, -1)), ((57.0, 0, 0), (1, 0, 0)),
-            ((-56.0, 0, 0), (-1, 0, 0))]
-    g = KD.shell(**FUS, grow=0.3, keep=keep)
-    look.team_part(rig, "plane", g)
-    for x in (-42.0, -15.0, 12.0, 36.0):
-        MW.team_line(rig, "plane", _fus(), [(x, FUS_Z + 2.4), (x + 0.4, FUS_Z + 8.0), (x + 1.0, FUS_Z + 12.6)], 1.2,
-                     tone=0.7)
+    # (paper: the planes' own tones are its two-tone team zone; no seams)
+    if not paper:
+        keep = [((0, 0, FUS_Z + 1.6), (0, 0, 1)), ((0, 0, FUS_Z - 3.0), (0, 0, -1)), ((57.0, 0, 0), (1, 0, 0)),
+                ((-56.0, 0, 0), (-1, 0, 0))]
+        g = KD.shell(**FUS, grow=0.3, keep=keep)
+        look.team_part(rig, "plane", g)
+        for x in (-42.0, -15.0, 12.0, 36.0):
+            MW.team_line(rig, "plane", _fus(), [(x, FUS_Z + 2.4), (x + 0.4, FUS_Z + 8.0), (x + 1.0, FUS_Z + 12.6)],
+                         1.2, tone=0.7)
     # a cream theatre band round the rear fuselage (it echoes the fin's band) and a row of cream mission markers (little
     # bombs) under the cockpit
     keep = [((-31.5, 0, 0), (1, 0, 0)), ((-35.5, 0, 0), (-1, 0, 0)), ((0, 0, FUS_Z - 2.9), (0, 0, -1))]
-    rig.part("plane", KD.shell(**FUS, grow=0.35, keep=keep), KM.CREAM, outline=0.4)
+    rig.part("plane", _paper_shell(0.35, keep) if paper else KD.shell(**FUS, grow=0.35, keep=keep), KM.CREAM,
+             outline=0.4)
     marker = [(-1.6, -0.8), (0.9, -0.8), (1.7, 0.0), (0.9, 0.8), (-1.6, 0.8), (-2.3, 1.2), (-2.3, -1.2)]
     bombs = [((NOSE_X - 36.0 + 4.2 * k, FUS_Z + 1.6), marker) for k in range(5)]
-    MW.decals(rig, "plane", [_fus()], bombs, KM.CREAM, depth=0.6)
+    MW.decals(rig, "plane", [_fus(paper)], bombs, KM.CREAM, depth=0.6)
     # a long panel line along the upper fuselage
-    MW.team_line(rig, "plane", _fus(), [(-54.0, FUS_Z + 14.6), (-10.0, FUS_Z + 15.6), (30.0, FUS_Z + 14.8),
-                                        (52.0, FUS_Z + 12.6)], 1.1, tone=0.7)
+    if not paper:
+        MW.team_line(rig, "plane", _fus(), [(-54.0, FUS_Z + 14.6), (-10.0, FUS_Z + 15.6), (30.0, FUS_Z + 14.8),
+                                            (52.0, FUS_Z + 12.6)], 1.1, tone=0.7)
     wins = [((x, FUS_Z + 5.0), F.ellipse(0, 0, 1.8, 1.7, 12)) for x in (-52.0, -46.0, -40.0, 3.0, 9.0, 15.0)]
-    MW.decals(rig, "plane", [_fus()], wins, WINDOW, depth=0.6, outline=0.4)
+    MW.decals(rig, "plane", [_fus(paper)], wins, WINDOW, depth=0.6, outline=0.4)
     if not paper:   # rivets along the belly line and the spine (W3: 2.5 lu, they read at game scale; paper has none)
         g = Geo()
         for x in range(-50, 50, 7):
@@ -179,37 +302,38 @@ def build(rig):
         rig.part("plane", g, R.OLIVE_LT, finish="metal", outline=0.3)
     # the anti-glare panel on the nose ahead of the cockpit
     glare = [(-5.0, -1.2), (4.6, -1.8), (4.8, 1.6), (-4.6, 2.0)]
-    MW.decals(rig, "plane", [_fus()], [((NOSE_X - 13.0, FUS_Z + 8.6), glare)], SEAM)
-    belly = Geo().blob((0.0, 0, FUS_Z), (LEN, 14.0, 15.0), p=2.6, taper=(0.62, 1.0), shift=(-0.1, 0))
+    MW.decals(rig, "plane", [_fus(paper)], [((NOSE_X - 13.0, FUS_Z + 8.6), glare)], SEAM)
+    if paper:
+        belly = _fus(True)
+    else:
+        belly = Geo().blob((0.0, 0, FUS_Z), (LEN, 14.0, 15.0), p=2.6, taper=(0.62, 1.0), shift=(-0.1, 0))
     bface = F.Face(rig, "plane", [belly])
-    g = Geo()   # W3: panel lines along and across the belly
-    bface.stroke(g, bface.hit(-2.0, FUS_Z - 8.0), [(-40.0, 0.6), (-10.0, 0.0), (20.0, -0.4), (40.0, -1.2)], 1.0, 0.4)
-    bface.stroke(g, bface.hit(-8.0, FUS_Z - 11.6), [(-30.0, 0.8), (0.0, 0.0), (30.0, -0.6)], 1.0, 0.4)
-    for x in (-44.0, -30.0, -12.0, 8.0, 24.0, 40.0):
-        bface.stroke(g, bface.hit(x, FUS_Z - 7.0), [(0.0, 3.4), (0.6, -4.0)], 1.0, 0.4)
-    rig.part("plane", g, SEAM, highlight=False, outline=0)
-    chips = [((-40.0, FUS_Z - 5.6), MW.CHIP_A), ((-12.0, FUS_Z - 10.0), MW.CHIP_B), ((36.0, FUS_Z - 6.0), MW.CHIP_C)]
-    MW.decals(rig, "plane", [_fus()], chips, CHIP)
-    if paper:   # the Origami Fortress's creases: a valley line beside a lit ridge on the paper, a fold on the team
-        MW.team_line(rig, "plane", _fus(), [(-52.0, FUS_Z + 8.4), (-10.0, FUS_Z + 9.8), (40.0, FUS_Z + 8.6),
-                                            (58.0, FUS_Z + 5.0)], 1.1, tone=0.7)
-        MW.team_line(rig, "plane", _fus(), [(-30.0, FUS_Z + 14.0), (-24.0, FUS_Z + 2.4)], 1.0, tone=0.7)
-        MW.team_line(rig, "plane", _fus(), [(26.0, FUS_Z + 13.4), (20.0, FUS_Z + 2.4)], 1.0, tone=0.7)
-        g = Geo()
-        bface.stroke(g, bface.hit(-2.0, FUS_Z - 6.9), [(-40.0, 0.6), (-10.0, 0.0), (20.0, -0.4), (40.0, -1.2)], 0.9,
-                     0.5)
-        rig.part("plane", g, RIDGE, highlight=False, outline=0)
+    if not paper:   # (paper: its folds are the planes' own edges, no panel lines or worn paint)
+        g = Geo()   # W3: panel lines along and across the belly
+        bface.stroke(g, bface.hit(-2.0, FUS_Z - 8.0), [(-40.0, 0.6), (-10.0, 0.0), (20.0, -0.4), (40.0, -1.2)], 1.0,
+                     0.4)
+        bface.stroke(g, bface.hit(-8.0, FUS_Z - 11.6), [(-30.0, 0.8), (0.0, 0.0), (30.0, -0.6)], 1.0, 0.4)
+        for x in (-44.0, -30.0, -12.0, 8.0, 24.0, 40.0):
+            bface.stroke(g, bface.hit(x, FUS_Z - 7.0), [(0.0, 3.4), (0.6, -4.0)], 1.0, 0.4)
+        rig.part("plane", g, SEAM, highlight=False, outline=0)
+        chips = [((-40.0, FUS_Z - 5.6), MW.CHIP_A), ((-12.0, FUS_Z - 10.0), MW.CHIP_B), ((36.0, FUS_Z - 6.0), MW.CHIP_C)]
+        MW.decals(rig, "plane", [_fus()], chips, CHIP)
     # glass nose and the cockpit with the pilot
-    g = Geo().blob((NOSE_X - 4.0, 0, FUS_Z - 1.0), (9.0, 10.0, 10.0), p=2.2)
+    if paper:   # W3 review: the nose folded to a point (six planes), inside the round nose's reach
+        g = _flat(Geo().lathe([(0.0, 0.0), (9.8, 0.4), (8.6, 7.0), (4.2, 13.5), (0.0, 18.0)],
+                              (NOSE_X - 13.0, 0, FUS_Z - 1.0), (NOSE_X + 5.0, 0, FUS_Z - 1.0), segs=6, rot=(0, 0, 30)))
+    else:
+        g = Geo().blob((NOSE_X - 4.0, 0, FUS_Z - 1.0), (9.0, 10.0, 10.0), p=2.2)
     rig.part("plane", g, R.GLASS, finish="gloss", outline=0.7, outline_hex="#6F8A94")
-    g = Geo()
-    for a in (-60, -40, -20, 0, 20, 40, 60):     # W3: the nose glass framed in seven bars (was three)
-        r = math.radians(a)
-        g.capsule((NOSE_X - 10.0, -8.6 * math.cos(r), FUS_Z - 1.0 + 8.6 * math.sin(r)),
-                  (NOSE_X + 3.0, -2.0 * math.cos(r), FUS_Z - 1.0 + 2.0 * math.sin(r)), 0.55)
-    g.lathe([(8.9, -0.5), (9.3, 0), (8.9, 0.5)], (NOSE_X - 7.0, 0, FUS_Z - 1.0), (NOSE_X - 6.0, 0, FUS_Z - 1.0),
-            segs=20)
-    rig.part("plane", g, R.GUNMETAL, finish="metal", outline=0)
+    if not paper:   # (paper: the folded nose has no frame)
+        g = Geo()
+        for a in (-60, -40, -20, 0, 20, 40, 60):     # W3: the nose glass framed in seven bars (was three)
+            r = math.radians(a)
+            g.capsule((NOSE_X - 10.0, -8.6 * math.cos(r), FUS_Z - 1.0 + 8.6 * math.sin(r)),
+                      (NOSE_X + 3.0, -2.0 * math.cos(r), FUS_Z - 1.0 + 2.0 * math.sin(r)), 0.55)
+        g.lathe([(8.9, -0.5), (9.3, 0), (8.9, 0.5)], (NOSE_X - 7.0, 0, FUS_Z - 1.0), (NOSE_X - 6.0, 0, FUS_Z - 1.0),
+                segs=20)
+        rig.part("plane", g, R.GUNMETAL, finish="metal", outline=0)
     g = Geo().blob((NOSE_X - 22.0, 0, FUS_Z + 11.5), (9.0, 7.0, 3.6), p=2.4)
     g.clip((0, 0, FUS_Z + 10.0), (0, 0, -1))
     rig.part("plane", g, R.GLASS, finish="gloss", outline=0.7, outline_hex="#6F8A94")
@@ -224,20 +348,29 @@ def build(rig):
     g.clip((hc[0], 0, hc[2] + 0.3), (0, 0, -1))
     rig.part("p_head", g, R.LEATHER)
     # tail: a tall team fin with a cream band, the tailplane
-    g = Geo().slab([(-52, FUS_Z + 6), (-68, FUS_Z + 7), (-74, FUS_Z + 40), (-62, FUS_Z + 42), (-54, FUS_Z + 16)], 0.0, 3.0)
+    fin_pts = PAPER_FIN if paper else FIN   # W3 review: the paper fin folded to a crisp point at its top
+    g = Geo().slab(fin_pts, 0.0, 3.0)
     rig.part("plane", g, team=True, outline=0.9)
     g = Geo().slab([(-62.5, FUS_Z + 30), (-71.5, FUS_Z + 30), (-72.5, FUS_Z + 34), (-63, FUS_Z + 34)], -1.8, 0.6)
     rig.part("plane", g, KM.CREAM, outline=0)
     # W3: the rudder team-dark (the fin in two tones), its hinge under the cream band; panel lines on the fin
-    g = Geo().slab([(-64.2, FUS_Z + 7.4), (-68.0, FUS_Z + 7.0), (-74.0, FUS_Z + 40.0), (-70.2, FUS_Z + 40.6)],
-                   -1.65, 0.3)
+    if paper:
+        g = Geo().slab([(-64.2, FUS_Z + 7.4), (-68.0, FUS_Z + 7.0), (-73.6, FUS_Z + 40.6), (-70.0, FUS_Z + 39.6)],
+                       -1.65, 0.3)
+    else:
+        g = Geo().slab([(-64.2, FUS_Z + 7.4), (-68.0, FUS_Z + 7.0), (-74.0, FUS_Z + 40.0), (-70.2, FUS_Z + 40.6)],
+                       -1.65, 0.3)
     look.team_part(rig, "plane", g)
-    fin = Geo().slab(FIN, 0.0, 3.0)
+    fin = Geo().slab(fin_pts, 0.0, 3.0)
     for z in (FUS_Z + 18.0, FUS_Z + 25.0):
         MW.team_line(rig, "plane", fin, [(-56.2 - (z - FUS_Z) * 0.24, z), (-66.0 - (z - FUS_Z) * 0.2, z + 0.4)], 1.3,
                      tone=look.TEAM_DARK)
-        fin = Geo().slab(FIN, 0.0, 3.0)
-    g = Geo().blob((-62.0, 0, FUS_Z + 4.0), (10.0, 24.0, 1.6), p=2.8)
+        fin = Geo().slab(fin_pts, 0.0, 3.0)
+    if paper:   # W3 review: a flat paper tailplane swept back to two crisp points
+        g = _plate([(-52.0, -5.0), (-59.0, -24.0), (-66.0, -22.5), (-72.0, -9.0), (-72.0, 9.0), (-66.0, 22.5),
+                    (-59.0, 24.0), (-52.0, 5.0)], FUS_Z + 4.0, 1.6)
+    else:
+        g = Geo().blob((-62.0, 0, FUS_Z + 4.0), (10.0, 24.0, 1.6), p=2.8)
     rig.part("plane", g, R.OLIVE_LT, outline=0.7)
     # the dorsal turret bubble with a gunner and a twin MG
     g = Geo().blob(DORSAL, (6.4, 6.4, 5.0), p=2.2)
@@ -264,7 +397,10 @@ def build(rig):
     # bomb-bay doors and the stick of bombs
     for side, y in (("dl", -4.0), ("dr", 4.0)):
         rig.joint(side, "plane", (BAY[0], y * 1.8, BAY[2] + 1.0))
-        g = Geo().blob((BAY[0], y * 1.8, BAY[2]), (13.0, 3.6, 1.0), p=3.0)
+        if paper:   # W3 review: flat paper doors
+            g = _air(True, (BAY[0], y * 1.8, BAY[2]), (13.0, 3.6, 1.0), p=3.0, cuts=1)
+        else:
+            g = Geo().blob((BAY[0], y * 1.8, BAY[2]), (13.0, 3.6, 1.0), p=3.0)
         rig.part(side, g, R.OLIVE_LT, finish="gloss", outline=0.5)
     rig.joint("bombs", "plane", BAY, hidden=True)
     g = Geo()
@@ -276,39 +412,56 @@ def build(rig):
     rig.joint("mz", "plane", (BAY[0], 0.0, BAY[2] - 2.0), hidden=True)
     rig.track("muzzle", "mz", (BAY[0], 0.0, BAY[2] - 2.0))
     # near wing (in front of the fuselage) and the engines (nacelles, team rings, spinners)
-    g = Geo().blob((12.0, -36.0, FUS_Z - 7.0), (17.0, 36.0, 3.0), p=3.0)
-    rig.part("plane", g, R.OLIVE, outline=0.7)
+    if paper:   # W3 review: a flat paper wing folded once along a diagonal (no painted crease)
+        _paper_wing(rig, WING_NEAR, FUS_Z - 7.0, 3.0, (PAPER_LT, PAPER, PAPER_DK), 0.7)
+    else:
+        g = Geo().blob((12.0, -36.0, FUS_Z - 7.0), (17.0, 36.0, 3.0), p=3.0)
+        rig.part("plane", g, R.OLIVE, outline=0.7)
     # W3: the flap's hinge line and access panels on the near wing, worn chips
-    wface = F.Face(rig, "plane", [Geo().blob((12.0, -36.0, FUS_Z - 7.0), (17.0, 36.0, 3.0), p=3.0)])
-    g = Geo()
-    wface.stroke(g, wface.hit(0.0, FUS_Z - 12.0), [(-1.0, 6.0), (0.0, 0.0), (1.5, -7.0)], 1.0, 0.4)
-    for cx, cz in ((6.0, FUS_Z - 9.0), (-4.0, FUS_Z - 15.0)):
-        wface.decal(g, wface.hit(cx, cz), [(-2.0, -1.4), (2.0, -1.4), (2.0, 1.4), (-2.0, 1.4)], 0.4)
-    rig.part("plane", g, SEAM, highlight=False, outline=0)
-    MW.decals(rig, "plane", [Geo().blob((12.0, -36.0, FUS_Z - 7.0), (17.0, 36.0, 3.0), p=3.0)],
-              [((14.0, FUS_Z - 12.0), MW.CHIP_A), ((2.0, FUS_Z - 18.0), MW.CHIP_C)], CHIP)
-    if paper:   # the wing folded along its span: a valley line with a lit ridge beside it, and a fold on the fin
-        g, gr = Geo(), Geo()
-        wface.stroke(g, wface.hit(10.0, FUS_Z - 10.0), [(-2.0, 7.0), (0.0, 0.0), (3.0, -9.0)], 1.0, 0.5)
-        wface.stroke(gr, wface.hit(12.2, FUS_Z - 10.0), [(-2.0, 7.0), (0.0, 0.0), (3.0, -9.0)], 0.9, 0.5)
-        rig.part("plane", g, FOLD, highlight=False, outline=0)
-        rig.part("plane", gr, RIDGE, highlight=False, outline=0)
-        MW.team_line(rig, "plane", Geo().slab(FIN, 0.0, 3.0), [(-56.0, FUS_Z + 9.0), (-67.0, FUS_Z + 39.0)], 1.0,
-                     tone=0.7)
-    g = Geo().blob((10.0, -70.0, FUS_Z - 7.0), (7.0, 4.0, 3.0), p=3.0)
+    if not paper:
+        wface = F.Face(rig, "plane", [Geo().blob((12.0, -36.0, FUS_Z - 7.0), (17.0, 36.0, 3.0), p=3.0)])
+        g = Geo()
+        wface.stroke(g, wface.hit(0.0, FUS_Z - 12.0), [(-1.0, 6.0), (0.0, 0.0), (1.5, -7.0)], 1.0, 0.4)
+        for cx, cz in ((6.0, FUS_Z - 9.0), (-4.0, FUS_Z - 15.0)):
+            wface.decal(g, wface.hit(cx, cz), [(-2.0, -1.4), (2.0, -1.4), (2.0, 1.4), (-2.0, 1.4)], 0.4)
+        rig.part("plane", g, SEAM, highlight=False, outline=0)
+        MW.decals(rig, "plane", [Geo().blob((12.0, -36.0, FUS_Z - 7.0), (17.0, 36.0, 3.0), p=3.0)],
+                  [((14.0, FUS_Z - 12.0), MW.CHIP_A), ((2.0, FUS_Z - 18.0), MW.CHIP_C)], CHIP)
+    if paper:   # a crease down the fin
+        MW.team_line(rig, "plane", Geo().slab(PAPER_FIN, 0.0, 3.0), [(-56.0, FUS_Z + 9.0), (-67.0, FUS_Z + 37.0)],
+                     1.0, tone=0.7)
+    if paper:   # W3 review: the team wing tip folded to a crisp point
+        g = _plate([(17.5, -64.0), (1.5, -64.0), (8.0, -74.0)], FUS_Z - 7.0, 3.4)
+    else:
+        g = Geo().blob((10.0, -70.0, FUS_Z - 7.0), (7.0, 4.0, 3.0), p=3.0)
     rig.part("plane", g, team=True, outline=0.5)                                  # team wing tip
     for ex, ey in ENGINES:
-        g = Geo().lathe([(0, 0), (7.6, 0.6), (8.4, 6.0), (6.4, 15.0), (2.4, 20.0)], (ex + 10.0, ey, ENG_Z),
-                        (ex - 10.0, ey, ENG_Z), segs=18)
+        if paper:   # W3 review: six-sided paper nacelles, team rings and pointed spinners
+            g = _flat(Geo().lathe([(0, 0), (7.6, 0.6), (8.4, 6.0), (6.4, 15.0), (2.4, 20.0)], (ex + 10.0, ey, ENG_Z),
+                                  (ex - 10.0, ey, ENG_Z), segs=6, rot=(0, 0, 30)))
+        else:
+            g = Geo().lathe([(0, 0), (7.6, 0.6), (8.4, 6.0), (6.4, 15.0), (2.4, 20.0)], (ex + 10.0, ey, ENG_Z),
+                            (ex - 10.0, ey, ENG_Z), segs=18)
         rig.part("plane", g, R.OLIVE, finish="gloss", outline=0.6)
         # W3: the cowl flaps' dark band behind the ring, an exhaust stub under the nacelle
-        g = Geo().lathe([(8.25, -1.0), (8.5, 0), (8.25, 1.0)], (ex + 3.0, ey, ENG_Z), (ex + 4.0, ey, ENG_Z), segs=18)
-        rig.part("plane", g, SEAM, outline=0)
+        if not paper:
+            g = Geo().lathe([(8.25, -1.0), (8.5, 0), (8.25, 1.0)], (ex + 3.0, ey, ENG_Z), (ex + 4.0, ey, ENG_Z),
+                            segs=18)
+            rig.part("plane", g, SEAM, outline=0)
         g = Geo().capsule((ex - 2.0, ey - 3.0, ENG_Z - 6.6), (ex - 8.0, ey - 3.4, ENG_Z - 7.2), 1.2)
         rig.part("plane", g, R.GUNMETAL, finish="metal", outline=0.4)
-        g = Geo().lathe([(8.5, -1.2), (8.8, 0), (8.5, 1.2)], (ex + 9.0, ey, ENG_Z), (ex + 10.5, ey, ENG_Z), segs=18)
+        if paper:
+            g = _flat(Geo().lathe([(8.6, -1.2), (8.9, 0), (8.6, 1.2)], (ex + 9.0, ey, ENG_Z), (ex + 10.5, ey, ENG_Z),
+                                  segs=6, rot=(0, 0, 30)))
+        else:
+            g = Geo().lathe([(8.5, -1.2), (8.8, 0), (8.5, 1.2)], (ex + 9.0, ey, ENG_Z), (ex + 10.5, ey, ENG_Z),
+                            segs=18)
         rig.part("plane", g, team=True, outline=0.4)
-        g = Geo().lathe([(2.4, 0), (1.8, 2.0), (0, 3.4)], (ex + 10.5, ey, ENG_Z), (ex + 14.0, ey, ENG_Z), segs=12)
+        if paper:
+            g = _flat(Geo().lathe([(2.6, 0), (1.6, 2.4), (0, 4.4)], (ex + 10.5, ey, ENG_Z), (ex + 14.4, ey, ENG_Z),
+                                  segs=4, rot=(0, 0, 45)))
+        else:
+            g = Geo().lathe([(2.4, 0), (1.8, 2.0), (0, 3.4)], (ex + 10.5, ey, ENG_Z), (ex + 14.0, ey, ENG_Z), segs=12)
         rig.part("plane", g, R.SIGNAL, outline=0.4)
     for k in range(BLUR):
         name = f"blur{k}"

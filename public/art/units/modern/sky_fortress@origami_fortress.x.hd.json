@@ -2,18 +2,18 @@
  "frames": {
   "sky_fortress@origami_fortress_attack_b_01": {
    "frame": {
-    "x": 1533,
-    "y": 220,
+    "x": 1148,
+    "y": 442,
     "w": 376,
-    "h": 205
+    "h": 208
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 353,
-    "y": 309,
+    "x": 352,
+    "y": 306,
     "w": 376,
-    "h": 205
+    "h": 208
    },
    "sourceSize": {
     "w": 958,
@@ -26,18 +26,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_01_team": {
    "frame": {
-    "x": 3257,
+    "x": 3222,
     "y": 2,
-    "w": 323,
-    "h": 202
+    "w": 314,
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 359,
-    "y": 302,
-    "w": 323,
-    "h": 202
+    "x": 360,
+    "y": 299,
+    "w": 314,
+    "h": 203
    },
    "sourceSize": {
     "w": 958,
@@ -50,18 +50,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_02": {
    "frame": {
-    "x": 1151,
-    "y": 486,
+    "x": 1529,
+    "y": 210,
     "w": 375,
-    "h": 204
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 354,
-    "y": 308,
+    "x": 353,
+    "y": 305,
     "w": 375,
-    "h": 204
+    "h": 207
    },
    "sourceSize": {
     "w": 958,
@@ -74,18 +74,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_02_team": {
    "frame": {
-    "x": 3257,
-    "y": 414,
-    "w": 319,
-    "h": 211
+    "x": 2940,
+    "y": 418,
+    "w": 309,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 364,
-    "y": 301,
-    "w": 319,
-    "h": 211
+    "x": 365,
+    "y": 297,
+    "w": 309,
+    "h": 204
    },
    "sourceSize": {
     "w": 958,
@@ -98,18 +98,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_03": {
    "frame": {
-    "x": 1533,
-    "y": 429,
-    "w": 375,
-    "h": 211
+    "x": 1907,
+    "y": 421,
+    "w": 374,
+    "h": 215
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 354,
-    "y": 309,
-    "w": 375,
-    "h": 211
+    "y": 305,
+    "w": 374,
+    "h": 215
    },
    "sourceSize": {
     "w": 958,
@@ -122,18 +122,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_03_team": {
    "frame": {
-    "x": 2923,
-    "y": 419,
-    "w": 319,
-    "h": 207
+    "x": 3253,
+    "y": 418,
+    "w": 308,
+    "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 364,
-    "y": 301,
-    "w": 319,
-    "h": 207
+    "x": 366,
+    "y": 297,
+    "w": 308,
+    "h": 210
    },
    "sourceSize": {
     "w": 958,
@@ -146,18 +146,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_04": {
    "frame": {
-    "x": 1533,
-    "y": 2,
-    "w": 376,
-    "h": 214
+    "x": 1528,
+    "y": 442,
+    "w": 375,
+    "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 353,
-    "y": 310,
-    "w": 376,
-    "h": 214
+    "y": 307,
+    "w": 375,
+    "h": 217
    },
    "sourceSize": {
     "w": 958,
@@ -170,18 +170,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_04_team": {
    "frame": {
-    "x": 3257,
-    "y": 208,
-    "w": 321,
-    "h": 202
+    "x": 3222,
+    "y": 209,
+    "w": 311,
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 362,
-    "y": 303,
-    "w": 321,
-    "h": 202
+    "x": 363,
+    "y": 299,
+    "w": 311,
+    "h": 205
    },
    "sourceSize": {
     "w": 958,
@@ -194,18 +194,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_05": {
    "frame": {
-    "x": 1151,
-    "y": 256,
-    "w": 378,
-    "h": 226
+    "x": 1148,
+    "y": 210,
+    "w": 377,
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 313,
-    "w": 378,
-    "h": 226
+    "y": 311,
+    "w": 377,
+    "h": 228
    },
    "sourceSize": {
     "w": 958,
@@ -218,18 +218,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_05_team": {
    "frame": {
-    "x": 2924,
-    "y": 2,
-    "w": 328,
-    "h": 176
+    "x": 2898,
+    "y": 198,
+    "w": 320,
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 353,
-    "y": 305,
-    "w": 328,
-    "h": 176
+    "x": 354,
+    "y": 304,
+    "w": 320,
+    "h": 180
    },
    "sourceSize": {
     "w": 958,
@@ -242,18 +242,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_06": {
    "frame": {
-    "x": 1151,
+    "x": 2,
     "y": 2,
     "w": 378,
-    "h": 250
+    "h": 251
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 313,
+    "y": 312,
     "w": 378,
-    "h": 250
+    "h": 251
    },
    "sourceSize": {
     "w": 958,
@@ -266,18 +266,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_06_team": {
    "frame": {
-    "x": 2587,
-    "y": 201,
-    "w": 332,
-    "h": 187
+    "x": 2850,
+    "y": 2,
+    "w": 323,
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 349,
-    "y": 305,
-    "w": 332,
-    "h": 187
+    "x": 350,
+    "y": 304,
+    "w": 323,
+    "h": 192
    },
    "sourceSize": {
     "w": 958,
@@ -291,17 +291,17 @@
   "sky_fortress@origami_fortress_attack_b_07": {
    "frame": {
     "x": 2,
-    "y": 2,
-    "w": 379,
-    "h": 207
+    "y": 257,
+    "w": 378,
+    "h": 208
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 312,
-    "w": 379,
-    "h": 207
+    "y": 311,
+    "w": 378,
+    "h": 208
    },
    "sourceSize": {
     "w": 958,
@@ -314,18 +314,18 @@
   },
   "sky_fortress@origami_fortress_attack_b_07_team": {
    "frame": {
-    "x": 2923,
-    "y": 201,
-    "w": 330,
-    "h": 214
+    "x": 2615,
+    "y": 398,
+    "w": 321,
+    "h": 216
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 351,
-    "y": 305,
-    "w": 330,
-    "h": 214
+    "x": 352,
+    "y": 303,
+    "w": 321,
+    "h": 216
    },
    "sourceSize": {
     "w": 958,
@@ -339,17 +339,17 @@
   "sky_fortress@origami_fortress_attack_alt_00": {
    "frame": {
     "x": 2,
-    "y": 213,
-    "w": 379,
-    "h": 203
+    "y": 469,
+    "w": 378,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 323,
-    "w": 379,
-    "h": 203
+    "y": 322,
+    "w": 378,
+    "h": 204
    },
    "sourceSize": {
     "w": 958,
@@ -362,18 +362,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_00_team": {
    "frame": {
-    "x": 1912,
-    "y": 429,
-    "w": 333,
-    "h": 195
+    "x": 1530,
+    "y": 2,
+    "w": 326,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 316,
-    "w": 333,
-    "h": 195
+    "y": 315,
+    "w": 326,
+    "h": 194
    },
    "sourceSize": {
     "w": 958,
@@ -386,18 +386,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_01": {
    "frame": {
-    "x": 2,
-    "y": 420,
-    "w": 379,
-    "h": 203
+    "x": 384,
+    "y": 2,
+    "w": 378,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 323,
-    "w": 379,
-    "h": 203
+    "y": 322,
+    "w": 378,
+    "h": 204
    },
    "sourceSize": {
     "w": 958,
@@ -410,18 +410,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_01_team": {
    "frame": {
-    "x": 1913,
+    "x": 1860,
     "y": 2,
-    "w": 333,
-    "h": 195
+    "w": 326,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 316,
-    "w": 333,
-    "h": 195
+    "y": 315,
+    "w": 326,
+    "h": 194
    },
    "sourceSize": {
     "w": 958,
@@ -434,18 +434,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_02": {
    "frame": {
-    "x": 385,
-    "y": 2,
-    "w": 379,
-    "h": 203
+    "x": 384,
+    "y": 210,
+    "w": 378,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 323,
-    "w": 379,
-    "h": 203
+    "y": 322,
+    "w": 378,
+    "h": 204
    },
    "sourceSize": {
     "w": 958,
@@ -458,18 +458,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_02_team": {
    "frame": {
-    "x": 1913,
-    "y": 201,
-    "w": 333,
-    "h": 195
+    "x": 1908,
+    "y": 200,
+    "w": 326,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 316,
-    "w": 333,
-    "h": 195
+    "y": 315,
+    "w": 326,
+    "h": 194
    },
    "sourceSize": {
     "w": 958,
@@ -482,18 +482,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_03": {
    "frame": {
-    "x": 385,
-    "y": 209,
-    "w": 379,
-    "h": 203
+    "x": 384,
+    "y": 418,
+    "w": 378,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 323,
-    "w": 379,
-    "h": 203
+    "y": 322,
+    "w": 378,
+    "h": 204
    },
    "sourceSize": {
     "w": 958,
@@ -506,18 +506,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_03_team": {
    "frame": {
-    "x": 2249,
-    "y": 400,
-    "w": 333,
-    "h": 195
+    "x": 2190,
+    "y": 2,
+    "w": 326,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 316,
-    "w": 333,
-    "h": 195
+    "y": 315,
+    "w": 326,
+    "h": 194
    },
    "sourceSize": {
     "w": 958,
@@ -530,18 +530,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_down_00": {
    "frame": {
-    "x": 385,
-    "y": 416,
-    "w": 379,
-    "h": 203
+    "x": 766,
+    "y": 2,
+    "w": 378,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 323,
-    "w": 379,
-    "h": 203
+    "y": 322,
+    "w": 378,
+    "h": 204
    },
    "sourceSize": {
     "w": 958,
@@ -554,18 +554,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_down_00_team": {
    "frame": {
-    "x": 2250,
-    "y": 2,
-    "w": 333,
-    "h": 195
+    "x": 2238,
+    "y": 200,
+    "w": 326,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 316,
-    "w": 333,
-    "h": 195
+    "y": 315,
+    "w": 326,
+    "h": 194
    },
    "sourceSize": {
     "w": 958,
@@ -578,18 +578,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_down_01": {
    "frame": {
-    "x": 768,
-    "y": 2,
-    "w": 379,
-    "h": 203
+    "x": 766,
+    "y": 210,
+    "w": 378,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 323,
-    "w": 379,
-    "h": 203
+    "y": 322,
+    "w": 378,
+    "h": 204
    },
    "sourceSize": {
     "w": 958,
@@ -602,18 +602,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_down_01_team": {
    "frame": {
-    "x": 2250,
-    "y": 201,
-    "w": 333,
-    "h": 195
+    "x": 2520,
+    "y": 2,
+    "w": 326,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 316,
-    "w": 333,
-    "h": 195
+    "y": 315,
+    "w": 326,
+    "h": 194
    },
    "sourceSize": {
     "w": 958,
@@ -626,18 +626,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_down_02": {
    "frame": {
-    "x": 768,
-    "y": 209,
-    "w": 379,
-    "h": 203
+    "x": 766,
+    "y": 418,
+    "w": 378,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 323,
-    "w": 379,
-    "h": 203
+    "y": 322,
+    "w": 378,
+    "h": 204
    },
    "sourceSize": {
     "w": 958,
@@ -650,18 +650,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_down_02_team": {
    "frame": {
-    "x": 2586,
-    "y": 400,
-    "w": 333,
-    "h": 195
+    "x": 2285,
+    "y": 398,
+    "w": 326,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 316,
-    "w": 333,
-    "h": 195
+    "y": 315,
+    "w": 326,
+    "h": 194
    },
    "sourceSize": {
     "w": 958,
@@ -674,18 +674,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_down_03": {
    "frame": {
-    "x": 768,
-    "y": 416,
-    "w": 379,
-    "h": 203
+    "x": 1148,
+    "y": 2,
+    "w": 378,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 323,
-    "w": 379,
-    "h": 203
+    "y": 322,
+    "w": 378,
+    "h": 204
    },
    "sourceSize": {
     "w": 958,
@@ -698,18 +698,18 @@
   },
   "sky_fortress@origami_fortress_attack_alt_down_03_team": {
    "frame": {
-    "x": 2587,
-    "y": 2,
-    "w": 333,
-    "h": 195
+    "x": 2568,
+    "y": 200,
+    "w": 326,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 316,
-    "w": 333,
-    "h": 195
+    "y": 315,
+    "w": 326,
+    "h": 194
    },
    "sourceSize": {
     "w": 958,
@@ -776,14 +776,14 @@
   "format": "RGBA8888",
   "size": {
    "w": 3584,
-   "h": 692
+   "h": 676
   },
   "scale": "3",
   "ageborn": {
    "visualId": "unit.sky_fortress@origami_fortress",
    "name": "Sky Fortress",
    "heightLu": 78,
-   "widthLu": 149.6,
+   "widthLu": 148.8,
    "pxPerLu": 2.46,
    "feetPx": [
     538,
