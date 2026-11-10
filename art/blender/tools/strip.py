@@ -1,12 +1,14 @@
 """Frame strips of a unit sheet at game scale (item 47 audit 7.3: "a short frame strip of every clip").
 
     <venv>/bin/python art/blender/tools/strip.py <sheet>.hd.json <out.png> [clip,clip,...] [--zoom 2]
-        [--tint blue|orange]
+        [--tint blue|orange] [--under mount]
 
 One row per clip with its unique frames, drawn as the game draws them: the team layer tinted under the base, then
 the GPU's bilinear draw to game scale (1.83 px/lu), enlarged `zoom` x nearest, all rows in one crop box (the union
 of the silhouettes) so the motion lines up. Reads the core sheet and its extras sheet (`.x.hd.json`: the aimed
 throws, attack_b, ...); the clips default to every clip of both, aimed variants with their aimDeg in the row label.
+World sheets (turrets, bases, forts, decorations) work the same from their 1x sheet; `--under CLIP` draws that clip's
+first frame beneath every tile (a turret's head clips on its mount, a decoration's loop on its body).
 """
 import argparse
 import os
@@ -26,6 +28,7 @@ ap.add_argument("out")
 ap.add_argument("clips", nargs="?", default="")
 ap.add_argument("--zoom", type=int, default=2)
 ap.add_argument("--tint", choices=("blue", "orange"), default="blue")
+ap.add_argument("--under", default=None, help="a clip whose first frame is drawn beneath every tile")
 a = ap.parse_args()
 tint = look2d.TEAM_BLUE if a.tint == "blue" else (0xF2 / 255, 0x8A / 255, 0x1E / 255)
 fr, d = look2d.frames_of(a.sheet)
@@ -45,10 +48,19 @@ def names(clip):
     return [n for n in (f"{slug}_{clip}_{i:02d}" for i in range(meta[clip]["frames"])) if n in fr]
 
 
+under = f"{slug}_{a.under}_00" if a.under else None
+if under is not None and under not in fr:
+    raise SystemExit(f"no frame {under}")
+
+
+def alpha(name):
+    return np.maximum(fr[name][..., 3], fr[name + "_team"][..., 3] if name + "_team" in fr else 0)
+
+
 box = None
 for clip in clips:
     for name in names(clip):
-        al = np.maximum(fr[name][..., 3], fr[name + "_team"][..., 3] if name + "_team" in fr else 0)
+        al = alpha(name) if under is None else np.maximum(alpha(name), alpha(under))
         ys, xs = np.nonzero(al > 0.02)
         b = (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1)
         box = b if box is None else (min(box[0], b[0]), min(box[1], b[1]), max(box[2], b[2]), max(box[3], b[3]))
@@ -57,7 +69,10 @@ rows = []
 for clip in clips:
     tiles = []
     for name in names(clip):
-        g = look2d.gpu_bilinear(look2d.composite(fr[name], fr.get(name + "_team"), tint), k)
+        arr = look2d.composite(fr[name], fr.get(name + "_team"), tint)
+        if under is not None and name != under:
+            arr = look2d.over(arr, look2d.composite(fr[under], fr.get(under + "_team"), tint))
+        g = look2d.gpu_bilinear(arr, k)
         al = g[..., 3:4]
         rgb = g[..., :3] * al + bg * (1 - al)
         im = Image.fromarray((np.clip(rgb, 0, 1) * 255 + 0.5).astype(np.uint8))
