@@ -44,3 +44,7 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+        with:
+          # 2026-11-10: two deploys of a 222 MB, 3,200-file site sat in "syncing_files" past the action's default 10
+          # minutes (c717114's took about 2); give Pages half an hour before giving up
+          timeout: 1800000
