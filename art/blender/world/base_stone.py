@@ -12,6 +12,8 @@ Treasury: a berry basket and meat (1), a pile of furs (2), tusks and ochre stone
 import math
 import random
 
+from mathutils import Matrix, Vector
+
 from ageborn_art import face as F
 from ageborn_art import look
 from ageborn_art.geometry import Geo
@@ -44,8 +46,88 @@ CHIP = "#B2A08A"
 STRATA_LT = "#A89682"     # world wave A: the lit ledges and the dark seams of the crag's strata
 STRATA_DK = "#5E554B"
 
+SEAM = "#4B433A"          # world wave A: the bedding seams and cross joints of the lower mound
+LIP = "#D6C7A9"           # and the lit lips and chips above them (lighter than CHIP: a camera-facing chip shades
+                          # darker than the rock's lit top planes beside it)
+
 DEPTHS = [-40, -24, -40, -24]
 CAVE = (-104.0, -44.0)
+
+
+def _strip(face, g, pts, w, depth=1.4):
+    """A dark line of width w through the screen points `pts` [(x, z)] that follows the surface under `face`: each
+    segment is a quad between the two surface hits (a flat decal would sink into a curved rock), with round joints.
+    Points the face's rays miss (past the silhouette) end the line there."""
+    U, V, N = face.right, face.up, face.view
+    hits = []
+    for x, z in pts:
+        h = face.hit(x, z)
+        hits.append(None if (h - Vector((x, 0.0, z))).length < 1e-6 else h)
+    for (p0, p1), (h0, h1) in zip(zip(pts, pts[1:]), zip(hits, hits[1:])):
+        if h0 is None or h1 is None:
+            continue
+        dx, dz = p1[0] - p0[0], p1[1] - p0[1]
+        L = math.hypot(dx, dz) or 1.0
+        n = U * (-dz / L * w / 2) + V * (dx / L * w / 2)
+        quad = [h0 + n, h1 + n, h1 - n, h0 - n]
+        verts = [tuple(q - N * (depth / 2)) for q in quad] + [tuple(q + N * (depth / 2)) for q in quad]
+        g._add(verts, [[3, 2, 1, 0], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]],
+               Matrix.Identity(4), smooth=False)
+    for h in hits:
+        if h is not None:
+            face.decal(g, h, F.ellipse(0, 0, w / 2, w / 2, 8), depth)
+
+
+def _beds(face, rig, rnd, seams, joint="body", joints=None, cracks=(), chips=None, w=1.8):
+    """Bedding seams on a rock face (`face`, an ageborn_art.face.Face over the rock): each seam (z, x0, x1) a wavy dark
+    line w lu wide that follows the surface; cross joints (`joints` [(x, z0, z1)], or one every 16-24 lu rising from
+    each seam toward the next, staggered per bed like courses); light chips on the lit lip above each seam (or at
+    `chips` [(x, z)]); `cracks` [[(x, z), ...]] hairlines."""
+    g = Geo()
+    lips = []
+    for z, xa, xb in seams:
+        n = max(2, int((xb - xa) / 3))
+        pts = [(xa + (xb - xa) * i / n, z + 1.1 * math.sin(i * 0.9 + z) + rnd.uniform(-0.4, 0.4)) for i in range(n + 1)]
+        _strip(face, g, pts, w)
+        lips.append(pts)
+    if joints is None:
+        joints = []
+        for k, (z, xa, xb) in enumerate(seams):
+            x = xa + 7 + (k % 2) * 9
+            while x < xb - 7:
+                joints.append((x + rnd.uniform(-2, 2), z + 1.2, z + rnd.uniform(9, 12)))
+                x += rnd.uniform(17, 24)
+    for x, za, zb in joints:
+        _strip(face, g, [(x, za), (x + rnd.uniform(-0.6, 0.6), (za + zb) / 2), (x + rnd.uniform(-1.0, 1.0), zb)],
+               w * 0.8)
+    for pts in cracks:
+        _strip(face, g, pts, 1.0)
+    rig.part(joint, g, SEAM, outline=0, highlight=False)
+    # the lit lip of the bed above each seam, in pieces (a dark seam under a light edge reads as a ledge at the
+    # base's density, where a seam alone reads as a crack)
+    g = Geo()
+    for pts in lips:
+        run = []
+        for i, (xp, zp) in enumerate(pts):
+            if i % 5 in (1, 2, 3):
+                run.append((xp, zp + w * 0.5 + 0.9))
+            elif len(run) > 1:
+                _strip(face, g, run, 0.9)
+                run = []
+            else:
+                run = []
+        if len(run) > 1:
+            _strip(face, g, run, 0.9)
+    if chips is None:
+        chips = []
+        for pts in lips:
+            for xp, zp in pts[4:-2:7]:
+                chips.append((xp + rnd.uniform(-1.5, 1.5), zp + 3.4))
+    for x, z in chips:
+        s = rnd.uniform(0.8, 1.15)
+        face.decal(g, face.hit(x, z), [(-2.4 * s, -1.0 * s), (2.0 * s, -1.4 * s), (2.6 * s, 0.8 * s),
+                                       (-1.2 * s, 1.5 * s)], 1.6)
+    rig.part(joint, g, LIP, outline=0, highlight=False)
 
 
 def build(rig, M):
@@ -170,7 +252,31 @@ def build(rig, M):
                                      (-36, -20, 206, 3.2), (-150, 10, 122, 3.0))):
         rock(g, (x, y, z), (r * 1.4, r, r * 0.7), seed=70 + k, jag=0.15, p=2.6, cuts=3)
     rig.part("body", g, STRATA_LT, outline=0.6)
+    # The lower mound in beds (pilot review, the base to 3.8): dark bedding seams 1.5 lu wide between the ledges, short
+    # cross joints between the seams (the beds break into blocks), and light chips on the lit lip above each seam, so
+    # the big faces read as layered, weathered stone at the base's density instead of smooth piles.
+    rb = random.Random(47)    # its own stream, so the parts after it keep theirs
+    lobe = Geo()               # the crag's left lobe, so the seams there follow its face
+    rock(lobe, (-140, 24, 70), (30, 34, 70), seed=2)
+    _beds(F.Face(rig, "body", [crag, lobe]), rig, rb, [
+        # (z, x from, x to) on the foot, left and right of the cave and over it, and on the body above
+        (38.0, -170, -140), (63.0, -168, -134), (101.0, -164, -84), (44.0, -72, -24), (84.0, -82, -30),
+        (122.0, -138, -92), (140.0, -96, -42), (166.0, -112, -60)])
+    lobe.bm.free()
     crag.bm.free()
+    # the boulder stack at the gate (under the first mount) and the summit pinnacle: a seam, a crack and chips each
+    x0, y0, z0 = M[0]
+    stack = Geo()
+    rock(stack, (x0 - 6, y0 + 16, z0 * 0.45), (26, 24, z0 * 0.5), seed=21, jag=0.14)
+    rock(stack, (x0 + 10, y0 + 8, 12), (16, 14, 13), seed=22, jag=0.18)
+    _beds(F.Face(rig, "body", [stack]), rig, rb, [(22.0, -30, 4)], joints=((-21, 23.2, 33), (-7, 20.8, 11)),
+          cracks=[[(-30, 36), (-27, 31), (-29, 26)]], chips=((-26, 37), (-12, 40), (2, 25), (-17, 25)))
+    stack.bm.free()
+    pin = Geo()
+    rock(pin, (-104, 30, 262), (22, 18, 30), seed=15, jag=0.16, rot=(0, 12, 0))
+    _beds(F.Face(rig, "top", [pin]), rig, rb, [(272.0, -120, -98)], joint="top", joints=((-110, 273.2, 283),),
+          chips=((-114, 286), (-104, 275), (-117, 262)))
+    pin.bm.free()
     # chunks that break off
     g = Geo()
     rock(g, (-120, -28, 150), (16, 14, 14), seed=11, jag=0.2)
@@ -380,7 +486,9 @@ MODULE = base_module(
 # (the big boulders take soft weathering blotches of 3-5 lu, which read at the base's density where the stone chips
 # turn to grain; the strata ledges keep the chipped stone)
 STONE_BASE_KINDS = {STONE: "hide", STONE_LT: "hide", STONE_DK: "hide", STONE_DKR: "hide", CHIP: "stone",
-                    STRATA_LT: "stone", STRATA_DK: "stone",
+                    STRATA_LT: "stone", STRATA_DK: "stone", SEAM: "stone", LIP: "stone",
                     MOSS: "fur", MOSS_LT: "fur", MOSS_DK: "fur", BONE: "bone", WOOD: "wood", WOOD_DK: "wood",
                     HIDE: "leather", FUR: "fur", "#B8A47E": "leather", "team": "hide"}
-LW.opt_in(MODULE, STONE_BASE_KINDS, highlight=2.0, shade=dict(KW.SHADE_WORLD, top=0.18))
+# a stronger finish highlight and lit top plane than the other world items: the base is drawn 1.79x, where small
+# highlights average out and the big boulders' tops must still read as lit (pilot review)
+LW.opt_in(MODULE, STONE_BASE_KINDS, highlight=2.6, shade=dict(KW.SHADE_WORLD, top=0.28))
