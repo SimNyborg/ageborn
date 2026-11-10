@@ -21,6 +21,14 @@ Animation (ANIM_SPEC G1 jog for both men, appendix B for artillery: aimed shot, 
             and covers his ears (a tall silhouette against A's kneel)
   hit       light: the gunner's head snaps back, the mate flinches
   die       the gunner topples from the hips, his helmet pops off; the mate tumbles beside him
+
+Detail standard (art round W3, Track INDUSTRIAL): a trench crew's kit. The gunner's helmet with a team-dark rim and
+its rivets, the jacket's team-dark yoke and back seams and a pocket flap, the canvas shell bag's flap and strap,
+puttees wound in spirals; the mate's knitted cap ribbed in team-dark and his waistcoat's seam; the mortar's tube
+blackened at its mouth, the baseplate riveted, a polished band down the tube and the bomb's fins. They are a crew,
+not a vehicle (soldier family): smoke rises from the mortar's mouth, nothing burns. Damage spots (posed frames
+measured): the gunner's jacket (r 7.5), his helmet, the mate's waistcoat, the shell bag, a strip from the jacket's hem;
+smoke from the mortar's mouth.
 """
 import math
 
@@ -33,6 +41,7 @@ from ageborn_art import rigs_industrial as I
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "trench_mortar"
 GAIT_NAME = "biped"
@@ -52,6 +61,21 @@ MATE_X = -30.0                       # the mate's hips (character space)
 MORT = (21.0, 0.0, 18.0)             # the mortar sits in front of the gunner (carried height)
 MOUTH = (MORT[0] + 4.0, MORT[1], MORT[2] + 13.0)
 HAT_C = (1.0, 0.0, 57.0)
+PUTTEE_DK = "#77705C"      # W3: the puttees' spiral wraps
+CANVAS_DK = "#6F6756"      # the shell bag's flap
+SOOT = "#2F2D2E"           # the mortar's blackened mouth
+TUBE_HI = "#7E858D"        # the tube's polished band
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, canvas, leather, iron and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({B.SKIN: "skin", B.HAIR: "fur", I.DENIM: "cloth", PUTTEE: "cloth", PUTTEE_DK: "cloth",
+                           "#8C826C": "cloth", CANVAS_DK: "cloth", I.LEATHER: "leather", B.LEATHER: "leather",
+                           SHOE: "leather", I.COAL_LT: "cloth", MORTAR: "iron", TUBE_HI: "iron", SOOT: "iron",
+                           I.IRON: "iron", I.IRON_DK: "iron", SHELL: "iron", BED: "wood", B.PUPIL: "skin",
+                           "team": "cloth"})
 
 
 def _cap(rig, joint):
@@ -63,6 +87,14 @@ def _cap(rig, joint):
     rig.part(joint, g, team=True, finish="metal")
     g = Geo().sphere((x + 1.0, y, z + 8.0), 1.4, cuts=2)
     rig.part(joint, g, I.IRON_DK, finish="metal", outline=0.4)
+    # W3: a team-dark rim round the brim and rivets round the dome's foot
+    g = Geo().lathe([(15.3, -0.6), (15.6, 0), (15.3, 0.6)], (x + 0.6, y, z - 1.6), (x + 0.6, y, z - 1.2), segs=28)
+    IW.team_dark(rig, joint, g, outline=0.3)
+    g = Geo()
+    for a in (200.0, 235.0, 270.0, 305.0, 340.0):
+        t = math.radians(a)
+        g.sphere((x + 11.2 * math.cos(t), y + 10.8 * math.sin(t), z + 0.4), 0.8, cuts=2)
+    rig.part(joint, g, I.IRON_LT, finish="metal", outline=0.3)
 
 
 RIG = None
@@ -87,6 +119,9 @@ def _mate(rig):
         rig.part(f"m_foot_{s}", g, C.scale(SHOE, k), finish="gloss")
     g = Geo().blob((mx, 0, 26.0), (8.8, 8.2, 9.0), p=2.4, taper=(1.05, 0.95))
     rig.part("m_torso", g, team=True)                                # team waistcoat
+    mface = F.Face(rig, "m_torso", [Geo().blob((mx, 0, 26.0), (8.8, 8.2, 9.0), p=2.4, taper=(1.05, 0.95))])
+    IW.folds(rig, "m_torso", mface, [[(mx - 4.0, 33.0), (mx - 4.4, 22.0)], [(mx + 4.0, 33.0), (mx + 4.2, 22.0)]],
+             w=1.0)                                                  # W3: the waistcoat's seams
     g = Geo().blob((mx + 0.4, 0, 18.4), (8.6, 8.0, 3.6), p=2.6)
     rig.part("m_torso", g, I.LEATHER)
     rig.joint("m_head", "m_torso", (mx + 1.0, 0, 34.0))
@@ -101,6 +136,10 @@ def _mate(rig):
     g.clip((0, 0, 44.4), (0, 0, -1))
     g.blob((mx - 6.0, 0, 47.8), (2.8, 2.8, 2.4), p=2.2)
     rig.part("m_head", g, team=True)                                 # knitted cap
+    cap = Geo().blob((mx + 0.6, 0, 46.0), (8.8, 8.6, 5.0), p=2.4)
+    cap.clip((0, 0, 44.4), (0, 0, -1))
+    kface = F.Face(rig, "m_head", [cap])
+    IW.folds(rig, "m_head", kface, [[(mx + x, 50.4), (mx + x * 1.1, 45.2)] for x in (-5.0, -2.0, 1.0, 4.0)], w=0.8)
     # arms holding the poles / the linstock
     for s, y in (("r", -9.4), ("l", 9.0)):
         rig.joint(f"m_arm_{s}", "m_torso", (mx, y, 31.0))
@@ -117,6 +156,40 @@ def _mate(rig):
     rig.part("linstock", g, I.IRON_DK, finish="metal", outline=0.4)
 
 
+def _jacket_detail(rig):
+    """W3: the gunner's jacket (team-dark yoke and back seams, a pocket flap), the shell bag's flap, the puttees
+    wound in spirals (the surfaces rebuilt for the ray casts)."""
+    coat = Geo().blob((0, 0, 28.0), (10.6, 9.8, 11.4), p=2.4, taper=(1.06, 0.95))
+    coat.blob((0, 0, 18.8), (10.2, 9.4, 4.6), p=2.6)
+    face = F.Face(rig, "torso", [coat])
+    IW.folds(rig, "torso", face, [[(-10.0, 34.0), (-4.0, 35.4), (2.0, 35.8)], [(-6.8, 34.6), (-7.2, 27.0), (-6.8, 22.6)]],
+             w=1.1)
+    IW.panel(rig, "torso", face, [(3.4, 26.4), (8.4, 26.8), (8.2, 28.4), (3.6, 28.0)])
+    g = Geo().blob((-5.2, 6.8, 23.4), (3.2, 0.7, 1.6), p=2.8, rot=(0, 20, 0))
+    rig.part("torso", g, CANVAS_DK, outline=0.3)
+    for s_ in ("r", "l"):
+        y = 6.0 * (-1 if s_ == "r" else 1)
+        shin = Geo().capsule((0.5, y, K.V3_KNEE_Z), (1.0, y, K.V3_ANKLE_Z + 0.4), 3.7, 3.7)
+        pface = F.Face(rig, f"shin_{s_}", [shin])
+        g = Geo()
+        for z in (6.4, 8.6, 10.8):
+            IW.ribbon(g, pface, [(-3.4, z - 1.2), (4.4, z + 1.2)], 0.7, 0.3)
+        rig.part(f"shin_{s_}", g, PUTTEE_DK if s_ == "r" else "#5F5A4A", outline=0, highlight=False)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier: a crew; never on the face or skin), measured in the posed
+    frames: the gunner's jacket front (r 7.5; the mate stands against his back), his helmet, the mate's back (his arms
+    and the shell cover his front), the gunner's near trouser leg (the shell bag rides on the far hip, behind the
+    coat), a strip torn from the jacket's hem; smoke from the mortar's mouth (a crew smokes; only vehicles burn)."""
+    rig.damage_spot_at("jacket", "torso", 3.0, 28.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("helmet", "hat", -2.0, 62.0, 5.5, "metal", team=True)
+    rig.damage_spot_at("mate", "m_torso", MATE_X - 6.0, 26.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("leg", "thigh_r", -0.6, 14.0, 5.0, "cloth", fill=I.DENIM)
+    rig.damage_spot_at("hem", "torso", 4.0, 18.0, 7.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("mouth", "mortar", MOUTH, 5.0, "smoke", kind="emit", normal=(0, 0, 1))
+
+
 def build(rig):
     global RIG
     RIG = rig
@@ -130,6 +203,7 @@ def build(rig):
     rig.part("torso", g, I.LEATHER, outline=0.6)                     # crossbelt
     g = Geo().blob((-6.0, 9.0, 21.0), (3.4, 2.6, 4.4), p=2.6, rot=(0, 20, 0))
     rig.part("torso", g, "#8C826C", outline=0.5)                     # canvas shell bag
+    _jacket_detail(rig)
     g = Geo().blob((0.4, 0, 19.8), (10.6, 9.8, 1.6), p=3.0)
     rig.part("torso", g, B.LEATHER)
 
@@ -163,6 +237,16 @@ def build(rig):
     p1 = (p0[0] + ax[0] * 20.0, my, p0[2] + ax[2] * 20.0)
     g = Geo().capsule(p0, p1, 2.6, 2.6)
     rig.part("mortar", g, MORTAR, finish="metal", outline=0.8)          # tube
+    g = Geo().capsule((p0[0] + ax[0] * 2.0 + 1.3, my - 2.0, p0[2] + ax[2] * 2.0 - 0.6),
+                      (p0[0] + ax[0] * 16.0 + 1.3, my - 2.0, p0[2] + ax[2] * 16.0 - 0.6), 0.5, segs=8, rings=2)
+    rig.part("mortar", g, TUBE_HI, finish="metal", outline=0)          # W3: its polished band
+    g = Geo().lathe([(2.65, 0), (2.75, 1.4), (2.65, 2.8)], (p0[0] + ax[0] * 17.2, my, p0[2] + ax[2] * 17.2),
+                    (p0[0] + ax[0] * 20.0, my, p0[2] + ax[2] * 20.0), segs=18)
+    rig.part("mortar", g, SOOT, outline=0)                              # its blackened mouth
+    g = Geo()
+    for dx in (-8.0, -3.0, 2.0):
+        g.sphere((mx + dx, my - 6.0, mz - 2.4), 0.7, cuts=2)
+    rig.part("mortar", g, I.IRON_LT, finish="metal", outline=0.3)      # the baseplate's rivets
     g = Geo().lathe([(2.8, -0.8), (3.1, 0), (2.8, 0.8)], (p0[0] + ax[0] * 8.0, my, p0[2] + ax[2] * 8.0),
                     (p0[0] + ax[0] * 10.0, my, p0[2] + ax[2] * 10.0), segs=18)
     rig.part("mortar", g, team=True, outline=0.4)                       # a team band on the tube
@@ -178,6 +262,8 @@ def build(rig):
     g = Geo().blob((mouth[0] + ax[0] * 3.0, my - 2, mouth[2] + ax[2] * 3.0), (2.4, 1.6, 3.6), p=2.0, rot=(0, -25, 0))
     rig.part("flash", g, glow=B.FLASH_CORE, outline=0)
     G.smoke_cloud(rig, "root", (mouth[0] + 6.0, -14.0, mouth[2] + 10.0), size=1.0)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
 
 
 # -- poses ---------------------------------------------------------------------------------

@@ -20,9 +20,17 @@ Animation standard (ANIM_SPEC 2026-10-02):
   attack_b  POINTED FLAT SHOT: swings the pistol out level at arm's length, sights along it (the
             held extreme, holdLoop), fires a flat flare (flash forward), the kick flips his wrist up,
             then he points at the target with the far arm and shouts
+
+Detail standard (art round W3, Track INDUSTRIAL): the Norfolk jacket's box pleats team-dark (the old thin coal
+lines), a team-dark yoke and a pocket flap with a brass button; creases at the iron-grey sleeves' elbows; the
+breeches' side seam and strapped gaiters; a polished band down the flare pistol's
+brass barrel; the map case stitched. Aimed (queue item 44): A and B up about 45 and 70 degrees (aimed.variants on the
+pistol: the arm and the lean turn together; A's skyward shot comes down to 45 too). Damage spots (posed frames
+measured): the jacket's back (r 7.5), the near armband, the cap, the breeches, a strip from the jacket's hem.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_medieval as K
@@ -30,6 +38,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "flare_spotter"
 GAIT_NAME = "biped"
@@ -43,6 +52,20 @@ CAP_C = (1.0, 0, 57.2)
 
 HR = (0.6, I.ARM_Y["r"] - 1.2, I.HAND_Z - 0.2)   # near fist
 BARREL = 14.0
+BRASS_HI = "#C9BA8A"       # W3: the pistol barrel's polished band
+CREAM_SEAM = "#ADA696"     # the breeches' seam
+THREAD = "#CFC6B2"
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, leather, brass, iron and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", I.HAIR: "fur", I.CREAM_DK: "cloth", CREAM_SEAM: "cloth", THREAD: "cloth",
+                           I.IRON: "cloth", I.IRON_LT: "cloth", I.COAL_LT: "cloth", I.COAL: "leather",
+                           I.LEATHER: "leather", I.LEATHER_DK: "leather", I.BOOT: "leather", I.WOOD_LT: "wood",
+                           I.BRASS: "bronze", I.BRASS_LT: "bronze", BRASS_HI: "bronze", I.IRON_DK: "iron",
+                           I.FLARE: "energy", I.FLARE_CORE: "energy", "team": "cloth"})
 
 
 RIG = None
@@ -54,11 +77,7 @@ def build(rig):
     KI.skeleton_v3(rig)
     KI.legs_v3(rig, trousers=I.CREAM_DK, gaiter=I.LEATHER, thigh_r=4.5)
     I.jacket(rig, collar=I.COAL_LT, hem_z=13.0)
-    # Norfolk jacket pleats (darker team stripes are not allowed: use thin coal lines)
-    g = Geo()
-    for y in (-4.0, 4.0):
-        g.blob((10.2, y, 28.0), (0.8, 0.9, 8.0), p=3.0)
-    rig.part("torso", g, I.COAL_LT, outline=0)
+    _jacket_detail(rig)
     # binoculars on a strap across the chest
     g = Geo().capsule((8.0, -8.6, 36.0), (11.6, -3.0, 25.0), 0.8)
     g.capsule((8.0, 8.6, 36.0), (11.6, 3.0, 25.0), 0.8)
@@ -87,12 +106,21 @@ def build(rig):
     rig.part("mapcase", g, I.LEATHER, outline=0.6)
     g = Geo().blob((-2.6, -13.6, 15.8), (3.6, 0.6, 1.4), p=3.0)
     rig.part("mapcase", g, I.LEATHER_DK, outline=0.3)
+    mface = F.Face(rig, "mapcase", [Geo().blob((-2.6, -12.2, 14.2), (4.2, 1.6, 3.6), p=3.0)])
+    IW.stitches(rig, "mapcase", mface, [(-6.0, 11.4), (-2.6, 11.0), (0.8, 11.4)], I.LEATHER_DK, w=0.5, dash=0.9,
+                gap=0.7)
 
     for s in ("r", "l"):
         I.arm_parts(rig, s, sleeve=I.IRON_LT, team_sleeve=False, fist=4.3, cuff=I.COAL_LT)
     I.shoulders(rig)
     I.armband(rig, "r")
     I.armband(rig, "l")
+    for s_ in ("r", "l"):   # W3: creases bunched at the sleeves' elbows
+        y = I.ARM_Y[s_]
+        lo = Geo().capsule((0, y, I.ELBOW_Z), (0, y, I.HAND_Z + 2.0), 4.0, 3.8)
+        IW.folds(rig, f"fore_{s_}", F.Face(rig, f"fore_{s_}", [lo]), [[(-2.8, 26.6), (0.2, 25.8), (2.8, 26.8)],
+                                                                    [(-2.4, 24.2), (0.4, 23.6), (2.4, 24.4)]],
+                 w=0.8, team=False, fill=I.IRON)
 
     # flare pistol along +X from the near fist
     rig.joint("pistol", "hand_r", HR)
@@ -102,6 +130,8 @@ def build(rig):
     g = Geo().lathe([(0, 0), (3.2, 0.2), (3.4, BARREL - 2.4), (4.4, BARREL - 1.2), (4.4, BARREL), (0, BARREL)],
                     (x + 0.5, y, z + 2.0), (x + 0.5 + BARREL, y, z + 2.0), segs=18)
     rig.part("pistol", g, I.BRASS, finish="metal")
+    g = Geo().capsule((x + 3.0, y - 2.75, z + 3.4), (x + 0.5 + BARREL - 2.8, y - 2.75, z + 3.4), 0.45, segs=8, rings=2)
+    rig.part("pistol", g, BRASS_HI, finish="metal", outline=0)          # W3: the barrel's polished band
     g = Geo().blob((x + 0.2, y, z + 2.4), (3.2, 2.6, 3.0), p=3.2)   # breech and hammer
     g.capsule((x - 2.0, y, z + 4.0), (x - 3.6, y, z + 6.0), 0.9)
     rig.part("pistol", g, I.IRON_DK, finish="metal", outline=0.6)
@@ -118,6 +148,37 @@ def build(rig):
     g = Geo().sphere((muz[0] + 4.0, muz[1] - 2.4, muz[2]), 3.0, cuts=3)
     rig.part("flash", g, glow=I.FLARE_CORE, outline=0)
     I.smoke_puff(rig, "pistol", (muz[0] + 5.0, muz[1], muz[2] + 2.0), size=0.8)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _jacket_detail(rig):
+    """W3: the Norfolk jacket's box pleats team-dark, a team-dark yoke and pocket flap with a brass button; the
+    breeches' side seam and the gaiters' straps (the surfaces rebuilt for the ray casts)."""
+    body = Geo().blob((0, 0, 28.0), (10.6, 9.6, 11.6), p=2.4, taper=(1.08, 0.94))
+    body.blob((0, 0, 18.4), (10.4, 9.6, 4.6), p=2.6)
+    face = F.Face(rig, "torso", [body])
+    IW.folds(rig, "torso", face, [[(x, 35.0), (x + 0.3, 22.6)] for x in (-6.0, 6.8)], w=1.6)          # box pleats
+    IW.folds(rig, "torso", face, [[(-10.0, 34.0), (-4.0, 35.6), (2.0, 35.8)]], w=1.1)                # yoke
+    IW.panel(rig, "torso", face, [(1.6, 26.2), (6.0, 26.4), (5.8, 28.0), (1.8, 27.8)])                 # pocket flap
+    IW.rivets(rig, "torso", face, [(3.8, 26.6)], r=0.75, fill=I.BRASS_LT)
+    ly = -I.LEG_Y
+    thigh = Geo().capsule((0, ly, KI.V3_THIGH_Z), (0.5, ly, KI.V3_KNEE_Z), 4.5, 4.1)
+    IW.seam(rig, "thigh_r", F.Face(rig, "thigh_r", [thigh]), [(0.4, 18.6), (0.7, 12.2)], fill=CREAM_SEAM, w=0.7)
+    for s_, y in (("r", -I.LEG_Y), ("l", I.LEG_Y)):
+        g = Geo().lathe([(3.85, 0), (4.05, 0.6), (4.05, 1.4), (3.8, 2.0)], (0.75, y, 8.6), (0.8, y, 10.6), segs=16)
+        rig.part(f"shin_{s_}", g, I.LEATHER_DK if s_ == "r" else "#4A3A33", outline=0.4)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames: the
+    jacket's back (the biggest team field the arms leave clear, r 7.5), the near armband, the cap's crown, the
+    breeches, a strip torn from the jacket's hem."""
+    rig.damage_spot_at("jacket", "torso", -7.4, 26.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("armband", "arm_r", -1.0, 33.6, 5.0, "cloth", team=True)
+    rig.damage_spot_at("cap", "hat", -2.0, 62.0, 5.0, "cloth", fill=I.IRON)
+    rig.damage_spot_at("breeches", "thigh_r", -2.0, 15.0, 5.0, "cloth", fill=I.CREAM_DK)
+    rig.damage_spot_at("hem", "hips", -4.0, 16.6, 7.0, "cloth", kind="strip", team=True)
 
 
 def near(a, f, w):
@@ -191,13 +252,31 @@ TR = [2, -2, 6, 6, 9, -12, -14, -6, -2, 0]
 HD = [4, 8, 14, 14, 16, -6, -8, -2, 0, 0]
 
 
-def _attack_pose(f):
+# aimed shots (queue item 44, ageborn_art/aimed.py): a turn of `turn` degrees up (negative: down) swings the pistol
+# arm about the shoulder (the upper arm a share of it) and leans the body back with it (the arms are torso-space)
+AIM_LEAN = 0.18           # torso r per degree of turn (positive leans back)
+AIM_ARM = (0.6, 0.8)      # upper arm and forearm: their share of the turn (the pistol takes all of it)
+AIM_HEAD = 0.30           # head r per degree, on top of the torso's lean
+# per unique frame of A and B: 0 at rest, 1.0 on the hold, the fire (the release frame 4) and the kick
+AIM_W = [0.0, 0.4, 1.0, 1.0, 1.0, 0.8, 0.4, 0.2, 0.0, 0.0, 0.0]
+AIM_W_B = [0.0, 0.5, 1.0, 1.0, 1.0, 0.8, 0.45, 0.2, 0.0, 0.0, 0.0]
+
+
+def _turned(na, nf, nw, tr, turn):
+    if not turn:
+        return na, nf, nw, tr
+    lean = AIM_LEAN * turn
+    return (na + AIM_ARM[0] * turn - lean, nf + AIM_ARM[1] * turn - lean, nw + turn - lean, tr + lean)
+
+
+def _attack_pose(f, turn=0.0):
     wob = f == 3
     f = U_OF[f]
     j = 2.5 if wob else 0.0
-    pose = merge(near(NA[f] + j, NF[f] + j, NW[f] + 1.4 * j), far(LA[f] - 1.2 * j, LF[f]), {
-        "torso": {"r": TR[f]},
-        "head": {"r": HD[f]},
+    na, nf, nw, tr = _turned(NA[f] + j, NF[f] + j, NW[f] + 1.4 * j, TR[f], turn)
+    pose = merge(near(na, nf, nw), far(LA[f] - 1.2 * j, LF[f]), {
+        "torso": {"r": tr},
+        "head": {"r": HD[f] + AIM_HEAD * turn},
         "hat": {"z": [0, 0, 0, 0, 1.6, 0, 0, 0, 0, 0][f], "r": [0, 0, 0, 0, 8, -3, -2, 0, 0, 0][f]},
         "thigh_r": {"r": [4, 4, 6, 6, 4, 16, 18, 12, 6, 2][f]},
         "shin_r": {"r": [-8, 0, -6, -6, -4, -6, -6, -4, -2, 0][f]},
@@ -250,13 +329,14 @@ PB_BQ = [-0.04, -0.06, -0.06, 0.04, -0.08, -0.03, -0.02, 0.0]
 PB_TH = [(8, -8), (16, -14), (16, -14), (16, -14), (10, -16), (16, -14), (18, -16), (10, -8)]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i in (0, 9, 10):
-        return _attack_pose(i)
+        return _attack_pose(i, turn)
     k = i - 1
-    pose = merge(near(PB_NA[k], PB_NF[k], PB_NW[k]), far(PB_LA[k], PB_LF[k]), {
-        "torso": {"r": PB_TR[k]},
-        "head": {"r": PB_HD[k], "x": 1.0 if k in (1, 2) else 0.0},
+    na, nf, nw, tr = _turned(PB_NA[k], PB_NF[k], PB_NW[k], PB_TR[k], turn)
+    pose = merge(near(na, nf, nw), far(PB_LA[k], PB_LF[k]), {
+        "torso": {"r": tr},
+        "head": {"r": PB_HD[k] + AIM_HEAD * turn, "x": 1.0 if k in (1, 2) else 0.0},
         "hat": {"z": 1.6 if k == 4 else 0.0, "r": [0, 0, 0, 0, 8, -3, -2, 0][k]},
         "thigh_r": {"r": PB_TH[k][0]}, "thigh_l": {"r": PB_TH[k][1]},
         "flash": {"show": k == 3},
@@ -314,16 +394,25 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (the Flare Spotter hits air; they go to the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, _b_pose, AIM_W_B, aims=("up45", "up70"))
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(8)], [IDLE_MS] * 8, loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
     by = {c.name: c for c in cl}
     assert by["idle"].total_ms() == 1200
+    cl += aimed_a + aimed_b
     M.check_variants(M.check_contract([c for c in cl if c.name != "idle"], attack_ms=824, attack_impact_at=0.3532))
     return cl

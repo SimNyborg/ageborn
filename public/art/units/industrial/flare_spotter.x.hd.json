@@ -2,8 +2,8 @@
  "frames": {
   "flare_spotter_attack_b_01": {
    "frame": {
-    "x": 698,
-    "y": 2,
+    "x": 154,
+    "y": 609,
     "w": 121,
     "h": 186
    },
@@ -26,8 +26,8 @@
   },
   "flare_spotter_attack_b_01_team": {
    "frame": {
-    "x": 620,
-    "y": 200,
+    "x": 1096,
+    "y": 956,
     "w": 83,
     "h": 137
    },
@@ -50,8 +50,8 @@
   },
   "flare_spotter_attack_b_02": {
    "frame": {
-    "x": 823,
-    "y": 2,
+    "x": 836,
+    "y": 609,
     "w": 129,
     "h": 181
    },
@@ -74,8 +74,8 @@
   },
   "flare_spotter_attack_b_02_team": {
    "frame": {
-    "x": 807,
-    "y": 200,
+    "x": 545,
+    "y": 1097,
     "w": 95,
     "h": 132
    },
@@ -98,8 +98,8 @@
   },
   "flare_spotter_attack_b_03": {
    "frame": {
-    "x": 2,
-    "y": 200,
+    "x": 969,
+    "y": 609,
     "w": 129,
     "h": 181
    },
@@ -122,8 +122,8 @@
   },
   "flare_spotter_attack_b_03_team": {
    "frame": {
-    "x": 707,
-    "y": 200,
+    "x": 445,
+    "y": 1097,
     "w": 96,
     "h": 132
    },
@@ -147,7 +147,7 @@
   "flare_spotter_attack_b_04": {
    "frame": {
     "x": 2,
-    "y": 2,
+    "y": 220,
     "w": 145,
     "h": 194
    },
@@ -170,10 +170,10 @@
   },
   "flare_spotter_attack_b_04_team": {
    "frame": {
-    "x": 135,
-    "y": 200,
+    "x": 793,
+    "y": 799,
     "w": 86,
-    "h": 145
+    "h": 144
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 196,
     "y": 213,
     "w": 86,
-    "h": 145
+    "h": 144
    },
    "sourceSize": {
     "w": 466,
@@ -194,8 +194,8 @@
   },
   "flare_spotter_attack_b_05": {
    "frame": {
-    "x": 409,
-    "y": 2,
+    "x": 426,
+    "y": 418,
     "w": 133,
     "h": 187
    },
@@ -218,8 +218,8 @@
   },
   "flare_spotter_attack_b_05_team": {
    "frame": {
-    "x": 415,
-    "y": 200,
+    "x": 321,
+    "y": 956,
     "w": 99,
     "h": 137
    },
@@ -242,8 +242,8 @@
   },
   "flare_spotter_attack_b_06": {
    "frame": {
-    "x": 546,
-    "y": 2,
+    "x": 2,
+    "y": 609,
     "w": 148,
     "h": 186
    },
@@ -266,8 +266,8 @@
   },
   "flare_spotter_attack_b_06_team": {
    "frame": {
-    "x": 518,
-    "y": 200,
+    "x": 424,
+    "y": 956,
     "w": 98,
     "h": 137
    },
@@ -290,8 +290,8 @@
   },
   "flare_spotter_attack_b_07": {
    "frame": {
-    "x": 268,
-    "y": 2,
+    "x": 144,
+    "y": 418,
     "w": 137,
     "h": 187
    },
@@ -314,8 +314,8 @@
   },
   "flare_spotter_attack_b_07_team": {
    "frame": {
-    "x": 310,
-    "y": 200,
+    "x": 216,
+    "y": 956,
     "w": 101,
     "h": 137
    },
@@ -338,8 +338,8 @@
   },
   "flare_spotter_attack_b_08": {
    "frame": {
-    "x": 151,
-    "y": 2,
+    "x": 275,
+    "y": 220,
     "w": 113,
     "h": 192
    },
@@ -362,8 +362,8 @@
   },
   "flare_spotter_attack_b_08_team": {
    "frame": {
-    "x": 225,
-    "y": 200,
+    "x": 972,
+    "y": 799,
     "w": 81,
     "h": 141
    },
@@ -374,6 +374,1350 @@
     "y": 215,
     "w": 81,
     "h": 141
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_01": {
+   "frame": {
+    "x": 670,
+    "y": 2,
+    "w": 112,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 188,
+    "w": 112,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_01_team": {
+   "frame": {
+    "x": 528,
+    "y": 799,
+    "w": 78,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 209,
+    "w": 78,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_02": {
+   "frame": {
+    "x": 456,
+    "y": 2,
+    "w": 104,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 181,
+    "w": 104,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_02_team": {
+   "frame": {
+    "x": 283,
+    "y": 799,
+    "w": 78,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 203,
+    "w": 78,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_03": {
+   "frame": {
+    "x": 564,
+    "y": 2,
+    "w": 102,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 181,
+    "w": 102,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_03_team": {
+   "frame": {
+    "x": 365,
+    "y": 799,
+    "w": 78,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 203,
+    "w": 78,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_04": {
+   "frame": {
+    "x": 330,
+    "y": 2,
+    "w": 122,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 182,
+    "w": 122,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_04_team": {
+   "frame": {
+    "x": 447,
+    "y": 799,
+    "w": 77,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 204,
+    "w": 77,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_05": {
+   "frame": {
+    "x": 392,
+    "y": 220,
+    "w": 113,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 197,
+    "w": 113,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_05_team": {
+   "frame": {
+    "x": 1168,
+    "y": 799,
+    "w": 96,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 219,
+    "w": 96,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_06": {
+   "frame": {
+    "x": 700,
+    "y": 418,
+    "w": 160,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 201,
+    "w": 160,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 956,
+    "w": 104,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 220,
+    "w": 104,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_07": {
+   "frame": {
+    "x": 2,
+    "y": 418,
+    "w": 138,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 200,
+    "w": 138,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up45_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 1097,
+    "w": 104,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 220,
+    "w": 104,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_01": {
+   "frame": {
+    "x": 786,
+    "y": 2,
+    "w": 111,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 188,
+    "w": 111,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_01_team": {
+   "frame": {
+    "x": 610,
+    "y": 799,
+    "w": 78,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 209,
+    "w": 78,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_02": {
+   "frame": {
+    "x": 116,
+    "y": 2,
+    "w": 103,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 179,
+    "w": 103,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 799,
+    "w": 90,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 202,
+    "w": 90,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_03": {
+   "frame": {
+    "x": 223,
+    "y": 2,
+    "w": 103,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 179,
+    "w": 103,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_03_team": {
+   "frame": {
+    "x": 96,
+    "y": 799,
+    "w": 90,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 202,
+    "w": 90,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 110,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 173,
+    "w": 110,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_04_team": {
+   "frame": {
+    "x": 190,
+    "y": 799,
+    "w": 89,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 203,
+    "w": 89,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_05": {
+   "frame": {
+    "x": 151,
+    "y": 220,
+    "w": 120,
+    "h": 192
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 194,
+    "w": 120,
+    "h": 192
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_05_team": {
+   "frame": {
+    "x": 1057,
+    "y": 799,
+    "w": 107,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 219,
+    "w": 107,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_06": {
+   "frame": {
+    "x": 931,
+    "y": 220,
+    "w": 161,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 200,
+    "w": 161,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_06_team": {
+   "frame": {
+    "x": 526,
+    "y": 956,
+    "w": 98,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 220,
+    "w": 98,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_07": {
+   "frame": {
+    "x": 285,
+    "y": 418,
+    "w": 137,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 200,
+    "w": 137,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_up70_07_team": {
+   "frame": {
+    "x": 110,
+    "y": 956,
+    "w": 102,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 219,
+    "w": 102,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_01": {
+   "frame": {
+    "x": 563,
+    "y": 418,
+    "w": 133,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 200,
+    "w": 133,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_01_team": {
+   "frame": {
+    "x": 919,
+    "y": 956,
+    "w": 85,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 220,
+    "w": 85,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_02": {
+   "frame": {
+    "x": 569,
+    "y": 609,
+    "w": 130,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 204,
+    "w": 130,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_02_team": {
+   "frame": {
+    "x": 644,
+    "y": 1097,
+    "w": 88,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 225,
+    "w": 88,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_03": {
+   "frame": {
+    "x": 703,
+    "y": 609,
+    "w": 129,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 204,
+    "w": 129,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_03_team": {
+   "frame": {
+    "x": 736,
+    "y": 1097,
+    "w": 87,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 225,
+    "w": 87,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_04": {
+   "frame": {
+    "x": 1038,
+    "y": 2,
+    "w": 138,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 191,
+    "w": 138,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_04_team": {
+   "frame": {
+    "x": 883,
+    "y": 799,
+    "w": 85,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 213,
+    "w": 85,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_05": {
+   "frame": {
+    "x": 1096,
+    "y": 220,
+    "w": 149,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 199,
+    "w": 149,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_05_team": {
+   "frame": {
+    "x": 110,
+    "y": 1097,
+    "w": 122,
+    "h": 134
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 223,
+    "w": 122,
+    "h": 134
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_06": {
+   "frame": {
+    "x": 864,
+    "y": 418,
+    "w": 158,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 201,
+    "w": 158,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_06_team": {
+   "frame": {
+    "x": 1008,
+    "y": 956,
+    "w": 84,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 220,
+    "w": 84,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_07": {
+   "frame": {
+    "x": 652,
+    "y": 220,
+    "w": 136,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 200,
+    "w": 136,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up45_07_team": {
+   "frame": {
+    "x": 628,
+    "y": 956,
+    "w": 95,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 220,
+    "w": 95,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_01": {
+   "frame": {
+    "x": 509,
+    "y": 220,
+    "w": 139,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 199,
+    "w": 139,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_01_team": {
+   "frame": {
+    "x": 824,
+    "y": 956,
+    "w": 91,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 220,
+    "w": 91,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_02": {
+   "frame": {
+    "x": 279,
+    "y": 609,
+    "w": 142,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 163,
+    "y": 203,
+    "w": 142,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_02_team": {
+   "frame": {
+    "x": 236,
+    "y": 1097,
+    "w": 101,
+    "h": 133
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 224,
+    "w": 101,
+    "h": 133
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_03": {
+   "frame": {
+    "x": 425,
+    "y": 609,
+    "w": 140,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 203,
+    "w": 140,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_03_team": {
+   "frame": {
+    "x": 341,
+    "y": 1097,
+    "w": 100,
+    "h": 133
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 224,
+    "w": 100,
+    "h": 133
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_04": {
+   "frame": {
+    "x": 901,
+    "y": 2,
+    "w": 133,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 190,
+    "w": 133,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_04_team": {
+   "frame": {
+    "x": 692,
+    "y": 799,
+    "w": 97,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 213,
+    "w": 97,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_05": {
+   "frame": {
+    "x": 1102,
+    "y": 609,
+    "w": 154,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 206,
+    "w": 154,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_05_team": {
+   "frame": {
+    "x": 827,
+    "y": 1097,
+    "w": 130,
+    "h": 130
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 227,
+    "w": 130,
+    "h": 130
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_06": {
+   "frame": {
+    "x": 1026,
+    "y": 418,
+    "w": 157,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 201,
+    "w": 157,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_06_team": {
+   "frame": {
+    "x": 1183,
+    "y": 956,
+    "w": 82,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 220,
+    "w": 82,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_07": {
+   "frame": {
+    "x": 792,
+    "y": 220,
+    "w": 135,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 200,
+    "w": 135,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 466,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.88942
+   }
+  },
+  "flare_spotter_attack_b_up70_07_team": {
+   "frame": {
+    "x": 727,
+    "y": 956,
+    "w": 93,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 220,
+    "w": 93,
+    "h": 137
    },
    "sourceSize": {
     "w": 466,
@@ -411,6 +1755,110 @@
    "flare_spotter_attack_b_08_team",
    "flare_spotter_attack_09_team",
    "flare_spotter_attack_10_team"
+  ],
+  "attack_up45": [
+   "flare_spotter_attack_00",
+   "flare_spotter_attack_up45_01",
+   "flare_spotter_attack_up45_02",
+   "flare_spotter_attack_up45_03",
+   "flare_spotter_attack_up45_04",
+   "flare_spotter_attack_up45_05",
+   "flare_spotter_attack_up45_06",
+   "flare_spotter_attack_up45_07",
+   "flare_spotter_attack_08",
+   "flare_spotter_attack_09",
+   "flare_spotter_attack_10"
+  ],
+  "attack_up45_team": [
+   "flare_spotter_attack_00_team",
+   "flare_spotter_attack_up45_01_team",
+   "flare_spotter_attack_up45_02_team",
+   "flare_spotter_attack_up45_03_team",
+   "flare_spotter_attack_up45_04_team",
+   "flare_spotter_attack_up45_05_team",
+   "flare_spotter_attack_up45_06_team",
+   "flare_spotter_attack_up45_07_team",
+   "flare_spotter_attack_08_team",
+   "flare_spotter_attack_09_team",
+   "flare_spotter_attack_10_team"
+  ],
+  "attack_up70": [
+   "flare_spotter_attack_00",
+   "flare_spotter_attack_up70_01",
+   "flare_spotter_attack_up70_02",
+   "flare_spotter_attack_up70_03",
+   "flare_spotter_attack_up70_04",
+   "flare_spotter_attack_up70_05",
+   "flare_spotter_attack_up70_06",
+   "flare_spotter_attack_up70_07",
+   "flare_spotter_attack_08",
+   "flare_spotter_attack_09",
+   "flare_spotter_attack_10"
+  ],
+  "attack_up70_team": [
+   "flare_spotter_attack_00_team",
+   "flare_spotter_attack_up70_01_team",
+   "flare_spotter_attack_up70_02_team",
+   "flare_spotter_attack_up70_03_team",
+   "flare_spotter_attack_up70_04_team",
+   "flare_spotter_attack_up70_05_team",
+   "flare_spotter_attack_up70_06_team",
+   "flare_spotter_attack_up70_07_team",
+   "flare_spotter_attack_08_team",
+   "flare_spotter_attack_09_team",
+   "flare_spotter_attack_10_team"
+  ],
+  "attack_b_up45": [
+   "flare_spotter_attack_00",
+   "flare_spotter_attack_b_up45_01",
+   "flare_spotter_attack_b_up45_02",
+   "flare_spotter_attack_b_up45_03",
+   "flare_spotter_attack_b_up45_04",
+   "flare_spotter_attack_b_up45_05",
+   "flare_spotter_attack_b_up45_06",
+   "flare_spotter_attack_b_up45_07",
+   "flare_spotter_attack_b_08",
+   "flare_spotter_attack_09",
+   "flare_spotter_attack_10"
+  ],
+  "attack_b_up45_team": [
+   "flare_spotter_attack_00_team",
+   "flare_spotter_attack_b_up45_01_team",
+   "flare_spotter_attack_b_up45_02_team",
+   "flare_spotter_attack_b_up45_03_team",
+   "flare_spotter_attack_b_up45_04_team",
+   "flare_spotter_attack_b_up45_05_team",
+   "flare_spotter_attack_b_up45_06_team",
+   "flare_spotter_attack_b_up45_07_team",
+   "flare_spotter_attack_b_08_team",
+   "flare_spotter_attack_09_team",
+   "flare_spotter_attack_10_team"
+  ],
+  "attack_b_up70": [
+   "flare_spotter_attack_00",
+   "flare_spotter_attack_b_up70_01",
+   "flare_spotter_attack_b_up70_02",
+   "flare_spotter_attack_b_up70_03",
+   "flare_spotter_attack_b_up70_04",
+   "flare_spotter_attack_b_up70_05",
+   "flare_spotter_attack_b_up70_06",
+   "flare_spotter_attack_b_up70_07",
+   "flare_spotter_attack_b_08",
+   "flare_spotter_attack_09",
+   "flare_spotter_attack_10"
+  ],
+  "attack_b_up70_team": [
+   "flare_spotter_attack_00_team",
+   "flare_spotter_attack_b_up70_01_team",
+   "flare_spotter_attack_b_up70_02_team",
+   "flare_spotter_attack_b_up70_03_team",
+   "flare_spotter_attack_b_up70_04_team",
+   "flare_spotter_attack_b_up70_05_team",
+   "flare_spotter_attack_b_up70_06_team",
+   "flare_spotter_attack_b_up70_07_team",
+   "flare_spotter_attack_b_08_team",
+   "flare_spotter_attack_09_team",
+   "flare_spotter_attack_10_team"
   ]
  },
  "meta": {
@@ -419,8 +1867,8 @@
   "image": "flare_spotter.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1024,
-   "h": 384
+   "w": 1280,
+   "h": 1236
   },
   "scale": "3",
   "ageborn": {
@@ -594,6 +2042,590 @@
       "atLu": [
        30.2,
        26.4
+      ]
+     }
+    },
+    "attack_up45": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      50,
+      70,
+      111,
+      60,
+      70,
+      80,
+      90,
+      90,
+      70,
+      80,
+      53
+     ],
+     "durationMs": 824,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3532,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "aimOf": "attack",
+     "anchorsLu": {
+      "binoculars": [
+       [
+        17.6,
+        30.7
+       ],
+       [
+        7.2,
+        22.7
+       ],
+       [
+        0.9,
+        24.7
+       ],
+       [
+        0.5,
+        24.9
+       ],
+       [
+        0.9,
+        24.0
+       ],
+       [
+        -0.4,
+        20.9
+       ],
+       [
+        26.2,
+        30.5
+       ],
+       [
+        26.9,
+        31.5
+       ],
+       [
+        19.8,
+        27.2
+       ],
+       [
+        18.2,
+        39.0
+       ],
+       [
+        14.8,
+        42.4
+       ]
+      ],
+      "muzzle": [
+       [
+        25.5,
+        20.3
+       ],
+       [
+        22.6,
+        49.3
+       ],
+       [
+        16.7,
+        58.7
+       ],
+       [
+        15.5,
+        59.8
+       ],
+       [
+        16.2,
+        58.8
+       ],
+       [
+        2.2,
+        55.4
+       ],
+       [
+        31.8,
+        16.8
+       ],
+       [
+        23.8,
+        6.6
+       ],
+       [
+        24.4,
+        13.5
+       ],
+       [
+        24.1,
+        17.2
+       ],
+       [
+        23.0,
+        18.5
+       ]
+      ]
+     },
+     "muzzle": [
+      16.2,
+      58.8
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       16.2,
+       58.8
+      ]
+     }
+    },
+    "attack_up70": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      50,
+      70,
+      111,
+      60,
+      70,
+      80,
+      90,
+      90,
+      70,
+      80,
+      53
+     ],
+     "durationMs": 824,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3532,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "aimOf": "attack",
+     "anchorsLu": {
+      "binoculars": [
+       [
+        17.6,
+        30.7
+       ],
+       [
+        7.0,
+        22.9
+       ],
+       [
+        0.4,
+        24.8
+       ],
+       [
+        0.1,
+        24.9
+       ],
+       [
+        0.4,
+        24.1
+       ],
+       [
+        -0.8,
+        21.0
+       ],
+       [
+        25.7,
+        31.2
+       ],
+       [
+        26.6,
+        31.8
+       ],
+       [
+        19.8,
+        27.2
+       ],
+       [
+        18.2,
+        39.0
+       ],
+       [
+        14.8,
+        42.4
+       ]
+      ],
+      "muzzle": [
+       [
+        25.5,
+        20.3
+       ],
+       [
+        19.3,
+        52.9
+       ],
+       [
+        6.1,
+        64.9
+       ],
+       [
+        4.7,
+        65.5
+       ],
+       [
+        5.6,
+        64.9
+       ],
+       [
+        -8.7,
+        56.5
+       ],
+       [
+        32.5,
+        20.7
+       ],
+       [
+        25.2,
+        8.0
+       ],
+       [
+        24.4,
+        13.5
+       ],
+       [
+        24.1,
+        17.2
+       ],
+       [
+        23.0,
+        18.5
+       ]
+      ]
+     },
+     "muzzle": [
+      5.6,
+      64.9
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       5.6,
+       64.9
+      ]
+     }
+    },
+    "attack_b_up45": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      50,
+      70,
+      111,
+      60,
+      70,
+      80,
+      90,
+      90,
+      70,
+      80,
+      53
+     ],
+     "durationMs": 824,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3532,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "binoculars": [
+       [
+        17.6,
+        30.7
+       ],
+       [
+        17.0,
+        27.3
+       ],
+       [
+        19.8,
+        29.6
+       ],
+       [
+        19.6,
+        29.1
+       ],
+       [
+        17.3,
+        31.8
+       ],
+       [
+        8.3,
+        25.6
+       ],
+       [
+        24.1,
+        32.2
+       ],
+       [
+        25.9,
+        31.9
+       ],
+       [
+        21.7,
+        33.0
+       ],
+       [
+        18.2,
+        39.0
+       ],
+       [
+        14.8,
+        42.4
+       ]
+      ],
+      "muzzle": [
+       [
+        25.5,
+        20.3
+       ],
+       [
+        28.2,
+        31.8
+       ],
+       [
+        22.7,
+        45.4
+       ],
+       [
+        21.8,
+        46.3
+       ],
+       [
+        20.0,
+        50.0
+       ],
+       [
+        -10.5,
+        54.8
+       ],
+       [
+        30.5,
+        19.6
+       ],
+       [
+        28.4,
+        12.2
+       ],
+       [
+        25.2,
+        14.8
+       ],
+       [
+        24.1,
+        17.2
+       ],
+       [
+        23.0,
+        18.5
+       ]
+      ]
+     },
+     "muzzle": [
+      20.0,
+      50.0
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       20.0,
+       50.0
+      ]
+     }
+    },
+    "attack_b_up70": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      50,
+      70,
+      111,
+      60,
+      70,
+      80,
+      90,
+      90,
+      70,
+      80,
+      53
+     ],
+     "durationMs": 824,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3532,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "binoculars": [
+       [
+        17.6,
+        30.7
+       ],
+       [
+        16.5,
+        27.9
+       ],
+       [
+        18.3,
+        30.8
+       ],
+       [
+        18.2,
+        30.3
+       ],
+       [
+        16.0,
+        33.1
+       ],
+       [
+        7.5,
+        26.2
+       ],
+       [
+        23.4,
+        32.9
+       ],
+       [
+        25.6,
+        32.3
+       ],
+       [
+        21.7,
+        33.0
+       ],
+       [
+        18.2,
+        39.0
+       ],
+       [
+        14.8,
+        42.4
+       ]
+      ],
+      "muzzle": [
+       [
+        25.5,
+        20.3
+       ],
+       [
+        26.1,
+        36.6
+       ],
+       [
+        12.2,
+        51.6
+       ],
+       [
+        11.0,
+        52.2
+       ],
+       [
+        10.4,
+        56.8
+       ],
+       [
+        -20.4,
+        53.3
+       ],
+       [
+        30.7,
+        24.0
+       ],
+       [
+        29.2,
+        14.0
+       ],
+       [
+        25.2,
+        14.8
+       ],
+       [
+        24.1,
+        17.2
+       ],
+       [
+        23.0,
+        18.5
+       ]
+      ]
+     },
+     "muzzle": [
+      10.4,
+      56.8
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       10.4,
+       56.8
       ]
      }
     }

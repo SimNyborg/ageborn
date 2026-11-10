@@ -20,13 +20,26 @@ Animation (ANIM_SPEC G1 march, appendix B for an instrument support: aimed blast
             note flies off the baton tip (rings)
   hit       light: the head snaps back, the tall cap tips
   die       D1 fling and spin: the cap pops off, the cornet flies, X eyes and tongue
+
+Detail standard (art round W3, Track INDUSTRIAL): the frogging laid round the chest as cream cords with knotted ends,
+the frock coat's team-dark back seams, yoke and skirt pleats, a vent down the coattail, team-dark creases at the
+elbows; a brass buckle on the belt; knee creases and a shin crease on the iron-blue trousers; the cap's cream top band,
+a cream cord over the visor, team-dark crown seams and a feathered plume; a polished band down the cornet and a rim on
+its bell. Aimed (queue item 44; the Bandmaster hits air with a projectile note): A and B up about 45 and 70 degrees
+(aimed.variants on the cornet and on the baton: the arm and the lean turn together, the head tips back with the
+cornet). Damage spots (posed frames measured): the coat's back (r 7.5), the cap, the near sleeve, the trousers, a
+strip from the coat's skirt.
 """
+import math
+
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
 from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "bandmaster"
 GAIT_NAME = "biped"
@@ -45,6 +58,18 @@ BATON_TIP = (FIST_L[0], FIST_L[1], FIST_L[2] + 15.0)
 CAP_C = (1.0, 0.0, 57.4)
 GLOVE = "#F1ECE2"
 BLACK = "#2E2B2C"
+BRASS_HI = "#C9BA8A"       # W3: the cornet's polished band
+DENIM_DK = "#434B55"       # the trousers' creases
+STRIPE_DK = "#B4AD9E"      # the far leg's cream stripe and the plume's feathering
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, leather, brass and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.0
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", BLACK: "leather", GLOVE: "cloth", I.CREAM: "cloth", I.CREAM_DK: "cloth",
+                           STRIPE_DK: "cloth", I.DENIM: "cloth", DENIM_DK: "cloth", I.LEATHER_DK: "leather",
+                           I.BRASS: "bronze", I.BRASS_LT: "bronze", BRASS_HI: "bronze", "team": "cloth"})
 
 
 def _cornet(rig, joint, fist):
@@ -60,6 +85,13 @@ def _cornet(rig, joint, fist):
     for z in (2.0, 4.0, 6.0):
         g.capsule((cx + 1.2, cy - 1.6, cz + z), (cx + 1.2, cy - 1.6, cz + z + 0.6), 0.6)
     rig.part(joint, g, I.BRASS_LT, finish="metal", outline=0.3)           # valves
+    # W3: a polished band down the tube and the coil, and a rolled rim on the bell
+    g = Geo().capsule((cx - 0.3, cy - 0.95, cz - 1.2), (cx - 0.3, cy - 0.95, cz + CORNET_L - 4.6), 0.42, segs=8, rings=2)
+    g.capsule((cx + 1.8, cy - 1.35, cz + 0.6), (cx + 1.8, cy - 1.35, cz + 6.4), 0.45, segs=8, rings=2)
+    rig.part(joint, g, BRASS_HI, finish="metal", outline=0)
+    g = Geo().lathe([(4.1, 0), (4.75, 0.35), (4.6, 0.9)], (cx, cy, cz + CORNET_L - 0.8), (cx, cy, cz + CORNET_L + 0.1),
+                    segs=18)
+    rig.part(joint, g, I.BRASS_LT, finish="metal", outline=0.4)
     return (cx, cy, cz + CORNET_L)
 
 
@@ -82,15 +114,17 @@ def build(rig):
     for s in ("r", "l"):
         y = I.LEG_Y * I.SIDE_Y[s]
         g = Geo().capsule((3.0, y - 2.8, KI.V3_THIGH_Z), (3.4, y - 2.8, KI.V3_KNEE_Z), 1.0)
-        rig.part(f"thigh_{s}", g, I.CREAM, outline=0)
+        rig.part(f"thigh_{s}", g, I.CREAM if s == "r" else STRIPE_DK, outline=0)
     coat = Geo().blob((0, 0, 27.6), (11.4, 10.4, 11.6), p=2.4, taper=(1.12, 0.92))
     coat.blob((0.3, 0, 17.4), (11.4, 10.4, 5.0), p=2.6)
     cface = F.Face(rig, "torso", [Geo().blob((0, 0, 27.6), (11.4, 10.4, 11.6), p=2.4, taper=(1.12, 0.92))])
     rig.part("torso", coat, team=True)
     g = Geo()
-    for z in (24.0, 27.5, 31.0):   # cream frogging across the chest
-        cface.decal(g, cface.hit(9.0, z), [(-4.0, -0.7), (4.0, -0.7), (4.0, 0.7), (-4.0, 0.7)], 0.5)
+    for z in (24.0, 27.5, 31.0):   # cream frogging across the chest (W3: cords laid round the chest, not flat bars)
+        IW.ribbon(g, cface, [(4.4, z + 0.2), (7.6, z - 0.1), (10.4, z)], 1.35, 0.45)
     rig.part("torso", g, I.CREAM, highlight=False, outline=0)
+    IW.rivets(rig, "torso", cface, [(4.2, z + 0.2) for z in (24.0, 27.5, 31.0)], r=0.8, fill=I.CREAM_DK, proud=0.3,
+              outline=0.25, finish="matte")                                  # the frogs' knotted ends
     g = Geo()
     for z in (24.0, 27.5, 31.0):
         g.sphere((11.8, -2.0, z), 0.9, cuts=2)
@@ -104,6 +138,7 @@ def build(rig):
     g = Geo().blob((-6.0, 0, 13.0), (6.0, 9.0, 5.0), p=2.6, taper=(1.25, 0.9))
     g.clip((0, 0, 15.5), (0, 0, 1))
     rig.part("coattail", g, team=True)
+    _coat_detail(rig)
 
     face = KI.head_face(rig, brow=BLACK, brow_angry=False, mouth_dz=-9.4, mouth_w=5.4)
     del face
@@ -117,6 +152,11 @@ def build(rig):
     for s in ("r", "l"):
         I.arm_parts(rig, s, sleeve=None, team_sleeve=True, hand=GLOVE, fist=4.4, cuff=I.CREAM)
     I.shoulders(rig, team=True)
+    for s_ in ("r", "l"):   # W3: team-dark creases bunched at the sleeves' elbows
+        y = I.ARM_Y[s_]
+        lo = Geo().capsule((0, y, I.ELBOW_Z), (0, y, I.HAND_Z + 2.0), 4.1, 3.9)
+        IW.folds(rig, f"fore_{s_}", F.Face(rig, f"fore_{s_}", [lo]), [[(-2.8, 26.8), (0.2, 26.0), (2.8, 27.0)],
+                                                                    [(-2.4, 24.4), (0.4, 23.8), (2.4, 24.6)]], w=0.8)
 
     rig.joint("cornet", "hand_r", FIST)
     rig.rest_scale["cornet"] = 1.2
@@ -126,6 +166,44 @@ def build(rig):
     rig.joint("baton", "hand_l", FIST_L)
     _baton(rig, "baton", FIST_L)
     rig.track("batonTip", "baton", BATON_TIP)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _coat_detail(rig):
+    """W3: the frock coat's team-dark back seams, yoke and skirt pleats, a vent down the coattail with two brass
+    buttons, a brass buckle on the belt; the trousers' knee creases and a crease down the near shin (the surfaces
+    rebuilt for the ray casts)."""
+    body = Geo().blob((0, 0, 27.6), (11.4, 10.4, 11.6), p=2.4, taper=(1.12, 0.92))
+    face = F.Face(rig, "torso", [body])
+    IW.folds(rig, "torso", face, [[(-7.0, 35.0), (-7.6, 28.0), (-7.2, 22.2)],                     # back seam
+                                  [(-10.4, 34.2), (-4.6, 35.8), (0.6, 36.2)]], w=1.1)             # yoke
+    g = Geo().blob((11.4, -1.4, 20.2), (1.3, 2.6, 1.6), p=3.0)                                  # belt buckle
+    rig.part("torso", g, I.BRASS_LT, finish="metal", outline=0.35)
+    skirt = Geo().blob((0.4, 0, 15.2), (11.6, 10.6, 5.4), p=2.6, taper=(1.12, 1.0))
+    IW.folds(rig, "hips", F.Face(rig, "hips", [skirt]), [[(-5.8, 18.8), (-6.4, 14.0)], [(3.2, 18.8), (3.6, 14.2)]],
+             w=1.1)
+    tail = Geo().blob((-6.0, 0, 13.0), (6.0, 9.0, 5.0), p=2.6, taper=(1.25, 0.9))
+    tface = F.Face(rig, "coattail", [tail])
+    IW.folds(rig, "coattail", tface, [[(-7.6, 14.6), (-8.2, 9.2)]], w=1.0)                       # the vent
+    IW.rivets(rig, "coattail", tface, [(-6.2, 14.2), (-9.6, 14.0)], r=0.75, fill=I.BRASS_LT, proud=0.3)
+    ly = -I.LEG_Y
+    thigh = Geo().capsule((0, ly, KI.V3_THIGH_Z), (0.5, ly, KI.V3_KNEE_Z), 4.6, 4.2)
+    IW.folds(rig, "thigh_r", F.Face(rig, "thigh_r", [thigh]), [[(-2.8, 14.4), (-0.4, 13.4), (1.6, 14.0)]], w=0.75,
+             team=False, fill=DENIM_DK)
+    shin = Geo().capsule((0.5, ly, KI.V3_KNEE_Z), (1.0, ly, KI.V3_ANKLE_Z + 0.6), 3.9, 3.3)
+    IW.seam(rig, "shin_r", F.Face(rig, "shin_r", [shin]), [(1.4, 11.6), (1.9, 8.2)], fill=DENIM_DK, w=0.6)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames: the
+    coat's back (the biggest team field the arms leave clear, r 7.5), the cap, the near sleeve, the trousers, a strip
+    torn from the coat's skirt."""
+    rig.damage_spot_at("coat", "torso", -7.4, 26.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("cap", "hat", -3.0, 61.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("sleeve", "arm_r", -1.0, 33.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("trousers", "thigh_r", -2.0, 16.0, 5.0, "cloth", fill=I.DENIM)
+    rig.damage_spot_at("hem", "hips", -4.0, 15.6, 7.0, "cloth", kind="strip", team=True)
 
 
 def _cap(rig, joint, live=True):
@@ -139,12 +217,36 @@ def _cap(rig, joint, live=True):
     rig.part(joint, g, I.CREAM, outline=0.5)
     g = Geo().blob((x + 10.4, y, z + 5.0), (0.8, 3.0, 3.2), p=2.4)
     rig.part(joint, g, I.BRASS_LT, finish="metal", outline=0.4)          # lyre badge
+    # W3: a cream top band round the crown and a cream cord over the visor (joint space, so the loose cap has them)
+    g = Geo().lathe([(11.25, 0), (11.75, 0.7), (11.6, 1.5)], (x - 1.0, y, z + 6.6), (x - 1.1, y, z + 8.1), segs=24)
+    rig.part(joint, g, I.CREAM_DK, outline=0.4)
+    g = Geo()   # the cord droops in the middle over the visor
+    pts = [(x - 0.4 + 10.6 * math.cos(math.radians(a)), y - 10.6 * math.sin(math.radians(a)),
+            z + 2.0 - 1.4 * math.cos(math.radians(a * 2.2))) for a in range(-40, 41, 10)]
+    for p, q in zip(pts, pts[1:]):
+        g.capsule(p, q, 0.55, segs=8, rings=2)
+    rig.part(joint, g, I.CREAM_DK, outline=0.3)
+    if live:   # team-dark seams up the crown (cast on its surface at rest)
+        crown = Geo().lathe([(0, 0), (10.2, 0), (11.0, 8.0), (11.6, 11.6), (0, 12.0)], (x - 0.4, y, z - 2.0),
+                            (x - 1.2, y, z + 10.0), segs=24)
+        IW.folds(rig, joint, F.Face(rig, joint, [crown]), [[(-4.6, 60.6), (-5.0, 66.8)], [(4.4, 60.8), (4.6, 66.6)]],
+                 w=0.9)
     pj = joint
     if live:
         rig.secondary("plume", joint, (x - 2.0, y, z + 10.0), (x - 4.0, y, z + 18.0), max_deg=28, gain=1.5)
         pj = "plume"
     g = Geo().blob((x - 2.6, y, z + 14.5), (2.8, 2.8, 5.4), p=2.0, rot=(0, -18, 0))
     rig.part(pj, g, I.CREAM, outline=0.5)
+    g = Geo()   # W3: the plume's feathering (strokes laid up its camera side, on the blob's own surface)
+    ca, sa = math.cos(math.radians(-18.0)), math.sin(math.radians(-18.0))
+    for u in (-1.1, 0.0, 1.1):
+        pts = []
+        for v in (-3.8, -1.3, 1.3, 3.8):
+            ext = 2.8 * math.sqrt(max(0.0, 1.0 - (u / 2.8) ** 2 - (v / 5.4) ** 2))
+            pts.append((x - 2.6 + u * ca + v * sa, y - ext - 0.1, z + 14.5 - u * sa + v * ca))
+        for p, q in zip(pts, pts[1:]):
+            g.capsule(p, q, 0.4, segs=8, rings=2)
+    rig.part(pj, g, STRIPE_DK, outline=0, highlight=False)
 
 
 def arms(a, f, la, lf, lean=0.0, w=None, wl=None):
@@ -191,10 +293,60 @@ A_X = [0.0, 0.0, -0.5, -1.5, -1.5, 0.5, 2.5, 3.5, 2.0, 0.5, 0.0]
 A_Q = [0.0, 0.0, 0.02, 0.05, 0.06, 0.0, -0.08, -0.04, 0.0, 0.0, 0.0]
 
 
-def _attack_pose(f):
-    t = A_T[f]
-    pose = merge(arms(A_A[f], A_F[f], A_LA[f], A_LF[f], lean=t, w=A_W[f], wl=60.0), {
-        "torso": {"r": t}, "head": {"r": [0, 0, -4, -6, -6, -2, 4, 6, 2, 0, 0][f]},
+# aimed shots (queue item 44, ageborn_art/aimed.py): a turn of `turn` degrees up (negative: down) swings the playing
+# arm about the shoulder (the upper arm and forearm a share of it, the cornet or the baton all of it), leans the body
+# back and tips the head back with the cornet (a bugler blowing at the sky)
+AIM_LEAN = 0.18           # torso r per degree of turn (positive leans back)
+AIM_ARM = (0.55, 0.8)     # upper arm and forearm: their share of the turn (world angles)
+AIM_HEAD = 0.15           # head r per degree, on top of the torso's lean (the arm reaches the lips)
+AIM_HEAD_B = 0.10         # the baton: the head follows less (he sights along it)
+# per unique frame (11; release 6): A rises into the aim from the lift (the hold loop 2-3 fully aimed) and falls
+# out of it on the recoil; B keeps A's frames 0, 1, 9, 10 level and aims the whip, the point and the recoil
+AIM_W = [0.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 0.85, 0.5, 0.2, 0.0]
+AIM_W_B = [0.0, 0.0, 0.6, 0.6, 0.8, 0.9, 1.0, 1.0, 0.6, 0.0, 0.0]
+
+
+A_HEAD = [0, 0, -4, -6, -6, -2, 4, 6, 2, 0, 0]
+HEAD_PIVOT, MOUTH = (1.0, 38.0), (13.6, 41.0)    # torso space at rest (x, z): the head joint and the mouth
+MOUTHPIECE = 2.0 * 1.2                           # the mouthpiece behind the fist, along the cornet (rest scale 1.2)
+AIM_IK_FULL = 30.0                               # a turn this big puts the mouthpiece fully on the lips
+
+
+def _cornet_arm(f, turn, t, head_r):
+    """The near arm for an aimed blast, torso space: the arm turned with the aim (`AIM_ARM`), blended toward the
+    arm that holds the turned cornet's mouthpiece to the lips (an IK reach to the mouth, which the lean and the head
+    tip carry back and up), so a bugler blowing at the sky does not hold the bell to his face."""
+    a1, f1, w_t = A_A[f] + AIM_ARM[0] * turn - t, A_F[f] + AIM_ARM[1] * turn - t, A_W[f] + turn - t
+    k = min(1.0, abs(turn) / AIM_IK_FULL)
+    if k <= 0.0:
+        return I.arm("r", a1, f1, w_t, w_rest=90.0)
+    hr = math.radians(head_r)
+    mx, mz = MOUTH[0] - HEAD_PIVOT[0], MOUTH[1] - HEAD_PIVOT[1]
+    mouth = (HEAD_PIVOT[0] + mx * math.cos(hr) - mz * math.sin(hr), HEAD_PIVOT[1] + mx * math.sin(hr) + mz * math.cos(hr))
+    wr = math.radians(w_t)
+    # the fist on the cornet's line through the mouth: the mouthpiece on the lips where the arm reaches that far, else
+    # the fist slides back down the line until it does (the tube then crosses the lips near its mouthpiece end)
+    for sh in (MOUTHPIECE, 1.0, -0.5, -2.0, -3.5, -5.0, -6.5):
+        hand = (mouth[0] + sh * math.cos(wr) - 0.4, mouth[1] + sh * math.sin(wr) + 0.4)
+        if math.hypot(hand[0], hand[1] - I.SHOULDER_Z) <= I.UPPER + I.LOWER - 0.3:
+            break
+    a2, f2 = I.ik2((0.0, I.SHOULDER_Z), hand)
+    while a2 - a1 > 180.0:
+        a2 -= 360.0
+    while a2 - a1 < -180.0:
+        a2 += 360.0
+    while f2 - f1 > 180.0:
+        f2 -= 360.0
+    while f2 - f1 < -180.0:
+        f2 += 360.0
+    return I.arm("r", a1 + (a2 - a1) * k, f1 + (f2 - f1) * k, w_t, w_rest=90.0)
+
+
+def _attack_pose(f, turn=0.0):
+    t = A_T[f] + AIM_LEAN * turn
+    head_r = A_HEAD[f] + AIM_HEAD * turn
+    pose = merge(_cornet_arm(f, turn, t, head_r), KI.aim_arm("l", A_LA[f], A_LF[f], t, 60.0), {
+        "torso": {"r": t}, "head": {"r": head_r},
         "thigh_r": {"r": [2, 4, 6, 8, 8, 6, 12, 14, 8, 4, 2][f]}, "shin_r": {"r": [0, -2, -4, -6, -6, -4, -10, -12, -6, -2, 0][f]},
         "thigh_l": {"r": [-2, -4, -6, -8, -8, -6, -10, -12, -8, -4, -2][f]},
         "plume": {"r": [0, 0, 4, 8, 8, -6, -14, -10, -4, 0, 0][f]},
@@ -229,13 +381,14 @@ B_WL = [120, 170, 110, 30, 2, 0, 20]
 B_T = [-6, -10, -4, 4, 10, 8, 2]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i in (0, 1, 9, 10):
         return _attack_pose(i)
     k = i - 2
-    t = B_T[k]
-    pose = merge(arms(-62.0, 64.0, B_LA[k], B_LF[k], lean=t, w=90.0, wl=B_WL[k]), {
-        "torso": {"r": t, "rz": [-10, -16, -6, 6, 14, 12, 4][k]}, "head": {"r": -0.4 * t},
+    t = B_T[k] + AIM_LEAN * turn
+    pose = merge(arms(-62.0, 64.0, B_LA[k] + AIM_ARM[0] * turn, B_LF[k] + AIM_ARM[1] * turn, lean=t, w=90.0,
+                      wl=B_WL[k] + turn), {
+        "torso": {"r": t, "rz": [-10, -16, -6, 6, 14, 12, 4][k]}, "head": {"r": -0.4 * B_T[k] + AIM_HEAD_B * turn},
         "thigh_r": {"r": [4, 2, 8, 14, 20, 20, 10][k]}, "shin_r": {"r": [-2, 0, -6, -12, -16, -16, -8][k]},
         "thigh_l": {"r": [-4, -2, -8, -14, -22, -22, -10][k]},
         "plume": {"r": [4, 8, 0, -8, -14, -10, -4][k]},
@@ -299,13 +452,22 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (the Bandmaster's note hits air; they go to the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, _b_pose, AIM_W_B, aims=("up45", "up70"))
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_variants(M.check_contract(cl))
+    out = M.check_variants(M.check_contract(cl))
+    return out + aimed_a + aimed_b

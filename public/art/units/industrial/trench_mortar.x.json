@@ -2,7 +2,7 @@
  "frames": {
   "trench_mortar_attack_b_02": {
    "frame": {
-    "x": 123,
+    "x": 124,
     "y": 2,
     "w": 109,
     "h": 96
@@ -26,8 +26,8 @@
   },
   "trench_mortar_attack_b_02_team": {
    "frame": {
-    "x": 798,
-    "y": 2,
+    "x": 206,
+    "y": 202,
     "w": 85,
     "h": 77
    },
@@ -50,8 +50,8 @@
   },
   "trench_mortar_attack_b_03": {
    "frame": {
-    "x": 236,
-    "y": 2,
+    "x": 124,
+    "y": 102,
     "w": 109,
     "h": 96
    },
@@ -74,8 +74,8 @@
   },
   "trench_mortar_attack_b_03_team": {
    "frame": {
-    "x": 887,
-    "y": 2,
+    "x": 295,
+    "y": 202,
     "w": 85,
     "h": 77
    },
@@ -98,7 +98,7 @@
   },
   "trench_mortar_attack_b_04": {
    "frame": {
-    "x": 349,
+    "x": 237,
     "y": 2,
     "w": 109,
     "h": 96
@@ -122,7 +122,7 @@
   },
   "trench_mortar_attack_b_04_team": {
    "frame": {
-    "x": 976,
+    "x": 350,
     "y": 2,
     "w": 85,
     "h": 77
@@ -146,8 +146,8 @@
   },
   "trench_mortar_attack_b_05": {
    "frame": {
-    "x": 462,
-    "y": 2,
+    "x": 237,
+    "y": 102,
     "w": 109,
     "h": 96
    },
@@ -170,8 +170,8 @@
   },
   "trench_mortar_attack_b_05_team": {
    "frame": {
-    "x": 1065,
-    "y": 2,
+    "x": 350,
+    "y": 83,
     "w": 85,
     "h": 77
    },
@@ -194,17 +194,17 @@
   },
   "trench_mortar_attack_b_06": {
    "frame": {
-    "x": 575,
-    "y": 2,
-    "w": 117,
+    "x": 2,
+    "y": 102,
+    "w": 118,
     "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
+    "x": 197,
     "y": 132,
-    "w": 117,
+    "w": 118,
     "h": 94
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "trench_mortar_attack_b_06_team": {
    "frame": {
-    "x": 1154,
-    "y": 2,
+    "x": 104,
+    "y": 202,
     "w": 98,
     "h": 74
    },
@@ -244,15 +244,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 117,
+    "w": 118,
     "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
+    "x": 197,
     "y": 132,
-    "w": 117,
+    "w": 118,
     "h": 96
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "trench_mortar_attack_b_07_team": {
    "frame": {
-    "x": 696,
-    "y": 2,
+    "x": 2,
+    "y": 202,
     "w": 98,
     "h": 77
    },
@@ -323,8 +323,8 @@
   "image": "trench_mortar.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 100
+   "w": 448,
+   "h": 284
   },
   "scale": "1.5",
   "ageborn": {
