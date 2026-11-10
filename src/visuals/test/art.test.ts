@@ -153,7 +153,8 @@ describe('team readability (A11)', () => {
       const own = colorRuleOfRaster(r).share * area;
       expect((own + trimBad) / area, u.id).toBeLessThanOrEqual(0.1);
     }
-  });
+    // it rasterises every unit puppet, so a machine busy with Blender renders needs more than the default 5 s
+  }, 30_000);
 });
 
 describe('bases (A11 Bases, A2.2)', () => {

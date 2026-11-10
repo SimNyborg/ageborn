@@ -8,7 +8,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { VisualDef } from '@/contracts/art';
 import { parseStripInfo } from '@/ui/screens/home/Diorama';
-import { MANIFEST } from '../manifest';
+import { MANIFEST, PROCEDURAL_MANIFEST } from '../manifest';
 import { createArtProvider } from '../provider';
 import { SKIN_PUPPETS } from '../skins';
 import { RECENT_KEY, mainSlots, puppetStripLayout, setStripDeps, spriteStripArt, stripInfoUrl, stripRequest, stripWorker, warmRecentStrips, type StripArt, type StripDeps, type StripSource } from '../adapters/spriteStrip';
@@ -401,14 +401,17 @@ function deps(o: Partial<StripDeps> = {}): StripDeps & { worker: WorkerMock; mai
 }
 
 const sheet = (url = '/ageborn/art/units/medieval/footman.json'): StripSource => ({ kind: 'atlas', url, heightLu: 68, headLu: 66 });
-// The example skin is the first unit skin still drawn as a puppet: skins move to Blender sheets wave by wave.
-const PUPPET_SKIN = SKIN_PUPPETS.find((p) => p.id.startsWith('unit.') && MANIFEST[p.id]?.kind === 'procedural')!;
+// The example for the puppet path: the first unit skin without an aura, drawn from its procedural entry, which every
+// skin keeps whether or not it has a Blender sheet yet (skins move to sheets wave by wave).
+const PUPPET_SKIN = SKIN_PUPPETS.find((p) => p.id.startsWith('unit.') && !p.aura)!;
 const PUPPET_ID = PUPPET_SKIN.id;
-const [PUPPET_CARD, PUPPET_SKIN_ID] = PUPPET_ID.slice('unit.'.length).split('@') as [string, string];
 const puppetSkin = (): StripSource => {
-  const def = MANIFEST[PUPPET_ID] as VisualDef;
+  const def = PROCEDURAL_MANIFEST[PUPPET_ID] as VisualDef;
   return { kind: 'puppet', key: PUPPET_ID, puppet: PUPPET_SKIN, def, headLu: -def.anchors.head.y, aura: true };
 };
+// The provider's own pick: a unit skin it still draws as a puppet. When the art waves have given the last one its
+// sheet, the provider test below needs a skin forced to its puppet instead.
+const DRAWN_PUPPET = SKIN_PUPPETS.find((p) => p.id.startsWith('unit.') && MANIFEST[p.id]?.kind === 'procedural');
 
 describe('the strip of a request', () => {
   afterEach(() => setStripDeps(null));
@@ -486,7 +489,9 @@ describe("the provider's strips", () => {
     const d = deps();
     setStripDeps(d);
     const art = createArtProvider({ warn: () => {} });
-    expect(await art.portrait({ card: `strip:idle:${PUPPET_CARD}`, skin: PUPPET_SKIN_ID, size: 160 })).toBe(ART.url);
+    if (!DRAWN_PUPPET) throw new Error('no unit skin is drawn as a puppet any more: force one to its puppet for this test');
+    const [card, skin] = DRAWN_PUPPET.id.slice('unit.'.length).split('@') as [string, string];
+    expect(await art.portrait({ card: `strip:idle:${card}`, skin, size: 160 })).toBe(ART.url);
     // the skinned strip is its own job (the puppet first, here without a canvas, then the card's sheet)
     expect(d.mainSlot).toHaveBeenCalledTimes(1);
     await art.portrait({ card: 'strip:idle:footman', size: 160 });
@@ -558,7 +563,7 @@ describe('strips ready at boot', () => {
     const saved = JSON.parse(data.get(RECENT_KEY) ?? '[]') as { id: string; puppet?: unknown; sources: unknown[] }[];
     expect(saved.map((r) => r.id)).toEqual(['/ageborn/art/units/medieval/footman.json|idle|160|2f7df6', `${PUPPET_ID}>/ageborn/art/units/medieval/footman.json|idle|160|2f7df6`]);
     // of the skin's puppet only what its kept strip is keyed by (the puppet itself is the provider's)
-    const head = -(MANIFEST[PUPPET_ID] as VisualDef).anchors.head.y;
+    const head = -(PROCEDURAL_MANIFEST[PUPPET_ID] as VisualDef).anchors.head.y;
     expect(saved[1]!.puppet).toEqual({ key: PUPPET_ID, headLu: head, aura: true });
     expect(saved[1]!.sources).toEqual([sheet()]);
     // the next page load: the skin's kept strip is one store read, the sheet's goes through the worker
