@@ -106,30 +106,94 @@ def _on_env(a_deg, z, lift=0.4):
     return ((r + lift) * d[0], (r + lift) * d[1], z), d
 
 
+def _env_r(z):
+    """The envelope's radius at the height z (its lathe profile)."""
+    prof = _envelope_profile()
+    for (r0, z0), (r1, z1) in zip(prof, prof[1:]):
+        if z0 <= z <= z1:
+            return r0 + (r1 - r0) * (z - z0) / max(z1 - z0, 1e-6)
+    return 0.0
+
+
+def _spine(g, a_deg, z, length=4.6, base=1.9):
+    """W2 review S2: a short cone standing out of the envelope at the angle a and the height z, along the surface's
+    normal leaning a little back toward the tail, so the spines along the outline break it (side-on, the earlier
+    horizontal spines read as studs)."""
+    drdz = (_env_r(z + 1.0) - _env_r(z - 1.0)) / 2.0
+    a = math.radians(a_deg)
+    n = (math.cos(a), math.sin(a), -drdz)
+    k = math.sqrt(sum(c * c for c in n))
+    n = (n[0] / k - 0.22, n[1] / k, n[2] / k + 0.08)
+    k = math.sqrt(sum(c * c for c in n))
+    n = tuple(c / k for c in n)
+    r = _env_r(z) - 0.8
+    p = (r * math.cos(a), r * math.sin(a), z)
+    g.lathe([(base, 0.0), (base * 0.55, 0.5 * (length + 0.8)), (0.0, length + 0.8)], p,
+            (p[0] + n[0], p[1] + n[1], p[2] + n[2]), segs=8)
+
+
 def _pufferfish(rig):
-    """The Pufferfish Balloon's own parts (skin only): spines, eyes, a mouth, side fins, belly spots."""
+    """The Pufferfish Balloon's own parts (skin only). W2 review S2 (it read as a riveted balloon with an eye): spines
+    that break the outline on the top and the sides, one big eye with a white ring looking ahead, pouting lips on
+    the front edge, a fan tail at the back and a pectoral fin behind the mouth; the belly spots."""
     g = Geo()
-    for z in (ENV_C - 34, ENV_C - 22, ENV_C - 6, ENV_C + 10, ENV_C + 26, ENV_C + 42, ENV_C + 52):   # W2: 7 rows
-        for a in range(-180, 1, 30):
-            a2 = a + (15 if (z // 16) % 2 else 0)
-            p, d = _on_env(a2, z, lift=-0.4)
-            q = (p[0] + d[0] * 4.6, p[1] + d[1] * 4.6, p[2] + 1.2)
-            g.lathe([(1.5, 0), (0.9, 2.4), (0, 4.8)], p, q, segs=8)
+    rows = (ENV_C - 30, ENV_C - 19, ENV_C - 8, ENV_C + 3, ENV_C + 14, ENV_C + 25, ENV_C + 36, ENV_C + 46,
+            ENV_C + 54)
+    for j, z in enumerate(rows):
+        for i in range(11):
+            a = -202.5 + 22.5 * i + (11.25 if j % 2 else 0.0)
+            if -28.0 < a < 26.0 and MOUTH[1] - 9.0 < z < MOUTH[1] + 9.0:
+                continue                   # the lips
+            if -82.0 < a < -24.0 and EYE[1] - 14.0 < z < EYE[1] + 13.0:
+                continue                   # the eye
+            if -102.0 < a < -68.0 and ENV_C - 14.0 < z < ENV_C + 4.0:
+                continue                   # the pectoral fin
+            if (a < -160.0 or a > 160.0) and abs(z - TAIL_Z) < 15.0:
+                continue                   # the tail fin
+            _spine(g, a, z, length=3.8 if j == len(rows) - 1 else 4.6)
     rig.part("envelope", g, PUFF_SPINE, outline=0.5)
-    for (a, z, rr) in ((-38, ENV_C + 14, 7.2),):
-        p, d = _on_env(a, z, lift=0.2)
-        e = Geo().blob(p, (rr * 0.5, rr * 0.5, rr), p=2.2, rot=(0, 0, a + 90))
-        rig.part("envelope", e, PUFF_EYE, outline=0.7)
-        p2, _ = _on_env(a + 6, z - 1.0, lift=1.6)
-        rig.part("envelope", Geo().sphere(p2, rr * 0.48, cuts=3), PUFF_PUPIL, outline=0)
-    p, d = _on_env(-14, ENV_C - 6, lift=0.6)
-    rig.part("envelope", Geo().blob(p, (2.6, 2.6, 2.2), p=2.2, rot=(0, 0, -14 + 90)), PUFF_LIP, outline=0.6)
-    g = Geo()
-    for a in (-120, -60):
-        p, d = _on_env(a, ENV_C - 14, lift=0.0)
-        g.blob((p[0] + d[0] * 3.0, p[1] + d[1] * 3.0, p[2] - 2.0), (5.6, 1.0, 3.2), p=2.2, rot=(0, 30, a + 90))
-    rig.part("envelope", g, PUFF_SPINE, outline=0.6)
     ef = F.Face(rig, "envelope", [Geo().lathe(_envelope_profile(), segs=36)])
+    # one big eye: a white ring round a large pupil that looks ahead, a catch-light
+    c = ef.hit(*K.scr(ef, (EYE[0], -44.0, EYE[1])))
+    g = Geo()
+    ef.decal(g, c, F.ellipse(0.0, 0.0, 9.4, 9.0, 20), 0.7)
+    rig.part("envelope", g, PUFF_EYE, outline=1.0, highlight=False)
+    g = Geo()
+    ef.decal(g, c - ef.view * 0.35, F.ellipse(2.3, -0.3, 5.4, 5.6, 18), 0.7)
+    rig.part("envelope", g, PUFF_PUPIL, outline=0, highlight=False)
+    g = Geo()
+    ef.decal(g, c - ef.view * 0.7, F.ellipse(0.9, 2.3, 1.7, 1.7, 10), 0.7)
+    rig.part("envelope", g, PUFF_EYE, outline=0, highlight=False)
+    # pouting lips on the front edge (they stand out of the outline) and the dark slit between them
+    a, z = MOUTH
+    p, d = _on_env(a, z, lift=-0.6)
+    g = Geo().blob((p[0] + d[0] * 3.4, p[1] + d[1] * 3.4, z + 2.7), (4.6, 4.0, 2.9), p=2.2, rot=(0, -8, a))
+    g.blob((p[0] + d[0] * 3.0, p[1] + d[1] * 3.0, z - 2.8), (4.2, 3.7, 2.6), p=2.2, rot=(0, 6, a))
+    rig.part("envelope", g, PUFF_LIP, outline=0.7)
+    g = Geo().blob((p[0] + d[0] * 6.6, p[1] + d[1] * 6.6 - 0.6, z), (1.1, 2.6, 0.9), p=2.2, rot=(0, 0, a))
+    rig.part("envelope", g, PUFF_PUPIL, outline=0, highlight=False)
+    # a fan tail at the back's lower half (in the side plane, so it reads side-on) with its rays; low on the back,
+    # where the envelope narrows, so it stands 10 lu out of it inside the outline the spines already make (at the
+    # widest ring it pushed every frame 8-12 lu wider: HD pixels 1.06 x the budget)
+    z0 = TAIL_Z
+    pts = [(-37.0, z0 + 6.0), (-43.0, z0 + 11.5), (-48.0, z0 + 12.5), (-49.5, z0 + 6.5), (-46.5, z0 + 0.5),
+           (-49.5, z0 - 6.0), (-48.0, z0 - 12.0), (-43.0, z0 - 11.0), (-37.0, z0 - 5.0)]
+    rig.part("envelope", Geo().slab(pts, 0.0, 1.6), PUFF_SPINE, outline=0.9)
+    g = Geo()
+    for x, z in ((-47.0, z0 + 10.5), (-48.4, z0 + 5.0), (-48.4, z0 - 4.5), (-47.0, z0 - 10.0)):
+        g.capsule((-39.5, -1.0, z0 + 0.5), (x, -1.0, z), 0.45)
+    rig.part("envelope", g, PUFF_SPOT, outline=0, highlight=False)
+    # a pectoral fin behind the mouth, fanning back over the near side, with its rays
+    c = ef.hit(*K.scr(ef, (8.0, -44.0, ENV_C - 4.0)))
+    fin = [(0.0, 2.6), (-5.0, 5.4), (-10.5, 4.8), (-13.0, 1.0), (-12.0, -3.4), (-8.0, -6.4), (-3.0, -5.0),
+           (0.0, -2.4)]
+    g = Geo()
+    ef.decal(g, c, fin, 0.8)
+    rig.part("envelope", g, PUFF_SPINE, outline=0.8, highlight=False)
+    g = Geo()
+    for u, v in ((-9.4, 3.8), (-11.4, 0.4), (-10.0, -3.4), (-6.0, -4.8)):
+        ef.stroke(g, c - ef.view * 0.4, [(-0.6, 0.0), (u, v)], 0.7, 0.3)
+    rig.part("envelope", g, PUFF_SPOT, outline=0, highlight=False)
     g = Geo()
     for x, z, r in ((-22.0, ENV_C - 26, 2.6), (8.0, ENV_C - 30, 2.2), (-6.0, ENV_C - 20, 2.4),
                     (20.0, ENV_C - 22, 2.0), (-30.0, ENV_C - 12, 2.2), (14.0, ENV_C - 12, 2.0),
@@ -157,6 +221,9 @@ ENV_C = 118.0            # envelope: widest ring height
 NECK_Z = 74.0
 GON_TOP = 22.0
 HATCH = (2.0, 0.0, -1.0)  # the bomb hangs here below the gondola floor
+EYE = (21.0, ENV_C + 15.0)     # the Pufferfish's eye: its centre on the screen (x, z), toward the front it flies to
+MOUTH = (-4.0, ENV_C - 7.0)    # its lips: the angle round the envelope (0 = the front) and the height
+TAIL_Z = ENV_C - 16.0          # its tail fin's middle height, on the back
 
 
 def _envelope_profile():

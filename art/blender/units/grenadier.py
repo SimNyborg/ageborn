@@ -74,13 +74,15 @@ MATERIAL_KINDS = {B.SKIN: "skin", HAIR: "fur", BOMB: "iron", SEAM: "iron", SHOE:
                   _FAR(B.BRASS): "bronze", PEWTER: "iron", B.TAN: "cloth", "team": "hide"}
 
 # Fireworks Grenadier (DESIGN A5.8, epic): the same grenadier with a firework bomb, the same model: a night-violet
-# shell with a lilac seam and gilt stars, a pink-white spark, a gilt fuse cap and a pink-white tuft on the mitre
+# shell with a lilac seam and gilt stars, a pink-white spark, a gilt fuse cap, a pink star burst for the mitre's tuft
+# and a little rocket stuck in the back of the cap (W2 review)
 # (violet sits outside the colour rule's team bands). The coat, cap plate and cuffs stay as the unit's.
 FIREWORKS = {BOMB: "#5A4A7A", SEAM: "#7E6EA2", B.BRASS: "#E2C36E", B.TAN: "#E8D8C0"}
 STAR = "#E8C86A"
 TUFT = "#F6DCF0"
+BURST = "#D995C2"       # W2 review: the rocket plume's star burst (a mid pink: matte, under the highlight band)
 FIREWORKS_KINDS = {"#5A4A7A": "ceramic", "#7E6EA2": "ceramic", "#E2C36E": "gold", "#E8D8C0": "cloth",
-                   STAR: "gold", TUFT: "cloth"}
+                   STAR: "gold", TUFT: "cloth", BURST: "ceramic"}
 SKINS = {"fireworks_grenadier": {"palette": FIREWORKS, "kinds": FIREWORKS_KINDS}}
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
@@ -125,10 +127,30 @@ def _cap(rig, joint):
     look.team_part(rig, joint, g, outline=0, highlight=False)
     g = Geo().capsule((-1.0, -8.9, 56.6), (13.4, -8.9, 56.6), 1.3).capsule((13.4, -8.9, 56.6), (13.4, 8.6, 56.6), 1.3)
     rig.part(joint, g, B.CREAM, outline=0.6)
-    g = Geo().sphere((0.6, 0, 77.0), 2.8, cuts=3)   # tuft
-    tuft = TUFT if getattr(rig, "skin", None) == "fireworks_grenadier" else B.CREAM
-    rig.part(joint, g, tuft, finish="hair", outline=0.6)
+    if getattr(rig, "skin", None) == "fireworks_grenadier":
+        _rocket(rig, joint)          # the star burst takes the tuft's place
+    else:
+        g = Geo().sphere((0.6, 0, 77.0), 2.8, cuts=3)   # tuft
+        rig.part(joint, g, B.CREAM, finish="hair", outline=0.6)
 
+
+def _rocket(rig, joint):
+    """W2 review nit 2 (the Fireworks Grenadier read as the Grenadier at 1x): a second sign that changes the
+    silhouette: the mitre's round tuft becomes a pink firework star burst, and a little violet rocket is stuck in
+    the back of the cap, leaning back with a lilac cone. Inside the frames' old bounds (a rocket plume standing on
+    the mitre made every frame 15 lu taller: the HD sheet budget is +2%), mid-valued and matte (the highlight share
+    sits at 0.098)."""
+    rig.part(joint, Geo().star((0.6, -0.6, 77.4), 4.2, 1.8, 2.4, points=6), BURST, outline=0.6, highlight=False)
+    a0, a1 = (-4.0, 0.8, 64.0), (-12.0, 0.8, 69.6)
+    rig.part(joint, Geo().capsule(a0, a1, 1.5), FIREWORKS[BOMB], outline=0.6)
+    dx, dz = a1[0] - a0[0], a1[2] - a0[2]
+    k = math.hypot(dx, dz)
+    tip = (a1[0] + 3.0 * dx / k, a1[1], a1[2] + 3.0 * dz / k)
+    t = 0.66
+    band = (a0[0] + dx * t, a0[1], a0[2] + dz * t)
+    g = Geo().lathe([(1.7, -0.6), (1.7, 0.6)], band, a1, segs=12)
+    g.lathe([(1.6, 0.0), (0.9, 1.5), (0.0, 3.0)], a1, tip, segs=12)
+    rig.part(joint, g, FIREWORKS[SEAM], outline=0.5, highlight=False)
 
 RIG = None
 

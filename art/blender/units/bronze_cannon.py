@@ -260,14 +260,16 @@ def _damage_spots(rig):
     """Damage spots (queue item 40 section 3.3, a gun with a crewman): never on his face or skin. The near cheek
     (the largest team surface), the barrel's chase, the gunner's coat, a strip from his coat tails; two smoke
     emitters. The first sits on the carriage's front under the trunnions (about 26 lu at rest, at most about 36 lu
-    when the gun hops and tilts on the shot) and 44 lu ahead of the gunner, below his head on every frame, so
+    when the gun hops and tilts on the shot) and 48 lu ahead of the gunner, below his head on every frame, so
     DAMAGE's `fireAt` puts the stage-3 fire and the ignite flare on the gun, not by his hands (W0 review, W1
     lesson 5); the second, on the breech, keeps the smoke rising above the barrel."""
     rig.damage_spot_at("cheek", "cart", -22.0, 20.0, 7.0, "wood", team=True)
     rig.damage_spot_at("chase", "barrel", 22.0, 40.0, 5.0, "metal", fill=BRONZE)
     rig.damage_spot_at("coat", "torso", -8.0, 28.0, 7.0, "cloth", team=True)          # (his rest place)
     rig.damage_spot_at("tails", "tails", -6.0, 13.0, 7.0, "cloth", kind="strip", team=True)
-    rig.damage_spot_at("smoke", "cart", 4.0, 27.0, 5.0, "smoke", kind="emit", team=True)
+    # (W2 review nit 4: 4.6 lu further toward the muzzle, at the cheek's front edge, so the ignite flare's edge
+    # clears his front hand)
+    rig.damage_spot_at("smoke", "cart", 8.6, 28.0, 5.0, "smoke", kind="emit", team=True)
     tx, _, tz = TRUN
     rig.damage_spot("smoke_top", "barrel", (tx - 8.0, -2.0, tz + 10.0), 5.0, "smoke", kind="emit",
                     normal=(0, 0, 1))
