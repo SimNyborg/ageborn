@@ -32,6 +32,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.colors import scale as darker
+from units import futcos_w4 as FW
 from ageborn_art.geometry import Geo
 
 SLUG = "crab_mech"
@@ -43,6 +44,15 @@ CANVAS = (460, 360)
 FEET = (210, 326)
 ANCHORS = {"head": (10, 88), "hitCenter": (0, 46)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the big machines' lifts; its own white (and the far legs' and claw's shaded
+# copies) in the W4 off-white by the palette (look.remap)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.8
+LOOK_SHADE = FW.SHADE_BIG
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5)
+SKIN_PALETTE = dict(FW.KIT_WHITE, **{darker("#E9EDF2", 0.82).upper(): darker(FW.ARMOR, 0.82).upper()})
+MATERIAL_KINDS = FW.kinds_future(None) | FW.kinds({darker(FW.ARMOR, 0.82): "ceramic"})
 
 S = 1.15            # the whole crab, so the Heavy sits in the A11 Heavy band (100-120 lu)
 HULL_Z = 46.0
@@ -150,6 +160,53 @@ def build(rig):
         _leg(rig, n)
     _claw(rig, "r")
     rig.track("clubHead", "claw_r", CLAW_R_TIP)
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the white rim in plates (seams down it, chipped edges), the team top shell split in three plates
+    (team-dark), a seam round the cockpit band, seams across the near claw and wear on its tip, seams round the
+    near legs' thigh armour (char space; decals cast at the unit's yaw)."""
+    hz = HULL_Z
+    rim = Geo().blob((0, 0, hz + 2.0), (30.0, 21.0, 9.0), p=2.6, taper=(1.0, 0.9))
+    rf = FC.Face(rig, "hull", [rim], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", rf, [[FW.sc(rf, x, z, -20.4) for z in (hz + 5.6, hz + 2.0, hz - 1.6)]
+                                     for x in (-15.0, 0.0, 13.0)], w=0.85)
+    FW.wear(rig, "hull", rf, [(*FW.sc(rf, -24.0, hz + 4.8, -18.6), 1.4, 0.7), (*FW.sc(rf, 6.0, hz + 5.8, -20.0), 1.2, 0.6),
+                              (*FW.sc(rf, 20.0, hz + 1.0, -18.0), 1.1, 0.6)])
+    shell = Geo().blob((-2.0, 0, hz + 5.0), (27.0, 19.0, 9.0), p=2.4)
+    sf = FC.Face(rig, "hull", [shell], yaw_deg=YAW_DEG)
+    FW.folds(rig, "hull", sf, [[FW.sc(sf, x, z, y) for x, z, y in ((-12.0, hz + 12.6, -12.0), (-13.0, hz + 7.6, -17.4))],
+                               [FW.sc(sf, x, z, y) for x, z, y in ((9.0, hz + 12.6, -12.0), (10.0, hz + 7.6, -17.0))]],
+             w=0.9, team=True)
+    FW.band(rig, "hull", (24.0, 0, hz + 3.0), (8.0, 14.0, 6.6), 2.4, hz + 7.0, hz + 7.7, fill=FW.LINE_ON_WHITE)
+    sx, sy, sz = CLAW_SH["r"]
+    cx = sx + ARM_L
+    g = Geo()
+    for x in (cx + 7.0, cx + 13.0):
+        g.capsule((x, sy - 4.6, sz + 6.2), (x + 0.6, sy - 4.8, sz + 0.4), 0.38, segs=8, rings=2)
+    rig.part("claw_r", g, FW.LINE_ON_WHITE, outline=0, highlight=False)
+    g = Geo().blob((cx + 18.4, sy - 3.2, sz + 3.2), (1.4, 0.5, 0.8), p=2.2)
+    rig.part("claw_r", g, FW.WEAR_ON_WHITE, outline=0, highlight=False)
+    for n in ("fr", "br"):
+        x, y = LEG_X[n], LEG_Y[n]
+        FW.band(rig, f"thigh_{n}", (x, y - 0.6, HIP_Z - THIGH * 0.45), (3.6, 3.8, 7.0), 2.6, HIP_Z - THIGH * 0.45 + 2.0,
+                HIP_Z - THIGH * 0.45 + 2.6, fill=FW.LINE_ON_WHITE)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, mech: dents and scratches, sparks and steam; never on the visor):
+    the team top shell, the white rim, the near claw's team cuff; steam from the back vent and sparks at the near
+    claw's shoulder."""
+    hz = HULL_Z
+    rig.damage_spot("shell", "hull", (-8.0, -13.0, hz + 11.0), 6.0, "metal", team=True, normal=(0, -0.6, 0.8))
+    rig.damage_spot("rim", "hull", (-6.0, -21.0, hz + 2.0), 5.0, "metal", normal=(0, -1, 0))
+    sx, sy, sz = CLAW_SH["r"]
+    rig.damage_spot("cuff", "claw_r", (sx + ARM_L + 1.5, sy - 5.6, sz), 5.0, "metal", team=True, normal=(0, -1, 0))
+    rig.damage_spot("vent", "hull", (-30.0, 0.0, hz + 6.0), 5.0, "steam", kind="emit", normal=(-0.7, 0, 0.7))
+    rig.damage_spot("knee", "carm_r", (sx, sy - 5.0, sz), 3.5, "spark", kind="emit", normal=(0, -1, 0))
 
 
 LEGS = {n: GK.Leg(f"thigh_{n}", f"shin_{n}", (LEG_X[n], LEG_Y[n], HIP_Z + HULL_Z - HULL_Z - THIGH - SHIN),
@@ -253,9 +310,9 @@ def _c_pose(f):
     return p
 
 
-SNAP = {"kind": "streak", "joint": "claw_r", "point": CLAW_R_TIP, "color": "#E9EDF2", "width_lu": 10.0, "white": 0.4}
+SNAP = {"kind": "streak", "joint": "claw_r", "point": CLAW_R_TIP, "color": FW.ARMOR, "width_lu": 10.0, "white": 0.4}
 SLAM = {"kind": "arc", "joint": "claw_r", "inner": (CLAW_R_TIP[0] - 12.0, CLAW_R_TIP[1], CLAW_R_TIP[2]),
-        "outer": CLAW_R_TIP, "color": "#E9EDF2", "taper": 0.2, "white": 0.45, "t0": 0.0, "t1": 0.95, "lines": 3,
+        "outer": CLAW_R_TIP, "color": FW.ARMOR, "taper": 0.2, "white": 0.45, "t0": 0.0, "t1": 0.95, "lines": 3,
         "samples": 16}
 
 
@@ -267,7 +324,9 @@ def _fx(seed, a0, gx):
 
 
 def _heavy_clip(name, fn, smear, fx, reuse=None):
-    ov = {4: [dict(smear, **{"from": 3})], 5: [dict(smear, **{"from": 4})], 6: [dict(smear, **{"from": 5})] + fx}
+    def sm(spec):          # W4: two-tone arcs (a streak stays one tone)
+        return FW.smear_two_tone(spec, band=0.55) if spec.get("kind") == "arc" else [spec]
+    ov = {4: sm(dict(smear, **{"from": 3})), 5: sm(dict(smear, **{"from": 4})), 6: sm(dict(smear, **{"from": 5})) + fx}
     return M.clip(name, [fn(f) for f in range(10)], M.HEAVY_MELEE_MS[:10] + [M.HEAVY_MELEE_MS[10] + M.HEAVY_MELEE_MS[11]],
                   impact=M.HEAVY_MELEE_IMPACT, smear=4, overlays=ov, sequence=list(range(10)) + [0],
                   reuse=reuse, extra={"holdStep": 3})

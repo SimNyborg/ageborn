@@ -2,18 +2,18 @@
  "frames": {
   "barrier_trooper_attack_b_01": {
    "frame": {
-    "x": 918,
-    "y": 2,
+    "x": 764,
+    "y": 197,
     "w": 130,
-    "h": 185
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 203,
-    "y": 196,
+    "y": 194,
     "w": 130,
-    "h": 185
+    "h": 187
    },
    "sourceSize": {
     "w": 514,
@@ -26,8 +26,8 @@
   },
   "barrier_trooper_attack_b_01_team": {
    "frame": {
-    "x": 414,
-    "y": 209,
+    "x": 507,
+    "y": 382,
     "w": 117,
     "h": 172
    },
@@ -53,15 +53,15 @@
     "x": 631,
     "y": 2,
     "w": 150,
-    "h": 188
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 180,
-    "y": 193,
+    "y": 190,
     "w": 150,
-    "h": 188
+    "h": 191
    },
    "sourceSize": {
     "w": 514,
@@ -74,8 +74,8 @@
   },
   "barrier_trooper_attack_b_02_team": {
    "frame": {
-    "x": 145,
-    "y": 209,
+    "x": 2,
+    "y": 211,
     "w": 122,
     "h": 175
    },
@@ -101,15 +101,15 @@
     "x": 467,
     "y": 2,
     "w": 160,
-    "h": 192
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 167,
-    "y": 189,
+    "y": 187,
     "w": 160,
-    "h": 192
+    "h": 194
    },
    "sourceSize": {
     "w": 514,
@@ -122,8 +122,8 @@
   },
   "barrier_trooper_attack_b_03_team": {
    "frame": {
-    "x": 1348,
-    "y": 2,
+    "x": 507,
+    "y": 200,
     "w": 116,
     "h": 178
    },
@@ -146,7 +146,7 @@
   },
   "barrier_trooper_attack_b_04": {
    "frame": {
-    "x": 2,
+    "x": 141,
     "y": 2,
     "w": 176,
     "h": 203
@@ -170,17 +170,17 @@
   },
   "barrier_trooper_attack_b_04_team": {
    "frame": {
-    "x": 922,
-    "y": 209,
-    "w": 114,
+    "x": 476,
+    "y": 558,
+    "w": 113,
     "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 214,
+    "x": 215,
     "y": 190,
-    "w": 114,
+    "w": 113,
     "h": 168
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "barrier_trooper_attack_b_05": {
    "frame": {
-    "x": 765,
-    "y": 209,
+    "x": 145,
+    "y": 390,
     "w": 153,
-    "h": 169
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 212,
+    "y": 210,
     "w": 153,
-    "h": 169
+    "h": 171
    },
    "sourceSize": {
     "w": 514,
@@ -218,17 +218,17 @@
   },
   "barrier_trooper_attack_b_05_team": {
    "frame": {
-    "x": 362,
-    "y": 388,
-    "w": 121,
+    "x": 468,
+    "y": 730,
+    "w": 120,
     "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 228,
+    "x": 229,
     "y": 202,
-    "w": 121,
+    "w": 120,
     "h": 158
    },
    "sourceSize": {
@@ -242,18 +242,18 @@
   },
   "barrier_trooper_attack_b_06": {
    "frame": {
-    "x": 1040,
-    "y": 209,
+    "x": 302,
+    "y": 390,
     "w": 170,
-    "h": 167
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 225,
-    "y": 226,
+    "y": 224,
     "w": 170,
-    "h": 167
+    "h": 169
    },
    "sourceSize": {
     "w": 514,
@@ -266,17 +266,17 @@
   },
   "barrier_trooper_attack_b_06_team": {
    "frame": {
-    "x": 1317,
-    "y": 388,
-    "w": 129,
+    "x": 291,
+    "y": 1058,
+    "w": 128,
     "h": 144
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 237,
+    "x": 238,
     "y": 217,
-    "w": 129,
+    "w": 128,
     "h": 144
    },
    "sourceSize": {
@@ -290,18 +290,18 @@
   },
   "barrier_trooper_attack_b_07": {
    "frame": {
-    "x": 1214,
-    "y": 209,
+    "x": 302,
+    "y": 563,
     "w": 148,
-    "h": 164
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 226,
-    "y": 217,
+    "y": 215,
     "w": 148,
-    "h": 164
+    "h": 166
    },
    "sourceSize": {
     "w": 514,
@@ -314,8 +314,8 @@
   },
   "barrier_trooper_attack_b_07_team": {
    "frame": {
-    "x": 487,
-    "y": 388,
+    "x": 703,
+    "y": 891,
     "w": 121,
     "h": 155
    },
@@ -338,18 +338,18 @@
   },
   "barrier_trooper_attack_b_08": {
    "frame": {
-    "x": 271,
-    "y": 209,
+    "x": 2,
+    "y": 390,
     "w": 139,
-    "h": 173
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 216,
-    "y": 208,
+    "y": 205,
     "w": 139,
-    "h": 173
+    "h": 176
    },
    "sourceSize": {
     "w": 514,
@@ -362,8 +362,8 @@
   },
   "barrier_trooper_attack_b_08_team": {
    "frame": {
-    "x": 123,
-    "y": 388,
+    "x": 161,
+    "y": 731,
     "w": 117,
     "h": 161
    },
@@ -386,18 +386,18 @@
   },
   "barrier_trooper_attack_c_01": {
    "frame": {
-    "x": 1366,
-    "y": 209,
+    "x": 2,
+    "y": 570,
     "w": 155,
-    "h": 163
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 194,
-    "y": 217,
+    "y": 215,
     "w": 155,
-    "h": 163
+    "h": 165
    },
    "sourceSize": {
     "w": 514,
@@ -410,8 +410,8 @@
   },
   "barrier_trooper_attack_c_01_team": {
    "frame": {
-    "x": 612,
-    "y": 388,
+    "x": 751,
+    "y": 1050,
     "w": 116,
     "h": 154
    },
@@ -434,18 +434,18 @@
   },
   "barrier_trooper_attack_c_02": {
    "frame": {
-    "x": 732,
-    "y": 388,
+    "x": 575,
+    "y": 1052,
     "w": 172,
-    "h": 153
+    "h": 155
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 178,
-    "y": 227,
+    "y": 225,
     "w": 172,
-    "h": 153
+    "h": 155
    },
    "sourceSize": {
     "w": 514,
@@ -458,8 +458,8 @@
   },
   "barrier_trooper_attack_c_02_team": {
    "frame": {
-    "x": 908,
-    "y": 388,
+    "x": 2,
+    "y": 739,
     "w": 115,
     "h": 153
    },
@@ -482,18 +482,18 @@
   },
   "barrier_trooper_attack_c_03": {
    "frame": {
-    "x": 1027,
-    "y": 388,
+    "x": 2,
+    "y": 1058,
     "w": 168,
-    "h": 149
+    "h": 151
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 231,
+    "y": 229,
     "w": 168,
-    "h": 149
+    "h": 151
    },
    "sourceSize": {
     "w": 514,
@@ -506,17 +506,17 @@
   },
   "barrier_trooper_attack_c_03_team": {
    "frame": {
-    "x": 1199,
-    "y": 388,
-    "w": 114,
+    "x": 174,
+    "y": 1058,
+    "w": 113,
     "h": 148
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 223,
+    "x": 224,
     "y": 222,
-    "w": 114,
+    "w": 113,
     "h": 148
    },
    "sourceSize": {
@@ -530,18 +530,18 @@
   },
   "barrier_trooper_attack_c_04": {
    "frame": {
-    "x": 1052,
-    "y": 2,
+    "x": 321,
+    "y": 201,
     "w": 182,
-    "h": 182
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 175,
-    "y": 221,
+    "y": 218,
     "w": 182,
-    "h": 182
+    "h": 185
    },
    "sourceSize": {
     "w": 514,
@@ -554,8 +554,8 @@
   },
   "barrier_trooper_attack_c_04_team": {
    "frame": {
-    "x": 244,
-    "y": 388,
+    "x": 779,
+    "y": 728,
     "w": 114,
     "h": 159
    },
@@ -578,18 +578,18 @@
   },
   "barrier_trooper_attack_c_05": {
    "frame": {
-    "x": 182,
+    "x": 2,
     "y": 2,
     "w": 135,
-    "h": 202
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 203,
+    "y": 200,
     "w": 135,
-    "h": 202
+    "h": 205
    },
    "sourceSize": {
     "w": 514,
@@ -602,8 +602,8 @@
   },
   "barrier_trooper_attack_c_05_team": {
    "frame": {
-    "x": 651,
-    "y": 209,
+    "x": 628,
+    "y": 390,
     "w": 110,
     "h": 170
    },
@@ -629,15 +629,15 @@
     "x": 321,
     "y": 2,
     "w": 142,
-    "h": 193
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 189,
+    "y": 187,
     "w": 142,
-    "h": 193
+    "h": 195
    },
    "sourceSize": {
     "w": 514,
@@ -650,7 +650,7 @@
   },
   "barrier_trooper_attack_c_06_team": {
    "frame": {
-    "x": 1238,
+    "x": 785,
     "y": 2,
     "w": 106,
     "h": 181
@@ -674,18 +674,18 @@
   },
   "barrier_trooper_attack_c_07": {
    "frame": {
-    "x": 785,
-    "y": 2,
+    "x": 631,
+    "y": 197,
     "w": 129,
-    "h": 186
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 196,
+    "y": 193,
     "w": 129,
-    "h": 186
+    "h": 189
    },
    "sourceSize": {
     "w": 514,
@@ -698,8 +698,8 @@
   },
   "barrier_trooper_attack_c_07_team": {
    "frame": {
-    "x": 535,
-    "y": 209,
+    "x": 764,
+    "y": 388,
     "w": 112,
     "h": 172
    },
@@ -722,18 +722,18 @@
   },
   "barrier_trooper_attack_c_08": {
    "frame": {
-    "x": 2,
+    "x": 141,
     "y": 209,
     "w": 139,
-    "h": 175
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 213,
-    "y": 206,
+    "y": 204,
     "w": 139,
-    "h": 175
+    "h": 177
    },
    "sourceSize": {
     "w": 514,
@@ -746,18 +746,210 @@
   },
   "barrier_trooper_attack_c_08_team": {
    "frame": {
-    "x": 2,
-    "y": 388,
-    "w": 117,
+    "x": 161,
+    "y": 565,
+    "w": 116,
     "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 217,
+    "x": 218,
     "y": 196,
-    "w": 117,
+    "w": 116,
     "h": 162
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "barrier_trooper_shield_lock_00": {
+   "frame": {
+    "x": 593,
+    "y": 728,
+    "w": 182,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 221,
+    "w": 182,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "barrier_trooper_shield_lock_00_team": {
+   "frame": {
+    "x": 319,
+    "y": 896,
+    "w": 124,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 213,
+    "w": 124,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "barrier_trooper_shield_lock_01": {
+   "frame": {
+    "x": 2,
+    "y": 896,
+    "w": 185,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 222,
+    "w": 185,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "barrier_trooper_shield_lock_01_team": {
+   "frame": {
+    "x": 575,
+    "y": 892,
+    "w": 124,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 214,
+    "w": 124,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "barrier_trooper_shield_lock_02": {
+   "frame": {
+    "x": 282,
+    "y": 733,
+    "w": 182,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 221,
+    "w": 182,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "barrier_trooper_shield_lock_02_team": {
+   "frame": {
+    "x": 447,
+    "y": 896,
+    "w": 124,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 213,
+    "w": 124,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "barrier_trooper_shield_lock_03": {
+   "frame": {
+    "x": 593,
+    "y": 564,
+    "w": 185,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 220,
+    "w": 185,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "barrier_trooper_shield_lock_03_team": {
+   "frame": {
+    "x": 191,
+    "y": 896,
+    "w": 124,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 212,
+    "w": 124,
+    "h": 158
    },
    "sourceSize": {
     "w": 514,
@@ -821,6 +1013,18 @@
    "barrier_trooper_attack_c_08_team",
    "barrier_trooper_attack_09_team",
    "barrier_trooper_attack_00_team"
+  ],
+  "shield_lock": [
+   "barrier_trooper_shield_lock_00",
+   "barrier_trooper_shield_lock_01",
+   "barrier_trooper_shield_lock_02",
+   "barrier_trooper_shield_lock_03"
+  ],
+  "shield_lock_team": [
+   "barrier_trooper_shield_lock_00_team",
+   "barrier_trooper_shield_lock_01_team",
+   "barrier_trooper_shield_lock_02_team",
+   "barrier_trooper_shield_lock_03_team"
   ]
  },
  "meta": {
@@ -829,8 +1033,8 @@
   "image": "barrier_trooper.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 552
+   "w": 896,
+   "h": 1212
   },
   "scale": "3",
   "ageborn": {
@@ -1014,6 +1218,43 @@
        [
         13.9,
         -3.3
+       ]
+      ]
+     }
+    },
+    "shield_lock": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      220,
+      180,
+      220,
+      180
+     ],
+     "durationMs": 800,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        -27.6,
+        9.0
+       ],
+       [
+        -27.6,
+        8.6
+       ],
+       [
+        -27.6,
+        9.0
+       ],
+       [
+        -27.6,
+        9.3
        ]
       ]
      }

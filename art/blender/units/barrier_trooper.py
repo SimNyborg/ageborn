@@ -92,12 +92,18 @@ def build(rig):
     rig.part("shield", g, glow=W.MINT_CORE, outline=0)
     # W4: the hardlight's scan lines (one flat glow field read as a plain card at game scale)
     g = Geo()
-    for z in (-11.5, -6.5, -1.5, 3.5, 8.5, 12.5):
-        g.capsule(at(1.0, -9.4, z), at(1.0, 9.4, z), 0.32, segs=6, rings=2)
+    for i in range(11):
+        z = -13.0 + 2.6 * i
+        g.capsule(at(1.0, -9.4, z), at(1.0, 9.4, z), 0.3, segs=6, rings=2)
     rig.part("shield", g, glow=W.HOLO_DK, outline=0)
     rig.joint("pulse", "shield", (px + 2.0, py, pz), hidden=True)
-    g = Geo().blob(at(1.8, 0, 0), (1.0, 12.4, 18.0), p=4.0, rot=rot)
-    rig.part("pulse", g, glow=W.MINT_CORE, outline=1.2, outline_hex=W.MINT)
+    # W4: the pulse runs round the pane's rim (a filled pane-sized glow was a flat card: flat 0.30 on its frames)
+    g = Geo()
+    corners = [at(1.8, -11.2, -16.6), at(1.8, 11.2, -16.6), at(1.8, 11.2, 16.6), at(1.8, -11.2, 16.6)]
+    for a_, b_ in zip(corners, corners[1:] + corners[:1]):
+        g.capsule(a_, b_, 1.0, segs=8, rings=2)
+    g.capsule(at(1.8, -11.2, 0.0), at(1.8, 11.2, 0.0), 0.6, segs=8, rings=2)
+    rig.part("pulse", g, glow=W.MINT_CORE, outline=1.0, outline_hex=W.MINT)
     rig.joint("pane_out", "shield", (px, py, pz), hidden=True)      # the die flicker: only the bars stay
     # the plasma blade
     rig.joint("blade", "hand_r", HR)

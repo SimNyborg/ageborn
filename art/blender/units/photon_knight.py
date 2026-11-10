@@ -288,15 +288,21 @@ def _detail(rig):
     FW.team_dark(rig, "buckler", g)
 
 
+SPOT_MAT = "metal"     # the Holo Decoy (this build drawn as light) sets "energy": its marks glitch, it sheds motes
+
+
 def _damage_spots(rig):
     """Damage spots (queue item 40 section 3.3, armoured; never on the face or skin), measured in the posed frames:
     the near shoulder pad, the great-helm's dome, the crest, the white faulds behind the tabard, a strip from the
     tabard's hem. (The buckler's team face was seen 20% at the median: the sword arm and the blade cross it.)"""
-    rig.damage_spot_at("faulds", "hips", -5.0, 16.5, 5.0, "metal")
-    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
-    rig.damage_spot_at("helmet", "head", -4.0, 52.0, 5.5, "metal")
-    rig.damage_spot_at("crest", "head", -6.0, 67.4, 5.0, "metal", team=True)      # (above its mint strip)
-    rig.damage_spot_at("hem", "tabard", 8.4, 12.6, 6.0, "cloth", kind="strip", team=True)
+    rig.damage_spot_at("faulds", "hips", -5.0, 16.5, 5.0, SPOT_MAT)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, SPOT_MAT, team=True)
+    rig.damage_spot_at("helmet", "head", -4.0, 52.0, 5.5, SPOT_MAT)
+    rig.damage_spot_at("crest", "head", -6.0, 67.4, 5.0, SPOT_MAT, team=True)      # (above its mint strip)
+    if SPOT_MAT == "energy":
+        rig.damage_spot("motes", "torso", (0.0, 0.0, 34.0), 4.0, "motes", kind="emit", normal=(0, 0, 1))
+    else:
+        rig.damage_spot_at("hem", "tabard", 8.4, 12.6, 6.0, "cloth", kind="strip", team=True)
 
 
 # -- poses -----------------------------------------------------------------------------------
