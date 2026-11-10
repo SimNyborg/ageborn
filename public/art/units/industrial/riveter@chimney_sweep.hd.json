@@ -1,0 +1,2322 @@
+{
+ "frames": {
+  "riveter@chimney_sweep_idle_00": {
+   "frame": {
+    "x": 1273,
+    "y": 2,
+    "w": 148,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 235,
+    "w": 148,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_00_team": {
+   "frame": {
+    "x": 2185,
+    "y": 351,
+    "w": 91,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 235,
+    "w": 91,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_01": {
+   "frame": {
+    "x": 1255,
+    "y": 377,
+    "w": 143,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 233,
+    "w": 143,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_01_team": {
+   "frame": {
+    "x": 2089,
+    "y": 355,
+    "w": 92,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 233,
+    "w": 92,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_02": {
+   "frame": {
+    "x": 824,
+    "y": 392,
+    "w": 135,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 227,
+    "w": 135,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_02_team": {
+   "frame": {
+    "x": 1658,
+    "y": 183,
+    "w": 92,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 227,
+    "w": 92,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_03": {
+   "frame": {
+    "x": 879,
+    "y": 2,
+    "w": 146,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 226,
+    "w": 146,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_03_team": {
+   "frame": {
+    "x": 1562,
+    "y": 183,
+    "w": 92,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 226,
+    "w": 92,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_04": {
+   "frame": {
+    "x": 740,
+    "y": 199,
+    "w": 140,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 225,
+    "w": 140,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_04_team": {
+   "frame": {
+    "x": 1548,
+    "y": 369,
+    "w": 90,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 225,
+    "w": 90,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_05": {
+   "frame": {
+    "x": 1103,
+    "y": 380,
+    "w": 148,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 233,
+    "w": 148,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_idle_05_team": {
+   "frame": {
+    "x": 2025,
+    "y": 179,
+    "w": 91,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 233,
+    "w": 91,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_00": {
+   "frame": {
+    "x": 1425,
+    "y": 2,
+    "w": 132,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 236,
+    "w": 132,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_00_team": {
+   "frame": {
+    "x": 2363,
+    "y": 521,
+    "w": 101,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 240,
+    "w": 101,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_01": {
+   "frame": {
+    "x": 2120,
+    "y": 177,
+    "w": 142,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 245,
+    "w": 142,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_01_team": {
+   "frame": {
+    "x": 2573,
+    "y": 510,
+    "w": 97,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 245,
+    "w": 97,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_02": {
+   "frame": {
+    "x": 1266,
+    "y": 190,
+    "w": 142,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 232,
+    "w": 142,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_02_team": {
+   "frame": {
+    "x": 1833,
+    "y": 359,
+    "w": 99,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 231,
+    "w": 99,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_03": {
+   "frame": {
+    "x": 963,
+    "y": 384,
+    "w": 136,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 222,
+    "w": 136,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_03_team": {
+   "frame": {
+    "x": 2087,
+    "y": 2,
+    "w": 99,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 222,
+    "w": 99,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_04": {
+   "frame": {
+    "x": 1767,
+    "y": 2,
+    "w": 132,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 236,
+    "w": 132,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_04_team": {
+   "frame": {
+    "x": 2089,
+    "y": 530,
+    "w": 111,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 240,
+    "w": 111,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_05": {
+   "frame": {
+    "x": 2535,
+    "y": 2,
+    "w": 147,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 246,
+    "w": 147,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_05_team": {
+   "frame": {
+    "x": 2865,
+    "y": 2,
+    "w": 106,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 211,
+    "y": 246,
+    "w": 106,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_06": {
+   "frame": {
+    "x": 1936,
+    "y": 357,
+    "w": 149,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 234,
+    "w": 149,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_06_team": {
+   "frame": {
+    "x": 2479,
+    "y": 345,
+    "w": 99,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 233,
+    "w": 99,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_07": {
+   "frame": {
+    "x": 1402,
+    "y": 376,
+    "w": 142,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 223,
+    "w": 142,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_walk_07_team": {
+   "frame": {
+    "x": 2190,
+    "y": 2,
+    "w": 99,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 223,
+    "w": 99,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_00": {
+   "frame": {
+    "x": 1032,
+    "y": 192,
+    "w": 143,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 230,
+    "w": 143,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_00_team": {
+   "frame": {
+    "x": 1992,
+    "y": 2,
+    "w": 91,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 230,
+    "w": 91,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_01": {
+   "frame": {
+    "x": 514,
+    "y": 213,
+    "w": 120,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 214,
+    "w": 120,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_01_team": {
+   "frame": {
+    "x": 1642,
+    "y": 363,
+    "w": 93,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 228,
+    "w": 93,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_02": {
+   "frame": {
+    "x": 2293,
+    "y": 2,
+    "w": 238,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 246,
+    "w": 238,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_02_team": {
+   "frame": {
+    "x": 2584,
+    "y": 167,
+    "w": 99,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 245,
+    "w": 99,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_03": {
+   "frame": {
+    "x": 2687,
+    "y": 163,
+    "w": 255,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 260,
+    "w": 255,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_03_team": {
+   "frame": {
+    "x": 2946,
+    "y": 156,
+    "w": 105,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 255,
+    "w": 105,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_04": {
+   "frame": {
+    "x": 129,
+    "y": 466,
+    "w": 300,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 239,
+    "w": 300,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_04_team": {
+   "frame": {
+    "x": 2474,
+    "y": 174,
+    "w": 106,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 237,
+    "w": 106,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_05": {
+   "frame": {
+    "x": 129,
+    "y": 237,
+    "w": 271,
+    "h": 225
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 231,
+    "w": 271,
+    "h": 225
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_05_team": {
+   "frame": {
+    "x": 1561,
+    "y": 2,
+    "w": 106,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 227,
+    "w": 106,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_06": {
+   "frame": {
+    "x": 287,
+    "y": 2,
+    "w": 211,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 199,
+    "w": 211,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_06_team": {
+   "frame": {
+    "x": 1029,
+    "y": 2,
+    "w": 96,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 239,
+    "y": 215,
+    "w": 96,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 99,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 167,
+    "w": 99,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_07_team": {
+   "frame": {
+    "x": 1903,
+    "y": 2,
+    "w": 85,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 227,
+    "w": 85,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_08": {
+   "frame": {
+    "x": 404,
+    "y": 222,
+    "w": 106,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 203,
+    "w": 106,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_08_team": {
+   "frame": {
+    "x": 2468,
+    "y": 521,
+    "w": 101,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 242,
+    "w": 101,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_09": {
+   "frame": {
+    "x": 602,
+    "y": 2,
+    "w": 120,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 217,
+    "w": 120,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_09_team": {
+   "frame": {
+    "x": 1671,
+    "y": 2,
+    "w": 92,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 230,
+    "w": 92,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_10": {
+   "frame": {
+    "x": 1129,
+    "y": 2,
+    "w": 140,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 230,
+    "w": 140,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_attack_10_team": {
+   "frame": {
+    "x": 1929,
+    "y": 180,
+    "w": 92,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 230,
+    "w": 92,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_hit_00": {
+   "frame": {
+    "x": 1754,
+    "y": 181,
+    "w": 171,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 240,
+    "w": 171,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_hit_00_team": {
+   "frame": {
+    "x": 2370,
+    "y": 174,
+    "w": 100,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 234,
+    "w": 100,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_hit_01": {
+   "frame": {
+    "x": 433,
+    "y": 438,
+    "w": 150,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 209,
+    "w": 150,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_hit_01_team": {
+   "frame": {
+    "x": 638,
+    "y": 204,
+    "w": 98,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 204,
+    "w": 98,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_hit_02": {
+   "frame": {
+    "x": 726,
+    "y": 2,
+    "w": 149,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 221,
+    "w": 149,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_hit_02_team": {
+   "frame": {
+    "x": 1179,
+    "y": 190,
+    "w": 83,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 219,
+    "w": 83,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_hit_03": {
+   "frame": {
+    "x": 1412,
+    "y": 187,
+    "w": 146,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 236,
+    "w": 146,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_hit_03_team": {
+   "frame": {
+    "x": 2266,
+    "y": 176,
+    "w": 100,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 234,
+    "w": 100,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_hit_04": {
+   "frame": {
+    "x": 884,
+    "y": 194,
+    "w": 144,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 228,
+    "w": 144,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_hit_04_team": {
+   "frame": {
+    "x": 1739,
+    "y": 362,
+    "w": 90,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 228,
+    "w": 90,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_00": {
+   "frame": {
+    "x": 2686,
+    "y": 2,
+    "w": 175,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 240,
+    "w": 175,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_00_team": {
+   "frame": {
+    "x": 1936,
+    "y": 533,
+    "w": 94,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 238,
+    "w": 94,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_01": {
+   "frame": {
+    "x": 2280,
+    "y": 349,
+    "w": 195,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 196,
+    "w": 195,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_01_team": {
+   "frame": {
+    "x": 2582,
+    "y": 345,
+    "w": 112,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 193,
+    "w": 112,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 254,
+    "w": 123,
+    "h": 245
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 158,
+    "w": 123,
+    "h": 245
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_02_team": {
+   "frame": {
+    "x": 2280,
+    "y": 521,
+    "w": 79,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 170,
+    "w": 79,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_03": {
+   "frame": {
+    "x": 587,
+    "y": 418,
+    "w": 233,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 183,
+    "w": 233,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 503,
+    "w": 92,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 184,
+    "w": 92,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_04": {
+   "frame": {
+    "x": 105,
+    "y": 2,
+    "w": 178,
+    "h": 231
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 199,
+    "w": 178,
+    "h": 231
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_04_team": {
+   "frame": {
+    "x": 502,
+    "y": 2,
+    "w": 96,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 208,
+    "w": 96,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_05": {
+   "frame": {
+    "x": 2698,
+    "y": 321,
+    "w": 206,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 293,
+    "w": 206,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_05_team": {
+   "frame": {
+    "x": 1402,
+    "y": 561,
+    "w": 142,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 287,
+    "w": 142,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_06": {
+   "frame": {
+    "x": 2674,
+    "y": 507,
+    "w": 315,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 300,
+    "w": 315,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_06_team": {
+   "frame": {
+    "x": 1030,
+    "y": 573,
+    "w": 194,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 328,
+    "w": 194,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_07": {
+   "frame": {
+    "x": 1548,
+    "y": 550,
+    "w": 343,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 305,
+    "w": 343,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "riveter@chimney_sweep_die_07_team": {
+   "frame": {
+    "x": 824,
+    "y": 583,
+    "w": 202,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 328,
+    "w": 202,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "riveter@chimney_sweep_idle_00",
+   "riveter@chimney_sweep_idle_01",
+   "riveter@chimney_sweep_idle_02",
+   "riveter@chimney_sweep_idle_03",
+   "riveter@chimney_sweep_idle_04",
+   "riveter@chimney_sweep_idle_05"
+  ],
+  "idle_team": [
+   "riveter@chimney_sweep_idle_00_team",
+   "riveter@chimney_sweep_idle_01_team",
+   "riveter@chimney_sweep_idle_02_team",
+   "riveter@chimney_sweep_idle_03_team",
+   "riveter@chimney_sweep_idle_04_team",
+   "riveter@chimney_sweep_idle_05_team"
+  ],
+  "walk": [
+   "riveter@chimney_sweep_walk_00",
+   "riveter@chimney_sweep_walk_01",
+   "riveter@chimney_sweep_walk_02",
+   "riveter@chimney_sweep_walk_03",
+   "riveter@chimney_sweep_walk_04",
+   "riveter@chimney_sweep_walk_05",
+   "riveter@chimney_sweep_walk_06",
+   "riveter@chimney_sweep_walk_07"
+  ],
+  "walk_team": [
+   "riveter@chimney_sweep_walk_00_team",
+   "riveter@chimney_sweep_walk_01_team",
+   "riveter@chimney_sweep_walk_02_team",
+   "riveter@chimney_sweep_walk_03_team",
+   "riveter@chimney_sweep_walk_04_team",
+   "riveter@chimney_sweep_walk_05_team",
+   "riveter@chimney_sweep_walk_06_team",
+   "riveter@chimney_sweep_walk_07_team"
+  ],
+  "attack": [
+   "riveter@chimney_sweep_attack_00",
+   "riveter@chimney_sweep_attack_01",
+   "riveter@chimney_sweep_attack_02",
+   "riveter@chimney_sweep_attack_03",
+   "riveter@chimney_sweep_attack_04",
+   "riveter@chimney_sweep_attack_05",
+   "riveter@chimney_sweep_attack_06",
+   "riveter@chimney_sweep_attack_07",
+   "riveter@chimney_sweep_attack_08",
+   "riveter@chimney_sweep_attack_09",
+   "riveter@chimney_sweep_attack_10"
+  ],
+  "attack_team": [
+   "riveter@chimney_sweep_attack_00_team",
+   "riveter@chimney_sweep_attack_01_team",
+   "riveter@chimney_sweep_attack_02_team",
+   "riveter@chimney_sweep_attack_03_team",
+   "riveter@chimney_sweep_attack_04_team",
+   "riveter@chimney_sweep_attack_05_team",
+   "riveter@chimney_sweep_attack_06_team",
+   "riveter@chimney_sweep_attack_07_team",
+   "riveter@chimney_sweep_attack_08_team",
+   "riveter@chimney_sweep_attack_09_team",
+   "riveter@chimney_sweep_attack_10_team"
+  ],
+  "hit": [
+   "riveter@chimney_sweep_hit_00",
+   "riveter@chimney_sweep_hit_01",
+   "riveter@chimney_sweep_hit_02",
+   "riveter@chimney_sweep_hit_03",
+   "riveter@chimney_sweep_hit_04"
+  ],
+  "hit_team": [
+   "riveter@chimney_sweep_hit_00_team",
+   "riveter@chimney_sweep_hit_01_team",
+   "riveter@chimney_sweep_hit_02_team",
+   "riveter@chimney_sweep_hit_03_team",
+   "riveter@chimney_sweep_hit_04_team"
+  ],
+  "die": [
+   "riveter@chimney_sweep_die_00",
+   "riveter@chimney_sweep_die_01",
+   "riveter@chimney_sweep_die_02",
+   "riveter@chimney_sweep_die_03",
+   "riveter@chimney_sweep_die_04",
+   "riveter@chimney_sweep_die_05",
+   "riveter@chimney_sweep_die_06",
+   "riveter@chimney_sweep_die_06",
+   "riveter@chimney_sweep_die_07",
+   "riveter@chimney_sweep_die_07"
+  ],
+  "die_team": [
+   "riveter@chimney_sweep_die_00_team",
+   "riveter@chimney_sweep_die_01_team",
+   "riveter@chimney_sweep_die_02_team",
+   "riveter@chimney_sweep_die_03_team",
+   "riveter@chimney_sweep_die_04_team",
+   "riveter@chimney_sweep_die_05_team",
+   "riveter@chimney_sweep_die_06_team",
+   "riveter@chimney_sweep_die_06_team",
+   "riveter@chimney_sweep_die_07_team",
+   "riveter@chimney_sweep_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "riveter@chimney_sweep.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 3072,
+   "h": 688
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.riveter@chimney_sweep",
+   "name": "Riveter",
+   "heightLu": 68,
+   "widthLu": 54.5,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    254,
+    398
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "skinOf": "unit.riveter",
+   "skin": "chimney_sweep",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "wrenchHead": [
+       [
+        -21.5,
+        47.4
+       ],
+       [
+        -18.5,
+        51.2
+       ],
+       [
+        -15.6,
+        55.9
+       ],
+       [
+        -20.5,
+        48.9
+       ],
+       [
+        -18.7,
+        53.1
+       ],
+       [
+        -21.9,
+        47.4
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      75,
+      75,
+      75,
+      75,
+      75,
+      75,
+      75,
+      75
+     ],
+     "durationMs": 600,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 90.0,
+     "cycleMs": 600,
+     "anchorsLu": {
+      "wrenchHead": [
+       [
+        -11.8,
+        52.5
+       ],
+       [
+        -16.3,
+        44.3
+       ],
+       [
+        -15.5,
+        49.6
+       ],
+       [
+        -13.1,
+        56.8
+       ],
+       [
+        -11.8,
+        52.5
+       ],
+       [
+        -18.2,
+        45.2
+       ],
+       [
+        -18.2,
+        50.8
+       ],
+       [
+        -15.1,
+        57.5
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 89.7,
+     "strideLu": 53.8,
+     "plantedDriftLu": 0.12,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.7,
+        -1.8
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.7,
+        1.5
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "wrenchHead": [
+       [
+        -20.0,
+        49.8
+       ],
+       [
+        -8.9,
+        61.3
+       ],
+       [
+        -53.6,
+        17.8
+       ],
+       [
+        -58.6,
+        34.0
+       ],
+       [
+        34.0,
+        -1.5
+       ],
+       [
+        53.7,
+        36.4
+       ],
+       [
+        46.9,
+        62.7
+       ],
+       [
+        8.7,
+        80.7
+       ],
+       [
+        4.4,
+        66.5
+       ],
+       [
+        -7.4,
+        60.1
+       ],
+       [
+        -18.2,
+        51.3
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "wrenchHead": [
+       [
+        -34.9,
+        33.9
+       ],
+       [
+        -33.1,
+        35.9
+       ],
+       [
+        -27.7,
+        44.4
+       ],
+       [
+        -16.9,
+        51.0
+       ],
+       [
+        -20.8,
+        49.6
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        24.5
+       ],
+       "scale": 0.681
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        37.4
+       ],
+       "loops": 2,
+       "scale": 0.825
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "wrenchHead": [
+       [
+        -33.5,
+        23.7
+       ],
+       [
+        10.6,
+        21.0
+       ],
+       [
+        -9.0,
+        58.4
+       ],
+       [
+        -32.9,
+        33.6
+       ],
+       [
+        -31.1,
+        -19.0
+       ],
+       [
+        -13.7,
+        -10.0
+       ],
+       [
+        -30.8,
+        -17.9
+       ],
+       [
+        -34.4,
+        -14.1
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -2,18 +2,18 @@
  "frames": {
   "harpoon_gunner_idle_00": {
    "frame": {
-    "x": 1650,
-    "y": 240,
+    "x": 785,
+    "y": 586,
     "w": 180,
-    "h": 192
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 211,
-    "y": 158,
+    "y": 163,
     "w": 180,
-    "h": 192
+    "h": 187
    },
    "sourceSize": {
     "w": 582,
@@ -26,18 +26,18 @@
   },
   "harpoon_gunner_idle_00_team": {
    "frame": {
-    "x": 1415,
-    "y": 804,
+    "x": 1972,
+    "y": 521,
     "w": 123,
-    "h": 136
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 231,
-    "y": 187,
+    "y": 158,
     "w": 123,
-    "h": 136
+    "h": 165
    },
    "sourceSize": {
     "w": 582,
@@ -50,18 +50,18 @@
   },
   "harpoon_gunner_idle_01": {
    "frame": {
-    "x": 974,
-    "y": 240,
+    "x": 608,
+    "y": 393,
     "w": 178,
-    "h": 195
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 213,
-    "y": 155,
+    "y": 161,
     "w": 178,
-    "h": 195
+    "h": 189
    },
    "sourceSize": {
     "w": 582,
@@ -74,18 +74,18 @@
   },
   "harpoon_gunner_idle_01_team": {
    "frame": {
-    "x": 520,
-    "y": 804,
+    "x": 1762,
+    "y": 351,
     "w": 121,
-    "h": 138
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 233,
-    "y": 185,
+    "y": 155,
     "w": 121,
-    "h": 138
+    "h": 168
    },
    "sourceSize": {
     "w": 582,
@@ -98,18 +98,18 @@
   },
   "harpoon_gunner_idle_02": {
    "frame": {
-    "x": 688,
+    "x": 324,
     "y": 2,
     "w": 174,
-    "h": 202
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 216,
-    "y": 148,
+    "y": 154,
     "w": 174,
-    "h": 202
+    "h": 196
    },
    "sourceSize": {
     "w": 582,
@@ -122,18 +122,18 @@
   },
   "harpoon_gunner_idle_02_team": {
    "frame": {
-    "x": 1773,
-    "y": 636,
+    "x": 1640,
+    "y": 352,
     "w": 118,
-    "h": 141
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 236,
-    "y": 179,
+    "y": 148,
     "w": 118,
-    "h": 141
+    "h": 171
    },
    "sourceSize": {
     "w": 582,
@@ -149,15 +149,15 @@
     "x": 147,
     "y": 2,
     "w": 173,
-    "h": 207
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 144,
+    "y": 151,
     "w": 173,
-    "h": 207
+    "h": 200
    },
    "sourceSize": {
     "w": 582,
@@ -170,18 +170,18 @@
   },
   "harpoon_gunner_idle_03_team": {
    "frame": {
-    "x": 912,
-    "y": 636,
+    "x": 1161,
+    "y": 562,
     "w": 118,
-    "h": 144
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 236,
-    "y": 177,
+    "y": 144,
     "w": 118,
-    "h": 144
+    "h": 176
    },
    "sourceSize": {
     "w": 582,
@@ -194,18 +194,18 @@
   },
   "harpoon_gunner_idle_04": {
    "frame": {
-    "x": 324,
-    "y": 2,
+    "x": 2,
+    "y": 445,
     "w": 176,
-    "h": 204
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 214,
-    "y": 146,
+    "y": 152,
     "w": 176,
-    "h": 204
+    "h": 198
    },
    "sourceSize": {
     "w": 582,
@@ -218,18 +218,18 @@
   },
   "harpoon_gunner_idle_04_team": {
    "frame": {
-    "x": 789,
-    "y": 636,
+    "x": 1225,
+    "y": 187,
     "w": 119,
-    "h": 146
+    "h": 178
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 234,
-    "y": 178,
+    "y": 146,
     "w": 119,
-    "h": 146
+    "h": 178
    },
    "sourceSize": {
     "w": 582,
@@ -242,18 +242,18 @@
   },
   "harpoon_gunner_idle_05": {
    "frame": {
-    "x": 542,
-    "y": 240,
+    "x": 523,
+    "y": 198,
     "w": 179,
-    "h": 196
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 211,
-    "y": 154,
+    "y": 159,
     "w": 179,
-    "h": 196
+    "h": 191
    },
    "sourceSize": {
     "w": 582,
@@ -266,18 +266,18 @@
   },
   "harpoon_gunner_idle_05_team": {
    "frame": {
-    "x": 645,
-    "y": 804,
+    "x": 1738,
+    "y": 699,
     "w": 121,
-    "h": 138
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 232,
-    "y": 184,
+    "y": 154,
     "w": 121,
-    "h": 138
+    "h": 168
    },
    "sourceSize": {
     "w": 582,
@@ -290,18 +290,18 @@
   },
   "harpoon_gunner_walk_00": {
    "frame": {
-    "x": 1834,
-    "y": 240,
+    "x": 862,
+    "y": 196,
     "w": 179,
-    "h": 192
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 159,
+    "y": 166,
     "w": 179,
-    "h": 192
+    "h": 185
    },
    "sourceSize": {
     "w": 582,
@@ -314,18 +314,18 @@
   },
   "harpoon_gunner_walk_00_team": {
    "frame": {
-    "x": 1895,
-    "y": 636,
+    "x": 1478,
+    "y": 548,
     "w": 121,
-    "h": 140
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 190,
+    "y": 159,
     "w": 121,
-    "h": 140
+    "h": 171
    },
    "sourceSize": {
     "w": 582,
@@ -338,18 +338,18 @@
   },
   "harpoon_gunner_walk_01": {
    "frame": {
-    "x": 747,
-    "y": 442,
+    "x": 1137,
+    "y": 379,
     "w": 179,
-    "h": 185
+    "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 166,
+    "y": 172,
     "w": 179,
-    "h": 185
+    "h": 179
    },
    "sourceSize": {
     "w": 582,
@@ -362,18 +362,18 @@
   },
   "harpoon_gunner_walk_01_team": {
    "frame": {
-    "x": 1542,
-    "y": 804,
+    "x": 1863,
+    "y": 694,
     "w": 121,
-    "h": 135
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 242,
-    "y": 197,
+    "y": 166,
     "w": 121,
-    "h": 135
+    "h": 166
    },
    "sourceSize": {
     "w": 582,
@@ -386,18 +386,18 @@
   },
   "harpoon_gunner_walk_02": {
    "frame": {
-    "x": 1628,
+    "x": 502,
     "y": 2,
     "w": 180,
-    "h": 198
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 152,
+    "y": 158,
     "w": 180,
-    "h": 198
+    "h": 192
    },
    "sourceSize": {
     "w": 582,
@@ -410,18 +410,18 @@
   },
   "harpoon_gunner_walk_02_team": {
    "frame": {
-    "x": 1021,
-    "y": 804,
+    "x": 1727,
+    "y": 527,
     "w": 122,
-    "h": 137
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 243,
-    "y": 183,
+    "y": 152,
     "w": 122,
-    "h": 137
+    "h": 168
    },
    "sourceSize": {
     "w": 582,
@@ -434,18 +434,18 @@
   },
   "harpoon_gunner_walk_03": {
    "frame": {
-    "x": 504,
-    "y": 2,
+    "x": 158,
+    "y": 206,
     "w": 180,
-    "h": 202
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 142,
+    "y": 148,
     "w": 180,
-    "h": 202
+    "h": 196
    },
    "sourceSize": {
     "w": 582,
@@ -458,18 +458,18 @@
   },
   "harpoon_gunner_walk_03_team": {
    "frame": {
-    "x": 1156,
-    "y": 636,
+    "x": 1420,
+    "y": 2,
     "w": 121,
-    "h": 142
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 242,
-    "y": 173,
+    "y": 142,
     "w": 121,
-    "h": 142
+    "h": 173
    },
    "sourceSize": {
     "w": 582,
@@ -482,18 +482,18 @@
   },
   "harpoon_gunner_walk_04": {
    "frame": {
-    "x": 372,
-    "y": 442,
+    "x": 1053,
+    "y": 2,
     "w": 179,
-    "h": 188
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 159,
+    "y": 166,
     "w": 179,
-    "h": 188
+    "h": 181
    },
    "sourceSize": {
     "w": 582,
@@ -506,18 +506,18 @@
   },
   "harpoon_gunner_walk_04_team": {
    "frame": {
-    "x": 1400,
-    "y": 636,
+    "x": 1515,
+    "y": 355,
     "w": 121,
-    "h": 141
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 190,
+    "y": 159,
     "w": 121,
-    "h": 141
+    "h": 171
    },
    "sourceSize": {
     "w": 582,
@@ -530,18 +530,18 @@
   },
   "harpoon_gunner_walk_05": {
    "frame": {
-    "x": 1320,
-    "y": 442,
+    "x": 1545,
+    "y": 2,
     "w": 177,
-    "h": 177
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 166,
+    "y": 172,
     "w": 177,
-    "h": 177
+    "h": 171
    },
    "sourceSize": {
     "w": 582,
@@ -554,18 +554,18 @@
   },
   "harpoon_gunner_walk_05_team": {
    "frame": {
-    "x": 720,
-    "y": 948,
+    "x": 1478,
+    "y": 723,
     "w": 120,
-    "h": 128
+    "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 237,
-    "y": 197,
+    "y": 166,
     "w": 120,
-    "h": 128
+    "h": 159
    },
    "sourceSize": {
     "w": 582,
@@ -578,18 +578,18 @@
   },
   "harpoon_gunner_walk_06": {
    "frame": {
-    "x": 192,
-    "y": 442,
+    "x": 1045,
+    "y": 191,
     "w": 176,
-    "h": 190
+    "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 152,
+    "y": 158,
     "w": 176,
-    "h": 190
+    "h": 184
    },
    "sourceSize": {
     "w": 582,
@@ -602,18 +602,18 @@
   },
   "harpoon_gunner_walk_06_team": {
    "frame": {
-    "x": 770,
-    "y": 804,
+    "x": 1985,
+    "y": 2,
     "w": 119,
-    "h": 138
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 183,
+    "y": 152,
     "w": 119,
-    "h": 138
+    "h": 169
    },
    "sourceSize": {
     "w": 582,
@@ -626,18 +626,18 @@
   },
   "harpoon_gunner_walk_07": {
    "frame": {
-    "x": 1812,
-    "y": 2,
+    "x": 355,
+    "y": 604,
     "w": 177,
-    "h": 198
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 142,
+    "y": 148,
     "w": 177,
-    "h": 198
+    "h": 192
    },
    "sourceSize": {
     "w": 582,
@@ -650,18 +650,18 @@
   },
   "harpoon_gunner_walk_07_team": {
    "frame": {
-    "x": 2,
-    "y": 804,
+    "x": 1594,
+    "y": 177,
     "w": 120,
-    "h": 140
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 173,
+    "y": 142,
     "w": 120,
-    "h": 140
+    "h": 171
    },
    "sourceSize": {
     "w": 582,
@@ -674,18 +674,18 @@
   },
   "harpoon_gunner_attack_00": {
    "frame": {
-    "x": 2,
-    "y": 442,
+    "x": 947,
+    "y": 385,
     "w": 186,
-    "h": 190
+    "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 212,
-    "y": 160,
+    "y": 166,
     "w": 186,
-    "h": 190
+    "h": 184
    },
    "sourceSize": {
     "w": 582,
@@ -698,18 +698,18 @@
   },
   "harpoon_gunner_attack_00_team": {
    "frame": {
-    "x": 1667,
-    "y": 804,
+    "x": 1988,
+    "y": 690,
     "w": 127,
-    "h": 134
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 233,
-    "y": 189,
+    "y": 160,
     "w": 127,
-    "h": 134
+    "h": 163
    },
    "sourceSize": {
     "w": 582,
@@ -722,18 +722,18 @@
   },
   "harpoon_gunner_attack_01": {
    "frame": {
-    "x": 555,
-    "y": 442,
+    "x": 969,
+    "y": 573,
     "w": 188,
-    "h": 187
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 216,
-    "y": 163,
+    "y": 170,
     "w": 188,
-    "h": 187
+    "h": 180
    },
    "sourceSize": {
     "w": 582,
@@ -746,18 +746,18 @@
   },
   "harpoon_gunner_attack_01_team": {
    "frame": {
-    "x": 1798,
-    "y": 804,
+    "x": 2150,
+    "y": 172,
     "w": 129,
-    "h": 133
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 237,
-    "y": 191,
+    "y": 163,
     "w": 129,
-    "h": 133
+    "h": 161
    },
    "sourceSize": {
     "w": 582,
@@ -770,18 +770,18 @@
   },
   "harpoon_gunner_attack_02": {
    "frame": {
-    "x": 930,
-    "y": 442,
+    "x": 1283,
+    "y": 562,
     "w": 191,
-    "h": 182
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 168,
+    "y": 175,
     "w": 191,
-    "h": 182
+    "h": 175
    },
    "sourceSize": {
     "w": 582,
@@ -794,18 +794,18 @@
   },
   "harpoon_gunner_attack_02_team": {
    "frame": {
-    "x": 319,
-    "y": 948,
+    "x": 2236,
+    "y": 2,
     "w": 131,
-    "h": 128
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 240,
-    "y": 196,
+    "y": 168,
     "w": 131,
-    "h": 128
+    "h": 156
    },
    "sourceSize": {
     "w": 582,
@@ -818,18 +818,18 @@
   },
   "harpoon_gunner_attack_03": {
    "frame": {
-    "x": 1125,
-    "y": 442,
+    "x": 1320,
+    "y": 369,
     "w": 191,
-    "h": 182
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 168,
+    "y": 175,
     "w": 191,
-    "h": 182
+    "h": 175
    },
    "sourceSize": {
     "w": 582,
@@ -842,18 +842,18 @@
   },
   "harpoon_gunner_attack_03_team": {
    "frame": {
-    "x": 454,
-    "y": 948,
+    "x": 2283,
+    "y": 162,
     "w": 131,
-    "h": 128
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 240,
-    "y": 196,
+    "y": 168,
     "w": 131,
-    "h": 128
+    "h": 156
    },
    "sourceSize": {
     "w": 582,
@@ -866,18 +866,18 @@
   },
   "harpoon_gunner_attack_04": {
    "frame": {
-    "x": 1202,
-    "y": 2,
+    "x": 362,
+    "y": 399,
     "w": 242,
-    "h": 199
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 152,
+    "y": 160,
     "w": 242,
-    "h": 199
+    "h": 191
    },
    "sourceSize": {
     "w": 582,
@@ -890,18 +890,18 @@
   },
   "harpoon_gunner_attack_04_team": {
    "frame": {
-    "x": 1034,
-    "y": 636,
+    "x": 1348,
+    "y": 182,
     "w": 118,
-    "h": 143
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 242,
-    "y": 184,
+    "y": 152,
     "w": 118,
-    "h": 143
+    "h": 175
    },
    "sourceSize": {
     "w": 582,
@@ -914,18 +914,18 @@
   },
   "harpoon_gunner_attack_05": {
    "frame": {
-    "x": 1685,
-    "y": 442,
+    "x": 1718,
+    "y": 177,
     "w": 297,
-    "h": 172
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 177,
+    "y": 179,
     "w": 297,
-    "h": 172
+    "h": 170
    },
    "sourceSize": {
     "w": 582,
@@ -938,18 +938,18 @@
   },
   "harpoon_gunner_attack_05_team": {
    "frame": {
-    "x": 589,
-    "y": 948,
+    "x": 2371,
+    "y": 2,
     "w": 127,
-    "h": 128
+    "h": 151
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 203,
-    "y": 200,
+    "y": 177,
     "w": 127,
-    "h": 128
+    "h": 151
    },
    "sourceSize": {
     "w": 582,
@@ -962,18 +962,18 @@
   },
   "harpoon_gunner_attack_06": {
    "frame": {
-    "x": 725,
-    "y": 240,
+    "x": 536,
+    "y": 594,
     "w": 245,
-    "h": 195
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 155,
+    "y": 161,
     "w": 245,
-    "h": 195
+    "h": 189
    },
    "sourceSize": {
     "w": 582,
@@ -986,18 +986,18 @@
   },
   "harpoon_gunner_attack_06_team": {
    "frame": {
-    "x": 250,
-    "y": 804,
+    "x": 1850,
+    "y": 2,
     "w": 131,
-    "h": 139
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 185,
+    "y": 155,
     "w": 131,
-    "h": 139
+    "h": 169
    },
    "sourceSize": {
     "w": 582,
@@ -1010,18 +1010,18 @@
   },
   "harpoon_gunner_attack_07": {
    "frame": {
-    "x": 1493,
-    "y": 240,
+    "x": 790,
+    "y": 389,
     "w": 153,
-    "h": 193
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 200,
-    "y": 157,
+    "y": 163,
     "w": 153,
-    "h": 193
+    "h": 187
    },
    "sourceSize": {
     "w": 582,
@@ -1034,18 +1034,18 @@
   },
   "harpoon_gunner_attack_07_team": {
    "frame": {
-    "x": 1147,
-    "y": 804,
+    "x": 1887,
+    "y": 351,
     "w": 133,
-    "h": 136
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 187,
+    "y": 157,
     "w": 133,
-    "h": 136
+    "h": 166
    },
    "sourceSize": {
     "w": 582,
@@ -1058,18 +1058,18 @@
   },
   "harpoon_gunner_attack_08": {
    "frame": {
-    "x": 1156,
-    "y": 240,
+    "x": 706,
+    "y": 196,
     "w": 152,
-    "h": 195
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 203,
-    "y": 155,
+    "y": 161,
     "w": 152,
-    "h": 195
+    "h": 189
    },
    "sourceSize": {
     "w": 582,
@@ -1082,18 +1082,18 @@
   },
   "harpoon_gunner_attack_08_team": {
    "frame": {
-    "x": 385,
-    "y": 804,
+    "x": 1603,
+    "y": 705,
     "w": 131,
-    "h": 139
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 224,
-    "y": 185,
+    "y": 155,
     "w": 131,
-    "h": 139
+    "h": 168
    },
    "sourceSize": {
     "w": 582,
@@ -1106,18 +1106,18 @@
   },
   "harpoon_gunner_attack_09": {
    "frame": {
-    "x": 2,
-    "y": 240,
+    "x": 342,
+    "y": 202,
     "w": 177,
-    "h": 198
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 210,
-    "y": 152,
+    "y": 157,
     "w": 177,
-    "h": 198
+    "h": 193
    },
    "sourceSize": {
     "w": 582,
@@ -1130,18 +1130,18 @@
   },
   "harpoon_gunner_attack_09_team": {
    "frame": {
-    "x": 1525,
-    "y": 636,
+    "x": 1726,
+    "y": 2,
     "w": 120,
-    "h": 141
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 231,
-    "y": 182,
+    "y": 152,
     "w": 120,
-    "h": 141
+    "h": 170
    },
    "sourceSize": {
     "w": 582,
@@ -1154,18 +1154,18 @@
   },
   "harpoon_gunner_attack_10": {
    "frame": {
-    "x": 1448,
-    "y": 2,
+    "x": 182,
+    "y": 406,
     "w": 176,
-    "h": 199
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 214,
-    "y": 151,
+    "y": 156,
     "w": 176,
-    "h": 199
+    "h": 194
    },
    "sourceSize": {
     "w": 582,
@@ -1178,18 +1178,18 @@
   },
   "harpoon_gunner_attack_10_team": {
    "frame": {
-    "x": 126,
-    "y": 804,
+    "x": 1603,
+    "y": 530,
     "w": 120,
-    "h": 140
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 234,
-    "y": 182,
+    "y": 151,
     "w": 120,
-    "h": 140
+    "h": 171
    },
    "sourceSize": {
     "w": 582,
@@ -1202,8 +1202,8 @@
   },
   "harpoon_gunner_hit_00": {
    "frame": {
-    "x": 1501,
-    "y": 442,
+    "x": 1236,
+    "y": 2,
     "w": 180,
     "h": 176
    },
@@ -1226,18 +1226,18 @@
   },
   "harpoon_gunner_hit_00_team": {
    "frame": {
-    "x": 190,
-    "y": 948,
-    "w": 125,
-    "h": 129
+    "x": 2418,
+    "y": 157,
+    "w": 128,
+    "h": 148
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 216,
-    "y": 195,
-    "w": 125,
-    "h": 129
+    "x": 213,
+    "y": 176,
+    "w": 128,
+    "h": 148
    },
    "sourceSize": {
     "w": 582,
@@ -1250,8 +1250,8 @@
   },
   "harpoon_gunner_hit_01": {
    "frame": {
-    "x": 1046,
-    "y": 2,
+    "x": 2,
+    "y": 240,
     "w": 152,
     "h": 201
    },
@@ -1274,18 +1274,18 @@
   },
   "harpoon_gunner_hit_01_team": {
    "frame": {
-    "x": 681,
-    "y": 636,
-    "w": 104,
-    "h": 147
+    "x": 2099,
+    "y": 513,
+    "w": 115,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 221,
-    "y": 172,
-    "w": 104,
-    "h": 147
+    "x": 210,
+    "y": 156,
+    "w": 115,
+    "h": 163
    },
    "sourceSize": {
     "w": 582,
@@ -1298,18 +1298,18 @@
   },
   "harpoon_gunner_hit_02": {
    "frame": {
-    "x": 183,
-    "y": 240,
+    "x": 2,
+    "y": 647,
     "w": 169,
-    "h": 198
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 207,
-    "y": 153,
+    "y": 155,
     "w": 169,
-    "h": 198
+    "h": 196
    },
    "sourceSize": {
     "w": 582,
@@ -1322,18 +1322,18 @@
   },
   "harpoon_gunner_hit_02_team": {
    "frame": {
-    "x": 1281,
-    "y": 636,
+    "x": 1853,
+    "y": 523,
     "w": 115,
-    "h": 142
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 227,
-    "y": 178,
+    "y": 153,
     "w": 115,
-    "h": 142
+    "h": 167
    },
    "sourceSize": {
     "w": 582,
@@ -1346,18 +1346,18 @@
   },
   "harpoon_gunner_hit_03": {
    "frame": {
-    "x": 356,
-    "y": 240,
+    "x": 686,
+    "y": 2,
     "w": 182,
-    "h": 197
+    "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 213,
-    "y": 155,
+    "y": 162,
     "w": 182,
-    "h": 197
+    "h": 190
    },
    "sourceSize": {
     "w": 582,
@@ -1370,18 +1370,18 @@
   },
   "harpoon_gunner_hit_03_team": {
    "frame": {
-    "x": 893,
-    "y": 804,
+    "x": 2108,
+    "y": 2,
     "w": 124,
-    "h": 137
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 233,
-    "y": 185,
+    "y": 155,
     "w": 124,
-    "h": 137
+    "h": 166
    },
    "sourceSize": {
     "w": 582,
@@ -1394,18 +1394,18 @@
   },
   "harpoon_gunner_hit_04": {
    "frame": {
-    "x": 866,
-    "y": 2,
+    "x": 175,
+    "y": 647,
     "w": 176,
-    "h": 201
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 213,
-    "y": 151,
+    "y": 157,
     "w": 176,
-    "h": 201
+    "h": 195
    },
    "sourceSize": {
     "w": 582,
@@ -1418,18 +1418,18 @@
   },
   "harpoon_gunner_hit_04_team": {
    "frame": {
-    "x": 1649,
-    "y": 636,
+    "x": 1470,
+    "y": 179,
     "w": 120,
-    "h": 141
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 233,
-    "y": 182,
+    "y": 151,
     "w": 120,
-    "h": 141
+    "h": 172
    },
    "sourceSize": {
     "w": 582,
@@ -1442,18 +1442,18 @@
   },
   "harpoon_gunner_die_00": {
    "frame": {
-    "x": 106,
-    "y": 636,
+    "x": 2146,
+    "y": 345,
     "w": 175,
-    "h": 163
+    "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 170,
+    "y": 171,
     "w": 175,
-    "h": 163
+    "h": 162
    },
    "sourceSize": {
     "w": 582,
@@ -1466,18 +1466,18 @@
   },
   "harpoon_gunner_die_00_team": {
    "frame": {
-    "x": 844,
-    "y": 948,
+    "x": 2218,
+    "y": 511,
     "w": 121,
-    "h": 127
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 190,
+    "y": 170,
     "w": 121,
-    "h": 127
+    "h": 147
    },
    "sourceSize": {
     "w": 582,
@@ -1490,17 +1490,17 @@
   },
   "harpoon_gunner_die_01": {
    "frame": {
-    "x": 285,
-    "y": 636,
-    "w": 219,
+    "x": 2325,
+    "y": 322,
+    "w": 213,
     "h": 153
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 150,
+    "x": 156,
     "y": 162,
-    "w": 219,
+    "w": 213,
     "h": 153
    },
    "sourceSize": {
@@ -1514,17 +1514,17 @@
   },
   "harpoon_gunner_die_01_team": {
    "frame": {
-    "x": 1492,
-    "y": 948,
-    "w": 148,
+    "x": 2285,
+    "y": 710,
+    "w": 184,
     "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 186,
+    "x": 150,
     "y": 193,
-    "w": 148,
+    "w": 184,
     "h": 104
    },
    "sourceSize": {
@@ -1562,9 +1562,9 @@
   },
   "harpoon_gunner_die_02_team": {
    "frame": {
-    "x": 2,
-    "y": 636,
-    "w": 100,
+    "x": 2024,
+    "y": 345,
+    "w": 118,
     "h": 164
    },
    "rotated": false,
@@ -1572,7 +1572,7 @@
    "spriteSourceSize": {
     "x": 236,
     "y": 172,
-    "w": 100,
+    "w": 118,
     "h": 164
    },
    "sourceSize": {
@@ -1586,18 +1586,18 @@
   },
   "harpoon_gunner_die_03": {
    "frame": {
-    "x": 1312,
-    "y": 240,
+    "x": 872,
+    "y": 2,
     "w": 177,
-    "h": 193
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 122,
+    "y": 130,
     "w": 177,
-    "h": 193
+    "h": 185
    },
    "sourceSize": {
     "w": 582,
@@ -1610,18 +1610,18 @@
   },
   "harpoon_gunner_die_03_team": {
    "frame": {
-    "x": 1284,
-    "y": 804,
+    "x": 2019,
+    "y": 175,
     "w": 127,
-    "h": 136
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 212,
-    "y": 152,
+    "y": 122,
     "w": 127,
-    "h": 136
+    "h": 166
    },
    "sourceSize": {
     "w": 582,
@@ -1634,17 +1634,17 @@
   },
   "harpoon_gunner_die_04": {
    "frame": {
-    "x": 508,
-    "y": 636,
-    "w": 169,
+    "x": 2119,
+    "y": 680,
+    "w": 162,
     "h": 150
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 162,
+    "x": 169,
     "y": 234,
-    "w": 169,
+    "w": 162,
     "h": 150
    },
    "sourceSize": {
@@ -1658,18 +1658,18 @@
   },
   "harpoon_gunner_die_04_team": {
    "frame": {
-    "x": 1374,
-    "y": 948,
-    "w": 114,
-    "h": 110
+    "x": 2343,
+    "y": 595,
+    "w": 141,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 189,
-    "y": 252,
-    "w": 114,
-    "h": 110
+    "x": 162,
+    "y": 251,
+    "w": 141,
+    "h": 111
    },
    "sourceSize": {
     "w": 582,
@@ -1682,17 +1682,17 @@
   },
   "harpoon_gunner_die_05": {
    "frame": {
-    "x": 1154,
-    "y": 948,
-    "w": 216,
+    "x": 2343,
+    "y": 479,
+    "w": 210,
     "h": 112
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 132,
+    "x": 138,
     "y": 248,
-    "w": 216,
+    "w": 210,
     "h": 112
    },
    "sourceSize": {
@@ -1706,17 +1706,17 @@
   },
   "harpoon_gunner_die_05_team": {
    "frame": {
-    "x": 1893,
-    "y": 948,
-    "w": 140,
+    "x": 355,
+    "y": 800,
+    "w": 175,
     "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 167,
+    "x": 132,
     "y": 263,
-    "w": 140,
+    "w": 175,
     "h": 76
    },
    "sourceSize": {
@@ -1730,17 +1730,17 @@
   },
   "harpoon_gunner_die_06": {
    "frame": {
-    "x": 2,
-    "y": 948,
-    "w": 184,
+    "x": 1283,
+    "y": 741,
+    "w": 180,
     "h": 129
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 147,
+    "x": 151,
     "y": 248,
-    "w": 184,
+    "w": 180,
     "h": 129
    },
    "sourceSize": {
@@ -1754,17 +1754,17 @@
   },
   "harpoon_gunner_die_06_team": {
    "frame": {
-    "x": 1644,
-    "y": 948,
-    "w": 122,
+    "x": 536,
+    "y": 787,
+    "w": 152,
     "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 177,
+    "x": 147,
     "y": 263,
-    "w": 122,
+    "w": 152,
     "h": 91
    },
    "sourceSize": {
@@ -1779,16 +1779,16 @@
   "harpoon_gunner_die_07": {
    "frame": {
     "x": 969,
-    "y": 948,
-    "w": 181,
+    "y": 757,
+    "w": 174,
     "h": 125
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 148,
+    "x": 155,
     "y": 248,
-    "w": 181,
+    "w": 174,
     "h": 125
    },
    "sourceSize": {
@@ -1802,17 +1802,17 @@
   },
   "harpoon_gunner_die_07_team": {
    "frame": {
-    "x": 1770,
-    "y": 948,
-    "w": 119,
+    "x": 692,
+    "y": 787,
+    "w": 150,
     "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 179,
+    "x": 148,
     "y": 264,
-    "w": 119,
+    "w": 150,
     "h": 88
    },
    "sourceSize": {
@@ -1933,8 +1933,8 @@
   "image": "harpoon_gunner.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2048,
-   "h": 1080
+   "w": 2560,
+   "h": 884
   },
   "scale": "3",
   "ageborn": {

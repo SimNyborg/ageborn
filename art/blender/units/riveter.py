@@ -23,15 +23,26 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   hit     light: the head snaps back, the cap lifts, eyes squeezed, then an overshoot forward
   die     D1 fling and spin: the cap pops off and the wrench flies out of his hand; he lands on
           his back with X eyes and his tongue out
+
+Detail standard (art round W3, Track INDUSTRIAL): worn work clothes. The cap's crown in six panels (team-dark
+seams from the button) over a team-dark band; the bib's cog whole (conforming) with brass rivets at its corners
+and a stitched edge; a team-dark patch sewn on the overalls' side and on the near knee (cream thread); soot
+smudges on the shirt and the trousers; creases at the rolled sleeves; the tool belt stitched and riveted; a
+polished band down the wrench's shank. Damage spots (posed frames measured): the cap's crown (r 7), the overalls'
+side, the bib, the shirt's shoulder, a strip torn from the overalls' hem.
+Chimney Sweep (rare skin): soot-black shirt, sooty hands, a faded red neckerchief, ash dusting the team cap and
+the clothes; the team overalls and cap stay (a charcoal cap took the team fill to 11%).
 """
 import math
 
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "riveter"
 GAIT_NAME = "biped"
@@ -48,6 +59,30 @@ JAW = 15.0
 CAP_C = (1.0, 0.0, 57.8)
 RAG = "#9A5A4E"     # faded red rag (muted, under the colour rule)
 JAW_C = (FIST[0], FIST[1], FIST[2] + LENGTH + JAW * 0.35)
+SOOT_CLOTH = "#A39E94"      # soot on the cream shirt and on the trousers' far side (a grey under the colour rule)
+THREAD = "#CFC6B2"          # cream thread on the team patches
+IRON_HI = "#AEB5BD"         # the wrench's polished band
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, leather, iron, brass and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2           # under the soldier lift (1.35): the polished band and the rivets add shine
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", I.GINGER: "fur", I.CREAM: "cloth", I.CREAM_DK: "cloth", KI.CREAM: "cloth",
+                           SOOT_CLOTH: "cloth", THREAD: "cloth", RAG: "cloth", I.LEATHER: "leather",
+                           I.LEATHER_DK: "leather", I.BOOT: "leather", I.COAL: "leather", I.COAL_LT: "cloth",
+                           I.TWEED: "cloth", I.IRON: "iron", I.IRON_LT: "iron", I.IRON_DK: "iron", IRON_HI: "iron",
+                           I.BRASS_LT: "bronze", I.WOOD_LT: "wood", "#B89A86": "skin", "team": "cloth"})
+
+# Chimney Sweep (rare skin, DESIGN A5.8): soot-black shirt, sooty hands, ash smudges; the team overalls and cap stay
+# (the hands, the neckerchief and the cap's ash are geometry the skin changes)
+SWEEP_SHIRT, SWEEP_SHIRT_DK, SWEEP_ASH = "#4E4A48", "#3F3B39", "#76716B"
+SWEEP_HAND, SWEEP_SCARF = "#8E7464", "#8A5A52"
+SKINS = {"chimney_sweep": {
+    "palette": IW.skin_palette({I.CREAM: SWEEP_SHIRT, I.CREAM_DK: SWEEP_SHIRT_DK, SOOT_CLOTH: SWEEP_ASH,
+                                I.IRON_LT: "#62666C", IRON_HI: "#8C9198"}),
+    "kinds": IW.kinds({SWEEP_SHIRT: "cloth", SWEEP_SHIRT_DK: "cloth", SWEEP_ASH: "cloth",
+                       SWEEP_HAND: "skin", SWEEP_SCARF: "cloth", "#62666C": "iron", "#8C9198": "iron"})}}
 
 
 def _wrench(rig, joint, fist):
@@ -58,25 +93,101 @@ def _wrench(rig, joint, fist):
     for z in (cz + 10.0, cz + 20.0):
         g.blob((cx, cy - 2.2, z), (1.6, 0.9, 1.6), p=3.0)
     rig.part(joint, g, I.IRON_DK, finish="metal", outline=0.3)
+    # W3: a polished band down the shank's near face, between the bolt heads (it carries the iron's shine)
+    g = Geo()
+    for z0, z1 in ((cz + 5.4, cz + 8.4), (cz + 11.8, cz + 18.2), (cz + 21.8, cz + 28.6)):
+        g.capsule((cx + 0.7, cy - 1.72, z0), (cx + 0.7, cy - 1.72, z1), 0.55, segs=10, rings=2)
+    rig.part(joint, g, IRON_HI, finish="metal", outline=0)
     return jaw
 
 
 RIG = None
 
 
+def _torso_face(rig):
+    """The overalls' and the shirt's surfaces (rigs_industrial.overalls, rebuilt for the ray casts)."""
+    shirt = Geo().blob((0, 0, 28.0), (10.4, 9.4, 11.4), p=2.4, taper=(1.06, 0.94))
+    low = Geo().blob((0.6, 0, 22.0), (11.0, 10.2, 8.6), p=2.8, taper=(1.05, 0.92))
+    low.clip((0, 0, 30.5), (0, 0, 1))
+    bib = Geo().blob((6.4, 0, 30.0), (4.8, 7.8, 6.4), p=3.2)
+    return F.Face(rig, "torso", [shirt, low, bib])
+
+
+def _work_clothes(rig, sweep):
+    """W3: the overalls and the shirt as worn work clothes (see the module doc)."""
+    face = _torso_face(rig)
+    # the bib: the cog whole, brass rivets at the bib's top corners and the pocket, a stitched edge down its side
+    g = IW.cog(face, Geo(), (8.6, 31.2), s=0.95)
+    rig.part("torso", g, KI.CREAM, highlight=False, outline=0)
+    IW.rivets(rig, "torso", face, [(6.2, 36.4), (11.0, 36.0), (11.6, 26.6)], r=0.95, fill=I.BRASS_LT)
+    IW.stitches(rig, "torso", face, [(5.6, 25.6), (5.4, 31.0), (5.8, 36.8)], THREAD)
+    # a patch on the overalls' side (team-dark, cream thread) and soot at the hem
+    IW.patch(rig, "torso", face, [(-8.4, 20.2), (-2.6, 19.8), (-2.2, 24.6), (-8.0, 24.8)], team=True, stitch=THREAD)
+    IW.soot(rig, "torso", face, [(3.6, 22.4, 1.8, 1.2), (-9.0, 22.6, 1.0, 1.6)], fill=SOOT_CLOTH)
+    # the shirt: soot on the chest and the shoulder, creases above the bib (shirt colours: the skin recolours them)
+    IW.soot(rig, "torso", face, [(-2.4, 33.6, 2.2, 1.5), (1.6, 38.6, 1.4, 1.0)], fill=SOOT_CLOTH)
+    IW.folds(rig, "torso", face, [[(-5.6, 30.0), (-3.0, 28.4)], [(-6.4, 35.6), (-3.6, 34.8)]], w=1.0, team=False,
+             fill=I.CREAM_DK)
+    # the near trouser leg: a knee patch and soot on the shin
+    for s, y in (("r", -I.LEG_Y),):
+        thigh = Geo().capsule((0, y, KI.V3_THIGH_Z), (0.5, y, KI.V3_KNEE_Z), 4.6, 4.2)
+        tface = F.Face(rig, f"thigh_{s}", [thigh])
+        IW.patch(rig, f"thigh_{s}", tface, [(-3.2, 12.8), (1.6, 12.6), (1.8, 16.8), (-3.0, 17.0)], team=True,
+                 stitch=THREAD)
+        shin = Geo().capsule((0.5, y, KI.V3_KNEE_Z), (1.0, y, KI.V3_ANKLE_Z + 0.6), 3.9, 3.3)
+        sface = F.Face(rig, f"shin_{s}", [shin])
+        IW.soot(rig, f"shin_{s}", sface, [(-1.4, 9.2, 1.3, 1.0)], fill=SOOT_CLOTH)
+    if sweep:   # a faded red neckerchief knotted at the throat
+        g = Geo().lathe([(6.6, 0), (7.0, 1.0), (6.4, 2.2)], (1.2, 0, 36.6), (1.8, 0, 39.0), segs=20)
+        g.blob((8.2, -2.6, 35.4), (1.6, 1.4, 1.8), p=2.2)
+        g.blob((8.6, -3.0, 33.0), (1.2, 0.8, 2.2), p=2.2, rot=(0, 18, 0))
+        rig.part("torso", g, SWEEP_SCARF, outline=0.5)
+
+
+def _cap_detail(rig, sweep):
+    """W3: the flat cap's crown in panels (team-dark seams from the button) over a team-dark band at its edge; the
+    Chimney Sweep's cap is dusted with ash."""
+    x, y, z = CAP_C
+    crown = Geo().blob((x + 1.6, y, z + 0.4), (13.4, 12.4, 6.0), p=2.3, shift=(0.12, 0))
+    crown.clip((x, y, z - 1.8), (0, 0, -1))
+    cface = F.Face(rig, "hat", [crown])
+    bx, bz = x + 3.4, z + 6.0
+    lines = [[(bx - 1.2, bz - 0.6), (x - 6.0, z - 0.4)], [(bx - 0.4, bz - 1.4), (x + 1.4, z - 1.3)],
+             [(bx + 0.8, bz - 1.0), (x + 9.4, z - 0.8)]]
+    band = [[(x - 11.0, z - 0.4), (x - 2.0, z - 1.4), (x + 6.0, z - 1.4), (x + 13.6, z - 0.4)]]
+    IW.folds(rig, "hat", cface, lines, w=1.0, team=True)
+    IW.folds(rig, "hat", cface, band, w=1.6, team=True)
+    if sweep:
+        IW.soot(rig, "hat", cface, [(x - 4.0, z + 3.4, 2.4, 1.3), (x + 7.6, z + 1.6, 1.6, 1.0)], fill=SWEEP_ASH)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames: the
+    cap's crown (the biggest team field the wrench leaves clear, r 7), the overalls' side, the bib, the shirt's
+    shoulder, a strip torn from the overalls' hem."""
+    rig.damage_spot_at("cap", "hat", 0.0, 60.6, 7.0, "cloth", team=True)
+    rig.damage_spot_at("overalls", "torso", 1.0, 20.5, 5.5, "cloth", team=True)
+    rig.damage_spot_at("bib", "torso", 8.0, 28.2, 5.0, "cloth", team=True)
+    rig.damage_spot_at("shirt", "torso", -4.4, 33.4, 5.0, "cloth", fill=I.CREAM)
+    rig.damage_spot_at("hem", "hips", 8.4, 12.6, 7.0, "cloth", kind="strip", team=True)
+
+
 def build(rig):
     global RIG
     RIG = rig
+    sweep = getattr(rig, "skin", None) == "chimney_sweep"
     KI.skeleton_v3(rig)
     KI.legs_v3(rig, team=True, cuff=I.IRON)
     I.overalls(rig, hem_z=13.0)
-    # cog emblem on the bib, a tool belt with a rivet pouch, a hammer and a rag on secondaries
-    bib = Geo().blob((6.4, 0, 30.0), (4.9, 7.9, 6.5), p=3.2)
-    bface = F.Face(rig, "torso", [bib])
-    g = KI.cog(bface, Geo(), (10.8, 27.4), s=0.95)
-    rig.part("torso", g, KI.CREAM, highlight=False, outline=0)
+    # the overalls and the shirt worn and patched (W3), a tool belt with a rivet pouch, a hammer and a rag
+    _work_clothes(rig, sweep)
     g = Geo().blob((0.4, 0, 17.6), (11.8, 10.9, 1.9), p=3.2)
+    belt = Geo().blob((0.4, 0, 17.6), (11.8, 10.9, 1.9), p=3.2)
     rig.part("hips", g, I.LEATHER)
+    bface = F.Face(rig, "hips", [belt])
+    IW.stitches(rig, "hips", bface, [(-10.0, 18.7), (-2.0, 18.9), (6.0, 18.8), (10.6, 18.5)], I.LEATHER_DK, w=0.6,
+                dash=1.0, gap=0.8)
+    IW.rivets(rig, "hips", bface, [(-7.6, 17.4), (-3.0, 17.5), (6.8, 17.4)], r=0.8, fill=I.BRASS_LT)
     g = Geo().blob((11.8, -3.0, 17.6), (1.0, 2.2, 1.8), p=3.2)
     rig.part("hips", g, I.BRASS_LT, finish="metal", outline=0.4)
     g = Geo().blob((4.0, -11.6, 14.8), (3.2, 2.0, 3.4), p=2.6)          # rivet pouch
@@ -106,13 +217,15 @@ def build(rig):
     rig.part("head", g, "#B89A86", highlight=False, outline=0)
     rig.joint("hat", "head", CAP_C)
     I.flat_cap(rig, c=CAP_C, team=True, joint="hat")
+    _cap_detail(rig, sweep)
     KI.loose(rig, "hat_loose", CAP_C, lambda j: I.flat_cap(rig, c=CAP_C, team=True, joint=j))
 
+    hand = SWEEP_HAND if sweep else I.SKIN
     for s in ("r", "l"):
-        I.arm_parts(rig, s, sleeve=I.CREAM, team_sleeve=False, rolled=True, fist=4.8)
+        I.arm_parts(rig, s, sleeve=I.CREAM, hand=hand, team_sleeve=False, rolled=True, fist=4.8)
         y = I.ARM_Y[s]
         g = Geo().blob((2.6, y - 1.5 * (1 if s == "r" else -1), I.HAND_Z + 0.6), (1.7, 1.6, 2.3), p=2.2)
-        rig.part(f"hand_{s}", g, I.SKIN)                                     # thumb
+        rig.part(f"hand_{s}", g, hand)                                       # thumb
     g = Geo().lathe([(4.6, 0), (4.8, 1.8), (4.5, 3.0)], (0, I.ARM_Y["r"], I.ELBOW_Z + 1.0),
                     (0, I.ARM_Y["r"], I.ELBOW_Z + 4.0), segs=16)
     rig.part("arm_r", g, I.CREAM_DK, outline=0.5)
@@ -126,6 +239,8 @@ def build(rig):
     rig.track("wrenchHead", "wrench", JAW_C)
     I.fuse_spark(rig, "wrench", (FIST[0] + 5.0, FIST[1] - 3.0, FIST[2] + LENGTH + JAW * 0.9), size=1.9,
                  name="clang", hidden=True)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
 
 
 # -- poses ---------------------------------------------------------------------------------
