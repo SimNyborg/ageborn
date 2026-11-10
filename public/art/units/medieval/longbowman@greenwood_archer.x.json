@@ -2,7 +2,7 @@
  "frames": {
   "longbowman@greenwood_archer_attack_b_01": {
    "frame": {
-    "x": 398,
+    "x": 399,
     "y": 2,
     "w": 102,
     "h": 95
@@ -26,9 +26,9 @@
   },
   "longbowman@greenwood_archer_attack_b_01_team": {
    "frame": {
-    "x": 1080,
+    "x": 1078,
     "y": 105,
-    "w": 59,
+    "w": 58,
     "h": 83
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 68,
     "y": 100,
-    "w": 59,
+    "w": 58,
     "h": 83
    },
    "sourceSize": {
@@ -74,7 +74,7 @@
   },
   "longbowman@greenwood_archer_attack_b_02_team": {
    "frame": {
-    "x": 125,
+    "x": 124,
     "y": 198,
     "w": 61,
     "h": 81
@@ -122,7 +122,7 @@
   },
   "longbowman@greenwood_archer_attack_b_03_team": {
    "frame": {
-    "x": 752,
+    "x": 750,
     "y": 198,
     "w": 60,
     "h": 77
@@ -194,7 +194,7 @@
   },
   "longbowman@greenwood_archer_attack_b_05": {
    "frame": {
-    "x": 321,
+    "x": 322,
     "y": 2,
     "w": 73,
     "h": 96
@@ -242,9 +242,9 @@
   },
   "longbowman@greenwood_archer_attack_b_06": {
    "frame": {
-    "x": 849,
+    "x": 780,
     "y": 2,
-    "w": 66,
+    "w": 67,
     "h": 92
    },
    "rotated": false,
@@ -252,7 +252,7 @@
    "spriteSourceSize": {
     "x": 78,
     "y": 107,
-    "w": 66,
+    "w": 67,
     "h": 92
    },
    "sourceSize": {
@@ -266,7 +266,7 @@
   },
   "longbowman@greenwood_archer_attack_b_06_team": {
    "frame": {
-    "x": 1143,
+    "x": 1140,
     "y": 105,
     "w": 52,
     "h": 83
@@ -290,7 +290,7 @@
   },
   "longbowman@greenwood_archer_attack_b_07": {
    "frame": {
-    "x": 919,
+    "x": 922,
     "y": 2,
     "w": 70,
     "h": 91
@@ -314,9 +314,9 @@
   },
   "longbowman@greenwood_archer_attack_b_07_team": {
    "frame": {
-    "x": 625,
+    "x": 624,
     "y": 198,
-    "w": 53,
+    "w": 52,
     "h": 79
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 73,
     "y": 96,
-    "w": 53,
+    "w": 52,
     "h": 79
    },
    "sourceSize": {
@@ -338,7 +338,7 @@
   },
   "longbowman@greenwood_archer_attack_up70_01": {
    "frame": {
-    "x": 609,
+    "x": 610,
     "y": 2,
     "w": 94,
     "h": 93
@@ -364,7 +364,7 @@
    "frame": {
     "x": 58,
     "y": 198,
-    "w": 63,
+    "w": 62,
     "h": 81
    },
    "rotated": false,
@@ -372,7 +372,7 @@
    "spriteSourceSize": {
     "x": 65,
     "y": 90,
-    "w": 63,
+    "w": 62,
     "h": 81
    },
    "sourceSize": {
@@ -386,7 +386,7 @@
   },
   "longbowman@greenwood_archer_attack_up70_02": {
    "frame": {
-    "x": 1165,
+    "x": 1168,
     "y": 2,
     "w": 97,
     "h": 89
@@ -410,7 +410,7 @@
   },
   "longbowman@greenwood_archer_attack_up70_02_team": {
    "frame": {
-    "x": 682,
+    "x": 680,
     "y": 198,
     "w": 66,
     "h": 77
@@ -458,7 +458,7 @@
   },
   "longbowman@greenwood_archer_attack_up70_03_team": {
    "frame": {
-    "x": 1144,
+    "x": 1142,
     "y": 198,
     "w": 70,
     "h": 71
@@ -482,7 +482,7 @@
   },
   "longbowman@greenwood_archer_attack_up70_04": {
    "frame": {
-    "x": 234,
+    "x": 235,
     "y": 2,
     "w": 83,
     "h": 96
@@ -554,7 +554,7 @@
   },
   "longbowman@greenwood_archer_attack_up70_05_team": {
    "frame": {
-    "x": 561,
+    "x": 560,
     "y": 198,
     "w": 60,
     "h": 79
@@ -580,7 +580,7 @@
    "frame": {
     "x": 162,
     "y": 2,
-    "w": 68,
+    "w": 69,
     "h": 98
    },
    "rotated": false,
@@ -588,7 +588,7 @@
    "spriteSourceSize": {
     "x": 71,
     "y": 89,
-    "w": 68,
+    "w": 69,
     "h": 98
    },
    "sourceSize": {
@@ -602,7 +602,7 @@
   },
   "longbowman@greenwood_archer_attack_up70_06_team": {
    "frame": {
-    "x": 190,
+    "x": 189,
     "y": 198,
     "w": 59,
     "h": 81
@@ -626,7 +626,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up45_01": {
    "frame": {
-    "x": 504,
+    "x": 505,
     "y": 2,
     "w": 101,
     "h": 93
@@ -650,9 +650,9 @@
   },
   "longbowman@greenwood_archer_attack_b_up45_01_team": {
    "frame": {
-    "x": 1016,
+    "x": 1015,
     "y": 105,
-    "w": 60,
+    "w": 59,
     "h": 83
    },
    "rotated": false,
@@ -660,7 +660,7 @@
    "spriteSourceSize": {
     "x": 68,
     "y": 100,
-    "w": 60,
+    "w": 59,
     "h": 83
    },
    "sourceSize": {
@@ -674,7 +674,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up45_02": {
    "frame": {
-    "x": 471,
+    "x": 470,
     "y": 198,
     "w": 86,
     "h": 80
@@ -698,7 +698,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up45_02_team": {
    "frame": {
-    "x": 253,
+    "x": 252,
     "y": 198,
     "w": 56,
     "h": 81
@@ -722,7 +722,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up45_03": {
    "frame": {
-    "x": 1047,
+    "x": 1045,
     "y": 198,
     "w": 93,
     "h": 76
@@ -746,7 +746,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up45_03_team": {
    "frame": {
-    "x": 816,
+    "x": 814,
     "y": 198,
     "w": 60,
     "h": 77
@@ -818,9 +818,9 @@
   },
   "longbowman@greenwood_archer_attack_b_up45_05": {
    "frame": {
-    "x": 707,
+    "x": 708,
     "y": 2,
-    "w": 67,
+    "w": 68,
     "h": 92
    },
    "rotated": false,
@@ -828,7 +828,7 @@
    "spriteSourceSize": {
     "x": 75,
     "y": 98,
-    "w": 67,
+    "w": 68,
     "h": 92
    },
    "sourceSize": {
@@ -866,7 +866,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up45_06": {
    "frame": {
-    "x": 778,
+    "x": 851,
     "y": 2,
     "w": 67,
     "h": 92
@@ -890,7 +890,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up45_06_team": {
    "frame": {
-    "x": 1199,
+    "x": 1196,
     "y": 105,
     "w": 52,
     "h": 83
@@ -914,7 +914,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up70_01": {
    "frame": {
-    "x": 1062,
+    "x": 1065,
     "y": 2,
     "w": 99,
     "h": 89
@@ -940,7 +940,7 @@
    "frame": {
     "x": 951,
     "y": 105,
-    "w": 61,
+    "w": 60,
     "h": 83
    },
    "rotated": false,
@@ -948,7 +948,7 @@
    "spriteSourceSize": {
     "x": 68,
     "y": 100,
-    "w": 61,
+    "w": 60,
     "h": 83
    },
    "sourceSize": {
@@ -962,7 +962,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up70_02": {
    "frame": {
-    "x": 373,
+    "x": 372,
     "y": 198,
     "w": 94,
     "h": 80
@@ -986,7 +986,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up70_02_team": {
    "frame": {
-    "x": 313,
+    "x": 312,
     "y": 198,
     "w": 56,
     "h": 81
@@ -1010,7 +1010,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up70_03": {
    "frame": {
-    "x": 944,
+    "x": 942,
     "y": 198,
     "w": 99,
     "h": 76
@@ -1034,7 +1034,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up70_03_team": {
    "frame": {
-    "x": 880,
+    "x": 878,
     "y": 198,
     "w": 60,
     "h": 77
@@ -1154,7 +1154,7 @@
   },
   "longbowman@greenwood_archer_attack_b_up70_06": {
    "frame": {
-    "x": 993,
+    "x": 996,
     "y": 2,
     "w": 65,
     "h": 91

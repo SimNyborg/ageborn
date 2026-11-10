@@ -72,7 +72,9 @@ MATERIAL_KINDS = MW.kinds({SKIN: "skin", HAIR: "fur", LEATHER: "leather", DARK_L
 
 # Greenwood Archer (DESIGN A5.8, rare: "moss and leaf greens, hood and leaf trim"): the jerkin moss, the hose and the
 # quiver forest green, the sleeves leaf green, the feather and the fletching pale leaf, and a trim of leaves round the
-# hood's face opening and the collar; the hood, its tail and the skirt stay team.
+# hood's face opening and the collar; the hood, its tail and the skirt stay team. W2 review (nit 2: barely told from
+# the Longbowman at 1x): a mantle of big leaves over the shoulders that breaks the silhouette, and leaves bound to the
+# bow above and below the grip.
 LEAF = "#6E8E3E"          # hue 87: just outside the A11 orange-yellow team band (350-81)
 LEAF_DK = "#4C6A2E"
 # the greens sit at hue 83-99 (outside the band); the wood and the parchment inside it keep saturation <= 0.38
@@ -180,6 +182,8 @@ def build(rig):
         p0 = (0.5 + 9.2 * c, -9.7 * s, 35.6)
         g.lathe([(3.3, 0), (0, 5.0)], p0, (p0[0] + 0.35 * c, p0[1] - 0.35 * s, p0[2] - 1.0), segs=10)
     rig.part("torso", g, team=True)
+    if getattr(rig, "skin", None) == "greenwood_archer":
+        _mantle(rig)
     rig.secondary("tail", "head", (-10.0, 0, 55.0), (-24.0, 0, 44.0), max_deg=18, gain=1.3)
     g = Geo().capsule((-10.0, 0, 55.0), (-17.0, 0, 50.5), 3.6, 2.6)
     rig.part("tail", g, team=True)
@@ -224,6 +228,16 @@ def build(rig):
     for sgn in (-1, 1):
         g.sphere((hx + _bow_x(BOW_HALF), hy, hz + sgn * BOW_HALF), 1.5, cuts=3)
     rig.part("hand_r", g, DARK_LEATHER, outline=0.8)
+    if getattr(rig, "skin", None) == "greenwood_archer":   # leaves bound to the stave above and below the grip
+        geos = {LEAF: Geo(), LEAF_DK: Geo()}
+        for k, (z, ang) in enumerate(((7.0, 35.0), (9.5, 150.0), (-7.0, -40.0), (-9.5, -145.0))):
+            a = math.radians(ang)
+            c = (hx + _bow_x(z) - 0.4, hy - 1.8, hz + z)
+            d = (math.cos(a), 0.0, math.sin(a))
+            geos[LEAF_DK if k % 2 else LEAF].capsule(c, (c[0] + d[0] * 5.2, c[1] - 0.3, c[2] + d[2] * 5.2), 1.6, 0.45,
+                                                    segs=10, rings=2)
+        for fill, g in geos.items():
+            rig.part("hand_r", g, fill, outline=0.5)
     # the bow hand sits in front of the grip
     g = Geo().blob((hx + 0.6, hy - 2.5, hz), (3.8, 2.8, 4.0), p=2.3)
     rig.part("hand_r", g, SKIN)
@@ -273,6 +287,26 @@ def _damage_spots(rig):
     rig.damage_spot_at("collar", "torso", 1.0, 40.0, 6.0, "cloth", team=True)
     rig.damage_spot_at("jerkin", "torso", -4.0, 29.5, 6.0, "hide", fill=LEATHER)
     rig.damage_spot_at("skirt", "hem", 0.0, 15.0, 8.0, "cloth", kind="strip", team=True)
+
+
+def _mantle(rig):
+    """Greenwood Archer (W2 review nit 2): a mantle of big leaves over the shoulders, two overlapping rows hanging
+    from the collar round the camera side and the back (6-7 lu leaves in two greens), so the skin's silhouette and
+    its green read at 1x."""
+    geos = {LEAF: Geo(), LEAF_DK: Geo()}
+    k = 0
+    for row, (z, rad, ln, angs) in enumerate(((37.6, 11.6, 6.6, (12, 40, 68, 96, 124, 152, 176)),
+                                              (35.4, 12.4, 6.0, (26, 54, 82, 110, 138, 164)))):
+        for a in angs:
+            t = math.radians(a)
+            c, s_ = math.cos(t), math.sin(t)
+            root = (0.5 + rad * c, -rad * s_ * 1.04, z)
+            out = (c * 0.45, -s_ * 0.45, -0.89)
+            tip = (root[0] + out[0] * ln, root[1] + out[1] * ln, root[2] + out[2] * ln)
+            geos[LEAF_DK if (k + row) % 2 else LEAF].capsule(root, tip, 1.9, 0.55, segs=10, rings=2)
+            k += 1
+    for fill, g in geos.items():
+        rig.part("torso", g, fill, outline=0.6)
 
 
 def _leaves(rig, face, rim):

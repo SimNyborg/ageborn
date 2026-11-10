@@ -700,10 +700,11 @@ SWEEP = {"kind": "arc", "joint": "lance", "inner": (LX, LY, LZ + LANCE_TIP * 0.4
 
 
 def _attack_c():
-    ov = {
-        4: [dict(SWEEP, **{"from": 3})],
-        5: [dict(SWEEP, **{"from": 4})],
-        6: [dict(SWEEP, t0=0.3, t1=1.0, lines=2, **{"from": 5}),
+    ov = {   # the smears in two values, narrower (W2 review S1: the flat steel crescents held the Chess Knight's
+             # extras micro under the cavalry floor)
+        4: MW.smear_two_tone(dict(SWEEP, **{"from": 3})),
+        5: MW.smear_two_tone(dict(SWEEP, **{"from": 4})),
+        6: MW.smear_two_tone(dict(SWEEP, t0=0.3, t1=1.0, lines=2, **{"from": 5})) + [
             {"kind": "burst", "joint": "lance", "point": TIP, "r0_lu": 7.0, "r1_lu": 14.0, "n": 6,
              "a0": -60.0, "arc": 140.0},
             {"kind": "dust", "ground": (30.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 58, "spread": 1.1}],

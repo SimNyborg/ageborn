@@ -58,13 +58,15 @@ PARCH, SKIN, HOSE, BOOT, HAIR = R.PARCH, R.SKIN, "#626A74", R.BOOT, R.HAIR
 BOW = "#9A8268"
 STRING = "#EDE6D6"
 STEEL_HI = "#D9DFE6"      # the archers' polished hat brims
+WOOD_HI = "#C4AE8E"       # W2 review nit 6: the planks' lit edges
 
 # the detail standard (art round W2): wood, iron, steel and the team hides apart
 DETAIL_STANDARD = True
 LOOK_HIGHLIGHT = 1.6          # matte wood and hides: hl 0.055-0.058 with the soldier's lifts
 LOOK_SHADE = MW.SHADE_SOLDIER
 LOOK_RIM = dict(MW.RIM_SOLDIER, lift=0.8, full_lu=0.8)
-MATERIAL_KINDS = MW.kinds({WOOD: "wood", DARK_WOOD: "wood", IRON: "iron", STEEL: "iron", STEEL_HI: "iron", GOLD: "gold",
+MATERIAL_KINDS = MW.kinds({WOOD: "wood", DARK_WOOD: "wood", WOOD_HI: "wood", IRON: "iron", STEEL: "iron",
+                           STEEL_HI: "iron", GOLD: "gold",
                            PARCH: "cloth", SKIN: "skin", HOSE: "cloth", "#4E555D": "cloth", BOOT: "leather", HAIR: "fur",
                            BOW: "wood", STRING: "cloth", R.EYE: "glass", "team": "hide"})
 
@@ -197,6 +199,10 @@ def build(rig):
     for x in range(-17, 18, 6):
         g.capsule((float(x), -14.6, 65.0), (float(x), -14.6, 95.0), 0.6)
     rig.part("hull", g, DARK_WOOD, outline=0.3)
+    g = Geo()   # W2 review nit 6: each plank's lit edge beside its seam (the core highlight share sat at 0.0599)
+    for x in range(-17, 12, 6):
+        g.capsule((x + 1.3, -14.45, 66.5), (x + 1.3, -14.45, 93.5), 0.4, segs=8, rings=2)
+    rig.part("hull", g, WOOD_HI, outline=0, highlight=False)
     g = Geo().blob((X1 + 0.4, 0.0, 87.0), (1.4, 12.6, 9.0), p=4.0)   # the front wall above the bridge
     rig.part("hull", g, WOOD)
     # wet team hides draped over the lower near side and the front, a parchment paw, a ragged hem
