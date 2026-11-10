@@ -21,12 +21,15 @@ Animation (ANIM_SPEC G8 fly, the odometer at 80 x 1.25 = 100 lu/s; the hover bob
 """
 import math
 
+from ageborn_art import aimed as AIMED
+from ageborn_art import face as FC
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_future_wave as W
 from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "jetpack_trooper"
 GAIT_NAME = "fly"
@@ -36,6 +39,14 @@ CANVAS = (320, 290)
 FEET = (150, 236)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 34), "muzzle": (50, 32)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the white soldiers' lifts; the wave kit's plates in the troopers' off-white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SKIN_PALETTE = FW.KIT_TROOPER
+MATERIAL_KINDS = FW.kinds_future()
 
 G0 = (4.0, -15.0, 27.0)
 FORE = 15.0
@@ -52,7 +63,12 @@ def _rifle(rig, j):
     rig.part(j, g, F.SUIT)
     g = Geo().blob((gx + 18, gy + 1, gz + 6.8), (14.0, 2.6, 2.0), p=3.4)
     g.lathe([(2.6, 0), (2.8, 4), (2.2, 14.0), (0, 14.2)], (gx + 28, gy + 1, gz + 3.5), (gx + 44, gy + 1, gz + 3.5), segs=14)
-    rig.part(j, g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part(j, g, FW.GUN_LT, finish="gloss", outline_hex=F.TRIM)              # (W4: the light gun grey)
+    g = Geo()
+    for x in (gx + 31.0, gx + 36.0):
+        g.lathe([(0, -0.3), (2.95, -0.25), (2.95, 0.25), (0, 0.3)], (x, gy + 1, gz + 3.5), (x + 1, gy + 1, gz + 3.5), segs=14)
+    g.blob((gx + 18, gy - 1.5, gz + 6.8), (11.0, 0.3, 0.35), p=3.0)                # the rail's seam
+    rig.part(j, g, FW.GUN_SEAM, outline=0, highlight=False)
     g = Geo().blob((gx + 12, gy - 2.0, gz + 3.8), (5.0, 0.8, 1.6), p=3.2)
     rig.part(j, g, team=True, outline=0.5)
     g = Geo().lathe([(2.0, 0), (4.2, 0.2), (4.2, 1.6), (2.2, 1.8)], (gx + 44, gy + 1, gz + 3.5), (gx + 47.5, gy + 1, gz + 3.5), segs=16)
@@ -65,7 +81,8 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, helmet_kind="dome", team_greave=True, pack=False)
+    W.trooper(rig, helmet_kind="dome", team_greave=True, pack=False, strip=False)
+    FW.strip(rig)
     # the jetpack: a white body, two team thruster pods, nozzles and flames
     px, py, pz = PACK
     g = Geo().blob((px, py, pz), (5.6, 9.0, 10.0), p=3.2)
@@ -97,6 +114,40 @@ def build(rig):
     rig.trackers.pop("_foot_l", None)
     rig.joint("odo", "root", (0, 0, 0))
     rig.track("_foot", "odo", (0.0, 0.0, 0.0))
+    FW.wave_trooper(rig, helmet_kind="dome", team_greave=True)
+    _pack_detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _pack_detail(rig):
+    """W4: the jetpack's white body in plates (seams) with chipped edges; team-dark rings round the thruster pods and
+    a team-dark seam down each (the pods were two flat team capsules)."""
+    px, py, pz = PACK
+    pf = FC.Face(rig, "torso", [Geo().blob((px, py, pz), (5.6, 9.0, 10.0), p=3.2)])
+    FW.panel_lines(rig, "torso", pf, [[FW.sc(pf, px - 1.0, pz + 9.0, -8.2), FW.sc(pf, px - 1.6, pz + 1.0, -8.8),
+                                       FW.sc(pf, px - 1.0, pz - 8.0, -8.2)]], w=0.8)
+    FW.wear(rig, "torso", pf, [(*FW.sc(pf, px + 3.4, pz + 8.6, -7.0), 1.2, 0.6), (*FW.sc(pf, px - 4.6, pz - 8.0, -6.8), 1.0, 0.5)])
+    for y in (7.5, -7.5):
+        g = Geo()
+        for z in (pz + 4.0, pz - 3.0):
+            g.lathe([(0, -0.35), (3.85, -0.3), (3.85, 0.3), (0, 0.35)], (px - 3.0, y, z), (px - 3.0, y, z + 1), segs=16)
+        FW.team_dark(rig, "torso", g)
+    kf = FC.Face(rig, "torso", [Geo().capsule((px - 3.0, -7.5, pz + 8.0), (px - 3.0, -7.5, pz - 8.0), 3.6)])
+    FW.folds(rig, "torso", kf, [[FW.sc(kf, px - 4.6, pz + 9.6, -10.6), FW.sc(kf, px - 4.6, pz - 9.6, -10.6)]], w=0.7,
+             team=True)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, flyer; never on the face): the team cap, the near pad, the near
+    thruster pod, the white faulds, the near greave; smoke from the jetpack once it is hurt (only vehicles burn)."""
+    rig.damage_spot_at("cap", "head", -3.0, 58.0, 5.5, "metal", team=True)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("pod", "torso", -16.0, 30.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("faulds", "hips", -5.0, 16.0, 5.0, "metal")
+    rig.damage_spot("greave", "shin_r", (1.9, -F.LEG_Y - 4.2, 8.6), 5.0, "metal", team=True, normal=(0, -1, 0))
+    rig.damage_spot("jets", "torso", (PACK[0] - 3.0, -7.5, PACK[2] - 11.0), 4.0, "smoke", kind="emit",
+                    normal=(0, 0, -1))
 
 
 def hold(gx, gz, deg):
@@ -154,9 +205,21 @@ A_LEG = [(30, -50, 10, -40), (44, -70, 24, -60), (50, -80, 30, -70), (50, -80, 3
 A_EYES = ["g_angry", "g_angry", "g_squint", "g_squint", "g_wide", "g_hurt", "eyes", "eyes"]
 
 
-def _a_pose(f):
-    pose = merge(hold(*A_G[f]), legs(*A_LEG[f]), jets(f, [1.1, 1.2, 1.3, 1.3, 1.4, 1.5, 1.2, 1.0][f], sweep=-10.0),
-                 {"flash": {"show": f == 4}}, M.body_about((0, 0, 30), x=A_BX[f], z=4.0, r=A_R[f]))
+# aimed down at the ground row (queue item 44, ageborn_art/aimed.py; W4): a turn of `turn` degrees (negative: down)
+# pitches the body nose-down by AIM_PITCH of it and the rifle by the rest; the head looks down the shot
+AIM_PITCH = 0.5
+AIM_HEAD = 0.3
+#        tuck  aim  HOLD hold2 FIRE drift drift2 settle
+AIM_W = [0.0, 0.6, 1.0, 1.0, 1.0, 0.8, 0.5, 0.2]
+
+
+def _a_pose(f, turn=0.0):
+    gx, gz, deg = A_G[f]
+    pose = merge(hold(gx, gz, deg + turn - AIM_PITCH * turn), legs(*A_LEG[f]),
+                 jets(f, [1.1, 1.2, 1.3, 1.3, 1.4, 1.5, 1.2, 1.0][f], sweep=-10.0),
+                 {"flash": {"show": f == 4}}, M.body_about((0, 0, 30), x=A_BX[f], z=4.0, r=A_R[f] + AIM_PITCH * turn))
+    if turn:
+        pose["head"] = dict(pose.get("head", {}), r=pose.get("head", {}).get("r", 0.0) + AIM_HEAD * turn)
     if f == 3:
         pose["body"]["x"] += 0.35
     return merge(pose, KF.glyph(A_EYES[f]))
@@ -168,9 +231,14 @@ B_LEG = [(-10, -30, -24, -20), (-24, -34, -36, -24), (-30, -36, -40, -28), (-30,
          (-12, -30, -28, -24), (0, -24, -14, -18), (12, -22, -4, -16)]
 
 
-def _b_pose(f):
-    pose = merge(hold(*B_G[f]), legs(*B_LEG[f], foot=-20), jets(f, [1.2, 1.3, 1.4, 1.4, 1.5, 1.6, 1.3, 1.0][f], sweep=26.0),
-                 {"flash": {"show": f == 4}}, M.body_about((0, 0, 30), x=[0, 1, 2, 2, 1, -2, -1, 0][f], z=5.0, r=B_R[f]))
+def _b_pose(f, turn=0.0):
+    gx, gz, deg = B_G[f]
+    pose = merge(hold(gx, gz, deg + turn - AIM_PITCH * turn), legs(*B_LEG[f], foot=-20),
+                 jets(f, [1.2, 1.3, 1.4, 1.4, 1.5, 1.6, 1.3, 1.0][f], sweep=26.0),
+                 {"flash": {"show": f == 4}}, M.body_about((0, 0, 30), x=[0, 1, 2, 2, 1, -2, -1, 0][f], z=5.0,
+                                                          r=B_R[f] + AIM_PITCH * turn))
+    if turn:
+        pose["head"] = dict(pose.get("head", {}), r=pose.get("head", {}).get("r", 0.0) + AIM_HEAD * turn)
     if f == 3:
         pose["body"]["x"] += 0.35
     return merge(pose, KF.glyph(A_EYES[f]))
@@ -208,15 +276,22 @@ def _die(k):
 
 
 def clips():
+    attack = M.clip("attack", [_a_pose(f) for f in range(8)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
+                    extra={"holdStep": 2})
+    attack_b = M.clip("attack_b", [_b_pose(f) for f in range(8)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
+                      extra={"holdStep": 2})
+    # aimed down at the ground row (the Jetpack Trooper flies; both shots; the extras sheet)
+    aimed = (AIMED.variants(RIG, attack, _a_pose, AIM_W, aims=("down",)) +
+             AIMED.variants(RIG, attack_b, _b_pose, AIM_W, aims=("down",)))
+    for v in aimed:
+        AIMED.check_timing(attack if v.name.startswith("attack_down") else attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
-        M.clip("attack", [_a_pose(f) for f in range(8)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
-               extra={"holdStep": 2}),
-        M.clip("attack_b", [_b_pose(f) for f in range(8)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
-               extra={"holdStep": 2}),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed
     return M.check_variants(M.check_contract(cl, attack_ms=600, attack_impact_at=0.5))

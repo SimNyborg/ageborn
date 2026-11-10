@@ -17,11 +17,14 @@ Animation (ANIM_SPEC G8 fly, the odometer at 90 x 1.25 = 112.5 lu/s; the hover b
 """
 import math
 
+from ageborn_art import aimed as AIMED
+from ageborn_art import face as FC
 from ageborn_art import kit_future as KF
 from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "attack_drone"
 GAIT_NAME = "fly"
@@ -33,6 +36,14 @@ FEET = (100, 150)
 ANCHORS = {"head": (0, 38), "hitCenter": (0, 20), "muzzle": (20, 10)}
 NO_RETIME = True
 
+# the detail standard (art round W4): the machines' lifts (W3's SHADE_BIG) on the white shell, in the W4 white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.8
+LOOK_SHADE = FW.SHADE_BIG
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5)
+SKIN_PALETTE = FW.KIT_WHITE
+MATERIAL_KINDS = FW.kinds_future()
+
 C = (0.0, 0.0, 20.0)
 R = (13.0, 9.0, 8.0)
 POD_Y = 12.0
@@ -40,7 +51,12 @@ GUN = (8.0, -1.0, 10.5)
 MUZZLE = (GUN[0] + 12.0, GUN[1] - 1.0, GUN[2])
 
 
+RIG = None
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("hull", "body", C)
     cx, cy, cz = C
@@ -80,7 +96,7 @@ def build(rig):
     rig.part("gun", g, F.SUIT)
     g = Geo().capsule((gx + 2.0, gy - 1.6, gz), (MUZZLE[0] - 1.0, gy - 1.6, gz), 1.0)
     g.capsule((gx + 2.0, gy + 1.6, gz), (MUZZLE[0] - 1.0, gy + 1.6, gz), 1.0)
-    rig.part("gun", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("gun", g, FW.GUN_LT, finish="gloss", outline_hex=F.TRIM)              # (W4: the light gun grey)
     g = Geo().lathe([(0.8, 0), (2.4, 0.2), (2.4, 1.0), (1.0, 1.2)], (MUZZLE[0] - 1.6, gy - 1.6, gz), (MUZZLE[0], gy - 1.6, gz), segs=12)
     rig.part("gun", g, F.MAGENTA)
     rig.joint("flash", "gun", MUZZLE, hidden=True)
@@ -94,6 +110,57 @@ def build(rig):
     F.sparks(rig, "hull", (cx + 2.0, -8.0, cz + 4.0), color=F.MINT, size=1.0, name="sparks", seed=4)
     rig.joint("odo", "root", (0, 0, 0))
     rig.track("_foot", "odo", (0.0, 0.0, 0.0))
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _pt(center, radii, p, phi, z):
+    """The char-space point at azimuth `phi` (degrees from +X toward the camera's -Y) and height z of a blob."""
+    cx, cy, cz = center
+    k = max(0.0, 1.0 - abs((z - cz) / radii[2]) ** p) ** (1 / p)
+    a = math.radians(phi)
+    return cx + radii[0] * k * math.cos(a), cy - radii[1] * k * math.sin(a), z
+
+
+def _detail(rig):
+    """W4: the detail standard (char space; decals cast at the unit's yaw): the team top plate in plates (team-dark
+    grooves and a ring), the white shell's seams and chipped edges, team-dark rings round the thruster pods, a
+    team-dark rib on the fin."""
+    cx, cy, cz = C
+    top_c, top_r = (cx - 1.0, cy, cz + 2.0), (R[0] - 1.0, R[1] + 0.4, R[2] - 1.0)
+    tf = FC.Face(rig, "hull", [Geo().blob(top_c, top_r, p=2.3)], yaw_deg=YAW_DEG)
+
+    def tsc(phi, z):
+        x, y, zz = _pt(top_c, top_r, 2.3, phi, z)
+        return FW.sc(tf, x, zz, y)
+    FW.folds(rig, "hull", tf, [[tsc(phi, z) for z in (24.2, 26.2, 28.0)] for phi in (55, 125)], w=0.75, team=True)
+    FW.band(rig, "hull", top_c, top_r, 2.3, cz + 5.6, cz + 6.2, team=True)
+    sf = FC.Face(rig, "hull", [Geo().blob(C, R, p=2.3, taper=(1.15, 0.8))], yaw_deg=YAW_DEG)
+
+    def ssc(phi, z):
+        x, y, zz = _pt(C, R, 2.3, phi, z)
+        return FW.sc(sf, x, zz, y)
+    FW.panel_lines(rig, "hull", sf, [[ssc(phi, z) for z in (23.0, 21.0, 19.2)] for phi in (62, 112)], w=0.75)
+    FW.wear(rig, "hull", sf, [(*ssc(80, 19.6), 1.0, 0.5), (*ssc(140, 22.6), 1.0, 0.5)])
+    for s, y in (("l", POD_Y), ("r", -POD_Y)):
+        g = Geo()
+        for x in (cx - 8.6, cx - 4.4):
+            g.lathe([(0, -0.35), (3.35, -0.3), (3.35, 0.3), (0, 0.35)], (x - 0.5, y, cz), (x + 0.5, y, cz), segs=16)
+        FW.team_dark(rig, f"pod_{s}", g)
+    ff = FC.Face(rig, "fin", [Geo().blob((cx - 11.0, 0, cz + 9.0), (4.6, 1.4, 5.0), p=2.4, rot=(0, 30, 0))],
+                 yaw_deg=YAW_DEG)
+    FW.folds(rig, "fin", ff, [[FW.sc(ff, cx - 8.4, cz + 5.6, -1.3), FW.sc(ff, cx - 12.6, cz + 12.4, -1.3)]], w=0.7,
+             team=True)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, flyer): the team top plate, the white shell, the near pod; smoke
+    from the near jet once it is hurt (only vehicles burn)."""
+    rig.damage_spot_at("top", "hull", -3.0, 25.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("shell", "hull", 2.0, 17.0, 5.0, "metal", fill=FW.ARMOR)
+    rig.damage_spot_at("pod", "pod_r", -7.0, 17.0, 5.0, "metal", team=True)
+    rig.damage_spot("jet", "pod_r", (C[0] - 12.0, -POD_Y, C[2]), 3.5, "smoke", kind="emit", normal=(-1, 0, 0))
 
 
 def jets(f, k=1.0, sweep=0.0):
@@ -132,9 +199,19 @@ A_Z = [0.0, -0.8, -1.4, -1.4, -1.0, 1.2, 0.2]
 A_Q = [0.0, -0.03, -0.05, -0.05, 0.05, -0.04, 0.0]
 
 
-def _a_pose(f):
+# aimed shots (queue item 44, ageborn_art/aimed.py; W4): the drone hits flyers above and the ground row below. A turn
+# of `turn` degrees (negative: down) pitches the shell by AIM_PITCH of it and swivels the chin gun by the rest
+AIM_PITCH = 0.6
+#        tilt dip  HOLD aim2 FIRE kick settle
+AIM_W = [0.0, 0.6, 1.0, 1.0, 1.0, 0.6, 0.25]
+
+
+def _a_pose(f, turn=0.0):
     pose = merge(jets(f, [1, 1.1, 1.2, 1.2, 1.3, 1.15, 1.0][f]), {
-        "body": dict(squash(A_Q[f]), x=A_X[f], z=A_Z[f]), "hull": {"r": A_R[f]}, "flash": {"show": f == 4}})
+        "body": dict(squash(A_Q[f]), x=A_X[f], z=A_Z[f]), "hull": {"r": A_R[f] + AIM_PITCH * turn},
+        "flash": {"show": f == 4}})
+    if turn:
+        pose["gun"] = {"r": (1 - AIM_PITCH) * turn}
     return merge(pose, KF.glyph(["g_angry", "g_angry", "g_squint", "g_squint", "g_wide", "g_angry", "g_angry"][f]))
 
 
@@ -142,10 +219,12 @@ B_RX = [-8, -16, -22, -22, -20, -10, -2]
 B_X = [0.0, -0.5, -1.0, -1.0, -3.0, -4.0, -1.0]
 
 
-def _b_pose(f):
+def _b_pose(f, turn=0.0):
     pose = merge(jets(f, [1, 1.1, 1.2, 1.2, 1.3, 1.15, 1.0][f], sweep=-10.0), {
         "body": dict(squash(A_Q[f]), x=B_X[f], z=0.6 * f if f < 4 else 2.0 - 0.4 * (f - 4)),
-        "hull": {"r": -4.0, "rx": B_RX[f]}, "flash": {"show": f == 4}})
+        "hull": {"r": -4.0 + AIM_PITCH * turn, "rx": B_RX[f]}, "flash": {"show": f == 4}})
+    if turn:
+        pose["gun"] = {"r": (1 - AIM_PITCH) * turn}
     return merge(pose, KF.glyph(["g_angry", "g_squint", "g_squint", "g_squint", "g_wide", "g_angry", "g_angry"][f]))
 
 
@@ -180,15 +259,23 @@ def _die(k):
 
 
 def clips():
+    attack = M.clip("attack", [_a_pose(f) for f in range(7)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(1),
+                    extra={"holdStep": 2})
+    attack_b = M.clip("attack_b", [_b_pose(f) for f in range(7)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(2),
+                      extra={"holdStep": 2})
+    # aimed up about 45 and 70 degrees at flyers and down at the ground row (both shots; the extras sheet)
+    aims = ("up45", "up70", "down")
+    aimed = (AIMED.variants(RIG, attack, _a_pose, AIM_W, aims=aims) +
+             AIMED.variants(RIG, attack_b, _b_pose, AIM_W, aims=aims))
+    for v in aimed:
+        AIMED.check_timing(attack_b if v.name.startswith("attack_b_") else attack, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
-        M.clip("attack", [_a_pose(f) for f in range(7)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(1),
-               extra={"holdStep": 2}),
-        M.clip("attack_b", [_b_pose(f) for f in range(7)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(2),
-               extra={"holdStep": 2}),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed
     return M.check_variants(M.check_contract(cl, attack_ms=300, attack_impact_at=0.5))

@@ -23,6 +23,7 @@ per 8-step cycle, the road wheels turn the same distance; the sim's 1.75 s wind-
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as FC
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_future_wave as W
@@ -32,6 +33,7 @@ from ageborn_art import rigs_future as F
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "particle_cannon"
 GAIT_NAME = "tracked"
@@ -42,6 +44,14 @@ CANVAS = (420, 330)
 FEET = (190, 300)
 ANCHORS = {"head": (0, 88), "hitCenter": (0, 34)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the machines' lifts (W3's SHADE_BIG) on the white hull, in the W4 white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.8
+LOOK_SHADE = FW.SHADE_BIG
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5)
+SKIN_PALETTE = FW.KIT_WHITE
+MATERIAL_KINDS = FW.kinds_future({"#1E2128": "polymer", "#2A2E37": "polymer", "#7E8794": "iron", "#B8BEC8": "iron"})
 
 TR_R = 9.5
 TX0, TX1 = -28.0, 28.0
@@ -55,9 +65,12 @@ ARM0 = (-6.0, 0.0, 34.0)          # dish arm pivot on the hull
 DISH = (18.0, -1.0, 58.0)         # dish centre (rest: facing +X)
 SPIKE = (DISH[0] + 9.0, DISH[1] - 1.0, DISH[2])
 _W = {}
+RIG = None
 
 
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("odo", "root", (0, 0, 0))
     rig.joint("hull", "body", (0, 0, 20.0))
@@ -134,6 +147,55 @@ def build(rig):
                        color="#2A2E37", tooth="#A9B1BD", hub=F.ARMOR)
     _W["n"] = names
     rig.track("_foot", "odo", (0, 0, 0))
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the detail standard (char space; decals cast at the unit's yaw): the white hull in plates (seams down its
+    flank and round the raised deck) with chipped edges and a rivet row; the team skirt in three plates (team-dark
+    seams and a rim); a seam down the cockpit; light grey bands round the dish arm."""
+    hull = Geo().blob((0, 0, 24.0), (34.0, 15.0, 7.0), p=2.6, taper=(1.0, 0.85))
+    hull.blob((10.0, 0, 30.0), (14.0, 12.0, 5.0), p=2.6)
+    hf = FC.Face(rig, "hull", [hull], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", hf, [[FW.sc(hf, x, 30.4, -11.0), FW.sc(hf, x, 27.6, -13.6), FW.sc(hf, x, 25.4, -14.6)]
+                                     for x in (-21.0, -7.0)], w=0.9)
+    FW.band(rig, "hull", (10.0, 0, 30.0), (14.0, 12.0, 5.0), 2.6, 30.2, 30.9, fill=FW.LINE_ON_WHITE)
+    FW.wear(rig, "hull", hf, [(*FW.sc(hf, -30.0, 28.6, -10.0), 1.4, 0.7), (*FW.sc(hf, -14.0, 29.8, -11.6), 1.2, 0.6),
+                              (*FW.sc(hf, 21.0, 33.8, -9.0), 1.3, 0.6)])
+    FW.rivets(rig, "hull", hf, FW.rivet_line(FW.sc(hf, -28.0, 28.8, -12.2), FW.sc(hf, -2.0, 28.8, -13.6), 6), r=0.8,
+              fill=FW.GUN_LT)
+    skirt = Geo().blob((0, -15.6, 19.0), (30.0, 2.4, 6.0), p=3.0)
+    sk = FC.Face(rig, "hull", [skirt], yaw_deg=YAW_DEG)
+    FW.folds(rig, "hull", sk, [[FW.sc(sk, x, 24.0, -17.8), FW.sc(sk, x, 14.0, -17.8)] for x in (-22.0, 1.0, 18.0)],
+             w=0.9, team=True)
+    FW.band(rig, "hull", (0, -15.6, 19.0), (30.0, 2.4, 6.0), 3.0, 23.4, 24.1, team=True)
+    cf = FC.Face(rig, "hull", [Geo().blob((26.0, 0, 30.0), (7.0, 10.0, 6.0), p=2.6)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", cf, [[FW.sc(cf, 22.4, 35.2, -7.6), FW.sc(cf, 22.0, 30.0, -9.6), FW.sc(cf, 22.4, 25.4, -8.0)]],
+                   w=0.8)
+    ax, ay, az = ARM0
+    p0, p1 = (ax, ay, az + 4.0), (DISH[0] - 6.0, ay, DISH[2] - 2.0)
+    L = math.dist(p0, p1)
+    d = tuple((b - a) / L for a, b in zip(p0, p1))
+    g = Geo()
+    for t in (0.3, 0.65):
+        c = tuple(a + t * (b - a) for a, b in zip(p0, p1))
+        g.lathe([(0, -0.5), (3.15, -0.45), (3.15, 0.45), (0, 0.5)], tuple(ci - 0.5 * di for ci, di in zip(c, d)),
+                tuple(ci + 0.5 * di for ci, di in zip(c, d)), segs=16)
+    rig.part("arm", g, FW.GUN_LT, finish="metal", outline=0.4)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, vehicle: dents and scorches; the vehicle burns), measured in the posed
+    frames: the team skirt, the white hull, the cockpit, the dish's team rim; smoke (and fire) from the engine deck
+    and the exhaust."""
+    rig.damage_spot_at("skirt", "hull", -22.0, 16.0, 6.0, "metal", team=True)
+    rig.damage_spot_at("hull", "hull", -14.0, 24.0, 5.0, "metal", fill=FW.ARMOR)
+    rig.damage_spot_at("cockpit", "hull", 26.0, 32.0, 5.0, "metal", fill=FW.ARMOR)
+    rig.damage_spot_at("dish", "dish", 20.0, 59.0, 5.0, "metal", team=True)
+    rig.damage_spot("engine", "hull", (-20.0, 0.0, 31.0), 6.0, "smoke", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("exhaust", "hull", (-36.0, 5.0, 31.0), 5.0, "smoke", kind="emit", normal=(-0.8, 0, 0.6))
 
 
 def _tracks(step, moving=True):
@@ -189,10 +251,17 @@ A_CHG = [0, 0.4, 1.0, 1.2, 0, 0, 0, 0, 0, 0]
 A_EYES = ["g_angry", "g_squint", "g_squint", "g_squint", "g_wide", "g_hurt", "eyes", "eyes", "g_happy", "eyes"]
 
 
-def _a_pose(f):
+# aimed down at the ground row (queue item 44, ageborn_art/aimed.py; W4): a turn of `turn` degrees (negative: down)
+# lowers the dish arm by AIM_ARM of it and tips the dish by the rest
+AIM_ARM = 0.4
+#        aim  ring HOLD hold2 SNAP hop  land rock roll settle
+AIM_W = [0.4, 0.8, 1.0, 1.0, 1.0, 0.85, 0.6, 0.4, 0.2, 0.0]
+
+
+def _a_pose(f, turn=0.0):
     pose = merge(_tracks(0, False), rings(A_RINGS[f]), {
         "body": {"x": A_BX[f], "z": A_BZ[f]}, "hull": dict(squash(A_Q[f]), r=A_HR[f]),
-        "arm": {"r": A_ARM[f]}, "dish": {"r": A_DISH[f], "x": -3.0 if f == 4 else 0.0},
+        "arm": {"r": A_ARM[f] + AIM_ARM * turn}, "dish": {"r": A_DISH[f] + (1 - AIM_ARM) * turn, "x": -3.0 if f == 4 else 0.0},
         "charge": {"show": A_CHG[f] > 0, "s": max(A_CHG[f], 0.01)}, "flash": {"show": f == 4},
         "exhaust": {"show": f in (5, 6), "z": 2.0 * (f - 4)},
     })
@@ -206,13 +275,13 @@ B_DISH = [-2, -6, -8, -8, -8, -2, -2, 0, 0, 0]
 B_HR = [0.0, -1.5, -2.5, -2.5, 6.0, 8.0, 2.0, 0.5, 0.0, 0.0]
 
 
-def _b_pose(f):
+def _b_pose(f, turn=0.0):
     if f in (8, 9):
-        return _a_pose(f)
+        return _a_pose(f, turn)
     pose = merge(_tracks(0, False), rings([1, 2, 3, 3, 0, 0, 0, 0][f]), {
         "body": {"x": [0, 0.5, 0.8, 1.0, -2.0, -5.0, -4.0, -2.0][f], "z": [0, 0, -0.5, -0.5, 1.0, 2.5, 0.0, 0.5][f]},
         "hull": dict(squash(A_Q[f]), r=B_HR[f]),
-        "arm": {"r": B_ARM[f]}, "dish": {"r": B_DISH[f], "x": -3.0 if f == 4 else 0.0},
+        "arm": {"r": B_ARM[f] + AIM_ARM * turn}, "dish": {"r": B_DISH[f] + (1 - AIM_ARM) * turn, "x": -3.0 if f == 4 else 0.0},
         "charge": {"show": f in (1, 2, 3), "s": [0, 0.5, 0.9, 1.0][f] if f < 4 else 0.01}, "flash": {"show": f == 4},
     })
     if f == 3:
@@ -249,15 +318,22 @@ def _die(k):
 
 
 def clips():
+    attack = M.clip("attack", [_a_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
+                    extra={"holdStep": 2, "holdLoop": [2, 3]})
+    attack_b = M.clip("attack_b", [_b_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
+                      reuse={8: ("attack", 8), 9: ("attack", 9)}, extra={"holdStep": 2, "holdLoop": [2, 3]})
+    # aimed down at the ground row in front (both shots; the extras sheet)
+    aimed = (AIMED.variants(RIG, attack, _a_pose, AIM_W, aims=("down",)) +
+             AIMED.variants(RIG, attack_b, _b_pose, AIM_W, aims=("down",)))
+    for v in aimed:
+        AIMED.check_timing(attack if v.name.startswith("attack_down") else attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         _walk_clip(),
-        M.clip("attack", [_a_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
-               extra={"holdStep": 2, "holdLoop": [2, 3]}),
-        M.clip("attack_b", [_b_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
-               reuse={8: ("attack", 8), 9: ("attack", 9)}, extra={"holdStep": 2, "holdLoop": [2, 3]}),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed
     return M.check_variants(M.check_contract(cl, attack_ms=790, attack_impact_at=0.3684))
