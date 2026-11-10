@@ -450,9 +450,20 @@ test.describe('live matches (queue item 34)', () => {
       await onBattle(page, 'b.live.dev.propose(2)');
     }
     await expect(page.getByTestId('hud-tempo-prompt')).toBeVisible();
-    await page.keyboard.press('n');
+    // the HUD's keys come back with the battle once Settings has closed; on CI's slow WebKit a first N could land
+    // before they do (2026-11-03: the card stayed for its whole window), so N repeats while their card is still open
+    // (N means nothing else to the HUD, and an answered card ignores it)
+    await expect
+      .poll(
+        async () => {
+          const t = await theirs(page);
+          if (t === 'open') await page.keyboard.press('n');
+          return t;
+        },
+        { timeout: 15_000, intervals: [400, 800, 800] },
+      )
+      .toBe('declined');
     await expect(page.getByTestId('hud-tempo-prompt')).toHaveCount(0);
-    expect(await theirs(page)).toBe('declined');
     expect(await onBattle<number>(page, 'return b.session.currentSpeed')).toBe(1);
     expect(problems.errors).toEqual([]);
   });
