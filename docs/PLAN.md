@@ -67,6 +67,8 @@ what we believe, how sure we are, and what we post next because of it.
 
 ## Owner notes (direction that overrides the numbers)
 
+- 2026-11-10: no subtitles in Reels; more developer-dilemma videos (two concrete options, viewers pick A or B).
+
 - 2026-11-01: most videos must be developer videos; duels are the exception (at most 3 a week).
 
 - 2026-10-14: 2 Reels a day to start; go to 3 only when reach holds and the queue is 2 days ahead.
@@ -205,3 +207,5 @@ what we believe, how sure we are, and what we post next because of it.
   the lowest skip of any post so far; DV15 (riders, old voice by mistake) 117 with 53 %; DV16 (air against air, the
   first post with expressive Steve v4) 111 in 7.5 h, 67.5 % skip but 40 % watch. Followers 155 (+2). Too early to
   judge the new voice; compare DV16 and the next Steve posts with DV13-DV15 over the week.
+- 2026-11-10: owner note: no subtitles, more developer dilemmas. Default devlog is now a dilemma: show option A and
+  option B on the sim, the voice weighs them, viewers vote. Caption overlays removed from the template from DV18 on.

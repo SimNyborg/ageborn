@@ -85,6 +85,12 @@ watched), share_rate, eng_rate, reach. Followers per post are not available from
 
 ## Content direction (from the first week)
 
+Owner note 2026-11-10: (1) no subtitles: do not add the narration caption overlay (T.overlay('caption', ...)) to
+Reels; short title cards and badges stay. (2) More developer-dilemma videos: each devlog is built around a real design
+dilemma with two concrete options shown on screen (for example "riders survive the mammoth, or go down with it"),
+the voice explains the trade-off, and the Reel ends by asking viewers to pick A or B. Footage must show both sides
+honestly (scouted on the sim); never invent a dilemma the game does not have.
+
 Owner note 2026-11-09, voice: the owner's Claude account is now connected to ElevenLabs on a paid plan. Narrate
 with "Steve - Warm, Expressive, British" (voice_id 33aGKIlf0SKhTTaSWPVO) through the ElevenLabs connector.
 Owner note 2026-11-09: use eleven_v4 with the WHOLE script in ONE take and audio tags ([curious], [leaning in,
