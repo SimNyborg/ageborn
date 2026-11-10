@@ -129,35 +129,45 @@ def _egg_ref():
 
 def _shark(rig):
     """The Shark Mouth's nose art: a grin round the nose and the chin (dark mouth, white teeth on both lips) and a
-    fierce eye on the pod's cheek, laid as small decals so they follow the curve."""
+    fierce eye on the nose, laid as small decals so they follow the curve.
+
+    W3 review 2 (it read only up close, the 1x Gyrocopter lost it): a bigger grin, a crescent that opens at the nose
+    tip and fills the lower front of the nose (5.5 lu open, the chin under it is behind the guns) to a corner curling
+    up at the nose ring, with two big fangs on each lip (3.6 lu, staggered) and a bigger eye, so the dark wedge and
+    its white zigzag read at 1x; all of it stays on the olive nose (the team pod and its band untouched)."""
     px, py, pz = POD
     fc = F.Face(rig, "pod", [_egg_ref(), _nose_ref()])
     mouth, teeth = Geo(), Geo()
-    n = 7
-    pts = []
-    for i in range(n + 1):       # W3 review: the grin on the olive nose alone (over the team pod it took the
-        t = i / n                # team fill under 18% in attack B), bigger, its back end curling up
-        x = px + 17.2 + 9.8 * t
-        zc = pz - 3.0 - 2.6 * t + 4.2 * (1.0 - t) ** 3
-        h = 3.3 * (1.0 - 0.55 * t)
-        pts.append((x, zc, h))
-    for (x0, z0, h0), (x1, z1, h1) in zip(pts, pts[1:]):
-        mx, mz = (x0 + x1) / 2, (z0 + z1) / 2
-        poly = [(x0 - mx - 0.15, z0 - h0 - mz), (x1 - mx + 0.15, z1 - h1 - mz), (x1 - mx + 0.15, z1 + h1 - mz),
-                (x0 - mx - 0.15, z0 + h0 - mz)]
+    # the lips in the side view (x, z), from the nose tip back to the mouth's corner
+    upper = [(26.6, -0.6), (25.0, -1.4), (23.0, -2.0), (21.0, -2.2), (19.5, -1.6), (18.2, -0.2)]
+    lower = [(26.6, -2.4), (25.0, -4.6), (23.0, -6.8), (21.0, -7.6), (19.5, -6.4), (18.2, -0.6)]
+    up = [(px + x, pz + z) for x, z in upper]
+    lo = [(px + x, pz + z) for x, z in lower]
+    for (ux0, uz0), (ux1, uz1), (lx0, lz0), (lx1, lz1) in zip(up, up[1:], lo, lo[1:]):
+        mx, mz = (ux0 + ux1 + lx0 + lx1) / 4, (uz0 + uz1 + lz0 + lz1) / 4
+        poly = [(lx0 - mx + 0.15, lz0 - mz - 0.3), (lx1 - mx - 0.15, lz1 - mz - 0.3), (ux1 - mx - 0.15, uz1 - mz + 0.3),
+                (ux0 - mx + 0.15, uz0 - mz + 0.3)]
         fc.decal(mouth, fc.hit(mx, mz), poly, 0.6)
-        for sgn in (1, -1):      # a tooth on each lip, pointing into the mouth
-            c = fc.hit(mx, mz + sgn * (h0 + h1) / 2 * 0.8)
-            tip = -sgn * min(h0, h1) * 0.9
-            fc.decal(teeth, c, [(-0.9, 0.0), (0.9, 0.0), (0.0, tip)], 0.9)
     rig.part("pod", mouth, MOUTH, outline=0.5, highlight=False)
+
+    def lip(pts, x):
+        for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+            if x1 <= x <= x0:
+                return z0 + (z1 - z0) * (x - x0) / (x1 - x0)
+        return pts[-1][1]
+    for x in (px + 24.4, px + 21.0):      # two big fangs hang from the upper lip
+        z = lip(up, x)
+        fc.decal(teeth, fc.hit(x, z - 1.3), [(-1.8, 1.4), (1.8, 1.4), (0.0, -1.7)], 0.9)
+    for x in (px + 22.8, px + 19.6):      # two point up from the lower lip, between them
+        z = lip(lo, x)
+        fc.decal(teeth, fc.hit(x, z + 1.3), [(-1.8, -1.4), (1.8, -1.4), (0.0, 1.7)], 0.9)
     rig.part("pod", teeth, TEETH, outline=0, highlight=False)
     g = Geo()
-    fc.decal(g, fc.hit(px + 20.6, pz + 3.0), F.ellipse(0, 0, 2.6, 1.9, 14), 0.7)    # the eye, on the nose
+    fc.decal(g, fc.hit(px + 21.0, pz + 2.6), F.ellipse(0, 0, 3.2, 2.4, 16), 0.7)    # the eye, on the nose
     rig.part("pod", g, TEETH, outline=0.5, highlight=False)
     g = Geo()
-    fc.decal(g, fc.hit(px + 21.4, pz + 2.8), F.ellipse(0, 0, 1.1, 1.2, 10), 1.1)    # its pupil
-    fc.stroke(g, fc.hit(px + 20.4, pz + 5.4), [(-2.6, 0.9), (2.4, -0.6)], 1.0, 1.1)  # a fierce brow
+    fc.decal(g, fc.hit(px + 22.0, pz + 2.4), F.ellipse(0, 0, 1.5, 1.6, 12), 1.1)    # its pupil
+    fc.stroke(g, fc.hit(px + 20.8, pz + 5.6), [(-3.2, 1.1), (3.0, -0.8)], 1.2, 1.1)  # a fierce brow
     rig.part("pod", g, EYE_DK, outline=0, highlight=False)
 
 
