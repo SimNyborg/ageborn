@@ -33,8 +33,9 @@ git ref, default HEAD: pass the wave's base commit so a re-render is measured ag
             pixels (audit 5.1 rule 11: decoded memory must not grow)
   colour    turrets: the A11 colour rule <= 10% on the RGBA frames and the encoded sheet; bases, skins, forts,
             decorations and kits (outside the rule's scope): no frame worse than the reference's (+0.5 points)
-  team      no frame's team share below the reference frame's (-0.5 points) and the composed item's visible team
-            share not below the reference's (-0.3 points): never less team than today
+  team      no frame's team share below the reference frame's (-1.0 point: outline v4 at the 1x density takes up to
+            0.7 off a thin flag's frame) and the composed item's visible team share not below the reference's
+            (-0.3 points): never less team than today
   orange    bases and skins: the blue side's share of non-team pixels that read as the orange team (README "Orange
             check": hue 10-45 degrees, saturation and value >= 45%) not above the reference's (+0.5 points)
   metrics   the composed item at game scale (`look2d.game_metrics` at the sheet's own density) against its class's
@@ -68,6 +69,9 @@ CONTRACT_META = ("kind", "age", "pxPerLu", "feetPx", "heightLu", "pivotLu", "aim
                  "auraLu", "glowLu", "glintsLu", "shadowLu", "motion", "mirror", "id", "style", "fortKind", "material",
                  "footLu", "flag", "door", "crew", "muzzleLu", "pieces", "heaps")
 CLIP_KEYS = ("frames", "sequence", "durations", "loop", "impact")
+# a frame's team share may sit this far below the installed frame's: outline v4 at the 1x density takes up to 0.7 points
+# off a thin team flag's frame (its silhouette and team area both shrink a little); the composed item may not drop
+TEAM_FRAME_TOL = 1.0
 TEAM_BLUE = (0x2F / 255, 0x7D / 255, 0xF6 / 255)
 ALT_TINT = (1.0, 0.0, 1.0)
 
@@ -334,7 +338,7 @@ def compare(new_path, ref_path, rgba_rule=None):
         p = look2d.team_share(a[n], a.get(n + "_team")) if n in a else 0.0
         if q - p > low[0]:
             low = (q - p, n)
-    if low[0] > 0.5:
+    if low[0] > TEAM_FRAME_TOL:
         hard.append(f"team share of {low[1]} {low[0]:.1f} points below the installed frame")
     res["teamFrameDropWorst"] = [round(low[0], 2), low[1]]
     tv, tr = team_visible(a, ad), team_visible(b, bd)

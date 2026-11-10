@@ -203,8 +203,8 @@ scene). Render with `AGEBORN_LOOK_REF=<the wave's base commit>` so a re-render i
 - pixels: the 1x sheet (and a fort's HD sheet, which the game loads on dense screens) within +2% of the installed one;
 - colour: turrets the A11 rule at most 10% on the RGBA frames and the encoded sheet; bases, skins, forts, decorations
   and kits no frame worse than the installed one (+0.5 points);
-- team: no frame's team share more than 0.5 points below the installed frame's, and the composed item's visible team
-  share not below the installed one's;
+- team: no frame's team share more than 1 point below the installed frame's (outline v4 at the 1x density takes up to
+  0.7 off a thin flag's frame), and the composed item's visible team share not below the installed one's;
 - orange: bases and skins, the blue side's orange-reading share (the orange check above) not above the installed one's;
 - metrics (soft, reported): the composed item at game scale against its class's floors.
 `<venv>/bin/python art/blender/world/look_world.py <installed sheets...> --ref <commit>` runs the same comparison on

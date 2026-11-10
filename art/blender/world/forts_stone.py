@@ -16,8 +16,11 @@ Run: `<venv>/bin/python art/blender/world/render_forts.py --age stone --out <scr
 """
 import math
 
+from ageborn_art import look
 from ageborn_art.geometry import Geo
 
+from world import kit_wa as KW
+from world import look_world as LW
 from world.fort_toon import make, scaffold
 from world.common import rock
 
@@ -66,6 +69,53 @@ def _stake(f, base, top, r, stage, lean_fall=1.0):
 
 
 # ================================================================================== Palisade (wall)
+# World wave A (the detail standard; opted in below): the sharpened points in fresh-cut wood (a lighter tip on every
+# stake, so the row reads as stakes at a glance), the rails lashed with crossed ties that read (1.2 lu), stones and
+# grass in the earth bank, the team hide in two tones (a team-dark laced border) and tied to the stakes at its corners,
+# splintered stumps (the crumble stages add breaks, not just fallen tops), a two-tone banner (team-dark hems).
+GRASS = "#7E9654"
+PALISADE_KINDS = {WOOD: "wood", WOOD_DK: "wood", BARK: "wood", TIP: "wood", ROPE: "leather", EARTH: "leather",
+                  STONE: "stone", STONE_DK: "stone", BONE: "bone", GRASS: "fur", "#6E5A45": "wood", "team": "hide"}
+
+
+def _stake_wa(f, base, top, r, stage, lean_fall=1.0):
+    """_stake for the Palisade (world wave A): the point a separate fresh-cut piece (TIP), a splintered stump once
+    the stake breaks, and the fallen top with its own point (the same length as before)."""
+    d = [t - b for t, b in zip(top, base)]
+    L0 = math.sqrt(sum(v * v for v in d))
+    u = [v / L0 for v in d]
+    point = tuple(t + u_ * r * 3.2 for t, u_ in zip(top, u))
+    mid = tuple(b + (t - b) * 0.35 for b, t in zip(base, top))
+
+    def body(fallen):
+        g = Geo()
+        if not fallen:
+            g.capsule(base, top, r, r * 0.9)
+            return g, WOOD
+        g.capsule(base, mid, r, r)
+        return g, WOOD_DK
+
+    def tip(fallen):
+        if fallen:
+            return None, None
+        return Geo().lathe([(r * 0.9, 0), (0, r * 3.2)], top, point, segs=10), TIP
+    f.breakable(body, stage, fall=True)
+    f.breakable(tip, stage, fall=True)
+    if stage <= 3:
+        g = Geo()   # the stump's splinters: three light points standing out of the break
+        for dx, dy, h in ((-0.5, -0.6, 3.4), (0.6, 0.3, 2.6), (0.0, 0.8, 2.0)):
+            p0 = (mid[0] + dx * r * 0.6, mid[1] + dy * r * 0.6, mid[2] - 0.6)
+            g.lathe([(r * 0.42, 0), (0, h)], p0, (p0[0] + 0.3, p0[1], p0[2] + h), segs=6)
+        f.add(g, TIP, "body", stage, 3, outline=0.4)
+        L = math.dist(base, top) * 0.6     # the broken-off top lying in front, its point at the far end
+        x, y = base[0] + 4.0 * lean_fall, base[1]
+        a, b = (x, y - 2, r), (x + L * 0.9, y + 3, r * 0.9)
+        cut = r * 2.6 / math.dist(a, b)
+        bb = tuple(p + (q - p) * (1.0 - cut) for p, q in zip(a, b))
+        f.add(Geo().capsule(a, bb, r * 0.9), WOOD, "body", stage, 3)
+        f.add(Geo().lathe([(r * 0.8, 0), (0, r * 2.6)], bb, b, segs=10), TIP, "body", stage, 3)
+
+
 def _palisade(f):
     g = Geo().blob((-2, 0, 0), (13, 40, 6.5), p=2.4)
     f.add(g, EARTH, "body", 0, 3)
@@ -76,20 +126,39 @@ def _palisade(f):
         b = (f.rnd.uniform(-0.8, 0.8), y, -2.0)
         t = (b[0] + 7.0 + f.rnd.uniform(-1.5, 1.5), y + f.rnd.uniform(-1.2, 1.2), H[i])
         stage = f.stage_for(H[i] / 84.0, edge=abs(y) / 34.0)
-        _stake(f, b, t, f.rnd.uniform(3.2, 3.8), stage)
-    # two lashed rails across the stakes (they fall at stage 2 and 3)
+        _stake_wa(f, b, t, f.rnd.uniform(3.2, 3.8), stage)
+    # two lashed rails across the stakes (they fall at stage 2 and 3), tied with crossed ropes at every second stake
     for z, st in ((26.0, 3), (52.0, 2)):
         f.breakable(lambda fallen, z=z: ((Geo().capsule((3.6, -36, z), (5.6, 36, z - 2), 2.2) if not fallen
                                            else Geo().capsule((10, -30, 2.0), (14, 28, 2.4), 2.0)), BARK), st)
         g = Geo()
         for y in ys[::2]:
-            g.capsule((4.4, y - 1.6, z + 1.6), (4.6, y + 1.6, z - 1.6), 0.8)
+            g.capsule((4.6, y - 1.9, z + 1.9), (4.9, y + 1.9, z - 1.9), 1.15)
+            g.capsule((4.6, y - 1.9, z - 1.9), (4.9, y + 1.9, z + 1.9), 1.15)
         f.add(g, ROPE, "body", 0, st - 1, outline=0.4)
-    # the team hide stretched on the stakes, with a bone hand-print
+    # stones and grass in the earth bank (they stay through every stage)
+    g = Geo()
+    for k, (y, r) in enumerate(((-30.0, 3.4), (-14.0, 2.8), (3.0, 3.6), (21.0, 3.0), (33.0, 2.6))):
+        rock(g, (8.6, y, 2.2), (r, r * 1.2, r * 0.8), seed=40 + k, jag=0.16, p=2.4, cuts=3)
+    f.add(g, STONE, "body", 0, 3, outline=0.5)
+    g = Geo()
+    for k, y in enumerate((-36.0, -22.0, -6.0, 12.0, 27.0)):
+        for j in range(3):
+            a = math.radians(-30 + 30 * j)
+            g.capsule((6.6, y + j * 1.6, 3.6), (7.4 + 2.2 * math.sin(a), y + j * 1.6 + 1.0, 7.8 + j % 2), 0.9, 0.5)
+    f.add(g, GRASS, "body", 0, 3, outline=0.4)
+    # the team hide stretched on the stakes, laced with a team-dark border and tied at its corners, a bone hand-print
     g = Geo().blob((8.6, -2.0, 46.0), (2.0, 14.0, 13.0), p=2.6)
     f.add(g, None, "body", 0, 1, team=True)
+    j = f.group("body", 0, 1)
+    look.team_part(f.rig, j, Geo().blob((8.1, -2.0, 46.0), (1.6, 15.6, 14.6), p=2.6))
+    g = Geo()
+    for dy, dz in ((-12.5, 11.0), (8.5, 11.0), (-12.5, -10.5), (8.5, -10.5)):
+        g.capsule((9.4, -2.0 + dy - 1.6, 46.0 + dz + 1.6), (9.6, -2.0 + dy + 1.6, 46.0 + dz - 1.6), 1.0)
+    f.add(g, ROPE, "body", 0, 1, outline=0.4)
     g = Geo().blob((9.8, -2.0, 30.0), (2.0, 13.0, 9.0), p=2.6)
     f.add(g, None, "body", 2, 2, team=True)
+    look.team_part(f.rig, f.group("body", 2, 2), Geo().blob((9.3, -2.0, 30.0), (1.6, 14.4, 10.4), p=2.6))
     g = Geo()
     g.blob((11.0, -4.0, 46.0), (0.8, 3.0, 2.6), p=2.2)
     for k, a in enumerate((60, 85, 110, 135, 10)):
@@ -107,6 +176,37 @@ def _palisade(f):
 
 PALISADE = make("palisade", "Palisade", AGE, "wall", _palisade, canvas=(300, 270), feet=(150, 236), height=96,
                 hit=(3, 38), material="wood", flag=(-7.0, 1.0, 0.0, 92.0), flag_len=22.0, foot=26.0, yaw=-38.0)
+
+
+def _banner_hems(mod, base, h, length, width):
+    """World wave A: a team-dark hem along the bottom edge of the fort's banner (its three waving segments), so the
+    flag is a two-tone team zone; added after the shared banner (fort_toon.banner) is built."""
+    build = mod.build
+
+    def _build(rig):
+        build(rig)
+        bx, by, bz = base
+        top = bz + h - 2.0
+        seg = length / 3
+        for i in range(3):
+            x0 = bx - 1.0 - seg * i
+            x1 = x0 - seg - 0.6 * (i < 2)
+            w0, w1 = width * (1.0 - 0.1 * i), width * (1.0 - 0.1 * (i + 1))
+            if i == 2:
+                x1 = x0 - seg * 0.55
+                w1 = width * 0.82
+            pts = [(x0, top - w0 + 2.2), (x1, top - w1 + 2.2 - 0.3 * i), (x1, top - w1 - 0.3 * i + 0.2),
+                   (x0, top - w0 + 0.2)]
+            look.team_part(rig, f"flag{i}", Geo().slab(pts, by - 0.85, 0.3), outline=0)
+        # the hoist bound to the pole with a team-dark cord (it waves with the first segment)
+        g = Geo().blob((bx - 2.2, by, top - width * 0.45), (1.6, 1.6, width * 0.55), p=2.4)
+        look.team_part(rig, "flag0", g, outline=0.4)
+    mod.build = _build
+    return mod
+
+
+_banner_hems(PALISADE, (-7.0, 1.0, 0.0), 92.0, 22.0, 10.0)
+LW.opt_in(PALISADE, PALISADE_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 
 # ================================================================================== Thorn Hedge (wall)

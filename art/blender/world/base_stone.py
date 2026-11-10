@@ -9,10 +9,15 @@ rubble (50%), the summit knocked askew with the top banner gone, the palisade do
 the crag (25%).
 Treasury: a berry basket and meat (1), a pile of furs (2), tusks and ochre stones (3).
 """
+import math
 import random
 
+from ageborn_art import face as F
+from ageborn_art import look
 from ageborn_art.geometry import Geo
 
+from world import kit_wa as KW
+from world import look_world as LW
 from world.common import (BASE_YAW, SHADOW_DARK, base_module, chipped_cracks, cyl, flag, moss_drape, platform,
                           rock, rope)
 
@@ -36,6 +41,8 @@ FIRE_CORE = "#FFF0CC"
 FIRE_OUT = "#E9823A"
 CRACK = "#3E362F"
 CHIP = "#B2A08A"
+STRATA_LT = "#A89682"     # world wave A: the lit ledges and the dark seams of the crag's strata
+STRATA_DK = "#5E554B"
 
 DEPTHS = [-40, -24, -40, -24]
 CAVE = (-104.0, -44.0)
@@ -116,6 +123,54 @@ def build(rig, M):
         rock(g, (x, -34 + rnd.uniform(-4, 2), z), (rnd.uniform(9, 14), 5, rnd.uniform(4, 6)), seed=int(x * z) % 97,
              jag=0.2, p=2.6)
     rig.part("body", g, STONE_DK)
+    # World wave A: the crag in strata. Ledges of flat stones 5-6 lu tall laid along the boulders' faces every 20-26 lu
+    # (lit ledges and dark seams in turn, standing 3.5 lu proud), so the rock reads as layered stone instead of smooth
+    # piles; light chips on their edges; dark grass tufts along the caps' rims.
+    crag = Geo()
+    rock(crag, (-96, 18, 54), (84, 46, 58), seed=1, jag=0.12)
+    rock(crag, (-78, 14, 138), (62, 40, 50), seed=4, jag=0.14, rot=(0, -10, 0))
+    rock(crag, (-68, 8, 236), (46, 36, 32), seed=5, jag=0.14)
+    face = F.Face(rig, "body", [crag])
+    rows = [(12.0, -170, -110, STRATA_LT), (30.0, -100, -40, STRATA_DK), (50.0, -166, -96, STRATA_DK),
+            (66.0, -88, -36, STRATA_LT), (88.0, -150, -98, STRATA_LT), (104.0, -76, -30, STRATA_DK),
+            (130.0, -132, -80, STRATA_DK), (150.0, -76, -34, STRATA_LT), (212.0, -104, -50, STRATA_DK),
+            (226.0, -96, -60, STRATA_LT), (22.0, -60, -20, STRATA_DK), (76.0, -168, -150, STRATA_DK),
+            (116.0, -150, -110, STRATA_LT), (180.0, -110, -84, STRATA_LT)]
+    for k, (z, xa, xb, col) in enumerate(rows):
+        g = Geo()
+        n = max(2, int((xb - xa) / 13))
+        for i in range(n):
+            x = xa + (xb - xa) * (i + 0.5) / n + rnd.uniform(-1.5, 1.5)
+            p = face.hit(x, z + rnd.uniform(-1.0, 1.0))
+            rock(g, (p.x, p.y + 0.8, p.z), ((xb - xa) / n * 0.48, 3.5, rnd.uniform(2.6, 3.0)),
+                 seed=100 + 7 * k + i, jag=0.1, p=3.4, cuts=3)
+        rig.part("body", g, col, outline=0.7)
+    g = Geo()
+    for x, z in ((-150, 40), (-112, 22), (-58, 82), (-30, 118), (-96, 158), (-52, 196), (-122, 112), (-84, 60),
+                 (-136, 70), (-64, 140), (-44, 50), (-160, 100)):
+        face.decal(g, face.hit(x, z), [(-2.8, -1.6), (2.4, -2.0), (3.0, 1.2), (-1.6, 2.0)], 0.6)
+    rig.part("body", g, CHIP, outline=0, highlight=False)
+    g = Geo()
+    for x, z in ((-150, 124), (-128, 126), (-104, 124), (-62, 172), (-40, 174), (-20, 170), (-90, 254), (-62, 256),
+                 (-44, 252), (-28, 204), (-12, 206)):
+        p = face.hit(x, z)
+        for j in range(3):
+            a = math.radians(-35 + 35 * j)
+            g.capsule((p.x + j * 1.8 - 1.8, p.y - 0.6, p.z - 1.0),
+                      (p.x + j * 1.8 - 1.8 + 3.0 * math.sin(a), p.y - 1.2, p.z + 4.6 - abs(j - 1)), 1.3, 0.6)
+    rig.part("body", g, MOSS_DK, outline=0.4)
+    g = Geo()    # weathering cracks (hairlines that are there from the start; the crumble adds its own)
+    for pts in ([(-140, 44), (-136, 36), (-140, 28)], [(-70, 120), (-66, 112), (-70, 104)],
+                [(-108, 92), (-102, 86), (-104, 78)], [(-52, 210), (-48, 202)], [(-28, 64), (-24, 56), (-28, 48)]):
+        x0, z0 = pts[0]
+        face.stroke(g, face.hit(x0, z0), [(x - x0, z - z0) for x, z in pts], 1.1, 0.6)
+    rig.part("body", g, CRACK, outline=0, highlight=False)
+    g = Geo()    # stones showing through the grass caps
+    for k, (x, y, z, r) in enumerate(((-128, 0, 124, 4.2), (-96, -12, 172, 3.6), (-56, -8, 254, 3.8),
+                                     (-36, -20, 206, 3.2), (-150, 10, 122, 3.0))):
+        rock(g, (x, y, z), (r * 1.4, r, r * 0.7), seed=70 + k, jag=0.15, p=2.6, cuts=3)
+    rig.part("body", g, STRATA_LT, outline=0.6)
+    crag.bm.free()
     # chunks that break off
     g = Geo()
     rock(g, (-120, -28, 150), (16, 14, 14), seed=11, jag=0.2)
@@ -150,6 +205,27 @@ def build(rig, M):
     rig.part("body", g, BONE)
     g = Geo().sphere((cx - 3.5, cy - 19.5, 70), 2.3, cuts=2).sphere((cx + 3.5, cy - 19.5, 70), 2.3, cuts=2)
     rig.part("body", g, SHADOW_DARK, outline=0, highlight=False)
+    # World wave A: the skull's curling horns, a rope of bone charms between the tusks' tips, soot over the cave mouth
+    g = Geo()
+    for s_ in (-1, 1):
+        pts = [(cx + 7 * s_, cy - 12, 74), (cx + 13 * s_, cy - 12, 80), (cx + 15 * s_, cy - 13, 88),
+               (cx + 11 * s_, cy - 14, 92)]
+        for i, (a, b) in enumerate(zip(pts, pts[1:])):
+            g.capsule(a, b, 2.6 - i * 0.7, 2.6 - (i + 1) * 0.7)
+    rig.part("body", g, BONE, outline=0.6)
+    g = Geo()
+    rope(g, [(cx - 30, cy - 16, 60), (cx - 16, cy - 18, 54), (cx, cy - 19, 52), (cx + 16, cy - 18, 54),
+             (cx + 30, cy - 16, 60)], 0.9)
+    rig.part("body", g, "#B8A47E", outline=0.4)
+    g = Geo()
+    for x, z in ((cx - 21, 56.4), (cx - 8, 52.6), (cx + 8, 52.6), (cx + 21, 56.4)):
+        g.capsule((x, cy - 19, z - 1.0), (x + 0.6, cy - 19, z - 7.0), 1.5, 1.0)
+        g.sphere((x + 0.6, cy - 19, z - 7.4), 1.7, cuts=2)
+    rig.part("body", g, BONE, outline=0.5)
+    g = Geo()
+    for x, z, rx, rz in ((cx - 6, 46, 9, 6), (cx + 8, 44, 7, 5), (cx, 50, 12, 4)):
+        g.blob((x, cy - 9, z), (rx, 2.0, rz), p=2.0, cuts=3)
+    rig.part("body", g, "#4A423A", outline=0, highlight=False)
 
     # log palisade in front of the cave
     def logs(joint, x0, x1, n, h0, seed):
@@ -200,6 +276,17 @@ def build(rig, M):
     rig.part("body", g, BONE, outline=0.6)
     g = Geo().blob((hx, -32.5, hz + 2), (7, 1.0, 7), p=2.0)
     rig.part("body", g, OCHRE, outline=0.5)
+    # World wave A: the painted hide in two tones (a team-dark border laced on behind it) and a second, small hide
+    # pinned over the overhang's shoulder with bone pegs (hide and bone dressing on the boulders)
+    g = Geo().slab([(hx - 19, hz + 29), (hx + 19, hz + 31), (hx + 23, hz), (hx + 14, hz - 25), (hx, hz - 31),
+                    (hx - 15, hz - 25), (hx - 22, hz)], -29.2, 1.0)
+    look.team_part(rig, "body", g)
+    g = Geo().slab([(-58, 214), (-38, 216), (-34, 198), (-44, 186), (-56, 190), (-62, 202)], -31.0, 1.6)
+    rig.part("body", g, HIDE, outline=0.6)
+    g = Geo()
+    for x, z in ((-56, 212), (-40, 213), (-37, 199)):
+        g.capsule((x, -33.0, z), (x + 0.6, -36.0, z + 0.6), 1.2, 0.9)
+    rig.part("body", g, BONE, outline=0.4)
 
     # bones and pebbles on the ground
     g = Geo()
@@ -227,6 +314,14 @@ def build(rig, M):
     # flags (separate looping clips): hide banners on the summit's back and the left shoulder
     flag(rig, "root", "flagA", (-96, 24, 300), length=30, height=18, pole=250)
     flag(rig, "root", "flagB", (-146, 32, 196), length=24, height=15, pole=132)
+    for name, (tx, ty, tz), L, H in (("flagA", (-96, 24, 300), 30, 18), ("flagB", (-146, 32, 196), 24, 15)):
+        seg = L / 4      # World wave A: a team-dark hem along each flag's foot (two tones)
+        for i in range(3):
+            x0 = tx - 1.0 - seg * i
+            x1 = x0 - seg - 0.4
+            g = Geo().slab([(x0, tz - H + 3.4), (x1, tz - H + 3.4), (x1, tz - H + 0.4), (x0, tz - H + 0.4)], ty - 0.9,
+                           0.3)
+            look.team_part(rig, f"{name}{i}", g, outline=0)
 
     # Treasury props, in front of the crag's left foot
     g = Geo()
@@ -280,3 +375,12 @@ MODULE = base_module(
     smoke=[((-70, 0, 256), 2), ((-120, -28, 150), 3), ((-150, -10, 104), 3)],
     horn=(-96, 316), yaw=BASE_YAW,
 )
+
+# world wave A (the detail standard; look_world.opt_in)
+# (the big boulders take soft weathering blotches of 3-5 lu, which read at the base's density where the stone chips
+# turn to grain; the strata ledges keep the chipped stone)
+STONE_BASE_KINDS = {STONE: "hide", STONE_LT: "hide", STONE_DK: "hide", STONE_DKR: "hide", CHIP: "stone",
+                    STRATA_LT: "stone", STRATA_DK: "stone",
+                    MOSS: "fur", MOSS_LT: "fur", MOSS_DK: "fur", BONE: "bone", WOOD: "wood", WOOD_DK: "wood",
+                    HIDE: "leather", FUR: "fur", "#B8A47E": "leather", "team": "hide"}
+LW.opt_in(MODULE, STONE_BASE_KINDS, highlight=2.0, shade=dict(KW.SHADE_WORLD, top=0.18))
