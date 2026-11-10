@@ -34,9 +34,25 @@ Animation standard (ANIM_SPEC 2026-10-02, G6 tracked):
               extreme), the shot makes it hop, then both funnels belch black smoke
   attack_alt  the sponson gunners' own attack (6 / 0.5 s, ANIM_SPEC R3): the body idles, both gunners
               squint down their rotary guns and fire; the bullets leave the near gun (`mgMuzzle`)
+
+Detail standard (art round W3, Track INDUSTRIAL): riveted steel. The side frame in plates (dark seams with proud
+rivet columns beside them and a proud row along the frame), the team band edged and split in team-dark (its rivets painted over), mud
+splashed along the frame under it, brass rivets round the roundel, scratches over the nose's warning stripes; proud rivets on
+the sponson, the casemate (with a vision slit) and the barbette; plate seams across the roof; a polished band and a
+sooted mouth on the main gun; a riveted band and a sooted crown on the stack. The war machines' panel lines (audit
+5.2): the plates above the band in seven columns with a riveted lap seam, the plates under it a seam every 10 lu with a
+riveted lap seam and rivet columns, the band in plates with rivets down its seams and along its lap seam, worn paint
+chips, scuffs on the band and road grime towards the ground; plate seams round the sponson's and the barbette's drums;
+a stronger in-band gradient and cavity (as Modern's Behemoth Tank). The sponson gun is drawn level (its
+axis is the joint's, so the aim data measures the gun as drawn). Aimed (queue item 44): the gunners' attack up about
+45 degrees (the sponson gun sits low, the flyers high) and down 20 at the ground troops (aimed.variants on the
+sponson gun; the barbette gun turns with it, further down). Damage spots (vehicle): the team band, the side frame,
+the sponson, the casemate's team band, the barbette; smoke from the engine at the frame's rear (low and far behind
+the gunners, so the fire `fireAt` picks burns there) and from the stack.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import fx
 from ageborn_art import kit_industrial as KI
@@ -45,6 +61,7 @@ from ageborn_art import rigs_gunpowder as G
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import Clip, merge, pick, squash
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "land_dreadnought"
 GAIT_NAME = "tracked"
@@ -72,10 +89,30 @@ CASEMATE = (22.0, 0.0, 96.0)
 BARREL_Z = 112.0
 MUZZLE = (112.0, -2.0, BARREL_Z)
 SPONSON = (6.0, TY - 14.0, 44.0)
-R0_MUZZLE = (40.0, TY - 18.0, 66.0)
+R0_MUZZLE = (40.0, TY - 18.0, 60.0)    # W3: level along the joint's +X (it pointed 17 degrees up, unmeasured)
 BARBETTE = (-46.0, 10.0, 100.0)
 R1_MUZZLE = (-14.0, 4.0, 127.0)
 _T = {}
+IRON_HI = "#AEB5BD"        # W3: the main gun's polished band and the scratches on the nose
+SOOT = "#2F2D2E"           # the gun's mouth and the stack's crown
+MUD = "#5E5648"            # mud splashed along the team band's foot
+SEAM_DK = "#3F444A"        # the side frame's plate seams
+
+# the detail standard (art round W3): a machine's lifts (big forms, a deeper core); iron, brass, copper, cream paint
+# and the team paint apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.9           # (the riveted machines ran over 0.10 at 1.2: the Tractor 0.101, the Car 0.118)
+# (r9) a stronger in-band gradient and cavity than SHADE_BIG's, as Modern's Behemoth Tank: the long hull's drums, belts
+# and guns turn from light to shadow across their width, and the seams and rivets darken the plate round them
+LOOK_SHADE = dict(IW.SHADE_BIG, gradient=3.0, cavity=0.85)
+LOOK_RIM = dict(IW.RIM_SOLDIER, lift=0.5)    # (0.6 with the rivet rows put the Car over the highlight band)
+MATERIAL_KINDS = IW.kinds({I.IRON: "iron", I.IRON_DK: "iron", I.IRON_LT: "iron", IRON_HI: "iron", SOOT: "iron",
+                           SEAM_DK: "iron", I.COAL: "iron", I.COAL_LT: "iron", I.STRIPE_DK: "iron", "#4A4648": "iron",
+                           MUD: "stone", "#6E747C": "iron", "#4B5056": "iron",
+                           I.BRASS: "bronze", I.BRASS_LT: "bronze", I.COPPER: "bronze",
+                           "#E8D9A8": "bronze", I.CREAM: "ceramic", I.BRICK_LT: "cloth", I.WOOD_LT: "wood",
+                           I.LEATHER: "leather", I.SKIN: "skin", I.SMOKE: "cloth", I.SMOKE_DK: "cloth",
+                           "team": "iron"})
 
 
 def _frame_plate(rig, joint, y, inset, color, team_band):
@@ -158,7 +195,12 @@ def rotary_gun(rig, joint, p0, p1, k=1.0):
     rig.part(joint, g, I.WOOD_LT, outline=0.4)
 
 
+RIG = None
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("odo", "root", (0, 0, 0))
     rig.joint("hull", "body", (0, 0, 30.0))
@@ -173,6 +215,10 @@ def build(rig):
     rig.part("hull", g, I.IRON)
     g = Geo().blob((-4.0, 0, 88.0), (64.0, 26.0, 4.0), p=4.0)
     rig.part("hull", g, I.IRON_LT, finish="metal")
+    g = Geo()   # W3: plate seams across the roof (read at the camera's 15 degree look-down)
+    for x in (-20.0, 54.0):     # (the barbette and the casemate cover the rest)
+        g.capsule((x, -23.0, 91.6), (x + 0.6, 23.0, 91.6), 0.6, segs=8, rings=2)
+    rig.part("hull", g, SEAM_DK, finish="metal", outline=0)
     rig.joint("tail", "hull", (-92.0, 0, 30.0))
     g = Geo()
     g.capsule((-80.0, -6.0, 36.0), (-118.0, -6.0, 18.0), 2.2)
@@ -192,6 +238,15 @@ def build(rig):
     g = Geo().lathe([(4.0, 0), (4.2, 2.0), (3.6, 26.0), (5.0, 28.0), (5.2, 31.0), (3.4, 31.4)],
                     (-26.0, 12.0, 90.0), (-28.0, 12.0, 121.0), segs=18)
     rig.part("hull", g, I.COAL_LT, finish="metal")
+    g = Geo().lathe([(4.25, -0.7), (4.6, 0), (4.25, 0.7)], (-26.2, 12.0, 93.0), (-26.3, 12.0, 94.0), segs=18)
+    rig.part("hull", g, I.IRON_LT, finish="metal", outline=0.3)           # W3: a riveted band round the stack's foot
+    g = Geo()
+    for a in range(200, 341, 28):
+        t = math.radians(a)
+        g.sphere((-26.2 + 4.7 * math.cos(t), 12.0 + 4.7 * math.sin(t), 93.0), 0.75, cuts=2)
+    rig.part("hull", g, I.BRASS_LT, finish="metal", outline=0.25)
+    g = Geo().lathe([(5.05, -0.9), (5.4, 0), (5.1, 1.0)], (-27.8, 12.0, 119.4), (-27.9, 12.0, 120.4), segs=18)
+    rig.part("hull", g, SOOT, outline=0, highlight=False)                 # its sooted crown
     I.steam_puff(rig, "hull", (-29.0, 8.0, 127.0), size=1.8, name="exhaust", color=I.SMOKE_DK)
     I.pennant(rig, "hull", (-70.0, 14.0, 90.0), 88.0, length=26.0, w=13.0, max_deg=16)
 
@@ -200,10 +255,13 @@ def build(rig):
     g = Geo().lathe([(13.0, 0), (13.6, 2.0), (13.0, 12.0), (11.4, 13.0), (0, 13.0)], (bx, by, bz - 10.0),
                     (bx, by, bz + 3.0), segs=26)
     rig.part("hull", g, I.IRON_LT, finish="metal")
-    g = Geo()
-    I.rivets(g, [(bx + 13.2 * math.cos(math.radians(a)), by + 13.2 * math.sin(math.radians(a)), bz - 3.0)
-                 for a in range(-170, -10, 22)], r=1.0)
-    rig.part("hull", g, I.BRASS_LT, finish="metal", outline=0)
+    g = Geo()   # W3: proud rivet heads (flush 1 lu dots vanished at game scale)
+    for a in range(-170, -10, 20):
+        t = math.radians(a)
+        g.sphere((bx + 13.55 * math.cos(t), by + 13.55 * math.sin(t), bz - 3.0), 1.25, cuts=2)
+    rig.part("hull", g, I.BRASS_LT, finish="metal", outline=0.3)
+    g = Geo().lathe([(13.62, -0.55), (13.85, 0), (13.62, 0.55)], (bx, by, bz - 7.6), (bx, by, bz - 6.6), segs=26)
+    rig.part("hull", g, SEAM_DK, finish="metal", outline=0)              # (r9) a plate seam round the drum
     gunner(rig, "hull", (bx + 1.0, by, bz), "g1")
     rig.joint("mg1", "hull", (bx + 10.0, by - 4.0, bz + 12.0))
     rotary_gun(rig, "mg1", (bx + 8.0, by - 4.0, bz + 12.0), R1_MUZZLE, k=1.0)
@@ -220,9 +278,13 @@ def build(rig):
     rig.part("casemate", g, I.IRON_LT, finish="metal")
     g = Geo().blob((cx + 1.0, -24.6, cz + 6.0), (20.0, 1.4, 6.0), p=3.2)
     rig.part("casemate", g, team=True, outline=0.6)
-    g = Geo()
-    I.rivets(g, [(cx + dx, -25.8, cz + dz) for dx in (-16, -8, 0, 8, 16) for dz in (1.0, 11.0)], r=0.9)
-    rig.part("casemate", g, I.BRASS_LT, finish="metal", outline=0)
+    g = Geo()   # W3: proud rivet heads along the team band's edges
+    for dx in (-16, -8, 0, 8, 16):
+        for dz in (1.0, 11.0):
+            g.sphere((cx + dx, -25.9, cz + dz), 1.2, cuts=2)
+    rig.part("casemate", g, I.BRASS_LT, finish="metal", outline=0.3)
+    g = Geo().blob((cx + 17.0, -20.4, cz + 13.6), (4.2, 1.6, 1.0), p=2.6)   # a vision slit
+    rig.part("casemate", g, I.COAL, outline=0, highlight=False)
     g = Geo().blob((cx + 22.0, -2.0, BARREL_Z), (7.0, 10.0, 8.0), p=2.6)   # mantlet
     rig.part("casemate", g, I.IRON_DK, finish="metal")
     rig.joint("barrel", "casemate", (cx + 24.0, -2.0, BARREL_Z))
@@ -235,6 +297,12 @@ def build(rig):
     g = Geo().lathe([(3.4, 0), (5.2, 1.4), (5.2, 5.6), (3.6, 6.4), (2.2, 6.6)], (MUZZLE[0] - 7.0, -2.0, BARREL_Z),
                     (MUZZLE[0], -2.0, BARREL_Z), segs=20)
     rig.part("barrel", g, I.IRON, finish="metal")
+    # W3: a polished band along the barrel's top and a sooted mouth
+    g = Geo().capsule((cx + 27.0, -4.6, BARREL_Z + 2.1), (MUZZLE[0] - 8.0, -4.4, BARREL_Z + 1.9), 0.6, segs=8, rings=2)
+    rig.part("barrel", g, IRON_HI, finish="metal", outline=0)
+    g = Geo().lathe([(2.3, 0), (3.5, 0.45), (3.3, 0.9)], (MUZZLE[0] - 0.2, -2.0, BARREL_Z), (MUZZLE[0] + 0.8, -2.0, BARREL_Z),
+                    segs=18)
+    rig.part("barrel", g, SOOT, outline=0, highlight=False)
     rig.track("muzzle", "barrel", MUZZLE)
     I.muzzle_flash(rig, "barrel", (MUZZLE[0] + 1, -2.0, BARREL_Z), size=3.4)
     g = Geo().blob((cx - 4.0, -6.0, cz + 18.6), (8.0, 8.0, 3.0), p=2.4)   # hatch
@@ -253,11 +321,7 @@ def build(rig):
     rig.part("track", g, team=True, outline=0.4)
     g = Geo().lathe([(0, -1.0), (4.6, -1.0), (4.6, 1.0), (0, 1.0)], (cxr, TY - 6.0, czr), (cxr, TY - 7.0, czr), segs=24)
     rig.part("track", g, I.CREAM, outline=0.3)
-    g = Geo()
-    for x in range(-64, 64, 10):
-        g.sphere((x, TY - 3.6, 72.0), 1.1, cuts=2)
-        g.sphere((x + 5, TY - 3.6, 22.0), 1.1, cuts=2)
-    rig.part("track", g, I.IRON_LT, finish="metal", outline=0)
+    _frame_detail(rig, cxr, czr)
     # warning stripes on the jutting nose, a lifebuoy and a strapped shovel on the side frame,
     # soot streaks under the exhaust
     nose = Geo().slab([(78.0, 60.0), (98.0, 50.0), (86.0, 32.0), (74.0, 44.0)], TY - 3.2, 0.8)
@@ -301,6 +365,11 @@ def build(rig):
     g = Geo()
     I.rivets(g, [(sx + dx, sy - 5.6, sz + dz) for dx in (-16, -8, 0, 8, 16) for dz in (-10.0, 12.0)], r=1.0)
     rig.part("track", g, I.BRASS_LT, finish="metal", outline=0)
+    g = Geo().blob((sx, sy + 4.0, sz), (24.35, 10.15, 16.25), p=2.8, taper=(0.8, 1.0))   # (r9) a plate seam: a band
+    g.clip((0, 0, sz - 4.5), (0, 0, 1))                                                  # of the drum's own surface,
+    g.clip((0, 0, sz - 5.7), (0, 0, -1))                                                 # 0.2-0.3 lu proud, round its
+    g.clip((0, sy + 8.0, 0), (0, 1, 0))                                                  # lower half
+    rig.part("track", g, SEAM_DK, finish="metal", outline=0)
     gunner(rig, "track", (sx + 2.0, sy + 3.0, sz + 11.0), "g0")
     rig.joint("mg0", "track", (sx + 16.0, sy - 2.0, sz + 16.0))
     rotary_gun(rig, "mg0", (sx + 14.0, R0_MUZZLE[1], sz + 16.0), R0_MUZZLE, k=1.0)
@@ -318,6 +387,149 @@ def build(rig):
     rig.part("smoke", g, I.SMOKE, finish="dust", outline=0.8)
     rig.track("_foot", "odo", (0, 0, 0))
     _wreck(rig)
+    _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, vehicle), on the surfaces the camera sees through every clip (joint
+    space): the team band's front (r 10), the side frame, the sponson's foot, the casemate's team band, the barbette;
+    smoke from the engine low on the frame's rear (below the sponson gunner's head on every frame and far behind it,
+    so the fire `fireAt` picks burns there) and from the stack's crown."""
+    sx, sy, sz = SPONSON
+    rig.damage_spot("band", "track", (60.0, TY - 3.5, 45.0), 10.0, "metal", team=True)
+    rig.damage_spot("frame", "track", (0.0, TY - 2.1, 78.0), 7.0, "metal")
+    rig.damage_spot("sponson", "track", (sx, sy + 4.0 - 8.7, sz - 11.0), 6.0, "metal", normal=(0, -0.93, -0.36))
+    rig.damage_spot("casemate", "casemate", (CASEMATE[0] - 6.0, -26.1, CASEMATE[2] + 6.0), 7.0, "metal", team=True)
+    bx, by, bz = BARBETTE
+    rig.damage_spot("barbette", "hull", (bx, by - 13.55, bz - 6.0), 6.0, "metal")
+    rig.damage_spot("engine", "track", (-74.0, TY - 3.6, 50.0), 9.0, "smoke", kind="emit", normal=(0, -1, 0))
+    rig.damage_spot("stack", "hull", (-28.0, 12.0, 123.0), 8.0, "smoke", kind="emit", normal=(0, 0, 1))
+
+
+def _frame_detail(rig, cxr, czr):
+    """W3: the near side frame in plates: dark seams up the iron above the team band with proud rivet columns beside
+    them and a proud row along it; the team band edged and split in team-dark with proud rivets at its foot and mud
+    splashed along it; brass rivets round the roundel; scratches over the nose's warning stripes (joint space: the
+    frame's face is the plane y = TY - 2, the band's TY - 3.4)."""
+    fy, by_ = TY - 2.0, TY - 3.4
+    g = Geo()
+    for x, top in ((-50.0, 84.0), (-16.0, 86.0), (18.0, 86.0), (52.0, 82.0)):
+        g.slab([(x - 0.7, 64.0), (x + 0.7, 64.0), (x + 0.7, top), (x - 0.7, top)], fy - 0.3, 0.6)
+    rig.part("track", g, SEAM_DK, finish="metal", outline=0)
+    g = Geo()
+    for x, top in ((-50.0, 84.0), (-16.0, 86.0), (18.0, 86.0), (52.0, 82.0)):
+        for dx in (-2.6, 2.6):
+            for z in (67.0, top - 3.0):
+                g.sphere((x + dx, fy - 0.5, z), 1.3, cuts=2)
+    for x in range(-64, 60, 8):
+        if all(abs(x - s) > 4.0 for s in (-50.0, -16.0, 18.0, 52.0)):
+            g.sphere((x, fy - 0.5, 72.0), 1.3, cuts=2)
+    rig.part("track", g, I.IRON_LT, finish="metal", outline=0.3)
+    g = Geo()   # along the band's foot, painted over with it (team: the shipped team share has little margin)
+    for x in range(-74, 80, 9):
+        g.sphere((x, by_ - 0.4, 33.4), 1.2, cuts=2)
+    rig.part("track", g, team=True, finish="metal", outline=0.3)
+    g = Geo()
+    g.slab([(-84.0, 61.8), (99.0, 61.8), (98.4, 63.0), (-84.0, 63.0)], by_ - 0.2, 0.4)          # the band's top edge
+    g.slab([(-80.0, 31.0), (79.0, 31.0), (79.6, 32.2), (-80.4, 32.2)], by_ - 0.2, 0.4)           # its foot
+    for x in (40.0, 70.0):
+        g.slab([(x - 0.6, 32.0), (x + 0.6, 32.0), (x + 0.6, 62.0), (x - 0.6, 62.0)], by_ - 0.2, 0.4)
+    IW.team_dark(rig, "track", g, outline=0)
+    g = Geo()
+    for a in range(0, 360, 45):
+        t = math.radians(a + 22.5)
+        g.sphere((cxr + 13.0 * math.cos(t), TY - 4.9, czr + 13.0 * math.sin(t)), 1.1, cuts=2)
+    rig.part("track", g, I.BRASS_LT, finish="metal", outline=0.3)
+    g = Geo()
+    for x, z, rx, rz in ((-70.0, 26.5, 4.0, 2.0), (-58.0, 25.2, 2.4, 1.4), (-22.0, 26.0, 3.2, 1.8), (58.0, 26.8, 4.4, 2.2),
+                         (66.0, 25.4, 2.0, 1.2), (34.0, 25.6, 2.6, 1.4), (-76.0, 29.0, 1.4, 1.0), (62.0, 29.4, 1.2, 0.9)):
+        g.blob((x, fy - 0.7, z), (rx, 0.35, rz), p=2.2)               # on the iron frame under the band (over its seams)
+    rig.part("track", g, MUD, outline=0, highlight=False)
+    g = Geo()
+    for (x0, z0), (x1, z1) in (((80.0, 52.0), (86.0, 49.0)), ((84.0, 44.0), (91.0, 41.5)), ((78.0, 40.0), (82.0, 37.0))):
+        g.capsule((x0, TY - 3.9, z0), (x1, TY - 3.9, z1), 0.5, segs=8, rings=2)
+    rig.part("track", g, IRON_HI, finish="metal", outline=0, highlight=False)
+    _frame_plates(rig, fy, by_)
+
+
+# W3 (r9): the war machines' panel lines every 6-12 lu, rivet rows as texture, wear and a grime gradient towards the
+# ground (audit 5.2). The first render (r8) measured edge 0.40 and micro 3.07 against the floors 0.45 and 3.4: the
+# plates above and below the team band and the band itself read as flat fields at game scale.
+#
+# The look-dev of that pass (ld9: flat 0.17, micro 3.8, edge 0.41-0.44) still read the lower plates and the band as the
+# weakest fields (edge 0.31 in the bottom sixth, 0.34 on the team), so the plates under the band go to a seam every
+# 10 lu with a riveted lap seam, and the band's seams carry rivet columns as riveted plate does.
+UP_SEAMS = ((-50.0, 84.0), (-36.0, 86.0), (-16.0, 86.0), (-4.0, 86.0), (18.0, 86.0), (36.0, 85.0), (52.0, 82.0))
+LO_SEAMS = [float(x) for x in range(-50, 71, 10)]
+BAND_SPLITS = (-70.0, 40.0, 55.0, 70.0)
+CHIPS_UP = [(-58.0, 68.4, 2.2, 1.0), (-43.0, 80.6, 1.4, 0.5), (-42.0, 66.2, 1.4, 0.8), (-23.0, 69.4, 2.4, 1.1),
+            (-10.0, 82.2, 1.6, 0.8), (-10.0, 66.0, 1.4, 0.7), (8.0, 75.4, 1.5, 0.8), (11.0, 81.4, 1.8, 0.9),
+            (25.0, 67.6, 1.8, 0.9), (30.0, 81.2, 1.4, 0.7), (44.0, 69.4, 2.0, 1.0), (44.0, 80.9, 1.6, 0.6),
+            (-56.0, 75.4, 1.6, 0.8), (24.0, 75.0, 1.2, 0.7), (-26.0, 75.2, 1.3, 0.7), (-64.0, 81.0, 1.2, 0.7)]
+CHIPS_LO = [(-45.0, 19.5, 2.0, 0.9), (-25.0, 19.6, 1.6, 0.8), (-5.0, 19.4, 2.2, 0.9), (15.0, 19.5, 1.5, 0.8),
+            (35.0, 19.6, 2.0, 0.9), (55.0, 19.4, 1.6, 0.8), (-35.0, 26.5, 1.4, 0.8), (5.0, 27.0, 1.5, 0.9),
+            (25.0, 26.4, 1.4, 0.7), (45.0, 27.2, 1.4, 0.8), (-15.0, 13.0, 1.6, 0.7), (15.0, 13.2, 1.4, 0.7),
+            (65.0, 13.4, 1.5, 0.7), (-45.0, 13.0, 1.3, 0.6)]
+SMUDGES = [(-40.0, 9.4, 6.0, 1.6), (-12.0, 10.0, 7.0, 1.8), (18.0, 9.2, 6.4, 1.5), (46.0, 9.8, 7.4, 1.7),
+           (62.0, 9.6, 4.4, 1.3), (-25.0, 24.2, 3.4, 1.1), (45.0, 24.0, 3.0, 1.0)]
+SCUFFS = [(-79.0, 53.5), (-64.0, 38.5), (-58.0, 54.0), (47.0, 39.5), (49.0, 55.0), (61.0, 41.0), (63.5, 55.5),
+          (77.0, 52.0), (81.0, 39.6)]
+CHIP = "#6E747C"       # bare iron where the paint is worn (a step lighter than I.IRON)
+GRIME = "#4B5056"      # road grime towards the ground (a step darker)
+
+
+def _frame_plates(rig, fy, by_):
+    g = Geo()
+    for x, top in UP_SEAMS[1::2]:                                       # seams between the four first ones
+        g.slab([(x - 0.6, 64.0), (x + 0.6, 64.0), (x + 0.6, top), (x - 0.6, top)], fy - 0.3, 0.6)
+    g.slab([(-70.0, 78.4), (64.0, 78.4), (64.0, 79.6), (-70.0, 79.6)], fy - 0.3, 0.6)   # a lap seam along them
+    for x in LO_SEAMS:                                                   # the plates under the band, every 10 lu
+        g.slab([(x - 0.6, 14.0), (x + 0.6, 14.0), (x + 0.6, 30.0), (x - 0.6, 30.0)], fy - 0.3, 0.6)   # (over the hubs)
+    g.slab([(-62.0, 21.4), (74.0, 21.4), (74.0, 22.6), (-62.0, 22.6)], fy - 0.3, 0.6)   # and their lap seam
+    rig.part("track", g, SEAM_DK, finish="metal", outline=0)
+    g = Geo()   # proud rivets: pairs at the new seams' ends, a row along the frame's top edge, the lower lap seam's row
+    for x, top in UP_SEAMS[1::2]:                                       # and a column beside each lower seam
+        for dx in (-2.6, 2.6):
+            for z in (67.0, top - 3.0):
+                g.sphere((x + dx, fy - 0.5, z), 1.3, cuts=2)
+    for x in range(-60, 57, 8):
+        if all(abs(x - s) > 5.5 for s, _ in UP_SEAMS):
+            g.sphere((x, fy - 0.5, 84.0), 1.2, cuts=2)
+    for x in (-59.0, -31.0, -10.0, 4.0, 11.0, 25.0, 46.0):              # the upper lap seam's rivets (clear of the
+        g.sphere((x, fy - 0.5, 79.0), 1.2, cuts=2)                     # shovel, the soot and the lifebuoy)
+    for x in LO_SEAMS[:-1]:
+        g.sphere((x + 5.0, fy - 0.5, 22.0), 1.2, cuts=2)
+        g.sphere((x + 5.0, fy - 0.5, 16.0), 1.1, cuts=2)
+    for k, x in enumerate(LO_SEAMS):
+        g.sphere((x + (2.2 if k % 2 else -2.2), fy - 0.5, 27.0), 1.1, cuts=2)
+    rig.part("track", g, I.IRON_LT, finish="metal", outline=0.3)
+    g = Geo()   # the band split into plates (team-dark) and a team-painted rivet row along its top edge
+    for x in (-70.0, 55.0):
+        g.slab([(x - 0.6, 32.0), (x + 0.6, 32.0), (x + 0.6, 62.0), (x - 0.6, 62.0)], by_ - 0.2, 0.4)
+    g.slab([(-84.0, 46.4), (88.0, 46.4), (88.0, 47.6), (-84.0, 47.6)], by_ - 0.2, 0.4)     # a lap seam along it
+    for x, z in SCUFFS:                                                  # scuffed paint (team-dark)
+        g.blob((x, by_ - 0.15, z), (1.6, 0.3, 0.6), p=2.2, rot=(0, 12, 0))
+    IW.team_dark(rig, "track", g, outline=0)
+    g = Geo()   # team-painted rivets: along the band's top edge, its lap seam and down both sides of each split
+    for x in range(-80, 96, 9):
+        g.sphere((x, by_ - 0.4, 60.4), 1.2, cuts=2)
+    for x in range(-80, 88, 9):
+        if all(abs(x + 4.5 - s) > 3.5 for s in BAND_SPLITS):
+            g.sphere((x + 4.5, by_ - 0.4, 47.0), 1.1, cuts=2)
+    for x in BAND_SPLITS:
+        for dx in (-2.4, 2.4):
+            for z in (37.5, 42.0, 52.0, 56.5):
+                if x + dx < 79.0 + (z - 31.0) * 0.6:                    # inside the band's slanted front edge
+                    g.sphere((x + dx, by_ - 0.4, z), 1.0, cuts=2)
+    rig.part("track", g, team=True, finish="metal", outline=0.3)
+    g = Geo()   # worn paint: bare iron chips over the plates
+    for x, z, rx, rz in CHIPS_UP + CHIPS_LO:
+        g.blob((x, fy - 0.25, z), (rx, 0.35, rz), p=2.2)
+    rig.part("track", g, CHIP, finish="metal", outline=0, highlight=False)
+    g = Geo()   # road grime towards the ground: smudges along the frame's foot and under the band
+    for x, z, rx, rz in SMUDGES:
+        g.blob((x, fy - 0.22, z), (rx, 0.35, rz), p=2.0)
+    rig.part("track", g, GRIME, outline=0, highlight=False)
 
 
 def _wreck(rig):
@@ -526,13 +738,22 @@ ALT_MS = [60, 70, 110, 60, 70, 80]
 ALT_IMPACT = 3
 
 
-def _alt_pose(f):
+# aimed gunners (queue item 44, ageborn_art/aimed.py): `turn` turns the sponson gun (the clip's measured weapon, its
+# `mgMuzzle`); the barbette gun up top turns with it, less when aiming up (it already points 30 degrees up at the
+# flyers) and further when aiming down (it sits 70 lu higher over the ground troops); both gunners lean with their guns
+AIM_W_ALT = [0.5, 1.0, 1.0, 1.0, 0.8, 0.4]
+AIM_TARGETS = {"down": -20.0}
+AIM_MG1 = (0.3, 2.4)      # the barbette gun's share of an up and of a down turn
+
+
+def _alt_pose(f, turn=0.0):
     base = _idle(0)
     mg = [2.0, 5.0, 5.0, 3.0, -4.0, 0.0][f]
+    t1 = turn * (AIM_MG1[0] if turn > 0 else AIM_MG1[1])
     pose = merge(base, {
-        "g0": {"r": [-4, -8, -9, 6, 8, 2][f], "x": [1.0, 2.0, 2.0, -1.0, -1.5, 0.0][f]},
-        "g1": {"r": [-4, -8, -9, 7, 9, 2][f], "x": [1.0, 2.0, 2.0, -1.0, -1.5, 0.0][f]},
-        "mg0": {"r": mg}, "mg1": {"r": mg + 1.0},
+        "g0": {"r": [-4, -8, -9, 6, 8, 2][f] + 0.15 * turn, "x": [1.0, 2.0, 2.0, -1.0, -1.5, 0.0][f]},
+        "g1": {"r": [-4, -8, -9, 7, 9, 2][f] + 0.15 * t1, "x": [1.0, 2.0, 2.0, -1.0, -1.5, 0.0][f]},
+        "mg0": {"r": mg + turn}, "mg1": {"r": mg + 1.0 + t1},
         "g0_eyes": {"sz": 0.35 if f in (1, 2, 3) else 1.0},
         "g1_eyes": {"sz": 0.35 if f in (1, 2, 3) else 1.0},
         "flash0": {"show": f == 3}, "flash1": {"show": f == 3},
@@ -616,12 +837,17 @@ def _die_extra():
 
 
 def clips():
+    alt = _attack_alt()
+    # the gunners aimed up about 45 degrees at flyers and down at the ground troops (the extras sheet)
+    aimed_alt = AIMED.variants(RIG, alt, _alt_pose, AIM_W_ALT, aims=("up45", "down"), targets=AIM_TARGETS)
+    for v in aimed_alt:
+        AIMED.check_timing(alt, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [150] * 6, loop=True),
         _walk_clip(),
         _attack_clip(),
         _attack_b(),
-        _attack_alt(),
+        alt,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]
@@ -629,4 +855,4 @@ def clips():
     assert [by[n].total_ms() for n in ("idle", "walk", "hit", "die")] == [900, 640, 310, 1100]
     m = by["attack"].meta()
     assert m["durationMs"] == 933 and m["impactAt"] == 0.3751, m
-    return M.check_variants(cl)
+    return M.check_variants(cl) + aimed_alt

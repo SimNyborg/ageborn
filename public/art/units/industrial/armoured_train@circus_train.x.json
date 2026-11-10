@@ -1,0 +1,1777 @@
+{
+ "frames": {
+  "armoured_train@circus_train_attack_b_01": {
+   "frame": {
+    "x": 1076,
+    "y": 309,
+    "w": 354,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 227,
+    "w": 354,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_01_team": {
+   "frame": {
+    "x": 911,
+    "y": 926,
+    "w": 222,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 235,
+    "w": 222,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_02": {
+   "frame": {
+    "x": 1076,
+    "y": 461,
+    "w": 354,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 228,
+    "w": 354,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_02_team": {
+   "frame": {
+    "x": 1792,
+    "y": 2,
+    "w": 223,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 236,
+    "w": 223,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_03": {
+   "frame": {
+    "x": 1434,
+    "y": 461,
+    "w": 354,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 229,
+    "w": 354,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_03_team": {
+   "frame": {
+    "x": 228,
+    "y": 926,
+    "w": 225,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 237,
+    "w": 225,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_04": {
+   "frame": {
+    "x": 1434,
+    "y": 611,
+    "w": 354,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 229,
+    "w": 354,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_04_team": {
+   "frame": {
+    "x": 457,
+    "y": 926,
+    "w": 225,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 237,
+    "w": 225,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_05": {
+   "frame": {
+    "x": 1434,
+    "y": 309,
+    "w": 354,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 227,
+    "w": 354,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_05_team": {
+   "frame": {
+    "x": 686,
+    "y": 926,
+    "w": 221,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 235,
+    "w": 221,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 354,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 174,
+    "w": 354,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_06_team": {
+   "frame": {
+    "x": 1137,
+    "y": 947,
+    "w": 211,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 224,
+    "w": 211,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 390,
+    "w": 354,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 197,
+    "w": 354,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_07_team": {
+   "frame": {
+    "x": 1809,
+    "y": 947,
+    "w": 230,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 215,
+    "y": 239,
+    "w": 230,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_08": {
+   "frame": {
+    "x": 2,
+    "y": 207,
+    "w": 354,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 196,
+    "w": 354,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_b_08_team": {
+   "frame": {
+    "x": 2,
+    "y": 926,
+    "w": 222,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 235,
+    "w": 222,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_00": {
+   "frame": {
+    "x": 2,
+    "y": 734,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_00_team": {
+   "frame": {
+    "x": 1792,
+    "y": 87,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_01": {
+   "frame": {
+    "x": 360,
+    "y": 2,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_01_team": {
+   "frame": {
+    "x": 1792,
+    "y": 173,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_02": {
+   "frame": {
+    "x": 360,
+    "y": 156,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_02_team": {
+   "frame": {
+    "x": 1792,
+    "y": 259,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_03": {
+   "frame": {
+    "x": 360,
+    "y": 310,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_03_team": {
+   "frame": {
+    "x": 1792,
+    "y": 345,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_04": {
+   "frame": {
+    "x": 360,
+    "y": 464,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_04_team": {
+   "frame": {
+    "x": 1792,
+    "y": 431,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_05": {
+   "frame": {
+    "x": 360,
+    "y": 618,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_05_team": {
+   "frame": {
+    "x": 1792,
+    "y": 517,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_00": {
+   "frame": {
+    "x": 360,
+    "y": 772,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_00_team": {
+   "frame": {
+    "x": 1792,
+    "y": 603,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_01": {
+   "frame": {
+    "x": 718,
+    "y": 2,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_01_team": {
+   "frame": {
+    "x": 1792,
+    "y": 689,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_02": {
+   "frame": {
+    "x": 1076,
+    "y": 2,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_02_team": {
+   "frame": {
+    "x": 1076,
+    "y": 775,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_03": {
+   "frame": {
+    "x": 2,
+    "y": 572,
+    "w": 354,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 217,
+    "w": 354,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_03_team": {
+   "frame": {
+    "x": 1076,
+    "y": 612,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_04": {
+   "frame": {
+    "x": 1434,
+    "y": 2,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_04_team": {
+   "frame": {
+    "x": 1137,
+    "y": 861,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_05": {
+   "frame": {
+    "x": 718,
+    "y": 156,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_up45_05_team": {
+   "frame": {
+    "x": 1300,
+    "y": 775,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_00": {
+   "frame": {
+    "x": 718,
+    "y": 310,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_00_team": {
+   "frame": {
+    "x": 1524,
+    "y": 761,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_01": {
+   "frame": {
+    "x": 1076,
+    "y": 156,
+    "w": 354,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 226,
+    "w": 354,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_01_team": {
+   "frame": {
+    "x": 1748,
+    "y": 775,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_02": {
+   "frame": {
+    "x": 1434,
+    "y": 156,
+    "w": 354,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 226,
+    "w": 354,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_02_team": {
+   "frame": {
+    "x": 1524,
+    "y": 847,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_03": {
+   "frame": {
+    "x": 718,
+    "y": 464,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_03_team": {
+   "frame": {
+    "x": 1361,
+    "y": 933,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_04": {
+   "frame": {
+    "x": 718,
+    "y": 618,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_04_team": {
+   "frame": {
+    "x": 1585,
+    "y": 933,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_05": {
+   "frame": {
+    "x": 718,
+    "y": 772,
+    "w": 354,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 225,
+    "w": 354,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  },
+  "armoured_train@circus_train_attack_alt_down_05_team": {
+   "frame": {
+    "x": 1809,
+    "y": 861,
+    "w": 220,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 234,
+    "w": 220,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 642,
+    "h": 392
+   },
+   "anchor": {
+    "x": 0.53583,
+    "y": 0.90051
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "armoured_train@circus_train_attack_00",
+   "armoured_train@circus_train_attack_b_01",
+   "armoured_train@circus_train_attack_b_02",
+   "armoured_train@circus_train_attack_b_03",
+   "armoured_train@circus_train_attack_b_04",
+   "armoured_train@circus_train_attack_b_05",
+   "armoured_train@circus_train_attack_b_06",
+   "armoured_train@circus_train_attack_b_07",
+   "armoured_train@circus_train_attack_b_08",
+   "armoured_train@circus_train_attack_b_08",
+   "armoured_train@circus_train_attack_09",
+   "armoured_train@circus_train_attack_09"
+  ],
+  "attack_b_team": [
+   "armoured_train@circus_train_attack_00_team",
+   "armoured_train@circus_train_attack_b_01_team",
+   "armoured_train@circus_train_attack_b_02_team",
+   "armoured_train@circus_train_attack_b_03_team",
+   "armoured_train@circus_train_attack_b_04_team",
+   "armoured_train@circus_train_attack_b_05_team",
+   "armoured_train@circus_train_attack_b_06_team",
+   "armoured_train@circus_train_attack_b_07_team",
+   "armoured_train@circus_train_attack_b_08_team",
+   "armoured_train@circus_train_attack_b_08_team",
+   "armoured_train@circus_train_attack_09_team",
+   "armoured_train@circus_train_attack_09_team"
+  ],
+  "attack_alt": [
+   "armoured_train@circus_train_attack_alt_00",
+   "armoured_train@circus_train_attack_alt_01",
+   "armoured_train@circus_train_attack_alt_02",
+   "armoured_train@circus_train_attack_alt_03",
+   "armoured_train@circus_train_attack_alt_04",
+   "armoured_train@circus_train_attack_alt_05"
+  ],
+  "attack_alt_team": [
+   "armoured_train@circus_train_attack_alt_00_team",
+   "armoured_train@circus_train_attack_alt_01_team",
+   "armoured_train@circus_train_attack_alt_02_team",
+   "armoured_train@circus_train_attack_alt_03_team",
+   "armoured_train@circus_train_attack_alt_04_team",
+   "armoured_train@circus_train_attack_alt_05_team"
+  ],
+  "attack_alt_up45": [
+   "armoured_train@circus_train_attack_alt_up45_00",
+   "armoured_train@circus_train_attack_alt_up45_01",
+   "armoured_train@circus_train_attack_alt_up45_02",
+   "armoured_train@circus_train_attack_alt_up45_03",
+   "armoured_train@circus_train_attack_alt_up45_04",
+   "armoured_train@circus_train_attack_alt_up45_05"
+  ],
+  "attack_alt_up45_team": [
+   "armoured_train@circus_train_attack_alt_up45_00_team",
+   "armoured_train@circus_train_attack_alt_up45_01_team",
+   "armoured_train@circus_train_attack_alt_up45_02_team",
+   "armoured_train@circus_train_attack_alt_up45_03_team",
+   "armoured_train@circus_train_attack_alt_up45_04_team",
+   "armoured_train@circus_train_attack_alt_up45_05_team"
+  ],
+  "attack_alt_down": [
+   "armoured_train@circus_train_attack_alt_down_00",
+   "armoured_train@circus_train_attack_alt_down_01",
+   "armoured_train@circus_train_attack_alt_down_02",
+   "armoured_train@circus_train_attack_alt_down_03",
+   "armoured_train@circus_train_attack_alt_down_04",
+   "armoured_train@circus_train_attack_alt_down_05"
+  ],
+  "attack_alt_down_team": [
+   "armoured_train@circus_train_attack_alt_down_00_team",
+   "armoured_train@circus_train_attack_alt_down_01_team",
+   "armoured_train@circus_train_attack_alt_down_02_team",
+   "armoured_train@circus_train_attack_alt_down_03_team",
+   "armoured_train@circus_train_attack_alt_down_04_team",
+   "armoured_train@circus_train_attack_alt_down_05_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "armoured_train@circus_train.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2048,
+   "h": 1028
+  },
+  "scale": "1.25",
+  "ageborn": {
+   "visualId": "unit.armoured_train@circus_train",
+   "name": "Armoured Train",
+   "heightLu": 172,
+   "widthLu": 338.5,
+   "pxPerLu": 1.025,
+   "feetPx": [
+    344.0,
+    353.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     154
+    ],
+    "hitCenter": [
+     0,
+     65
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "wheeled",
+   "skinOf": "unit.armoured_train",
+   "skin": "circus_train",
+   "extrasOf": "armoured_train@circus_train",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        76.4,
+        90.5
+       ],
+       [
+        77.2,
+        89.4
+       ],
+       [
+        77.7,
+        96.8
+       ],
+       [
+        78.9,
+        99.3
+       ],
+       [
+        79.1,
+        99.0
+       ],
+       [
+        77.1,
+        101.0
+       ],
+       [
+        36.5,
+        130.7
+       ],
+       [
+        67.6,
+        103.9
+       ],
+       [
+        78.1,
+        95.1
+       ],
+       [
+        76.4,
+        90.5
+       ]
+      ],
+      "mgMuzzle": [
+       [
+        -29.1,
+        104.9
+       ],
+       [
+        -29.1,
+        104.9
+       ],
+       [
+        -28.6,
+        103.8
+       ],
+       [
+        -27.4,
+        102.4
+       ],
+       [
+        -27.2,
+        102.3
+       ],
+       [
+        -27.3,
+        104.3
+       ],
+       [
+        -47.9,
+        120.0
+       ],
+       [
+        -32.9,
+        101.8
+       ],
+       [
+        -25.7,
+        104.1
+       ],
+       [
+        -29.1,
+        104.9
+       ]
+      ]
+     },
+     "muzzle": [
+      36.5,
+      130.7
+     ],
+     "aimDeg": 19.1,
+     "release": {
+      "frame": 6,
+      "atLu": [
+       36.5,
+       130.7
+      ]
+     }
+    },
+    "attack_alt": {
+     "frames": 6,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      60,
+      70,
+      110,
+      60,
+      70,
+      80
+     ],
+     "durationMs": 450,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.5333,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ]
+      ],
+      "mgMuzzle": [
+       [
+        -28.8,
+        106.8
+       ],
+       [
+        -28.8,
+        107.5
+       ],
+       [
+        -28.8,
+        107.5
+       ],
+       [
+        -28.8,
+        107.0
+       ],
+       [
+        -28.8,
+        105.5
+       ],
+       [
+        -28.8,
+        106.4
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "aimDeg": 0.2,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       -28.8,
+       107.0
+      ]
+     }
+    },
+    "attack_alt_up45": {
+     "frames": 6,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      60,
+      70,
+      110,
+      60,
+      70,
+      80
+     ],
+     "durationMs": 450,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.5333,
+     "aimOf": "attack_alt",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ]
+      ],
+      "mgMuzzle": [
+       [
+        -29.8,
+        111.5
+       ],
+       [
+        -33.0,
+        116.0
+       ],
+       [
+        -33.0,
+        116.0
+       ],
+       [
+        -32.7,
+        115.7
+       ],
+       [
+        -30.5,
+        112.9
+       ],
+       [
+        -29.3,
+        110.2
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       -32.7,
+       115.7
+      ]
+     }
+    },
+    "attack_alt_down": {
+     "frames": 6,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      60,
+      70,
+      110,
+      60,
+      70,
+      80
+     ],
+     "durationMs": 450,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.5333,
+     "aimOf": "attack_alt",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ],
+       [
+        75.5,
+        91.9
+       ]
+      ],
+      "mgMuzzle": [
+       [
+        -29.1,
+        103.4
+       ],
+       [
+        -30.0,
+        100.9
+       ],
+       [
+        -30.0,
+        100.9
+       ],
+       [
+        -30.2,
+        100.5
+       ],
+       [
+        -30.3,
+        100.4
+       ],
+       [
+        -29.0,
+        103.7
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "aimDeg": -30.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       -30.2,
+       100.5
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}
