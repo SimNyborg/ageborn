@@ -55,14 +55,14 @@ MATERIAL_KINDS = FW.kinds_future()
 
 # Chrome Rail (epic skin, DESIGN A5.8): mirror chrome plates over a gunmetal suit, a pale ice-blue glow (under 40%
 # saturation), and a chrome heat sink along the top rail (the silhouette sign)
-CR_CHROME, CR_ICE, CR_ICE_CORE = "#D9DFE7", "#9FD6E6", "#EAF8FC"
+CR_CHROME, CR_ICE, CR_ICE_CORE = "#BEC5CF", "#86C4D8", "#EAF8FC"   # (#D9DFE7 and #9FD6E6: highlight share 0.106-0.113)
 SKINS = {"chrome_rail": {
-    "palette": FW.skin_palette({FW.ARMOR: CR_CHROME, FW.LINE_ON_WHITE: "#8E96A4", FW.WEAR_ON_WHITE: "#BCC3CD",
-                                F.ARMOR: "#EEF1F5", F.SUIT: "#3A3E48", F.SUIT_LT: "#4C515D", F.CHARCOAL: "#2C2F37",
+    "palette": FW.skin_palette({FW.ARMOR: CR_CHROME, FW.LINE_ON_WHITE: "#98A0AD", FW.WEAR_ON_WHITE: "#B0B8C3",
+                                F.ARMOR: "#DDE2E9", F.SUIT: "#3A3E48", F.SUIT_LT: "#4C515D", F.CHARCOAL: "#2C2F37",
                                 FW.FOLD_ON_SUIT: "#4E535E", F.GUNMETAL: "#5A606C", F.TRIM: "#C4CAD4", F.STEEL: "#9AA2AE",
                                 F.MAGENTA: CR_ICE, F.MAGENTA_CORE: CR_ICE_CORE, F.MINT: CR_ICE, F.MINT_CORE: CR_ICE_CORE,
                                 F.CYAN: "#BFE0E8", F.VISOR_DARK: "#1A1F28"}),
-    "kinds": FW.kinds({CR_CHROME: "iron", "#8E96A4": "iron", "#BCC3CD": "iron", "#EEF1F5": "iron",
+    "kinds": FW.kinds({CR_CHROME: "iron", "#98A0AD": "iron", "#B0B8C3": "iron", "#DDE2E9": "iron",
                        "#3A3E48": "cloth", "#4C515D": "cloth", "#2C2F37": "cloth", "#4E535E": "cloth",
                        "#5A606C": "iron", "#C4CAD4": "iron", "#9AA2AE": "iron", "#1A1F28": "glass"})}}
 

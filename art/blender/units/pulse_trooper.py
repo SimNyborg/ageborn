@@ -54,14 +54,17 @@ LOOK_SHADE = FW.SHADE_WHITE
 LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
 # the rifle's shroud in a light gun grey, not the armour's white (its long lit edge rang the highlight share)
 GUN_LT, GUN_SEAM = "#B4BBC6", "#8A929F"
-COIL = "#8CF5D0"               # the heated coils, a mid mint
-MATERIAL_KINDS = FW.kinds_future({GUN_LT: "iron", GUN_SEAM: "iron"})
+COIL = "#8CF5D0"               # the heated coils, the charge ball and its rings: a mid mint
+# the trooper's white a step under FW.ARMOR (#D2D8E0): its white legs, gloves and faceplate against the charcoal suit
+# held the extras' highlight share at 0.102 (the rank-and-file armour reads a shade greyer than the knight's)
+WHITE = "#CBD1DA"
+MATERIAL_KINDS = FW.kinds_future({GUN_LT: "iron", GUN_SEAM: "iron", WHITE: "ceramic"})
 
 # Space Cadet (rare skin, DESIGN A5.8): a retro space cadet: cream plates over a purple-grey flight suit with lilac
 # piping, silver trims, a finned silver ray gun and rocket fins on the pack (the silhouette sign)
-SC_CREAM, SC_SILVER, SC_LILAC = "#DDD2B6", "#D8DCE0", "#8A7CB4"
+SC_CREAM, SC_SILVER, SC_LILAC = "#DDD2B6", "#BEC4CC", "#776A9E"    # (silver #D8DCE0, lilac #8A7CB4: extras 0.101)
 SKINS = {"space_cadet": {
-    "palette": FW.skin_palette({FW.ARMOR: SC_CREAM, FW.LINE_ON_WHITE: "#B8AB8B", FW.WEAR_ON_WHITE: "#CFC4A6",
+    "palette": FW.skin_palette({WHITE: SC_CREAM, FW.LINE_ON_WHITE: "#B8AB8B", FW.WEAR_ON_WHITE: "#CFC4A6",
                                 F.ARMOR: "#ECE4CF", F.SUIT: "#5A5470", F.SUIT_LT: "#6E6788", F.CHARCOAL: "#4A4560",
                                 FW.FOLD_ON_SUIT: SC_LILAC, FW.LINE_ON_SUIT: "#433E57", FW.WEAR_ON_SUIT: "#7A7394",
                                 F.GUNMETAL: "#6A6E80", F.TRIM: SC_SILVER, F.STEEL: "#A8AEBC", GUN_LT: SC_SILVER,
@@ -89,7 +92,7 @@ def build(rig):
     global RIG
     RIG = rig
     KF.skeleton_v3(rig, head=(1, 0, 39))
-    KF.legs_v3(rig, armor=FW.ARMOR)
+    KF.legs_v3(rig, armor=WHITE)
     gx, gy, gz = G0
     rig.joint("gun", "torso", G0)
 
@@ -108,16 +111,16 @@ def build(rig):
         g.capsule(a, b, 1.3, segs=8, rings=2)
     rig.part("cable", g, F.GUNMETAL, outline=0.6)
 
-    F.arm_parts(rig, "l", glove=FW.ARMOR)
+    F.arm_parts(rig, "l", glove=WHITE)
     F.torso_armor(rig, pack=False)
-    FW.pack(rig)
+    FW.pack(rig, cell_r=0.95)
     g = Geo().blob((-11.4, 0, 36.6), (4.8, 8.8, 2.2), p=3.4)      # team band on the pack
     rig.part("torso", g, team=True, outline=0.6)
     g = Geo().blob((1.0, 0, 39.0), (7.6, 7.8, 1.8), p=2.6)         # white gorget
-    rig.part("torso", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("torso", g, WHITE, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((0.6, 0, 16.6), (10.4, 10.2, 4.0), p=2.8, taper=(1.1, 1.0))
     g.clip((0, 0, 13.0), (0, 0, -1))
-    rig.part("hips", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("hips", g, WHITE, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((5.0, -9.6, 20.2), (2.6, 1.8, 2.8), p=3.2).blob((-2.8, -9.6, 20.4), (2.4, 1.8, 2.6), p=3.2)
     rig.part("torso", g, F.GUNMETAL, outline=0.6)
     chest = Geo().blob((1.8, 0, 32.0), (9.8, 10.6, 7.6), p=3.0, taper=(0.9, 1.0))
@@ -128,7 +131,7 @@ def build(rig):
     # helmet: white dome and faceplate, a team cap with a crest, a dark visor with the eyes
     g = Geo().blob((2, 0, 52), (11.4, 11.0, 11.6), p=2.5)
     g.blob((0, 0, 43.2), (7.5, 7.5, 3.2), p=2.4)
-    rig.part("head", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("head", g, WHITE, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((2, 0, 52.1), (11.75, 11.35, 11.95), p=2.5, cuts=8)
     g.clip((0, 0, 48.6), (0, 0, -1))
     g.clip((8.4, 0, 51.0), (1, 0, -0.3))
@@ -139,12 +142,12 @@ def build(rig):
     rig.part("head", visor, F.VISOR_DARK, finish="gloss", outline_hex=F.SUIT)
     g = Geo().blob((-3.5, -10.4, 51.0), (4.4, 2.0, 4.4), p=2.4)       # ear pod
     rig.part("head", g, F.SUIT)
-    g = Geo().blob((-3.5, -12.2, 51.0), (1.4, 0.8, 1.4), p=2.2)
+    g = Geo().blob((-3.5, -12.2, 51.0), (1.1, 0.8, 1.1), p=2.2)
     rig.part("head", g, glow=F.MINT, outline=0)
 
-    F.arm_parts(rig, "r", glove=FW.ARMOR)
+    F.arm_parts(rig, "r", glove=WHITE)
     F.shoulders(rig)
-    KF.strip(rig, "arm_r", [(-4.0, -18.0, 38.0), (0.6, -18.4, 39.4), (5.2, -17.8, 38.0)], r=0.65)
+    KF.strip(rig, "arm_r", [(-4.0, -18.0, 38.0), (0.6, -18.4, 39.4), (5.2, -17.8, 38.0)], r=0.55)
 
     # the plasma rifle along +X from the grip
     g = Geo().blob((X(12), gy + 1, gz + 3.5), (13.5 * K_, 3.4, 4.2), p=3.6)          # receiver
@@ -158,6 +161,7 @@ def build(rig):
     rig.part("gun", g, GUN_LT, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((X(12), gy - 2.2, gz + 3.8), (7.0, 0.8, 2.4), p=3.2)            # team side panel (W4: 5 x 1.8;
     #                                     the up-70 aimed shots, the rifle across the chest plate, ran 16.8% team)
+    g.blob((gx - 7.4, gy - 1.5, gz + 2.6), (4.2, 0.7, 2.3), p=3.0, rot=(0, 10, 0))   # W4: and a team stock plate
     rig.part("gun", g, team=True, outline=0.5)
     rings = [X(20), X(24), X(28)]
     g = Geo()
@@ -194,7 +198,7 @@ def build(rig):
     mx, my, mz = MUZZLE
     rig.joint("charge", "gun", MUZZLE, hidden=True)
     g = Geo().sphere((mx + 2.5, my - 1.0, mz), 3.8, cuts=4)
-    rig.part("charge", g, glow=F.MINT_CORE, outline=1.4, outline_hex=F.MINT)
+    rig.part("charge", g, glow=COIL, outline=1.4, outline_hex=F.MINT)
     rig.joint("flash", "gun", MUZZLE, hidden=True)
     g = Geo().blob((mx + 9.5, my - 1, mz), (10.0, 1.6, 3.6), p=2.0)
     g.blob((mx + 5.0, my - 1, mz + 2.6), (6.4, 1.5, 2.0), p=2.0, rot=(0, -34, 0))
@@ -215,12 +219,12 @@ def _cadet(rig):
     gx, gy, gz = G0
     g = Geo()
     for x in (X(31), X(35), X(39)):
-        g.lathe([(0, -0.45), (5.4, -0.4), (5.7, 0.0), (5.4, 0.4), (0, 0.45)], (x, gy + 1, gz + 3.5),
+        g.lathe([(0, -0.45), (4.9, -0.4), (5.2, 0.0), (4.9, 0.4), (0, 0.45)], (x, gy + 1, gz + 3.5),
                 (x + 1, gy + 1, gz + 3.5), segs=20)
     rig.part("gun", g, F.TRIM, finish="gloss", outline=0.6, outline_hex=F.SUIT)
     g = Geo()
     for y in (-5.0, 3.0):
-        g.slab([(-14.0, 24.6), (-19.6, 18.8), (-19.8, 22.4), (-15.6, 28.0)], y, 0.9)
+        g.slab([(-14.2, 24.8), (-18.8, 19.8), (-19.0, 22.8), (-15.6, 27.6)], y, 0.9)
     rig.part("torso", g, F.TRIM, finish="gloss", outline=0.6, outline_hex=F.SUIT)
 
 
@@ -415,7 +419,7 @@ def _attack_clip():
         4: [{"kind": "burst", "joint": "gun", "point": MUZZLE, "r0_lu": 8.0, "r1_lu": 14.0, "n": 5,
              "a0": -60.0, "arc": 120.0, "color": FW.fx(RIG, SKINS, F.MINT_CORE)}],
         3: [{"kind": "rings", "joint": "gun", "point": (MUZZLE[0] - 2.0, MUZZLE[1], MUZZLE[2]), "radii_lu": (6.5, 10.0),
-             "a0": -70.0, "a1": 70.0, "color": FW.fx(RIG, SKINS, F.MINT_CORE)}],
+             "a0": -70.0, "a1": 70.0, "color": FW.fx(RIG, SKINS, COIL)}],
         7: [{"kind": "burst", "joint": "gun", "point": (HATCH[0], HATCH[1], HATCH[2] + 3.0), "r0_lu": 3.5,
              "r1_lu": 7.0, "n": 4, "a0": 30.0, "arc": 120.0, "color": "#FFFFFF"}],
     }
@@ -472,7 +476,7 @@ def _attack_b():
             {"kind": "dust", "ground": (-12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 61, "spread": 0.8,
              "color": "#DDE3E8"}],
         2: [{"kind": "rings", "joint": "gun", "point": (MUZZLE[0] - 2.0, MUZZLE[1], MUZZLE[2]), "radii_lu": (5.5, 8.5),
-             "a0": -70.0, "a1": 70.0, "color": FW.fx(RIG, SKINS, F.MINT_CORE)}],
+             "a0": -70.0, "a1": 70.0, "color": FW.fx(RIG, SKINS, COIL)}],
     }
     reuse = {7: ("attack", 7), 8: ("attack", 8)}
     return M.clip("attack_b", [_b_pose(i) for i in range(9)], B_MS, impact=4, overlays=ov, reuse=reuse,
@@ -519,7 +523,7 @@ def _attack_c():
             {"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 62, "spread": 0.9,
              "color": "#DDE3E8"}],
         3: [{"kind": "rings", "joint": "gun", "point": (MUZZLE[0] - 2.0, MUZZLE[1], MUZZLE[2]), "radii_lu": (6.5, 10.0),
-             "a0": -70.0, "a1": 70.0, "color": FW.fx(RIG, SKINS, F.MINT_CORE)}],
+             "a0": -70.0, "a1": 70.0, "color": FW.fx(RIG, SKINS, COIL)}],
     }
     reuse = {0: ("attack", 0), 8: ("attack", 8)}
     return M.clip("attack_c", [_c_pose(i) for i in range(9)], C_MS, impact=4, overlays=ov, reuse=reuse,

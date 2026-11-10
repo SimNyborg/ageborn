@@ -1,0 +1,2705 @@
+{
+ "frames": {
+  "pulse_trooper@space_cadet_attack_b_00": {
+   "frame": {
+    "x": 1505,
+    "y": 2,
+    "w": 109,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 75,
+    "w": 109,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_00_team": {
+   "frame": {
+    "x": 243,
+    "y": 132,
+    "w": 55,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 85,
+    "w": 55,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_01": {
+   "frame": {
+    "x": 1018,
+    "y": 111,
+    "w": 107,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 81,
+    "w": 107,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_01_team": {
+   "frame": {
+    "x": 129,
+    "y": 134,
+    "w": 55,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 91,
+    "w": 55,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_02": {
+   "frame": {
+    "x": 2259,
+    "y": 94,
+    "w": 116,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 88,
+    "w": 116,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_02_team": {
+   "frame": {
+    "x": 510,
+    "y": 122,
+    "w": 55,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 95,
+    "w": 55,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_03": {
+   "frame": {
+    "x": 1830,
+    "y": 105,
+    "w": 115,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 80,
+    "w": 115,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_03_team": {
+   "frame": {
+    "x": 674,
+    "y": 118,
+    "w": 53,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 89,
+    "w": 53,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_04": {
+   "frame": {
+    "x": 1729,
+    "y": 2,
+    "w": 121,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 77,
+    "w": 121,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_04_team": {
+   "frame": {
+    "x": 1344,
+    "y": 110,
+    "w": 51,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 85,
+    "w": 51,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_05": {
+   "frame": {
+    "x": 573,
+    "y": 119,
+    "w": 97,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 57,
+    "y": 90,
+    "w": 97,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_05_team": {
+   "frame": {
+    "x": 76,
+    "y": 134,
+    "w": 49,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 90,
+    "w": 49,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_06": {
+   "frame": {
+    "x": 1399,
+    "y": 108,
+    "w": 101,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 78,
+    "w": 101,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_b_06_team": {
+   "frame": {
+    "x": 188,
+    "y": 132,
+    "w": 51,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 81,
+    "w": 51,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_01": {
+   "frame": {
+    "x": 1505,
+    "y": 107,
+    "w": 108,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 80,
+    "w": 108,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_01_team": {
+   "frame": {
+    "x": 2564,
+    "y": 2,
+    "w": 56,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 90,
+    "w": 56,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_02": {
+   "frame": {
+    "x": 2137,
+    "y": 98,
+    "w": 118,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 87,
+    "w": 118,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_02_team": {
+   "frame": {
+    "x": 2764,
+    "y": 128,
+    "w": 56,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 99,
+    "w": 56,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_03": {
+   "frame": {
+    "x": 2173,
+    "y": 2,
+    "w": 123,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 88,
+    "w": 123,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_03_team": {
+   "frame": {
+    "x": 2539,
+    "y": 66,
+    "w": 57,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 98,
+    "w": 57,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_04": {
+   "frame": {
+    "x": 733,
+    "y": 117,
+    "w": 138,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 87,
+    "w": 138,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_04_team": {
+   "frame": {
+    "x": 2487,
+    "y": 131,
+    "w": 58,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 97,
+    "w": 58,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_05": {
+   "frame": {
+    "x": 2379,
+    "y": 94,
+    "w": 104,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 94,
+    "w": 104,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_05_team": {
+   "frame": {
+    "x": 2624,
+    "y": 2,
+    "w": 52,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 96,
+    "w": 52,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_06": {
+   "frame": {
+    "x": 2300,
+    "y": 2,
+    "w": 106,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 88,
+    "w": 106,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_06_team": {
+   "frame": {
+    "x": 2824,
+    "y": 127,
+    "w": 54,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 95,
+    "w": 54,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_07": {
+   "frame": {
+    "x": 1854,
+    "y": 2,
+    "w": 108,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 80,
+    "w": 108,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_07_team": {
+   "frame": {
+    "x": 2811,
+    "y": 65,
+    "w": 56,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 88,
+    "w": 56,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_01": {
+   "frame": {
+    "x": 1399,
+    "y": 2,
+    "w": 102,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 74,
+    "w": 102,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_01_team": {
+   "frame": {
+    "x": 2882,
+    "y": 126,
+    "w": 52,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 82,
+    "w": 52,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_02": {
+   "frame": {
+    "x": 1124,
+    "y": 2,
+    "w": 93,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 71,
+    "w": 93,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_02_team": {
+   "frame": {
+    "x": 2948,
+    "y": 2,
+    "w": 46,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 83,
+    "w": 46,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_03": {
+   "frame": {
+    "x": 1018,
+    "y": 2,
+    "w": 102,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 71,
+    "w": 102,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_03_team": {
+   "frame": {
+    "x": 2938,
+    "y": 126,
+    "w": 48,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 86,
+    "w": 48,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_04": {
+   "frame": {
+    "x": 149,
+    "y": 2,
+    "w": 95,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 50,
+    "w": 95,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_04_team": {
+   "frame": {
+    "x": 302,
+    "y": 130,
+    "w": 44,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 77,
+    "w": 44,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_05": {
+   "frame": {
+    "x": 573,
+    "y": 2,
+    "w": 83,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 59,
+    "w": 83,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_05_team": {
+   "frame": {
+    "x": 2990,
+    "y": 121,
+    "w": 57,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 86,
+    "w": 57,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_06": {
+   "frame": {
+    "x": 1728,
+    "y": 106,
+    "w": 98,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 76,
+    "w": 98,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_06_team": {
+   "frame": {
+    "x": 2462,
+    "y": 2,
+    "w": 47,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 77,
+    "w": 47,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_07": {
+   "frame": {
+    "x": 1618,
+    "y": 2,
+    "w": 107,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 76,
+    "w": 107,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up45_07_team": {
+   "frame": {
+    "x": 2871,
+    "y": 64,
+    "w": 54,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 82,
+    "w": 54,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_01": {
+   "frame": {
+    "x": 1304,
+    "y": 2,
+    "w": 91,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 72,
+    "w": 91,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_01_team": {
+   "frame": {
+    "x": 2711,
+    "y": 65,
+    "w": 47,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 81,
+    "w": 47,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_02": {
+   "frame": {
+    "x": 330,
+    "y": 2,
+    "w": 72,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 52,
+    "w": 72,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_02_team": {
+   "frame": {
+    "x": 2929,
+    "y": 64,
+    "w": 50,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 83,
+    "w": 50,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_03": {
+   "frame": {
+    "x": 248,
+    "y": 2,
+    "w": 78,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 52,
+    "w": 78,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_03_team": {
+   "frame": {
+    "x": 2998,
+    "y": 2,
+    "w": 50,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 86,
+    "w": 50,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 70,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 25,
+    "w": 70,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_04_team": {
+   "frame": {
+    "x": 350,
+    "y": 130,
+    "w": 50,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 78,
+    "w": 50,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_05": {
+   "frame": {
+    "x": 406,
+    "y": 2,
+    "w": 88,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 55,
+    "w": 88,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 157,
+    "w": 61,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 91,
+    "w": 61,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_06": {
+   "frame": {
+    "x": 819,
+    "y": 2,
+    "w": 93,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 67,
+    "w": 93,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_06_team": {
+   "frame": {
+    "x": 2410,
+    "y": 2,
+    "w": 48,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 77,
+    "w": 48,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_07": {
+   "frame": {
+    "x": 1618,
+    "y": 106,
+    "w": 106,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 76,
+    "w": 106,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_up70_07_team": {
+   "frame": {
+    "x": 2831,
+    "y": 2,
+    "w": 55,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 82,
+    "w": 55,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_01": {
+   "frame": {
+    "x": 1238,
+    "y": 111,
+    "w": 102,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 81,
+    "w": 102,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_01_team": {
+   "frame": {
+    "x": 2608,
+    "y": 128,
+    "w": 51,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 89,
+    "w": 51,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_02": {
+   "frame": {
+    "x": 2046,
+    "y": 100,
+    "w": 87,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 83,
+    "w": 87,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_02_team": {
+   "frame": {
+    "x": 2715,
+    "y": 128,
+    "w": 45,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 96,
+    "w": 45,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_03": {
+   "frame": {
+    "x": 1949,
+    "y": 102,
+    "w": 93,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 80,
+    "w": 93,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_03_team": {
+   "frame": {
+    "x": 2762,
+    "y": 65,
+    "w": 45,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 96,
+    "w": 45,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_04": {
+   "frame": {
+    "x": 916,
+    "y": 2,
+    "w": 98,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 70,
+    "w": 98,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_04_team": {
+   "frame": {
+    "x": 2782,
+    "y": 2,
+    "w": 45,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 96,
+    "w": 45,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_05": {
+   "frame": {
+    "x": 1221,
+    "y": 2,
+    "w": 79,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 71,
+    "w": 79,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_05_team": {
+   "frame": {
+    "x": 2890,
+    "y": 2,
+    "w": 54,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 97,
+    "w": 54,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_06": {
+   "frame": {
+    "x": 406,
+    "y": 123,
+    "w": 100,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 93,
+    "w": 100,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_06_team": {
+   "frame": {
+    "x": 2487,
+    "y": 67,
+    "w": 48,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 93,
+    "w": 48,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_07": {
+   "frame": {
+    "x": 1129,
+    "y": 111,
+    "w": 105,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 81,
+    "w": 105,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up45_07_team": {
+   "frame": {
+    "x": 2549,
+    "y": 129,
+    "w": 55,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 87,
+    "w": 55,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_01": {
+   "frame": {
+    "x": 916,
+    "y": 112,
+    "w": 95,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 82,
+    "w": 95,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_01_team": {
+   "frame": {
+    "x": 2680,
+    "y": 2,
+    "w": 48,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 89,
+    "w": 48,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_02": {
+   "frame": {
+    "x": 660,
+    "y": 2,
+    "w": 69,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 64,
+    "w": 69,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_02_team": {
+   "frame": {
+    "x": 2663,
+    "y": 128,
+    "w": 48,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 96,
+    "w": 48,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_03": {
+   "frame": {
+    "x": 498,
+    "y": 2,
+    "w": 71,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 60,
+    "w": 71,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_03_team": {
+   "frame": {
+    "x": 2732,
+    "y": 2,
+    "w": 46,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 96,
+    "w": 46,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_04": {
+   "frame": {
+    "x": 76,
+    "y": 2,
+    "w": 69,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 48,
+    "w": 69,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_04_team": {
+   "frame": {
+    "x": 2658,
+    "y": 65,
+    "w": 49,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 96,
+    "w": 49,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_05": {
+   "frame": {
+    "x": 733,
+    "y": 2,
+    "w": 82,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 66,
+    "w": 82,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_05_team": {
+   "frame": {
+    "x": 2983,
+    "y": 64,
+    "w": 59,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 103,
+    "w": 59,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_06": {
+   "frame": {
+    "x": 2074,
+    "y": 2,
+    "w": 95,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 84,
+    "w": 95,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_06_team": {
+   "frame": {
+    "x": 2513,
+    "y": 2,
+    "w": 47,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 93,
+    "w": 47,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_07": {
+   "frame": {
+    "x": 1966,
+    "y": 2,
+    "w": 104,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 82,
+    "w": 104,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_c_up70_07_team": {
+   "frame": {
+    "x": 2600,
+    "y": 65,
+    "w": 54,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 87,
+    "w": 54,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "pulse_trooper@space_cadet_attack_b_00",
+   "pulse_trooper@space_cadet_attack_b_01",
+   "pulse_trooper@space_cadet_attack_b_02",
+   "pulse_trooper@space_cadet_attack_b_03",
+   "pulse_trooper@space_cadet_attack_b_04",
+   "pulse_trooper@space_cadet_attack_b_05",
+   "pulse_trooper@space_cadet_attack_b_06",
+   "pulse_trooper@space_cadet_attack_07",
+   "pulse_trooper@space_cadet_attack_08"
+  ],
+  "attack_b_team": [
+   "pulse_trooper@space_cadet_attack_b_00_team",
+   "pulse_trooper@space_cadet_attack_b_01_team",
+   "pulse_trooper@space_cadet_attack_b_02_team",
+   "pulse_trooper@space_cadet_attack_b_03_team",
+   "pulse_trooper@space_cadet_attack_b_04_team",
+   "pulse_trooper@space_cadet_attack_b_05_team",
+   "pulse_trooper@space_cadet_attack_b_06_team",
+   "pulse_trooper@space_cadet_attack_07_team",
+   "pulse_trooper@space_cadet_attack_08_team"
+  ],
+  "attack_c": [
+   "pulse_trooper@space_cadet_attack_00",
+   "pulse_trooper@space_cadet_attack_c_01",
+   "pulse_trooper@space_cadet_attack_c_02",
+   "pulse_trooper@space_cadet_attack_c_03",
+   "pulse_trooper@space_cadet_attack_c_04",
+   "pulse_trooper@space_cadet_attack_c_05",
+   "pulse_trooper@space_cadet_attack_c_06",
+   "pulse_trooper@space_cadet_attack_c_07",
+   "pulse_trooper@space_cadet_attack_08"
+  ],
+  "attack_c_team": [
+   "pulse_trooper@space_cadet_attack_00_team",
+   "pulse_trooper@space_cadet_attack_c_01_team",
+   "pulse_trooper@space_cadet_attack_c_02_team",
+   "pulse_trooper@space_cadet_attack_c_03_team",
+   "pulse_trooper@space_cadet_attack_c_04_team",
+   "pulse_trooper@space_cadet_attack_c_05_team",
+   "pulse_trooper@space_cadet_attack_c_06_team",
+   "pulse_trooper@space_cadet_attack_c_07_team",
+   "pulse_trooper@space_cadet_attack_08_team"
+  ],
+  "attack_up45": [
+   "pulse_trooper@space_cadet_attack_00",
+   "pulse_trooper@space_cadet_attack_up45_01",
+   "pulse_trooper@space_cadet_attack_up45_02",
+   "pulse_trooper@space_cadet_attack_up45_03",
+   "pulse_trooper@space_cadet_attack_up45_04",
+   "pulse_trooper@space_cadet_attack_up45_05",
+   "pulse_trooper@space_cadet_attack_up45_06",
+   "pulse_trooper@space_cadet_attack_up45_07",
+   "pulse_trooper@space_cadet_attack_08"
+  ],
+  "attack_up45_team": [
+   "pulse_trooper@space_cadet_attack_00_team",
+   "pulse_trooper@space_cadet_attack_up45_01_team",
+   "pulse_trooper@space_cadet_attack_up45_02_team",
+   "pulse_trooper@space_cadet_attack_up45_03_team",
+   "pulse_trooper@space_cadet_attack_up45_04_team",
+   "pulse_trooper@space_cadet_attack_up45_05_team",
+   "pulse_trooper@space_cadet_attack_up45_06_team",
+   "pulse_trooper@space_cadet_attack_up45_07_team",
+   "pulse_trooper@space_cadet_attack_08_team"
+  ],
+  "attack_up70": [
+   "pulse_trooper@space_cadet_attack_00",
+   "pulse_trooper@space_cadet_attack_up70_01",
+   "pulse_trooper@space_cadet_attack_up70_02",
+   "pulse_trooper@space_cadet_attack_up70_03",
+   "pulse_trooper@space_cadet_attack_up70_04",
+   "pulse_trooper@space_cadet_attack_up70_05",
+   "pulse_trooper@space_cadet_attack_up70_06",
+   "pulse_trooper@space_cadet_attack_up70_07",
+   "pulse_trooper@space_cadet_attack_08"
+  ],
+  "attack_up70_team": [
+   "pulse_trooper@space_cadet_attack_00_team",
+   "pulse_trooper@space_cadet_attack_up70_01_team",
+   "pulse_trooper@space_cadet_attack_up70_02_team",
+   "pulse_trooper@space_cadet_attack_up70_03_team",
+   "pulse_trooper@space_cadet_attack_up70_04_team",
+   "pulse_trooper@space_cadet_attack_up70_05_team",
+   "pulse_trooper@space_cadet_attack_up70_06_team",
+   "pulse_trooper@space_cadet_attack_up70_07_team",
+   "pulse_trooper@space_cadet_attack_08_team"
+  ],
+  "attack_c_up45": [
+   "pulse_trooper@space_cadet_attack_00",
+   "pulse_trooper@space_cadet_attack_c_up45_01",
+   "pulse_trooper@space_cadet_attack_c_up45_02",
+   "pulse_trooper@space_cadet_attack_c_up45_03",
+   "pulse_trooper@space_cadet_attack_c_up45_04",
+   "pulse_trooper@space_cadet_attack_c_up45_05",
+   "pulse_trooper@space_cadet_attack_c_up45_06",
+   "pulse_trooper@space_cadet_attack_c_up45_07",
+   "pulse_trooper@space_cadet_attack_08"
+  ],
+  "attack_c_up45_team": [
+   "pulse_trooper@space_cadet_attack_00_team",
+   "pulse_trooper@space_cadet_attack_c_up45_01_team",
+   "pulse_trooper@space_cadet_attack_c_up45_02_team",
+   "pulse_trooper@space_cadet_attack_c_up45_03_team",
+   "pulse_trooper@space_cadet_attack_c_up45_04_team",
+   "pulse_trooper@space_cadet_attack_c_up45_05_team",
+   "pulse_trooper@space_cadet_attack_c_up45_06_team",
+   "pulse_trooper@space_cadet_attack_c_up45_07_team",
+   "pulse_trooper@space_cadet_attack_08_team"
+  ],
+  "attack_c_up70": [
+   "pulse_trooper@space_cadet_attack_00",
+   "pulse_trooper@space_cadet_attack_c_up70_01",
+   "pulse_trooper@space_cadet_attack_c_up70_02",
+   "pulse_trooper@space_cadet_attack_c_up70_03",
+   "pulse_trooper@space_cadet_attack_c_up70_04",
+   "pulse_trooper@space_cadet_attack_c_up70_05",
+   "pulse_trooper@space_cadet_attack_c_up70_06",
+   "pulse_trooper@space_cadet_attack_c_up70_07",
+   "pulse_trooper@space_cadet_attack_08"
+  ],
+  "attack_c_up70_team": [
+   "pulse_trooper@space_cadet_attack_00_team",
+   "pulse_trooper@space_cadet_attack_c_up70_01_team",
+   "pulse_trooper@space_cadet_attack_c_up70_02_team",
+   "pulse_trooper@space_cadet_attack_c_up70_03_team",
+   "pulse_trooper@space_cadet_attack_c_up70_04_team",
+   "pulse_trooper@space_cadet_attack_c_up70_05_team",
+   "pulse_trooper@space_cadet_attack_c_up70_06_team",
+   "pulse_trooper@space_cadet_attack_c_up70_07_team",
+   "pulse_trooper@space_cadet_attack_08_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "pulse_trooper@space_cadet.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 3072,
+   "h": 208
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.pulse_trooper@space_cadet",
+   "name": "Pulse Trooper",
+   "heightLu": 70,
+   "widthLu": 82.5,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    110.0,
+    167.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     54,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "skinOf": "unit.pulse_trooper",
+   "skin": "space_cadet",
+   "extrasOf": "pulse_trooper@space_cadet",
+   "clips": {
+    "attack_b": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      50,
+      70,
+      194,
+      60,
+      90,
+      70,
+      70,
+      60,
+      84
+     ],
+     "durationMs": 748,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 2,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        62.7,
+        10.8
+       ],
+       [
+        59.9,
+        20.3
+       ],
+       [
+        58.4,
+        21.9
+       ],
+       [
+        58.7,
+        17.0
+       ],
+       [
+        54.1,
+        20.6
+       ],
+       [
+        28.5,
+        56.1
+       ],
+       [
+        51.4,
+        41.5
+       ],
+       [
+        62.3,
+        25.0
+       ],
+       [
+        61.9,
+        14.7
+       ]
+      ]
+     },
+     "muzzle": [
+      54.1,
+      20.6
+     ],
+     "aimDeg": 5.8,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       54.1,
+       20.6
+      ]
+     }
+    },
+    "attack_c": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      50,
+      60,
+      80,
+      184,
+      90,
+      70,
+      70,
+      60,
+      84
+     ],
+     "durationMs": 748,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        63.2,
+        20.3
+       ],
+       [
+        63.5,
+        10.6
+       ],
+       [
+        66.2,
+        4.4
+       ],
+       [
+        67.5,
+        3.1
+       ],
+       [
+        66.1,
+        5.6
+       ],
+       [
+        51.7,
+        37.5
+       ],
+       [
+        60.3,
+        21.2
+       ],
+       [
+        62.4,
+        16.9
+       ],
+       [
+        61.9,
+        14.7
+       ]
+      ]
+     },
+     "muzzle": [
+      66.1,
+      5.6
+     ],
+     "aimDeg": -10.5,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       66.1,
+       5.6
+      ]
+     }
+    },
+    "attack_up45": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      50,
+      60,
+      80,
+      184,
+      90,
+      70,
+      70,
+      60,
+      84
+     ],
+     "durationMs": 748,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        63.2,
+        20.3
+       ],
+       [
+        55.5,
+        56.3
+       ],
+       [
+        42.2,
+        71.1
+       ],
+       [
+        45.6,
+        67.2
+       ],
+       [
+        36.8,
+        78.9
+       ],
+       [
+        7.7,
+        83.2
+       ],
+       [
+        42.4,
+        65.4
+       ],
+       [
+        60.6,
+        32.8
+       ],
+       [
+        61.9,
+        14.7
+       ]
+      ]
+     },
+     "holdStep": 3,
+     "muzzle": [
+      36.8,
+      78.9
+     ],
+     "aimDeg": 45.1,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       36.8,
+       78.9
+      ]
+     }
+    },
+    "attack_up70": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      50,
+      60,
+      80,
+      184,
+      90,
+      70,
+      70,
+      60,
+      84
+     ],
+     "durationMs": 748,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        63.2,
+        20.3
+       ],
+       [
+        44.5,
+        70.0
+       ],
+       [
+        16.4,
+        86.6
+       ],
+       [
+        19.4,
+        82.6
+       ],
+       [
+        12.2,
+        94.6
+       ],
+       [
+        -17.4,
+        87.9
+       ],
+       [
+        34.6,
+        74.2
+       ],
+       [
+        59.4,
+        36.8
+       ],
+       [
+        61.9,
+        14.7
+       ]
+      ]
+     },
+     "holdStep": 3,
+     "muzzle": [
+      12.2,
+      94.6
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       12.2,
+       94.6
+      ]
+     }
+    },
+    "attack_c_up45": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      50,
+      60,
+      80,
+      184,
+      90,
+      70,
+      70,
+      60,
+      84
+     ],
+     "durationMs": 748,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "aimOf": "attack_c",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        63.2,
+        20.3
+       ],
+       [
+        56.2,
+        41.1
+       ],
+       [
+        39.9,
+        61.5
+       ],
+       [
+        42.1,
+        60.7
+       ],
+       [
+        38.7,
+        62.3
+       ],
+       [
+        14.3,
+        73.2
+       ],
+       [
+        47.0,
+        50.3
+       ],
+       [
+        60.2,
+        29.3
+       ],
+       [
+        61.9,
+        14.7
+       ]
+      ]
+     },
+     "muzzle": [
+      38.7,
+      62.3
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       38.7,
+       62.3
+      ]
+     }
+    },
+    "attack_c_up70": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      50,
+      60,
+      80,
+      184,
+      90,
+      70,
+      70,
+      60,
+      84
+     ],
+     "durationMs": 748,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "aimOf": "attack_c",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        63.2,
+        20.3
+       ],
+       [
+        49.0,
+        53.0
+       ],
+       [
+        15.4,
+        76.3
+       ],
+       [
+        17.9,
+        75.9
+       ],
+       [
+        14.0,
+        76.7
+       ],
+       [
+        -7.5,
+        79.7
+       ],
+       [
+        37.6,
+        60.8
+       ],
+       [
+        58.5,
+        34.5
+       ],
+       [
+        61.9,
+        14.7
+       ]
+      ]
+     },
+     "muzzle": [
+      14.0,
+      76.7
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       14.0,
+       76.7
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}
