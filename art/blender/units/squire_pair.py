@@ -342,10 +342,10 @@ CHOP = {"kind": "arc", "joint": "hand_r", "inner": SWORD_IN, "outer": SWORD_TIP,
 
 
 def _attack_b():
-    ov = {
-        4: [dict(CHOP, **{"from": 3})],
-        5: [dict(CHOP, **{"from": 3})],
-        6: [dict(CHOP, t0=0.4, t1=1.0, lines=2, **{"from": 5}),
+    ov = {   # the smears in two values, narrower (W2 review S1: the flat cream crescents held the extras' means down)
+        4: MW.smear_two_tone(dict(CHOP, **{"from": 3}), band=0.5),
+        5: MW.smear_two_tone(dict(CHOP, t0=0.15, **{"from": 4}), band=0.5),
+        6: MW.smear_two_tone(dict(CHOP, t0=0.4, t1=1.0, lines=2, **{"from": 5}), band=0.5) + [
             {"kind": "burst", "joint": "hand_r", "point": SWORD_TIP, "r0_lu": 5.0, "r1_lu": 10.0,
              "n": 5, "a0": -120.0, "arc": 150.0},
             {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 43, "spread": 0.8}],
@@ -404,12 +404,12 @@ RISE = dict(CHOP, t0=0.0, t1=0.95, lines=3, samples=16)
 def _attack_c():
     ov = {
         3: [{"kind": "dust", "ground": (-6.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 44, "spread": 0.7}],
-        4: [dict(RISE, **{"from": 3})],
-        5: [dict(RISE, **{"from": 3})],
-        6: [dict(RISE, t0=0.4, t1=1.0, lines=2, **{"from": 5}),
+        4: MW.smear_two_tone(dict(RISE, **{"from": 3}), band=0.5),
+        5: MW.smear_two_tone(dict(RISE, t0=0.15, **{"from": 4}), band=0.5),
+        6: MW.smear_two_tone(dict(RISE, t0=0.4, t1=1.0, lines=2, **{"from": 5}), band=0.5) + [
             {"kind": "burst", "joint": "hand_r", "point": SWORD_TIP, "r0_lu": 5.0, "r1_lu": 10.0,
              "n": 5, "a0": -60.0, "arc": 120.0}],
-        7: [dict(RISE, t0=0.3, t1=1.0, lines=2, **{"from": 6})],
+        7: MW.smear_two_tone(dict(RISE, t0=0.3, t1=1.0, lines=2, **{"from": 6}), band=0.5),
     }
     reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
     return M.clip("attack_c", [_c_pose(i) for i in range(11)], M.SMALL_MELEE_MS,

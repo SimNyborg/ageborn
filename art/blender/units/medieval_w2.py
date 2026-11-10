@@ -17,6 +17,9 @@ rounded fur tufts); this module adds what Medieval kit needs:
   cut_loop() / piping()  a rolled edge round the rim a clip left (a hood's facing round the face opening)
   shell_bands()   mail rows (or lames) on a blob's own shape; lattice(): diagonal quilting lines for folds()
   skin_palette()  a skin's palette with the far side's shaded copies mapped as well
+  smear_two_tone()  a swing smear (smear2 "arc") as a narrower crescent in two values: a darker trailing band under a
+                  lighter leading edge (the W2 review, S1: one flat cream or steel fill held the extras sheets' flat
+                  and micro means off their floors)
 
 Every number is in lu at rest, character space (x forward, y away from the camera, z up).
 """
@@ -49,6 +52,18 @@ RIM_BEAST = W1.RIM_BEAST
 HIGHLIGHT_BEAST = W1.HIGHLIGHT_BEAST
 SHADE_BIG = W1.SHADE_BIG
 SHADE_MOUNT = W1.SHADE_MOUNT
+
+
+def smear_two_tone(spec, band=0.6, shade=0.8, edge=0.3):
+    """A smear2 "arc" spec as two: the swept crescent cut to `band` of the sweep (from the weapon's outer path in) in
+    the colour x `shade` with less white (the trailing band, with the arc's outline and speed lines), and on top a
+    lighter strip `edge` of the sweep along the outer, leading edge (no outline, no speed lines)."""
+    from ageborn_art import colors as C
+    b0 = spec.get("band", 1.0)
+    white = spec.get("white", 0.3)
+    base = dict(spec, band=band * b0, color=C.scale(spec["color"], shade), white=white * 0.5)
+    lead = dict(spec, band=edge * b0, white=min(0.75, white + 0.25), outline_lu=0.0, lines=0)
+    return [base, lead]
 
 
 def skin_palette(mapping, far=0.8):

@@ -24,6 +24,10 @@ Detail standard (art round W2, Track MEDIEVAL): the habit in two tones (team-dar
 team-dark cuffs on the sleeves), the paw whole on the belly, folds in the parchment cowl. Aimed at flyers (queue item 44): A and B up about 45 and 70 degrees, hand-posed like W1's slingers
 (kit_bronze_detail.aimed_hand: the turn is solved on the sling's cord at the release), the stone lobbed up at the
 target. Damage spots: the habit's back, a sleeve, the cowl, a strip torn from the skirt.
+W2 review (S1, the extras sheet's micro under the floor across every throw frame): the habit worn and textured at
+every angle a throw shows: creases between the skirt's pleats and a team-dark hem band, folds where the rope belt
+cinches the belly, a darned patch on the habit's side and one on the skirt (dark thread), creases at the sleeves'
+elbows, and the rope belt knotted along its length.
 """
 import math
 
@@ -65,7 +69,7 @@ BEAD = "#8A6A4E"
 # the detail standard (art round W2): the friar's soft look (the soldier's lifts), cloth, leather and wood apart
 PARCH_DK = "#CFC3A6"      # the cowl's folds
 DETAIL_STANDARD = True
-LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_HIGHLIGHT = 1.2      # under the soldier lift (1.35): the W2 review's creases, patches and knots add edges
 LOOK_SHADE = MW.SHADE_SOLDIER
 LOOK_RIM = MW.RIM_SOLDIER
 MATERIAL_KINDS = MW.kinds({SKIN: "skin", CHEEK: "skin", HAIR: "fur", ROPE: "cloth", PARCH: "cloth", PARCH_DK: "cloth",
@@ -122,11 +126,16 @@ def build(rig):
     # W2: pleats round the bell skirt, team-dark, flaring to the hem (the habit reads as cloth)
     MW.folds(rig, "skirt", kface, [[(x, 17.0), (1.0 + (x - 1.0) * 1.2, 10.6)] for x in (-7.4, -3.2, 1.0, 5.2, 9.0)],
              w=1.3)
+    _habit_wear(rig, kface)
     # rope belt with a hanging knotted end
     g = Geo().lathe([(12.4, -1.3), (13.4, 0), (12.4, 1.3)], (2.0, 0, 20.8), segs=24, squash=(1.0, 0.9))
     g.capsule((11.0, -8.5, 20.5), (11.6, -9.4, 10.5), 1.2)
     g.sphere((11.6, -9.4, 14.2), 1.8, cuts=3).sphere((11.7, -9.5, 10.2), 1.8, cuts=3)
+    for a in (-150.0, -118.0, -62.0):    # W2 review S1: the belt knotted along its length (near side)
+        t = math.radians(a)
+        g.sphere((2.0 + 13.3 * math.cos(t), 13.3 * 0.9 * math.sin(t), 20.8), 1.55, cuts=2)
     rig.part("torso", g, ROPE, outline=0.8)
+    _belly_wear(rig, bface)
     # parchment cowl around the neck and shoulders
     g = Geo().blob((0.2, 0, 36.2), (11.6, 12.4, 4.6), p=2.4, taper=(1.12, 0.9))
     g.blob((-9.0, 0, 38.5), (4.4, 9.5, 5.2), p=2.2)
@@ -168,6 +177,13 @@ def build(rig):
     for s in ("r", "l"):    # W2: the habit's wide sleeves end in team-dark cuffs
         g = Geo().blob((0.2, B.ARM_Y[s], B.HAND_Z + 3.0), (5.8, 5.8, 1.9), p=2.6)
         look.team_part(rig, f"fore_{s}", g, outline=0.5)
+    for s in ("r", "l"):    # W2 review S1: creases bunched at the sleeves' elbows (team-dark)
+        y = B.ARM_Y[s]
+        up = Geo().capsule((0, y, B.SHOULDER_Z), (0, y, B.ELBOW_Z), 4.8, 4.6)
+        lo = Geo().capsule((0, y, B.ELBOW_Z), (0, y, B.HAND_Z + 2.0), 4.6, 4.4)
+        MW.folds(rig, f"arm_{s}", F.Face(rig, f"arm_{s}", [up]), [[(-3.4, 30.2), (0.0, 29.4), (3.2, 30.4)],
+                                                                [(-2.8, 32.8), (0.4, 32.0), (2.6, 33.0)]], w=1.0)
+        MW.folds(rig, f"fore_{s}", F.Face(rig, f"fore_{s}", [lo]), [[(-3.2, 26.4), (0.2, 25.6), (3.0, 26.6)]], w=1.0)
     g = Geo().blob((3.0, B.ARM_Y["l"] - 3.5, B.HAND_Z + 3.0), (5.2, 2.2, 6.8), p=4.0)
     rig.part("hand_l", g, BOOK)
     g = Geo().blob((3.0, B.ARM_Y["l"] - 3.9, B.HAND_Z + 3.0), (4.6, 2.2, 6.2), p=4.0)
@@ -190,6 +206,50 @@ def build(rig):
     rig.track("muzzle", "sling", (x, y - 1.0, z - SLING))
     if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
         _damage_spots(rig)
+
+
+def _dashes(pts, dash=1.3, gap=0.9):
+    """A polyline [(x, z)] cut into dashes `dash` long with `gap` between them (a running stitch)."""
+    out, carry, on = [], 0.0, True
+    for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+        L, t = math.dist((x0, z0), (x1, z1)), 0.0
+        while t < L - 1e-6:
+            step = min((dash if on else gap) - carry, L - t)
+            if on:
+                a, b = t / L, (t + step) / L
+                out.append([(x0 + (x1 - x0) * a, z0 + (z1 - z0) * a), (x0 + (x1 - x0) * b, z0 + (z1 - z0) * b)])
+            t += step
+            carry += step
+            if carry >= (dash if on else gap) - 1e-6:
+                carry, on = 0.0, not on
+    return out
+
+
+def _darn(rig, joint, face, pts):
+    """A darned patch: a team-dark field over the convex polygon pts with a dark running stitch round it (a light
+    thread lit up as highlight pixels at game scale)."""
+    MW.panel(rig, joint, face, pts, depth=0.35)
+    g = Geo()
+    for seg in _dashes(list(pts) + [pts[0]]):
+        MW.ribbon(g, face, seg, 0.75, 0.43)
+    rig.part(joint, g, LEATHER, outline=0, highlight=False)
+
+
+def _habit_wear(rig, kface):
+    """W2 review S1: creases between the skirt's pleats, a team-dark hem band and a darned patch on the skirt."""
+    MW.folds(rig, "skirt", kface, [[(x, 15.6), (1.0 + (x - 1.0) * 1.15, 11.4)] for x in (-5.3, -1.1, 3.1, 7.1)],
+             w=0.9)
+    g = Geo().lathe([(13.25, 9.3), (13.95, 10.0), (13.85, 11.3), (13.35, 11.7)], (1.0, 0, 0), segs=24,
+                    squash=(1.0, 0.9))
+    look.team_part(rig, "skirt", g, outline=0.5)
+    _darn(rig, "skirt", kface, [(-10.4, 12.0), (-6.4, 11.8), (-6.2, 15.4), (-10.0, 15.6)])
+
+
+def _belly_wear(rig, bface):
+    """W2 review S1: folds where the rope belt cinches the habit and a darned patch on its side."""
+    MW.folds(rig, "torso", bface, [[(x, 22.6), (x + 0.8 * d, 26.4)] for x, d in ((-6.4, -1), (-2.6, 0), (1.6, 1),
+                                                                                  (5.0, 1))], w=1.0)
+    _darn(rig, "torso", bface, [(-9.6, 26.0), (-5.2, 25.6), (-5.0, 30.4), (-9.2, 30.6)])
 
 
 def _damage_spots(rig):

@@ -394,10 +394,10 @@ def _c_pose(i):
 
 
 def _attack_c():
-    ov = {
-        4: [dict(ARC, **{"from": 3})],
-        5: [dict(ARC, **{"from": 4})],
-        6: [dict(ARC, t0=0.4, t1=1.0, lines=2, **{"from": 5}),
+    ov = {   # the smears in two values, narrower (W2 review S1: the flat steel crescents held the extras' means down)
+        4: MW.smear_two_tone(dict(ARC, **{"from": 3})),
+        5: MW.smear_two_tone(dict(ARC, **{"from": 4})),
+        6: MW.smear_two_tone(dict(ARC, t0=0.4, t1=1.0, lines=2, **{"from": 5})) + [
             {"kind": "burst", "joint": "sword", "point": TIP, "r0_lu": 7.0, "r1_lu": 13.0, "n": 6,
              "a0": -70.0, "arc": 140.0},
             {"kind": "dust", "ground": (28.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 84, "spread": 1.0}],

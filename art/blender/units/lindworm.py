@@ -29,6 +29,12 @@ scales, the tail fin, a strip torn from the caparison's fringe, smoke curling fr
 emitter low on the haunch, below the head and clear beside it on every frame (DAMAGE's `fireAt`).
 Bone Wyrm (legendary skin): a skeletal dragon in bleached bone with dark rib bands down its flank and dark
 sockets round the eyes; the fire stays ghost green.
+W2 review (S1, the wave's weakest item; the extras sheet under the beast floors): the neck and tail no longer banded
+like a ribbed hose: shingled scales over their backs (round lobes pointing down the neck and out along the tail) and
+pale scutes down the throat; the caparison quilted in team-dark diamonds (its big field read as glossy plastic); the
+breath in three values (a darker green rim, the mint body, the white core) with lighter streaks along the flow
+instead of one flat mint cone; the smoke rises from the back behind the caparison, clear of the body. The Bone Wyrm
+keeps the ringed neck and tail (vertebrae suit the skeleton).
 """
 import math
 
@@ -62,6 +68,11 @@ MOUTH = "#5A2E3E"
 PARCH = "#E8DFC8"
 FIRE = "#8FE39A"
 FIRE_CORE = "#E8FFE6"
+FIRE_RIM = "#56B26C"      # W2 review S1: the breath's darker rim (three values instead of a flat mint cone)
+FIRE_BAND_CORE = "#D3F2D4"  # W2 S1, second pass: flow bands a few levels under the white core
+FIRE_BAND_LT = "#A6EBB0"    # ... a few levels over the mint body
+FIRE_BAND_DK = "#7CD38A"    # ... and a few under it
+SCALE_MID = "#79718F"     # the shingled scales over the neck's and tail's backs
 SMOKE = "#B9C2B8"
 SCALE_RING = "#5F5874"    # the neck's and tail's scale rows (between the scale and its dark)
 RIDGE = "#BDB396"
@@ -71,9 +82,12 @@ DETAIL_STANDARD = True
 LOOK_HIGHLIGHT = MW.HIGHLIGHT_BEAST
 LOOK_SHADE = MW.SHADE_BEAST
 LOOK_RIM = MW.RIM_BEAST
-MATERIAL_KINDS = MW.kinds({SCALE_C: "hide", SCALE_DK: "hide", SCALE_LT: "hide", SCALE_RING: "hide", BELLY: "bone",
+MATERIAL_KINDS = MW.kinds({SCALE_C: "hide", SCALE_DK: "hide", SCALE_LT: "hide", SCALE_RING: "hide", SCALE_MID: "hide",
+                           BELLY: "bone",
                            RIDGE: "bone", FANG: "bone", CLAW: "bone", EYEC: "glass", MOUTH: "skin", PARCH: "cloth",
-                           FIRE: "energy", FIRE_CORE: "energy", SMOKE: "cloth", "#2A2018": "skin", "team": "cloth"})
+                           FIRE: "energy", FIRE_CORE: "energy", FIRE_RIM: "energy", FIRE_BAND_CORE: "energy",
+                           FIRE_BAND_LT: "energy", FIRE_BAND_DK: "energy", SMOKE: "cloth", "#2A2018": "skin",
+                           "team": "cloth"})
 
 # Bone Wyrm (legendary skin, DESIGN A5.8): a skeletal dragon: bleached bone hide, dark rib bands down the flank and
 # dark sockets round the eyes (geometry the skin adds), grey-brown scale rows; the breath stays ghost green. The bone
@@ -102,6 +116,63 @@ SNOUT = (X2 + 22.0, 0.0, Z2 - 1.0)
 FLAME_TIP = (X2 + 64.0, 0.0, Z2 - 4.0)
 
 
+def _frame(p0, p1):
+    """A capsule segment's axis a (p0 -> p1 in the x-z plane), its dorsal normal d (the side facing up: the back of a
+    rising neck, the top of a falling tail) and the camera side c (-y)."""
+    from mathutils import Vector
+    a = Vector((p1[0] - p0[0], 0.0, p1[1] - p0[1])).normalized()
+    d = Vector((-a.z, 0.0, a.x)) if a.x >= 0 else Vector((a.z, 0.0, -a.x))
+    return a, d, Vector((0.0, -1.0, 0.0))
+
+
+def _rows(p0, p1, step, t0, t1):
+    L = math.dist(p0, p1) * (t1 - t0)
+    n = max(1, int(L / step))
+    return [t0 + (t1 - t0) * (k + 0.5) / n for k in range(n)]
+
+
+def _scales(rig, joint, p0, p1, r0, r1, toward, step=3.0, phis=(10.0, 40.0, 70.0), length=4.4, r=1.75, t0=0.06,
+            t1=0.96):
+    """W2 review S1: shingled scales over the back of a neck or tail segment: round lobes (W1.tuft_at) laid on the
+    capsule p0 -> p1 (radius r0 -> r1) in rows every `step` lu at the angles `phis` from the dorsal line toward the
+    camera (odd rows offset half a step), each pointing toward p0 (`toward` -1: down a neck to the body) or p1 (+1:
+    out along a tail), so each row's round ends cover the next row's roots."""
+    a, d, c = _frame(p0, p1)
+    dv = a * toward
+    tilt = math.degrees(math.atan2(dv.x, -dv.z))
+    half = (phis[1] - phis[0]) / 2 if len(phis) > 1 else 0.0
+    lobes = Geo()
+    for k, t in enumerate(_rows(p0, p1, step, t0, t1)):
+        rr = r0 + (r1 - r0) * t
+        ax = (p0[0] + (p1[0] - p0[0]) * t, 0.0, p0[1] + (p1[1] - p0[1]) * t)
+        for phi in phis:
+            ph = math.radians(phi + (half if k % 2 else 0.0))
+            nv = d * math.cos(ph) + c * math.sin(ph)
+            p = (ax[0] + nv.x * rr, ax[1] + nv.y * rr, ax[2] + nv.z * rr)
+            MW.tuft_at(None, lobes, p, nv, length, tilt, r, inset=0.45, lean=0.18, flat=0.55, cap=0, shape="round")
+    rig.part(joint, lobes, SCALE_MID, outline=0)
+
+
+def _scutes(rig, joint, p0, p1, r0, r1, step=2.5, phis=(126.0, 158.0), t0=0.05, t1=0.95):
+    """W2 review S1: pale scutes down the throat: flat plates across the throat side of a neck segment (rows every
+    `step` lu at the angles `phis` from the dorsal line, past the camera side to the throat), each lying on the
+    surface and wide round the neck, so the throat reads as a snake's belly between the scaled back and the jaw."""
+    from mathutils import Matrix
+    a, d, c = _frame(p0, p1)
+    g = Geo()
+    for t in _rows(p0, p1, step, t0, t1):
+        rr = r0 + (r1 - r0) * t
+        ax = (p0[0] + (p1[0] - p0[0]) * t, 0.0, p0[1] + (p1[1] - p0[1]) * t)
+        for phi in phis:
+            ph = math.radians(phi)
+            nv = d * math.cos(ph) + c * math.sin(ph)
+            tv = d * -math.sin(ph) + c * math.cos(ph)
+            p = (ax[0] + nv.x * (rr - 0.3), ax[1] + nv.y * (rr - 0.3), ax[2] + nv.z * (rr - 0.3))
+            e = Matrix((tuple(a), tuple(tv), tuple(nv))).transposed().to_euler("XYZ")
+            g.blob(p, (1.3, 2.7, 0.8), p=2.4, rot=tuple(math.degrees(v) for v in e))
+    rig.part(joint, g, BELLY, outline=0.3)
+
+
 def _neck(rig):
     r0, r1 = NECK["r"]
     rig.joint("n1", "trunk", (X0, 0.0, Z0))
@@ -109,16 +180,23 @@ def _neck(rig):
     rig.joint("nh", "n2", (X2, 0.0, Z2))
     rig.part("n1", Geo().capsule((X0, 0, Z0), (X1, 0, Z1), r0 + 2.0, r0), SCALE_C)
     rig.part("n2", Geo().capsule((X1, 0, Z1), (X2, 0, Z2), r0, r1), SCALE_C)
-    # W2: the neck banded in scale rows (the long plain field reads as scaled hide)
-    MW.mail_rows(rig, "n1", (X0, 0, Z0), (X1, 0, Z1), lambda t: r0 + 2.0 - 2.0 * t, SCALE_RING, step=2.8, w=1.0,
-                 bulge=0.35, finish="metal")
-    MW.mail_rows(rig, "n2", (X1, 0, Z1), (X2, 0, Z2), lambda t: r0 + (r1 - r0) * t, SCALE_RING, step=2.8, w=1.0,
-                 bulge=0.35, finish="metal")
-    g = Geo()
-    for t in (0.2, 0.5, 0.8):
-        g.blob((X0 + (X1 - X0) * t + 4.4 * math.sin(A1), -r0 * 0.5, Z0 + (Z1 - Z0) * t - 4.4 * math.cos(A1)),
-               (3.6, 3.4, 1.6), p=2.4, rot=(0, -NECK["ang"][0], 0))
-    rig.part("n1", g, BELLY, outline=0.4)
+    if getattr(rig, "skin", None) == "bone_wyrm":
+        # the Bone Wyrm's neck banded in rings (vertebrae suit the skeleton) over three pale throat plates
+        MW.mail_rows(rig, "n1", (X0, 0, Z0), (X1, 0, Z1), lambda t: r0 + 2.0 - 2.0 * t, SCALE_RING, step=2.8, w=1.0,
+                     bulge=0.35, finish="metal")
+        MW.mail_rows(rig, "n2", (X1, 0, Z1), (X2, 0, Z2), lambda t: r0 + (r1 - r0) * t, SCALE_RING, step=2.8, w=1.0,
+                     bulge=0.35, finish="metal")
+        g = Geo()
+        for t in (0.2, 0.5, 0.8):
+            g.blob((X0 + (X1 - X0) * t + 4.4 * math.sin(A1), -r0 * 0.5, Z0 + (Z1 - Z0) * t - 4.4 * math.cos(A1)),
+                   (3.6, 3.4, 1.6), p=2.4, rot=(0, -NECK["ang"][0], 0))
+        rig.part("n1", g, BELLY, outline=0.4)
+    else:
+        # W2 review S1: shingled scales down the neck's back and pale scutes down its throat (no ringed hose)
+        _scales(rig, "n1", (X0, Z0), (X1, Z1), r0 + 2.0, r0, toward=-1)
+        _scales(rig, "n2", (X1, Z1), (X2, Z2), r0, r1, toward=-1, t1=0.86)
+        _scutes(rig, "n1", (X0, Z0), (X1, Z1), r0 + 2.0, r0)
+        _scutes(rig, "n2", (X1, Z1), (X2, Z2), r0, r1, t1=0.84)
     for seg, (p0, p1, aa, rr) in enumerate((((X0, Z0), (X1, Z1), A1, r0), ((X1, Z1), (X2, Z2), A2, r1))):
         g = Geo()
         for t in (0.2, 0.55, 0.9):
@@ -180,16 +258,77 @@ def _neck(rig):
     # the breath: a cone of green fire from the jaws (its own joint, shown only while breathing)
     rig.joint("flame", "nh", (SNOUT[0], 0, SNOUT[2] - 1.0), hidden=True)
     sx, sz = SNOUT[0], SNOUT[2] - 1.0
-    g = Geo().lathe([(1.8, 0), (5.0, 8.0), (9.0, 20.0), (12.0, 32.0), (12.6, 38.0), (9.0, 42.0), (0, 43.0)],
-                    (sx, 0, sz), (sx + 43.0, 0, sz - 3.0), segs=18, squash=(1.0, 0.9))
+    # W2 review S1: the gout in three values: a darker rim (the full cone, behind), the mint body inside it and the
+    # white core, with lighter streaks along the flow (one flat mint cone read as a plastic funnel)
+    prof = [(1.8, 0), (4.6, 8.0), (8.2, 20.0), (10.8, 32.0), (11.4, 38.0), (8.2, 42.0), (0, 43.0)]
+    g = Geo().lathe(prof, (sx, 2.5, sz), (sx + 43.0, 2.5, sz - 3.0), segs=18, squash=(1.0, 0.9))
+    rig.part("flame", g, glow=FIRE_RIM, outline=0)
+    g = Geo().lathe([(r * 0.8, h * 0.95) for r, h in prof], (sx + 0.6, 0.0, sz), (sx + 41.0, 0.0, sz - 2.85), segs=18,
+                    squash=(1.0, 0.9))
     rig.part("flame", g, glow=FIRE, outline=0)
     g = Geo().lathe([(1.0, 0), (2.6, 8.0), (5.0, 20.0), (6.0, 30.0), (0, 36.0)], (sx + 1.0, -2.0, sz),
                     (sx + 37.0, -2.0, sz - 2.5), segs=14)
     rig.part("flame", g, glow=FIRE_CORE, outline=0)
     g = Geo()
     for dx, dz, r in ((40.0, 8.0, 4.0), (32.0, -9.0, 3.4), (46.0, -5.0, 3.0)):
+        g.sphere((sx + dx, 2.5, sz + dz), r, cuts=2)
+    rig.part("flame", g, glow=FIRE_RIM, outline=0)
+    g = Geo()
+    for dx, dz, r in ((40.0, 6.8, 2.6), (32.0, -7.8, 2.2)):
         g.sphere((sx + dx, 0.0, sz + dz), r, cuts=2)
     rig.part("flame", g, glow=FIRE, outline=0)
+    # streaks along the flow on the near side of the mint body: lighter lines and, between them, darker ones (moving
+    # fire, not a funnel), and embers flung off the gout's edge
+    def streaks(lines):
+        g = Geo()
+        for v, h0, h1, w in lines:
+            pts = []
+            for i in range(6):
+                h = h0 + (h1 - h0) * i / 5
+                rad = 0.8 * (1.8 + (11.2 - 1.8) * min(1.0, h / 34.0))
+                pts.append((sx + 0.6 + h, -0.9 * rad * math.sqrt(max(0.0, 1.0 - v * v)) - 0.4,
+                            sz - 0.07 * h + v * rad))
+            for p, q in zip(pts, pts[1:]):
+                g.capsule(p, q, w, w * 0.9, segs=8, rings=2)
+        return g
+    rig.part("flame", streaks(((0.62, 7.0, 30.0, 0.85), (-0.55, 10.0, 33.0, 0.8), (0.18, 18.0, 38.0, 0.7),
+                               (-0.2, 24.0, 39.0, 0.65), (0.84, 16.0, 34.0, 0.6), (-0.82, 20.0, 36.0, 0.6))),
+             glow=FIRE_CORE, outline=0)
+    rig.part("flame", streaks(((0.4, 12.0, 34.0, 0.55), (-0.38, 15.0, 36.0, 0.55), (0.0, 28.0, 40.0, 0.5),
+                               (0.72, 26.0, 38.0, 0.45), (-0.68, 28.0, 39.0, 0.45))), glow=FIRE_RIM, outline=0)
+    # W2 S1 (second pass): low-contrast flow bands, a few levels off their ground, laid closely over the white core and
+    # the mint body, so the gout has value structure everywhere inside it (wide flat glow held the extras' micro
+    # under the beast floor)
+    def core_r(h):
+        for (h0, r0), (h1, r1) in zip(((0.0, 1.0), (8.0, 2.6), (20.0, 5.0), (30.0, 6.0), (36.0, 0.0)),
+                                      ((8.0, 2.6), (20.0, 5.0), (30.0, 6.0), (36.0, 0.0), (99.0, 0.0))):
+            if h <= h1:
+                return r0 + (r1 - r0) * (h - h0) / (h1 - h0)
+        return 0.0
+
+    def core_bands(lines):
+        g = Geo()
+        for v, h0, h1, w in lines:
+            pts = []
+            for i in range(7):
+                h = h0 + (h1 - h0) * i / 6
+                r = core_r(h)
+                pts.append((sx + 1.0 + h, -2.0 - r * math.sqrt(max(0.0, 1.0 - v * v)) - 0.3, sz - 0.069 * h + v * r))
+            for p, q in zip(pts, pts[1:]):
+                g.capsule(p, q, w, w, segs=8, rings=2)
+        return g
+    rig.part("flame", core_bands(((-0.62, 4.0, 31.0, 0.42), (-0.2, 3.0, 32.0, 0.42), (0.22, 4.0, 31.0, 0.42),
+                                  (0.6, 6.0, 30.0, 0.42))), glow=FIRE_BAND_CORE, outline=0)
+    rig.part("flame", streaks(((0.74, 6.0, 38.0, 0.42), (-0.72, 8.0, 39.0, 0.42), (0.92, 12.0, 36.0, 0.4),
+                               (-0.9, 12.0, 37.0, 0.4), (0.3, 30.0, 42.0, 0.42), (-0.3, 31.0, 42.0, 0.42))),
+             glow=FIRE_BAND_LT, outline=0)
+    rig.part("flame", streaks(((0.5, 22.0, 41.0, 0.4), (-0.48, 24.0, 41.0, 0.4), (0.06, 33.0, 42.5, 0.4))),
+             glow=FIRE_BAND_DK, outline=0)
+    g = Geo()
+    for dx, dz, r in ((22.0, 13.5, 1.2), (30.0, 15.5, 1.0), (26.0, -13.0, 1.1), (36.0, -14.5, 0.9), (44.0, 11.0, 1.0),
+                      (48.0, -9.0, 0.9), (16.0, 10.0, 0.9), (52.0, 2.0, 1.1)):
+        g.sphere((sx + dx, -1.0, sz + dz), r, cuts=2)
+    rig.part("flame", g, glow=FIRE_CORE, outline=0)
     g = Geo()   # W2: licks of the white core curling out through the gout (the fire reads as flames, not a cone)
     for dx, dz, ang, ln in ((12.0, 3.0, 18.0, 14.0), (20.0, -4.0, -16.0, 13.0), (27.0, 5.5, 24.0, 11.0),
                             (33.0, -6.0, -22.0, 10.0)):
@@ -247,11 +386,14 @@ def build(rig):
     rig.joint("tail3", "tail2", (-74.0, 0, 12.0))
     rig.part("tail1", Geo().capsule((-32.0, 0, 30.0), (-54.0, 0, 22.0), 11.0, 7.8), SCALE_C)
     rig.part("tail2", Geo().capsule((-54.0, 0, 22.0), (-74.0, 0, 12.0), 7.8, 4.8), SCALE_C)
-    # W2: the tail banded in scale rows too
-    MW.mail_rows(rig, "tail1", (-36.0, 0, 28.5), (-54.0, 0, 22.0), lambda t: 10.6 - 2.8 * t, SCALE_RING, step=2.9,
-                 w=1.0, bulge=0.35, finish="metal")
-    MW.mail_rows(rig, "tail2", (-54.0, 0, 22.0), (-72.0, 0, 13.0), lambda t: 7.8 - 3.0 * t, SCALE_RING, step=2.9,
-                 w=0.9, bulge=0.3, finish="metal")
+    if getattr(rig, "skin", None) == "bone_wyrm":   # the Bone Wyrm's tail banded in rings (vertebrae)
+        MW.mail_rows(rig, "tail1", (-36.0, 0, 28.5), (-54.0, 0, 22.0), lambda t: 10.6 - 2.8 * t, SCALE_RING, step=2.9,
+                     w=1.0, bulge=0.35, finish="metal")
+        MW.mail_rows(rig, "tail2", (-54.0, 0, 22.0), (-72.0, 0, 13.0), lambda t: 7.8 - 3.0 * t, SCALE_RING, step=2.9,
+                     w=0.9, bulge=0.3, finish="metal")
+    else:   # W2 review S1: shingled scales out along the tail's top
+        _scales(rig, "tail1", (-32.0, 30.0), (-54.0, 22.0), 11.0, 7.8, toward=1, t0=0.14)
+        _scales(rig, "tail2", (-54.0, 22.0), (-74.0, 12.0), 7.8, 4.8, toward=1, length=3.8, r=1.5, step=2.7)
     rig.part("tail3", Geo().capsule((-74.0, 0, 12.0), (-92.0, 0, 7.0), 4.8, 2.0), SCALE_C)
     g = Geo().slab([(-86.0, 8.0), (-100.0, 17.0), (-96.0, 6.0), (-101.0, -3.0)], 0.0, 1.6)
     rig.part("tail3", g, team=True, outline=0.7)
@@ -267,7 +409,7 @@ def build(rig):
     rig.part("trunk", g, SCALE_C)
     rig.part("trunk", gb, BELLY, outline=0.6)
     g = Geo()
-    for x in range(-30, 30, 7):
+    for x in range(-30, 31, 4):   # W2 review S1: the belly's ridges twice as close (the reared frames show it)
         g.capsule((float(x), -15.6, 20.0), (float(x) + 1.0, -16.4, 25.0), 0.7)
     rig.part("trunk", g, RIDGE, outline=0)
     g = Geo()
@@ -280,6 +422,7 @@ def build(rig):
             c = bodyface.hit(x + (2.5 if row % 2 else 0.0), z)
             g.blob((c.x, c.y, c.z), (2.6, 1.3, 2.0), p=2.3)
     rig.part("trunk", g, SCALE_LT, outline=0)
+
     if getattr(rig, "skin", None) == "bone_wyrm":   # dark rib bands down the flank, the skeleton showing through
         g = Geo()
         for x in (-20.0, -12.0, -4.0, 4.0, 12.0):
@@ -302,6 +445,9 @@ def build(rig):
                                                                            (-27.0, 50.0))], depth=0.3)
     MW.folds(rig, "trunk", cface, [[K.scr(cface, (x, -20.6, 54.0 - 0.12 * abs(x))), K.scr(cface, (x + 0.6, -20.6, 35.0))]
                                    for x in (-20.0, -6.0, 16.0, 24.0)], w=1.4)
+    # W2 review S1: the caparison's front quilted in team-dark diamonds (its big field read as glossy plastic)
+    (qx0, qz0), (qx1, qz1) = K.scr(cface, (-10.0, -20.6, 35.6)), K.scr(cface, (27.0, -20.6, 55.0))
+    MW.folds(rig, "trunk", cface, MW.lattice(qx0, qx1, qz0, qz1, 6.5), w=0.9)
     g = Geo()
     for x in range(-26, 26, 5):
         g.lathe([(1.6, 0), (2.0, -1.8), (0, -4.6)], (x, -20.6, 30.2), segs=8)
@@ -325,14 +471,14 @@ SPOTS = {"caparison": (-14.0, 50.0), "neck": (30.0, 80.0), "fin": (-121.0, 14.0)
 def _damage_spots(rig):
     """Damage spots (queue item 40 section 3.3, beast; the body x 1.25, the head x 1.45): the caparison behind its paw
     (its largest team field, r 9), the neck's scales, the tail fin, a strip torn from the caparison's fringe, smoke
-    curling from the nostrils (breath) and a smoke emitter low on the haunch, below the head and clear beside it on
-    every frame (DAMAGE's `fireAt`)."""
+    curling from the nostrils (breath) and a smoke emitter on the back behind the caparison, so the smoke rises clear
+    of the body against the sky (the W2 review's nit: low on the haunch it read as a faint smudge by the leg)."""
     rig.damage_spot_at("caparison", "trunk", *SPOTS["caparison"], 9.0, "cloth", team=True)
     rig.damage_spot_at("neck", "n1", *SPOTS["neck"], 6.0, "hide")
     rig.damage_spot_at("fin", "tail3", *SPOTS["fin"], 5.0, "cloth", team=True)
     rig.damage_spot_at("hem", "trunk", *SPOTS["hem"], 10.0, "cloth", kind="strip", team=True)
     rig.damage_spot("breath", "nh", (X2 + 22.4, -1.6, Z2 + 1.6), 4.0, "breath", kind="emit", normal=(1, 0, 0))
-    rig.damage_spot("smoke", "trunk", (-30.0, -12.0, 24.0), 7.0, "smoke", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("smoke", "trunk", (-31.0, -4.0, 47.0), 7.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -390,7 +536,9 @@ ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
 #       shift  draw  rear  HOLD lunge lunge BREATH sweep fade settle  (neck1, neck2, head, jaw)
 A_HEAD = [(2, 2, 0, 0), (10, 12, -6, 6), (10, 26, -14, 14), (12, 42, -26, 22), (4, 10, -6, 30), (-8, -12, 6, 34),
           (-16, -20, 10, 36), (-20, -24, 12, 34), (-10, -12, 6, 16), (-2, -2, 0, 2)]
-A_FIRE = [None, None, None, None, (0.5, 0), (1.0, 0), (1.3, 7), (1.25, 15), (0.9, 6), None]
+# the gout's scale per frame (W2 review S1: its peak 1.3-1.35 cut to 1.15-1.18, so the fire ends near the `breath`
+# tracker where the hit lands, and the flat green field no longer holds the extras' means under the floors)
+A_FIRE = [None, None, None, None, (0.5, 0), (1.0, 0), (1.15, 7), (1.12, 15), (0.9, 6), None]
 A_R = [0.0, 0.5, 1.0, 1.0, 0.5, -2.0, -4.0, -4.0, -2.0, 0.0]
 A_X = [0.0, -1.0, -2.5, -3.5, 0.0, 3.0, 5.0, 5.0, 2.0, 0.0]
 A_Q = [-0.01, 0.02, 0.04, 0.06, 0.02, -0.03, -0.06, -0.04, -0.02, 0.0]
@@ -439,7 +587,7 @@ def _attack_clip():
 # sweep starts, 6 BREATH (fire swept up and across), 7 sweep, 8-9 = A
 B_HEAD = [(2, 2, 0, 0), (-14, -10, 6, 4), (-26, -20, 12, 8), (-34, -28, 18, 14), (-26, -18, 12, 26), (-16, -8, 4, 32),
           (-8, 0, -2, 36), (-2, 4, -6, 34), (-10, -12, 6, 16), (-2, -2, 0, 2)]
-B_FIRE = [None, None, None, None, (0.5, 12), (1.0, 8), (1.3, 2), (1.35, -6), (0.9, -14), None]
+B_FIRE = [None, None, None, None, (0.5, 12), (1.0, 8), (1.15, 2), (1.18, -6), (0.9, -14), None]
 B_R = [0.0, -2.0, -4.0, -5.0, -3.0, -1.0, 1.0, 1.0, -2.0, 0.0]
 B_X = [0.0, 1.0, 0.0, -1.0, 1.0, 3.0, 5.0, 5.0, 2.0, 0.0]
 B_Z = [0.0, -1.5, -3.0, -4.0, -3.0, -1.5, 0.0, 0.0, 0.0, 0.0]
@@ -456,7 +604,7 @@ def _b_pose(f):
 # head drops, 6 BREATH (fire poured down in front), 7 pour, 8-9 = A
 C_HEAD = [(2, 2, 0, 0), (6, 8, -4, 4), (12, 16, -8, 10), (16, 22, -10, 16), (0, -6, 10, 28), (-14, -20, 22, 34),
           (-22, -28, 30, 36), (-24, -30, 32, 34), (-10, -12, 6, 16), (-2, -2, 0, 2)]
-C_FIRE = [None, None, None, None, (0.5, 0), (1.0, -4), (1.3, -8), (1.35, -14), (0.9, -18), None]
+C_FIRE = [None, None, None, None, (0.5, 0), (1.0, -4), (1.15, -8), (1.18, -14), (0.9, -18), None]
 C_REAR = [0.0, 6.0, 14.0, 18.0, 12.0, 4.0, 0.0, 0.0, 0.0, 0.0]
 C_X = [0.0, -1.0, -2.0, -3.0, 0.0, 3.0, 5.0, 5.0, 2.0, 0.0]
 C_Q = [-0.01, 0.02, 0.03, 0.04, 0.02, -0.03, -0.07, -0.04, -0.02, 0.0]
