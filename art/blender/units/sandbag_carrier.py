@@ -18,10 +18,15 @@ Animation (ANIM_SPEC G1 plodding jog at card 70 x 1.25 = 87.5 lu/s, appendix B s
             round flat into the enemy (a horizontal hit)
   hit       armoured: he ducks behind the bag, the helmet clanks down
   die       D1 fling and spin: the helmet pops off, the bag flops to the ground spilling sand
+  shield_lock  (items 51/52, extras sheet) the bag hugged up in front of him as a wall, braced behind it with his
+            eyes over the top: the pose of Cover and of the Shield Wall
+
+Art round W3 (the detail standard): damage spots measured in posed frames (item 40) and the `shield_lock` pose.
 """
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as GT
 from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_modern as KM
 from ageborn_art import kit_modern_wave as W
@@ -29,6 +34,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "sandbag_carrier"
 GAIT_NAME = "biped"
@@ -44,6 +50,23 @@ BAG_R = (12.5, 9.0, 8.0)     # half sizes: long axis along x
 SACK = "#B39E74"
 SACK_DK = "#8F7C58"
 SAND = "#D8C49A"
+PATCH = "#9C8862"        # W3: a sewn patch on the sack
+STRING = "#E8DFC8"
+TROUSERS = "#767B5A"     # kit_modern.legs_v3's olive trousers
+STUBBLE = "#C9A88E"
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Sandbag Carrier is the huge sack, the Brodie and the tunic under it: burlap creases and a
+# sewn patch on the sack (a big plain field, W1 lesson 6), worn chips on the Brodie, the tunic's team-dark hem,
+# pocket flap and cuffs with a side seam and the khaki front brace, lighter boots.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", STUBBLE: "skin", R.HAIR: "fur", R.KHAKI: "cloth", R.KHAKI_LT: "cloth",
+                           KM.NET: "cloth", KM.FELT: "cloth", KM.CREAM: "cloth", TROUSERS: "cloth", SACK: "cloth",
+                           SACK_DK: "cloth", PATCH: "cloth", SAND: "stone", R.OLIVE: "iron", MW.CHIP: "iron",
+                           MW.BOOT: "leather", "#2B2A2E": "leather", R.LEATHER: "leather", KM.MUD: "stone",
+                           R.GUNMETAL: "iron", R.STEEL: "iron", KM.BRASS: "bronze", "team": "cloth"})
 
 
 def _bag(rig, joint, k=1.0):
@@ -55,7 +78,7 @@ def _bag(rig, joint, k=1.0):
     g.blob((rx * k + 4.0, 0, 1.2), (1.6, 2.2, 2.0), p=2.2)                   # the tuft
     rig.part(joint, g, SACK_DK, outline=0.6)
     g = Geo().lathe([(2.4, -0.4), (2.6, 0), (2.4, 0.4)], (rx * k + 0.8, 0, 0.6), (rx * k + 1.6, 0, 0.6), segs=12)
-    rig.part(joint, g, "#E8DFC8", outline=0.3)                               # string
+    rig.part(joint, g, STRING, outline=0.3)                                  # string
     c = face.hit(-1.0, 1.0)
     g = Geo()
     face.stroke(g, c, [(-8.0, 0.4), (7.0, 0.4)], 4.2, 0.4)                   # painted team stripe
@@ -66,7 +89,14 @@ def _bag(rig, joint, k=1.0):
     g = Geo()   # seams
     for dx in (-5.0, 4.0):
         g.capsule((dx, -ry * k + 0.4, -rz * k + 1.6), (dx + 1.0, -ry * k + 0.4, rz * k - 1.6), 0.4)
+    # W3: burlap creases at the corners, where the full sack folds
+    for pts in (((-10.6, 4.4), (-7.2, 6.2)), ((6.6, 5.8), (10.2, 3.8)), ((-10.2, -5.0), (-6.6, -6.6)),
+                ((7.0, -6.6), (10.6, -4.6)), ((-2.0, 6.8), (2.4, 6.4))):
+        face.stroke(g, c, [(x + 1.0, z - 1.0) for x, z in pts], 1.1, 0.4)
     rig.part(joint, g, SACK_DK, outline=0, highlight=False)
+    g = Geo()   # W3: a sewn patch below the stencil line
+    face.decal(g, c, [(1.4, -7.4), (6.4, -7.0), (6.2, -4.4), (1.2, -4.8)], 0.5)
+    rig.part(joint, g, PATCH, outline=0.4, highlight=False)
 
 
 RIG = None
@@ -75,7 +105,10 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, hat="brodie", stubble=True, mud=True, mouth_w=6.2)
+    W.trooper(rig, hat=None, stubble=True, mud=True, mouth_w=6.2, boot=MW.BOOT)
+    MW.hat(rig, "brodie")                # W3: worn chips on the Brodie
+    MW.tunic_w3(rig, pocket=KM.BRASS)    # W3: the tunic's team-dark hem and pocket flap, a side seam, the brace
+    MW.cuffs(rig)
     KM.pouches(rig, "torso", [(9.4, -6.6, 19.4), (4.0, -10.4, 19.2)], size=(2.3, 1.7, 2.8))
     KM.canteen(rig, "torso", (-8.4, -9.6, 16.4), r=3.1)
     rig.joint("bag", "torso", (0.0, 0.0, 0.0))
@@ -87,6 +120,16 @@ def build(rig):
     rig.part("sand", g, SAND, finish="dust", outline=0.4)
     KI.loose(rig, "bag_loose", (0.0, -7.0, 0.0), lambda j: _bag(rig, j))
     rig.track("clubHead", "bag", (BAG_R[0], 0, 0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: never on the face or skin."""
+    rig.damage_spot_at("tunic", "torso", 4.0, 22.0, 8.0, "cloth", team=True)      # 70-100% (at (-7, 24): 46%)
+    rig.damage_spot_at("sack", "bag", -4.0, -2.0, 8.0, "cloth", fill=SACK)       # 98-100%
+    rig.damage_spot_at("helmet", "hat", -2.0, 66.0, 6.0, "metal", fill=R.OLIVE)
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses: the bag at (bx, bz) torso space, turned `rot` degrees; the hands grab it by IK --------------
@@ -263,6 +306,36 @@ def _die(k):
     return W.die_d1_pose(k, STANCE, HEIGHT_LU, prop="bag", prop_path=BAG_FLOP)
 
 
+# -- shield_lock (items 51/52, extras sheet): the pose of Cover and of the Shield Wall -------------------------------
+# The bag hugged up in front of his chest as a wall (both hands round its back end, as B's hold), he crouches into a
+# brace behind it: the near leg forward and bent, the far leg driven back onto the ball of its foot, his shoulder
+# leaning into the sack and his eyes peering over its top. A held loop of 4 frames: he leans in, the bag nudges
+# forward, and settles back. The feet are solved onto fixed marks: they never move.
+LOCK_FEET = {"r": (9.0, 0.0), "l": (-12.0, -26.0)}   # ankle x of each foot and its roll about the toe (deg)
+LOCK = {"bag": (13.0, 34.5, 72.0), "torso": -10.0, "head": 6.0, "x": 1.5, "z": -6.0}   # the sack stood upright
+
+
+def _planted(s, x, ang):
+    """IK target of foot `s` set down with its ankle at x, rolled `ang` degrees about the toe."""
+    leg = LEGS[s]
+    gz = leg.end.z
+    px, pz = x + leg.toe.x - leg.end.x, gz + leg.toe.z - leg.end.z
+    dx, dz = x - px, gz - pz
+    r = math.radians(ang)
+    return (leg, px + dx * math.cos(r) - dz * math.sin(r), pz + dx * math.sin(r) + dz * math.cos(r), ang)
+
+
+def _lock_pose(f):
+    br = [0.0, 0.5, 1.0, 0.5][f]
+    bx, bz, rot = LOCK["bag"]
+    pose = merge(bag(bx + 0.8 * br, bz - 0.3 * br, rot - 1.5 * br, grips=BACK), {
+        "torso": {"r": LOCK["torso"] - 2.0 * br}, "head": {"r": LOCK["head"] + 1.5 * br, "z": -0.4 * br},
+        "hat": {"r": 2.0 * br},
+    }, M.body_about((0, 0, 22), x=LOCK["x"] + 0.5 * br, z=LOCK["z"] - 0.4 * br, q=-0.03 - 0.01 * br))
+    pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.9}})
+    return GT.solve(RIG, pose, {s: _planted(s, *LOCK_FEET[s]) for s in ("r", "l")})
+
+
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
@@ -273,5 +346,6 @@ def clips():
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
+        M.clip("shield_lock", [_lock_pose(f) for f in range(4)], [220, 180, 220, 180], loop=True),
     ]
     return M.check_variants(M.check_contract(cl))

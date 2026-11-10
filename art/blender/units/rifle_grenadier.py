@@ -18,6 +18,10 @@ Animation (ANIM_SPEC G1 jog at card 65 x 1.25 = 81.25 lu/s, appendix B guns and 
             (the held extreme), fires, staggers back a step from the kick
   hit       light: the head snaps back, the helmet lifts, eyes squeezed
   die       D1 fling and spin: the helmet pops off and the rifle flies; X eyes and tongue
+
+Art round W3 (the detail standard): damage spots measured in posed frames (item 40); B's rifle drawn at the
+grenade's launch angle (item 44: it was drawn at about 62 degrees on the release frame and the grenade leaves at
+about 64).
 """
 import math
 
@@ -25,10 +29,12 @@ from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_modern as KM
 from ageborn_art import kit_modern_wave as W
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "rifle_grenadier"
 GAIT_NAME = "biped"
@@ -45,6 +51,19 @@ LENGTH = 44.0
 CUP_X = G0[0] + LENGTH
 MUZ = (CUP_X + 6.0, G0[1], G0[2] + 1.8)
 OLIVE_DK = "#4E5238"
+TROUSERS = "#767B5A"     # kit_modern.legs_v3's olive trousers
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Rifle Grenadier is the Brodie, the tunic, the grenade bag on his hip and the long rifle
+# with its cup: worn chips on the Brodie, the tunic's team-dark hem, pocket flap and cuffs with a side seam and the
+# khaki front brace, the grenade bag's flap team-dark (the bag in two tones), lighter boots.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", R.HAIR: "fur", R.KHAKI: "cloth", R.KHAKI_LT: "cloth", KM.NET: "cloth",
+                           KM.FELT: "cloth", KM.CREAM: "cloth", TROUSERS: "cloth", R.OLIVE: "iron", MW.CHIP: "iron",
+                           OLIVE_DK: "iron", MW.BOOT: "leather", "#2B2A2E": "leather", R.LEATHER: "leather",
+                           R.WOOD: "wood", R.GUNMETAL: "iron", R.STEEL: "iron", KM.BRASS: "bronze", "team": "cloth"})
 
 
 def _nade(rig, joint, at, k=1.0):
@@ -81,15 +100,18 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    face = W.trooper(rig, hat="brodie", brow_angry=False, mouth_w=5.6)
+    face = W.trooper(rig, hat=None, brow_angry=False, mouth_w=5.6, boot=MW.BOOT)
+    MW.hat(rig, "brodie")                # W3: worn chips on the Brodie
+    MW.tunic_w3(rig, pocket=KM.BRASS)    # W3: the tunic's team-dark hem and pocket flap, a side seam, the brace
+    MW.cuffs(rig)
     g = Geo().blob((12.0, -1.0, 40.2), (2.0, 6.4, 1.4), p=2.2, rot=(0, -10, 0))        # moustache
     rig.part("head", g, R.HAIR, finish="hair", outline=0.5)
     del face
     # grenade bag on the near hip with two grenades poking out
     g = Geo().blob((2.0, -11.4, 15.0), (5.0, 2.6, 4.4), p=3.0)
     rig.part("torso", g, R.KHAKI, outline=0.6)
-    g = Geo().blob((2.0, -12.2, 18.0), (5.4, 2.2, 2.0), p=3.0)          # team flap
-    rig.part("torso", g, team=True, outline=0.4)
+    g = Geo().blob((2.0, -12.2, 18.0), (5.4, 2.2, 2.0), p=3.0)          # team flap (W3: team-dark)
+    look.team_part(rig, "torso", g, outline=0.4)
     _nade(rig, "torso", (0.0, -11.6, 21.0), k=0.8)
     _nade(rig, "torso", (4.4, -11.8, 20.4), k=0.8)
     rig.joint("gun", "torso", G0)
@@ -103,6 +125,16 @@ def build(rig):
                     (MUZ[0] + 5.0, G0[1], MUZ[2]), segs=18)
     g.sphere((MUZ[0] + 9.0, G0[1] - 1, MUZ[2] + 2.0), 2.6, cuts=3)
     rig.part("ring", g, R.SMOKE, finish="dust", outline=0.6)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: never on the face or skin."""
+    rig.damage_spot_at("back", "torso", -10.0, 24.0, 8.0, "cloth", team=True)     # 64-80% (at (-7, 27): 22%)
+    rig.damage_spot_at("skirt", "hips", 8.0, 12.0, 7.0, "cloth", team=True)       # 60-92% (at (5, 12): 38%)
+    rig.damage_spot_at("helmet", "hat", -2.0, 66.0, 6.0, "metal", fill=R.OLIVE)
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 7.0, "cloth", kind="strip", team=True)
 
 
 def hold(gx, gz, deg):
@@ -192,7 +224,7 @@ def _attack_clip():
 #        brace tuck  HOLD  FIRE  kick  step  reload reload       (B: standing high shot; 0, 8, 9 = A's)
 B_GX = [4.0, 3.0, 2.0, 2.0, -1.0, 0.0, 1.0, 2.0]
 B_GZ = [26.0, 25.0, 24.0, 24.0, 25.0, 25.0, 24.0, 23.0]
-B_DEG = [40.0, 55.0, 62.0, 62.0, 70.0, 66.0, 70.0, 72.0]
+B_DEG = [40.0, 55.0, 63.4, 63.4, 70.0, 66.0, 70.0, 72.0]     # W3: hold and fire at the launch angle (64 drawn)
 B_T = [0, 6, 10, 10, 14, 8, 4, 2]
 B_X = [0.0, -1.0, -1.5, -1.5, -5.0, -4.0, -2.0, -1.0]
 
