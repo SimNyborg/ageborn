@@ -723,6 +723,22 @@
    "experiment": "indie-angle",
    "arm": "devlog",
    "voice": "elevenlabs-steve-v4"
+  },
+  {
+   "id": "18101996654404531",
+   "permalink": "https://www.instagram.com/reel/Dfjmp6hipAY/",
+   "timestamp": "2026-11-10T09:39:36+0000",
+   "name": "dv17-devlog-17-the-hydra-test",
+   "kind": "reel",
+   "pillar": "devlog",
+   "hook": "Devlog #17: the Hydra test (answers DV12, Steve v4)",
+   "trial": false,
+   "length_s": 23.9,
+   "format": "devlog",
+   "hook_type": "question",
+   "experiment": "indie-angle",
+   "arm": "devlog",
+   "voice": "elevenlabs-steve-v4"
   }
  ]
 }
