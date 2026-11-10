@@ -97,13 +97,19 @@ def begin(mod):
         if v not in KINDS:
             raise ValueError(f"{mod.SLUG}: unknown material kind {v!r} for {k}")
     palette = {k.upper(): v.upper() for k, v in getattr(mod, "SKIN_PALETTE", {}).items()}
-    STATE = {"slug": mod.SLUG, "kinds": kinds, "height": float(mod.HEIGHT_LU),
+    STATE = {"slug": mod.SLUG, "kinds": kinds,
+             # the dirt bands' height: a world turret builds in its authored lu and is scaled at render
+             # (world/common.py TURRET_SCALE), so it gives its dirt height in that lu (LOOK_HEIGHT_LU)
+             "height": float(getattr(mod, "LOOK_HEIGHT_LU", mod.HEIGHT_LU)),
              "supersample": os.environ.get("AGEBORN_SUPERSAMPLE") == "1",
              "rim": getattr(mod, "LOOK_RIM", None), "palette": palette,
              # the finish highlight's strength (its mix toward the highlight colour), per unit; the audit's
              # highlight share (5.2) is 0.06-0.10 for infantry and ranged
              "hl": float(getattr(mod, "LOOK_HIGHLIGHT", 1.0)),
-             "shade": dict(SHADE, **getattr(mod, "LOOK_SHADE", {}))}
+             "shade": dict(SHADE, **getattr(mod, "LOOK_SHADE", {})),
+             # outline v4, or an item's own 4-tuple (LOOK_OUTLINE: a world decoration keeps its thinner prop line
+             # with v4's inner cover)
+             "outline": tuple(getattr(mod, "LOOK_OUTLINE", UNIT_OUTLINE_V4))}
     sheet.PACKER = lambda images: look2d.maxrects(images, shelf=sheet.pack)   # never larger than the shelf packer
     return STATE
 
@@ -480,10 +486,10 @@ def after_build(rig):
 
 # -- 2D: outline, rim, supersampling --------------------------------------------------------------------
 def outline_spec(spec):
-    """The outer outline of an opted-in unit: v4 (4-tuple with the inner cover)."""
+    """The outer outline of an opted-in unit: v4 (4-tuple with the inner cover), or the item's LOOK_OUTLINE."""
     if STATE is None or spec is None:
         return spec
-    return UNIT_OUTLINE_V4
+    return STATE["outline"]
 
 
 def pre_outline(base, team):
@@ -596,6 +602,13 @@ def checks(mod, out_dir, file_slug, stats, clip_meta, log=print, ref_slug=None):
     failure after the stats are written."""
     if STATE is None:
         return None
+    own = getattr(mod, "LOOK_CHECKS", None)
+    if own is not None:
+        # world items (turrets, forts, bases, decorations; world/look_world.py) check against their installed
+        # sheet instead: the same stats["look"] and `failures` contract
+        res = own(mod, out_dir, file_slug, stats, clip_meta, log)
+        stats["look"] = res
+        return res
     res = {"outline": "v4", "supersample": STATE["supersample"]}
     hard = []
     rgba = stats.get("colourRule", {}).get("worstPct", 0.0)
