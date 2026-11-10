@@ -80,8 +80,9 @@ def build(rig):
                      keep=[((0, 0, 39.0), (0, 0, 1)), ((0, 0, 19.0), (0, 0, -1)), ((0, 0, 0), (0, 1, 0))])
     rig.part("torso", g, R.LEATHER, finish="gloss", outline=0.5)        # a polished Sam Browne
     MW.tunic_w3(rig, brace=None)
-    for s in ("r", "l"):     # the rolled sleeves' lower folds team-dark (the roll in two tones)
-        W1.ring(rig, f"fore_{s}", (0, R.ARM_Y[s], R.ELBOW_Z - 1.7), 4.75, height=1.9, team=True, outline=0.4)
+    for s in ("r", "l"):     # the rolled sleeves' lower folds in khaki (the roll in two tones). Not team: the
+        # forearms travel with his punches, and the lunge curve reads the team layer's box as his torso
+        W1.ring(rig, f"fore_{s}", (0, R.ARM_Y[s], R.ELBOW_Z - 1.7), 4.75, height=1.9, fill=R.KHAKI, outline=0.4)
     g = Geo().blob((12.4, -1.0, 40.4), (2.2, 7.0, 1.6), p=2.2, rot=(0, -8, 0))   # moustache
     rig.part("head", g, R.HAIR, finish="hair", outline=0.5)
     g = Geo().blob((10.6, 0.0, 37.4), (5.4, 8.6, 3.2), p=2.2)          # jowls and underbite

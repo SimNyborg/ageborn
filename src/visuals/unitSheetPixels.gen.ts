@@ -146,7 +146,7 @@ export const UNIT_SHEET_PIXELS: Readonly<Record<string, readonly [number, number
   'modern/assault_gun': [7163904, 1429504, 1818624, 379904],
   'modern/bazooka_trooper': [2752512, 2125824, 731136, 551936],
   'modern/behemoth_tank': [13418496, 2494464, 3309568, 632832],
-  'modern/bulldog_sergeant': [1515520, 630784, 411648, 174080],
+  'modern/bulldog_sergeant': [1464320, 627200, 397312, 168960],
   'modern/bulldozer': [6866944, 1658880, 1794048, 422400],
   'modern/combat_medic': [1474560, 1191936, 394240, 317440],
   'modern/commando': [1812480, 679936, 491520, 180224],
