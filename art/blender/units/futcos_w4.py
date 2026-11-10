@@ -134,17 +134,20 @@ def strip(rig, r=0.65):
 
 
 def wave_trooper(rig, helmet_kind="dome", bulk=1.0, team_greave=False, team_thigh=False, team_sleeve=False,
-                 hips=True, shoulders=True, far_shoulder=True):
+                 hips=True, shoulders=True, far_shoulder=True, helmet_team=True):
     """The W4 detail on kit_future_wave.trooper's body (call it after the trooper, with the same arguments): the
     helmet's seams, bands and wear per kind; the team chest plate in two plates with two vents, the gorget's seam;
     the faulds in three chipped plates; the shoulder pads' team-dark rims, the bracers' cuff seams, elbow creases;
-    knee creases, the greaves' team-dark rims, the boots' seams and a scuffed toe (char space; decals cast)."""
+    knee creases, the greaves' team-dark rims, the boots' seams and a scuffed toe (char space; decals cast).
+    helmet_team=False draws the dome's two bands as seams: a melee unit's team box must not grow forward at the visor
+    (the lunge proxy, atlasCombat.lungeCurve, is the team box centre against the idle mean)."""
     from ageborn_art import kit_medieval as KM
     from ageborn_art import face as FC_
     k = bulk
     if helmet_kind == "dome":
-        band(rig, "head", (2, 0, 52.1), (11.75, 11.35, 11.95), 2.5, 48.7, 49.5, team=True)
-        band(rig, "head", (2, 0, 52.1), (11.75, 11.35, 11.95), 2.5, 55.4, 56.1, team=True)
+        hb = {"team": True} if helmet_team else {"fill": LINE_ON_WHITE}
+        band(rig, "head", (2, 0, 52.1), (11.75, 11.35, 11.95), 2.5, 48.7, 49.5, **hb)
+        band(rig, "head", (2, 0, 52.1), (11.75, 11.35, 11.95), 2.5, 55.4, 56.1, **hb)
         band(rig, "head", (0, 0, 43.2), (7.5, 7.5, 3.2), 2.4, 42.0, 42.7, fill=LINE_ON_WHITE)
         hf = FC_.Face(rig, "head", [Geo().blob((2, 0, 52), (11.4, 11.0, 11.6), p=2.5)])
         panel_lines(rig, "head", hf, [[sc(hf, -8.0, 47.6, -9.6), sc(hf, -1.0, 46.0, -11.0), sc(hf, 5.0, 46.4, -10.4)]],

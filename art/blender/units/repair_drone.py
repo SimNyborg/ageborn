@@ -26,11 +26,13 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`): the one big le
 """
 import math
 
+from ageborn_art import face as FC
 from ageborn_art import kit_future as KF
 from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "repair_drone"
 GAIT_NAME = "fly"
@@ -41,6 +43,14 @@ CANVAS = (240, 224)
 FEET = (104, 178)
 ANCHORS = {"head": (0, 52), "hitCenter": (0, 28), "muzzle": (18, 15)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the machines' lifts (W3's SHADE_BIG) on the white orb, a darker kit white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.8
+LOOK_SHADE = FW.SHADE_BIG
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5)
+SKIN_PALETTE = FW.KIT_WHITE
+MATERIAL_KINDS = FW.kinds_future()
 
 C = (0.0, 0.0, 30.0)                 # orb centre
 R = (14.5, 13.5, 13.0)
@@ -106,10 +116,12 @@ def build(rig):
     rig.part("orb", g, team=True, outline=0.7)
     g = Geo().blob((cx - 2.0, -6.0, cz - 12.2), (2.4, 0.6, 1.0), p=3.0)
     rig.part("orb", g, F.TRIM, finish="metal", outline=0)
-    # a mint heal plus on the near side
-    g = Geo().blob((cx - 1.0, -R[1] + 1.2, cz + 12.2), (1.3, 3.8, 0.8), p=3.4)
-    g.blob((cx - 1.0, -R[1] + 1.2, cz + 12.2), (3.8, 1.3, 0.8), p=3.4)
-    rig.part("orb", g, glow=F.MINT, outline=0.8, outline_hex=F.SUIT)
+    # a mint heal plus on the near side of the dome (W4: laid on the dome facing the camera, where it reads at 1x;
+    # it floated flat over the crown, seen edge-on)
+    df = FC.Face(rig, "orb", [Geo().blob((cx, cy, cz + 0.4), (R[0] + 0.5, R[1] + 0.5, R[2] + 0.5), p=2.2)],
+                 yaw_deg=YAW_DEG)
+    FW.glow_seam(rig, "orb", df, [FW.sc(df, 0.5, 34.6, -13.0), FW.sc(df, 0.5, 41.0, -10.6)], color=F.MINT, w=1.7)
+    FW.glow_seam(rig, "orb", df, [FW.sc(df, -3.2, 37.9, -12.4), FW.sc(df, 4.2, 37.9, -11.8)], color=F.MINT, w=1.7)
 
     # manipulator arm under the belly, emitter nozzle at the wrist
     rig.joint("arm", "orb", SHOULDER)
@@ -153,6 +165,75 @@ def build(rig):
     # natural speed (70 lu/s, the sim speed) like the walkers do
     rig.joint("odo", "root", (0, 0, 0))
     rig.track("_foot", "odo", (0.0, 0.0, 0.0))
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _orb_pt(phi, z, grow=0.0):
+    """The char-space point of the orb's surface (grown by `grow`) at azimuth `phi` (degrees from +X toward the
+    camera's -Y) and height z."""
+    cx, cy, cz = C
+    rz = R[2] + grow
+    k = max(0.0, 1.0 - abs((z - cz) / rz) ** 2.2) ** (1 / 2.2)
+    a = math.radians(phi)
+    return cx + (R[0] + grow) * k * math.cos(a), cy - (R[1] + grow) * k * math.sin(a), z
+
+
+def _orb_sc(face, phi, z, grow=0.0):
+    """The screen position of `_orb_pt` (as Face.hit takes it)."""
+    x, y, zz = _orb_pt(phi, z, grow)
+    return FW.sc(face, x, zz, y)
+
+
+def _detail(rig):
+    """W4: the detail standard on the orb (char space; decals cast at the unit's yaw): the white band in four plates
+    (meridian seams, a seam under the rivets) with chipped edges, the lower bowl's seams, the team dome in plates
+    (team-dark meridian grooves and a crown ring), light vents on the charcoal belly ring, team-dark rings round the
+    thruster pods and a seam round the toolbox."""
+    cx, cy, cz = C
+    shell = FC.Face(rig, "orb", [Geo().blob(C, R, p=2.2)], yaw_deg=YAW_DEG)
+
+    def line(phi0, phi1, z0, z1, n=4, grow=0.0):
+        return [_orb_sc(shell, phi0 + (phi1 - phi0) * i / (n - 1), z0 + (z1 - z0) * i / (n - 1), grow)
+                for i in range(n)]
+    # the white band: meridians (the visor sits at about 18 degrees, the near pod at about 100) and a seam
+    FW.panel_lines(rig, "orb", shell, [line(48, 48, 34.4, 25.6), line(138, 138, 34.4, 25.6),
+                                       line(28, 155, 30.2, 30.2, n=8)], w=0.8)
+    FW.wear(rig, "orb", shell, [(*_orb_sc(shell, 56, 33.6), 1.3, 0.6), (*_orb_sc(shell, 128, 26.8), 1.1, 0.5),
+                                (*_orb_sc(shell, 80, 26.4), 1.0, 0.5), (*_orb_sc(shell, 150, 33.4), 1.2, 0.6)])
+    # the lower bowl under the belly ring: two short meridians and a ring seam
+    FW.panel_lines(rig, "orb", shell, [line(60, 60, 23.4, 19.0, n=3), line(132, 132, 23.4, 19.0, n=3),
+                                       line(32, 152, 21.0, 21.0, n=8)], w=0.75)
+    # the team dome in plates: team-dark meridian grooves and a crown ring
+    dome = FC.Face(rig, "orb", [Geo().blob((cx, cy, cz + 0.4), (R[0] + 0.5, R[1] + 0.5, R[2] + 0.5), p=2.2)],
+                   yaw_deg=YAW_DEG)
+
+    def dline(phi, z0, z1, n=4):
+        return [_orb_sc(dome, phi, z0 + (z1 - z0) * i / (n - 1), 0.5) for i in range(n)]
+    FW.folds(rig, "orb", dome, [dline(40, 36.2, 41.6), dline(150, 36.2, 41.6)], w=0.8, team=True)
+    FW.band(rig, "orb", (cx, cy, cz + 0.4), (R[0] + 0.5, R[1] + 0.5, R[2] + 0.5), 2.2, cz + 10.2, cz + 10.9, team=True)
+    # light vents on the charcoal belly ring
+    g = Geo()
+    for phi in (36, 54, 72, 126, 144, 162):
+        x, y, z = _orb_pt(phi, cz - 5.5, 1.0)
+        g.capsule((x, y, z - 0.6), (x, y, z + 0.6), 0.45, segs=6, rings=2)
+    rig.part("orb", g, FW.WEAR_ON_SUIT, outline=0, highlight=False)
+    # team-dark rings round the thruster pods, a seam round the toolbox
+    for s, y in (("l", POD_Y), ("r", -POD_Y)):
+        g = Geo().lathe([(0, -0.35), (5.05, -0.3), (5.05, 0.3), (0, 0.35)], (cx - 2.0, y, cz - 3.4),
+                        (cx - 2.0, y, cz - 2.4), segs=20)
+        FW.team_dark(rig, f"pod_{s}", g)
+    FW.band(rig, "orb", (cx - 2.0, 0, cz - 12.4), (6.4, 6.0, 3.0), 3.4, cz - 11.6, cz - 10.9, team=True)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, flyer): the team dome, the white band, the near thruster pod, and smoke
+    from the near jet once it is hurt (fire: only vehicles burn)."""
+    rig.damage_spot_at("dome", "orb", -10.0, 37.5, 5.5, "metal", team=True)
+    rig.damage_spot_at("band", "orb", -4.0, 27.6, 5.0, "metal", fill=FW.ARMOR)
+    rig.damage_spot_at("pod", "pod_r", -7.0, 22.0, 5.0, "metal", team=True)
+    rig.damage_spot("jet", "pod_r", (C[0] - 2.0, -POD_Y, C[2] - 9.0), 4.0, "smoke", kind="emit", normal=(0, 0, -1))
 
 
 # -- poses -----------------------------------------------------------------------------------

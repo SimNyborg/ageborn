@@ -28,6 +28,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "arc_lobber"
 GAIT_NAME = "biped"
@@ -37,6 +38,14 @@ CANVAS = (300, 280)
 FEET = (120, 246)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 32), "muzzle": (30, 58)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the white soldiers' lifts; the wave kit's plates in the troopers' off-white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SKIN_PALETTE = FW.KIT_TROOPER
+MATERIAL_KINDS = FW.kinds_future()
 
 G0 = (4.0, -15.0, 27.0)        # tube grip at rest (character space), the tube along +X above it
 TUBE_Z = 5.5                   # the tube axis sits this far above the grip
@@ -48,12 +57,12 @@ def _tube(rig, j):
     gx, gy, gz = G0
     tz = gz + TUBE_Z
     g = Geo().lathe([(0, 0), (4.6, 0.2), (4.8, 3.0), (4.4, 26.0), (0, 26.2)], (gx - 6.0, gy, tz), (gx + 30.0, gy, tz), segs=18)
-    rig.part(j, g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part(j, g, FW.GUN_LT, finish="gloss", outline_hex=F.TRIM)              # (W4: the light gun grey)
     g = Geo().lathe([(0, -1.6), (5.0, -1.5), (5.0, 1.5), (0, 1.6)], (gx + 4.0, gy, tz), (gx + 7.0, gy, tz), segs=18)
     rig.part(j, g, team=True, outline=0.6)                                     # team band
     g = Geo()
     for x in (gx + 13.0, gx + 18.0):
-        g.lathe([(0, -0.7), (5.0, -0.6), (5.0, 0.6), (0, 0.7)], (x, gy, tz), (x + 1, gy, tz), segs=16)
+        g.lathe([(0, -0.5), (5.0, -0.45), (5.0, 0.45), (0, 0.5)], (x, gy, tz), (x + 1, gy, tz), segs=16)
     rig.part(j, g, glow=W.MINT, outline=1.0, outline_hex=F.SUIT)
     g = Geo().lathe([(3.4, 0), (6.4, 0.3), (6.6, 3.6), (3.8, 3.8)], (gx + 28.0, gy, tz), (gx + 32.0, gy, tz), segs=18)
     rig.part(j, g, F.MAGENTA)
@@ -69,20 +78,22 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, helmet_kind="dome", team_greave=True, pack=True)
+    W.trooper(rig, helmet_kind="dome", team_greave=True, pack=False, strip=False)
+    FW.strip(rig)
+    FW.wave_pack(rig)
     # back rack: three glowing shells in a frame
     g = Geo().blob((-15.5, 0, 31.0), (2.4, 8.6, 9.6), p=3.4)
     rig.part("torso", g, F.GUNMETAL, outline=0.6)
     g = Geo()
     for z in (25.0, 31.0, 37.0):
-        g.sphere((-18.0, -3.0, z), 2.6, cuts=3)
+        g.sphere((-18.0, -3.0, z), 2.1, cuts=3)                 # (W4: r 2.6)
     rig.part("torso", g, glow=W.MINT, outline=1.0, outline_hex=F.SUIT)
     rig.joint("tube", "torso", G0)
     _tube(rig, "tube")
     mx, my, mz = MUZZLE
     rig.joint("shell", "tube", MUZZLE, hidden=True)
     g = Geo().sphere((mx - 1.0, my - 1.0, mz), 3.6, cuts=4)
-    rig.part("shell", g, glow=W.MINT_CORE, outline=1.4, outline_hex=W.MINT)
+    rig.part("shell", g, glow="#8CF5D0", outline=1.0, outline_hex=W.HOLO_DK)   # (W4: a mid mint, a darker rim)
     rig.joint("flash", "tube", MUZZLE, hidden=True)
     g = Geo().blob((mx + 6.0, my - 1, mz), (7.0, 2.0, 5.0), p=2.0)
     rig.part("flash", g, glow=W.MINT, outline=0)
@@ -94,6 +105,19 @@ def build(rig):
     rig.part("held_shell", g, glow=W.MINT, outline=1.0, outline_hex=F.SUIT)
     rig.track("muzzle", "tube", MUZZLE)
     KI.loose(rig, "tube_loose", G0, lambda j: _tube(rig, j))
+    FW.wave_trooper(rig, helmet_kind="dome", team_greave=True)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face): the team band on the pack, the team
+    cap, the white faulds, the near thigh, the near team greave (the tube on the shoulder hides the shoulder pad)."""
+    rig.damage_spot_at("pack", "torso", -11.4, 36.6, 5.5, "metal", team=True)
+    rig.damage_spot_at("cap", "head", -3.0, 58.0, 5.5, "metal", team=True)
+    rig.damage_spot_at("faulds", "hips", -5.0, 16.0, 5.0, "metal")
+    rig.damage_spot_at("thigh", "thigh_r", 1.0, 13.0, 5.0, "cloth")
+    rig.damage_spot("greave", "shin_r", (1.9, -F.LEG_Y - 4.2, 8.6), 5.0, "metal", team=True, normal=(0, -1, 0))
 
 
 def hold(gx, gz, deg):
@@ -161,9 +185,9 @@ def _a_pose(f):
     return KI.ground_feet(RIG, merge(pose, KF.glyph(A_EYES[f])), LEGS)
 
 
-def _charge_ov(r=(6.0, 9.5)):
+def _charge_ov(r=(6.0, 9.5), col=W.MINT_CORE, span=80.0):
     return [{"kind": "rings", "joint": "tube", "point": (MUZZLE[0] - 1.0, MUZZLE[1], MUZZLE[2]), "radii_lu": r,
-             "a0": -80.0, "a1": 80.0, "color": W.MINT_CORE}]
+             "a0": -span, "a1": span, "color": col}]
 
 
 def _fire_ov(seed):
@@ -192,7 +216,7 @@ def _b_pose(f):
     gx, gz, deg = B_G[k]
     pose = merge(hold(gx, gz, deg), {
         "torso": {"r": B_TR[k]}, "head": {"r": B_TR[k] + 10.0},
-        "shell": {"show": k in (2, 3, 4), "s": [0, 0, 0.9, 1.1, 1.2, 0, 0, 0][k] or 0.01},
+        "shell": {"show": k in (2, 3, 4), "s": [0, 0, 0.8, 0.95, 1.0, 0, 0, 0][k] or 0.01},     # (W4: 0.9-1.2)
         "flash": {"show": k == 5}, "smoke": {"show": k in (6, 7)},
     }, M.body_about((0, 0, 22), x=-3.0 if k == 6 else 0.0))
     if k == 3:
@@ -202,7 +226,9 @@ def _b_pose(f):
 
 
 def _attack_b():
-    ov = {3: _charge_ov(), 4: _charge_ov((7.0, 11.0)), 5: _charge_ov((7.5, 12.0)), 6: _fire_ov(152)}
+    # W4: the kneeling hold read hot on the extras sheet (thin rings on air are highlight all through): shorter arcs
+    ov = {3: _charge_ov((5.5, 8.5), span=45.0), 4: _charge_ov((6.5, 10.0), span=45.0),
+          5: _charge_ov((7.0, 10.5), span=45.0), 6: _fire_ov(152)}
     reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
     return M.clip("attack_b", [_b_pose(f) for f in range(11)], M.SMALL_MELEE_MS, impact=M.SMALL_MELEE_IMPACT,
                   overlays=ov, reuse=reuse, extra={"holdStep": 3, "holdLoop": [3, 4]})

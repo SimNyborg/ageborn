@@ -2,8 +2,8 @@
  "frames": {
   "plasma_lancer_idle_00": {
    "frame": {
-    "x": 357,
-    "y": 107,
+    "x": 302,
+    "y": 97,
     "w": 54,
     "h": 91
    },
@@ -26,17 +26,17 @@
   },
   "plasma_lancer_idle_00_team": {
    "frame": {
-    "x": 106,
-    "y": 475,
-    "w": 48,
+    "x": 1007,
+    "y": 175,
+    "w": 47,
     "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 124,
+    "x": 125,
     "y": 124,
-    "w": 48,
+    "w": 47,
     "h": 81
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "plasma_lancer_idle_01": {
    "frame": {
-    "x": 2,
-    "y": 107,
+    "x": 228,
+    "y": 2,
     "w": 53,
     "h": 93
    },
@@ -74,8 +74,8 @@
   },
   "plasma_lancer_idle_01_team": {
    "frame": {
-    "x": 522,
-    "y": 387,
+    "x": 956,
+    "y": 177,
     "w": 47,
     "h": 82
    },
@@ -122,18 +122,18 @@
   },
   "plasma_lancer_idle_02_team": {
    "frame": {
-    "x": 482,
-    "y": 296,
-    "w": 46,
-    "h": 85
+    "x": 860,
+    "y": 90,
+    "w": 45,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 126,
-    "y": 119,
-    "w": 46,
-    "h": 85
+    "x": 127,
+    "y": 120,
+    "w": 45,
+    "h": 84
    },
    "sourceSize": {
     "w": 308,
@@ -146,7 +146,7 @@
   },
   "plasma_lancer_idle_03": {
    "frame": {
-    "x": 290,
+    "x": 116,
     "y": 2,
     "w": 52,
     "h": 95
@@ -170,8 +170,8 @@
   },
   "plasma_lancer_idle_03_team": {
    "frame": {
-    "x": 176,
-    "y": 296,
+    "x": 762,
+    "y": 92,
     "w": 45,
     "h": 86
    },
@@ -194,7 +194,7 @@
   },
   "plasma_lancer_idle_04": {
    "frame": {
-    "x": 516,
+    "x": 172,
     "y": 2,
     "w": 52,
     "h": 94
@@ -218,8 +218,8 @@
   },
   "plasma_lancer_idle_04_team": {
    "frame": {
-    "x": 582,
-    "y": 296,
+    "x": 791,
+    "y": 182,
     "w": 45,
     "h": 85
    },
@@ -242,7 +242,7 @@
   },
   "plasma_lancer_idle_05": {
    "frame": {
-    "x": 233,
+    "x": 59,
     "y": 2,
     "w": 53,
     "h": 96
@@ -266,8 +266,8 @@
   },
   "plasma_lancer_idle_05_team": {
    "frame": {
-    "x": 129,
-    "y": 204,
+    "x": 532,
+    "y": 187,
     "w": 47,
     "h": 88
    },
@@ -290,8 +290,8 @@
   },
   "plasma_lancer_walk_00": {
    "frame": {
-    "x": 473,
-    "y": 107,
+    "x": 344,
+    "y": 192,
     "w": 57,
     "h": 90
    },
@@ -314,9 +314,9 @@
   },
   "plasma_lancer_walk_00_team": {
    "frame": {
-    "x": 344,
-    "y": 475,
-    "w": 49,
+    "x": 1058,
+    "y": 171,
+    "w": 48,
     "h": 80
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 130,
     "y": 126,
-    "w": 49,
+    "w": 48,
     "h": 80
    },
    "sourceSize": {
@@ -338,18 +338,18 @@
   },
   "plasma_lancer_walk_01": {
    "frame": {
-    "x": 347,
-    "y": 387,
+    "x": 890,
+    "y": 178,
     "w": 62,
-    "h": 82
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 120,
-    "y": 134,
+    "y": 133,
     "w": 62,
-    "h": 82
+    "h": 83
    },
    "sourceSize": {
     "w": 308,
@@ -362,8 +362,8 @@
   },
   "plasma_lancer_walk_01_team": {
    "frame": {
-    "x": 110,
-    "y": 561,
+    "x": 680,
+    "y": 273,
     "w": 47,
     "h": 77
    },
@@ -386,18 +386,18 @@
   },
   "plasma_lancer_walk_02": {
    "frame": {
-    "x": 2,
-    "y": 204,
+    "x": 405,
+    "y": 190,
     "w": 62,
-    "h": 88
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 121,
-    "y": 127,
+    "y": 126,
     "w": 62,
-    "h": 88
+    "h": 89
    },
    "sourceSize": {
     "w": 308,
@@ -410,8 +410,8 @@
   },
   "plasma_lancer_walk_02_team": {
    "frame": {
-    "x": 247,
-    "y": 387,
+    "x": 909,
+    "y": 90,
     "w": 46,
     "h": 83
    },
@@ -434,8 +434,8 @@
   },
   "plasma_lancer_walk_03": {
    "frame": {
-    "x": 572,
-    "y": 2,
+    "x": 175,
+    "y": 100,
     "w": 58,
     "h": 93
    },
@@ -458,17 +458,17 @@
   },
   "plasma_lancer_walk_03_team": {
    "frame": {
-    "x": 2,
-    "y": 296,
-    "w": 48,
+    "x": 659,
+    "y": 2,
+    "w": 47,
     "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 130,
+    "x": 131,
     "y": 117,
-    "w": 48,
+    "w": 47,
     "h": 87
    },
    "sourceSize": {
@@ -482,8 +482,8 @@
   },
   "plasma_lancer_walk_04": {
    "frame": {
-    "x": 68,
-    "y": 204,
+    "x": 471,
+    "y": 187,
     "w": 57,
     "h": 88
    },
@@ -506,9 +506,9 @@
   },
   "plasma_lancer_walk_04_team": {
    "frame": {
-    "x": 469,
-    "y": 387,
-    "w": 49,
+    "x": 896,
+    "y": 265,
+    "w": 48,
     "h": 82
    },
    "rotated": false,
@@ -516,7 +516,7 @@
    "spriteSourceSize": {
     "x": 130,
     "y": 126,
-    "w": 49,
+    "w": 48,
     "h": 82
    },
    "sourceSize": {
@@ -530,8 +530,8 @@
   },
   "plasma_lancer_walk_05": {
    "frame": {
-    "x": 450,
-    "y": 475,
+    "x": 1073,
+    "y": 86,
     "w": 64,
     "h": 79
    },
@@ -554,17 +554,17 @@
   },
   "plasma_lancer_walk_05_team": {
    "frame": {
-    "x": 58,
-    "y": 561,
-    "w": 48,
+    "x": 1141,
+    "y": 85,
+    "w": 47,
     "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 129,
+    "x": 130,
     "y": 129,
-    "w": 48,
+    "w": 47,
     "h": 78
    },
    "sourceSize": {
@@ -578,8 +578,8 @@
   },
   "plasma_lancer_walk_06": {
    "frame": {
-    "x": 54,
-    "y": 296,
+    "x": 710,
+    "y": 2,
     "w": 64,
     "h": 86
    },
@@ -602,17 +602,17 @@
   },
   "plasma_lancer_walk_06_team": {
    "frame": {
-    "x": 573,
-    "y": 387,
-    "w": 47,
+    "x": 948,
+    "y": 265,
+    "w": 48,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 131,
+    "x": 130,
     "y": 123,
-    "w": 47,
+    "w": 48,
     "h": 82
    },
    "sourceSize": {
@@ -626,8 +626,8 @@
   },
   "plasma_lancer_walk_07": {
    "frame": {
-    "x": 171,
-    "y": 107,
+    "x": 237,
+    "y": 99,
     "w": 61,
     "h": 92
    },
@@ -650,17 +650,17 @@
   },
   "plasma_lancer_walk_07_team": {
    "frame": {
-    "x": 53,
-    "y": 475,
-    "w": 49,
+    "x": 1000,
+    "y": 263,
+    "w": 48,
     "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 129,
+    "x": 130,
     "y": 118,
-    "w": 49,
+    "w": 48,
     "h": 81
    },
    "sourceSize": {
@@ -674,8 +674,8 @@
   },
   "plasma_lancer_attack_00": {
    "frame": {
-    "x": 402,
-    "y": 2,
+    "x": 116,
+    "y": 207,
     "w": 53,
     "h": 94
    },
@@ -698,8 +698,8 @@
   },
   "plasma_lancer_attack_00_team": {
    "frame": {
-    "x": 98,
-    "y": 387,
+    "x": 837,
+    "y": 2,
     "w": 46,
     "h": 84
    },
@@ -722,18 +722,18 @@
   },
   "plasma_lancer_attack_01": {
    "frame": {
-    "x": 382,
-    "y": 204,
+    "x": 506,
+    "y": 2,
     "w": 89,
-    "h": 87
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 123,
-    "y": 128,
+    "y": 127,
     "w": 89,
-    "h": 87
+    "h": 88
    },
    "sourceSize": {
     "w": 308,
@@ -746,8 +746,8 @@
   },
   "plasma_lancer_attack_01_team": {
    "frame": {
-    "x": 413,
-    "y": 387,
+    "x": 840,
+    "y": 268,
     "w": 52,
     "h": 82
    },
@@ -770,18 +770,18 @@
   },
   "plasma_lancer_attack_02": {
    "frame": {
-    "x": 326,
-    "y": 296,
+    "x": 583,
+    "y": 185,
     "w": 93,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 120,
-    "y": 130,
+    "y": 129,
     "w": 93,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 308,
@@ -794,8 +794,8 @@
   },
   "plasma_lancer_attack_02_team": {
    "frame": {
-    "x": 397,
-    "y": 475,
+    "x": 1052,
+    "y": 260,
     "w": 49,
     "h": 80
    },
@@ -818,18 +818,18 @@
   },
   "plasma_lancer_attack_03": {
    "frame": {
-    "x": 2,
-    "y": 387,
+    "x": 666,
+    "y": 93,
     "w": 92,
-    "h": 84
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
-    "y": 131,
+    "y": 129,
     "w": 92,
-    "h": 84
+    "h": 86
    },
    "sourceSize": {
     "w": 308,
@@ -842,8 +842,8 @@
   },
   "plasma_lancer_attack_03_team": {
    "frame": {
-    "x": 577,
-    "y": 475,
+    "x": 1109,
+    "y": 2,
     "w": 49,
     "h": 79
    },
@@ -866,18 +866,18 @@
   },
   "plasma_lancer_attack_04": {
    "frame": {
-    "x": 180,
-    "y": 204,
+    "x": 464,
+    "y": 95,
     "w": 97,
-    "h": 87
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 132,
-    "y": 129,
+    "y": 128,
     "w": 97,
-    "h": 87
+    "h": 88
    },
    "sourceSize": {
     "w": 308,
@@ -890,10 +890,10 @@
   },
   "plasma_lancer_attack_04_team": {
    "frame": {
-    "x": 535,
-    "y": 204,
+    "x": 680,
+    "y": 183,
     "w": 53,
-    "h": 87
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
@@ -901,7 +901,7 @@
     "x": 137,
     "y": 124,
     "w": 53,
-    "h": 87
+    "h": 86
    },
    "sourceSize": {
     "w": 308,
@@ -914,18 +914,18 @@
   },
   "plasma_lancer_attack_05": {
    "frame": {
-    "x": 281,
-    "y": 204,
+    "x": 405,
+    "y": 2,
     "w": 97,
-    "h": 87
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 139,
-    "y": 132,
+    "y": 130,
     "w": 97,
-    "h": 87
+    "h": 89
    },
    "sourceSize": {
     "w": 308,
@@ -938,8 +938,8 @@
   },
   "plasma_lancer_attack_05_team": {
    "frame": {
-    "x": 423,
-    "y": 296,
+    "x": 778,
+    "y": 2,
     "w": 55,
     "h": 85
    },
@@ -962,18 +962,18 @@
   },
   "plasma_lancer_attack_06": {
    "frame": {
-    "x": 59,
-    "y": 107,
+    "x": 173,
+    "y": 199,
     "w": 108,
-    "h": 92
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 142,
-    "y": 142,
+    "y": 141,
     "w": 108,
-    "h": 92
+    "h": 93
    },
    "sourceSize": {
     "w": 308,
@@ -986,8 +986,8 @@
   },
   "plasma_lancer_attack_06_team": {
    "frame": {
-    "x": 364,
-    "y": 561,
+    "x": 1162,
+    "y": 2,
     "w": 55,
     "h": 70
    },
@@ -1010,18 +1010,18 @@
   },
   "plasma_lancer_attack_07": {
    "frame": {
-    "x": 534,
-    "y": 107,
+    "x": 360,
+    "y": 97,
     "w": 100,
-    "h": 88
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 142,
-    "y": 137,
+    "y": 136,
     "w": 100,
-    "h": 88
+    "h": 89
    },
    "sourceSize": {
     "w": 308,
@@ -1034,10 +1034,10 @@
   },
   "plasma_lancer_attack_07_team": {
    "frame": {
-    "x": 518,
-    "y": 475,
+    "x": 1105,
+    "y": 255,
     "w": 55,
-    "h": 79
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
@@ -1045,7 +1045,7 @@
     "x": 148,
     "y": 132,
     "w": 55,
-    "h": 79
+    "h": 78
    },
    "sourceSize": {
     "w": 308,
@@ -1058,18 +1058,18 @@
   },
   "plasma_lancer_attack_08": {
    "frame": {
-    "x": 225,
-    "y": 296,
+    "x": 565,
+    "y": 94,
     "w": 97,
-    "h": 85
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 132,
-    "y": 131,
+    "y": 129,
     "w": 97,
-    "h": 85
+    "h": 87
    },
    "sourceSize": {
     "w": 308,
@@ -1082,8 +1082,8 @@
   },
   "plasma_lancer_attack_08_team": {
    "frame": {
-    "x": 223,
-    "y": 475,
+    "x": 1010,
+    "y": 87,
     "w": 59,
     "h": 80
    },
@@ -1106,8 +1106,8 @@
   },
   "plasma_lancer_attack_09": {
    "frame": {
-    "x": 459,
-    "y": 2,
+    "x": 118,
+    "y": 101,
     "w": 53,
     "h": 94
    },
@@ -1130,8 +1130,8 @@
   },
   "plasma_lancer_attack_09_team": {
    "frame": {
-    "x": 198,
-    "y": 387,
+    "x": 887,
+    "y": 2,
     "w": 45,
     "h": 84
    },
@@ -1154,8 +1154,8 @@
   },
   "plasma_lancer_hit_00": {
    "frame": {
-    "x": 475,
-    "y": 204,
+    "x": 599,
+    "y": 2,
     "w": 56,
     "h": 87
    },
@@ -1178,8 +1178,8 @@
   },
   "plasma_lancer_hit_00_team": {
    "frame": {
-    "x": 217,
-    "y": 561,
+    "x": 731,
+    "y": 273,
     "w": 51,
     "h": 73
    },
@@ -1202,8 +1202,8 @@
   },
   "plasma_lancer_hit_01": {
    "frame": {
-    "x": 415,
-    "y": 107,
+    "x": 347,
+    "y": 2,
     "w": 54,
     "h": 91
    },
@@ -1226,8 +1226,8 @@
   },
   "plasma_lancer_hit_01_team": {
    "frame": {
-    "x": 2,
-    "y": 561,
+    "x": 1110,
+    "y": 169,
     "w": 52,
     "h": 78
    },
@@ -1250,8 +1250,8 @@
   },
   "plasma_lancer_hit_02": {
    "frame": {
-    "x": 59,
-    "y": 2,
+    "x": 2,
+    "y": 107,
     "w": 51,
     "h": 100
    },
@@ -1274,17 +1274,17 @@
   },
   "plasma_lancer_hit_02_team": {
    "frame": {
-    "x": 532,
-    "y": 296,
-    "w": 46,
+    "x": 811,
+    "y": 91,
+    "w": 45,
     "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 122,
+    "x": 123,
     "y": 120,
-    "w": 46,
+    "w": 45,
     "h": 85
    },
    "sourceSize": {
@@ -1298,8 +1298,8 @@
   },
   "plasma_lancer_hit_03": {
    "frame": {
-    "x": 298,
-    "y": 107,
+    "x": 285,
+    "y": 195,
     "w": 55,
     "h": 91
    },
@@ -1322,8 +1322,8 @@
   },
   "plasma_lancer_hit_03_team": {
    "frame": {
-    "x": 2,
-    "y": 475,
+    "x": 959,
+    "y": 89,
     "w": 47,
     "h": 82
    },
@@ -1346,8 +1346,8 @@
   },
   "plasma_lancer_hit_04": {
    "frame": {
-    "x": 346,
-    "y": 2,
+    "x": 60,
+    "y": 207,
     "w": 52,
     "h": 95
    },
@@ -1370,8 +1370,8 @@
   },
   "plasma_lancer_hit_04_team": {
    "frame": {
-    "x": 148,
-    "y": 387,
+    "x": 840,
+    "y": 180,
     "w": 46,
     "h": 84
    },
@@ -1394,18 +1394,18 @@
   },
   "plasma_lancer_die_00": {
    "frame": {
-    "x": 158,
-    "y": 475,
+    "x": 986,
+    "y": 2,
     "w": 61,
-    "h": 80
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 129,
-    "y": 135,
+    "y": 134,
     "w": 61,
-    "h": 80
+    "h": 81
    },
    "sourceSize": {
     "w": 308,
@@ -1418,8 +1418,8 @@
   },
   "plasma_lancer_die_00_team": {
    "frame": {
-    "x": 161,
-    "y": 561,
+    "x": 583,
+    "y": 275,
     "w": 52,
     "h": 75
    },
@@ -1442,8 +1442,8 @@
   },
   "plasma_lancer_die_01": {
    "frame": {
-    "x": 172,
-    "y": 2,
+    "x": 57,
+    "y": 107,
     "w": 57,
     "h": 96
    },
@@ -1466,8 +1466,8 @@
   },
   "plasma_lancer_die_01_team": {
    "frame": {
-    "x": 122,
-    "y": 296,
+    "x": 737,
+    "y": 183,
     "w": 50,
     "h": 86
    },
@@ -1490,8 +1490,8 @@
   },
   "plasma_lancer_die_02": {
    "frame": {
-    "x": 114,
-    "y": 2,
+    "x": 2,
+    "y": 211,
     "w": 54,
     "h": 97
    },
@@ -1514,8 +1514,8 @@
   },
   "plasma_lancer_die_02_team": {
    "frame": {
-    "x": 297,
-    "y": 387,
+    "x": 936,
+    "y": 2,
     "w": 46,
     "h": 83
    },
@@ -1538,8 +1538,8 @@
   },
   "plasma_lancer_die_03": {
    "frame": {
-    "x": 236,
-    "y": 107,
+    "x": 285,
+    "y": 2,
     "w": 58,
     "h": 91
    },
@@ -1562,8 +1562,8 @@
   },
   "plasma_lancer_die_03_team": {
    "frame": {
-    "x": 286,
-    "y": 475,
+    "x": 1051,
+    "y": 2,
     "w": 54,
     "h": 80
    },
@@ -1586,8 +1586,8 @@
   },
   "plasma_lancer_die_04": {
    "frame": {
-    "x": 272,
-    "y": 561,
+    "x": 471,
+    "y": 279,
     "w": 88,
     "h": 71
    },
@@ -1610,9 +1610,9 @@
   },
   "plasma_lancer_die_04_team": {
    "frame": {
-    "x": 423,
-    "y": 561,
-    "w": 77,
+    "x": 344,
+    "y": 286,
+    "w": 76,
     "h": 64
    },
    "rotated": false,
@@ -1620,7 +1620,7 @@
    "spriteSourceSize": {
     "x": 69,
     "y": 130,
-    "w": 77,
+    "w": 76,
     "h": 64
    },
    "sourceSize": {
@@ -1634,8 +1634,8 @@
   },
   "plasma_lancer_die_05": {
    "frame": {
-    "x": 504,
-    "y": 561,
+    "x": 1192,
+    "y": 76,
     "w": 83,
     "h": 62
    },
@@ -1658,8 +1658,8 @@
   },
   "plasma_lancer_die_05_team": {
    "frame": {
-    "x": 287,
-    "y": 643,
+    "x": 173,
+    "y": 296,
     "w": 72,
     "h": 51
    },
@@ -1682,8 +1682,8 @@
   },
   "plasma_lancer_die_06": {
    "frame": {
-    "x": 2,
-    "y": 643,
+    "x": 1166,
+    "y": 167,
     "w": 95,
     "h": 58
    },
@@ -1706,10 +1706,10 @@
   },
   "plasma_lancer_die_06_team": {
    "frame": {
-    "x": 195,
-    "y": 643,
+    "x": 249,
+    "y": 296,
     "w": 88,
-    "h": 51
+    "h": 50
    },
    "rotated": false,
    "trimmed": true,
@@ -1717,7 +1717,7 @@
     "x": 51,
     "y": 152,
     "w": 88,
-    "h": 51
+    "h": 50
    },
    "sourceSize": {
     "w": 308,
@@ -1730,8 +1730,8 @@
   },
   "plasma_lancer_die_07": {
    "frame": {
-    "x": 101,
-    "y": 643,
+    "x": 1166,
+    "y": 229,
     "w": 90,
     "h": 58
    },
@@ -1754,8 +1754,8 @@
   },
   "plasma_lancer_die_07_team": {
    "frame": {
-    "x": 363,
-    "y": 643,
+    "x": 1164,
+    "y": 291,
     "w": 79,
     "h": 50
    },
@@ -1885,8 +1885,8 @@
   "image": "plasma_lancer.png",
   "format": "RGBA8888",
   "size": {
-   "w": 640,
-   "h": 704
+   "w": 1280,
+   "h": 352
   },
   "scale": "1.5",
   "ageborn": {

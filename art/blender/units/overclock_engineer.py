@@ -18,6 +18,9 @@ loops the charge hold):
   hit       light: the head snaps back, eyes > <
   die       D1 fling and spin, the zapper flung away, X eyes
 """
+import math
+
+from ageborn_art import aimed as AIMED
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_future_wave as W
 from ageborn_art import kit_industrial as KI
@@ -25,6 +28,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "overclock_engineer"
 GAIT_NAME = "biped"
@@ -34,6 +38,14 @@ CANVAS = (300, 256)
 FEET = (120, 222)
 ANCHORS = {"head": (2, 66), "hitCenter": (0, 31), "muzzle": (30, 30)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the white soldiers' lifts; the wave kit's plates in the troopers' off-white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SKIN_PALETTE = FW.KIT_TROOPER
+MATERIAL_KINDS = FW.kinds_future()
 
 HR = (0.0, F.ARM_Y["r"], F.HAND_Z)
 HL = (0.0, F.ARM_Y["l"], F.HAND_Z)
@@ -50,6 +62,9 @@ def _tool(rig, j, k=1.55):
     g = Geo().lathe([(0, 0), (2.6 * k, 0.2), (2.2 * k, 6.0 * k), (0, 6.2 * k)], (hx, hy, hz + 10.0 * k),
                     (hx, hy, hz + 16.0 * k), segs=14)
     rig.part(j, g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    g = Geo().lathe([(0, -0.35), (3.95, -0.3), (3.95, 0.3), (0, 0.35)], (hx, hy, hz + 19.5), (hx, hy, hz + 20.5),
+                    segs=14)
+    rig.part(j, g, FW.GUN_SEAM, outline=0, highlight=False)                     # (W4: a seam round the nozzle)
     g = Geo().capsule((hx + 1.6 * k, hy, hz + 15.0 * k), (hx + 1.6 * k, hy, hz + (TOOL_LEN + 1.0)), 0.9)
     g.capsule((hx - 1.6 * k, hy, hz + 15.0 * k), (hx - 1.6 * k, hy, hz + (TOOL_LEN + 1.0)), 0.9)
     rig.part(j, g, F.TRIM, finish="metal", outline=0.5)
@@ -66,7 +81,8 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, helmet_kind="hardhat", team_greave=True, team_sleeve=False, pack=False)
+    W.trooper(rig, helmet_kind="hardhat", team_greave=True, team_sleeve=False, pack=False, strip=False)
+    FW.strip(rig)
     # tool belt: pouches and a spanner on the hip
     g = Geo().blob((5.0, -10.0, 19.6), (2.6, 1.8, 2.8), p=3.0).blob((-3.0, -10.0, 19.8), (2.4, 1.8, 2.6), p=3.0)
     g.blob((-8.0, -6.0, 19.8), (2.2, 1.8, 2.6), p=3.0)
@@ -89,6 +105,19 @@ def build(rig):
     F.sparks(rig, "tool", MUZZLE, name="arc", size=0.7, seed=7)
     rig.track("muzzle", "tool", MUZZLE)
     KI.loose(rig, "tool_loose", HR, lambda j: _tool(rig, j))
+    FW.wave_trooper(rig, helmet_kind="hardhat", team_greave=True)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face): the team hard hat, the near shoulder
+    pad, the white faulds, the near thigh, the near team greave (the zapper arm hides the chest plate)."""
+    rig.damage_spot_at("hat", "head", -3.0, 59.0, 5.5, "metal", team=True)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("faulds", "hips", -5.0, 16.0, 5.0, "metal")
+    rig.damage_spot_at("thigh", "thigh_r", 1.0, 13.0, 5.0, "cloth")
+    rig.damage_spot("greave", "shin_r", (1.9, -F.LEG_Y - 4.2, 8.6), 5.0, "metal", team=True, normal=(0, -1, 0))
 
 
 def aim(hand, w, far=None):
@@ -141,11 +170,24 @@ A_BX = [0.0, 0.5, 0.5, 0.8, 0.8, 1.0, 0.0, -3.0, -1.0, 0.0, 0.0]
 A_EYES = ["eyes", "g_angry", "g_squint", "g_squint", "g_squint", "g_squint", "g_wide", "g_happy", "eyes", "eyes", "eyes"]
 
 
-def _a_pose(f):
-    hx, hz = A_H[f]
-    far = (hx + 4.0, hz + 1.0) if 1 <= f <= 7 else (8.0, 30.0)
-    pose = merge(aim(A_H[f], A_W[f], far), {
-        "torso": {"r": A_TR[f]}, "head": {"r": A_TR[f] - 2},
+# aimed zaps (queue item 44, ageborn_art/aimed.py; W4): the Pulse Trooper's rule, a turn of `turn` degrees up raises
+# the zapper toward the cheek and leans the torso back; the far hand keeps its brace on the tool
+AIM_LEAN = 0.22           # torso r per degree of turn (positive leans back)
+AIM_RISE = 0.10           # hand z per degree up (torso space, lu)
+AIM_DRAW = 0.05           # hand x per degree up (drawn back toward the shoulder)
+AIM_HEAD = 0.30           # head r per degree, on top of the torso's lean
+#        read raise brace HOLD  crk   set   ZAP   kick  settle lower low
+AIM_W = [0.0, 0.35, 0.75, 1.0, 1.0, 1.0, 1.0, 0.85, 0.5, 0.2, 0.0]
+
+
+def _a_pose(f, turn=0.0):
+    up = max(0.0, turn)
+    dw = turn - AIM_LEAN * turn                     # the tool's turn in torso space (the torso's lean taken out)
+    hx, hz = A_H[f][0] - AIM_DRAW * up, A_H[f][1] + AIM_RISE * up
+    c, s = math.cos(math.radians(dw)), math.sin(math.radians(dw))
+    far = (hx + 4.0 * c - 1.0 * s, hz + 4.0 * s + 1.0 * c) if 1 <= f <= 7 else (8.0, 30.0)
+    pose = merge(aim((hx, hz), A_W[f] + dw, far), {
+        "torso": {"r": A_TR[f] + AIM_LEAN * turn}, "head": {"r": A_TR[f] - 2 + AIM_HEAD * turn},
         "thigh_r": {"r": [0, 8, 12, 14, 14, 14, 12, 6, 2, 0, 0][f]}, "thigh_l": {"r": [0, -8, -12, -14, -14, -14, -16, -12, -4, 0, 0][f]},
         "arc": {"show": f in (3, 5, 6)},
     }, M.body_about((0, 0, 22), x=A_BX[f], z=[0, -0.5, -1, -1.4, -1.2, -1.5, -0.8, 0.4, 0, 0, 0][f]))
@@ -206,13 +248,18 @@ def _die(k):
 
 
 def clips():
+    attack = _attack_clip()
+    # aimed up about 45 and 70 degrees at flyers (the Overclock Engineer hits air; they go to the extras sheet)
+    aimed = AIMED.variants(RIG, attack, _a_pose, AIM_W, aims=("up45", "up70"))
+    for v in aimed:
+        AIMED.check_timing(attack, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
+        attack,
         _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed
     return M.check_variants(M.check_contract(cl))
