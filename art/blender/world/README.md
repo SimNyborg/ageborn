@@ -178,6 +178,57 @@ Turrets follow the A11 colour rule except the team layer; saturated accents (bra
 magenta energy) stay small. Bases are exempt (A11) and carry large team areas: banners, roofs,
 domes, stripes and flags.
 
+## Detail standard (art round, world wave A)
+
+Every world sprite item goes through `pipeline.run_unit`, so the units' detail standard (`../README.md`, "Detail
+standard": the lifts L1, L2, L3 and L5, `MATERIAL_KINDS`, `LOOK_HIGHLIGHT`, `LOOK_SHADE`, `LOOK_RIM`, two-tone team
+parts through `look.team_part`) applies to world items too. Several items share a module, so the opt-in is per item:
+`look_world.opt_in(ITEM, {hex: kind, ..., "team": kind}, highlight=..., shade=...)` on the item's namespace (a
+turret, base, skin, fort, decoration or kit module from its factory). It also sets three knobs that `look.py` reads
+for world items only:
+
+- `LOOK_HEIGHT_LU`: a turret's dirt bands in its authored lu (its parts are built at authored size and scaled by
+  `TURRET_SCALE` at the `all` joint, while `HEIGHT_LU` is the rendered height);
+- `LOOK_OUTLINE`: a decoration keeps its thinner prop line (`PROP_OUTLINE`) with outline v4's inner cover;
+- `LOOK_CHECKS`: `look_world.checks` replaces the unit checks (a turret's team zone is a pennant or a band, bases are
+  outside the A11 colour rule, and the reference is the installed world sheet, not `public/art/units`).
+
+Items without the opt-in render exactly as before (proved byte for byte on a turret, a fort, a base, a decoration and a
+scene). Render with `AGEBORN_LOOK_REF=<the wave's base commit>` so a re-render is measured against the shipped sheet.
+
+**The checks** (`look_world.checks`; a hard failure stops the install like a unit's `LookCheckError`):
+- contract: the same clips (frames, sequence, durations, impact, loop), canvas, feet and contract meta (pivot, aim
+  limits, mounts, flags, lights, smoke, horn, props, glow, shadow, the fort keys) as the installed sheet; per-frame
+  anchors (the turret's muzzle, the base's mounts) within 0.05 lu;
+- pixels: the 1x sheet (and a fort's HD sheet, which the game loads on dense screens) within +2% of the installed one;
+- colour: turrets the A11 rule at most 10% on the RGBA frames and the encoded sheet; bases, skins, forts, decorations
+  and kits no frame worse than the installed one (+0.5 points);
+- team: no frame's team share more than 0.5 points below the installed frame's, and the composed item's visible team
+  share not below the installed one's;
+- orange: bases and skins, the blue side's orange-reading share (the orange check above) not above the installed one's;
+- metrics (soft, reported): the composed item at game scale against its class's floors.
+`<venv>/bin/python art/blender/world/look_world.py <installed sheets...> --ref <commit>` runs the same comparison on
+installed sheets (a fort after `finish_meta`, or the gate's numbers for a set), with no Blender.
+
+**Floors per class** (`look_world.FLOORS`; `look2d.game_metrics` on the composed item at rest: a turret's mount with its
+head, a base's body with its flags and props at their hold frame, a fort's body with its crew front and flag, a
+decoration's body with its loop; and as a mean over the clip's steps). The audit gives world items no numbers ("at the
+sheet's density"), so the war machines' row (flat 0.30, micro 3.4, edge 0.45, highlight 0.06 on the HD sheet) is carried
+to each world density by what the density alone does to 16 detailed war machines (Bronze to Modern; their idle 0 on the
+HD sheet, on the 1x sheet, and box-resized to 1.025 px/lu): near the floor, a softer upscaled sheet has fewer
+perfectly flat pixels and more small gradients and loses its small highlights (flat -0.06 / -0.09, micro +0.45 / +0.6,
+edge -0.01, highlight x0.44 / x0.37 at 1.23 / 1.025 px/lu).
+
+| Class | Sheet the game draws | flat <= | micro >= | edge >= | highlight >= |
+|---|---|---|---|---|---|
+| Turrets | 1x, 1.23 px/lu, drawn 1.49x at DPR 2 | 0.25 | 3.85 | 0.44 | 0.026 |
+| Decorations | 1x in battle (HD in Customize) | 0.25 | 3.85 | 0.44 | 0.026 |
+| Bases and base skins | 1x, 1.025 px/lu, drawn 1.79x | 0.22 | 4.0 | 0.44 | 0.022 |
+| Forts | HD, 2.46 px/lu, drawn 0.74x | 0.30 | 3.4 | 0.45 | 0.06 |
+
+Decorations are small (60-70 sheet px tall), so their flat, micro and edge are size-dominated and mostly met already;
+the rubric (three secondary shapes of at least 3 lu, a two-tone material, a clear top rim) is their real bar.
+
 ## Backdrops and grounds
 
 ```sh
