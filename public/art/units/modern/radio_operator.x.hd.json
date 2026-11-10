@@ -2,8 +2,8 @@
  "frames": {
   "radio_operator_attack_b_01": {
    "frame": {
-    "x": 450,
-    "y": 2,
+    "x": 1297,
+    "y": 237,
     "w": 160,
     "h": 230
    },
@@ -26,18 +26,18 @@
   },
   "radio_operator_attack_b_01_team": {
    "frame": {
-    "x": 2,
-    "y": 476,
+    "x": 1006,
+    "y": 481,
     "w": 113,
-    "h": 167
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 202,
-    "y": 218,
+    "y": 219,
     "w": 113,
-    "h": 167
+    "h": 165
    },
    "sourceSize": {
     "w": 514,
@@ -50,17 +50,17 @@
   },
   "radio_operator_attack_b_02": {
    "frame": {
-    "x": 182,
-    "y": 252,
-    "w": 147,
+    "x": 2174,
+    "y": 2,
+    "w": 157,
     "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 216,
+    "x": 206,
     "y": 187,
-    "w": 147,
+    "w": 157,
     "h": 214
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "radio_operator_attack_b_02_team": {
    "frame": {
-    "x": 351,
-    "y": 476,
+    "x": 297,
+    "y": 503,
     "w": 130,
     "h": 147
    },
@@ -98,17 +98,17 @@
   },
   "radio_operator_attack_b_03": {
    "frame": {
-    "x": 470,
-    "y": 252,
-    "w": 146,
+    "x": 2087,
+    "y": 444,
+    "w": 157,
     "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 217,
+    "x": 206,
     "y": 191,
-    "w": 146,
+    "w": 157,
     "h": 210
    },
    "sourceSize": {
@@ -122,18 +122,18 @@
   },
   "radio_operator_attack_b_03_team": {
    "frame": {
-    "x": 485,
-    "y": 476,
+    "x": 818,
+    "y": 491,
     "w": 130,
-    "h": 146
+    "h": 145
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 250,
+    "y": 251,
     "w": 130,
-    "h": 146
+    "h": 145
    },
    "sourceSize": {
     "w": 514,
@@ -146,17 +146,17 @@
   },
   "radio_operator_attack_b_04": {
    "frame": {
-    "x": 2,
-    "y": 252,
-    "w": 176,
+    "x": 1737,
+    "y": 230,
+    "w": 181,
     "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 214,
+    "x": 209,
     "y": 182,
-    "w": 176,
+    "w": 181,
     "h": 220
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "radio_operator_attack_b_04_team": {
    "frame": {
-    "x": 233,
-    "y": 476,
+    "x": 700,
+    "y": 492,
     "w": 114,
     "h": 155
    },
@@ -194,8 +194,8 @@
   },
   "radio_operator_attack_b_05": {
    "frame": {
-    "x": 333,
-    "y": 252,
+    "x": 2209,
+    "y": 220,
     "w": 133,
     "h": 213
    },
@@ -218,8 +218,8 @@
   },
   "radio_operator_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 647,
+    "x": 149,
+    "y": 513,
     "w": 114,
     "h": 141
    },
@@ -242,7 +242,7 @@
   },
   "radio_operator_attack_b_06": {
    "frame": {
-    "x": 282,
+    "x": 1016,
     "y": 2,
     "w": 164,
     "h": 231
@@ -266,8 +266,8 @@
   },
   "radio_operator_attack_b_06_team": {
    "frame": {
-    "x": 119,
-    "y": 476,
+    "x": 586,
+    "y": 492,
     "w": 110,
     "h": 161
    },
@@ -290,7 +290,7 @@
   },
   "radio_operator_attack_b_07": {
    "frame": {
-    "x": 135,
+    "x": 727,
     "y": 2,
     "w": 143,
     "h": 241
@@ -314,18 +314,18 @@
   },
   "radio_operator_attack_b_07_team": {
    "frame": {
-    "x": 226,
-    "y": 647,
-    "w": 107,
-    "h": 139
+    "x": 2636,
+    "y": 286,
+    "w": 103,
+    "h": 138
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 206,
     "y": 241,
-    "w": 107,
-    "h": 139
+    "w": 103,
+    "h": 138
    },
    "sourceSize": {
     "w": 514,
@@ -338,8 +338,8 @@
   },
   "radio_operator_attack_b_08": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 297,
+    "y": 253,
     "w": 129,
     "h": 246
    },
@@ -362,18 +362,1362 @@
   },
   "radio_operator_attack_b_08_team": {
    "frame": {
-    "x": 120,
-    "y": 647,
-    "w": 102,
+    "x": 2409,
+    "y": 509,
+    "w": 99,
     "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 200,
+    "x": 203,
     "y": 233,
-    "w": 102,
+    "w": 99,
     "h": 140
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_01": {
+   "frame": {
+    "x": 431,
+    "y": 2,
+    "w": 142,
+    "h": 242
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 158,
+    "w": 142,
+    "h": 242
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_01_team": {
+   "frame": {
+    "x": 2507,
+    "y": 2,
+    "w": 109,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 235,
+    "w": 109,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_02": {
+   "frame": {
+    "x": 873,
+    "y": 247,
+    "w": 129,
+    "h": 239
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 162,
+    "w": 129,
+    "h": 239
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 518,
+    "w": 106,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 236,
+    "w": 106,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_03": {
+   "frame": {
+    "x": 874,
+    "y": 2,
+    "w": 138,
+    "h": 237
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 164,
+    "w": 138,
+    "h": 237
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_03_team": {
+   "frame": {
+    "x": 2743,
+    "y": 285,
+    "w": 106,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 236,
+    "w": 106,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_04": {
+   "frame": {
+    "x": 149,
+    "y": 260,
+    "w": 144,
+    "h": 249
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 152,
+    "w": 144,
+    "h": 249
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_04_team": {
+   "frame": {
+    "x": 1770,
+    "y": 454,
+    "w": 102,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 228,
+    "w": 102,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_05": {
+   "frame": {
+    "x": 1922,
+    "y": 224,
+    "w": 161,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 142,
+    "y": 183,
+    "w": 161,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_05_team": {
+   "frame": {
+    "x": 2951,
+    "y": 141,
+    "w": 116,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 237,
+    "w": 116,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_06": {
+   "frame": {
+    "x": 270,
+    "y": 2,
+    "w": 157,
+    "h": 247
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 154,
+    "w": 157,
+    "h": 247
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_06_team": {
+   "frame": {
+    "x": 1663,
+    "y": 462,
+    "w": 103,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 228,
+    "w": 103,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 144,
+    "h": 254
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 147,
+    "w": 144,
+    "h": 254
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up45_07_team": {
+   "frame": {
+    "x": 2453,
+    "y": 218,
+    "w": 105,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 230,
+    "w": 105,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_01": {
+   "frame": {
+    "x": 735,
+    "y": 247,
+    "w": 134,
+    "h": 240
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 160,
+    "w": 134,
+    "h": 240
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_01_team": {
+   "frame": {
+    "x": 2512,
+    "y": 509,
+    "w": 108,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 234,
+    "w": 108,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_02": {
+   "frame": {
+    "x": 1006,
+    "y": 243,
+    "w": 136,
+    "h": 234
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 167,
+    "w": 136,
+    "h": 234
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_02_team": {
+   "frame": {
+    "x": 2672,
+    "y": 144,
+    "w": 110,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 235,
+    "w": 110,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_03": {
+   "frame": {
+    "x": 1146,
+    "y": 237,
+    "w": 147,
+    "h": 231
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 170,
+    "w": 147,
+    "h": 231
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_03_team": {
+   "frame": {
+    "x": 2730,
+    "y": 2,
+    "w": 110,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 235,
+    "w": 110,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_04": {
+   "frame": {
+    "x": 150,
+    "y": 2,
+    "w": 116,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 153,
+    "w": 116,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_04_team": {
+   "frame": {
+    "x": 1123,
+    "y": 481,
+    "w": 105,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 226,
+    "w": 105,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_05": {
+   "frame": {
+    "x": 2335,
+    "y": 2,
+    "w": 168,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 188,
+    "w": 168,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_05_team": {
+   "frame": {
+    "x": 2951,
+    "y": 2,
+    "w": 119,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 237,
+    "w": 119,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_06": {
+   "frame": {
+    "x": 430,
+    "y": 253,
+    "w": 152,
+    "h": 245
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 156,
+    "w": 152,
+    "h": 245
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_06_team": {
+   "frame": {
+    "x": 1339,
+    "y": 471,
+    "w": 102,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 227,
+    "w": 102,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_07": {
+   "frame": {
+    "x": 2,
+    "y": 260,
+    "w": 143,
+    "h": 254
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 147,
+    "w": 143,
+    "h": 254
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_up70_07_team": {
+   "frame": {
+    "x": 2409,
+    "y": 364,
+    "w": 106,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 230,
+    "w": 106,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_01": {
+   "frame": {
+    "x": 1330,
+    "y": 2,
+    "w": 153,
+    "h": 230
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 171,
+    "w": 153,
+    "h": 230
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_01_team": {
+   "frame": {
+    "x": 2519,
+    "y": 363,
+    "w": 113,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 246,
+    "w": 113,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_02": {
+   "frame": {
+    "x": 1785,
+    "y": 2,
+    "w": 130,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 183,
+    "w": 130,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_02_team": {
+   "frame": {
+    "x": 2895,
+    "y": 280,
+    "w": 109,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 261,
+    "w": 109,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_03": {
+   "frame": {
+    "x": 2041,
+    "y": 2,
+    "w": 129,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 184,
+    "w": 129,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_03_team": {
+   "frame": {
+    "x": 2849,
+    "y": 425,
+    "w": 109,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 261,
+    "w": 109,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_04": {
+   "frame": {
+    "x": 1635,
+    "y": 2,
+    "w": 146,
+    "h": 224
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 178,
+    "w": 146,
+    "h": 224
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_04_team": {
+   "frame": {
+    "x": 1232,
+    "y": 472,
+    "w": 103,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 253,
+    "w": 103,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_05": {
+   "frame": {
+    "x": 1922,
+    "y": 445,
+    "w": 146,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 194,
+    "w": 146,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_05_team": {
+   "frame": {
+    "x": 2786,
+    "y": 143,
+    "w": 105,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 258,
+    "w": 105,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_06": {
+   "frame": {
+    "x": 1461,
+    "y": 236,
+    "w": 153,
+    "h": 228
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 173,
+    "w": 153,
+    "h": 228
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_06_team": {
+   "frame": {
+    "x": 1551,
+    "y": 468,
+    "w": 108,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 251,
+    "w": 108,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_07": {
+   "frame": {
+    "x": 586,
+    "y": 247,
+    "w": 145,
+    "h": 241
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 160,
+    "w": 145,
+    "h": 241
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up45_07_team": {
+   "frame": {
+    "x": 2562,
+    "y": 144,
+    "w": 106,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 241,
+    "w": 106,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_01": {
+   "frame": {
+    "x": 1184,
+    "y": 2,
+    "w": 142,
+    "h": 231
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 170,
+    "w": 142,
+    "h": 231
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_01_team": {
+   "frame": {
+    "x": 2624,
+    "y": 505,
+    "w": 112,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 246,
+    "w": 112,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_02": {
+   "frame": {
+    "x": 1919,
+    "y": 2,
+    "w": 118,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 183,
+    "w": 118,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_02_team": {
+   "frame": {
+    "x": 2844,
+    "y": 2,
+    "w": 103,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 260,
+    "w": 103,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_03": {
+   "frame": {
+    "x": 2087,
+    "y": 223,
+    "w": 118,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 184,
+    "w": 118,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_03_team": {
+   "frame": {
+    "x": 2346,
+    "y": 218,
+    "w": 103,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 254,
+    "w": 103,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_04": {
+   "frame": {
+    "x": 1618,
+    "y": 232,
+    "w": 115,
+    "h": 226
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 176,
+    "w": 115,
+    "h": 226
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_04_team": {
+   "frame": {
+    "x": 431,
+    "y": 502,
+    "w": 97,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 251,
+    "w": 97,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_05": {
+   "frame": {
+    "x": 2248,
+    "y": 437,
+    "w": 157,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 197,
+    "w": 157,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_05_team": {
+   "frame": {
+    "x": 2740,
+    "y": 428,
+    "w": 105,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 257,
+    "w": 105,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_06": {
+   "frame": {
+    "x": 1487,
+    "y": 2,
+    "w": 144,
+    "h": 226
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 175,
+    "w": 144,
+    "h": 226
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_06_team": {
+   "frame": {
+    "x": 1445,
+    "y": 471,
+    "w": 102,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 250,
+    "w": 102,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_07": {
+   "frame": {
+    "x": 577,
+    "y": 2,
+    "w": 146,
+    "h": 241
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 160,
+    "w": 146,
+    "h": 241
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.86878
+   }
+  },
+  "radio_operator_attack_b_up70_07_team": {
+   "frame": {
+    "x": 2620,
+    "y": 2,
+    "w": 106,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 241,
+    "w": 106,
+    "h": 138
    },
    "sourceSize": {
     "w": 514,
@@ -411,6 +1755,110 @@
    "radio_operator_attack_b_08_team",
    "radio_operator_attack_09_team",
    "radio_operator_attack_10_team"
+  ],
+  "attack_up45": [
+   "radio_operator_attack_00",
+   "radio_operator_attack_up45_01",
+   "radio_operator_attack_up45_02",
+   "radio_operator_attack_up45_03",
+   "radio_operator_attack_up45_04",
+   "radio_operator_attack_up45_05",
+   "radio_operator_attack_up45_06",
+   "radio_operator_attack_up45_07",
+   "radio_operator_attack_08",
+   "radio_operator_attack_09",
+   "radio_operator_attack_10"
+  ],
+  "attack_up45_team": [
+   "radio_operator_attack_00_team",
+   "radio_operator_attack_up45_01_team",
+   "radio_operator_attack_up45_02_team",
+   "radio_operator_attack_up45_03_team",
+   "radio_operator_attack_up45_04_team",
+   "radio_operator_attack_up45_05_team",
+   "radio_operator_attack_up45_06_team",
+   "radio_operator_attack_up45_07_team",
+   "radio_operator_attack_08_team",
+   "radio_operator_attack_09_team",
+   "radio_operator_attack_10_team"
+  ],
+  "attack_up70": [
+   "radio_operator_attack_00",
+   "radio_operator_attack_up70_01",
+   "radio_operator_attack_up70_02",
+   "radio_operator_attack_up70_03",
+   "radio_operator_attack_up70_04",
+   "radio_operator_attack_up70_05",
+   "radio_operator_attack_up70_06",
+   "radio_operator_attack_up70_07",
+   "radio_operator_attack_08",
+   "radio_operator_attack_09",
+   "radio_operator_attack_10"
+  ],
+  "attack_up70_team": [
+   "radio_operator_attack_00_team",
+   "radio_operator_attack_up70_01_team",
+   "radio_operator_attack_up70_02_team",
+   "radio_operator_attack_up70_03_team",
+   "radio_operator_attack_up70_04_team",
+   "radio_operator_attack_up70_05_team",
+   "radio_operator_attack_up70_06_team",
+   "radio_operator_attack_up70_07_team",
+   "radio_operator_attack_08_team",
+   "radio_operator_attack_09_team",
+   "radio_operator_attack_10_team"
+  ],
+  "attack_b_up45": [
+   "radio_operator_attack_00",
+   "radio_operator_attack_b_up45_01",
+   "radio_operator_attack_b_up45_02",
+   "radio_operator_attack_b_up45_03",
+   "radio_operator_attack_b_up45_04",
+   "radio_operator_attack_b_up45_05",
+   "radio_operator_attack_b_up45_06",
+   "radio_operator_attack_b_up45_07",
+   "radio_operator_attack_b_08",
+   "radio_operator_attack_09",
+   "radio_operator_attack_10"
+  ],
+  "attack_b_up45_team": [
+   "radio_operator_attack_00_team",
+   "radio_operator_attack_b_up45_01_team",
+   "radio_operator_attack_b_up45_02_team",
+   "radio_operator_attack_b_up45_03_team",
+   "radio_operator_attack_b_up45_04_team",
+   "radio_operator_attack_b_up45_05_team",
+   "radio_operator_attack_b_up45_06_team",
+   "radio_operator_attack_b_up45_07_team",
+   "radio_operator_attack_b_08_team",
+   "radio_operator_attack_09_team",
+   "radio_operator_attack_10_team"
+  ],
+  "attack_b_up70": [
+   "radio_operator_attack_00",
+   "radio_operator_attack_b_up70_01",
+   "radio_operator_attack_b_up70_02",
+   "radio_operator_attack_b_up70_03",
+   "radio_operator_attack_b_up70_04",
+   "radio_operator_attack_b_up70_05",
+   "radio_operator_attack_b_up70_06",
+   "radio_operator_attack_b_up70_07",
+   "radio_operator_attack_b_08",
+   "radio_operator_attack_09",
+   "radio_operator_attack_10"
+  ],
+  "attack_b_up70_team": [
+   "radio_operator_attack_00_team",
+   "radio_operator_attack_b_up70_01_team",
+   "radio_operator_attack_b_up70_02_team",
+   "radio_operator_attack_b_up70_03_team",
+   "radio_operator_attack_b_up70_04_team",
+   "radio_operator_attack_b_up70_05_team",
+   "radio_operator_attack_b_up70_06_team",
+   "radio_operator_attack_b_up70_07_team",
+   "radio_operator_attack_b_08_team",
+   "radio_operator_attack_09_team",
+   "radio_operator_attack_10_team"
   ]
  },
  "meta": {
@@ -419,8 +1867,8 @@
   "image": "radio_operator.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 640,
-   "h": 792
+   "w": 3072,
+   "h": 656
   },
   "scale": "3",
   "ageborn": {
@@ -594,6 +2042,590 @@
       "atLu": [
        34.8,
        30.1
+      ]
+     }
+    },
+    "attack_up45": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      60,
+      80,
+      70,
+      70,
+      70,
+      75,
+      74
+     ],
+     "durationMs": 790,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3684,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "aimOf": "attack",
+     "anchorsLu": {
+      "antenna": [
+       [
+        -19.8,
+        88.8
+       ],
+       [
+        -12.0,
+        86.8
+       ],
+       [
+        -19.7,
+        85.2
+       ],
+       [
+        -23.7,
+        84.5
+       ],
+       [
+        -6.6,
+        89.3
+       ],
+       [
+        -43.0,
+        76.8
+       ],
+       [
+        -27.6,
+        88.6
+       ],
+       [
+        -6.4,
+        91.4
+       ],
+       [
+        0.1,
+        86.9
+       ],
+       [
+        -8.2,
+        88.6
+       ],
+       [
+        -18.8,
+        89.3
+       ]
+      ],
+      "muzzle": [
+       [
+        26.9,
+        33.9
+       ],
+       [
+        28.8,
+        44.3
+       ],
+       [
+        23.1,
+        53.5
+       ],
+       [
+        22.3,
+        54.3
+       ],
+       [
+        21.9,
+        56.4
+       ],
+       [
+        5.3,
+        56.2
+       ],
+       [
+        25.1,
+        51.3
+       ],
+       [
+        31.6,
+        39.6
+       ],
+       [
+        26.9,
+        22.5
+       ],
+       [
+        20.7,
+        18.1
+       ],
+       [
+        18.9,
+        17.9
+       ]
+      ]
+     },
+     "muzzle": [
+      21.9,
+      56.4
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       21.9,
+       56.4
+      ]
+     }
+    },
+    "attack_up70": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      60,
+      80,
+      70,
+      70,
+      70,
+      75,
+      74
+     ],
+     "durationMs": 790,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3684,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "aimOf": "attack",
+     "anchorsLu": {
+      "antenna": [
+       [
+        -19.8,
+        88.8
+       ],
+       [
+        -9.7,
+        86.0
+       ],
+       [
+        -26.8,
+        83.4
+       ],
+       [
+        -31.5,
+        81.9
+       ],
+       [
+        -12.4,
+        89.0
+       ],
+       [
+        -46.6,
+        74.8
+       ],
+       [
+        -29.6,
+        87.7
+       ],
+       [
+        -6.5,
+        91.2
+       ],
+       [
+        0.1,
+        86.9
+       ],
+       [
+        -8.2,
+        88.6
+       ],
+       [
+        -18.8,
+        89.3
+       ]
+      ],
+      "muzzle": [
+       [
+        26.9,
+        33.9
+       ],
+       [
+        25.9,
+        49.3
+       ],
+       [
+        12.6,
+        60.1
+       ],
+       [
+        11.6,
+        60.4
+       ],
+       [
+        12.0,
+        63.3
+       ],
+       [
+        -3.8,
+        57.4
+       ],
+       [
+        21.4,
+        56.0
+       ],
+       [
+        31.1,
+        41.9
+       ],
+       [
+        26.9,
+        22.5
+       ],
+       [
+        20.7,
+        18.1
+       ],
+       [
+        18.9,
+        17.9
+       ]
+      ]
+     },
+     "muzzle": [
+      12.0,
+      63.3
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       12.0,
+       63.3
+      ]
+     }
+    },
+    "attack_b_up45": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      60,
+      80,
+      70,
+      70,
+      70,
+      75,
+      74
+     ],
+     "durationMs": 790,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3684,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "antenna": [
+       [
+        -19.8,
+        88.8
+       ],
+       [
+        -22.2,
+        81.7
+       ],
+       [
+        -5.0,
+        76.7
+       ],
+       [
+        -1.9,
+        76.1
+       ],
+       [
+        6.5,
+        78.8
+       ],
+       [
+        -33.6,
+        72.6
+       ],
+       [
+        -23.9,
+        80.9
+       ],
+       [
+        -15.9,
+        86.1
+       ],
+       [
+        -11.2,
+        88.6
+       ],
+       [
+        -8.2,
+        88.6
+       ],
+       [
+        -18.8,
+        89.3
+       ]
+      ],
+      "muzzle": [
+       [
+        26.9,
+        33.9
+       ],
+       [
+        30.4,
+        38.8
+       ],
+       [
+        25.4,
+        46.7
+       ],
+       [
+        24.9,
+        47.1
+       ],
+       [
+        23.7,
+        50.0
+       ],
+       [
+        1.7,
+        51.7
+       ],
+       [
+        26.7,
+        44.5
+       ],
+       [
+        30.5,
+        28.6
+       ],
+       [
+        23.2,
+        19.4
+       ],
+       [
+        20.7,
+        18.1
+       ],
+       [
+        18.9,
+        17.9
+       ]
+      ]
+     },
+     "muzzle": [
+      23.7,
+      50.0
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       23.7,
+       50.0
+      ]
+     }
+    },
+    "attack_b_up70": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      60,
+      80,
+      70,
+      70,
+      70,
+      75,
+      74
+     ],
+     "durationMs": 790,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3684,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "antenna": [
+       [
+        -19.8,
+        88.8
+       ],
+       [
+        -19.8,
+        82.0
+       ],
+       [
+        -13.2,
+        76.6
+       ],
+       [
+        -11.3,
+        76.5
+       ],
+       [
+        1.8,
+        79.4
+       ],
+       [
+        -37.9,
+        71.0
+       ],
+       [
+        -26.0,
+        80.1
+       ],
+       [
+        -16.1,
+        86.0
+       ],
+       [
+        -11.2,
+        88.6
+       ],
+       [
+        -8.2,
+        88.6
+       ],
+       [
+        -18.8,
+        89.3
+       ]
+      ],
+      "muzzle": [
+       [
+        26.9,
+        33.9
+       ],
+       [
+        27.7,
+        44.0
+       ],
+       [
+        13.7,
+        52.7
+       ],
+       [
+        13.1,
+        52.9
+       ],
+       [
+        12.8,
+        56.4
+       ],
+       [
+        -8.3,
+        51.4
+       ],
+       [
+        22.6,
+        49.2
+       ],
+       [
+        30.5,
+        30.8
+       ],
+       [
+        23.2,
+        19.4
+       ],
+       [
+        20.7,
+        18.1
+       ],
+       [
+        18.9,
+        17.9
+       ]
+      ]
+     },
+     "muzzle": [
+      12.8,
+      56.4
+     ],
+     "aimDeg": 70.1,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       12.8,
+       56.4
       ]
      }
     }

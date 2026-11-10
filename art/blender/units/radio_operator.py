@@ -28,17 +28,24 @@ Animation standard (ANIM_SPEC 2026-10-02):
   attack_b  TWO-HANDED AIMED SHOT: he lets the handset drop onto its cord, drops into a low lunge on
             one knee and aims the pistol in both hands at arm's length (the held extreme, holdLoop), fires,
             the kick lifts both arms, and he snatches the handset back up to his ear
+
+Art round W3 (the detail standard): both shots aimed up about 45 and 70 degrees at flyers (item 44) and damage
+spots measured in posed frames (item 40).
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_medieval as K
 from ageborn_art import kit_modern as KM
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "radio_operator"
 GAIT_NAME = "biped"
@@ -56,6 +63,22 @@ HANDSET = "#2E3237"
 CAP_C = (1.0, 0.0, 56.5)
 PF = (0.4, R.ARM_Y["l"], R.HAND_Z - 0.4)     # the far fist (pistol grip)
 PMUZ = (PF[0] + 13.5, PF[1] - 1.5, PF[2] + 2.8)
+RADIO = ((-13.8, 1.0, 32.0), (6.8, 10.6, 12.6))     # the radio set's case (p 3.4)
+WHIP = "#A9B1B8"
+GRILLE = "#262A2E"
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Radio Operator is the big team radio on his back with its antenna, the cap and headphones,
+# the tunic and the pistol: the radio case in two tones (team-dark top and bottom trims round the bright case, a
+# khaki carrying strap round it), the tunic's team-dark hem, pocket flap and cuffs with a side seam and the khaki
+# front brace, lighter boots.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", R.HAIR: "fur", R.KHAKI: "cloth", R.KHAKI_LT: "cloth", KM.CREAM: "cloth",
+                           R.OLIVE: "cloth", R.OLIVE_LT: "polymer", MW.BOOT: "leather", "#2B2A2E": "leather",
+                           R.LEATHER: "leather", HANDSET: "polymer", R.GUNMETAL: "iron", R.STEEL: "iron",
+                           WHIP: "iron", GRILLE: "iron", R.SIGNAL: "polymer", KM.BRASS: "bronze", "team": "cloth"})
 
 
 def _pistol(rig, joint):
@@ -77,10 +100,15 @@ def build(rig):
     global RIG
     RIG = rig
     KM.skeleton_v3(rig)
-    KM.legs_v3(rig, trousers=R.OLIVE)
+    KM.legs_v3(rig, trousers=R.OLIVE, boot=MW.BOOT)
     # the radio set on his back (behind the torso)
-    radio = Geo().blob((-13.8, 1.0, 32.0), (6.8, 10.6, 12.6), p=3.4)
+    radio = Geo().blob(*RADIO, p=3.4)
     rig.part("torso", radio, team=True)
+    # W3: the case in two tones (team-dark trims top and bottom), a khaki carrying strap round it
+    look.team_part(rig, "torso", KD.band_z(*RADIO, 39.4, 45.0, p=3.4, grow=0.3))
+    look.team_part(rig, "torso", KD.band_z(*RADIO, 18.0, 22.4, p=3.4, grow=0.3))
+    g = KD.stripe_x(*RADIO, -18.6, -16.0, z0=22.0, z1=40.0, p=3.4, grow=0.55)
+    rig.part("torso", g, R.KHAKI, outline=0.4)
     panel = Geo().blob((-13.8, -9.8, 34.0), (5.0, 1.4, 8.0), p=3.2)   # face panel
     pface = F.Face(rig, "torso", [panel])
     rig.part("torso", panel, R.GUNMETAL, finish="metal", outline=0.6)
@@ -95,7 +123,7 @@ def build(rig):
     g = Geo()
     pface.stroke(g, pface.hit(-13.8, 30.4), [(-3.0, 0), (3.0, 0)], 0.9, 0.4)   # a grille
     pface.stroke(g, pface.hit(-13.8, 28.6), [(-3.0, 0), (3.0, 0)], 0.9, 0.4)
-    rig.part("torso", g, "#262A2E", highlight=False, outline=0)
+    rig.part("torso", g, GRILLE, highlight=False, outline=0)
     g = Geo().sphere((-10.8, -11.2, 32.6), 1.4, cuts=3)
     rig.part("torso", g, glow="#E0508E", outline=0.5, outline_hex=R.SIGNAL)
     g = Geo().blob((-13.8, 1.0, 45.2), (5.6, 8.6, 1.7), p=3.0)   # lid
@@ -115,15 +143,16 @@ def build(rig):
     rig.part("torso", g, R.GUNMETAL, finish="metal", outline=0.5)
     rig.secondary("ant1", "torso", ANT_BASE, ANT_MID, max_deg=12, gain=1.1)
     g = Geo().capsule(ANT_BASE, ANT_MID, 1.1, 0.95)
-    rig.part("ant1", g, "#A9B1B8", finish="metal", outline=0.5)
+    rig.part("ant1", g, WHIP, finish="metal", outline=0.5)
     rig.secondary("ant2", "ant1", ANT_MID, ANT_TOP, max_deg=20, gain=1.5)
     g = Geo().capsule(ANT_MID, ANT_TOP, 0.9, 0.75)
-    rig.part("ant2", g, "#A9B1B8", finish="metal", outline=0.5)
+    rig.part("ant2", g, WHIP, finish="metal", outline=0.5)
     g = Geo().sphere(ANT_TOP, 1.4, cuts=3)
     rig.part("ant2", g, R.SIGNAL, outline=0.6)
     rig.track("antenna", "ant2", ANT_TOP)
 
     R.tunic(rig, hem_z=13.0)
+    MW.tunic_w3(rig, pocket=KM.BRASS)    # W3: the tunic's team-dark hem and pocket flap, a side seam, the brace
     KI.head_face(rig, brow=R.HAIR, brow_angry=False, mouth_dz=-9.0, mouth_w=5.6, mouth_shape="smile")
     g = Geo().blob((-6.0, 0, 46.0), (5.6, 9.8, 6.0), p=2.2)
     rig.part("head", g, R.HAIR, finish="hair")
@@ -140,6 +169,7 @@ def build(rig):
 
     for s in ("r", "l"):
         R.arm_parts(rig, s, fist=4.3)
+    MW.cuffs(rig)
     R.shoulders(rig)
     sleeve = Geo().capsule((0, R.ARM_Y["r"], R.SHOULDER_Z), (0, R.ARM_Y["r"], R.ELBOW_Z), 4.4, 4.1)
     sface = F.Face(rig, "arm_r", [sleeve])
@@ -173,6 +203,16 @@ def build(rig):
     for dx, dz, r in ((3.0, 2.0, 2.2), (5.0, 4.4, 1.8), (2.0, 6.0, 1.5)):
         g.sphere((PMUZ[0] + dx, PMUZ[1] - 5.0, PMUZ[2] + dz), r, cuts=3)
     rig.part("smoke", g, R.SMOKE, finish="dust", outline=0.6)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: never on the face or skin."""
+    rig.damage_spot_at("tunic", "torso", -6.0, 24.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("radio", "torso", -17.5, 42.0, 6.0, "metal", team=True)     # the case's top band
+    rig.damage_spot_at("skirt", "hips", 5.0, 12.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ------------------------------------------------------------------------------------------
@@ -187,6 +227,12 @@ def pistol(a, f, w=None, lean=0.0):
     w = f if w is None else w
     return R.arm("l", a - lean, f - lean, w=w - lean, w_rest=0.0)
 
+
+# aimed shots (queue item 44, ageborn_art/aimed.py): a turn of `turn` degrees up raises the pistol arm about the
+# shoulder (the upper arm takes 85% of the turn, the forearm and the pistol all of it), he leans back a little and
+# looks up along it.
+AIM_LEAN, AIM_HEAD, AIM_UPPER = 0.14, 0.28, 0.85
+AIM_W = [0.0, 0.5, 1.0, 1.0, 1.0, 0.8, 0.5, 0.2, 0.0, 0.0, 0.0]   # per unique frame (A and B: fire on 4)
 
 LOW = (-80.0, -62.0, -40.0)      # the pistol hangs low at his side
 STANCE = merge(talk(), pistol(*LOW), {"torso": {"r": -2.0}})
@@ -236,15 +282,16 @@ LEAN = [-2, -5, -6, -6, 2, -6, -8, -4, -2, -2]
 MOUTHS = ["o", None, "o", "grit", "o", "yell", "yell", "o", None, None]
 
 
-def _attack_pose(i):
+def _attack_pose(i, turn=0.0):
     wob = i == 3
     f = U_OF[i]
-    t = LEAN[f]
+    t0 = LEAN[f]
+    t = t0 + AIM_LEAN * turn
     w = 1.5 if wob else 0.0
     pose = merge(talk([0, 0, 0.3, 0, -0.6, 1.0, 0.6, 0, 0, 0][f] - (0.3 if wob else 0.0)),
-                 pistol(PA[f] + w, PF_[f] + w, PW[f] + 2 * w, lean=t), {
+                 pistol(PA[f] + w + AIM_UPPER * turn, PF_[f] + w + turn, PW[f] + 2 * w + turn, lean=t), {
         "torso": {"r": t, "rz": [0, 6, 8, 8, 4, 2, 0, 0, 0, 0][f]},
-        "head": {"r": [0, -4, -6, -6, 4, 8, 10, 4, 2, 0][f] - 0.3 * t},
+        "head": {"r": [0, -4, -6, -6, 4, 8, 10, 4, 2, 0][f] - 0.3 * t0 + AIM_HEAD * turn},
         "thigh_r": {"r": [2, 8, 10, 10, 6, 10, 12, 6, 2, 0][f]},
         "shin_r": {"r": [0, -4, -6, -6, -2, -4, -6, -2, 0, 0][f]},
         "thigh_l": {"r": [-2, -8, -12, -12, -10, -12, -14, -8, -4, -2][f]},
@@ -297,15 +344,18 @@ def _hand_l(a, f, lean):
     return ex + R.LOWER * math.cos(tf), ez + R.LOWER * math.sin(tf)
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i in (0, 9, 10):
         return _attack_pose(i)
     k = i - 1
-    t = B_LEAN[k]
+    t0 = B_LEAN[k]
+    t = t0 + AIM_LEAN * turn
     d = B_DROP[k]
+    pa, pf, pw = B_PA[k] + AIM_UPPER * turn, B_PF[k] + turn, B_PW[k] + turn
     pose = merge({"torso": {"r": t, "rz": [2, 2, 2, 2, 2, 2, 0, 0][k]}},
-                 pistol(B_PA[k], B_PF[k], B_PW[k], lean=t), {
-        "head": {"r": [-2, -8, -8, -8, 4, 0, 4, 0][k] - 0.3 * t, "x": 1.2 if k in (1, 2, 3) else 0.0},
+                 pistol(pa, pf, pw, lean=t), {
+        "head": {"r": [-2, -8, -8, -8, 4, 0, 4, 0][k] - 0.3 * t0 + AIM_HEAD * turn,
+                 "x": 1.2 if k in (1, 2, 3) else 0.0},
         "hat": {"r": [0, 0, 0, 0, 6, -2, -3, 0][k]},
         "flash": {"show": k == 3},
         "smoke": {"show": k in (4, 5), "s": [1, 1, 1, 1, 1.0, 1.3, 1, 1][k], "z": [0, 0, 0, 0, 0, 2.0, 0, 0][k]},
@@ -314,7 +364,7 @@ def _b_pose(i):
     }, M.body_about((0, 0, 14), x=[0.5, 1.0, 1.0, 1.0, -2.5, -0.5, 0, 0][k],
                     q=[-0.03, -0.05, -0.05, 0.03, -0.07, 0.02, 0, 0][k]))
     if B_TWO[k]:   # the near hand cups the far one under the grip
-        hx, hz = _hand_l(B_PA[k], B_PF[k], t)
+        hx, hz = _hand_l(pa, pf, t)
         a, fo = R.ik2(R.SH, (hx - 1.6, hz - 1.8))
         pose = merge(pose, R.arm("r", a, fo))
     elif k == 0:
@@ -374,13 +424,21 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (both shots; the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, lambda u, t: _attack_pose(u, turn=t), AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, lambda u, t: _b_pose(u, turn=t), AIM_W, aims=("up45", "up70"))
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl, attack_ms=790, attack_impact_at=0.3684))

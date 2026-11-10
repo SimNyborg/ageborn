@@ -18,6 +18,8 @@ Animation (ANIM_SPEC G1 swagger jog at card 75 x 1.25 = 93.75 lu/s, appendix B b
             (the held extreme), then snaps a straight jab with a lunge (a thrust)
   hit       light: the head snaps back, the cap lifts, eyes squeezed
   die       D1 fling and spin: the cap pops off; X eyes and tongue
+
+Art round W3 (the detail standard): damage spots measured in posed frames (item 40). A melee unit: no aimed clips.
 """
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
@@ -27,6 +29,8 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
+from units import stone_w1 as W1
 
 SLUG = "bulldog_sergeant"
 GAIT_NAME = "biped"
@@ -38,6 +42,23 @@ ANCHORS = {"head": (2, 67), "hitCenter": (0, 32)}
 NO_RETIME = True
 
 FIST = (0.6, R.ARM_Y["r"], R.HAND_Z - 0.4)
+CHEST = ((2.0, 0, 29.0), (12.6, 11.0, 10.4))      # the barrel chest over the tunic (p 2.3)
+TROUSERS = "#767B5A"     # kit_modern.legs_v3's olive trousers
+STUBBLE = "#C9A88E"
+PEAK = "#2A2A2E"
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Bulldog Sergeant is the barrel chest, the peaked cap, the jowls and the big fists: the
+# chest in two tones (team-dark flaps with brass buttons on the breast pockets) under a leather cross-belt (the
+# sergeant's Sam Browne, 3 lu), the tunic's team-dark hem and a side seam, the rolled sleeves' lower folds
+# team-dark, lighter boots.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.0     # (the soldiers' 0.7 left his matte cap and cloth near the 0.06 highlight floor in look-dev)
+LOOK_SHADE = MW.SHADE_SOLDIER
+MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", STUBBLE: "skin", R.HAIR: "fur", R.KHAKI: "cloth", R.KHAKI_LT: "cloth",
+                           KM.CREAM: "cloth", TROUSERS: "cloth", R.OLIVE: "cloth", PEAK: "leather",
+                           MW.BOOT: "leather", "#2B2A2E": "leather", R.LEATHER: "leather", R.TOOTH: "bone",
+                           R.GUNMETAL: "iron", R.STEEL: "iron", KM.BRASS: "bronze", "team": "cloth"})
 
 
 RIG = None
@@ -46,9 +67,21 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, hat="peaked", stubble=True, rolled=True, chevrons=3, fist=6.4, mouth_w=6.6, mouth_shape="grim")
-    g = Geo().blob((2.0, 0, 29.0), (12.6, 11.0, 10.4), p=2.3)          # barrel chest over the tunic
+    W.trooper(rig, hat=None, stubble=True, rolled=True, chevrons=3, fist=6.4, mouth_w=6.6, mouth_shape="grim",
+              boot=MW.BOOT)
+    MW.hat(rig, "peaked")                 # W3: the cap's crown piping, side seam and lit top
+    g = Geo().blob(*CHEST, p=2.3)          # barrel chest over the tunic
     rig.part("torso", g, team=True)
+    # W3: team-dark flaps with brass buttons on the breast pockets, a leather cross-belt, the tunic's hem and seam
+    MW.team_patch(rig, "torso", Geo().blob(*CHEST, p=2.3), (9.6, 33.4), MW.rect(5.6, 3.0, slant=0.4))
+    MW.studs(rig, "torso", [Geo().blob(*CHEST, p=2.3)], [(9.8, 31.4), (6.6, 25.0), (7.2, 21.6)], r=1.35,
+             color=KM.BRASS)
+    g = MW.diag_band(*CHEST, 22.4, 4.4, 7.4, p=2.3, grow=0.5,
+                     keep=[((0, 0, 39.0), (0, 0, 1)), ((0, 0, 19.0), (0, 0, -1)), ((0, 0, 0), (0, 1, 0))])
+    rig.part("torso", g, R.LEATHER, finish="gloss", outline=0.5)        # a polished Sam Browne
+    MW.tunic_w3(rig, brace=None)
+    for s in ("r", "l"):     # the rolled sleeves' lower folds team-dark (the roll in two tones)
+        W1.ring(rig, f"fore_{s}", (0, R.ARM_Y[s], R.ELBOW_Z - 1.7), 4.75, height=1.9, team=True, outline=0.4)
     g = Geo().blob((12.4, -1.0, 40.4), (2.2, 7.0, 1.6), p=2.2, rot=(0, -8, 0))   # moustache
     rig.part("head", g, R.HAIR, finish="hair", outline=0.5)
     g = Geo().blob((10.6, 0.0, 37.4), (5.4, 8.6, 3.2), p=2.2)          # jowls and underbite
@@ -58,6 +91,16 @@ def build(rig):
         g.blob((14.4, y, 38.6), (0.9, 0.8, 1.3), p=2.2)
     rig.part("head", g, R.TOOTH, outline=0.3)
     rig.track("clubHead", "hand_r", FIST)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: never on the face or skin."""
+    rig.damage_spot_at("chest", "torso", -6.0, 22.0, 8.0, "cloth", team=True)     # 70-100% (at (-5, 28): 28%)
+    rig.damage_spot_at("skirt", "hips", 5.0, 12.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("cap", "hat", -4.0, 61.0, 6.0, "cloth", fill=R.OLIVE)
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 7.0, "cloth", kind="strip", team=True)
 
 
 def guard(t=0.0, near=(9.0, 39.0), far=(11.0, 42.0)):

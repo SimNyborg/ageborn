@@ -172,13 +172,14 @@ HAT_C = {"round": (1.0, 0.0, 57.4), "brodie": (1.5, 0.0, 59.6), "beret": (0.0, 0
 BRODIE_CHIPS = [((-6.1, 66.4), CHIP_A), ((4.9, 67.9), CHIP_B), ((-1.2, 68.9), CHIP_C)]
 
 
-def hat_parts(rig, joint, kind, c, loose=False, team_cover=True):
-    """kit_modern_wave.trooper's hat `kind` at `c` on `joint` with the W3 detail."""
+def hat_parts(rig, joint, kind, c, loose=False, team_cover=True, band=1.9):
+    """kit_modern_wave.trooper's hat `kind` at `c` on `joint` with the W3 detail (`band`: the top of the round
+    helmet cover's team-dark band, lu above the hat's centre)."""
     x, y, z = c
     if kind == "round":
         KM.round_helmet(rig, joint, c=c, strap=not loose, team_cover=team_cover)
         if team_cover:
-            g = KD.band_z((x, y, z + 1.5), (12.6, 12.2, 10.4), z - 1.2, z + 1.9, p=2.3, grow=0.35)
+            g = KD.band_z((x, y, z + 1.5), (12.6, 12.2, 10.4), z - 1.2, z + band, p=2.3, grow=0.35)
             look.team_part(rig, joint, g)
     elif kind == "brodie":
         KM.brodie(rig, joint, c=c)
@@ -188,17 +189,28 @@ def hat_parts(rig, joint, kind, c, loose=False, team_cover=True):
         KW.beret(rig, joint, c=c)
     elif kind == "peaked":
         KW.peaked_cap(rig, joint, c=c)
+        # W3: a team-dark piping round the crown above the band (the team zone in two tones, and a line through the
+        # big olive top), the crown's side seam, and a lighter top plane (a dark material needs a lit side)
+        g = Geo().lathe([(12.55, -0.55), (12.95, 0.0), (12.55, 0.55)], (x - 0.4, y, z + 3.4), (x - 0.4, y, z + 4.4),
+                        segs=28)
+        look.team_part(rig, joint, g, outline=0)
+        crown = Geo().blob((x - 0.4, y, z + 2.6), (12.8, 12.2, 4.8), p=2.6)
+        KD.surface_line(rig, joint, crown, [(x - 9.5, z + 5.6), (x - 2.0, z + 6.6), (x + 6.5, z + 6.0)], 0.9,
+                        "#4E5238")
+        g = Geo().blob((x - 1.4, y, z + 6.2), (9.4, 8.6, 1.3), p=2.4)
+        rig.part(joint, g, R.OLIVE_LT, outline=0, highlight=False)
     else:
         raise ValueError(f"unknown hat {kind!r}")
 
 
-def hat(rig, kind, c=None, team_cover=True):
+def hat(rig, kind, c=None, team_cover=True, band=1.9):
     """The `hat` joint on the head with kit_modern_wave.trooper's hat `kind` and the W3 detail, and its `hat_loose`
     copy for the death (call it with `trooper(..., hat=None)`). Returns the hat's centre."""
     c = c or HAT_C[kind]
     rig.joint("hat", "head", c)
-    hat_parts(rig, "hat", kind, c, team_cover=team_cover)
-    KI.loose(rig, "hat_loose", c, lambda j: hat_parts(rig, j, kind, c, loose=True, team_cover=team_cover))
+    hat_parts(rig, "hat", kind, c, team_cover=team_cover, band=band)
+    KI.loose(rig, "hat_loose", c, lambda j: hat_parts(rig, j, kind, c, loose=True, team_cover=team_cover,
+                                                     band=band))
     return c
 
 

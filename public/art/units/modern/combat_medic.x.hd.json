@@ -2,7 +2,7 @@
  "frames": {
   "combat_medic_attack_b_01": {
    "frame": {
-    "x": 215,
+    "x": 552,
     "y": 2,
     "w": 106,
     "h": 172
@@ -26,17 +26,17 @@
   },
   "combat_medic_attack_b_01_team": {
    "frame": {
-    "x": 108,
-    "y": 355,
-    "w": 104,
+    "x": 1302,
+    "y": 598,
+    "w": 105,
     "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 205,
+    "x": 204,
     "y": 258,
-    "w": 104,
+    "w": 105,
     "h": 140
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "combat_medic_attack_b_02": {
    "frame": {
-    "x": 110,
-    "y": 189,
+    "x": 881,
+    "y": 2,
     "w": 120,
     "h": 158
    },
@@ -74,10 +74,10 @@
   },
   "combat_medic_attack_b_02_team": {
    "frame": {
-    "x": 317,
-    "y": 355,
+    "x": 1413,
+    "y": 295,
     "w": 113,
-    "h": 136
+    "h": 137
    },
    "rotated": false,
    "trimmed": true,
@@ -85,7 +85,7 @@
     "x": 205,
     "y": 270,
     "w": 113,
-    "h": 136
+    "h": 137
    },
    "sourceSize": {
     "w": 514,
@@ -98,8 +98,8 @@
   },
   "combat_medic_attack_b_03": {
    "frame": {
-    "x": 104,
-    "y": 2,
+    "x": 456,
+    "y": 384,
     "w": 107,
     "h": 174
    },
@@ -122,17 +122,17 @@
   },
   "combat_medic_attack_b_03_team": {
    "frame": {
-    "x": 331,
-    "y": 189,
-    "w": 105,
+    "x": 1189,
+    "y": 153,
+    "w": 106,
     "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 208,
+    "x": 207,
     "y": 262,
-    "w": 105,
+    "w": 106,
     "h": 146
    },
    "sourceSize": {
@@ -146,8 +146,8 @@
   },
   "combat_medic_attack_b_04": {
    "frame": {
-    "x": 2,
-    "y": 189,
+    "x": 696,
+    "y": 540,
     "w": 104,
     "h": 162
    },
@@ -170,17 +170,17 @@
   },
   "combat_medic_attack_b_04_team": {
    "frame": {
-    "x": 216,
-    "y": 355,
-    "w": 97,
+    "x": 1413,
+    "y": 436,
+    "w": 98,
     "h": 137
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
+    "x": 200,
     "y": 268,
-    "w": 97,
+    "w": 98,
     "h": 137
    },
    "sourceSize": {
@@ -194,8 +194,8 @@
   },
   "combat_medic_attack_b_05": {
    "frame": {
-    "x": 325,
-    "y": 2,
+    "x": 588,
+    "y": 540,
     "w": 104,
     "h": 167
    },
@@ -218,17 +218,17 @@
   },
   "combat_medic_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 355,
-    "w": 102,
+    "x": 1420,
+    "y": 2,
+    "w": 103,
     "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 204,
+    "x": 203,
     "y": 263,
-    "w": 102,
+    "w": 103,
     "h": 143
    },
    "sourceSize": {
@@ -242,8 +242,8 @@
   },
   "combat_medic_attack_b_06": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 447,
+    "y": 197,
     "w": 98,
     "h": 183
    },
@@ -266,17 +266,1169 @@
   },
   "combat_medic_attack_b_06_team": {
    "frame": {
-    "x": 234,
-    "y": 189,
-    "w": 93,
+    "x": 1122,
+    "y": 473,
+    "w": 94,
     "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 205,
+    "x": 204,
     "y": 248,
+    "w": 94,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_01": {
+   "frame": {
+    "x": 117,
+    "y": 2,
+    "w": 103,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 212,
+    "w": 103,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_01_team": {
+   "frame": {
+    "x": 1211,
+    "y": 303,
+    "w": 88,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 235,
+    "w": 88,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_02": {
+   "frame": {
+    "x": 232,
+    "y": 202,
+    "w": 108,
+    "h": 192
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 217,
+    "w": 108,
+    "h": 192
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_02_team": {
+   "frame": {
+    "x": 1027,
+    "y": 319,
+    "w": 92,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 233,
+    "w": 92,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 111,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 209,
+    "w": 111,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_03_team": {
+   "frame": {
+    "x": 826,
+    "y": 338,
+    "w": 90,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 226,
+    "w": 90,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_04": {
+   "frame": {
+    "x": 330,
+    "y": 398,
+    "w": 122,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 221,
+    "w": 122,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_04_team": {
+   "frame": {
+    "x": 907,
+    "y": 496,
+    "w": 109,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 232,
+    "w": 109,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_05": {
+   "frame": {
+    "x": 119,
+    "y": 203,
+    "w": 109,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 213,
+    "w": 109,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_05_team": {
+   "frame": {
+    "x": 1020,
+    "y": 475,
+    "w": 98,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 230,
+    "w": 98,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_06": {
+   "frame": {
+    "x": 2,
+    "y": 409,
+    "w": 101,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 212,
+    "w": 101,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up45_06_team": {
+   "frame": {
+    "x": 1299,
+    "y": 152,
+    "w": 88,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 234,
+    "w": 88,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_01": {
+   "frame": {
+    "x": 224,
+    "y": 2,
+    "w": 102,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 213,
+    "w": 102,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_01_team": {
+   "frame": {
+    "x": 118,
+    "y": 610,
+    "w": 86,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 232,
+    "w": 86,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_02": {
+   "frame": {
+    "x": 330,
+    "y": 2,
+    "w": 116,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 218,
+    "w": 116,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_02_team": {
+   "frame": {
+    "x": 990,
+    "y": 164,
+    "w": 102,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 232,
+    "w": 102,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_03": {
+   "frame": {
+    "x": 2,
+    "y": 206,
+    "w": 113,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 210,
+    "w": 113,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_03_team": {
+   "frame": {
+    "x": 804,
+    "y": 515,
+    "w": 99,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 223,
+    "w": 99,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_04": {
+   "frame": {
+    "x": 330,
+    "y": 590,
+    "w": 129,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 157,
+    "y": 225,
+    "w": 129,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_04_team": {
+   "frame": {
+    "x": 1005,
+    "y": 2,
+    "w": 122,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 233,
+    "w": 122,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_05": {
+   "frame": {
+    "x": 211,
+    "y": 403,
+    "w": 115,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 215,
+    "w": 115,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_05_team": {
+   "frame": {
+    "x": 920,
+    "y": 320,
+    "w": 103,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 229,
+    "w": 103,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_06": {
+   "frame": {
+    "x": 107,
+    "y": 409,
+    "w": 100,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 212,
+    "w": 100,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_up70_06_team": {
+   "frame": {
+    "x": 1234,
+    "y": 2,
+    "w": 92,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 234,
+    "w": 92,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_01": {
+   "frame": {
+    "x": 549,
+    "y": 189,
+    "w": 100,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 236,
+    "w": 100,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_01_team": {
+   "frame": {
+    "x": 1220,
+    "y": 453,
+    "w": 92,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 257,
+    "w": 92,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_02": {
+   "frame": {
+    "x": 769,
+    "y": 2,
+    "w": 108,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 249,
+    "w": 108,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_02_team": {
+   "frame": {
+    "x": 1316,
+    "y": 447,
     "w": 93,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 269,
+    "w": 93,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_03": {
+   "frame": {
+    "x": 463,
+    "y": 562,
+    "w": 121,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 238,
+    "w": 121,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_03_team": {
+   "frame": {
+    "x": 1122,
+    "y": 624,
+    "w": 87,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 261,
+    "w": 87,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_04": {
+   "frame": {
+    "x": 2,
+    "y": 610,
+    "w": 112,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 246,
+    "w": 112,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_04_team": {
+   "frame": {
+    "x": 1020,
+    "y": 629,
+    "w": 89,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 260,
+    "w": 89,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_05": {
+   "frame": {
+    "x": 662,
+    "y": 2,
+    "w": 103,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 241,
+    "w": 103,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_05_team": {
+   "frame": {
+    "x": 1330,
+    "y": 2,
+    "w": 86,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 260,
+    "w": 86,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_06": {
+   "frame": {
+    "x": 450,
+    "y": 2,
+    "w": 98,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 226,
+    "w": 98,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up45_06_team": {
+   "frame": {
+    "x": 1123,
+    "y": 308,
+    "w": 84,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 248,
+    "w": 84,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_01": {
+   "frame": {
+    "x": 211,
+    "y": 601,
+    "w": 102,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 236,
+    "w": 102,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_01_team": {
+   "frame": {
+    "x": 1303,
+    "y": 302,
+    "w": 85,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 257,
+    "w": 85,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_02": {
+   "frame": {
+    "x": 768,
+    "y": 174,
+    "w": 118,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 249,
+    "w": 118,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_02_team": {
+   "frame": {
+    "x": 1420,
+    "y": 149,
+    "w": 94,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 265,
+    "w": 94,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_03": {
+   "frame": {
+    "x": 567,
+    "y": 366,
+    "w": 129,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 239,
+    "w": 129,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_03_team": {
+   "frame": {
+    "x": 890,
+    "y": 164,
+    "w": 96,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 256,
+    "w": 96,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_04": {
+   "frame": {
+    "x": 700,
+    "y": 350,
+    "w": 122,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 248,
+    "w": 122,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_04_team": {
+   "frame": {
+    "x": 1131,
+    "y": 2,
+    "w": 99,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 258,
+    "w": 99,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_05": {
+   "frame": {
+    "x": 653,
+    "y": 178,
+    "w": 111,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 241,
+    "w": 111,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_05_team": {
+   "frame": {
+    "x": 1096,
+    "y": 156,
+    "w": 89,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 258,
+    "w": 89,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_06": {
+   "frame": {
+    "x": 344,
+    "y": 197,
+    "w": 99,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 226,
+    "w": 99,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_up70_06_team": {
+   "frame": {
+    "x": 1213,
+    "y": 624,
+    "w": 85,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 248,
+    "w": 85,
     "h": 147
    },
    "sourceSize": {
@@ -309,6 +1461,86 @@
    "combat_medic_attack_b_05_team",
    "combat_medic_attack_b_06_team",
    "combat_medic_attack_07_team"
+  ],
+  "attack_up45": [
+   "combat_medic_attack_00",
+   "combat_medic_attack_up45_01",
+   "combat_medic_attack_up45_02",
+   "combat_medic_attack_up45_03",
+   "combat_medic_attack_up45_04",
+   "combat_medic_attack_up45_05",
+   "combat_medic_attack_up45_06",
+   "combat_medic_attack_07"
+  ],
+  "attack_up45_team": [
+   "combat_medic_attack_00_team",
+   "combat_medic_attack_up45_01_team",
+   "combat_medic_attack_up45_02_team",
+   "combat_medic_attack_up45_03_team",
+   "combat_medic_attack_up45_04_team",
+   "combat_medic_attack_up45_05_team",
+   "combat_medic_attack_up45_06_team",
+   "combat_medic_attack_07_team"
+  ],
+  "attack_up70": [
+   "combat_medic_attack_00",
+   "combat_medic_attack_up70_01",
+   "combat_medic_attack_up70_02",
+   "combat_medic_attack_up70_03",
+   "combat_medic_attack_up70_04",
+   "combat_medic_attack_up70_05",
+   "combat_medic_attack_up70_06",
+   "combat_medic_attack_07"
+  ],
+  "attack_up70_team": [
+   "combat_medic_attack_00_team",
+   "combat_medic_attack_up70_01_team",
+   "combat_medic_attack_up70_02_team",
+   "combat_medic_attack_up70_03_team",
+   "combat_medic_attack_up70_04_team",
+   "combat_medic_attack_up70_05_team",
+   "combat_medic_attack_up70_06_team",
+   "combat_medic_attack_07_team"
+  ],
+  "attack_b_up45": [
+   "combat_medic_attack_00",
+   "combat_medic_attack_b_up45_01",
+   "combat_medic_attack_b_up45_02",
+   "combat_medic_attack_b_up45_03",
+   "combat_medic_attack_b_up45_04",
+   "combat_medic_attack_b_up45_05",
+   "combat_medic_attack_b_up45_06",
+   "combat_medic_attack_07"
+  ],
+  "attack_b_up45_team": [
+   "combat_medic_attack_00_team",
+   "combat_medic_attack_b_up45_01_team",
+   "combat_medic_attack_b_up45_02_team",
+   "combat_medic_attack_b_up45_03_team",
+   "combat_medic_attack_b_up45_04_team",
+   "combat_medic_attack_b_up45_05_team",
+   "combat_medic_attack_b_up45_06_team",
+   "combat_medic_attack_07_team"
+  ],
+  "attack_b_up70": [
+   "combat_medic_attack_00",
+   "combat_medic_attack_b_up70_01",
+   "combat_medic_attack_b_up70_02",
+   "combat_medic_attack_b_up70_03",
+   "combat_medic_attack_b_up70_04",
+   "combat_medic_attack_b_up70_05",
+   "combat_medic_attack_b_up70_06",
+   "combat_medic_attack_07"
+  ],
+  "attack_b_up70_team": [
+   "combat_medic_attack_00_team",
+   "combat_medic_attack_b_up70_01_team",
+   "combat_medic_attack_b_up70_02_team",
+   "combat_medic_attack_b_up70_03_team",
+   "combat_medic_attack_b_up70_04_team",
+   "combat_medic_attack_b_up70_05_team",
+   "combat_medic_attack_b_up70_06_team",
+   "combat_medic_attack_07_team"
   ]
  },
  "meta": {
@@ -317,15 +1549,15 @@
   "image": "combat_medic.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 448,
-   "h": 500
+   "w": 1536,
+   "h": 776
   },
   "scale": "3",
   "ageborn": {
    "visualId": "unit.combat_medic",
    "name": "Combat Medic",
    "heightLu": 68,
-   "widthLu": 33.7,
+   "widthLu": 34.1,
    "pxPerLu": 2.46,
    "feetPx": [
     244,
@@ -424,6 +1656,318 @@
       "atLu": [
        19.3,
        6.9
+      ]
+     }
+    },
+    "attack_up45": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      40,
+      60,
+      160,
+      50,
+      60,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 560,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.4643,
+     "holdStep": 2,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        21.3,
+        29.3
+       ],
+       [
+        18.7,
+        37.3
+       ],
+       [
+        11.1,
+        45.4
+       ],
+       [
+        9.8,
+        48.9
+       ],
+       [
+        3.5,
+        48.8
+       ],
+       [
+        11.6,
+        46.0
+       ],
+       [
+        17.3,
+        39.1
+       ],
+       [
+        16.2,
+        34.6
+       ]
+      ]
+     },
+     "muzzle": [
+      9.8,
+      48.9
+     ],
+     "aimDeg": 45.1,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       9.8,
+       48.9
+      ]
+     }
+    },
+    "attack_up70": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      40,
+      60,
+      160,
+      50,
+      60,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 560,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.4643,
+     "holdStep": 2,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        21.3,
+        29.3
+       ],
+       [
+        16.4,
+        41.7
+       ],
+       [
+        3.1,
+        51.1
+       ],
+       [
+        1.6,
+        54.7
+       ],
+       [
+        -6.4,
+        52.4
+       ],
+       [
+        5.2,
+        51.1
+       ],
+       [
+        15.2,
+        42.2
+       ],
+       [
+        16.2,
+        34.6
+       ]
+      ]
+     },
+     "muzzle": [
+      1.6,
+      54.7
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       1.6,
+       54.7
+      ]
+     }
+    },
+    "attack_b_up45": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      40,
+      60,
+      160,
+      50,
+      60,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 560,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.4643,
+     "holdStep": 2,
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        21.3,
+        29.3
+       ],
+       [
+        19.7,
+        18.4
+       ],
+       [
+        23.0,
+        18.6
+       ],
+       [
+        21.1,
+        21.0
+       ],
+       [
+        15.8,
+        23.7
+       ],
+       [
+        19.6,
+        20.1
+       ],
+       [
+        15.0,
+        21.6
+       ],
+       [
+        16.2,
+        34.6
+       ]
+      ]
+     },
+     "muzzle": [
+      21.1,
+      21.0
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       21.1,
+       21.0
+      ]
+     }
+    },
+    "attack_b_up70": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      40,
+      60,
+      160,
+      50,
+      60,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 560,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.4643,
+     "holdStep": 2,
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        21.3,
+        29.3
+       ],
+       [
+        19.6,
+        21.6
+       ],
+       [
+        20.1,
+        25.0
+       ],
+       [
+        18.1,
+        28.3
+       ],
+       [
+        11.3,
+        29.1
+       ],
+       [
+        17.7,
+        25.7
+       ],
+       [
+        14.9,
+        24.0
+       ],
+       [
+        16.2,
+        34.6
+       ]
+      ]
+     },
+     "muzzle": [
+      18.1,
+      28.3
+     ],
+     "aimDeg": 70.1,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       18.1,
+       28.3
       ]
      }
     }

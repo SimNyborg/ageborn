@@ -2,8 +2,8 @@
  "frames": {
   "sticky_bomber_attack_b_01": {
    "frame": {
-    "x": 230,
-    "y": 215,
+    "x": 1189,
+    "y": 2,
     "w": 137,
     "h": 182
    },
@@ -26,17 +26,17 @@
   },
   "sticky_bomber_attack_b_01_team": {
    "frame": {
-    "x": 204,
-    "y": 589,
-    "w": 94,
+    "x": 702,
+    "y": 208,
+    "w": 95,
     "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 225,
+    "x": 224,
     "y": 267,
-    "w": 94,
+    "w": 95,
     "h": 149
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "sticky_bomber_attack_b_02": {
    "frame": {
-    "x": 653,
-    "y": 215,
+    "x": 1476,
+    "y": 183,
     "w": 163,
     "h": 174
    },
@@ -74,18 +74,18 @@
   },
   "sticky_bomber_attack_b_02_team": {
    "frame": {
-    "x": 530,
-    "y": 589,
-    "w": 109,
-    "h": 144
+    "x": 549,
+    "y": 210,
+    "w": 110,
+    "h": 145
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 215,
+    "x": 214,
     "y": 275,
-    "w": 109,
-    "h": 144
+    "w": 110,
+    "h": 145
    },
    "sourceSize": {
     "w": 514,
@@ -98,8 +98,8 @@
   },
   "sticky_bomber_attack_b_03": {
    "frame": {
-    "x": 2,
-    "y": 416,
+    "x": 1612,
+    "y": 2,
     "w": 168,
     "h": 169
    },
@@ -122,18 +122,18 @@
   },
   "sticky_bomber_attack_b_03_team": {
    "frame": {
-    "x": 643,
-    "y": 589,
-    "w": 113,
-    "h": 142
+    "x": 2,
+    "y": 215,
+    "w": 114,
+    "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 213,
-    "y": 279,
-    "w": 113,
-    "h": 142
+    "x": 212,
+    "y": 280,
+    "w": 114,
+    "h": 143
    },
    "sourceSize": {
     "w": 514,
@@ -170,17 +170,17 @@
   },
   "sticky_bomber_attack_b_04_team": {
    "frame": {
-    "x": 381,
-    "y": 416,
-    "w": 97,
+    "x": 1784,
+    "y": 2,
+    "w": 98,
     "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 227,
+    "x": 226,
     "y": 261,
-    "w": 97,
+    "w": 98,
     "h": 162
    },
    "sourceSize": {
@@ -218,18 +218,18 @@
   },
   "sticky_bomber_attack_b_05_team": {
    "frame": {
-    "x": 581,
-    "y": 416,
-    "w": 91,
-    "h": 162
+    "x": 1643,
+    "y": 175,
+    "w": 92,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 237,
+    "x": 236,
     "y": 258,
-    "w": 91,
-    "h": 162
+    "w": 92,
+    "h": 163
    },
    "sourceSize": {
     "w": 514,
@@ -242,8 +242,8 @@
   },
   "sticky_bomber_attack_b_06": {
    "frame": {
-    "x": 371,
-    "y": 215,
+    "x": 1330,
+    "y": 2,
     "w": 142,
     "h": 181
    },
@@ -266,17 +266,17 @@
   },
   "sticky_bomber_attack_b_06_team": {
    "frame": {
-    "x": 302,
-    "y": 589,
-    "w": 97,
+    "x": 447,
+    "y": 210,
+    "w": 98,
     "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 240,
+    "x": 239,
     "y": 270,
-    "w": 97,
+    "w": 98,
     "h": 146
    },
    "sourceSize": {
@@ -314,9 +314,9 @@
   },
   "sticky_bomber_attack_b_07_team": {
    "frame": {
-    "x": 676,
-    "y": 416,
-    "w": 82,
+    "x": 1843,
+    "y": 168,
+    "w": 83,
     "h": 161
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 220,
     "y": 244,
-    "w": 82,
+    "w": 83,
     "h": 161
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "sticky_bomber_attack_b_08": {
    "frame": {
-    "x": 2,
-    "y": 215,
+    "x": 961,
+    "y": 2,
     "w": 107,
     "h": 197
    },
@@ -362,9 +362,9 @@
   },
   "sticky_bomber_attack_b_08_team": {
    "frame": {
-    "x": 2,
-    "y": 589,
-    "w": 90,
+    "x": 830,
+    "y": 204,
+    "w": 91,
     "h": 154
    },
    "rotated": false,
@@ -372,7 +372,7 @@
    "spriteSourceSize": {
     "x": 207,
     "y": 253,
-    "w": 90,
+    "w": 91,
     "h": 154
    },
    "sourceSize": {
@@ -410,18 +410,18 @@
   },
   "sticky_bomber_attack_c_01_team": {
    "frame": {
-    "x": 762,
-    "y": 416,
-    "w": 91,
-    "h": 159
+    "x": 1886,
+    "y": 2,
+    "w": 92,
+    "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 207,
     "y": 246,
-    "w": 91,
-    "h": 159
+    "w": 92,
+    "h": 160
    },
    "sourceSize": {
     "w": 514,
@@ -458,9 +458,9 @@
   },
   "sticky_bomber_attack_c_02_team": {
    "frame": {
-    "x": 278,
-    "y": 416,
-    "w": 99,
+    "x": 1739,
+    "y": 175,
+    "w": 100,
     "h": 162
    },
    "rotated": false,
@@ -468,7 +468,7 @@
    "spriteSourceSize": {
     "x": 196,
     "y": 243,
-    "w": 99,
+    "w": 100,
     "h": 162
    },
    "sourceSize": {
@@ -506,10 +506,10 @@
   },
   "sticky_bomber_attack_c_03_team": {
    "frame": {
-    "x": 174,
-    "y": 416,
+    "x": 1072,
+    "y": 192,
     "w": 100,
-    "h": 165
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
@@ -517,7 +517,7 @@
     "x": 194,
     "y": 241,
     "w": 100,
-    "h": 165
+    "h": 164
    },
    "sourceSize": {
     "w": 514,
@@ -554,18 +554,18 @@
   },
   "sticky_bomber_attack_c_04_team": {
    "frame": {
-    "x": 857,
-    "y": 416,
-    "w": 84,
-    "h": 159
+    "x": 1930,
+    "y": 166,
+    "w": 85,
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
     "y": 248,
-    "w": 84,
-    "h": 159
+    "w": 85,
+    "h": 158
    },
    "sourceSize": {
     "w": 514,
@@ -602,18 +602,18 @@
   },
   "sticky_bomber_attack_c_05_team": {
    "frame": {
-    "x": 482,
-    "y": 416,
-    "w": 95,
-    "h": 162
+    "x": 1176,
+    "y": 192,
+    "w": 96,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 235,
+    "x": 234,
     "y": 254,
-    "w": 95,
-    "h": 162
+    "w": 96,
+    "h": 163
    },
    "sourceSize": {
     "w": 514,
@@ -626,8 +626,8 @@
   },
   "sticky_bomber_attack_c_06": {
    "frame": {
-    "x": 517,
-    "y": 215,
+    "x": 1476,
+    "y": 2,
     "w": 132,
     "h": 177
    },
@@ -650,17 +650,17 @@
   },
   "sticky_bomber_attack_c_06_team": {
    "frame": {
-    "x": 760,
-    "y": 589,
-    "w": 126,
+    "x": 120,
+    "y": 215,
+    "w": 127,
     "h": 139
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 237,
+    "x": 236,
     "y": 282,
-    "w": 126,
+    "w": 127,
     "h": 139
    },
    "sourceSize": {
@@ -674,8 +674,8 @@
   },
   "sticky_bomber_attack_c_07": {
    "frame": {
-    "x": 820,
-    "y": 215,
+    "x": 1330,
+    "y": 187,
     "w": 126,
     "h": 171
    },
@@ -698,18 +698,18 @@
   },
   "sticky_bomber_attack_c_07_team": {
    "frame": {
-    "x": 403,
-    "y": 589,
+    "x": 320,
+    "y": 211,
     "w": 123,
-    "h": 145
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 277,
+    "y": 278,
     "w": 123,
-    "h": 145
+    "h": 147
    },
    "sourceSize": {
     "w": 514,
@@ -722,8 +722,8 @@
   },
   "sticky_bomber_attack_c_08": {
    "frame": {
-    "x": 113,
-    "y": 215,
+    "x": 1072,
+    "y": 2,
     "w": 113,
     "h": 186
    },
@@ -746,8 +746,8 @@
   },
   "sticky_bomber_attack_c_08_team": {
    "frame": {
-    "x": 96,
-    "y": 589,
+    "x": 961,
+    "y": 203,
     "w": 104,
     "h": 151
    },
@@ -829,8 +829,8 @@
   "image": "sticky_bomber.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1024,
-   "h": 748
+   "w": 2048,
+   "h": 360
   },
   "scale": "3",
   "ageborn": {
