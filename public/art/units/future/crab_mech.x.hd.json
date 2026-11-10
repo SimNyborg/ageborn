@@ -2,8 +2,8 @@
  "frames": {
   "crab_mech_attack_b_01": {
    "frame": {
-    "x": 314,
-    "y": 2,
+    "x": 2,
+    "y": 804,
     "w": 306,
     "h": 263
    },
@@ -26,8 +26,8 @@
   },
   "crab_mech_attack_b_01_team": {
    "frame": {
-    "x": 2,
-    "y": 1296,
+    "x": 889,
+    "y": 1079,
     "w": 256,
     "h": 200
    },
@@ -50,8 +50,8 @@
   },
   "crab_mech_attack_b_02": {
    "frame": {
-    "x": 624,
-    "y": 2,
+    "x": 2,
+    "y": 1071,
     "w": 306,
     "h": 263
    },
@@ -74,18 +74,18 @@
   },
   "crab_mech_attack_b_02_team": {
    "frame": {
-    "x": 523,
-    "y": 1296,
+    "x": 884,
+    "y": 1283,
     "w": 254,
-    "h": 198
+    "h": 197
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 285,
-    "y": 306,
+    "y": 307,
     "w": 254,
-    "h": 198
+    "h": 197
    },
    "sourceSize": {
     "w": 786,
@@ -98,8 +98,8 @@
   },
   "crab_mech_attack_b_03": {
    "frame": {
-    "x": 624,
-    "y": 289,
+    "x": 312,
+    "y": 1299,
     "w": 304,
     "h": 260
    },
@@ -122,18 +122,18 @@
   },
   "crab_mech_attack_b_03_team": {
    "frame": {
-    "x": 2,
-    "y": 1500,
+    "x": 1142,
+    "y": 1283,
     "w": 252,
-    "h": 196
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 284,
-    "y": 307,
+    "y": 308,
     "w": 252,
-    "h": 196
+    "h": 195
    },
    "sourceSize": {
     "w": 786,
@@ -146,8 +146,8 @@
   },
   "crab_mech_attack_b_04": {
    "frame": {
-    "x": 2,
-    "y": 289,
+    "x": 312,
+    "y": 1033,
     "w": 306,
     "h": 262
    },
@@ -170,8 +170,8 @@
   },
   "crab_mech_attack_b_04_team": {
    "frame": {
-    "x": 262,
-    "y": 1296,
+    "x": 1156,
+    "y": 1046,
     "w": 257,
     "h": 199
    },
@@ -194,8 +194,8 @@
   },
   "crab_mech_attack_b_05": {
    "frame": {
-    "x": 934,
-    "y": 2,
+    "x": 314,
+    "y": 767,
     "w": 307,
     "h": 262
    },
@@ -218,17 +218,17 @@
   },
   "crab_mech_attack_b_05_team": {
    "frame": {
-    "x": 539,
-    "y": 1068,
-    "w": 261,
+    "x": 625,
+    "y": 961,
+    "w": 260,
     "h": 201
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 291,
+    "x": 292,
     "y": 307,
-    "w": 261,
+    "w": 260,
     "h": 201
    },
    "sourceSize": {
@@ -243,7 +243,7 @@
   "crab_mech_attack_b_06": {
    "frame": {
     "x": 2,
-    "y": 2,
+    "y": 517,
     "w": 308,
     "h": 283
    },
@@ -267,7 +267,7 @@
   "crab_mech_attack_b_06_team": {
    "frame": {
     "x": 2,
-    "y": 1068,
+    "y": 1338,
     "w": 266,
     "h": 224
    },
@@ -291,7 +291,7 @@
   "crab_mech_attack_b_07": {
    "frame": {
     "x": 316,
-    "y": 555,
+    "y": 508,
     "w": 309,
     "h": 255
    },
@@ -314,8 +314,8 @@
   },
   "crab_mech_attack_b_07_team": {
    "frame": {
-    "x": 272,
-    "y": 1068,
+    "x": 1270,
+    "y": 2,
     "w": 263,
     "h": 219
    },
@@ -338,8 +338,8 @@
   },
   "crab_mech_attack_b_08": {
    "frame": {
-    "x": 312,
-    "y": 289,
+    "x": 629,
+    "y": 508,
     "w": 308,
     "h": 261
    },
@@ -362,17 +362,17 @@
   },
   "crab_mech_attack_b_08_team": {
    "frame": {
-    "x": 804,
-    "y": 1068,
-    "w": 261,
+    "x": 620,
+    "y": 1299,
+    "w": 260,
     "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 289,
+    "x": 290,
     "y": 308,
-    "w": 261,
+    "w": 260,
     "h": 200
    },
    "sourceSize": {
@@ -386,8 +386,8 @@
   },
   "crab_mech_attack_c_01": {
    "frame": {
-    "x": 2,
-    "y": 555,
+    "x": 952,
+    "y": 252,
     "w": 310,
     "h": 255
    },
@@ -410,18 +410,18 @@
   },
   "crab_mech_attack_c_01_team": {
    "frame": {
-    "x": 795,
-    "y": 1500,
+    "x": 1208,
+    "y": 851,
     "w": 261,
-    "h": 192
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 281,
-    "y": 313,
+    "y": 314,
     "w": 261,
-    "h": 192
+    "h": 191
    },
    "sourceSize": {
     "w": 786,
@@ -434,8 +434,8 @@
   },
   "crab_mech_attack_c_02": {
    "frame": {
-    "x": 318,
-    "y": 814,
+    "x": 319,
+    "y": 2,
     "w": 313,
     "h": 248
    },
@@ -458,17 +458,17 @@
   },
   "crab_mech_attack_c_02_team": {
    "frame": {
-    "x": 539,
-    "y": 1700,
-    "w": 262,
+    "x": 891,
+    "y": 891,
+    "w": 261,
     "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 277,
+    "x": 278,
     "y": 321,
-    "w": 262,
+    "w": 261,
     "h": 184
    },
    "sourceSize": {
@@ -482,8 +482,8 @@
   },
   "crab_mech_attack_c_03": {
    "frame": {
-    "x": 635,
-    "y": 814,
+    "x": 636,
+    "y": 2,
     "w": 313,
     "h": 246
    },
@@ -506,8 +506,8 @@
   },
   "crab_mech_attack_c_03_team": {
    "frame": {
-    "x": 805,
-    "y": 1700,
+    "x": 625,
+    "y": 773,
     "w": 262,
     "h": 184
    },
@@ -530,8 +530,8 @@
   },
   "crab_mech_attack_c_04": {
    "frame": {
-    "x": 952,
-    "y": 814,
+    "x": 953,
+    "y": 2,
     "w": 313,
     "h": 246
    },
@@ -554,8 +554,8 @@
   },
   "crab_mech_attack_c_04_team": {
    "frame": {
-    "x": 272,
-    "y": 1700,
+    "x": 941,
+    "y": 703,
     "w": 263,
     "h": 184
    },
@@ -578,8 +578,8 @@
   },
   "crab_mech_attack_c_05": {
    "frame": {
-    "x": 2,
-    "y": 814,
+    "x": 319,
+    "y": 254,
     "w": 312,
     "h": 250
    },
@@ -602,18 +602,18 @@
   },
   "crab_mech_attack_c_05_team": {
    "frame": {
-    "x": 2,
-    "y": 1700,
+    "x": 941,
+    "y": 511,
     "w": 266,
-    "h": 189
+    "h": 188
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 290,
-    "y": 320,
+    "y": 321,
     "w": 266,
-    "h": 189
+    "h": 188
    },
    "sourceSize": {
     "w": 786,
@@ -626,8 +626,8 @@
   },
   "crab_mech_attack_c_06": {
    "frame": {
-    "x": 945,
-    "y": 555,
+    "x": 2,
+    "y": 2,
     "w": 313,
     "h": 250
    },
@@ -650,8 +650,8 @@
   },
   "crab_mech_attack_c_06_team": {
    "frame": {
-    "x": 258,
-    "y": 1500,
+    "x": 1266,
+    "y": 453,
     "w": 266,
     "h": 195
    },
@@ -674,8 +674,8 @@
   },
   "crab_mech_attack_c_07": {
    "frame": {
-    "x": 629,
-    "y": 555,
+    "x": 636,
+    "y": 252,
     "w": 312,
     "h": 252
    },
@@ -698,8 +698,8 @@
   },
   "crab_mech_attack_c_07_team": {
    "frame": {
-    "x": 781,
-    "y": 1296,
+    "x": 1266,
+    "y": 252,
     "w": 266,
     "h": 197
    },
@@ -722,8 +722,8 @@
   },
   "crab_mech_attack_c_08": {
    "frame": {
-    "x": 932,
-    "y": 289,
+    "x": 2,
+    "y": 256,
     "w": 310,
     "h": 257
    },
@@ -746,8 +746,8 @@
   },
   "crab_mech_attack_c_08_team": {
    "frame": {
-    "x": 528,
-    "y": 1500,
+    "x": 1211,
+    "y": 652,
     "w": 263,
     "h": 195
    },
@@ -829,8 +829,8 @@
   "image": "crab_mech.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 1892
+   "w": 1536,
+   "h": 1564
   },
   "scale": "3",
   "ageborn": {

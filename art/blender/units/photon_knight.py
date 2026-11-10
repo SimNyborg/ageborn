@@ -36,6 +36,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "photon_knight"
 GAIT_NAME = "biped"
@@ -46,7 +47,33 @@ FEET = (130, 222)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 32)}
 NO_RETIME = True
 
+# the detail standard (art round W4): the soldiers' lifts; the glossy white armour, trims, the charcoal suit and the
+# team plates apart (the glows are never lifted)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5           # (0.8: highlight share 0.104-0.132 with the gloss white armour and the mint blade)
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+MATERIAL_KINDS = FW.kinds_future()
+
+# Synthwave (epic skin, DESIGN A5.8 "Neon grid visor"): lavender-white plates on a dark purple suit, a hot pink
+# blade, cyan emitters, a bigger boxy visor standing proud of the helm with a neon grid, and the buckler as a synthwave
+# sun with a corona of neon rays (the silhouette signs: the face's profile and the shield's rays)
+SW_PLATE, GRID_PINK, GRID_CYAN = "#D3CBE6", "#F04AB0", "#3AD8F0"
+SKINS = {"synthwave": {
+    "palette": FW.skin_palette({FW.ARMOR: SW_PLATE, FW.LINE_ON_WHITE: "#A79DC6", FW.WEAR_ON_WHITE: "#BDB2DA",
+                                F.ARMOR: "#E6DDF2", F.SUIT: "#3A3450", F.SUIT_LT: "#524870", F.CHARCOAL: "#2B2440",
+                                FW.FOLD_ON_SUIT: "#4E4568", FW.LINE_ON_SUIT: "#251E38", FW.WEAR_ON_SUIT: "#655B88",
+                                F.GUNMETAL: "#3F3758", F.TRIM: "#B3A8D0", F.STEEL: "#9086B0",
+                                F.VISOR_DARK: "#1B1430", F.MINT: "#F03AA8", F.MINT_CORE: "#FFD6EE",
+                                "#8CF5D0": "#F79ACF", F.MAGENTA: "#29E3F5", F.MAGENTA_CORE: "#D6FBFF"}),
+    "kinds": FW.kinds({SW_PLATE: "ceramic", "#A79DC6": "ceramic", "#BDB2DA": "ceramic", "#E6DDF2": "ceramic",
+                       "#3A3450": "cloth", "#524870": "cloth", "#2B2440": "cloth", "#4E4568": "cloth", "#251E38": "cloth",
+                       "#655B88": "cloth", "#3F3758": "iron", "#B3A8D0": "iron", "#9086B0": "iron",
+                       "#1B1430": "glass"})}}
+
 BLADE_LEN = 44.0
+BLADE_CORE = 1.1               # the blade's white core, half width (W4: 1.6, its rim counted as highlight)
+HUM = "#8CF5D0"                # the hum shell, a mid mint (W4: MINT_CORE put its frames' highlight share at 0.11-0.12)
 HILT = 7.0
 HR = (0.0, F.ARM_Y["r"], F.HAND_Z)        # near hand joint (sword)
 HL = (0.0, F.ARM_Y["l"], F.HAND_Z)        # far hand joint (buckler)
@@ -62,7 +89,7 @@ def build(rig):
     global RIG
     RIG = rig
     KF.skeleton_v3(rig)
-    KF.legs_v3(rig, team_greave=True)
+    KF.legs_v3(rig, team_greave=True, armor=FW.ARMOR)
     rig.joint("sword", "hand_r", HR)
     rig.joint("blade", "sword", (HR[0], HR[1], B0))
     rig.joint("buckler", "hand_l", HL)
@@ -74,7 +101,7 @@ def build(rig):
     def along(d):
         return (bx + n[0] * d, by + n[1] * d, bz)
     g = Geo().lathe([(0, -0.4), (9.8, -0.2), (10.8, 1.2), (10.2, 2.6), (0, 2.4)], along(0), along(3.2), segs=24)
-    rig.part("buckler", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("buckler", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().lathe([(0, -0.3), (8.4, -0.2), (8.2, 1.0), (0, 1.6)], along(2.4), along(3.6), segs=24)
     rig.part("buckler", g, team=True, outline=0.6)
     g = Geo()
@@ -85,11 +112,20 @@ def build(rig):
     rig.part("buckler", g, F.TRIM, finish="metal", outline=0)
     g = Geo().lathe([(0, 0), (3.2, 0.2), (2.8, 1.4), (0, 2.2)], along(3.4), along(5.6), segs=16)
     rig.part("buckler", g, glow=F.MAGENTA, outline=1.0, outline_hex=F.SUIT)
+    if getattr(rig, "skin", None) == "synthwave":    # the buckler as a synthwave sun: a corona of neon rays
+        g = Geo()
+        p0 = along(1.6)
+        for a_ in range(0, 360, 45):
+            ca, sa = math.cos(math.radians(a_ + 22.5)), math.sin(math.radians(a_ + 22.5))
+            d = (-n[1] * ca, n[0] * ca, sa)
+            base = (p0[0] + d[0] * 10.0, p0[1] + d[1] * 10.0, p0[2] + d[2] * 10.0)
+            g.lathe([(1.15, 0.0), (0.0, 3.0)], base, (base[0] + d[0], base[1] + d[1], base[2] + d[2]), segs=8)
+        rig.part("buckler", g, glow=GRID_PINK, outline=0.8, outline_hex=F.SUIT)
     rig.joint("shield_glow", "buckler", along(5.0), hidden=True)
     g = Geo().lathe([(0, 0), (11.2, 0.3), (11.6, 0.9), (0, 1.0)], along(4.6), along(5.4), segs=28)
     rig.part("shield_glow", g, glow=F.MAGENTA_CORE, outline=1.0, outline_hex=F.MAGENTA)
 
-    F.arm_parts(rig, "l")
+    F.arm_parts(rig, "l", glove=FW.ARMOR)
 
     # tabard behind the belt: a team panel with a white hem band (follow-through)
     # (the hem ends 9 lu above the soles so the feet read apart, ANIM_SPEC G1)
@@ -97,17 +133,17 @@ def build(rig):
     g = Geo().blob((8.2, -0.5, 15.6), (2.4, 6.8, 5.6), p=3.2, taper=(1.12, 0.9))
     rig.part("tabard", g, team=True)
     g = Geo().blob((8.6, -0.5, 10.6), (2.6, 7.2, 1.4), p=3.0)
-    rig.part("tabard", g, F.ARMOR, outline=0.6)
-    F.torso_armor(rig, pack=True)
+    rig.part("tabard", g, FW.ARMOR, outline=0.6)
+    F.torso_armor(rig, pack=True)     # (FW.pack's slimmer cells bared the pack's team stripe: the lunge proxy moved 1 lu)
     # a team stripe on the backpack (team reads from behind during the spin)
     g = Geo().blob((-11.4, 0, 33.5), (4.6, 8.6, 2.4), p=3.4)
     rig.part("torso", g, team=True, outline=0.6)
     # white breastplate rim (gorget) and hip faulds
     g = Geo().blob((1.0, 0, 39.2), (7.4, 7.6, 1.8), p=2.6)
-    rig.part("torso", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("torso", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((0.6, 0, 16.8), (10.6, 10.4, 4.4), p=2.8, taper=(1.12, 1.0))
     g.clip((0, 0, 12.8), (0, 0, -1))
-    rig.part("hips", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("hips", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     # belt pouches and a glowing buckle
     g = Geo().blob((4.0, -9.6, 20.4), (2.6, 1.8, 2.6), p=3.2).blob((-4.0, -9.4, 20.6), (2.4, 1.8, 2.6), p=3.2)
     rig.part("torso", g, F.GUNMETAL, outline=0.6)
@@ -122,29 +158,43 @@ def build(rig):
     # great-helm: white dome and chin guard, a team crest fin with a tail, a dark visor band
     g = Geo().blob((2.0, 0, 50.5), (12.2, 11.6, 12.4), p=2.5)
     g.blob((4.5, 0, 42.0), (9.0, 9.2, 3.6), p=2.4)
-    rig.part("head", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("head", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((0.0, 0, 63.0), (13.0, 3.0, 6.8), p=2.4, rot=(0, -8, 0))
     rig.part("head", g, team=True)
-    g = Geo().blob((0.5, -2.4, 63.6), (10.0, 0.8, 1.2), p=2.6, rot=(0, -8, 0))
+    g = Geo().blob((0.5, -2.4, 63.6), (9.0, 0.8, 0.7), p=2.6, rot=(0, -8, 0))      # (W4: 10 x 1.2, highlight share)
     rig.part("head", g, glow=F.MINT, outline=0)
     rig.secondary("crest_tail", "head", (-8.0, 0, 60.0), (-15.0, 0, 51.0), max_deg=18, gain=1.2)
     g = Geo().blob((-10.5, 0, 56.0), (4.6, 2.8, 7.4), p=2.4, rot=(0, 26, 0))
     rig.part("crest_tail", g, team=True)
-    visor = Geo().blob((2.0, 0, 50.5), (13.0, 12.4, 13.2), p=2.5)
-    visor.clip((6.5, 0, 0), (-1, 0, 0)).clip((0, 0, 54.6), (0, 0, 1)).clip((0, 0, 45.6), (0, 0, -1))
-    KF.visor_face(rig, "head", [visor], (10.6, 50.2), eye_dx=(0.0, 3.9), eye_rx=1.7, eye_rz=2.5)
+    synth = getattr(rig, "skin", None) == "synthwave"
+    if synth:     # the neon grid visor: bigger and boxier, standing 1.8 lu proud of the helm's face
+        visor = Geo().blob((2.6, 0, 50.3), (14.2, 13.2, 13.8), p=3.4)
+        visor.clip((5.6, 0, 0), (-1, 0, 0)).clip((0, 0, 55.2), (0, 0, 1)).clip((0, 0, 44.8), (0, 0, -1))
+    else:
+        visor = Geo().blob((2.0, 0, 50.5), (13.0, 12.4, 13.2), p=2.5)
+        visor.clip((6.5, 0, 0), (-1, 0, 0)).clip((0, 0, 54.6), (0, 0, 1)).clip((0, 0, 45.6), (0, 0, -1))
+    vf = KF.visor_face(rig, "head", [visor], (10.6, 50.2), eye_dx=(0.0, 3.9), eye_rx=1.7, eye_rz=2.5)
+    if synth:     # the grid: a neon floor under the eyes (pink rows, cyan rails converging on the horizon)
+        g = Geo()
+        for z in (45.3, 46.4, 47.4):     # (under the eyes, 47.7-52.7)
+            FW.ribbon(g, vf, [(6.6, z), (9.0, z), (11.4, z), (13.8, z), (15.6, z)], 0.5, 0.25)
+        rig.part("head", g, glow=GRID_PINK, outline=0)
+        g = Geo()
+        for x0, x1 in ((7.0, 9.4), (11.4, 11.8), (15.4, 13.8)):
+            FW.ribbon(g, vf, [(x0, 44.9), ((x0 + x1) / 2, 46.2), (x1, 47.4)], 0.45, 0.25)
+        rig.part("head", g, glow=GRID_CYAN, outline=0)
     rig.part("head", visor, F.VISOR_DARK, finish="gloss", outline_hex=F.SUIT)
     g = Geo().blob((13.6, -0.6, 44.6), (2.4, 2.0, 3.8), p=3.0)         # nasal bar
-    rig.part("head", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("head", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().lathe([(0, 0), (3.6, 0.1), (3.4, 1.6), (0, 2.0)], (-3.0, -10.6, 49.0), (-3.0, -12.6, 49.0), segs=16)
     rig.part("head", g, F.TRIM, finish="metal", outline=0.6)            # ear disc
-    g = Geo().sphere((-3.0, -12.8, 49.0), 1.4, cuts=2)
+    g = Geo().sphere((-3.0, -12.8, 49.0), 1.15, cuts=2)
     rig.part("head", g, glow=F.MINT, outline=0)
     KF.rivets(rig, "head", [(x, -11.2, 43.8 + 0.1 * x) for x in (-4.0, 0.0, 4.0)], r=0.9)
 
-    F.arm_parts(rig, "r")
+    F.arm_parts(rig, "r", glove=FW.ARMOR)
     F.shoulders(rig, r=(7.2, 6.0, 5.8))
-    KF.strip(rig, "arm_r", [(-4.0, -18.4, 38.2), (0.8, -18.8, 39.6), (5.6, -18.2, 38.2)], r=0.8)
+    KF.strip(rig, "arm_r", [(-4.0, -18.4, 38.2), (0.8, -18.8, 39.6), (5.6, -18.2, 38.2)], r=0.65)
 
     # the photon sword: a wrapped grip, pommel, a white guard with magenta emitters, a big blade
     hx, hy, hz = HR
@@ -156,22 +206,103 @@ def build(rig):
     rig.part("sword", g, F.TRIM, finish="metal", outline=0)
     g = Geo().blob((hx, hy, hz - 5.6), (2.4, 2.4, 2.0), p=2.4)
     g.blob((hx, hy, hz + 5.8), (7.2, 2.8, 2.0), p=2.6)
-    rig.part("sword", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("sword", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((hx + 6.0, hy - 0.8, hz + 5.8), (1.4, 1.3, 1.3), p=2.2)
     g.blob((hx - 6.0, hy - 0.8, hz + 5.8), (1.4, 1.3, 1.3), p=2.2)
     rig.part("sword", g, glow=F.MAGENTA, outline=0)
     g = Geo().blob((hx, hy - 0.4, B0 + BLADE_LEN / 2), (3.8, 1.6, BLADE_LEN / 2 + 0.5), p=2.3,
                    taper=(1.0, 0.45))
     rig.part("blade", g, glow=F.MINT, outline=1.0, outline_hex=F.MINT)
-    g = Geo().blob((hx + 0.2, hy - 1.4, B0 + BLADE_LEN / 2 - 1.0), (1.6, 0.9, BLADE_LEN / 2 - 2.0),
+    g = Geo().blob((hx + 0.2, hy - 1.4, B0 + BLADE_LEN / 2 - 1.0), (BLADE_CORE, 0.9, BLADE_LEN / 2 - 2.0),
                    p=2.3, taper=(1.0, 0.35))
     rig.part("blade", g, glow=F.MINT_CORE, outline=0)
     # hum: a faint outer shell that flickers on some idle frames
     rig.joint("hum", "blade", (hx, hy, B0), hidden=True)
     g = Geo().blob((hx, hy + 0.2, B0 + BLADE_LEN / 2), (5.2, 1.2, BLADE_LEN / 2 + 1.6), p=2.2,
                    taper=(1.0, 0.5))
-    rig.part("hum", g, glow=F.MINT_CORE, outline=0.8, outline_hex=F.MINT)
+    rig.part("hum", g, glow=HUM, outline=0.8, outline_hex=F.MINT)
     rig.track("bladeTip", "sword", TIP)
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the detail standard on the white armour, the suit and the team plates (char space; decals cast)."""
+    # the great-helm: a seam down the dome behind the visor, a brow line over it, a rim band round the jaw; wear
+    hf = FC.Face(rig, "head", [Geo().blob((2.0, 0, 50.5), (12.2, 11.6, 12.4), p=2.5)])
+    FW.panel_lines(rig, "head", hf, [[FW.sc(hf, -1.0, 59.0, -10.0), FW.sc(hf, -2.2, 52.5, -11.0), FW.sc(hf, -1.4, 44.6, -10.0)],
+                                     [FW.sc(hf, -9.4, 55.4, -9.0), FW.sc(hf, -3.6, 57.0, -10.5), FW.sc(hf, 4.6, 57.2, -10.5)]],
+                   w=0.8)
+    FW.wear(rig, "head", hf, [(*FW.sc(hf, -8.4, 47.6, -9.0), 1.4, 0.8), (*FW.sc(hf, 6.2, 59.2, -9.0), 1.3, 0.7),
+                              (*FW.sc(hf, -6.0, 58.8, -9.0), 1.0, 0.6)])
+    FW.band(rig, "head", (4.5, 0, 42.0), (9.0, 9.2, 3.6), 2.4, 41.0, 41.9, fill=FW.LINE_ON_WHITE)   # the chin guard's seam
+    # the crest fin's two team-dark grooves above and below its mint strip (the fin read as one flat team field)
+    cr = FC.Face(rig, "head", [Geo().blob((0.0, 0, 63.0), (13.0, 3.0, 6.8), p=2.4, rot=(0, -8, 0))])
+    FW.folds(rig, "head", cr, [[FW.sc(cr, x, 63.0 + 0.139 * x + dz, -3.4) for x in (-9.0, -4.5, 0.0, 4.5, 9.0)]
+                               for dz in (3.4, -3.0)], w=0.75, team=True)
+    # the team chest plate in two plates (team-dark), two vents under the hex; the gorget's seam
+    cf = FC.Face(rig, "torso", [Geo().blob((1.8, 0, 32.0), (9.8, 10.6, 7.6), p=3.0, taper=(0.9, 1.0))])
+    FW.folds(rig, "torso", cf, [[FW.sc(cf, -6.0, 27.6, -10.4), FW.sc(cf, 3.0, 27.4, -10.4), FW.sc(cf, 10.0, 28.2, -9.0)],
+                                [FW.sc(cf, -3.0, 37.6, -10.4), FW.sc(cf, -3.4, 28.0, -10.4)]], w=0.8, team=True)
+    FW.folds(rig, "torso", cf, [[FW.sc(cf, 3.2, 30.0, -10.4), FW.sc(cf, 6.4, 30.0, -10.4)],
+                                [FW.sc(cf, 3.2, 31.6, -10.4), FW.sc(cf, 6.4, 31.6, -10.4)]], w=0.6, team=True)
+    FW.band(rig, "torso", (1.0, 0, 39.2), (7.4, 7.6, 1.8), 2.6, 38.0, 38.7, fill=FW.LINE_ON_WHITE)
+    # the faulds split in three plates, chipped along the hem
+    ff = FC.Face(rig, "hips", [Geo().blob((0.6, 0, 16.8), (10.6, 10.4, 4.4), p=2.8, taper=(1.12, 1.0))])
+    FW.panel_lines(rig, "hips", ff, [[FW.sc(ff, -3.6, 20.0, -10.4), FW.sc(ff, -4.0, 13.4, -10.4)],
+                                     [FW.sc(ff, 3.4, 20.0, -10.4), FW.sc(ff, 3.8, 13.4, -10.4)]], w=0.7)
+    FW.wear(rig, "hips", ff, [(*FW.sc(ff, -7.0, 13.8, -9.0), 1.4, 0.6), (*FW.sc(ff, 0.0, 13.6, -10.4), 1.2, 0.5),
+                              (*FW.sc(ff, 7.4, 14.0, -8.0), 1.0, 0.5)])
+    # the shoulder pads' team-dark rims; the bracers' cuff seams and wear; the suit's elbow creases
+    for s in ("r", "l"):
+        y = F.ARM_Y[s]
+        FW.band(rig, f"arm_{s}", (0.5, y - 0.3 * F.SIDE_Y[s], 37.6), (7.2, 6.0, 5.8), 2.6, 33.4, 34.4, team=True)
+        FW.band(rig, f"fore_{s}", (0.3, y, F.HAND_Z + 4.2), (4.9, 4.8, 3.6), 2.8, 26.0, 26.7, fill=FW.LINE_ON_WHITE,
+              taper=(0.9, 1.1))
+        sleeve = FC.Face(rig, f"arm_{s}", [Geo().capsule((0, y, F.SHOULDER_Z), (0, y, F.ELBOW_Z), 4.1, 3.8)])
+        FW.folds(rig, f"arm_{s}", sleeve, [[FW.sc(sleeve, -2.6, 30.6, y - 3.8), FW.sc(sleeve, 0.2, 29.8, y - 4.0),
+                                            FW.sc(sleeve, 2.8, 30.8, y - 3.8)]], w=0.8, team=False, fill=FW.FOLD_ON_SUIT)
+    bf = FC.Face(rig, "fore_r", [Geo().blob((0.3, F.ARM_Y["r"], F.HAND_Z + 4.2), (4.9, 4.8, 3.6), p=2.8,
+                                            taper=(0.9, 1.1))])
+    FW.wear(rig, "fore_r", bf, [(*FW.sc(bf, 3.4, 23.2, F.ARM_Y["r"] - 4.6), 1.1, 0.6)])
+    # the legs: knee creases on the suit, the greaves' team-dark rims, the boots' seams and scuffed toes
+    from ageborn_art import kit_medieval as KM
+    for s in ("r", "l"):
+        y = F.LEG_Y * F.SIDE_Y[s]
+        th = FC.Face(rig, f"thigh_{s}", [Geo().capsule((0, y, KM.V3_THIGH_Z + 0.5), (0.5, y, KM.V3_KNEE_Z), 4.6, 4.1)])
+        FW.folds(rig, f"thigh_{s}", th, [[FW.sc(th, -2.4, 14.4, y - 4.4), FW.sc(th, 0.4, 13.6, y - 4.6),
+                                          FW.sc(th, 3.0, 14.6, y - 4.2)]], w=0.8, team=False, fill=FW.FOLD_ON_SUIT)
+        FW.band(rig, f"shin_{s}", (1.9, y, 8.6), (3.4, 4.2, 2.6), 2.6, 6.4, 7.1, team=True)
+        FW.band(rig, f"foot_{s}", (2.8, y, 2.4), (4.4, 4.7, 2.5), 2.9, 3.0, 3.6, fill=FW.LINE_ON_WHITE, taper=(1.02, 0.84))
+    tf = FC.Face(rig, "foot_r", [Geo().blob((2.8, -F.LEG_Y, 2.4), (4.4, 4.7, 2.5), p=2.9, taper=(1.02, 0.84))])
+    FW.wear(rig, "foot_r", tf, [(*FW.sc(tf, 6.2, 2.0, -F.LEG_Y - 3.0), 1.2, 0.6)])
+    # the tabard's pleats (team-dark) and its white hem scuffed; the buckler's team-dark ring
+    tb = FC.Face(rig, "tabard", [Geo().blob((8.2, -0.5, 15.6), (2.4, 6.8, 5.6), p=3.2, taper=(1.12, 0.9))])
+    FW.folds(rig, "tabard", tb, [[FW.sc(tb, 8.4, 20.0, -7.0), FW.sc(tb, 8.8, 11.6, -7.0)]], w=0.8, team=True)
+    bx, by, bz = HL[0] + 4.0, HL[1] - 5.0, HL[2] + 1.0
+    n = (math.cos(math.radians(-42)), math.sin(math.radians(-42)), 0.0)
+    a0 = (bx + n[0] * 3.55, by + n[1] * 3.55, bz)
+    a1 = (bx + n[0] * 3.75, by + n[1] * 3.75, bz)
+    g = Geo().lathe([(5.4, 0.0), (6.4, 0.0), (6.4, 0.4), (5.4, 0.4)], a0, a1, segs=28)
+    FW.team_dark(rig, "buckler", g)
+
+
+SPOT_MAT = "metal"     # the Holo Decoy (this build drawn as light) sets "energy": its marks glitch, it sheds motes
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, armoured; never on the face or skin), measured in the posed frames:
+    the near shoulder pad, the great-helm's dome, the crest, the white faulds behind the tabard, a strip from the
+    tabard's hem. (The buckler's team face was seen 20% at the median: the sword arm and the blade cross it.)"""
+    rig.damage_spot_at("faulds", "hips", -5.0, 16.5, 5.0, SPOT_MAT)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, SPOT_MAT, team=True)
+    rig.damage_spot_at("helmet", "head", -4.0, 52.0, 5.5, SPOT_MAT)
+    rig.damage_spot_at("crest", "head", -6.0, 67.4, 5.0, SPOT_MAT, team=True)      # (above its mint strip)
+    if SPOT_MAT == "energy":
+        rig.damage_spot("motes", "torso", (0.0, 0.0, 34.0), 4.0, "motes", kind="emit", normal=(0, 0, 1))
+    else:
+        rig.damage_spot_at("hem", "tabard", 8.4, 12.6, 6.0, "cloth", kind="strip", team=True)
 
 
 # -- poses -----------------------------------------------------------------------------------
@@ -256,15 +387,18 @@ def _attack_pose(f, rz=None):
 
 
 def _attack_clip():
-    ring = {"kind": "arc", "joint": "sword", "inner": MID, "outer": TIP, "color": F.MINT, "white": 0.35,
+    ring = {"kind": "arc", "joint": "sword", "inner": MID, "outer": TIP, "color": FW.fx(RIG, SKINS, F.MINT), "white": 0.35,
             "taper": 0.15, "band": 0.85, "lines": 2}
     ov = {
-        4: [dict(ring, **{"pose_from": _attack_pose(4, rz=-10.0), "t0": 0.0, "t1": 1.0, "samples": 20})],
-        5: [dict(ring, **{"pose_from": _attack_pose(5, rz=100.0), "t0": 0.0, "t1": 1.0, "samples": 20})],
-        6: [dict(ring, **{"pose_from": _attack_pose(6, rz=250.0), "t0": 0.3, "t1": 1.0, "samples": 16,
-                          "lines": 3}),
+        # W4: two-tone ring smears (one flat light crescent held the attack frames' micro under the floor)
+        4: FW.smear_soft(dict(ring, **{"pose_from": _attack_pose(4, rz=-10.0), "t0": 0.0, "t1": 1.0,
+                                           "samples": 20}), band=0.55),
+        5: FW.smear_soft(dict(ring, **{"pose_from": _attack_pose(5, rz=100.0), "t0": 0.0, "t1": 1.0,
+                                           "samples": 20}), band=0.55),
+        6: FW.smear_soft(dict(ring, **{"pose_from": _attack_pose(6, rz=250.0), "t0": 0.3, "t1": 1.0,
+                                           "samples": 16, "lines": 3}), band=0.55) + [
             {"kind": "burst", "joint": "sword", "point": TIP, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
-             "a0": -70.0, "arc": 140.0, "color": F.MINT_CORE},
+             "a0": -70.0, "arc": 140.0, "color": FW.fx(RIG, SKINS, F.MINT_CORE)},
             {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 4, "spread": 0.9,
              "color": "#DDE3E8"}],
         3: [{"kind": "dust", "ground": (-9.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 2, "spread": 0.7,
@@ -312,14 +446,14 @@ def _b_pose(i):
 
 
 def _attack_b():
-    chop = {"kind": "arc", "joint": "sword", "inner": MID, "outer": TIP, "color": F.MINT, "white": 0.35,
+    chop = {"kind": "arc", "joint": "sword", "inner": MID, "outer": TIP, "color": FW.fx(RIG, SKINS, F.MINT), "white": 0.35,
             "taper": 0.15, "lines": 3, "t0": 0.0, "t1": 0.95}
     ov = {
-        4: [dict(chop, **{"from": 3})],
-        5: [dict(chop, **{"from": 3, "t0": 0.35, "t1": 1.0})],
-        6: [dict(chop, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2}),
+        4: FW.smear_soft(dict(chop, **{"from": 3}), band=0.35),          # (0.55: B 4-5 flat 0.25, micro 3.3;
+        5: FW.smear_soft(dict(chop, **{"from": 3, "t0": 0.35, "t1": 1.0}), band=0.35),   # 0.45: 0.25, 3.4)
+        6: FW.smear_soft(dict(chop, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2}), band=0.45) + [
             {"kind": "burst", "joint": "sword", "point": TIP, "r0_lu": 6.0, "r1_lu": 13.0, "n": 6,
-             "a0": 10.0, "arc": 160.0, "color": F.MINT_CORE},
+             "a0": 10.0, "arc": 160.0, "color": FW.fx(RIG, SKINS, F.MINT_CORE)},
             {"kind": "dust", "joint": "sword", "point": TIP, "ground_snap": True, "size_lu": 7.0, "puffs": 4,
              "seed": 81, "spread": 1.2, "color": "#DDE3E8"},
             {"kind": "dust", "ground": (-10.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 82, "spread": 0.7,
@@ -374,13 +508,13 @@ def _c_pose(i):
 
 
 def _attack_c():
-    streak = {"kind": "streak", "joint": "sword", "point": TIP, "color": F.MINT, "width_lu": 7.0, "white": 0.35}
+    streak = {"kind": "streak", "joint": "sword", "point": TIP, "color": FW.fx(RIG, SKINS, F.MINT), "width_lu": 7.0, "white": 0.35}
     ov = {
         4: [dict(streak, **{"from": 3, "t0": 0.0, "t1": 1.0})],
         5: [dict(streak, **{"from": 3, "t0": 0.25, "t1": 1.0, "width_lu": 6.0})],
         6: [dict(streak, **{"from": 4, "t0": 0.4, "t1": 1.0, "width_lu": 5.0}),
             {"kind": "burst", "joint": "sword", "point": TIP, "r0_lu": 6.0, "r1_lu": 13.0, "n": 6,
-             "a0": -70.0, "arc": 140.0, "color": F.MINT_CORE},
+             "a0": -70.0, "arc": 140.0, "color": FW.fx(RIG, SKINS, F.MINT_CORE)},
             {"kind": "dust", "ground": (20.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 83, "spread": 0.9,
              "color": "#DDE3E8"}],
     }

@@ -28,6 +28,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "plasma_lancer"
 GAIT_NAME = "biped"
@@ -37,6 +38,14 @@ CANVAS = (360, 300)
 FEET = (150, 252)
 ANCHORS = {"head": (2, 70), "hitCenter": (0, 33)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the white soldiers' lifts; the wave kit's plates in the troopers' off-white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SKIN_PALETTE = FW.KIT_TROOPER
+MATERIAL_KINDS = FW.kinds_future()
 
 HR = (0.0, F.ARM_Y["r"], F.HAND_Z)
 BACK = 14.0                   # shaft behind the near hand
@@ -52,7 +61,9 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, helmet_kind="dome", team_greave=True, team_thigh=True, team_sleeve=True, bulk=1.05, head=(1, 0, 40))
+    W.trooper(rig, helmet_kind="dome", team_greave=True, team_thigh=True, team_sleeve=True, bulk=1.05, head=(1, 0, 40),
+              strip=False)
+    FW.strip(rig)
     rig.joint("lance", "hand_r", HR)
     hx, hy, hz = HR
     g = Geo().capsule((hx, hy, hz - BACK), (hx, hy, hz + SHAFT), 1.5)
@@ -66,12 +77,26 @@ def build(rig):
     rig.part("lance", g, F.MAGENTA, outline=0.6)
     g = Geo().blob((hx, hy - 0.6, hz + SHAFT + 2.0 + BLADE / 2), (2.8, 1.4, BLADE / 2 + 0.4), p=2.2, taper=(1.0, 0.3))
     rig.part("lance", g, glow=W.MINT, outline=1.0, outline_hex=W.MINT)
-    g = Geo().blob((hx, hy - 1.4, hz + SHAFT + 1.5 + BLADE / 2), (1.1, 0.8, BLADE / 2 - 1.2), p=2.2, taper=(1.0, 0.3))
+    g = Geo().blob((hx, hy - 1.4, hz + SHAFT + 1.5 + BLADE / 2), (0.9, 0.8, BLADE / 2 - 1.2), p=2.2, taper=(1.0, 0.3))
     rig.part("lance", g, glow=W.MINT_CORE, outline=0)
     rig.joint("crackle", "lance", TIP, hidden=True)
     F.sparks(rig, "lance", TIP, name="crackle", size=0.8, seed=5)
     rig.joint("blade_glow", "lance", MID, hidden=True)        # the die: the blade powers down
     rig.track("lanceTip", "lance", TIP)
+    FW.wave_trooper(rig, helmet_kind="dome", bulk=1.05, team_greave=True, team_thigh=True, team_sleeve=True,
+                    helmet_team=False)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face): the team band on the pack, the near
+    shoulder pad, the team cap, the white faulds, the near (team) thigh."""
+    rig.damage_spot_at("pack", "torso", -11.4, 36.6, 5.5, "metal", team=True)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("cap", "head", -3.0, 58.0, 5.5, "metal", team=True)
+    rig.damage_spot_at("faulds", "hips", -5.0, 16.0, 5.0, "metal")
+    rig.damage_spot_at("thigh", "thigh_r", 1.0, 13.0, 5.0, "cloth", team=True)
 
 
 def arms(hand, w, far):
@@ -196,9 +221,9 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        W.melee_clip("attack", _a_pose, THRUST, W.impact_fx("lance", TIP, 161, a0=-70.0, ground_x=40.0)),
-        W.melee_clip("attack_b", _b_pose, THRUST, W.impact_fx("lance", TIP, 162, a0=-120.0, ground_x=40.0), rr),
-        W.melee_clip("attack_c", _c_pose, THRUST, W.impact_fx("lance", TIP, 163, a0=-20.0, ground_x=36.0), rr),
+        FW.melee_clip("attack", _a_pose, THRUST, W.impact_fx("lance", TIP, 161, a0=-70.0, ground_x=40.0)),
+        FW.melee_clip("attack_b", _b_pose, THRUST, W.impact_fx("lance", TIP, 162, a0=-120.0, ground_x=40.0), rr),
+        FW.melee_clip("attack_c", _c_pose, THRUST, W.impact_fx("lance", TIP, 163, a0=-20.0, ground_x=36.0), rr),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),

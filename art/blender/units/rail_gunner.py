@@ -25,6 +25,7 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as FC
 from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_future as KF
@@ -33,6 +34,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "rail_gunner"
 GAIT_NAME = "biped"
@@ -42,6 +44,27 @@ CANVAS = (340, 240)
 FEET = (112, 214)
 ANCHORS = {"head": (2, 70), "hitCenter": (0, 34), "muzzle": (62, 17)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the soldiers' lifts; the glossy white armour, trims, the charcoal suit and the
+# team plates apart (the glows are never lifted)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+MATERIAL_KINDS = FW.kinds_future()
+
+# Chrome Rail (epic skin, DESIGN A5.8): mirror chrome plates over a gunmetal suit, a pale ice-blue glow (under 40%
+# saturation), and a chrome heat sink along the top rail (the silhouette sign)
+CR_CHROME, CR_ICE, CR_ICE_CORE = "#BEC5CF", "#86C4D8", "#EAF8FC"   # (#D9DFE7 and #9FD6E6: highlight share 0.106-0.113)
+SKINS = {"chrome_rail": {
+    "palette": FW.skin_palette({FW.ARMOR: CR_CHROME, FW.LINE_ON_WHITE: "#98A0AD", FW.WEAR_ON_WHITE: "#B0B8C3",
+                                F.ARMOR: "#DDE2E9", F.SUIT: "#3A3E48", F.SUIT_LT: "#4C515D", F.CHARCOAL: "#2C2F37",
+                                FW.FOLD_ON_SUIT: "#4E535E", F.GUNMETAL: "#5A606C", F.TRIM: "#C4CAD4", F.STEEL: "#9AA2AE",
+                                F.MAGENTA: CR_ICE, F.MAGENTA_CORE: CR_ICE_CORE, F.MINT: CR_ICE, F.MINT_CORE: CR_ICE_CORE,
+                                F.CYAN: "#BFE0E8", F.VISOR_DARK: "#1A1F28"}),
+    "kinds": FW.kinds({CR_CHROME: "iron", "#98A0AD": "iron", "#B0B8C3": "iron", "#DDE2E9": "iron",
+                       "#3A3E48": "cloth", "#4C515D": "cloth", "#2C2F37": "cloth", "#4E535E": "cloth",
+                       "#5A606C": "iron", "#C4CAD4": "iron", "#9AA2AE": "iron", "#1A1F28": "glass"})}}
 
 G0 = (2.0, -15.5, 25.0)     # grip at rest (character space); the gun is a torso child
 FORE = 17.0                 # far hand: this far along the gun from the grip
@@ -56,7 +79,7 @@ def build(rig):
     global RIG
     RIG = rig
     KF.skeleton_v3(rig, head=(1, 0, 39))
-    KF.legs_v3(rig, thigh_r=4.8)
+    KF.legs_v3(rig, thigh_r=4.8, armor=FW.ARMOR)
     rig.joint("gun", "torso", G0)
     gx, gy, gz = G0
 
@@ -70,7 +93,7 @@ def build(rig):
     g = Geo()
     for z in (48.0, 51.0, 54.0):
         g.blob((-15.0, 0.5, z), (5.4 - 0.5 * (z - 48) / 3, 5.4, 0.9), p=3.0)
-    rig.part("torso", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("torso", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     F.puff(rig, "torso", (-15.0, -2.0, 58.0), size=0.9, name="pack_steam", spread=1.2)
 
     # cable from the pack to the breech (follow-through)
@@ -81,15 +104,15 @@ def build(rig):
         g.capsule(a, b, 1.3, segs=8, rings=2)
     rig.part("cable", g, F.GUNMETAL, outline=0.6)
 
-    F.arm_parts(rig, "l", r0=4.4, r1=3.9, fist=4.4)
+    F.arm_parts(rig, "l", r0=4.4, r1=3.9, fist=4.4, glove=FW.ARMOR)
     g = Geo().blob((0.5, 11.6, 38.0), (6.2, 5.4, 5.0), p=2.6)
     rig.part("arm_l", g, team=True)
     F.torso_armor(rig, pack=False, bulk=1.08)
     g = Geo().blob((1.0, 0, 38.2), (8.8, 9.0, 2.6), p=2.6)     # white gorget
-    rig.part("torso", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("torso", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((0.6, 0, 16.8), (10.8, 10.6, 4.4), p=2.8, taper=(1.1, 1.0))
     g.clip((0, 0, 12.6), (0, 0, -1))
-    rig.part("hips", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("hips", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((5.0, -10.4, 20.2), (2.8, 1.8, 2.8), p=3.2).blob((-3.0, -10.2, 20.4), (2.6, 1.8, 2.6), p=3.2)
     rig.part("torso", g, F.GUNMETAL, outline=0.6)
     chest = Geo().blob((1.8, 0, 32.0), (10.4, 11.2, 7.6), p=3.0, taper=(0.9, 1.0))
@@ -100,7 +123,7 @@ def build(rig):
     # helmet: white, flat-topped with a team cap, dark visor with the eyes, magenta scope
     g = Geo().blob((2.0, 0, 51.0), (11.8, 11.4, 11.4), p=2.8)
     g.blob((1.5, 0, 42.4), (7.6, 7.6, 3.2), p=2.4)
-    rig.part("head", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("head", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((1.0, 0, 55.5), (12.4, 12.0, 7.6), p=3.2)
     g.clip((0, 0, 54.0), (0, 0, -1))
     g.clip((9.2, 0, 57.0), (1, 0, -0.5))
@@ -116,7 +139,7 @@ def build(rig):
     g = Geo().lathe([(0, 0), (1.9, 0.2), (1.7, 0.8), (0, 1.0)], (12.4, -9.4, 53.6), (13.4, -9.1, 53.6), segs=16)
     rig.part("scope", g, glow=F.MAGENTA, outline=0)
 
-    F.arm_parts(rig, "r", r0=4.4, r1=3.9, fist=4.4)
+    F.arm_parts(rig, "r", r0=4.4, r1=3.9, fist=4.4, glove=FW.ARMOR)
     g = Geo().blob((0.2, -13.4, 38.6), (8.0, 6.6, 6.4), p=2.6)
     g.blob((0.8, -14.2, 34.2), (6.4, 5.4, 2.6), p=2.6)
     rig.part("arm_r", g, team=True)
@@ -129,7 +152,7 @@ def build(rig):
     g.blob((gx + FORE, gy + 2.0, gz - 2.0), (2.0, 1.8, 3.4), p=2.8, rot=(0, -8, 0))  # foregrip
     rig.part("gun", g, F.SUIT, finish="gloss")
     g = Geo().blob((gx + 8.0, gy + 1.0, gz + 7.2), (10.0, 3.0, 2.2), p=3.4)          # top shroud
-    rig.part("gun", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("gun", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo()
     for x in (gx + 10.5, gx + 14.0, gx + 17.5):
         g.lathe([(0, -0.9), (5.6, -0.8), (5.6, 0.8), (0, 0.9)], (x, gy + 1.0, gz + 2.0),
@@ -140,7 +163,7 @@ def build(rig):
         rig.joint(name, "gun", (gx + RAIL0, gy, gz + dz))
         g = Geo().blob((gx + (RAIL0 + RAIL1) / 2, gy + 1.0, gz + dz), ((RAIL1 - RAIL0) / 2 + 1, 2.9, h),
                        p=3.4, taper=(1.0, 1.0))
-        rig.part(name, g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+        rig.part(name, g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
         g = Geo().blob((gx + RAIL1 - 3.0, gy + 1.0, gz + dz), (3.2, 3.1, h + 0.3), p=3.0)
         rig.part(name, g, F.GUNMETAL, finish="metal", outline=0.6)
     g = Geo().blob((gx + (RAIL0 + RAIL1) / 2 - 1, gy + 0.4, gz + 3.0), ((RAIL1 - RAIL0) / 2, 1.8, 1.6), p=3.0)
@@ -174,6 +197,117 @@ def build(rig):
     g = Geo().lathe([(9.0, -1.0), (11.0, 0), (9.0, 1.0), (7.6, 0)], (mx + 3.0, my, mz), (mx + 4.0, my, mz), segs=22)
     rig.part("flash", g, glow=F.MAGENTA_CORE, outline=1.0, outline_hex=F.MAGENTA)
     F.puff(rig, "gun", (gx + 36.0, gy, gz + 10.0), size=1.1, name="vent", spread=1.6)
+    _detail(rig)
+    if getattr(rig, "skin", None) == "chrome_rail":
+        _heat_sink(rig)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _heat_sink(rig):
+    """Chrome Rail: five chrome fins standing on the top rail (a heat sink comb along the cannon's back)."""
+    gx, gy, gz = G0
+    top = gz + 7.4 + 2.4
+    g = Geo()
+    for x in (gx + 25.0, gx + 30.0, gx + 35.0, gx + 40.0, gx + 45.0):
+        g.slab([(x - 0.45, top - 0.8), (x + 0.45, top - 0.8), (x + 0.35, top + 2.6), (x - 0.55, top + 2.6)],
+               gy + 1.0, 4.6)
+    rig.part("rail_top", g, FW.ARMOR, finish="gloss", outline=0.6, outline_hex=F.TRIM)
+
+
+def _detail(rig):
+    """W4: the detail standard on the white armour, the suit, the team plates, the pack and the cannon (char space;
+    decals cast)."""
+    # the helmet: the team cap's team-dark rim, a seam round the jaw, a panel line on the white side; wear
+    FW.band(rig, "head", (1.0, 0, 55.5), (12.4, 12.0, 7.6), 3.2, 54.1, 54.9, team=True)
+    FW.band(rig, "head", (1.5, 0, 42.4), (7.6, 7.6, 3.2), 2.4, 41.2, 41.9, fill=FW.LINE_ON_WHITE)
+    hf = FC.Face(rig, "head", [Geo().blob((2.0, 0, 51.0), (11.8, 11.4, 11.4), p=2.8)])
+    FW.panel_lines(rig, "head", hf, [[FW.sc(hf, -9.4, 47.0, -9.6), FW.sc(hf, -3.0, 45.8, -11.2),
+                                      FW.sc(hf, 3.4, 46.2, -11.0)]], w=0.75)
+    FW.wear(rig, "head", hf, [(*FW.sc(hf, -9.0, 44.0, -8.4), 1.3, 0.7), (*FW.sc(hf, -6.0, 52.6, -10.6), 1.1, 0.6)])
+    # the team chest plate in two plates with two vents; the gorget's seam
+    cf = FC.Face(rig, "torso", [Geo().blob((1.8, 0, 32.0), (10.4, 11.2, 7.6), p=3.0, taper=(0.9, 1.0))])
+    FW.folds(rig, "torso", cf, [[FW.sc(cf, -6.4, 27.4, -11.0), FW.sc(cf, 3.0, 27.2, -11.0), FW.sc(cf, 10.6, 28.0, -9.4)],
+                                [FW.sc(cf, -3.2, 37.6, -11.0), FW.sc(cf, -3.6, 27.8, -11.0)]], w=0.8, team=True)
+    FW.folds(rig, "torso", cf, [[FW.sc(cf, 3.2, 29.0, -11.0), FW.sc(cf, 6.6, 29.0, -11.0)],
+                                [FW.sc(cf, 3.2, 30.6, -11.0), FW.sc(cf, 6.6, 30.6, -11.0)]], w=0.6, team=True)
+    FW.band(rig, "torso", (1.0, 0, 38.2), (8.8, 9.0, 2.6), 2.6, 36.6, 37.3, fill=FW.LINE_ON_WHITE)
+    # the faulds in three plates, chipped along the hem
+    ff = FC.Face(rig, "hips", [Geo().blob((0.6, 0, 16.8), (10.8, 10.6, 4.4), p=2.8, taper=(1.1, 1.0))])
+    FW.panel_lines(rig, "hips", ff, [[FW.sc(ff, -3.6, 20.2, -10.6), FW.sc(ff, -4.0, 13.2, -10.6)],
+                                     [FW.sc(ff, 3.4, 20.2, -10.6), FW.sc(ff, 3.8, 13.2, -10.6)]], w=0.7)
+    FW.wear(rig, "hips", ff, [(*FW.sc(ff, -7.2, 13.6, -9.4), 1.4, 0.6), (*FW.sc(ff, 0.0, 13.4, -10.6), 1.2, 0.5),
+                              (*FW.sc(ff, 7.4, 13.8, -8.4), 1.0, 0.5)])
+    # the big team pauldron's and the far pad's team-dark rims; the bracers' seams; the suit's elbow creases
+    FW.band(rig, "arm_r", (0.2, -13.4, 38.6), (8.0, 6.6, 6.4), 2.6, 34.2, 35.0, team=True)
+    FW.band(rig, "arm_l", (0.5, 11.6, 38.0), (6.2, 5.4, 5.0), 2.6, 34.0, 34.8, team=True)
+    for s in ("r", "l"):
+        y = F.ARM_Y[s]
+        FW.band(rig, f"fore_{s}", (0.3, y, F.HAND_Z + 4.2), (5.2, 5.1, 3.6), 2.8, 26.0, 26.7, fill=FW.LINE_ON_WHITE,
+                taper=(0.9, 1.1))
+        sleeve = FC.Face(rig, f"arm_{s}", [Geo().capsule((0, y, F.SHOULDER_Z), (0, y, F.ELBOW_Z), 4.4, 4.1)])
+        FW.folds(rig, f"arm_{s}", sleeve, [[FW.sc(sleeve, -2.8, 30.4, y - 4.1), FW.sc(sleeve, 0.2, 29.6, y - 4.3),
+                                            FW.sc(sleeve, 3.0, 30.6, y - 4.1)]], w=0.8, team=False,
+                 fill=FW.FOLD_ON_SUIT)
+    # the legs: knee creases on the suit, the boots' seams, a scuffed toe
+    from ageborn_art import kit_medieval as KM
+    for s in ("r", "l"):
+        y = F.LEG_Y * F.SIDE_Y[s]
+        th = FC.Face(rig, f"thigh_{s}", [Geo().capsule((0, y, KM.V3_THIGH_Z + 0.5), (0.5, y, KM.V3_KNEE_Z), 4.8, 4.3)])
+        FW.folds(rig, f"thigh_{s}", th, [[FW.sc(th, -2.4, 14.4, y - 4.6), FW.sc(th, 0.4, 13.6, y - 4.8),
+                                          FW.sc(th, 3.0, 14.6, y - 4.4)]], w=0.8, team=False, fill=FW.FOLD_ON_SUIT)
+        FW.band(rig, f"foot_{s}", (2.8, y, 2.4), (4.4, 4.7, 2.5), 2.9, 3.0, 3.6, fill=FW.LINE_ON_WHITE,
+                taper=(1.02, 0.84))
+    tf = FC.Face(rig, "foot_r", [Geo().blob((2.8, -F.LEG_Y, 2.4), (4.4, 4.7, 2.5), p=2.9, taper=(1.02, 0.84))])
+    FW.wear(rig, "foot_r", tf, [(*FW.sc(tf, 6.2, 2.0, -F.LEG_Y - 3.0), 1.2, 0.6)])
+    # the cap's second team-dark ridge (the cap read as one flat team field); the pack's team panel inset; a seam down
+    # the big pauldron
+    FW.band(rig, "head", (1.0, 0, 55.5), (12.4, 12.0, 7.6), 3.2, 58.6, 59.3, team=True)
+    pf = FC.Face(rig, "torso", [Geo().blob((-13.8, -4.8, 33.0), (4.6, 1.6, 8.6), p=3.2)])
+    FW.folds(rig, "torso", pf, [[FW.sc(pf, x, z, -6.2) for x, z in ((-16.4, 27.4), (-11.4, 27.4), (-11.4, 38.6),
+                                                                      (-16.4, 38.6), (-16.4, 27.4))]], w=0.7, team=True)
+    af = FC.Face(rig, "arm_r", [Geo().blob((0.2, -13.4, 38.6), (8.0, 6.6, 6.4), p=2.6)])
+    FW.folds(rig, "arm_r", af, [[FW.sc(af, -2.6, z, -19.8) for z in (43.4, 40.6, 36.4)]], w=0.75, team=True)
+    # the capacitor pack: two seam rings round the charcoal can (its axis runs from (-13.5, 21) to (-15, 46))
+    g = Geo()
+    for z in (26.4, 40.0):
+        x = -13.5 - 1.5 * (z - 21.0) / 25.0
+        r = 6.2 - 0.6 * (z - 21.0) / 25.0 + 0.18
+        g.lathe([(r - 0.12, -0.35), (r, 0.0), (r - 0.12, 0.35)], (x, 0.5, z), (x - 0.06, 0.5, z + 1.0), segs=24)
+    rig.part("torso", g, FW.LINE_ON_SUIT, outline=0, highlight=False)
+    # the cannon: seams across the white rails and the shroud, vent slots on the receiver, wear on the rails' noses
+    gx, gy, gz = G0
+    for name, dz, h in (("rail_top", 7.4, 2.4), ("rail_bot", -1.4, 2.2)):
+        g = Geo()
+        for x in (gx + 30.0, gx + 43.0):
+            g.capsule((x, gy - 1.95, gz + dz + h - 0.4), (x + 0.4, gy - 1.95, gz + dz - h + 0.4), 0.34, segs=8, rings=2)
+        rig.part(name, g, FW.LINE_ON_WHITE, outline=0, highlight=False)
+        g = Geo().blob((gx + RAIL1 - 7.2, gy - 1.9, gz + dz + 0.6), (1.4, 0.4, 0.6), p=2.2)
+        rig.part(name, g, FW.WEAR_ON_WHITE, outline=0, highlight=False)
+    g = Geo()
+    for x in (gx + 5.0, gx + 11.0):
+        g.capsule((x, gy - 2.05, gz + 9.0), (x + 0.4, gy - 2.05, gz + 5.6), 0.34, segs=8, rings=2)
+    rig.part("gun", g, FW.LINE_ON_WHITE, outline=0, highlight=False)
+    g = Geo()
+    for x in (gx - 2.0, gx + 0.8, gx + 3.6):
+        g.capsule((x, gy - 2.9, gz - 0.6), (x + 1.6, gy - 2.9, gz - 0.6), 0.42, segs=8, rings=2)
+    rig.part("gun", g, FW.LINE_ON_SUIT, outline=0, highlight=False)
+    # the magenta channel between the rails in capacitor cells (four gunmetal ties across it)
+    g = Geo()
+    for i in range(4):
+        x = gx + RAIL0 + 7.0 + i * 8.0
+        g.blob((x, gy - 1.0, gz + 3.0), (0.55, 0.8, 2.0), p=2.6)
+    rig.part("gun", g, F.GUNMETAL, finish="metal", outline=0)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames:
+    the capacitor pack's team panel, the big near pauldron, the helmet's team cap, the white faulds, the near thigh."""
+    rig.damage_spot_at("pack", "torso", -13.8, 33.0, 5.5, "metal", team=True)
+    rig.damage_spot_at("pauldron", "arm_r", 0.2, 40.0, 6.0, "metal", team=True)
+    rig.damage_spot_at("cap", "head", -3.0, 58.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("faulds", "hips", -5.0, 16.0, 5.0, "metal")
+    rig.damage_spot_at("thigh", "thigh_r", 1.0, 13.0, 5.0, "cloth")
 
 
 # -- poses -----------------------------------------------------------------------------------
@@ -237,10 +371,31 @@ def _kneel(t):
             "thigh_l": {"r": 78 * t}, "shin_l": {"r": -80 * t}}
 
 
-def _attack_pose(f):
+# aimed shots (queue item 44, ageborn_art/aimed.py): a turn of `turn` degrees up raises the cannon from the thigh or
+# the shoulder (the grip rises and draws back), leans the body back into the shot and tips the head up with it (the
+# Carbineer's rig, W3). The torso carries the cannon, so its lean is part of the turn.
+AIM_LEAN = 0.22           # torso r per degree of turn (positive leans back)
+AIM_RISE = 0.10           # grip z per degree up (torso space, lu)
+AIM_DRAW = 0.05           # grip x per degree up
+AIM_HEAD = 0.30           # head r per degree, on top of the torso's lean
+#        drop kneel spread HOLD FIRE slide shut rise settle
+AIM_W = [0.0, 0.5, 1.0, 1.0, 1.0, 0.8, 0.4, 0.15, 0.0]
+#         brace shoul spread HOLD FIRE shove shut lower A
+AIM_W_B = [0.2, 0.7, 1.0, 1.0, 1.0, 0.8, 0.4, 0.15, 0.0]
+
+
+def _aim(gx, gz, deg, turn):
+    """The grip and the cannon's angle (torso space) turned `turn` degrees up, with the torso's lean taken out."""
+    if not turn:
+        return gx, gz, deg
+    up = max(0.0, turn)
+    return gx - AIM_DRAW * up, gz + AIM_RISE * up, deg + turn - AIM_LEAN * turn
+
+
+def _attack_pose(f, turn=0.0):
     k = KNEEL[f]
-    pose = merge(hold(GX[f], GZ[f] - 2.0 * k, DEG[f] - TR[f] * k), {
-        "torso": {"r": TR[f] * k - 2.0 * (1 - k)}, "head": {"r": HR[f] * k},
+    pose = merge(hold(*_aim(GX[f], GZ[f] - 2.0 * k, DEG[f] - TR[f] * k, turn)), {
+        "torso": {"r": TR[f] * k - 2.0 * (1 - k) + AIM_LEAN * turn}, "head": {"r": HR[f] * k + AIM_HEAD * turn},
         "rail_top": {"z": 2.4 * SPREAD[f], "r": 2.2 * SPREAD[f]},
         "rail_bot": {"z": -2.4 * SPREAD[f], "r": -2.2 * SPREAD[f]},
         "arc_a": {"show": f == 2},
@@ -260,9 +415,9 @@ def _attack_pose(f):
 def _attack_clip():
     ov = {
         4: [{"kind": "burst", "joint": "gun", "point": MUZZLE, "r0_lu": 10.0, "r1_lu": 16.0, "n": 6,
-             "a0": -70.0, "arc": 140.0, "color": F.MAGENTA_CORE}],
+             "a0": -70.0, "arc": 140.0, "color": FW.fx(RIG, SKINS, F.MAGENTA_CORE)}],
         3: [{"kind": "rings", "joint": "gun", "point": (MUZZLE[0] - 1.0, MUZZLE[1], MUZZLE[2]), "radii_lu": (7.0, 11.0),
-             "a0": -70.0, "a1": 70.0, "color": F.MAGENTA_CORE}],
+             "a0": -70.0, "a1": 70.0, "color": FW.fx(RIG, SKINS, F.MAGENTA_CORE)}],
         5: [{"kind": "dust", "ground": (-4.0, 0.0), "size_lu": 6.5, "puffs": 4, "seed": 21, "spread": 1.3,
              "color": "#DDE3E8", "dir": 1.0}],
         6: [{"kind": "dust", "ground": (-10.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 22, "spread": 1.0,
@@ -293,13 +448,14 @@ B_SHL = [-4, -8, -10, -12, -10, -30, -8, -4]
 B_EYES = ["eyes", "g_angry", "g_angry", "g_angry", "g_squint", "g_hurt", "eyes", "eyes"]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i == 8:
-        return _attack_pose(8)
+        return _attack_pose(8, turn)
     k = i
     sp = B_SPREAD[k]
-    pose = merge(hold(B_GX[k], B_GZ[k], B_DEG[k]), {
-        "torso": {"r": B_TR[k]}, "head": {"r": B_HR[k], "x": 1.0 if k in (2, 3, 4) else 0.0},
+    pose = merge(hold(*_aim(B_GX[k], B_GZ[k], B_DEG[k], turn)), {
+        "torso": {"r": B_TR[k] + AIM_LEAN * turn},
+        "head": {"r": B_HR[k] + AIM_HEAD * turn, "x": 1.0 if k in (2, 3, 4) else 0.0},
         "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
         "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
         "rail_top": {"z": 2.4 * sp, "r": 2.2 * sp},
@@ -321,9 +477,9 @@ def _b_pose(i):
 def _attack_b():
     ov = {
         4: [{"kind": "burst", "joint": "gun", "point": MUZZLE, "r0_lu": 10.0, "r1_lu": 16.0, "n": 6,
-             "a0": -70.0, "arc": 140.0, "color": F.MAGENTA_CORE}],
+             "a0": -70.0, "arc": 140.0, "color": FW.fx(RIG, SKINS, F.MAGENTA_CORE)}],
         3: [{"kind": "rings", "joint": "gun", "point": (MUZZLE[0] - 1.0, MUZZLE[1], MUZZLE[2]), "radii_lu": (7.0, 11.0),
-             "a0": -70.0, "a1": 70.0, "color": F.MAGENTA_CORE}],
+             "a0": -70.0, "a1": 70.0, "color": FW.fx(RIG, SKINS, F.MAGENTA_CORE)}],
         5: [{"kind": "dust", "ground": (-8.0, 0.0), "size_lu": 6.0, "puffs": 4, "seed": 71, "spread": 1.2,
              "color": "#DDE3E8", "dir": 1.0}],
         6: [{"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 72, "spread": 0.9,
@@ -357,13 +513,23 @@ def _die(k):
 
 
 def clips():
+    attack = _attack_clip()
+    attack_b = _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (the Rail Gunner hits air; they go to the extras sheet): the kneeling
+    # snap (A) and the standing shoulder shot (B)
+    aimed_a = AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, _b_pose, AIM_W_B, aims=("up45", "up70"))
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
     return M.check_variants(M.check_contract(cl, attack_ms=832, attack_impact_at=0.5))

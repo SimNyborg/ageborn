@@ -2,18 +2,18 @@
  "frames": {
   "arc_lobber_attack_b_01": {
    "frame": {
-    "x": 2,
-    "y": 95,
-    "w": 65,
-    "h": 81
+    "x": 206,
+    "y": 2,
+    "w": 64,
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
-    "y": 130,
-    "w": 65,
-    "h": 81
+    "x": 93,
+    "y": 128,
+    "w": 64,
+    "h": 83
    },
    "sourceSize": {
     "w": 257,
@@ -27,7 +27,7 @@
   "arc_lobber_attack_b_01_team": {
    "frame": {
     "x": 2,
-    "y": 180,
+    "y": 95,
     "w": 41,
     "h": 76
    },
@@ -50,18 +50,18 @@
   },
   "arc_lobber_attack_b_02": {
    "frame": {
-    "x": 114,
-    "y": 180,
+    "x": 181,
+    "y": 95,
     "w": 61,
-    "h": 73
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 138,
+    "y": 137,
     "w": 61,
-    "h": 73
+    "h": 74
    },
    "sourceSize": {
     "w": 257,
@@ -74,9 +74,9 @@
   },
   "arc_lobber_attack_b_02_team": {
    "frame": {
-    "x": 146,
-    "y": 260,
-    "w": 43,
+    "x": 197,
+    "y": 175,
+    "w": 42,
     "h": 68
    },
    "rotated": false,
@@ -84,7 +84,7 @@
    "spriteSourceSize": {
     "x": 104,
     "y": 133,
-    "w": 43,
+    "w": 42,
     "h": 68
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "arc_lobber_attack_b_03": {
    "frame": {
-    "x": 47,
-    "y": 180,
-    "w": 63,
-    "h": 75
+    "x": 246,
+    "y": 95,
+    "w": 61,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 93,
-    "y": 136,
-    "w": 63,
-    "h": 75
+    "x": 94,
+    "y": 137,
+    "w": 61,
+    "h": 74
    },
    "sourceSize": {
     "w": 257,
@@ -122,8 +122,8 @@
   },
   "arc_lobber_attack_b_03_team": {
    "frame": {
-    "x": 2,
-    "y": 260,
+    "x": 53,
+    "y": 175,
     "w": 44,
     "h": 68
    },
@@ -146,18 +146,18 @@
   },
   "arc_lobber_attack_b_04": {
    "frame": {
-    "x": 185,
+    "x": 47,
     "y": 95,
-    "w": 64,
-    "h": 76
+    "w": 63,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 135,
-    "w": 64,
-    "h": 76
+    "y": 137,
+    "w": 63,
+    "h": 74
    },
    "sourceSize": {
     "w": 257,
@@ -170,8 +170,8 @@
   },
   "arc_lobber_attack_b_04_team": {
    "frame": {
-    "x": 50,
-    "y": 260,
+    "x": 101,
+    "y": 175,
     "w": 44,
     "h": 68
    },
@@ -194,18 +194,18 @@
   },
   "arc_lobber_attack_b_05": {
    "frame": {
-    "x": 71,
+    "x": 114,
     "y": 95,
-    "w": 65,
-    "h": 78
+    "w": 63,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 93,
-    "y": 133,
-    "w": 65,
-    "h": 78
+    "x": 94,
+    "y": 137,
+    "w": 63,
+    "h": 74
    },
    "sourceSize": {
     "w": 257,
@@ -218,8 +218,8 @@
   },
   "arc_lobber_attack_b_05_team": {
    "frame": {
-    "x": 98,
-    "y": 260,
+    "x": 149,
+    "y": 175,
     "w": 44,
     "h": 68
    },
@@ -266,8 +266,8 @@
   },
   "arc_lobber_attack_b_06_team": {
    "frame": {
-    "x": 193,
-    "y": 260,
+    "x": 243,
+    "y": 175,
     "w": 41,
     "h": 68
    },
@@ -314,8 +314,8 @@
   },
   "arc_lobber_attack_b_07_team": {
    "frame": {
-    "x": 179,
-    "y": 180,
+    "x": 2,
+    "y": 175,
     "w": 47,
     "h": 72
    },
@@ -362,8 +362,8 @@
   },
   "arc_lobber_attack_b_08_team": {
    "frame": {
-    "x": 140,
-    "y": 95,
+    "x": 274,
+    "y": 2,
     "w": 41,
     "h": 77
    },
@@ -419,15 +419,15 @@
   "image": "arc_lobber.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 256,
-   "h": 332
+   "w": 320,
+   "h": 252
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.arc_lobber",
    "name": "Arc Lobber",
    "heightLu": 70,
-   "widthLu": 53.7,
+   "widthLu": 53.3,
    "pxPerLu": 1.23,
    "feetPx": [
     122.0,

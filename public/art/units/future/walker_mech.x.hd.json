@@ -26,9 +26,9 @@
   },
   "walker_mech_attack_b_01_team": {
    "frame": {
-    "x": 1613,
-    "y": 335,
-    "w": 164,
+    "x": 1366,
+    "y": 333,
+    "w": 163,
     "h": 273
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 196,
     "y": 190,
-    "w": 164,
+    "w": 163,
     "h": 273
    },
    "sourceSize": {
@@ -50,17 +50,17 @@
   },
   "walker_mech_attack_b_02": {
    "frame": {
-    "x": 1510,
+    "x": 2258,
     "y": 2,
-    "w": 229,
+    "w": 230,
     "h": 323
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 167,
+    "x": 166,
     "y": 185,
-    "w": 229,
+    "w": 230,
     "h": 323
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "walker_mech_attack_b_02_team": {
    "frame": {
-    "x": 2993,
-    "y": 335,
+    "x": 2293,
+    "y": 329,
     "w": 196,
     "h": 267
    },
@@ -98,17 +98,17 @@
   },
   "walker_mech_attack_b_03": {
    "frame": {
-    "x": 3258,
+    "x": 3260,
     "y": 2,
-    "w": 230,
+    "w": 231,
     "h": 317
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 166,
+    "x": 165,
     "y": 191,
-    "w": 230,
+    "w": 231,
     "h": 317
    },
    "sourceSize": {
@@ -122,9 +122,9 @@
   },
   "walker_mech_attack_b_03_team": {
    "frame": {
-    "x": 3193,
-    "y": 335,
-    "w": 196,
+    "x": 2493,
+    "y": 328,
+    "w": 195,
     "h": 260
    },
    "rotated": false,
@@ -132,7 +132,7 @@
    "spriteSourceSize": {
     "x": 156,
     "y": 206,
-    "w": 196,
+    "w": 195,
     "h": 260
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "walker_mech_attack_b_04_team": {
    "frame": {
-    "x": 893,
-    "y": 335,
+    "x": 646,
+    "y": 334,
     "w": 158,
     "h": 283
    },
@@ -194,18 +194,18 @@
   },
   "walker_mech_attack_b_05": {
    "frame": {
-    "x": 2228,
+    "x": 1278,
     "y": 2,
     "w": 226,
-    "h": 322
+    "h": 327
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 186,
+    "y": 181,
     "w": 226,
-    "h": 322
+    "h": 327
    },
    "sourceSize": {
     "w": 670,
@@ -218,7 +218,7 @@
   },
   "walker_mech_attack_b_05_team": {
    "frame": {
-    "x": 664,
+    "x": 232,
     "y": 335,
     "w": 225,
     "h": 291
@@ -242,18 +242,18 @@
   },
   "walker_mech_attack_b_06": {
    "frame": {
-    "x": 2975,
+    "x": 995,
     "y": 2,
     "w": 279,
-    "h": 317
+    "h": 327
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 192,
+    "y": 182,
     "w": 279,
-    "h": 317
+    "h": 327
    },
    "sourceSize": {
     "w": 670,
@@ -266,7 +266,7 @@
   },
   "walker_mech_attack_b_06_team": {
    "frame": {
-    "x": 255,
+    "x": 2,
     "y": 335,
     "w": 226,
     "h": 292
@@ -290,7 +290,7 @@
   },
   "walker_mech_attack_b_07": {
    "frame": {
-    "x": 995,
+    "x": 1508,
     "y": 2,
     "w": 285,
     "h": 324
@@ -314,8 +314,8 @@
   },
   "walker_mech_attack_b_07_team": {
    "frame": {
-    "x": 2541,
-    "y": 335,
+    "x": 2996,
+    "y": 324,
     "w": 230,
     "h": 268
    },
@@ -362,17 +362,17 @@
   },
   "walker_mech_attack_b_08_team": {
    "frame": {
-    "x": 1214,
-    "y": 335,
-    "w": 199,
+    "x": 967,
+    "y": 334,
+    "w": 200,
     "h": 273
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 227,
+    "x": 226,
     "y": 190,
-    "w": 199,
+    "w": 200,
     "h": 273
    },
    "sourceSize": {
@@ -410,8 +410,8 @@
   },
   "walker_mech_attack_c_01_team": {
    "frame": {
-    "x": 1055,
-    "y": 335,
+    "x": 808,
+    "y": 334,
     "w": 155,
     "h": 274
    },
@@ -434,17 +434,17 @@
   },
   "walker_mech_attack_c_02": {
    "frame": {
-    "x": 1284,
+    "x": 2031,
     "y": 2,
-    "w": 222,
+    "w": 223,
     "h": 324
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 179,
+    "x": 178,
     "y": 184,
-    "w": 222,
+    "w": 223,
     "h": 324
    },
    "sourceSize": {
@@ -458,9 +458,9 @@
   },
   "walker_mech_attack_c_02_team": {
    "frame": {
-    "x": 1417,
-    "y": 335,
-    "w": 192,
+    "x": 1171,
+    "y": 333,
+    "w": 191,
     "h": 273
    },
    "rotated": false,
@@ -468,7 +468,7 @@
    "spriteSourceSize": {
     "x": 170,
     "y": 194,
-    "w": 192,
+    "w": 191,
     "h": 273
    },
    "sourceSize": {
@@ -482,7 +482,7 @@
   },
   "walker_mech_attack_c_03": {
    "frame": {
-    "x": 2458,
+    "x": 2743,
     "y": 2,
     "w": 249,
     "h": 319
@@ -506,8 +506,8 @@
   },
   "walker_mech_attack_c_03_team": {
    "frame": {
-    "x": 2775,
-    "y": 335,
+    "x": 2743,
+    "y": 325,
     "w": 214,
     "h": 268
    },
@@ -530,7 +530,7 @@
   },
   "walker_mech_attack_c_04": {
    "frame": {
-    "x": 2711,
+    "x": 2996,
     "y": 2,
     "w": 260,
     "h": 318
@@ -554,8 +554,8 @@
   },
   "walker_mech_attack_c_04_team": {
    "frame": {
-    "x": 2326,
-    "y": 335,
+    "x": 2078,
+    "y": 330,
     "w": 211,
     "h": 269
    },
@@ -578,8 +578,8 @@
   },
   "walker_mech_attack_c_05": {
    "frame": {
-    "x": 2,
-    "y": 335,
+    "x": 3260,
+    "y": 323,
     "w": 249,
     "h": 315
    },
@@ -602,8 +602,8 @@
   },
   "walker_mech_attack_c_05_team": {
    "frame": {
-    "x": 2161,
-    "y": 335,
+    "x": 1913,
+    "y": 330,
     "w": 161,
     "h": 271
    },
@@ -626,18 +626,18 @@
   },
   "walker_mech_attack_c_06": {
    "frame": {
-    "x": 1994,
+    "x": 1797,
     "y": 2,
     "w": 230,
-    "h": 322
+    "h": 324
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 212,
-    "y": 187,
+    "y": 185,
     "w": 230,
-    "h": 322
+    "h": 324
    },
    "sourceSize": {
     "w": 670,
@@ -650,18 +650,18 @@
   },
   "walker_mech_attack_c_06_team": {
    "frame": {
-    "x": 485,
-    "y": 335,
-    "w": 175,
-    "h": 292
+    "x": 461,
+    "y": 334,
+    "w": 181,
+    "h": 291
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 232,
+    "x": 228,
     "y": 177,
-    "w": 175,
-    "h": 292
+    "w": 181,
+    "h": 291
    },
    "sourceSize": {
     "w": 670,
@@ -674,7 +674,7 @@
   },
   "walker_mech_attack_c_07": {
    "frame": {
-    "x": 1743,
+    "x": 2492,
     "y": 2,
     "w": 247,
     "h": 322
@@ -698,8 +698,8 @@
   },
   "walker_mech_attack_c_07_team": {
    "frame": {
-    "x": 1781,
-    "y": 335,
+    "x": 1533,
+    "y": 330,
     "w": 203,
     "h": 272
    },
@@ -746,8 +746,8 @@
   },
   "walker_mech_attack_c_08_team": {
    "frame": {
-    "x": 1988,
-    "y": 335,
+    "x": 1740,
+    "y": 330,
     "w": 169,
     "h": 272
    },
@@ -834,7 +834,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 3584,
-   "h": 652
+   "h": 640
   },
   "scale": "3",
   "ageborn": {

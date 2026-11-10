@@ -23,12 +23,14 @@ Animation (ANIM_SPEC G8 hover, the odometer at 110 x 1.25 = 137.5 lu/s; the hove
 """
 import math
 
+from ageborn_art import face as FC
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_future_wave as W
 from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "hover_bike"
 GAIT_NAME = "hover"
@@ -39,6 +41,16 @@ CANVAS = (380, 270)
 FEET = (150, 230)
 ANCHORS = {"head": (6, 64), "hitCenter": (2, 28)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the white soldiers' lifts on the rider and the bike; the wave kit's plates and
+# the bike's white in the troopers' off-white (look.remap)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SKIN_PALETTE = FW.KIT_TROOPER
+CONE = "#8CF5D0"               # the thrust cones, a mid mint (MINT_CORE rang the highlight share)
+MATERIAL_KINDS = FW.kinds_future()
 
 HR = (0.0, F.ARM_Y["r"], F.HAND_Z)
 LANCE = 30.0
@@ -54,7 +66,8 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, helmet_kind="android", team_greave=True, pack=False, head=(1, 0, 38))
+    W.trooper(rig, helmet_kind="android", team_greave=True, pack=False, head=(1, 0, 38), strip=False)
+    FW.strip(rig)
     rig.trackers.pop("_foot_l", None)
     # the hover bike (a child of `body`: the rider and bike move together)
     rig.joint("bike", "body", (0, 0, 12.0))
@@ -71,22 +84,22 @@ def build(rig):
     rig.part("bike", g, F.SUIT)
     g = Geo().lathe([(0, 0), (2.8, 0.2), (2.6, 3.0), (0, 3.2)], (-31.5, 0, 12.0), (-34.0, 0, 12.0), segs=14)
     rig.part("bike", g, F.GUNMETAL, outline=0.6)                                          # exhaust
-    KF.strip(rig, "bike", [(-6.0, -6.4, 14.0), (8.0, -6.6, 14.6)], r=0.7)
+    KF.strip(rig, "bike", [(-6.0, -6.4, 14.0), (8.0, -6.6, 14.6)], r=0.55)          # (W4: r 0.7)
     for i, (x, z) in enumerate(PADS):
         g = Geo().lathe([(0, 0), (6.0, 0.2), (6.2, 1.4), (0, 1.6)], (x, 0, z + 4.0), (x, 0, z + 2.6), segs=20)
         rig.part("bike", g, F.SUIT, outline=0.6)
-        g = Geo().lathe([(4.6, 0), (6.4, 0.2), (6.4, 0.8), (4.6, 1.0)], (x, -0.2, z + 2.8), (x, -0.2, z + 2.2), segs=20)
-        rig.part("bike", g, glow=W.MINT, outline=0)
+        g = Geo().lathe([(5.0, 0), (6.4, 0.1), (6.4, 0.5), (5.0, 0.6)], (x, -0.2, z + 2.8), (x, -0.2, z + 2.2), segs=20)
+        rig.part("bike", g, glow=W.MINT, outline=0)          # (W4: the glow ring 1.8 x 1.0 lu: highlight share)
         rig.joint(f"cone{i}", "bike", (x, 0, z + 2.0))
         g = Geo().lathe([(4.6, 0), (3.6, 1.6), (1.6, 3.4), (0, 4.0)], (x, 0, z + 2.0), (x, 0, z + 1.0), segs=16)
-        rig.part(f"cone{i}", g, glow=W.MINT_CORE, outline=0.8, outline_hex=W.MINT)
+        rig.part(f"cone{i}", g, glow=CONE, outline=0.8, outline_hex=W.MINT)
     F.puff(rig, "bike", (-38.0, 0, 12.0), size=0.8, name="exhaust", spread=1.2)
     F.sparks(rig, "bike", (2.0, -7.0, 10.0), color=W.MINT, size=1.0, name="sparks", seed=8)
     # the energy lance
     rig.joint("lance", "hand_r", HR)
     hx, hy, hz = HR
     g = Geo().capsule((hx, hy, hz - 8.0), (hx, hy, hz + LANCE), 1.4)
-    rig.part("lance", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("lance", g, FW.GUN_LT, finish="gloss", outline_hex=F.TRIM)     # (W4: the light gun grey)
     g = Geo().capsule((hx, hy - 0.2, hz + 6.0), (hx, hy - 0.2, hz + 10.0), 1.9)
     rig.part("lance", g, team=True, outline=0.5)
     g = Geo().blob((hx, hy - 0.5, hz + LANCE + 2.0), (2.4, 1.4, 4.2), p=2.2, taper=(1.0, 0.3))
@@ -95,6 +108,38 @@ def build(rig):
     rig.joint("odo", "root", (0, 0, 0))
     rig.track("_foot", "odo", (0, 0, 0))
     rig.rest_scale["hips"] = 0.86          # the rider a little smaller so the long bike reads
+    FW.wave_trooper(rig, helmet_kind="android", team_greave=True)
+    _bike_detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _bike_detail(rig):
+    """W4: the bike's white body in panels (seams down its flank, a seam along the seat) with chipped edges, the team
+    fairing split by a team-dark seam, vent slots on the charcoal underside (char space; decals cast)."""
+    body = Geo().blob((4.0, 0, 12.0), (30.0, 6.4, 4.6), p=2.6, taper=(1.0, 0.85))
+    bf = FC.Face(rig, "bike", [body])
+    FW.panel_lines(rig, "bike", bf, [[FW.sc(bf, x, z, -6.2) for z in (15.4, 12.0, 8.8)] for x in (-16.0, 12.0)] +
+                   [[FW.sc(bf, x, 16.0, -4.6) for x in (-20.0, -8.0, 4.0)]], w=0.8)
+    FW.wear(rig, "bike", bf, [(*FW.sc(bf, -24.0, 13.0, -5.4), 1.3, 0.6), (*FW.sc(bf, 0.0, 9.0, -6.0), 1.2, 0.5)])
+    fair = Geo().blob((24.0, 0, 14.0), (12.0, 6.9, 5.6), p=2.5, rot=(0, -10, 0))
+    ff = FC.Face(rig, "bike", [fair])
+    FW.folds(rig, "bike", ff, [[FW.sc(ff, 22.0, z, -6.8) for z in (18.6, 14.0, 9.6)]], w=0.8, team=True)
+    g = Geo()
+    for x in (-12.0, -8.0, -4.0):
+        g.capsule((x, -5.1, 7.4), (x + 2.2, -5.1, 7.4), 0.42, segs=8, rings=2)
+    rig.part("bike", g, FW.LINE_ON_SUIT, outline=0, highlight=False)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, rider: the mount's body and the rider; smoke from the exhaust):
+    the team fairing, the bike's white flank, the team tail, the rider's near shoulder pad."""
+    rig.damage_spot("fairing", "bike", (24.0, -6.8, 14.0), 5.0, "metal", team=True, normal=(0.2, -1, 0))
+    rig.damage_spot("flank", "bike", (-4.0, -6.4, 12.0), 5.0, "metal", normal=(0, -1, 0))
+    rig.damage_spot("tail", "bike", (-25.0, -5.8, 15.0), 5.0, "metal", team=True, normal=(0, -1, 0))
+    rig.damage_spot("pauldron", "arm_r", (0.5, -18.0, 38.4), 5.0, "metal", team=True, normal=(0, -1, 0))   # (the
+    #                                                          rider is drawn at 0.86: a screen point misses the pad)
+    rig.damage_spot("exhaust", "bike", (-34.5, 0.0, 12.0), 4.0, "smoke", kind="emit", normal=(-1, 0, 0))
 
 
 # the seated rider: thighs forward on the seat, shins down to the pegs; the body sits 2 lu lower
@@ -235,9 +280,9 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
-        W.melee_clip("attack", _a_pose, SWIPE, _fx(181, -100.0)),
-        W.melee_clip("attack_b", _b_pose, RAM, _fx(182, -70.0), rr),
-        W.melee_clip("attack_c", _c_pose, SWIPE, _fx(183, -120.0), rr),
+        FW.melee_clip("attack", _a_pose, SWIPE, _fx(181, -100.0)),
+        FW.melee_clip("attack_b", _b_pose, RAM, _fx(182, -70.0), rr),
+        FW.melee_clip("attack_c", _c_pose, SWIPE, _fx(183, -120.0), rr),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
