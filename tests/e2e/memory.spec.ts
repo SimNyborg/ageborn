@@ -172,8 +172,10 @@ async function warProbe(page: Page, label: string, s: Step): Promise<void> {
  * upload and unload in between. Checks the budget, the evolves it covered and the page's errors. Returns the
  * troop skins' sheets (`<slug>@<skinId>.json`, queue item 46) the war held at some point.
  */
-async function warPeak(page: Page, problems: { errors: string[] }, label: string): Promise<{ skinSheets: string[] }> {
+async function warPeak(page: Page, problems: { errors: string[] }, label: string): Promise<{ skinSheets: string[]; mine: number }> {
   const skinSheets = new Set<string>();
+  // the last age index your side (side 0, the one that wears skins) reached
+  let mine = 0;
   await expect(page.getByTestId('battle')).toBeVisible({ timeout: 60_000 });
   // The opening at real speed: the troops both sides train first draw from their sheets (a slow
   // software-rendered engine plays a few game seconds a minute, hence the long wait).
@@ -199,6 +201,7 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
       if (i % 10 === 0 || s.battle.phase === 'ended') await warProbe(page, label, s);
       for (const src of [...(s.mem.sheets?.sources ?? []), ...(s.mem.sheets?.sdSources ?? [])]) if (src.includes('@')) skinSheets.add(src);
       top = Math.max(top, ...s.battle.ages);
+      mine = Math.max(mine, s.battle.ages[0] ?? 0);
       if (!peak || s.mem.total > peak.total) peak = s.mem;
       if (s.battle.phase === 'ended') break;
       await page.waitForTimeout(200);
@@ -226,7 +229,7 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
   const still = { turrets: fb?.turretsNow ?? 0, bases: fb?.basesNow ?? 0 };
   expect({ ...still, last: still.turrets + still.bases > 0 ? fb?.lastWorld : '' }).toEqual({ turrets: 0, bases: 0, last: '' });
   expect(problems.errors).toEqual([]);
-  return { skinSheets: [...skinSheets].sort() };
+  return { skinSheets: [...skinSheets].sort(), mine };
 }
 
 test('G7: a long Standard War at DPR 2 (a skinned and a plain copy of the same cards) keeps decoded images under the budget, and no unit appears without its art', async ({ page }) => {
@@ -252,11 +255,11 @@ test('G7: a long Standard War at DPR 2 (a skinned and a plain copy of the same c
     type Ctl = {
       quickBattle(f: string): { setup: Setup };
       startSetup(s: Setup): unknown;
-      services: { content: { generals?: { list?: Record<string, { weights?: Record<string, number> }> }; skins: Record<string, { id: string; target: string }>; units: Record<string, { age: string }> } };
+      services: { content: { generals?: { list?: Record<string, { weights?: Record<string, number> }> }; skins: Record<string, { id: string; target: string }>; units: Record<string, { age: string }>; order: { ages: string[] } } };
     };
     const c = (window as unknown as { __agebornDev: { controller: Ctl } }).__agebornDev.controller;
     const weights = c.services.content.generals?.list?.['echo']?.weights;
-    if (!weights) return { error: 'no Balanced General', skins: [] as string[] };
+    if (!weights) return { error: 'no Balanced General', skins: [] as string[], ages: [] as number[] };
     const setup = c.quickBattle('standard').setup;
     const [me, foe] = setup.config.sides as [Side, Side];
     const skins: Record<string, string> = {};
@@ -269,19 +272,30 @@ test('G7: a long Standard War at DPR 2 (a skinned and a plain copy of the same c
       // the autopilot's profile (`botProfile(content, { generalId: 'echo', tier: 5 })`; no openings: its personality's)
       brain: { kind: 'general', profile: { generalId: 'echo', tier: 5, mistakeBonusBp: 0, weights: { ...weights }, openings: [] } },
     });
-    // where each worn skin's sheet would be (contract C3)
-    return { error: '', skins: Object.entries(skins).map(([card, id]) => `art/units/${c.services.content.units[card]?.age ?? ''}/${card}@${id}.json`) };
+    // where each worn skin's sheet would be (contract C3), and the index of its card's age
+    const worn = Object.entries(skins);
+    const ageOf = (card: string): string => c.services.content.units[card]?.age ?? '';
+    return {
+      error: '',
+      skins: worn.map(([card, id]) => `art/units/${ageOf(card)}/${card}@${id}.json`),
+      ages: worn.map(([card]) => c.services.content.order.ages.indexOf(ageOf(card))),
+    };
   });
   expect(started.error).toBe('');
   expect(started.skins.length).toBeGreaterThan(0);
-  const { skinSheets } = await warPeak(page, problems, 'Standard War (mirror, your side skinned)');
+  expect(started.ages).not.toContain(-1);
+  const { skinSheets, mine } = await warPeak(page, problems, 'Standard War (mirror, your side skinned)');
   // every worn skin that is rendered as a sheet was held (next to its unit's sheet, which the mirror's plain copies hold)
-  // (a missing file may come back as the app's index.html: only a JSON answer is a sheet)
+  // (a missing file may come back as the app's index.html: only a JSON answer is a sheet). Only the ages your side
+  // reached count: the war ends in Industrial (age index 4), so a Modern skin's sheet (W3) is never needed in it.
   const installed = await page.evaluate(
     (paths) => Promise.all(paths.map((p) => fetch(p, { method: 'HEAD' }).then((r) => (r.ok && (r.headers.get('content-type') ?? '').includes('json') ? p : null), () => null))),
     started.skins,
   );
-  for (const p of installed) if (p) expect(skinSheets, p).toContain(p);
+  const due = installed.filter((p, i): p is string => p !== null && (started.ages[i] ?? Infinity) <= mine);
+  console.log(`[memory] ${test.info().project.name}: worn skin sheets due (ages up to ${mine}): ${due.join(', ') || 'none'}; not reached: ${installed.filter((p, i) => p !== null && (started.ages[i] ?? Infinity) > mine).join(', ') || 'none'}`);
+  expect(due.length).toBeGreaterThan(0);
+  for (const p of due) expect(skinSheets, p).toContain(p);
 });
 
 async function roundThree(browser: Browser, baseURL: string | undefined): Promise<void> {
