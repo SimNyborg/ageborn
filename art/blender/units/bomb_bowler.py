@@ -20,13 +20,24 @@ Animation (ANIM_SPEC G1, appendix B for throwers: overhand, side-arm):
             underarm up and out like a bowls player
   hit       light: the head snaps back, the cap lifts, eyes squeezed
   die       D1 fling and spin: the cap pops off, the bomb rolls away, X eyes and tongue
+
+Detail standard (art round W3, Track INDUSTRIAL): the sportsman's knits and the iron bombs. The pullover knitted
+(team-dark ribs down it) with its cog whole (conforming); the flat cap's crown in panels over a team-dark band; the
+shirt's creases at the rolled sleeves; the trousers' side seam and a patch on the near knee; the satchel stitched with
+a flap; each bomb girdled by a riveted iron band (a bare black ball read as a hole at 62 px). The red hair's
+saturation is clamped by the standard (the shipped sheet broke the A11 colour rule, 10.5%). Damage spots (posed
+frames measured): the pullover's back (r 7.5), the cap's crown, the near sleeve, the trousers, a strip from the
+pullover's ribbing.
 """
+import math
+
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
 from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "bomb_bowler"
 GAIT_NAME = "biped"
@@ -41,11 +52,31 @@ FIST = (0.4, I.ARM_Y["r"] - 1.4, I.HAND_Z - 0.4)
 BOMB_C = (FIST[0] + 2.6, FIST[1] - 1.4, FIST[2] - 3.2)
 CAP_C = (1.0, 0.0, 57.4)
 BOMB = "#34343A"
+BOMB_BAND = "#6B7179"      # W3: the bombs' riveted iron band
+THREAD = "#CFC6B2"
+DENIM_DK = "#3F4750"       # the trousers' seam
+PATCH = "#5E6873"          # a faded denim patch
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, leather, iron and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", I.HAIR_RED: "fur", I.CREAM: "cloth", I.CREAM_DK: "cloth", KI.CREAM: "cloth",
+                           THREAD: "cloth", I.DENIM: "cloth", DENIM_DK: "cloth", PATCH: "cloth", I.LEATHER: "leather",
+                           I.LEATHER_DK: "leather", I.BOOT: "leather", I.COAL: "leather", BOMB: "iron",
+                           BOMB_BAND: "iron", "#C9B48A": "cloth", "team": "cloth"})
 
 
 def _bomb(rig, joint, c, spark=True, name="bfuse"):
     g = Geo().sphere(c, 4.4, cuts=4)
     rig.part(joint, g, BOMB, finish="gloss", outline=0.7)
+    # W3: a riveted iron band round the ball (a bare black ball read as a hole at 62 px)
+    g = Geo().lathe([(4.35, -0.8), (4.65, -0.3), (4.65, 0.3), (4.35, 0.8)], c, (c[0], c[1], c[2] + 1.0), segs=20)
+    for a in (-55.0, -18.0, 18.0, 55.0):   # rivets on the band's camera side
+        t = math.radians(a)
+        g.sphere((c[0] + 4.7 * math.sin(t), c[1] - 4.7 * math.cos(t), c[2]), 0.62, cuts=2)
+    rig.part(joint, g, BOMB_BAND, finish="metal", outline=0.3)
     g = Geo().capsule((c[0], c[1], c[2] + 3.2), (c[0] + 0.8, c[1], c[2] + 5.4), 0.6)
     rig.part(joint, g, "#C9B48A", outline=0.3)
     if spark:
@@ -66,8 +97,10 @@ def build(rig):
     vest.clip((0, 0, 35.4), (0, 0, 1))
     vface = F.Face(rig, "torso", [Geo().blob((0.3, 0, 27.0), (10.8, 9.8, 10.4), p=2.6, taper=(1.05, 0.92))])
     rig.part("torso", vest, team=True)
-    g = KI.cog(vface, Geo(), (9.8, 27.6), s=0.9)
+    g = IW.cog(vface, Geo(), (9.8, 27.6), s=0.9)        # W3: the cog whole (conforming)
     rig.part("torso", g, KI.CREAM, highlight=False, outline=0)
+    # W3: the pullover knitted: team-dark ribs down it (the cog's side clear)
+    IW.folds(rig, "torso", vface, [[(x, 34.4), (x + 0.2, 22.8)] for x in (-8.4, -5.6, -2.8, 0.0, 2.8)], w=0.8)
     g = Geo()
     for z in (19.0, 21.4):   # knitted ribbing at the waist
         g.blob((0.3, 0, z), (11.0, 10.0, 0.8), p=3.0)
@@ -79,6 +112,8 @@ def build(rig):
     rig.secondary("satchel", "hips", (-4.0, 10.0, 20.0), (-5.0, 11.0, 13.0), max_deg=24, gain=1.4)
     g = Geo().blob((-5.0, 11.6, 15.0), (5.0, 2.6, 4.4), p=2.8)
     rig.part("satchel", g, I.LEATHER, outline=0.6)
+    g = Geo().blob((-5.0, 9.4, 17.6), (5.1, 0.8, 1.8), p=2.8)
+    rig.part("satchel", g, I.LEATHER_DK, outline=0.3)                       # W3: the satchel's flap
     _bomb(rig, "satchel", (-7.0, 11.0, 19.4), spark=False)
     _bomb(rig, "satchel", (-2.6, 11.4, 19.0), spark=False)
     g = Geo().capsule((-5.0, 9.6, 19.0), (6.0, -9.0, 36.0), 1.0)
@@ -91,17 +126,60 @@ def build(rig):
     I.ear(rig)
     rig.joint("hat", "head", CAP_C)
     I.flat_cap(rig, c=CAP_C, team=True, joint="hat")
+    _cap_detail(rig)
     KI.loose(rig, "hat_loose", CAP_C, lambda j: I.flat_cap(rig, c=CAP_C, team=True, joint=j))
 
     for s in ("r", "l"):
         I.arm_parts(rig, s, sleeve=I.CREAM, team_sleeve=False, rolled=True, fist=4.4)
     I.shoulders(rig, team=True)
+    _shirt_and_trousers(rig)
 
     rig.joint("bomb", "hand_r", FIST)
     _bomb(rig, "bomb", BOMB_C)
     rig.track("muzzle", "hand_r", BOMB_C)
     rig.joint("roll", "root", BOMB_C, hidden=True)
     _bomb(rig, "roll", BOMB_C, spark=False)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _cap_detail(rig):
+    """W3: the flat cap's crown in panels (team-dark seams from the button) over a team-dark band at its edge."""
+    x, y, z = CAP_C
+    crown = Geo().blob((x + 1.6, y, z + 0.4), (13.4, 12.4, 6.0), p=2.3, shift=(0.12, 0))
+    crown.clip((x, y, z - 1.8), (0, 0, -1))
+    cface = F.Face(rig, "hat", [crown])
+    bx, bz = x + 3.4, z + 6.0
+    lines = [[(bx - 1.2, bz - 0.6), (x - 6.0, z - 0.4)], [(bx - 0.4, bz - 1.4), (x + 1.4, z - 1.3)],
+             [(bx + 0.8, bz - 1.0), (x + 9.4, z - 0.8)]]
+    IW.folds(rig, "hat", cface, lines, w=1.0, team=True)
+    IW.folds(rig, "hat", cface, [[(x - 11.0, z - 0.4), (x - 2.0, z - 1.4), (x + 6.0, z - 1.4), (x + 13.6, z - 0.4)]],
+             w=1.6, team=True)
+
+
+def _shirt_and_trousers(rig):
+    """W3: a second roll on the near sleeve; the trousers' side seam and a patch on the near knee."""
+    y = I.ARM_Y["r"]
+    g = Geo().lathe([(4.6, 0), (4.8, 1.8), (4.5, 3.0)], (0, y, I.ELBOW_Z + 1.0), (0, y, I.ELBOW_Z + 4.0), segs=16)
+    rig.part("arm_r", g, I.CREAM_DK, outline=0.5)
+    ly = -I.LEG_Y
+    thigh = Geo().capsule((0, ly, KI.V3_THIGH_Z), (0.5, ly, KI.V3_KNEE_Z), 4.6, 4.2)
+    tface = F.Face(rig, "thigh_r", [thigh])
+    IW.seam(rig, "thigh_r", tface, [(0.6, 18.8), (0.9, 12.0)], fill=DENIM_DK, w=0.7)
+    shin = Geo().capsule((0.5, ly, KI.V3_KNEE_Z), (1.0, ly, KI.V3_ANKLE_Z + 0.6), 3.9, 3.3)
+    sface = F.Face(rig, "shin_r", [shin])
+    IW.patch(rig, "shin_r", sface, [(-2.8, 9.0), (1.4, 8.8), (1.6, 12.2), (-2.6, 12.4)], fill=PATCH, stitch=THREAD)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames: the
+    pullover's back (the biggest team field the arms leave clear, r 7.5), the cap's crown, the near sleeve, the
+    trousers, a strip torn from the pullover's ribbing."""
+    rig.damage_spot_at("pullover", "torso", -8.0, 27.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("cap", "hat", 0.0, 60.6, 6.5, "cloth", team=True)
+    rig.damage_spot_at("sleeve", "arm_r", -1.0, 31.0, 5.0, "cloth", fill=I.CREAM)
+    rig.damage_spot_at("trousers", "thigh_r", -2.0, 14.0, 5.0, "cloth", fill=I.DENIM)
+    rig.damage_spot_at("ribbing", "torso", 4.0, 21.4, 7.0, "cloth", kind="strip", team=True)
 
 
 def arms(a, f, la=-70.0, lf=-40.0, lean=0.0):

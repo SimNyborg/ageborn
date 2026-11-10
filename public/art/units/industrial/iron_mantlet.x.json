@@ -2,18 +2,18 @@
  "frames": {
   "iron_mantlet_attack_b_01": {
    "frame": {
-    "x": 146,
-    "y": 131,
+    "x": 169,
+    "y": 112,
     "w": 60,
-    "h": 94
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 115,
-    "y": 126,
+    "y": 125,
     "w": 60,
-    "h": 94
+    "h": 95
    },
    "sourceSize": {
     "w": 291,
@@ -26,9 +26,9 @@
   },
   "iron_mantlet_attack_b_01_team": {
    "frame": {
-    "x": 260,
-    "y": 325,
-    "w": 50,
+    "x": 580,
+    "y": 270,
+    "w": 54,
     "h": 80
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 114,
     "y": 121,
-    "w": 50,
+    "w": 54,
     "h": 80
    },
    "sourceSize": {
@@ -50,18 +50,18 @@
   },
   "iron_mantlet_attack_b_02": {
    "frame": {
-    "x": 2,
-    "y": 230,
+    "x": 253,
+    "y": 2,
     "w": 62,
-    "h": 91
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 112,
-    "y": 128,
+    "y": 127,
     "w": 62,
-    "h": 91
+    "h": 92
    },
    "sourceSize": {
     "w": 291,
@@ -74,9 +74,9 @@
   },
   "iron_mantlet_attack_b_02_team": {
    "frame": {
-    "x": 2,
-    "y": 410,
-    "w": 53,
+    "x": 648,
+    "y": 84,
+    "w": 57,
     "h": 77
    },
    "rotated": false,
@@ -84,7 +84,7 @@
    "spriteSourceSize": {
     "x": 109,
     "y": 123,
-    "w": 53,
+    "w": 57,
     "h": 77
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "iron_mantlet_attack_b_03": {
    "frame": {
-    "x": 139,
-    "y": 230,
-    "w": 65,
-    "h": 88
+    "x": 319,
+    "y": 2,
+    "w": 66,
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 109,
-    "y": 131,
-    "w": 65,
-    "h": 88
+    "x": 108,
+    "y": 130,
+    "w": 66,
+    "h": 89
    },
    "sourceSize": {
     "w": 291,
@@ -122,18 +122,18 @@
   },
   "iron_mantlet_attack_b_03_team": {
    "frame": {
-    "x": 117,
-    "y": 410,
-    "w": 56,
-    "h": 75
+    "x": 439,
+    "y": 279,
+    "w": 61,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 104,
     "y": 126,
-    "w": 56,
-    "h": 75
+    "w": 61,
+    "h": 74
    },
    "sourceSize": {
     "w": 291,
@@ -146,18 +146,18 @@
   },
   "iron_mantlet_attack_b_04": {
    "frame": {
-    "x": 68,
-    "y": 230,
+    "x": 317,
+    "y": 98,
     "w": 67,
-    "h": 88
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
-    "y": 131,
+    "y": 130,
     "w": 67,
-    "h": 88
+    "h": 89
    },
    "sourceSize": {
     "w": 291,
@@ -170,9 +170,9 @@
   },
   "iron_mantlet_attack_b_04_team": {
    "frame": {
-    "x": 177,
-    "y": 410,
-    "w": 56,
+    "x": 701,
+    "y": 165,
+    "w": 61,
     "h": 74
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 104,
     "y": 126,
-    "w": 56,
+    "w": 61,
     "h": 74
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "iron_mantlet_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 131,
+    "x": 98,
+    "y": 112,
     "w": 67,
-    "h": 95
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 118,
-    "y": 125,
+    "y": 124,
     "w": 67,
-    "h": 95
+    "h": 96
    },
    "sourceSize": {
     "w": 291,
@@ -218,9 +218,9 @@
   },
   "iron_mantlet_attack_b_05_team": {
    "frame": {
-    "x": 205,
-    "y": 325,
-    "w": 51,
+    "x": 521,
+    "y": 270,
+    "w": 55,
     "h": 80
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 117,
     "y": 120,
-    "w": 51,
+    "w": 55,
     "h": 80
    },
    "sourceSize": {
@@ -242,18 +242,18 @@
   },
   "iron_mantlet_attack_b_06": {
    "frame": {
-    "x": 73,
-    "y": 131,
+    "x": 78,
+    "y": 250,
     "w": 69,
-    "h": 94
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 123,
-    "y": 126,
+    "y": 124,
     "w": 69,
-    "h": 94
+    "h": 96
    },
    "sourceSize": {
     "w": 291,
@@ -266,18 +266,18 @@
   },
   "iron_mantlet_attack_b_06_team": {
    "frame": {
-    "x": 89,
-    "y": 325,
-    "w": 55,
-    "h": 80
+    "x": 558,
+    "y": 2,
+    "w": 56,
+    "h": 79
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 121,
     "y": 121,
-    "w": 55,
-    "h": 80
+    "w": 56,
+    "h": 79
    },
    "sourceSize": {
     "w": 291,
@@ -290,18 +290,18 @@
   },
   "iron_mantlet_attack_b_07": {
    "frame": {
-    "x": 2,
-    "y": 325,
+    "x": 471,
+    "y": 2,
     "w": 83,
-    "h": 81
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 120,
-    "y": 139,
+    "y": 138,
     "w": 83,
-    "h": 81
+    "h": 82
    },
    "sourceSize": {
     "w": 291,
@@ -314,8 +314,8 @@
   },
   "iron_mantlet_attack_b_07_team": {
    "frame": {
-    "x": 237,
-    "y": 410,
+    "x": 347,
+    "y": 282,
     "w": 66,
     "h": 71
    },
@@ -338,18 +338,18 @@
   },
   "iron_mantlet_attack_b_08": {
    "frame": {
-    "x": 210,
-    "y": 131,
+    "x": 179,
+    "y": 2,
     "w": 70,
-    "h": 92
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 124,
-    "y": 128,
+    "y": 126,
     "w": 70,
-    "h": 92
+    "h": 94
    },
    "sourceSize": {
     "w": 291,
@@ -362,8 +362,8 @@
   },
   "iron_mantlet_attack_b_08_team": {
    "frame": {
-    "x": 374,
-    "y": 325,
+    "x": 675,
+    "y": 2,
     "w": 56,
     "h": 77
    },
@@ -386,18 +386,18 @@
   },
   "iron_mantlet_attack_c_02": {
    "frame": {
-    "x": 275,
-    "y": 2,
+    "x": 2,
+    "y": 250,
     "w": 72,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 98,
-    "y": 121,
+    "y": 120,
     "w": 72,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 291,
@@ -410,9 +410,9 @@
   },
   "iron_mantlet_attack_c_02_team": {
    "frame": {
-    "x": 362,
-    "y": 230,
-    "w": 58,
+    "x": 521,
+    "y": 184,
+    "w": 62,
     "h": 82
    },
    "rotated": false,
@@ -420,7 +420,7 @@
    "spriteSourceSize": {
     "x": 106,
     "y": 116,
-    "w": 58,
+    "w": 62,
     "h": 82
    },
    "sourceSize": {
@@ -434,18 +434,18 @@
   },
   "iron_mantlet_attack_c_03": {
    "frame": {
-    "x": 181,
+    "x": 85,
     "y": 2,
     "w": 90,
-    "h": 105
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 80,
-    "y": 115,
+    "y": 114,
     "w": 90,
-    "h": 105
+    "h": 106
    },
    "sourceSize": {
     "w": 291,
@@ -458,9 +458,9 @@
   },
   "iron_mantlet_attack_c_03_team": {
    "frame": {
-    "x": 300,
-    "y": 230,
-    "w": 58,
+    "x": 470,
+    "y": 94,
+    "w": 62,
     "h": 86
    },
    "rotated": false,
@@ -468,7 +468,7 @@
    "spriteSourceSize": {
     "x": 106,
     "y": 110,
-    "w": 58,
+    "w": 62,
     "h": 86
    },
    "sourceSize": {
@@ -482,18 +482,18 @@
   },
   "iron_mantlet_attack_c_04": {
    "frame": {
-    "x": 85,
-    "y": 2,
+    "x": 2,
+    "y": 131,
     "w": 92,
-    "h": 116
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 78,
-    "y": 104,
+    "y": 105,
     "w": 92,
-    "h": 116
+    "h": 115
    },
    "sourceSize": {
     "w": 291,
@@ -506,9 +506,9 @@
   },
   "iron_mantlet_attack_c_04_team": {
    "frame": {
-    "x": 351,
-    "y": 2,
-    "w": 47,
+    "x": 151,
+    "y": 212,
+    "w": 51,
     "h": 96
    },
    "rotated": false,
@@ -516,7 +516,7 @@
    "spriteSourceSize": {
     "x": 117,
     "y": 102,
-    "w": 47,
+    "w": 51,
     "h": 96
    },
    "sourceSize": {
@@ -554,8 +554,8 @@
   },
   "iron_mantlet_attack_c_05_team": {
    "frame": {
-    "x": 148,
-    "y": 325,
+    "x": 536,
+    "y": 88,
     "w": 53,
     "h": 80
    },
@@ -578,18 +578,18 @@
   },
   "iron_mantlet_attack_c_06": {
    "frame": {
-    "x": 208,
-    "y": 230,
+    "x": 347,
+    "y": 191,
     "w": 88,
-    "h": 86
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 118,
-    "y": 143,
+    "y": 142,
     "w": 88,
-    "h": 86
+    "h": 87
    },
    "sourceSize": {
     "w": 291,
@@ -602,8 +602,8 @@
   },
   "iron_mantlet_attack_c_06_team": {
    "frame": {
-    "x": 307,
-    "y": 410,
+    "x": 692,
+    "y": 250,
     "w": 68,
     "h": 70
    },
@@ -626,18 +626,18 @@
   },
   "iron_mantlet_attack_c_07": {
    "frame": {
-    "x": 284,
-    "y": 131,
+    "x": 206,
+    "y": 211,
     "w": 55,
-    "h": 92
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 126,
-    "y": 128,
+    "y": 126,
     "w": 55,
-    "h": 92
+    "h": 94
    },
    "sourceSize": {
     "w": 291,
@@ -650,8 +650,8 @@
   },
   "iron_mantlet_attack_c_07_team": {
    "frame": {
-    "x": 314,
-    "y": 325,
+    "x": 587,
+    "y": 172,
     "w": 56,
     "h": 79
    },
@@ -674,18 +674,18 @@
   },
   "iron_mantlet_attack_c_08": {
    "frame": {
-    "x": 343,
-    "y": 131,
+    "x": 233,
+    "y": 100,
     "w": 80,
-    "h": 91
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 120,
-    "y": 129,
+    "y": 128,
     "w": 80,
-    "h": 91
+    "h": 92
    },
    "sourceSize": {
     "w": 291,
@@ -698,8 +698,8 @@
   },
   "iron_mantlet_attack_c_08_team": {
    "frame": {
-    "x": 59,
-    "y": 410,
+    "x": 709,
+    "y": 83,
     "w": 54,
     "h": 76
    },
@@ -710,6 +710,198 @@
     "y": 124,
     "w": 54,
     "h": 76
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.87234
+   }
+  },
+  "iron_mantlet_shield_lock_00": {
+   "frame": {
+    "x": 265,
+    "y": 196,
+    "w": 78,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 131,
+    "w": 78,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.87234
+   }
+  },
+  "iron_mantlet_shield_lock_00_team": {
+   "frame": {
+    "x": 593,
+    "y": 85,
+    "w": 51,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 127,
+    "w": 51,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.87234
+   }
+  },
+  "iron_mantlet_shield_lock_01": {
+   "frame": {
+    "x": 388,
+    "y": 95,
+    "w": 78,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 132,
+    "w": 78,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.87234
+   }
+  },
+  "iron_mantlet_shield_lock_01_team": {
+   "frame": {
+    "x": 638,
+    "y": 255,
+    "w": 50,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 128,
+    "w": 50,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.87234
+   }
+  },
+  "iron_mantlet_shield_lock_02": {
+   "frame": {
+    "x": 389,
+    "y": 2,
+    "w": 78,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 132,
+    "w": 78,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.87234
+   }
+  },
+  "iron_mantlet_shield_lock_02_team": {
+   "frame": {
+    "x": 618,
+    "y": 2,
+    "w": 53,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 129,
+    "w": 53,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.87234
+   }
+  },
+  "iron_mantlet_shield_lock_03": {
+   "frame": {
+    "x": 439,
+    "y": 187,
+    "w": 78,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 132,
+    "w": 78,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.87234
+   }
+  },
+  "iron_mantlet_shield_lock_03_team": {
+   "frame": {
+    "x": 647,
+    "y": 168,
+    "w": 50,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 128,
+    "w": 50,
+    "h": 78
    },
    "sourceSize": {
     "w": 291,
@@ -773,6 +965,18 @@
    "iron_mantlet_attack_c_08_team",
    "iron_mantlet_attack_09_team",
    "iron_mantlet_attack_10_team"
+  ],
+  "shield_lock": [
+   "iron_mantlet_shield_lock_00",
+   "iron_mantlet_shield_lock_01",
+   "iron_mantlet_shield_lock_02",
+   "iron_mantlet_shield_lock_03"
+  ],
+  "shield_lock_team": [
+   "iron_mantlet_shield_lock_00_team",
+   "iron_mantlet_shield_lock_01_team",
+   "iron_mantlet_shield_lock_02_team",
+   "iron_mantlet_shield_lock_03_team"
   ]
  },
  "meta": {
@@ -781,8 +985,8 @@
   "image": "iron_mantlet.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 448,
-   "h": 492
+   "w": 768,
+   "h": 356
   },
   "scale": "1.5",
   "ageborn": {
@@ -977,6 +1181,43 @@
       ]
      },
      "holdStep": 3
+    },
+    "shield_lock": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      220,
+      180,
+      220,
+      180
+     ],
+     "durationMs": 800,
+     "anchorsLu": {
+      "bayonetTip": [
+       [
+        41.3,
+        15.5
+       ],
+       [
+        41.8,
+        15.2
+       ],
+       [
+        42.2,
+        14.9
+       ],
+       [
+        41.8,
+        15.2
+       ]
+      ]
+     }
     }
    },
    "team": {

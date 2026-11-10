@@ -2,8 +2,8 @@
  "frames": {
   "steam_tractor_attack_b_01": {
    "frame": {
-    "x": 341,
-    "y": 165,
+    "x": 338,
+    "y": 232,
     "w": 167,
     "h": 106
    },
@@ -26,8 +26,8 @@
   },
   "steam_tractor_attack_b_01_team": {
    "frame": {
-    "x": 271,
-    "y": 279,
+    "x": 186,
+    "y": 232,
     "w": 131,
     "h": 72
    },
@@ -50,8 +50,8 @@
   },
   "steam_tractor_attack_b_02": {
    "frame": {
-    "x": 685,
-    "y": 2,
+    "x": 186,
+    "y": 116,
     "w": 163,
     "h": 112
    },
@@ -74,8 +74,8 @@
   },
   "steam_tractor_attack_b_02_team": {
    "frame": {
-    "x": 406,
-    "y": 279,
+    "x": 509,
+    "y": 241,
     "w": 129,
     "h": 71
    },
@@ -98,8 +98,8 @@
   },
   "steam_tractor_attack_b_03": {
    "frame": {
-    "x": 521,
-    "y": 2,
+    "x": 174,
+    "y": 309,
     "w": 160,
     "h": 115
    },
@@ -122,8 +122,8 @@
   },
   "steam_tractor_attack_b_03_team": {
    "frame": {
-    "x": 539,
-    "y": 279,
+    "x": 509,
+    "y": 316,
     "w": 126,
     "h": 71
    },
@@ -146,8 +146,8 @@
   },
   "steam_tractor_attack_b_04": {
    "frame": {
-    "x": 2,
-    "y": 165,
+    "x": 165,
+    "y": 2,
     "w": 167,
     "h": 110
    },
@@ -170,8 +170,8 @@
   },
   "steam_tractor_attack_b_04_team": {
    "frame": {
-    "x": 669,
-    "y": 279,
+    "x": 353,
+    "y": 115,
     "w": 132,
     "h": 70
    },
@@ -194,8 +194,8 @@
   },
   "steam_tractor_attack_b_05": {
    "frame": {
-    "x": 349,
-    "y": 2,
+    "x": 2,
+    "y": 309,
     "w": 168,
     "h": 125
    },
@@ -218,8 +218,8 @@
   },
   "steam_tractor_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 279,
+    "x": 504,
+    "y": 2,
     "w": 132,
     "h": 75
    },
@@ -242,8 +242,8 @@
   },
   "steam_tractor_attack_b_06": {
    "frame": {
-    "x": 165,
-    "y": 2,
+    "x": 2,
+    "y": 165,
     "w": 180,
     "h": 140
    },
@@ -266,8 +266,8 @@
   },
   "steam_tractor_attack_b_06_team": {
    "frame": {
-    "x": 642,
-    "y": 165,
+    "x": 338,
+    "y": 342,
     "w": 135,
     "h": 75
    },
@@ -314,8 +314,8 @@
   },
   "steam_tractor_attack_b_07_team": {
    "frame": {
-    "x": 512,
-    "y": 165,
+    "x": 509,
+    "y": 81,
     "w": 126,
     "h": 77
    },
@@ -338,8 +338,8 @@
   },
   "steam_tractor_attack_b_08": {
    "frame": {
-    "x": 173,
-    "y": 165,
+    "x": 336,
+    "y": 2,
     "w": 164,
     "h": 109
    },
@@ -362,8 +362,8 @@
   },
   "steam_tractor_attack_b_08_team": {
    "frame": {
-    "x": 138,
-    "y": 279,
+    "x": 509,
+    "y": 162,
     "w": 129,
     "h": 75
    },
@@ -421,8 +421,8 @@
   "image": "steam_tractor.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 896,
-   "h": 356
+   "w": 640,
+   "h": 436
   },
   "scale": "1.5",
   "ageborn": {

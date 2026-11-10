@@ -2,8 +2,8 @@
  "frames": {
   "bomb_bowler_attack_b_02": {
    "frame": {
-    "x": 2,
-    "y": 184,
+    "x": 340,
+    "y": 2,
     "w": 111,
     "h": 171
    },
@@ -26,9 +26,9 @@
   },
   "bomb_bowler_attack_b_02_team": {
    "frame": {
-    "x": 2,
-    "y": 518,
-    "w": 89,
+    "x": 225,
+    "y": 180,
+    "w": 88,
     "h": 126
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 227,
     "y": 251,
-    "w": 89,
+    "w": 88,
     "h": 126
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "bomb_bowler_attack_b_03": {
    "frame": {
-    "x": 117,
-    "y": 184,
+    "x": 455,
+    "y": 2,
     "w": 119,
     "h": 161
    },
@@ -74,8 +74,8 @@
   },
   "bomb_bowler_attack_b_03_team": {
    "frame": {
-    "x": 215,
-    "y": 518,
+    "x": 768,
+    "y": 161,
     "w": 89,
     "h": 123
    },
@@ -122,8 +122,8 @@
   },
   "bomb_bowler_attack_b_04_team": {
    "frame": {
-    "x": 233,
-    "y": 359,
+    "x": 553,
+    "y": 167,
     "w": 91,
     "h": 132
    },
@@ -170,8 +170,8 @@
   },
   "bomb_bowler_attack_b_05_team": {
    "frame": {
-    "x": 135,
-    "y": 359,
+    "x": 455,
+    "y": 167,
     "w": 94,
     "h": 136
    },
@@ -194,8 +194,8 @@
   },
   "bomb_bowler_attack_b_06": {
    "frame": {
-    "x": 2,
-    "y": 359,
+    "x": 710,
+    "y": 2,
     "w": 129,
     "h": 155
    },
@@ -218,8 +218,8 @@
   },
   "bomb_bowler_attack_b_06_team": {
    "frame": {
-    "x": 308,
-    "y": 518,
+    "x": 2,
+    "y": 184,
     "w": 114,
     "h": 119
    },
@@ -242,8 +242,8 @@
   },
   "bomb_bowler_attack_b_07": {
    "frame": {
-    "x": 240,
-    "y": 184,
+    "x": 578,
+    "y": 2,
     "w": 128,
     "h": 159
    },
@@ -266,8 +266,8 @@
   },
   "bomb_bowler_attack_b_07_team": {
    "frame": {
-    "x": 95,
-    "y": 518,
+    "x": 648,
+    "y": 165,
     "w": 116,
     "h": 123
    },
@@ -314,9 +314,9 @@
   },
   "bomb_bowler_attack_b_08_team": {
    "frame": {
-    "x": 328,
-    "y": 359,
-    "w": 100,
+    "x": 340,
+    "y": 177,
+    "w": 99,
     "h": 129
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 233,
     "y": 245,
-    "w": 100,
+    "w": 99,
     "h": 129
    },
    "sourceSize": {
@@ -371,8 +371,8 @@
   "image": "bomb_bowler.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 448,
-   "h": 648
+   "w": 896,
+   "h": 308
   },
   "scale": "3",
   "ageborn": {

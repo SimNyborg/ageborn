@@ -20,6 +20,14 @@ Animation (ANIM_SPEC G6 wheeled, appendix B for a raider: ram, club swing, skid)
   attack_c  SKID KICK: the bike slews sideways in a spray of dust and he kicks out with his boot
   hit       light: he wobbles in the saddle, the bike bounces
   die       D1 fling: he is thrown over the handlebars, the helmet pops off; the bike tips over
+
+Detail standard (art round W3, Track INDUSTRIAL): the machine and the courier's kit. The tank's cog whole
+(conforming) with a team-dark pinstripe and a brass filler cap; cooling fins across the engine block; the exhaust's
+polished band and its soot-black tail; the saddle stitched on two coil springs; treads round the tyres (16 to a turn,
+so they land on the same places at a quarter turn a frame and never crawl); the helmet's crown in team-dark panels;
+the jacket's yoke and back seams and a team-dark pocket flap; the breeches' side seam; the scarf's folds; strapped
+gaiters; a polished band on the spanner. Damage spots (rider; posed frames measured): the jacket's back (r 7.5), the
+tank, the helmet, the near breeches, a strip from the jacket's hem; smoke from the engine.
 """
 import math
 
@@ -29,6 +37,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "dispatch_rider"
 GAIT_NAME = "wheeled"
@@ -55,6 +64,22 @@ FIST = (0.4, I.ARM_Y["r"] - 1.4, I.HAND_Z - 0.4)
 SCARF = "#E8DFC8"
 TYRE = "#2B2A2E"
 SOOT = "#2F2D2E"
+TREAD = "#46454A"          # W3: the tyres' tread blocks
+IRON_HI = "#AEB5BD"        # the exhaust's and the spanner's polished bands
+SCARF_DK = "#CDC2A8"       # the scarf's folds
+TWEED_DK = "#655D4D"       # the breeches' seams
+
+# the detail standard (art round W3): the soldier's lifts on the courier; cloth, leather, iron, brass and the
+# black frame apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", I.HAIR: "fur", SCARF: "cloth", SCARF_DK: "cloth", I.TWEED: "cloth",
+                           TWEED_DK: "cloth", I.CREAM: "cloth", I.LEATHER: "leather", I.LEATHER_DK: "leather",
+                           I.BOOT: "leather", TYRE: "polymer", TREAD: "polymer", SOOT: "iron", I.IRON: "iron",
+                           I.IRON_DK: "iron", I.IRON_LT: "iron", IRON_HI: "iron", I.BRASS: "bronze",
+                           I.BRASS_LT: "bronze", I.COPPER: "bronze", I.GLASS: "glass", "team": "cloth"})
 
 
 def _wheel(rig, name, x, y, far=False):
@@ -69,6 +94,12 @@ def _wheel(rig, name, x, y, far=False):
         g.capsule((x + (R_W - 1.2) * math.cos(a0), y, R_W + (R_W - 1.2) * math.sin(a0)),
                   (x + (R_W - 1.2) * math.cos(a1), y, R_W + (R_W - 1.2) * math.sin(a1)), 1.8, segs=10, rings=2)
     rig.part(name, g, sh(TYRE))
+    g = Geo()   # W3: tread blocks, 16 to a turn (the walk turns the wheel 90 degrees a frame: they never crawl)
+    for i in range(16):
+        a = 2 * math.pi * (i + 0.5) / 16
+        g.blob((x + (R_W - 0.2) * math.cos(a), y - 1.1, R_W + (R_W - 0.2) * math.sin(a)), (0.9, 0.7, 0.9), p=2.6,
+               rot=(0, -math.degrees(a), 0))
+    rig.part(name, g, sh(TREAD), outline=0)
     g = Geo()
     for i in range(8):
         a = math.radians(45 * i)
@@ -88,6 +119,12 @@ def _cap(rig, joint):
     g.blob((x - 1.0, 11.0, z - 4.0), (3.4, 1.6, 5.0), p=2.4)
     rig.part(joint, g, team=True)
     I.goggles(rig, at=(x + 9.6, 0, z - 1.0), joint=joint, rim=I.BRASS_LT)
+    # W3: the leather helmet's crown in panels (team-dark seams over the top)
+    crown = Geo().blob((x - 0.4, y, z + 0.8), (12.4, 11.8, 7.0), p=2.3)
+    crown.clip((x, y, z - 2.4), (0, 0, -1))
+    cface = F.Face(rig, joint, [crown])
+    IW.folds(rig, joint, cface, [[(x - 1.0, z + 7.4), (x - 8.6, z + 1.4)], [(x - 0.4, z + 7.6), (x + 0.4, z + 0.6)],
+                                 [(x + 0.6, z + 7.4), (x + 6.4, z + 3.0)]], w=0.9, team=True)
 
 
 def build(rig):
@@ -107,10 +144,27 @@ def build(rig):
     tank = Geo().blob((6.0, 0, 23.0), (8.0, 4.4, 3.6), p=2.6)
     tface = F.Face(rig, "bike", [Geo().blob((6.0, 0, 23.0), (8.0, 4.4, 3.6), p=2.6)])
     rig.part("bike", tank, team=True)
-    g = KI.cog(tface, Geo(), (6.0, 23.0), s=0.6)
+    g = IW.cog(tface, Geo(), (6.0, 23.0), s=0.6)       # W3: the cog whole (conforming)
     rig.part("bike", g, I.CREAM, highlight=False, outline=0)
+    IW.seam(rig, "bike", tface, [(-1.0, 25.0), (5.0, 25.7), (12.4, 24.6)], w=0.8, team=True)   # pinstripe
+    g = Geo().lathe([(0, 0), (1.3, 0), (1.3, 0.9), (0, 1.2)], (9.0, 0, 26.3), (9.0, 0, 27.5), segs=12)
+    rig.part("bike", g, I.BRASS_LT, finish="metal", outline=0.3)            # filler cap
+    eface = F.Face(rig, "bike", [Geo().blob((0.0, 0, 13.0), (6.0, 4.0, 4.4), p=2.8)])
+    g = Geo()
+    for z in (10.6, 12.4, 14.2, 16.0):                                       # cooling fins across the block
+        IW.ribbon(g, eface, [(-4.8, z), (4.8, z)], 0.65, 0.35)
+    rig.part("bike", g, I.IRON_LT, outline=0, highlight=False)
     g = Geo().blob((-6.0, 0, 23.4), (5.0, 3.6, 1.6), p=2.6)
     rig.part("bike", g, I.LEATHER, outline=0.5)                            # saddle
+    sface = F.Face(rig, "bike", [Geo().blob((-6.0, 0, 23.4), (5.0, 3.6, 1.6), p=2.6)])
+    IW.stitches(rig, "bike", sface, [(-10.4, 23.2), (-6.0, 22.6), (-1.6, 23.2)], I.LEATHER_DK, w=0.5, dash=0.9,
+                gap=0.7)
+    g = Geo()   # W3: the saddle on two coil springs
+    for sx in (-9.0, -3.4):
+        for k in range(3):
+            z = 21.9 - k * 0.9
+            g.capsule((sx - 0.9, -2.6, z), (sx + 0.9, -2.6, z - 0.45), 0.36, segs=8, rings=2)
+    rig.part("bike", g, I.IRON_LT, finish="metal", outline=0.3)
     g = Geo().capsule((15.0, -2.0, 25.0), (FRONT, -2.0, R_W), 1.2)
     rig.part("bike", g, I.IRON_LT, finish="metal", outline=0.5)             # fork
     g = Geo().capsule((10.0, -10.0, 31.0), (10.0, 6.0, 31.0), 0.9)
@@ -122,6 +176,10 @@ def build(rig):
     rig.part("bike", g, glow="#FFF1C8", outline=0)                          # headlamp
     g = Geo().capsule((-2.0, -5.0, 11.0), (-24.0, -5.0, 12.0), 1.2)
     rig.part("bike", g, I.IRON_LT, finish="metal", outline=0.4)             # exhaust
+    g = Geo().capsule((-3.0, -5.9, 11.6), (-18.0, -5.9, 12.3), 0.42, segs=8, rings=2)
+    rig.part("bike", g, IRON_HI, finish="metal", outline=0)                 # W3: its polished band
+    g = Geo().capsule((-20.4, -5.0, 11.85), (-24.3, -5.0, 12.0), 1.32)
+    rig.part("bike", g, SOOT, outline=0.3)                                   # and its soot-black tail
     g = Geo()
     for x in (REAR, FRONT):
         pts = [(x + 10.0 * math.cos(math.radians(a)), R_W + 10.0 * math.sin(math.radians(a))) for a in range(20, 161, 35)]
@@ -137,11 +195,16 @@ def build(rig):
     I.jacket(rig, hem_z=13.0)
     g = Geo().blob((-8.0, 9.0, 21.0), (5.0, 2.6, 5.0), p=2.6)
     rig.part("torso", g, I.LEATHER, outline=0.6)                           # despatch satchel
+    _jacket_detail(rig)
     g = Geo().capsule((10.0, -8.0, 36.0), (-8.0, 8.0, 24.0), 1.1)
     rig.part("torso", g, I.LEATHER_DK, outline=0.4)
     rig.secondary("scarf", "torso", (2.0, -4.0, 37.0), (-12.0, -4.0, 38.0), max_deg=26, gain=1.6)
     g = Geo().blob((-5.0, -4.0, 37.6), (7.0, 2.4, 1.8), p=2.4, rot=(0, -8, 0))
     rig.part("scarf", g, SCARF, outline=0.5)
+    g = Geo()   # W3: folds down the streaming end
+    for dz in (-0.7, 0.7):
+        g.capsule((-1.0, -6.2, 37.6 + dz), (-10.0, -6.2, 38.9 + dz * 1.3), 0.35, segs=8, rings=2)
+    rig.part("scarf", g, SCARF_DK, outline=0)
     g = Geo().lathe([(7.0, 0), (7.6, 1.6), (7.2, 3.0)], (1.2, 0, 36.0), (1.2, 0, 39.0), segs=18)
     rig.part("torso", g, SCARF, outline=0.5)
     KI.head_face(rig, brow=I.HAIR, brow_angry=True, mouth_dz=-9.0, mouth_w=5.6)
@@ -155,6 +218,9 @@ def build(rig):
     I.shoulders(rig, team=True)
     rig.joint("spanner", "hand_r", FIST)
     I.wrench(rig, "spanner", FIST, length=20.0, jaw=8.0)
+    g = Geo().capsule((FIST[0] + 0.7, FIST[1] - 1.7, FIST[2] + 6.4), (FIST[0] + 0.7, FIST[1] - 1.7, FIST[2] + 17.6),
+                      0.45, segs=8, rings=2)
+    rig.part("spanner", g, IRON_HI, finish="metal", outline=0)              # W3: the shank's polished band
     rig.rest_scale["spanner"] = 1.1
     rig.track("spannerHead", "spanner", (FIST[0], FIST[1], FIST[2] + 24.0))
 
@@ -163,6 +229,37 @@ def build(rig):
     _wheel(rig, "fn", FRONT, -6.0)
     rig.joint("odo", "root", (0, 0, 0))
     rig.track("_foot", "odo", (0, 0, 0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _jacket_detail(rig):
+    """W3: the jacket's team-dark yoke and back seams and pocket flap, the breeches' side seam and the gaiters' straps
+    (the surfaces rebuilt for the ray casts)."""
+    body = Geo().blob((0, 0, 28.0), (10.6, 9.6, 11.6), p=2.4, taper=(1.08, 0.94))
+    body.blob((0, 0, 18.4), (10.4, 9.6, 4.6), p=2.6)
+    face = F.Face(rig, "torso", [body])
+    IW.folds(rig, "torso", face, [[(-10.0, 33.6), (-4.0, 35.0), (2.0, 35.4)], [(-7.0, 34.6), (-7.6, 27.0), (-7.2, 22.6)]],
+             w=1.1, team=True)
+    IW.panel(rig, "torso", face, [(4.0, 27.4), (9.6, 27.8), (9.4, 29.6), (4.2, 29.4)])
+    for s, ly in (("r", -I.LEG_Y), ("l", I.LEG_Y)):
+        g = Geo().lathe([(3.85, 0), (4.05, 0.6), (4.05, 1.4), (3.8, 2.0)], (0.75, ly, 8.6), (0.8, ly, 10.6), segs=16)
+        rig.part(f"shin_{s}", g, I.LEATHER if s == "r" else "#564337", outline=0.4)
+    thigh = Geo().capsule((0, -I.LEG_Y, KI.V3_THIGH_Z), (0.5, -I.LEG_Y, KI.V3_KNEE_Z), 4.6, 4.2)
+    IW.seam(rig, "thigh_r", F.Face(rig, "thigh_r", [thigh]), [(0.4, 18.6), (0.6, 12.4)], fill=TWEED_DK, w=0.7)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, rider; never on the face or skin), measured in the posed frames: the
+    jacket's back (the biggest team field the arms and the bike leave clear, r 7.5), the fuel tank's front, the
+    helmet, the near breeches, a strip torn from the jacket's hem; smoke from the engine (a rider smokes; only
+    vehicles burn)."""
+    rig.damage_spot_at("jacket", "torso", -5.0, 28.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("tank", "bike", 19.0, 30.0, 5.5, "metal", team=True)
+    rig.damage_spot_at("helmet", "hat", -3.0, 60.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("breeches", "thigh_r", -2.0, 16.0, 5.0, "cloth", fill=I.TWEED)
+    rig.damage_spot_at("hem", "hips", -4.0, 16.6, 7.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("engine", "bike", (-2.0, -5.0, 16.0), 5.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 # -- poses -----------------------------------------------------------------------------------

@@ -22,6 +22,14 @@ Animation (ANIM_SPEC G1, appendix B for a pick: overhead chop, low hack, butt ja
   attack_c  HAFT JAB: chokes up on the haft and rams the butt end forward with a twist
   hit       light: the head snaps back, the cap lifts, eyes squeezed
   die       D1 fling and spin: the cap pops off, the pick flies, X eyes and tongue
+
+Detail standard (art round W3, Track INDUSTRIAL): a pitman's worn work clothes. The soft cap's crown in panels
+(team-dark seams from the button) over a leather lamp band; the waistcoat's cog whole (conforming), a team-dark welt
+pocket, a stitched top edge and a team-dark back strap with a brass buckle; a second roll on the near sleeve and
+soot on it; the belt stitched and riveted with a brass buckle; leather straps buckled round the gaiters; the pick
+head's polished band and grain down the haft. Damage spots (posed frames measured; never on the face or the
+sooty skin): the waistcoat's back (r 7.5), the cap's crown, the near trouser leg, the near sleeve, a strip torn
+from the hem under the belt.
 """
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
@@ -29,6 +37,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "coal_miners"
 GAIT_NAME = "biped"
@@ -49,6 +58,21 @@ SHIRT_DK = "#85837D"
 SOOT = "#5E5652"
 HAFT_C = "#C9AE84"
 CORD = "#D9CCB0"
+SHIRT_SOOT = "#77746F"     # W3: soot on the grey sleeve (a darker grey under the colour rule)
+THREAD = "#CFC6B2"         # cream thread
+GRAIN = "#A68A63"          # the haft's grain
+IRON_HI = "#AEB5BD"        # the pick head's polished band
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, leather, iron, brass, wood and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2           # under the soldier lift (1.35): the brass lamp, the buckles and the polished pick shine
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", I.HAIR: "fur", SOOT: "skin", SHIRT: "cloth", SHIRT_DK: "cloth",
+                           SHIRT_SOOT: "cloth", THREAD: "cloth", CORD: "cloth", KI.CREAM: "cloth", I.DENIM: "cloth",
+                           HAFT_C: "wood", GRAIN: "wood", I.LEATHER: "leather", I.LEATHER_DK: "leather",
+                           I.BOOT: "leather", I.COAL: "leather", I.IRON: "iron", I.IRON_LT: "iron", IRON_HI: "iron",
+                           I.BRASS: "bronze", I.BRASS_LT: "bronze", "team": "cloth"})
 
 
 def _pick(rig, joint, fist):
@@ -66,6 +90,13 @@ def _pick(rig, joint, fist):
     rig.part(joint, g, I.IRON, finish="metal", outline=0.8)
     g = Geo().capsule((cx + 10.6, cy - 0.6, hz - 2.8), (cx + 13.0, cy - 0.6, hz - 5.0), 0.9, 0.5)
     rig.part(joint, g, I.IRON_LT, finish="metal", outline=0)          # bright worn tip
+    # W3: a polished band along the head's top edge and the haft's grain (two lines down its near face)
+    g = Geo().capsule((cx + 1.4, cy - 1.5, hz + 1.2), (cx + 8.6, cy - 1.2, hz - 0.2), 0.55, segs=10, rings=2)
+    g.capsule((cx - 1.4, cy - 1.5, hz + 1.2), (cx - 7.6, cy - 1.3, hz + 0.2), 0.5, segs=10, rings=2)
+    rig.part(joint, g, IRON_HI, finish="metal", outline=0)
+    g = Geo().capsule((cx + 0.75, cy - 1.15, cz + 4.6), (cx + 0.7, cy - 1.0, cz + 15.0), 0.36, segs=8, rings=2)
+    g.capsule((cx - 0.6, cy - 1.1, cz + 18.0), (cx - 0.55, cy - 0.95, cz + 29.0), 0.36, segs=8, rings=2)
+    rig.part(joint, g, GRAIN, outline=0, highlight=False)
     return (cx + 13.0, cy, hz - 5.0)
 
 
@@ -85,12 +116,7 @@ def build(rig):
     # grey shirt with a team waistcoat, a cog emblem and a belt with a lamp tin
     g = Geo().blob((0, 0, 28.0), (10.4, 9.4, 11.4), p=2.4, taper=(1.06, 0.94))
     rig.part("torso", g, SHIRT)
-    vest = Geo().blob((0.4, 0, 27.0), (11.0, 10.0, 10.6), p=2.6, taper=(1.05, 0.92))
-    vest.clip((0, 0, 36.0), (0, 0, 1))
-    vface = F.Face(rig, "torso", [vest])
-    rig.part("torso", vest, team=True)
-    g = KI.cog(vface, Geo(), (9.6, 28.0), s=0.9)
-    rig.part("torso", g, KI.CREAM, highlight=False, outline=0)
+    rig.part("torso", _vest(), team=True)
     g = Geo()
     for z in (24.0, 29.5):
         g.sphere((11.3, -2.4, z), 0.9, cuts=2)
@@ -99,6 +125,7 @@ def build(rig):
     rig.part("torso", g, SHIRT_DK)
     g = Geo().blob((0.4, 0, 18.0), (11.6, 10.6, 2.0), p=3.2)
     rig.part("hips", g, I.LEATHER)
+    _work_clothes(rig)
     g = Geo().blob((0.5, 0, 15.6), (11.0, 10.2, 4.4), p=2.6, taper=(1.08, 1.0))
     g.clip((0, 0, 13.0), (0, 0, -1))
     rig.part("hips", g, team=True)
@@ -115,6 +142,7 @@ def build(rig):
     I.ear(rig)
     rig.joint("hat", "head", CAP_C)
     _cap(rig, "hat")
+    _cap_detail(rig)
     KI.loose(rig, "hat_loose", CAP_C, lambda j: _cap(rig, j))
 
     for s in ("r", "l"):
@@ -125,12 +153,74 @@ def build(rig):
         g = Geo().blob((0.2, y, I.ELBOW_Z - 3.0), (4.1, 4.1, 2.4), p=2.4)
         rig.part(f"fore_{s}", g, SOOT, highlight=False, outline=0)      # soot up to the elbows
     I.shoulders(rig, team=True)
+    _sleeve_and_gaiters(rig)
 
     rig.joint("pick", "hand_r", FIST)
     tip = _pick(rig, "pick", FIST)
     KI.loose(rig, "pick_loose", FIST, lambda j: _pick(rig, j, FIST))
     rig.track("pickTip", "pick", tip)
     I.fuse_spark(rig, "pick", (tip[0] + 1.0, tip[1] - 2.0, tip[2] - 1.0), size=2.0, name="clink", hidden=True)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _vest():
+    g = Geo().blob((0.4, 0, 27.0), (11.0, 10.0, 10.6), p=2.6, taper=(1.05, 0.92))
+    g.clip((0, 0, 36.0), (0, 0, 1))
+    return g
+
+
+def _work_clothes(rig):
+    """W3: the waistcoat and the belt as a pitman's worn work clothes (see the module doc); the surfaces are rebuilt
+    for the ray casts."""
+    face = F.Face(rig, "torso", [_vest()])
+    g = IW.cog(face, Geo(), (9.6, 28.0), s=0.9)
+    rig.part("torso", g, KI.CREAM, highlight=False, outline=0)
+    # a team-dark welt pocket low on the front, the top edge stitched in cream thread
+    IW.panel(rig, "torso", face, [(4.8, 20.6), (9.8, 20.9), (9.8, 22.5), (4.8, 22.2)])
+    IW.stitches(rig, "torso", face, [(-9.4, 34.9), (-3.0, 35.3), (3.0, 35.3), (9.2, 34.9)], THREAD)
+    # the back's adjuster strap (team-dark) with a brass buckle
+    IW.seam(rig, "torso", face, [(-10.4, 23.4), (-7.0, 23.6), (-3.8, 23.8)], w=1.5, team=True)
+    g = Geo()
+    IW.field(g, face, [(-6.6, 22.4), (-5.0, 22.4), (-5.0, 25.0), (-6.6, 25.0)], 0.5)
+    rig.part("torso", g, I.BRASS_LT, finish="metal", outline=0.3)
+    # the belt: stitched along its top, brass rivets and a brass buckle at the front
+    belt = Geo().blob((0.4, 0, 18.0), (11.6, 10.6, 2.0), p=3.2)
+    bface = F.Face(rig, "hips", [belt])
+    IW.stitches(rig, "hips", bface, [(-10.0, 19.1), (-2.0, 19.3), (6.0, 19.2), (10.4, 18.9)], I.LEATHER_DK, w=0.6,
+                dash=1.0, gap=0.8)
+    IW.rivets(rig, "hips", bface, [(-8.4, 17.8), (-2.6, 17.9)], r=0.8, fill=I.BRASS_LT)
+    g = Geo().blob((11.9, -2.6, 18.0), (1.0, 2.2, 1.8), p=3.2)
+    rig.part("hips", g, I.BRASS_LT, finish="metal", outline=0.4)
+
+
+def _sleeve_and_gaiters(rig):
+    """W3: a second roll on the near sleeve and soot on it; leather straps buckled round the gaiters."""
+    y = I.ARM_Y["r"]
+    g = Geo().lathe([(4.6, 0), (4.8, 1.8), (4.5, 3.0)], (0, y, I.ELBOW_Z + 1.0), (0, y, I.ELBOW_Z + 4.0), segs=16)
+    rig.part("arm_r", g, SHIRT_DK, outline=0.5)
+    arm = Geo().capsule((0, y, I.SHOULDER_Z), (0, y, I.ELBOW_Z), 4.4, 4.1)
+    IW.soot(rig, "arm_r", F.Face(rig, "arm_r", [arm]), [(-1.2, 30.4, 1.6, 1.1)], fill=SHIRT_SOOT)
+    for s in ("r", "l"):
+        ly = I.LEG_Y * I.SIDE_Y[s]
+        k = 1.0 if s == "r" else 0.8
+        g = Geo().lathe([(3.85, 0), (4.05, 0.6), (4.05, 1.4), (3.8, 2.0)], (0.75, ly, 8.6), (0.8, ly, 10.6), segs=16)
+        rig.part(f"shin_{s}", g, I.LEATHER if k == 1.0 else "#564337", outline=0.4)
+        if s == "r":
+            g = Geo().blob((2.4, ly - 3.6, 9.6), (1.2, 0.6, 1.3), p=3.0)
+            rig.part(f"shin_{s}", g, I.BRASS_LT, finish="metal", outline=0.3)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or the sooty skin), measured in the posed
+    frames: the waistcoat's back (the biggest team field the arm and the pick leave clear, r 7.5), the cap's crown,
+    the near trouser leg (the waistcoat's front hides behind the pick in most frames: 20% seen), the near sleeve, a
+    strip torn from the hem under the belt."""
+    rig.damage_spot_at("vest", "torso", -5.0, 29.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("cap", "hat", -1.0, 61.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("trousers", "thigh_r", -1.6, 16.0, 5.0, "cloth", fill=I.DENIM)
+    rig.damage_spot_at("sleeve", "arm_r", -1.0, 31.0, 5.0, "cloth", fill=SHIRT)
+    rig.damage_spot_at("hem", "hips", 5.0, 13.0, 7.0, "cloth", kind="strip", team=True)
 
 
 def _cap(rig, joint):
@@ -144,6 +234,23 @@ def _cap(rig, joint):
     rig.part(joint, g, I.BRASS_LT, finish="metal", outline=0.6)         # the headlamp
     g = Geo().blob((x + 12.8, y, z + 3.2), (0.8, 2.4, 2.4), p=2.2)
     rig.part(joint, g, glow="#FFF1C8", outline=0)
+
+
+def _cap_detail(rig):
+    """W3: the soft cap's crown in panels (team-dark seams from a team-dark button) over a leather band that carries
+    the lamp."""
+    x, y, z = CAP_C
+    crown = Geo().blob((x, y, z + 1.4), (12.2, 11.6, 6.6), p=2.4)
+    crown.clip((x, y, z - 2.0), (0, 0, -1))
+    cface = F.Face(rig, "hat", [crown])
+    bx, bz = x + 0.6, z + 7.2
+    lines = [[(bx - 0.8, bz - 0.6), (x - 7.0, z + 1.6)], [(bx, bz - 1.0), (x + 0.6, z + 0.6)],
+             [(bx + 0.8, bz - 0.6), (x + 7.6, z + 2.4)]]
+    IW.folds(rig, "hat", cface, lines, w=1.0, team=True)
+    g = Geo().sphere((bx, -2.4, bz + 0.2), 1.3, cuts=2)
+    IW.team_dark(rig, "hat", g, outline=0.3)
+    IW.seam(rig, "hat", cface, [(x - 11.2, z - 0.2), (x - 2.0, z - 1.0), (x + 5.0, z - 1.0), (x + 9.6, z - 0.4)],
+            fill=I.LEATHER, w=2.2)
 
 
 # -- poses ---------------------------------------------------------------------------------

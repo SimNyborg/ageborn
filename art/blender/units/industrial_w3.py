@@ -11,6 +11,8 @@ conforming decals, seams, folds, panels and mail rows come from W2's `units/medi
                  game scale, where single 1 lu dots would vanish)
   soot()         soot smudges laid on a surface (value breakup on cloth, steel and skin-free plates)
   patch()        a patch sewn onto cloth: a field in a second tone with a stitched border
+  smear_two_tone()  a swing smear as two arcs (W2's fix for the extras' floors, kept here so the W3 branch does not
+                 touch medieval_w2.py): a narrower darker crescent under a light leading strip
 
 Every number is in lu at rest, character space (x forward, y away from the camera, z up); decal points are screen
 lu as Face.hit takes them.
@@ -135,3 +137,15 @@ def patch(rig, joint, face, pts, fill=None, stitch=None, team=False, w=0.75, dep
 def team_dark(rig, joint, g, outline=0):
     """A part in the team-dark tone (look.team_part)."""
     return look.team_part(rig, joint, g, outline=outline)
+
+
+def smear_two_tone(spec, band=0.6, shade=0.8, edge=0.3):
+    """A smear2 "arc" spec as two arcs: the swept crescent cut to `band` of the sweep in a darker tone (the colour x
+    `shade`, half the white; it keeps the outline and the speed lines) under a lighter strip `edge` wide along the
+    outer, leading edge (no outline, no lines). One flat light crescent held the extras' micro under the floors."""
+    from ageborn_art import colors as C
+    b0 = spec.get("band", 1.0)
+    white = spec.get("white", 0.3)
+    base = dict(spec, band=band * b0, color=C.scale(spec["color"], shade), white=white * 0.5)
+    lead = dict(spec, band=edge * b0, white=min(0.75, white + 0.25), outline_lu=0.0, lines=0)
+    return [base, lead]
