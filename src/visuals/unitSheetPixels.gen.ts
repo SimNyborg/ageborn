@@ -100,7 +100,7 @@ export const UNIT_SHEET_PIXELS: Readonly<Record<string, readonly [number, number
   'industrial/bandmaster': [1806336, 344064, 491520, 93184],
   'industrial/bomb_bowler': [1544192, 290304, 421888, 75264],
   'industrial/carbineer': [1878016, 1906688, 503808, 519168],
-  'industrial/clockwork_soldier': [1848320, 788480, 481280, 212992],
+  'industrial/clockwork_soldier': [1794048, 783360, 466944, 204800],
   'industrial/clockwork_tinker': [1474560, 546816, 395264, 141312],
   'industrial/coal_miners': [1817600, 679936, 471040, 180224],
   'industrial/dispatch_rider': [2783232, 1034240, 727552, 267008],
