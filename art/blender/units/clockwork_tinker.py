@@ -18,13 +18,24 @@ Animation (ANIM_SPEC G2 hurried waddle, appendix B for a club: tap-tap-BONK, jab
   attack_c  LOW HOOK: crouches with the key trailing behind his knee, then hooks it up into the legs
   hit       light: the head snaps back, the spectacles bounce
   die       D1 fling and spin: the key flies, springs pop out of the pack, X eyes and tongue
+
+Detail standard (art round W3, Track INDUSTRIAL): the inventor's workshop clothes. The waistcoat's cog whole
+(conforming), team-dark ribs down its back and a stitched top edge; creases across the cream shirt's belly; the
+leather apron's pocket stitched with tools in it (a screwdriver, a little wrench); the gear pack's frame riveted with
+brass corner plates; a polished band down the key's stem; creases at the sleeves' elbows. He is a man, not a machine:
+the soldier family (item 40 appendix A; the Clockwork Soldier is the mech), with sparks from the gear pack for his
+trade. Damage spots (posed frames measured): the waistcoat's back (r 7.5), the pack's frame, the near sleeve, the
+apron, a strip from the waistcoat's hem; sparks from the gears.
 """
+import math
+
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
 from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "clockwork_tinker"
 GAIT_NAME = "biped"
@@ -45,6 +56,21 @@ SHIRT_DK = "#85837D"
 WHITE = "#ECE6DA"
 APRON = "#6B5444"
 HAFT_C = "#C9AE84"
+THREAD = "#CFC6B2"
+BRASS_HI = "#D2C28E"       # W3: the key stem's polished band
+CREAM_FOLD = "#C9C2B2"     # the shirt's creases
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, leather, brass, iron and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", WHITE: "fur", I.CREAM: "cloth", I.CREAM_DK: "cloth", KI.CREAM: "cloth",
+                           CREAM_FOLD: "cloth", THREAD: "cloth", I.DENIM: "cloth", APRON: "leather",
+                           I.LEATHER: "leather", I.LEATHER_DK: "leather", I.BOOT: "leather", I.COAL: "leather",
+                           I.COAL_LT: "leather", I.BRASS: "bronze", I.BRASS_LT: "bronze", BRASS_HI: "bronze",
+                           I.IRON_DK: "iron", I.IRON_LT: "iron", I.GLASS: "glass", I.WOOD_LT: "wood",
+                           "team": "cloth"})
 
 
 def _pick(rig, joint, fist):
@@ -65,6 +91,15 @@ def _pick(rig, joint, fist):
     for sx in (-1, 1):
         g.blob((cx + sx * 5.6, cy - 1.0, hz + 1.0), (2.0, 1.0, 1.6), p=2.4)
     rig.part(joint, g, I.COAL_LT, outline=0, highlight=False)           # holes in the bow
+    g = Geo()   # W3: a raised rim round each lobe of the bow (the big brass butterfly read flat at 1x)
+    for sx in (-1, 1):
+        pts = [(cx + sx * 5.6 + 4.1 * math.cos(math.radians(a)), cy - 1.05, hz + 1.0 + 3.6 * math.sin(math.radians(a)))
+               for a in range(0, 361, 30)]
+        for p, q in zip(pts, pts[1:]):
+            g.capsule(p, q, 0.42, segs=8, rings=2)
+    rig.part(joint, g, I.BRASS_LT, finish="metal", outline=0)
+    g = Geo().capsule((cx + 0.75, cy - 1.15, cz + 4.6), (cx + 0.75, cy - 1.15, cz + HAFT - 7.0), 0.42, segs=8, rings=2)
+    rig.part(joint, g, BRASS_HI, finish="metal", outline=0)            # W3: the stem's polished band
     return (cx, cy, hz + 1.0)
 
 
@@ -82,8 +117,9 @@ def build(rig):
     vest.clip((0, 0, 35.0), (0, 0, 1))
     vface = F.Face(rig, "torso", [Geo().blob((0.4, 0, 27.0), (11.8, 11.0, 10.6), p=2.6, taper=(1.08, 0.9))])
     rig.part("torso", vest, team=True)
-    g = KI.cog(vface, Geo(), (10.4, 28.4), s=0.9)
+    g = IW.cog(vface, Geo(), (10.4, 28.4), s=0.9)       # W3: the cog whole (conforming)
     rig.part("torso", g, KI.CREAM, highlight=False, outline=0)
+    _work_clothes(rig, vface)
     g = Geo().blob((0.5, 0, 15.6), (11.4, 10.6, 4.4), p=2.6, taper=(1.08, 1.0))
     g.clip((0, 0, 13.0), (0, 0, -1))
     rig.part("hips", g, team=True)
@@ -92,10 +128,23 @@ def build(rig):
     rig.part("apron", g, APRON, outline=0.6)
     g = Geo().blob((12.6, -2.6, 16.2), (0.8, 2.6, 2.0), p=2.6)
     rig.part("apron", g, I.LEATHER_DK, outline=0.4)
+    aface = F.Face(rig, "apron", [Geo().blob((12.6, -2.6, 16.2), (0.8, 2.6, 2.0), p=2.6)])
+    IW.stitches(rig, "apron", aface, [(11.9, 14.4), (13.1, 14.3), (13.3, 17.9)], THREAD, w=0.45, dash=0.8, gap=0.6)
+    g = Geo().capsule((12.4, -4.0, 17.6), (12.0, -4.2, 20.6), 0.55, segs=8, rings=2)      # a screwdriver in it
+    rig.part("apron", g, I.WOOD_LT, outline=0.3)
+    g = Geo().capsule((13.0, -1.6, 17.8), (13.6, -1.5, 20.2), 0.5, segs=8, rings=2)       # and a little wrench
+    g.blob((13.7, -1.5, 20.6), (0.9, 0.5, 0.7), p=2.6)
+    rig.part("apron", g, I.IRON_LT, finish="metal", outline=0.3)
     # the gear pack: a brass frame with cogs that tick round on their own joint
     rig.joint("pack", "torso", (-11.0, 0, 29.0))
     g = Geo().blob((-12.0, 0, 28.0), (4.0, 8.4, 8.6), p=3.0)
     rig.part("pack", g, team=True, outline=0.7)
+    pface = F.Face(rig, "pack", [Geo().blob((-12.0, 0, 28.0), (4.0, 8.4, 8.6), p=3.0)])
+    g = Geo()   # W3: brass corner plates riveted to the frame
+    for x0, z0 in ((-16.2, 34.4), (-16.2, 20.4)):
+        IW.field(g, pface, [(x0, z0), (x0 + 2.8, z0), (x0 + 2.8, z0 + 2.0), (x0, z0 + 2.0)], 0.45)
+    rig.part("pack", g, I.BRASS_LT, finish="metal", outline=0.3)
+    IW.rivets(rig, "pack", pface, [(-10.2, 35.2), (-10.2, 21.4)], r=0.75, fill=I.IRON_LT)
     rig.joint("gears", "pack", (-14.0, -3.0, 31.0))
     g = Geo().star((-14.0, -6.0, 32.0), 5.2, 4.0, 1.6, points=9)
     g.star((-15.0, -5.6, 23.4), 3.6, 2.7, 1.4, points=7)
@@ -132,6 +181,35 @@ def build(rig):
     KI.loose(rig, "key_loose", FIST, lambda j: _pick(rig, j, FIST))
     rig.track("keyBow", "key", tip)
     I.fuse_spark(rig, "key", (tip[0] + 1.0, tip[1] - 2.0, tip[2] - 1.0), size=2.0, name="clink", hidden=True)
+    for s_ in ("r", "l"):   # W3: creases bunched at the sleeves' elbows (team-dark)
+        y = I.ARM_Y[s_]
+        lo = Geo().capsule((0, y, I.ELBOW_Z), (0, y, I.HAND_Z + 2.0), 4.1, 3.9)
+        IW.folds(rig, f"fore_{s_}", F.Face(rig, f"fore_{s_}", [lo]), [[(-2.8, 26.4), (0.2, 25.6), (2.8, 26.6)]],
+                 w=0.9, team=True)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _work_clothes(rig, vface):
+    """W3: the waistcoat's ribs down its back and its stitched top edge; creases across the shirt's belly."""
+    IW.folds(rig, "torso", vface, [[(x, 34.0), (x + 0.2, 21.0)] for x in (-8.2, -5.0, -1.8)], w=0.9)
+    IW.stitches(rig, "torso", vface, [(-9.8, 34.4), (-3.0, 34.8), (3.0, 34.8), (9.6, 34.4)], THREAD)
+    belly = Geo().blob((0, 0, 27.6), (11.2, 10.6, 11.4), p=2.4, taper=(1.12, 0.9))
+    bface = F.Face(rig, "torso", [belly])
+    IW.folds(rig, "torso", bface, [[(-4.0, 36.6), (2.0, 37.4)], [(-6.4, 35.8), (-1.0, 36.0)]], w=0.8, team=False,
+             fill=CREAM_FOLD)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames: the
+    waistcoat's back (the biggest team field the arm and the key leave clear, r 7.5), the gear pack's frame, the near
+    sleeve, the apron, a strip torn from the waistcoat's hem; sparks from the gears (his trade, not damage to him)."""
+    rig.damage_spot_at("vest", "torso", -7.0, 26.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("pack", "pack", -13.0, 27.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("sleeve", "arm_r", -1.0, 32.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("apron", "apron", 11.0, 13.0, 5.0, "cloth", fill=APRON)
+    rig.damage_spot_at("hem", "hips", 4.0, 13.0, 7.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("gears", "gears", (-14.0, -7.6, 32.0), 3.5, "spark", kind="emit", normal=(-0.4, -1.0, 0.0))
 
 
 def _cap(rig, joint):
@@ -239,8 +317,8 @@ def _bonk(seed):
 def _attack_clip():
     ov = {
         2: [{"kind": "burst", "joint": "key", "point": TIP, "r0_lu": 3.0, "r1_lu": 6.0, "n": 4, "a0": 0.0, "arc": 120.0}],
-        4: [dict(ARC, **{"from": 3, "t0": 0.0, "t1": 0.95})],
-        5: [dict(ARC, **{"from": 4, "t0": 0.3, "t1": 1.0, "lines": 2})] + _bonk(71),
+        4: IW.smear_two_tone(dict(ARC, **{"from": 3, "t0": 0.0, "t1": 0.95}), band=0.5),     # W3: two-tone arcs
+        5: IW.smear_two_tone(dict(ARC, **{"from": 4, "t0": 0.3, "t1": 1.0, "lines": 2}), band=0.5) + _bonk(71),
     }
     return M.clip("attack", [_attack_pose(f) for f in range(9)], A_MS, impact=5, smear=4, sequence=A_SEQ,
                   overlays=ov, extra={"holdStep": 4})
@@ -320,8 +398,8 @@ def _c_pose(i):
 def _attack_c():
     hook = dict(ARC, t0=0.0, t1=0.95, lines=3)
     ov = {
-        3: [dict(hook, **{"from": 2})],
-        4: [dict(hook, **{"from": 3, "t0": 0.3, "t1": 1.0, "lines": 2})] + _bonk(77),
+        3: IW.smear_two_tone(dict(hook, **{"from": 2}), band=0.5),     # W3: two-tone (flat 0.35 on frame 3)
+        4: IW.smear_two_tone(dict(hook, **{"from": 3, "t0": 0.3, "t1": 1.0, "lines": 2}), band=0.5) + _bonk(77),
     }
     reuse = {0: ("attack", 0), 7: ("attack", 7), 8: ("attack", 8)}
     return M.clip("attack_c", [_c_pose(i) for i in range(9)], C_MS, impact=4, smear=3, sequence=C_SEQ,

@@ -19,15 +19,24 @@ Animation (ANIM_SPEC G1, appendix B for a gun: aimed shot, kneeling shot):
   attack_b  KNEELING ZAP: drops to one knee, aims, zaps, rides the kick, rises
   hit       light: the head snaps back, the hair stands up
   die       D1 fling and spin: the goggles pop off, X eyes and tongue, his hair frizzed
+
+Detail standard (art round W3, Track INDUSTRIAL): the lab coat's cog whole on its skirt (conforming), team-dark
+yoke and back seams, a breast pocket with a pencil and a team-dark pleat down the skirt; scorch marks on the coat's
+sleeve-ends (a scientist's wear); a crease down the grey trousers; a polished band on the brass stock. Aimed (queue
+item 44): A and B up about 45 and 70 degrees (aimed.variants on the coil gun, as the Carbineer: the stock rises to
+the cheek and the body leans back). Damage spots (posed frames measured): the coat's back (r 7.5), its skirt, the
+near sleeve, the trousers, a strip from the coat's hem.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
 from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "spark_scientist"
 GAIT_NAME = "biped"
@@ -47,6 +56,21 @@ RUBBER = "#3E3B3C"
 COPPER = "#A87A5E"
 SPARK = "#E6FFF2"
 GREY = "#7E7C78"
+GREY_DK = "#686662"        # W3: the trousers' crease
+SCORCH = "#4A4542"         # scorch marks on the sleeve-ends
+BRASS_HI = "#C9BA8A"       # the stock's polished band
+PENCIL = "#C9A94E"
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, rubber, brass, copper, glass and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.85          # (1.2 and 1.0 held the extras' highlight share at 0.101-0.105: sparks and brass)
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = dict(IW.RIM_SOLDIER, lift=0.42)   # a softer rim (its edge light counted as highlight)
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", WHITE: "fur", I.CREAM: "cloth", KI.CREAM: "cloth", GREY: "cloth",
+                           GREY_DK: "cloth", SCORCH: "cloth", RUBBER: "polymer", I.COAL_LT: "cloth", I.COAL: "leather",
+                           I.LEATHER: "leather", I.BRASS: "bronze", I.BRASS_LT: "bronze", BRASS_HI: "bronze",
+                           COPPER: "bronze", I.IRON_DK: "iron", I.GLASS: "glass", PENCIL: "wood",
+                           SPARK: "energy", I.STEAM: "cloth", "team": "cloth"})
 
 
 RIG = None
@@ -56,6 +80,8 @@ def _gun(rig, joint, grip, length):
     gx, gy, gz = grip
     g = Geo().blob((gx - 7.0, gy, gz - 2.0), (7.4, 2.2, 3.4), p=2.8, rot=(0, 16, 0), taper=(1.0, 0.75))
     rig.part(joint, g, I.BRASS, finish="metal", outline=0.7)               # stock
+    g = Geo().capsule((gx - 11.8, gy - 2.15, gz - 1.6), (gx - 3.0, gy - 2.15, gz + 0.4), 0.45, segs=8, rings=2)
+    rig.part(joint, g, BRASS_HI, finish="metal", outline=0)                 # W3: its polished band
     g = Geo().capsule((gx + 2.0, gy, gz + 1.0), (gx + length - 4.0, gy, gz + 1.0), 2.0, 1.6)
     rig.part(joint, g, I.IRON_DK, finish="metal", outline=0.8)            # barrel
     g = Geo()
@@ -85,8 +111,9 @@ def build(rig):
     I.long_coat(rig, tail_len=6.0, long=True, hem_z=13.0, skirt_z=10.0)
     skirt = Geo().blob((0.4, 0, 12.0), (11.9, 10.9, 5.0), p=2.6)
     sface = F.Face(rig, "hips", [skirt])
-    g = KI.cog(sface, Geo(), (5.0, 11.6), s=0.85)
+    g = IW.cog(sface, Geo(), (5.0, 11.6), s=0.85)      # W3: the cog whole (conforming)
     rig.part("hips", g, KI.CREAM, highlight=False, outline=0)
+    _coat_detail(rig)
     g = Geo().lathe([(7.2, 0), (7.8, 1.6), (7.4, 3.0)], (1.2, 0, 36.2), (1.2, 0, 39.2), segs=18)
     rig.part("torso", g, I.CREAM, outline=0.6)                            # shirt collar
     g = Geo().blob((8.8, -1.6, 36.8), (1.6, 3.2, 1.6), p=2.4)
@@ -127,6 +154,43 @@ def build(rig):
     rig.part("casing", g, glow=SPARK, outline=0)
     I.fuse_spark(rig, "gun", (muzzle[0] - 1.0, muzzle[1] - 1.0, muzzle[2] + 2.0), size=1.4, name="crackle")
     MUZ.append(muzzle)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _coat_detail(rig):
+    """W3: the lab coat's team-dark yoke and back seams, a breast pocket with a pencil, a team-dark pleat down the
+    skirt, scorch marks at the sleeve-ends; the trousers' crease (the surfaces rebuilt for the ray casts)."""
+    body = Geo().blob((0, 0, 27.6), (10.8, 9.8, 12.0), p=2.4, taper=(1.1, 0.94))
+    body.blob((0.3, 0, 17.4), (11.2, 10.2, 5.0), p=2.6)
+    face = F.Face(rig, "torso", [body])
+    IW.folds(rig, "torso", face, [[(-10.0, 34.6), (-4.0, 36.0), (2.0, 36.4)], [(-6.8, 35.2), (-7.2, 27.0), (-6.8, 22.4)]],
+             w=1.1)
+    IW.panel(rig, "torso", face, [(2.6, 29.6), (6.6, 29.8), (6.4, 31.4), (2.8, 31.2)])
+    g = Geo().capsule((4.0, -9.6, 31.0), (4.6, -9.4, 34.0), 0.42, segs=8, rings=2)
+    rig.part("torso", g, PENCIL, outline=0.3)
+    skirt = Geo().blob((0.4, 0, 12.0), (11.9, 10.9, 5.0), p=2.6)
+    IW.folds(rig, "hips", F.Face(rig, "hips", [skirt]), [[(-4.4, 16.0), (-5.0, 8.6)]], w=1.2)
+    for s_ in ("r", "l"):
+        y = I.ARM_Y[s_]
+        lo = Geo().capsule((0, y, I.ELBOW_Z), (0, y, I.HAND_Z + 2.0), 4.1, 3.9)
+        IW.soot(rig, f"fore_{s_}", F.Face(rig, f"fore_{s_}", [lo]), [(-1.4, 24.6, 1.4, 1.0), (1.6, 25.6, 1.0, 0.8)],
+                fill=SCORCH)
+    ly = -I.LEG_Y
+    shin = Geo().capsule((0.5, ly, KI.V3_KNEE_Z), (1.0, ly, KI.V3_ANKLE_Z + 0.6), 3.9, 3.3)
+    IW.seam(rig, "shin_r", F.Face(rig, "shin_r", [shin]), [(2.4, 11.0), (2.8, 6.0)], fill=GREY_DK, w=0.6)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames: the
+    coat's back (the biggest team field the coil gun and the arms leave clear, r 7.5), its skirt, the near sleeve,
+    the trousers, a strip torn from the coat's hem."""
+    rig.damage_spot_at("coat", "torso", -7.0, 26.0, 7.5, "cloth", team=True,
+                       on=("torso", "hips", "arm_r", "fore_r", "arm_l", "fore_l"))   # the coat's skirt and sleeves too
+    rig.damage_spot_at("skirt", "hips", 6.0, 12.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("sleeve", "arm_r", -1.0, 33.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("trousers", "shin_r", -1.4, 8.0, 5.0, "cloth", fill=GREY)
+    rig.damage_spot_at("hem", "hips", -7.0, 11.5, 7.0, "cloth", kind="strip", team=True)
 
 
 MUZ = []
@@ -193,12 +257,32 @@ CAS = [None, None, None, None, None, (-3, 4, 60), (-9, 13, 200), (-15, 10, 330),
        None]
 
 
-def _attack_pose(f, kneel=None):
+# aimed shots (queue item 44, ageborn_art/aimed.py), as the Carbineer: a turn of `turn` degrees up raises the stock
+# toward the cheek and leans the body back; the torso carries the coil gun, so its lean is part of the turn.
+AIM_LEAN = 0.22           # torso r per degree of turn (positive leans back)
+AIM_RISE = 0.10           # grip z per degree up (torso space, lu)
+AIM_DRAW = 0.05           # grip x per degree up (drawn back toward the shoulder)
+AIM_HEAD = 0.30           # head r per degree, on top of the torso's lean
+# per unique frame of A and B: 0 at rest, 1.0 on the hold, the fire (the release frame 4) and the kick
+AIM_W = [0.0, 0.5, 1.0, 1.0, 1.0, 0.8, 0.35, 0.15, 0.0, 0.0, 0.0]
+AIM_W_B = [0.0, 0.4, 1.0, 1.0, 1.0, 1.0, 0.8, 0.6, 0.25, 0.0, 0.0]
+
+
+def _aim(gx, gz, deg, turn):
+    """The grip and the gun's angle (torso space) turned `turn` degrees up, with the torso's lean taken out."""
+    if not turn:
+        return gx, gz, deg
+    up = max(0.0, turn)
+    return gx - AIM_DRAW * up, gz + AIM_RISE * up, deg + turn - AIM_LEAN * turn
+
+
+def _attack_pose(f, turn=0.0):
     wob = f == 3
     f = U_OF[f]
-    pose = merge(hold(GX[f], GZ[f] + (0.7 if wob else 0.0), DEG[f] + (1.8 if wob else 0.0)), {
-        "torso": {"r": TR[f]},
-        "head": {"r": HR[f], "x": 1.2 if f in (1, 2, 3) else 0.0},
+    lean = AIM_LEAN * turn
+    pose = merge(hold(*_aim(GX[f], GZ[f] + (0.7 if wob else 0.0), DEG[f] + (1.8 if wob else 0.0), turn)), {
+        "torso": {"r": TR[f] + lean},
+        "head": {"r": HR[f] + AIM_HEAD * turn, "x": 1.2 if f in (1, 2, 3) else 0.0},
         "hair": {"r": [0, 0, 4, 6, -10, -6, -2, 0, 0, 0][f]}, "crackle": {"show": f in (1, 2, 3)},
         "thigh_r": {"r": [4, 10, 14, 14, 10, 8, 6, 4, 2, 0][f]},
         "shin_r": {"r": [0, -4, -8, -8, -6, -2, -2, 0, 0, 0][f]},
@@ -249,13 +333,14 @@ KB_CAS = [None, None, None, None, None, (-3, 3, 60), (-10, 9, 200), (-16, 0, 330
 KB_FRONT = [8.0, 12.5, 12.5, 12.5, 12.0, 12.5, 12.5, 7.0]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i in (0, 9, 10):
-        return _attack_pose(i)
+        return _attack_pose(i, turn)
     k = i - 1
-    pose = merge(hold(KB_GX[k], KB_GZ[k], KB_DEG[k]), {
-        "torso": {"r": KB_TR[k]},
-        "head": {"r": KB_HR[k], "x": 1.2 if k in (1, 2, 3) else 0.0},
+    lean = AIM_LEAN * turn
+    pose = merge(hold(*_aim(KB_GX[k], KB_GZ[k], KB_DEG[k], turn)), {
+        "torso": {"r": KB_TR[k] + lean},
+        "head": {"r": KB_HR[k] + AIM_HEAD * turn, "x": 1.2 if k in (1, 2, 3) else 0.0},
         "hair": {"r": [0, 4, 6, 6, -10, -4, -1, 0][k]}, "crackle": {"show": k in (1, 2, 3)},
         "lever": {"r": KB_LEVER[k]},
         "flash": {"show": k == 3, "s": 0.8 if k == 3 else 1.0},
@@ -326,13 +411,21 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (the Spark Scientist hits air; they go to the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, _b_pose, AIM_W_B, aims=("up45", "up70"))
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
     return M.check_variants(M.check_contract(cl, attack_ms=765, attack_impact_at=0.3804))

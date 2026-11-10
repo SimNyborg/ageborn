@@ -19,6 +19,16 @@ Animation standard (ANIM_SPEC 2026-10-02):
   attack_b  UNDERHAND BUNDLE TOSS AND DUCK: strikes the match, crouches low with the bundle swung
             back behind his hip (the held extreme, holdLoop), bowls it underhand at the target and
             ducks with his hands over his ears as it goes off
+  burrow    (items 51/52, Tunnel; extras sheet) DIGS IN: drops to his knees and claws at the ground with both hands
+            (dirt flung back), digs deeper with his head down, then curls into the hole in a burst of dirt (the
+            runtime's mound and trail take over); 1000 ms, the sim's dig-in
+  surface   (items 51/52, Tunnel; extras sheet) BURSTS UP: curled low in a spray of dirt, he pushes up, bursts out
+            arms high in a ring of dirt, lands in a crouch and readies the charge; 1500 ms, the surfacing telegraph
+
+Detail standard (art round W3, Track INDUSTRIAL): a demolition man's kit. The jacket's team-dark yoke and back seams
+and a pocket flap; the padded helmet stitched; the charge box's corners riveted and its rope lashing; the scarf's
+folds; a patch on the near knee and straps round the gaiters. Damage spots (posed frames measured): the jacket's back
+(r 7.5), the charge box's lid, the near sleeve, the trousers, a strip from the jacket's hem.
 """
 import math
 
@@ -28,6 +38,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "sapper"
 GAIT_NAME = "biped"
@@ -43,6 +54,23 @@ STICK = 13.0
 PAPER = "#C9B9A0"
 FUSE_TIP = (-22.0, 2.0, 60.0)
 BOOM = (30.0, -18.0, 32.0)
+THREAD = "#CFC6B2"
+ROPE = "#B8A47E"           # W3: the charge box's lashing
+PATCH = "#5E6873"          # a faded denim patch
+SCARF_DK = "#C7C0B0"       # the scarf's folds
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, leather, paper, copper and skin apart (the
+# copper corner caps as iron: an accent kind keeps its saturation, and the shipped sheet broke the A11 colour rule)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.85          # (1.2 and 1.0 held the extras' highlight share at 0.101-0.105: sparks and brass)
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = dict(IW.RIM_SOLDIER, lift=0.42)   # a softer rim (its edge light counted as highlight)
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", I.HAIR: "fur", I.CREAM: "cloth", I.CREAM_DK: "cloth", SCARF_DK: "cloth",
+                           THREAD: "cloth", ROPE: "cloth", PATCH: "cloth", I.DENIM: "cloth", PAPER: "cloth",
+                           I.LEATHER: "leather", I.LEATHER_DK: "leather", I.BOOT: "leather", I.COAL: "leather",
+                           I.COAL_LT: "leather", I.BRICK: "cloth", I.COPPER: "iron", I.BRASS: "bronze",
+                           I.BRASS_LT: "bronze", I.IRON_LT: "iron", I.WOOD_LT: "wood", I.GLASS: "glass",
+                           "team": "cloth"})
 
 RIG = None
 
@@ -66,9 +94,14 @@ def build(rig):
     for a, b in zip(pts, pts[1:]):
         g.capsule(a, b, 0.9)
     rig.part("torso", g, I.COAL_LT, outline=0.4)
-    I.fuse_spark(rig, "torso", FUSE_TIP, size=1.8, name="spark", seed=1)
+    I.fuse_spark(rig, "torso", FUSE_TIP, size=1.3, name="spark", seed=1)   # W3: 1.8 lit the extras' highlights to 0.103
+    g = Geo()   # W3: the box lashed with rope round its middle
+    for zz in (27.0, 33.0):
+        g.blob((-15.0, 0.0, zz), (7.0, 11.0, 0.6), p=4.0)
+    rig.part("torso", g, ROPE, outline=0.3)
 
     I.jacket(rig, collar=I.CREAM_DK, hem_z=13.0)
+    _jacket_detail(rig)
     # scarf: a wrap at the neck and a tail streaming back on follow-through
     g = Geo().lathe([(7.4, 0), (8.0, 1.6), (7.6, 3.2)], (1.2, 0, 36.0), (1.2, 0, 39.4), segs=18)
     rig.part("torso", g, I.CREAM)
@@ -76,6 +109,10 @@ def build(rig):
     g = Geo().blob((-10.0, -2.0, 37.4), (8.0, 2.2, 2.0), p=2.4, taper=(1.0, 0.7))
     g.blob((-17.0, -2.0, 36.2), (3.0, 2.0, 2.6), p=2.4)
     rig.part("scarf", g, I.CREAM, outline=0.6)
+    g = Geo()   # W3: folds down the streaming end
+    for dz in (-0.6, 0.7):
+        g.capsule((-4.0, -4.0, 37.5 + dz), (-14.0, -3.8, 36.6 + dz * 1.2), 0.35, segs=8, rings=2)
+    rig.part("scarf", g, SCARF_DK, outline=0)
 
     face = KI.head_face(rig, brow=I.HAIR, brow_angry=True, mouth_dz=-8.6, mouth_shape="smile")
     # soot on the face after the blast (shown in the death)
@@ -133,6 +170,37 @@ def build(rig):
     I.fuse_spark(rig, "root", BOOM, size=3.4, name="boom", seed=6, hidden=True)
     I.smoke_puff(rig, "root", (BOOM[0] + 2.0, BOOM[1], BOOM[2] + 4.0), size=1.5, name="boomsmoke")
     rig.track("fuse", "torso", FUSE_TIP)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _jacket_detail(rig):
+    """W3: the jacket's team-dark yoke and back seams and a pocket flap; a patch on the near knee and the gaiters'
+    straps (the surfaces rebuilt for the ray casts)."""
+    body = Geo().blob((0, 0, 28.0), (10.6, 9.6, 11.6), p=2.4, taper=(1.08, 0.94))
+    body.blob((0, 0, 18.4), (10.4, 9.6, 4.6), p=2.6)
+    face = F.Face(rig, "torso", [body])
+    IW.folds(rig, "torso", face, [[(-6.0, 35.6), (0.0, 35.8), (6.0, 35.2)], [(-6.6, 34.6), (-7.0, 27.0), (-6.6, 22.6)]],
+             w=1.1)
+    IW.panel(rig, "torso", face, [(3.6, 26.6), (8.6, 27.0), (8.4, 28.6), (3.8, 28.2)])
+    ly = -I.LEG_Y
+    IW.patch(rig, "thigh_r", F.Face(rig, "thigh_r", [Geo().capsule((0, ly, KI.V3_THIGH_Z), (0.5, ly, KI.V3_KNEE_Z),
+                                                                  4.6, 4.2)]),
+             [(-3.0, 12.6), (1.4, 12.4), (1.6, 15.8), (-2.8, 16.0)], fill=PATCH, stitch=THREAD)
+    for s_, y in (("r", -I.LEG_Y), ("l", I.LEG_Y)):
+        g = Geo().lathe([(3.85, 0), (4.05, 0.6), (4.05, 1.4), (3.8, 2.0)], (0.75, y, 8.6), (0.8, y, 10.6), segs=16)
+        rig.part(f"shin_{s_}", g, I.LEATHER if s_ == "r" else "#564337", outline=0.4)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames: the
+    jacket's back (the team field the charge box and the arms leave clear, r 7.5), the charge box's team lid, the
+    near sleeve, the trousers, a strip torn from the jacket's hem."""
+    rig.damage_spot_at("jacket", "torso", -8.0, 33.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("lid", "torso", -15.0, 43.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("sleeve", "arm_r", -1.0, 32.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("trousers", "thigh_r", -2.6, 17.4, 5.0, "cloth", fill=I.DENIM)
+    rig.damage_spot_at("hem", "hips", 4.0, 16.4, 7.0, "cloth", kind="strip", team=True)
 
 
 def grip(a, f, w, la=-80.0, lf=-60.0):
@@ -309,11 +377,11 @@ def _attack_b():
     ov = {
         1: [{"kind": "burst", "joint": "head", "point": (6.0, 0.0, 58.0), "r0_lu": 3.0, "r1_lu": 7.0, "n": 5,
              "a0": 20.0, "arc": 140.0}],
-        5: [dict(bowl, **{"from": 4, "t0": 0.0, "t1": 0.95})],
-        6: [dict(bowl, **{"from": 4, "t0": 0.4, "t1": 1.0})],
+        5: IW.smear_two_tone(dict(bowl, **{"from": 4, "t0": 0.0, "t1": 0.95}), band=0.5),     # W3: two-tone
+        6: IW.smear_two_tone(dict(bowl, **{"from": 4, "t0": 0.4, "t1": 1.0}), band=0.5),
         7: [{"kind": "burst", "joint": "root", "point": BOOM, "r0_lu": 12.0, "r1_lu": 22.0, "n": 9,
              "a0": 0.0, "arc": 360.0},
-            {"kind": "dust", "ground": (28.0, 0.0), "size_lu": 9.0, "puffs": 5, "seed": 63, "spread": 1.2}],
+            {"kind": "dust", "ground": (28.0, 0.0), "size_lu": 6.5, "puffs": 4, "seed": 63, "spread": 1.2}],
     }
     reuse = {0: ("attack", 0), 1: ("attack", 1), 2: ("attack", 2), 8: ("attack", 8), 9: ("attack", 9),
              10: ("attack", 10), 11: ("attack", 11)}
@@ -349,6 +417,77 @@ def _die(k):
     return pose
 
 
+# -- burrow and surface (items 51/52, Tunnel; extras sheet): poses on the rig, no new parts ---------------------------
+# burrow (1000 ms, the sim's dig-in): kneel, claw at the ground with both hands (dirt flung back), dig deeper with the
+# head down, curl into the hole; surface (1500 ms, the surfacing telegraph): curled low, push up, burst out arms high,
+# land in a crouch, ready the charge. The runtime adds the mound, the trail and the crack ring at the gate.
+DIG = [  # (near arm a, f, w), (far arm a, f), hips z, torso r, head r, kneel drop
+    ((-60.0, -10.0, 60.0), (-60.0, -30.0), -2.5, -16.0, 10.0, 0.0),
+    ((-100.0, -60.0, 70.0), (-96.0, -70.0), -5.0, -30.0, 18.0, 9.0),
+    ((-130.0, -150.0, 40.0), (-120.0, -150.0), -6.0, -42.0, 22.0, 14.0),
+    ((-70.0, -100.0, 90.0), (-64.0, -96.0), -6.0, -38.0, 20.0, 14.0),
+    ((-140.0, -160.0, 30.0), (-132.0, -158.0), -8.0, -54.0, 26.0, 14.0),
+    ((-150.0, -170.0, 20.0), (-146.0, -170.0), -11.0, -70.0, 30.0, 14.0),
+]
+BURROW_MS = [140, 160, 170, 170, 180, 180]
+
+
+def _burrow_pose(k):
+    (a, fo, w), (la, lf), hz, tr, hr, drop = DIG[k]
+    pose = merge(grip(a, fo, w, la, lf), fizz(k), {"hips": {"z": hz}, "torso": {"r": tr}, "head": {"r": hr},
+                                                   "scarf": {"r": [0, 6, 10, 4, 12, 16][k]}})
+    pose = merge(pose, F.expr("grit") if k < 2 else F.expr("squeeze", "grit"))
+    if drop > 0:
+        return KI.kneel(RIG, pose, LEGS, drop=drop, front=10.0)
+    return KI.ground_feet(RIG, pose, LEGS)
+
+
+def _burrow_clip():
+    dirt = lambda seed, size, x: {"kind": "dust", "ground": (x, 0.0), "size_lu": size, "puffs": 4, "seed": seed,  # noqa: E731
+                                  "spread": 1.2, "dir": -1.0}
+    # W3: smaller clods (the flat dust held the extras' micro at 4.06; the dig reads from the pose and the spark)
+    ov = {2: [dirt(71, 5.0, 8.0)], 3: [dirt(72, 5.5, 4.0)], 4: [dirt(73, 6.0, 6.0)],
+          5: [dirt(74, 7.0, 4.0), {"kind": "dust", "ground": (14.0, 0.0), "size_lu": 6.0, "puffs": 4, "seed": 75,
+                                   "spread": 1.4}]}
+    return M.clip("burrow", [_burrow_pose(k) for k in range(6)], BURROW_MS, overlays=ov)
+
+
+RISE = [  # (near arm a, f, w), (far arm a, f), hips z, torso r, head r, kneel drop, body z
+    ((-150.0, -170.0, 20.0), (-146.0, -170.0), -11.0, -66.0, 28.0, 14.0, 0.0),
+    ((-120.0, -100.0, 60.0), (-116.0, -96.0), -8.0, -44.0, 22.0, 12.0, 0.0),
+    ((60.0, 110.0, 120.0), (70.0, 120.0), 0.0, 6.0, -4.0, 0.0, 10.0),
+    ((80.0, 130.0, 140.0), (90.0, 140.0), 0.0, 10.0, -6.0, 0.0, 14.0),
+    ((-90.0, -40.0, 60.0), (-80.0, -40.0), -6.0, -24.0, 14.0, 6.0, 0.0),
+    ((-66.0, -6.0, 64.0), (-60.0, -30.0), -2.5, -16.0, 10.0, 0.0, 0.0),
+]
+SURFACE_MS = [260, 240, 200, 200, 280, 320]
+
+
+def _surface_pose(k):
+    (a, fo, w), (la, lf), hz, tr, hr, drop, bz = RISE[k]
+    pose = merge(grip(a, fo, w, la, lf), fizz(k + 3), {"hips": {"z": hz}, "torso": {"r": tr}, "head": {"r": hr},
+                                                       "scarf": {"r": [14, 10, -18, -24, 8, 0][k]}})
+    if k in (2, 3):   # airborne: the body up, the legs tucked a little; feet off the ground
+        pose = merge(pose, {"body": {"z": bz}, "thigh_r": {"r": 14}, "shin_r": {"r": -22}, "thigh_l": {"r": -8},
+                            "shin_l": {"r": -26}}, F.expr("yell"), {"brow": {"z": 1.0}})
+        return pose
+    pose = merge(pose, F.expr("squeeze", "grit") if k < 2 else F.expr("grit"))
+    if drop > 0:
+        return KI.kneel(RIG, pose, LEGS, drop=drop, front=10.0)
+    return KI.ground_feet(RIG, pose, LEGS)
+
+
+def _surface_clip():
+    ov = {0: [{"kind": "dust", "ground": (2.0, 0.0), "size_lu": 6.5, "puffs": 4, "seed": 81, "spread": 1.3}],
+          1: [{"kind": "dust", "ground": (0.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 82, "spread": 1.5}],
+          2: [{"kind": "burst", "joint": "root", "point": (2.0, -14.0, 6.0), "r0_lu": 10.0, "r1_lu": 20.0, "n": 9,
+               "a0": 10.0, "arc": 160.0, "color": "#E6D8BE"},
+              {"kind": "dust", "ground": (-6.0, 0.0), "size_lu": 6.5, "puffs": 4, "seed": 83, "spread": 1.6},
+              {"kind": "dust", "ground": (10.0, 0.0), "size_lu": 6.5, "puffs": 4, "seed": 84, "spread": 1.6}],
+          4: [{"kind": "dust", "ground": (4.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 85, "spread": 1.0}]}
+    return M.clip("surface", [_surface_pose(k) for k in range(6)], SURFACE_MS, overlays=ov)
+
+
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
@@ -358,5 +497,7 @@ def clips():
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
+        _burrow_clip(),
+        _surface_clip(),
     ]
     return M.check_variants(M.check_contract(cl))

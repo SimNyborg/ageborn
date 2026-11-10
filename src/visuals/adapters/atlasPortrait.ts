@@ -16,7 +16,7 @@ import { skinSheetOf, skinStillBase } from '../skinSheets';
  * needs the render frames). They keep the procedural portrait, so the game never requests a missing file.
  * `src/visuals/test/unitSheets.test.ts` fails once a still appears, so this list shrinks with the art.
  */
-export const UNITS_WITHOUT_STILLS: ReadonlySet<string> = new Set(['sapper']);
+export const UNITS_WITHOUT_STILLS: ReadonlySet<string> = new Set<string>();
 
 /**
  * `art/units/<age>/<slug>.json` → `art/portraits/<slug>` (no extension), or null for other sources. A troop skin's

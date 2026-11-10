@@ -20,6 +20,13 @@ Animation (ANIM_SPEC G1, appendix B for an axe: overhead chop, leaping chop, low
             across into the target's legs
   hit       light: the head snaps back, the hat lifts, eyes squeezed
   die       D1 fling and spin: the hat pops off, the axe flies, X eyes and tongue
+
+Detail standard (art round W3, Track INDUSTRIAL): a mountaineer's wool and tweed. The loden jacket's cog whole
+(conforming), team-dark yoke and back seams and two pocket flaps; the knickerbockers' side seam; the knee socks
+ribbed; the rope coil's twist; the Tyrolean hat's team-dark crease and a brass badge on its band; a polished band
+on the axe's pick and grain down its haft. The red-brown beard's saturation is clamped by the standard (the shipped
+sheet broke the A11 colour rule, 12.6%). Damage spots (posed frames measured): the jacket's back (r 7.5), the hat's
+crown, the near sleeve, the knickerbockers, a strip from the jacket's hem.
 """
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
@@ -27,6 +34,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "alpine_climber"
 GAIT_NAME = "biped"
@@ -50,6 +58,22 @@ FEATHER = "#E8DFC8"
 ROPE = "#D9CCB0"
 HAFT_C = "#C9AE84"
 STEEL = "#A9B0B8"
+SOCK_RIB = "#CFC4AC"       # W3: the knee socks' ribs
+ROPE_DK = "#BFB094"        # the rope's twist
+STEEL_HI = "#C8CDD3"       # the pick's polished band
+GRAIN = "#A68A63"          # the haft's grain
+TWEED_SEAM = "#5E574A"
+
+# the detail standard (art round W3): the pilot's soldier lifts; wool, tweed, leather, rope, steel and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", BEARD: "fur", SHIRT: "cloth", SHIRT_DK: "cloth", TWEED_SEAM: "cloth",
+                           SOCK: "cloth", SOCK_RIB: "cloth", FEATHER: "cloth", ROPE: "cloth", ROPE_DK: "cloth",
+                           KI.CREAM: "cloth", HAFT_C: "wood", GRAIN: "wood", I.LEATHER: "leather",
+                           I.LEATHER_DK: "leather", I.BOOT: "leather", I.COAL: "leather", STEEL: "iron",
+                           STEEL_HI: "iron", I.IRON_DK: "iron", I.BRASS_LT: "bronze", "team": "cloth"})
 
 
 def _pick(rig, joint, fist):
@@ -68,6 +92,12 @@ def _pick(rig, joint, fist):
     g = Geo().blob((cx - 6.0, cy, hz + 0.4), (3.4, 2.2, 1.2), p=2.6, rot=(0, 10, 0))   # flat adze
     g.capsule((cx, cy, hz), (cx - 4.0, cy, hz + 0.2), 1.6)
     rig.part(joint, g, STEEL, finish="metal", outline=0.8)
+    # W3: a polished band along the pick's top and the haft's grain
+    g = Geo().capsule((cx + 1.4, cy - 1.45, hz + 1.0), (cx + 7.6, cy - 1.2, hz - 0.2), 0.48, segs=8, rings=2)
+    rig.part(joint, g, STEEL_HI, finish="metal", outline=0)
+    g = Geo().capsule((cx + 0.7, cy - 1.1, cz + 2.0), (cx + 0.65, cy - 0.95, cz + 12.0), 0.34, segs=8, rings=2)
+    g.capsule((cx - 0.55, cy - 1.05, cz + 15.0), (cx - 0.5, cy - 0.95, cz + 23.0), 0.34, segs=8, rings=2)
+    rig.part(joint, g, GRAIN, outline=0, highlight=False)
     return (cx + 11.0, cy, hz - 4.0)
 
 
@@ -87,8 +117,9 @@ def build(rig):
     jacket.blob((0, 0, 18.4), (10.4, 9.6, 4.6), p=2.6)
     jface = F.Face(rig, "torso", [Geo().blob((0, 0, 28.0), (10.6, 9.6, 11.6), p=2.4, taper=(1.08, 0.94))])
     rig.part("torso", jacket, team=True)
-    g = KI.cog(jface, Geo(), (9.8, 27.0), s=0.9)
+    g = IW.cog(jface, Geo(), (9.8, 27.0), s=0.9)       # W3: the cog whole (conforming)
     rig.part("torso", g, KI.CREAM, highlight=False, outline=0)
+    _wool_and_tweed(rig, jface)
     g = Geo().blob((1.2, 0, 37.4), (7.6, 8.0, 2.8), p=2.4)
     rig.part("torso", g, SHIRT_DK)
     g = Geo().blob((0.2, 0, 20.6), (11.4, 10.6, 2.0), p=3.2)
@@ -107,6 +138,14 @@ def build(rig):
         for p0, p1 in zip(pts, pts[1:]):
             g.capsule(p0, p1, 1.1)
     rig.part("rope", g, ROPE, outline=0.5)
+    g = Geo()   # W3: the rope's twist (short dark strokes across the near coil)
+    for t in range(0, 18, 2):
+        a = 2 * _m.pi * (t + 0.5) / 18
+        r0 = 6.4
+        c = (-2.0 + r0 * _m.cos(a), 9.4 - 1.05, 28.0 + r0 * 1.15 * _m.sin(a))
+        g.capsule((c[0] - 0.5 * _m.sin(a), c[1], c[2] + 0.5 * _m.cos(a)),
+                  (c[0] + 0.5 * _m.sin(a), c[1], c[2] - 0.5 * _m.cos(a)), 0.3, segs=6, rings=2)
+    rig.part("rope", g, ROPE_DK, outline=0)
     g = Geo().capsule((9.0, -8.0, 35.0), (10.0, 7.0, 21.0), 1.2)
     rig.part("torso", g, ROPE, outline=0.4)
 
@@ -132,6 +171,37 @@ def build(rig):
     KI.loose(rig, "pick_loose", FIST, lambda j: _pick(rig, j, FIST))
     rig.track("pickTip", "pick", tip)
     I.fuse_spark(rig, "pick", (tip[0] + 1.0, tip[1] - 2.0, tip[2] - 1.0), size=2.0, name="clink", hidden=True)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _wool_and_tweed(rig, jface):
+    """W3: the loden jacket's team-dark yoke and back seams and two pocket flaps; the knickerbockers' side seam; the
+    knee socks ribbed (the surfaces rebuilt for the ray casts)."""
+    IW.folds(rig, "torso", jface, [[(-10.0, 34.0), (-4.0, 35.4), (2.0, 35.8)], [(-6.8, 34.6), (-7.2, 27.0), (-6.8, 22.6)]],
+             w=1.1)
+    for x0 in (2.0,):
+        IW.panel(rig, "torso", jface, [(x0, 23.6), (x0 + 5.0, 24.0), (x0 + 4.8, 25.6), (x0 + 0.2, 25.2)])
+    IW.panel(rig, "torso", jface, [(1.6, 31.4), (5.6, 31.8), (5.4, 33.2), (1.8, 32.8)])
+    ly = -I.LEG_Y
+    thigh = Geo().capsule((0, ly, KI.V3_THIGH_Z), (0.5, ly, KI.V3_KNEE_Z), 4.6, 4.2)
+    IW.seam(rig, "thigh_r", F.Face(rig, "thigh_r", [thigh]), [(0.4, 18.6), (0.7, 13.6)], fill=TWEED_SEAM, w=0.7)
+    for s_, y in (("r", -I.LEG_Y), ("l", I.LEG_Y)):
+        shin = Geo().capsule((0.5, y, KI.V3_KNEE_Z), (1.0, y, KI.V3_ANKLE_Z + 0.6), 3.9, 3.3)
+        IW.folds(rig, f"shin_{s_}", F.Face(rig, f"shin_{s_}", [shin]),
+                 [[(x, 10.6), (x + 0.3, 6.4)] for x in (-1.8, 0.0, 1.8)], w=0.6, team=False,
+                 fill=SOCK_RIB if s_ == "r" else "#A69D8A")
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames: the
+    jacket's back (the biggest team field the axe and the rope leave clear, r 7.5), the hat's crown, the near sleeve,
+    the knickerbockers, a strip torn from the jacket's hem."""
+    rig.damage_spot_at("jacket", "torso", -7.4, 26.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("hat", "hat", -2.0, 66.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("sleeve", "arm_r", -1.0, 32.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("breeches", "thigh_r", -2.0, 15.0, 5.0, "cloth", fill=SHIRT)
+    rig.damage_spot_at("hem", "torso", 4.0, 16.6, 7.0, "cloth", kind="strip", team=True)
 
 
 def _cap(rig, joint):
@@ -142,6 +212,10 @@ def _cap(rig, joint):
     rig.part(joint, g, team=True)
     g = Geo().lathe([(9.8, 0), (9.7, 1.8), (9.3, 2.8)], (x, y, z + 1.4), (x, y, z + 4.2), segs=24)
     rig.part(joint, g, I.LEATHER_DK, outline=0.5)
+    g = Geo().sphere((x + 9.4, y - 2.2, z + 2.8), 1.1, cuts=2)               # W3: a brass badge on the band
+    rig.part(joint, g, I.BRASS_LT, finish="metal", outline=0.3)
+    g = Geo().capsule((x - 3.0, y - 4.0, z + 10.4), (x + 4.0, y - 3.4, z + 10.0), 0.6, segs=8, rings=2)
+    IW.team_dark(rig, joint, g)                                                # the crown's crease
     g = Geo().blob((x - 6.0, y - 8.6, z + 7.0), (1.2, 1.0, 6.0), p=2.2, rot=(0, -40, 0))
     rig.part(joint, g, FEATHER, outline=0.5)
 
