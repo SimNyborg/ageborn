@@ -31,7 +31,7 @@ const PORTRAITS = import.meta.glob('/public/art/portraits/*.png', { query: '?url
 /** What an extras sheet holds besides aimed variants: the attack variants (ANIM_SPEC P4) and the items 51/52 signature
  * and formation poses (`art/blender/ageborn_art/pipeline.py` POSE_CLIPS; nothing plays them until those items ship). */
 const X_VARIANTS = ['attack_b', 'attack_c', 'attack_alt'];
-const POSE_CLIPS = ['kneel_fire', 'square', 'charge', 'wheel_back', 'aim', 'pike_set', 'shield_lock'];
+const POSE_CLIPS = ['kneel_fire', 'square', 'charge', 'wheel_back', 'aim', 'pike_set', 'shield_lock', 'spear_set', 'hop_back', 'burrow', 'surface', 'stomp_walk'];
 
 describe('HD unit sheets', () => {
   it('every HD sheet matches its plain sheet frame for frame', () => {

@@ -37,7 +37,10 @@ class _ExtraClips(tuple):
 
 # attack variants and second attackers go into the lazily loaded extras sheet (ANIM_SPEC P4)
 # items 51/52: signature and formation poses, rendered with their unit, kept out of the core sheet
-POSE_CLIPS = ("kneel_fire", "square", "charge", "wheel_back", "aim", "pike_set", "shield_lock")
+# (the full list of docs/design-history/item51-signatures.md section 10.9; wheel_back stays though the Dragoon no longer
+# needs it, so a sheet that has it keeps routing it)
+POSE_CLIPS = ("kneel_fire", "square", "charge", "wheel_back", "aim", "pike_set", "shield_lock", "spear_set", "hop_back",
+              "burrow", "surface", "stomp_walk")
 EXTRA_CLIPS = _ExtraClips(("attack_b", "attack_c", "attack_alt") + POSE_CLIPS)   # and every aimed variant (W0)
 
 
