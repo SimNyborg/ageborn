@@ -5,5 +5,13 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
+  },
+  "dv17-devlog-17-the-hydra-test": {
+    "length_s": 23.9,
+    "format": "devlog",
+    "hook_type": "question",
+    "experiment": "indie-angle",
+    "arm": "devlog",
+    "voice": "elevenlabs-steve-v4"
   }
 }

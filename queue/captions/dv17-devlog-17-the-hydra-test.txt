@@ -1,0 +1,4 @@
+Devlog #17: the Hydra test 🐉🛡️
+Last week I asked which Legendary to test next, so here's the Hydra. Three heads, each biting a different soldier. Against five Hoplites it wins with 14% health left. Add one more and it falls. Should a Legendary beat six, or is five about right? 👇
+
+#gamedev #indiedev #indiegame #devlog #gamebalance
