@@ -6,9 +6,12 @@ about its pivot; `fire` has a per-frame muzzle anchor where the projectile leave
 import math
 
 from ageborn_art import face as F
+from ageborn_art import look
 from ageborn_art.geometry import Geo
 
-from world.common import box, cyl, muzzle_flash, pennant, rock, rope, smoke_puff, turret_module
+from world import kit_wa as KW
+from world import look_world as LW
+from world.common import box, cyl, muzzle_flash, pennant, plank, rock, rope, smoke_puff, turret_module
 
 STONE = "#8C7B68"
 STONE_LT = "#A08E78"
@@ -44,9 +47,30 @@ def stone_footing(rig, r=17.0, h=8.0, seed=1):
     rig.part("mount", g, STONE_DK)
 
 
-# -- Rock Tosser: a log catapult ------------------------------------------------------------------
+# -- Rock Tosser: a log catapult on a drystone plinth ---------------------------------------------
+# World wave A (the detail standard; opted in below with look_world): a plinth of fitted blocks 4-5 lu tall (two
+# courses, chipped, moss on the top edges) in place of the smooth footing rock; the A-frames lashed at the apex and the
+# near one braced by a cross-beam; a torsion skein of twisted rope round the axle (the mechanism); the arm with three
+# rope wraps and a team rag tied under the cup (in two tones, so the team reads on the head in every frame), the cup
+# with a rope rim; the pennant in two tones. All inside the old envelope (the sheet budget); clips, pivot and muzzle
+# untouched.
+LASH = "#CDBB92"          # pale rope lashings: they read against the dark bark
+HIDE = "#8A6A50"
+FINIAL = "#C8B488"
+RT_KINDS = {STONE: "stone", STONE_LT: "stone", STONE_DK: "stone", BARK: "wood", WOOD: "wood", WOOD_DK: "wood",
+            ROPE: "leather", LASH: "leather", HIDE: "leather", MOSS: "fur", FINIAL: "bone", "team": "cloth"}
+
+
 def rock_tosser_build(rig):
-    stone_footing(rig, seed=2)
+    # the drystone plinth on the old footing's footprint (x -17..17, y -11..14, its top at z 8.6)
+    KW.drystone(rig, "mount", [(0.0, 4.6, [-17.0, -6.5, 5.0, 17.0]), (4.4, 8.6, [-13.0, 0.5, 13.0])],
+                (STONE_LT, STONE, STONE_LT, STONE_DK, STONE), seed=3, depth=(-11.0, 14.0))
+    g = Geo()
+    rock(g, (-11.9, -8.5, 2.5), (5, 4, 3.4), seed=7, jag=0.2)     # the loose stones at its front corners
+    rock(g, (12.75, -6.8, 2), (4, 3.4, 2.8), seed=8, jag=0.2)
+    rig.part("mount", g, STONE_DK)
+    KW.moss(rig, "mount", [(-10.0, -9.8, 8.4, 3.8), (-3.0, -10.6, 4.8, 2.8), (8.0, -9.6, 8.6, 3.4), (12.0, 9.0, 8.4, 3.0)],
+            MOSS, seed=5)
     g = Geo()
     for y in (-8, 8):
         g.capsule((-12, y, 6), (0, y, 24), 2.8, 2.4)
@@ -54,19 +78,33 @@ def rock_tosser_build(rig):
     rig.part("mount", g, BARK)
     g = Geo().capsule((0, -10, 22), (0, 10, 22), 2.2)
     rig.part("mount", g, WOOD_DK, outline=0.6)
+    # the torsion skein: a fat bundle of twisted rope round the axle between the frames
+    prof = [(0.0, 0.0), (3.0, 0.0)] + [(3.7 if k % 2 else 3.1, 1.0 * k) for k in range(1, 10)] + [(3.0, 10.0),
+                                                                                                   (0.0, 10.0)]
+    g = Geo().lathe(prof, (0, -5, 22), (0, 5, 22), segs=14)
+    rig.part("mount", g, ROPE, outline=0.5)
+    # the apex lashings and the near frame's cross-beam with its lashed ends
+    for y in (-8, 8):
+        KW.wraps(rig, "mount", (0, y, 18.6), (0, y, 25.0), 2.6, 3, LASH)
+    for x in (-12, 12):     # each leg lashed where it stands in the plinth
+        KW.wraps(rig, "mount", (x * 0.86, -8, 8.6), (x * 0.7, -8, 11.6), 2.5, 2, LASH, w=0.65)
     g = Geo()
-    rope(g, [(-7, -9.5, 14), (7, -9.5, 14)], 1.0)
-    rig.part("mount", g, ROPE, outline=0.4)
-    pennant(rig, "mount", -14, 6, 6, h=30)
+    plank(g, (-7.4, -8.4, 13.0), (7.4, -8.4, 13.0), 2.8, 1.8, up=(0, 1, 0))
+    rig.part("mount", g, WOOD_DK, outline=0.6)
+    for x0, x1 in ((-7.6, -5.0), (5.0, 7.6)):
+        KW.wraps(rig, "mount", (x0, -8.4, 13.0), (x1, -8.4, 13.0), 1.5, 2, LASH, w=0.6)
+    KW.pennant(rig, "mount", -14, 6, 6, h=30, pole=BARK, finial=FINIAL)
     # the arm (head pivot at the axle), modelled pointing up-back at rest
     rig.joint("arm", "head", (0, 0, 22))
     g = Geo().capsule((0, 0, 22), (-2, 0, 50), 2.6, 2.0)
     rig.part("arm", g, WOOD)
     g = Geo().lathe([(0, 0), (6.5, 1.2), (7.5, 5), (6.5, 6.2), (0, 3)], (-2.5, 0, 48), (-2.5, 0, 55), segs=14)
     rig.part("arm", g, WOOD_DK)
-    g = Geo()
-    rope(g, [(-1.2, -2.6, 30), (-1.6, -2.6, 36), (-1.2, -2.6, 42)], 0.9)
-    rig.part("arm", g, ROPE, outline=0.4)
+    g = Geo().lathe([(6.4, -0.6), (7.1, 0.0), (6.4, 0.6)], (-2.5, 0, 53.4), (-2.5, 0, 54.6), segs=14)
+    rig.part("arm", g, ROPE, outline=0.4)                                   # the cup's rope rim
+    KW.wraps(rig, "arm", (-0.5, 0, 28.0), (-1.2, 0, 38.0), 2.3, 3, ROPE)
+    KW.team_band(rig, "arm", (-1.45, 0, 41.2), (-1.65, 0, 43.4), 2.1, tone=look.TEAM_DARK)
+    KW.team_band(rig, "arm", (-1.65, 0, 43.4), (-1.85, 0, 46.4), 2.0)
     rig.joint("boulder", "arm", (-2.5, 0, 57))
     g = Geo()
     rock(g, (-2.5, 0, 57), (5.4, 5, 5), seed=7, jag=0.15)
@@ -95,32 +133,65 @@ ROCK_TOSSER_OVERLAYS = {"fire": {1: [{"kind": "arc", "joint": "arm", "inner": (-
 
 
 # -- Angry Beehive: a hive hanging from a branch on a stump ----------------------------------------
+# World wave A (the detail standard): a woven straw skep (coils of 2.6 lu in two tones round the hive, in place of
+# three thin rings; round the face only at its sides), the eyes outlined so they read on the lit straw, the team band in
+# two tones and a team rag on the branch, the stump with flaring roots, a lashed branch, bigger moss, the pennant in two
+# tones.
+HIVE_LT = "#DCCB9E"
+WING = "#F4F2EA"
+# (the straw keeps no breakup pattern: its coils are its texture, and the angry face stays clean on it)
+BH_KINDS = {BARK: "wood", WOOD: "wood", WOOD_DK: "wood", MOSS: "fur", BEE: "fur", BEE_DK: "fur", "#C8B488": "bone",
+            "team": "cloth"}
+
+
 def beehive_build(rig):
     g = Geo()
     cyl(g, (0, 0, 0), (0, 0, 14), 13, 11, bevel=1.4, segs=16)
+    for a in (-150.0, -95.0, -35.0, 40.0):      # flaring roots
+        t = math.radians(a)
+        g.capsule((9.5 * math.cos(t), 9.5 * math.sin(t), 4.0), (14.0 * math.cos(t), 13.0 * math.sin(t), 0.8), 2.6, 1.6)
     rig.part("mount", g, BARK)
     g = Geo()
     cyl(g, (0, 0, 13), (0, 0, 15), 10.5, bevel=0.5, segs=16)
     rig.part("mount", g, WOOD)
     g = Geo().capsule((-6, 0, 13), (-2, 0, 44), 3.2, 2.2).capsule((-3, 0, 42), (14, 0, 46), 2.2, 1.4)
     rig.part("mount", g, BARK)
+    KW.wraps(rig, "mount", (-5.2, 0, 19.0), (-4.6, 0, 23.0), 2.9, 2, "#CDBB92", w=0.65)
+    # a team rag tied round the branch in two tones, beside the pennant (team parts kept together: a team frame's
+    # box spans every team part in it, and the sheet pays for that box)
+    KW.team_band(rig, "mount", (-3.75, 0, 31.6), (-3.5, 0, 33.4), 2.45, tone=look.TEAM_DARK)
+    KW.team_band(rig, "mount", (-3.5, 0, 33.4), (-3.1, 0, 36.8), 2.35)
     g = Geo()
-    for dx, dz in ((10, 48), (15, 44)):
-        g.blob((dx, -1, dz), (3.6, 1.2, 2.2), p=2.0, rot=(0, 30, 0))
+    for dx, dz, r in ((9.0, 48.0, 4.2), (15.0, 44.5, 3.6), (-4.4, 33.0, 3.2)):
+        rock(g, (dx, -1.6, dz), (r, r * 0.55, r * 0.6), seed=int(dx * 3), jag=0.2, p=2.2, cuts=3)
     rig.part("mount", g, MOSS, outline=0.5)
-    pennant(rig, "mount", -11, 4, 12, h=26)
+    KW.pennant(rig, "mount", -11, 4, 12, h=26)
     # head: the hive swings from the branch
     prof = [(0, 0), (6, 0.5), (9.5, 3.5), (10.5, 8), (10, 13), (8, 17), (4.5, 20), (0, 21)]
     g = Geo().lathe(prof, (8, 0, 22), (8, 0, 43), segs=18)
     rig.part("head", g, HIVE)
-    g = Geo()
-    for z in (26.5, 31.5, 36.5):
-        k = 1.0 - abs(z - 31) / 22
-        cyl(g, (8, 0, z - 0.8), (8, 0, z + 0.8), 10.8 * k + 0.2, bevel=0.3, segs=18)
-    rig.part("head", g, HIVE_DK, outline=0.4)
+
+    def r_at(z):    # the hive's radius at height z (its lathe profile)
+        h = z - 22.0
+        for (r0, h0), (r1, h1) in zip(prof, prof[1:]):
+            if h0 <= h <= h1:
+                return r0 + (r1 - r0) * (h - h0) / max(1e-6, h1 - h0)
+        return 0.0
+    # the skep's coils: bulging straw bands of 2.6 lu, dark and light in turn (the team band sits in their row)
+    for i, z in enumerate((24.4, 27.2, 30.0, 35.8, 38.6, 41.0)):
+        g = Geo()
+        r = r_at(z)
+        g.lathe([(r - 0.4, -1.3), (r + 0.55, -0.5), (r + 0.55, 0.5), (r - 0.4, 1.3)], (8, 0, z), (8, 0, z + 1.0),
+                segs=18)
+        if z > 35.0:    # round the face only at the sides and the back: the angry face stays clear
+            g.clip((0, -4.0, 0), (0, -1, 0))
+        rig.part("head", g, HIVE_DK if i % 2 == 0 else HIVE_LT, outline=0.4)
     g = Geo()
     cyl(g, (8, 0, 32.8), (8, 0, 34.6), 10.9, bevel=0.3, segs=18)
     rig.part("head", g, team=True, outline=0.4)
+    g = Geo()
+    cyl(g, (8, 0, 31.3), (8, 0, 32.8), 10.9, bevel=0.3, segs=18)
+    look.team_part(rig, "head", g, outline=0.4)
     # the entrance is its mouth (it gapes on fire); an angry face above it
     rig.joint("hole", "head", (13, -8.5, 28))
     g = Geo().blob((13, -8.5, 28), (3.4, 1.4, 2.8), p=2.0)
@@ -131,7 +202,8 @@ def beehive_build(rig):
     g = Geo()
     for x, z in ((9.0, 38.0), (15.4, 37.6)):
         face.decal(g, face.hit(x, z), F.ellipse(0, 0, 2.3, 2.8, 14), 0.4)
-    rig.part("head", g, EYE, highlight=False, outline=0)
+    # (world wave A: a dark line round the eyes, so they read on the lit straw)
+    rig.part("head", g, EYE, highlight=False, outline=0.45)
     rig.joint("pupils", "head", (12, -10, 38))
     g = Geo()
     for x, z in ((9.0, 38.0), (15.4, 37.6)):
@@ -149,7 +221,7 @@ def beehive_build(rig):
         g = Geo().blob((x - 0.8, -10.5, z), (0.8, 2.1, 2.1), p=2.0)
         rig.part(f"bee{i}", g, BEE_DK, outline=0)
         g = Geo().blob((x, -9.4, z + 2.4), (1.8, 0.6, 1.4), p=2.0)
-        rig.part(f"bee{i}", g, "#F4F2EA", outline=0.3)
+        rig.part(f"bee{i}", g, WING, outline=0.3)
 
 
 def beehive_idle(f):
@@ -464,3 +536,7 @@ TURRETS = [
                   sapling_idle, sapling_fire, aim=(0, 0), fire_kind="swing", muzzle_joint="stone", idle_frames=6,
                   overlays=SAPLING_OVERLAYS),
 ]
+
+# world wave A: the items brought to the detail standard (look_world.opt_in; the others render as before)
+LW.opt_in(TURRETS[0], RT_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
+LW.opt_in(TURRETS[1], BH_KINDS, highlight=1.6, shade=dict(KW.SHADE_WORLD, shadow=1.0))   # warm straw: no darker band

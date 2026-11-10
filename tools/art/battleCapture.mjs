@@ -17,8 +17,13 @@
 // Scenario file: { "<name>": { "query": "left=stone&right=stone&seed=11", "bars": false, "vp": "phone",
 //   "tags": ["before", "after"], "range": [from, to], "every": 1,
 //   "spawns": [[side, card, p, frame, level?], ...],
+//   "turrets": [[side, mount, card, frame?], ...]?, "forts": [[side, card, frame?, pad?, done?], ...]?,
+//   "baseBp": [[side, bp, frame?], ...]?,
 //   "track": <spawn index>?, "trackWidth": <lu>?, "camera": { "wMin": 640, "wMax": 760 }? } }
 // p is the lane position from the side's own base (lu), frame the sim step to spawn at, level the card level.
+// World items (art round world wave): `turrets` stand a turret card on a base mount (0-3) at once, `forts` place a fort
+// card on a pad (default 0; `done` default true: built at once), `baseBp` sets a base's HP in basis points (its crumble
+// stage); `frame` defaults to 0. A `camera` such as { "kind": "base", "side": 0, "w": 923, "inset": 0.3 } frames a base.
 /* global window */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
@@ -83,7 +88,7 @@ async function waitForLocks() {
 }
 
 async function capture(browser, name) {
-  const sc = all[name];
+  const sc = { spawns: [], ...all[name] };
   const vp = sc.vp ?? 'phone';
   const every = sc.every ?? 1;
   const ctx = await browser.newContext({ viewport: VIEWPORTS[vp], deviceScaleFactor: 2 });
@@ -103,12 +108,29 @@ async function capture(browser, name) {
   fs.mkdirSync(dir, { recursive: true });
   const byFrame = new Map();
   sc.spawns.forEach((s, i) => byFrame.set(s[3], [...(byFrame.get(s[3]) ?? []), [i, ...s]]));
+  // world items: placed through the capture page's dev hooks at their frame (before that frame's step)
+  const world = new Map();
+  const put = (f, act) => world.set(f, [...(world.get(f) ?? []), act]);
+  for (const [side, mount, card, f = 0] of sc.turrets ?? []) put(f, ['turret', side, mount, card]);
+  for (const [side, card, f = 0, pad = 0, done = true] of sc.forts ?? []) put(f, ['fort', side, card, pad, done]);
+  for (const [side, bp, f = 0] of sc.baseBp ?? []) put(f, ['baseBp', side, bp]);
   const ids = {};
   const hp = [];
   const [from, to] = sc.range;
   let frame = 0;
   let snaps = 0;
   while (frame <= to) {
+    const acts = world.get(frame);
+    if (acts) {
+      await page.evaluate((l) => {
+        const dev = window.__capture.dev;
+        for (const [k, side, a, b, c] of l) {
+          if (k === 'turret') dev.turret(side, a, b);
+          else if (k === 'fort') dev.fort(side, a, { pad: b, done: c });
+          else if (k === 'baseBp') dev.baseBp(side, a);
+        }
+      }, acts);
+    }
     const list = byFrame.get(frame);
     if (list) {
       const got = await page.evaluate(

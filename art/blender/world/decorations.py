@@ -1824,3 +1824,23 @@ DECORATIONS = [fire_bowl(), fern(), stone_idol(), lion_statue(), knight_statue()
                hide_banner(), royal_standard(), regiment_colors(), neon_banner(), iron_brazier(), gas_lamp(),
                plasma_brazier(), mammoth_tusks(), knight_helm(), golden_cup(), star_trophy(), shield_rack(),
                olive_tree(), topiary(), potted_cactus(), bonsai(), crystal_flower()]
+
+# world wave A (the detail standard; look_world.opt_in): the props brought to it so far. Their models already carry the
+# audit's secondary shapes (round 3), so the step is the lifts: material kinds (chipped stone, moss in clumps, sinew,
+# charred wood with grain), the cavity and edge light, the top rim and outline v4's inner cover on their prop line.
+SINEW = "#A88F6E"
+WA_KINDS = {
+    "fire_bowl": {STONE: "stone", STONE_LT: "stone", STONE_DK: "stone", MOSS: "fur", SINEW: "leather", CHAR: "wood"},
+    "stone_idol": {GREY: "stone", GREY_LT: "stone", GREY_DK: "stone", MOSS: "fur", BONE_DK: "bone"},
+}
+
+
+def _opt_in_wa():
+    from world import kit_wa as KW
+    from world import look_world as LW
+    for mod in DECORATIONS:
+        if mod.DECO in WA_KINDS:
+            LW.opt_in(mod, WA_KINDS[mod.DECO], highlight=KW.HIGHLIGHT_WORLD, shade=KW.SHADE_WORLD)
+
+
+_opt_in_wa()
