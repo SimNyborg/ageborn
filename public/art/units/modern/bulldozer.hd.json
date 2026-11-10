@@ -26,10 +26,10 @@
   },
   "bulldozer_idle_00_team": {
    "frame": {
-    "x": 2,
-    "y": 1456,
+    "x": 3261,
+    "y": 1211,
     "w": 274,
-    "h": 227
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 290,
     "y": 219,
     "w": 274,
-    "h": 227
+    "h": 228
    },
    "sourceSize": {
     "w": 804,
@@ -74,8 +74,8 @@
   },
   "bulldozer_idle_01_team": {
    "frame": {
-    "x": 2803,
-    "y": 1456,
+    "x": 3079,
+    "y": 1457,
     "w": 277,
     "h": 223
    },
@@ -83,7 +83,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 290,
-    "y": 225,
+    "y": 226,
     "w": 277,
     "h": 223
    },
@@ -122,18 +122,18 @@
   },
   "bulldozer_idle_02_team": {
    "frame": {
-    "x": 1118,
-    "y": 1687,
-    "w": 274,
-    "h": 221
+    "x": 1124,
+    "y": 1689,
+    "w": 273,
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 290,
     "y": 227,
-    "w": 274,
-    "h": 221
+    "w": 273,
+    "h": 222
    },
    "sourceSize": {
     "w": 804,
@@ -170,10 +170,10 @@
   },
   "bulldozer_idle_03_team": {
    "frame": {
-    "x": 280,
-    "y": 1456,
+    "x": 2,
+    "y": 1457,
     "w": 272,
-    "h": 227
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 290,
     "y": 219,
     "w": 272,
-    "h": 227
+    "h": 228
    },
    "sourceSize": {
     "w": 804,
@@ -218,17 +218,17 @@
   },
   "bulldozer_idle_04_team": {
    "frame": {
-    "x": 3084,
-    "y": 1456,
-    "w": 277,
+    "x": 283,
+    "y": 1689,
+    "w": 276,
     "h": 223
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 290,
-    "y": 225,
-    "w": 277,
+    "y": 226,
+    "w": 276,
     "h": 223
    },
    "sourceSize": {
@@ -266,10 +266,10 @@
   },
   "bulldozer_idle_05_team": {
    "frame": {
-    "x": 837,
-    "y": 1687,
+    "x": 843,
+    "y": 1689,
     "w": 277,
-    "h": 221
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 290,
     "y": 227,
     "w": 277,
-    "h": 221
+    "h": 222
    },
    "sourceSize": {
     "w": 804,
@@ -314,18 +314,18 @@
   },
   "bulldozer_walk_00_team": {
    "frame": {
-    "x": 1874,
+    "x": 1591,
     "y": 1211,
-    "w": 269,
-    "h": 229
+    "w": 268,
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 293,
     "y": 215,
-    "w": 269,
-    "h": 229
+    "w": 268,
+    "h": 230
    },
    "sourceSize": {
     "w": 804,
@@ -362,10 +362,10 @@
   },
   "bulldozer_walk_01_team": {
    "frame": {
-    "x": 556,
-    "y": 1456,
+    "x": 278,
+    "y": 1457,
     "w": 281,
-    "h": 226
+    "h": 227
    },
    "rotated": false,
    "trimmed": true,
@@ -373,7 +373,7 @@
     "x": 284,
     "y": 222,
     "w": 281,
-    "h": 226
+    "h": 227
    },
    "sourceSize": {
     "w": 804,
@@ -410,10 +410,10 @@
   },
   "bulldozer_walk_02_team": {
    "frame": {
-    "x": 2250,
-    "y": 1687,
+    "x": 2255,
+    "y": 1689,
     "w": 286,
-    "h": 214
+    "h": 215
    },
    "rotated": false,
    "trimmed": true,
@@ -421,7 +421,7 @@
     "x": 283,
     "y": 236,
     "w": 286,
-    "h": 214
+    "h": 215
    },
    "sourceSize": {
     "w": 804,
@@ -458,10 +458,10 @@
   },
   "bulldozer_walk_03_team": {
    "frame": {
-    "x": 1396,
-    "y": 1687,
+    "x": 1401,
+    "y": 1689,
     "w": 277,
-    "h": 220
+    "h": 221
    },
    "rotated": false,
    "trimmed": true,
@@ -469,7 +469,7 @@
     "x": 288,
     "y": 228,
     "w": 277,
-    "h": 220
+    "h": 221
    },
    "sourceSize": {
     "w": 804,
@@ -506,10 +506,10 @@
   },
   "bulldozer_walk_04_team": {
    "frame": {
-    "x": 2147,
+    "x": 1863,
     "y": 1211,
     "w": 267,
-    "h": 229
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
@@ -517,7 +517,7 @@
     "x": 293,
     "y": 215,
     "w": 267,
-    "h": 229
+    "h": 230
    },
    "sourceSize": {
     "w": 804,
@@ -554,10 +554,10 @@
   },
   "bulldozer_walk_05_team": {
    "frame": {
-    "x": 664,
+    "x": 663,
     "y": 1211,
     "w": 276,
-    "h": 232
+    "h": 233
    },
    "rotated": false,
    "trimmed": true,
@@ -565,7 +565,7 @@
     "x": 290,
     "y": 218,
     "w": 276,
-    "h": 232
+    "h": 233
    },
    "sourceSize": {
     "w": 804,
@@ -602,10 +602,10 @@
   },
   "bulldozer_walk_06_team": {
    "frame": {
-    "x": 1954,
-    "y": 1456,
+    "x": 1957,
+    "y": 1457,
     "w": 279,
-    "h": 223
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
@@ -613,7 +613,7 @@
     "x": 291,
     "y": 230,
     "w": 279,
-    "h": 223
+    "h": 224
    },
    "sourceSize": {
     "w": 804,
@@ -650,18 +650,18 @@
   },
   "bulldozer_walk_07_team": {
    "frame": {
-    "x": 1680,
-    "y": 1456,
-    "w": 270,
-    "h": 224
+    "x": 1684,
+    "y": 1457,
+    "w": 269,
+    "h": 225
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 294,
     "y": 226,
-    "w": 270,
-    "h": 224
+    "w": 269,
+    "h": 225
    },
    "sourceSize": {
     "w": 804,
@@ -698,10 +698,10 @@
   },
   "bulldozer_attack_00_team": {
    "frame": {
-    "x": 557,
-    "y": 1687,
+    "x": 563,
+    "y": 1689,
     "w": 276,
-    "h": 222
+    "h": 223
    },
    "rotated": false,
    "trimmed": true,
@@ -709,7 +709,7 @@
     "x": 290,
     "y": 226,
     "w": 276,
-    "h": 222
+    "h": 223
    },
    "sourceSize": {
     "w": 804,
@@ -746,10 +746,10 @@
   },
   "bulldozer_attack_01_team": {
    "frame": {
-    "x": 276,
-    "y": 1687,
+    "x": 2,
+    "y": 1689,
     "w": 277,
-    "h": 222
+    "h": 223
    },
    "rotated": false,
    "trimmed": true,
@@ -757,7 +757,7 @@
     "x": 284,
     "y": 222,
     "w": 277,
-    "h": 222
+    "h": 223
    },
    "sourceSize": {
     "w": 804,
@@ -794,10 +794,10 @@
   },
   "bulldozer_attack_02_team": {
    "frame": {
-    "x": 2237,
-    "y": 1456,
+    "x": 2240,
+    "y": 1457,
     "w": 279,
-    "h": 223
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
@@ -805,7 +805,7 @@
     "x": 273,
     "y": 218,
     "w": 279,
-    "h": 223
+    "h": 224
    },
    "sourceSize": {
     "w": 804,
@@ -842,10 +842,10 @@
   },
   "bulldozer_attack_03_team": {
    "frame": {
-    "x": 2520,
-    "y": 1456,
+    "x": 2523,
+    "y": 1457,
     "w": 279,
-    "h": 223
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
@@ -853,7 +853,7 @@
     "x": 269,
     "y": 217,
     "w": 279,
-    "h": 223
+    "h": 224
    },
    "sourceSize": {
     "w": 804,
@@ -890,10 +890,10 @@
   },
   "bulldozer_attack_04_team": {
    "frame": {
-    "x": 2418,
+    "x": 2134,
     "y": 1211,
     "w": 277,
-    "h": 228
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
@@ -901,7 +901,7 @@
     "x": 271,
     "y": 212,
     "w": 277,
-    "h": 228
+    "h": 229
    },
    "sourceSize": {
     "w": 804,
@@ -938,10 +938,10 @@
   },
   "bulldozer_attack_05_team": {
    "frame": {
-    "x": 1305,
+    "x": 1304,
     "y": 1211,
     "w": 283,
-    "h": 229
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
@@ -949,7 +949,7 @@
     "x": 284,
     "y": 217,
     "w": 283,
-    "h": 229
+    "h": 230
    },
    "sourceSize": {
     "w": 804,
@@ -986,18 +986,18 @@
   },
   "bulldozer_attack_06_team": {
    "frame": {
-    "x": 2979,
+    "x": 2976,
     "y": 1211,
-    "w": 282,
-    "h": 227
+    "w": 281,
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 299,
     "y": 228,
-    "w": 282,
-    "h": 227
+    "w": 281,
+    "h": 228
    },
    "sourceSize": {
     "w": 804,
@@ -1034,10 +1034,10 @@
   },
   "bulldozer_attack_07_team": {
    "frame": {
-    "x": 2540,
-    "y": 1687,
+    "x": 2545,
+    "y": 1689,
     "w": 291,
-    "h": 212
+    "h": 213
    },
    "rotated": false,
    "trimmed": true,
@@ -1045,7 +1045,7 @@
     "x": 306,
     "y": 248,
     "w": 291,
-    "h": 212
+    "h": 213
    },
    "sourceSize": {
     "w": 804,
@@ -1082,10 +1082,10 @@
   },
   "bulldozer_attack_08_team": {
    "frame": {
-    "x": 1677,
-    "y": 1687,
+    "x": 1682,
+    "y": 1689,
     "w": 277,
-    "h": 220
+    "h": 221
    },
    "rotated": false,
    "trimmed": true,
@@ -1093,7 +1093,7 @@
     "x": 310,
     "y": 234,
     "w": 277,
-    "h": 220
+    "h": 221
    },
    "sourceSize": {
     "w": 804,
@@ -1130,10 +1130,10 @@
   },
   "bulldozer_attack_09_team": {
    "frame": {
-    "x": 2699,
+    "x": 2696,
     "y": 1211,
     "w": 276,
-    "h": 228
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
@@ -1141,7 +1141,7 @@
     "x": 297,
     "y": 220,
     "w": 276,
-    "h": 228
+    "h": 229
    },
    "sourceSize": {
     "w": 804,
@@ -1178,10 +1178,10 @@
   },
   "bulldozer_attack_10_team": {
    "frame": {
-    "x": 841,
-    "y": 1456,
+    "x": 845,
+    "y": 1457,
     "w": 277,
-    "h": 225
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
@@ -1189,7 +1189,7 @@
     "x": 289,
     "y": 223,
     "w": 277,
-    "h": 225
+    "h": 226
    },
    "sourceSize": {
     "w": 804,
@@ -1226,8 +1226,8 @@
   },
   "bulldozer_hit_00_team": {
    "frame": {
-    "x": 3136,
-    "y": 1687,
+    "x": 3141,
+    "y": 1689,
     "w": 303,
     "h": 205
    },
@@ -1274,8 +1274,8 @@
   },
   "bulldozer_hit_01_team": {
    "frame": {
-    "x": 2835,
-    "y": 1687,
+    "x": 2840,
+    "y": 1689,
     "w": 297,
     "h": 208
    },
@@ -1283,7 +1283,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 263,
-    "y": 241,
+    "y": 242,
     "w": 297,
     "h": 208
    },
@@ -1322,8 +1322,8 @@
   },
   "bulldozer_hit_02_team": {
    "frame": {
-    "x": 1402,
-    "y": 1456,
+    "x": 1406,
+    "y": 1457,
     "w": 274,
     "h": 225
    },
@@ -1370,9 +1370,9 @@
   },
   "bulldozer_hit_03_team": {
    "frame": {
-    "x": 1592,
+    "x": 2415,
     "y": 1211,
-    "w": 278,
+    "w": 277,
     "h": 229
    },
    "rotated": false,
@@ -1380,7 +1380,7 @@
    "spriteSourceSize": {
     "x": 288,
     "y": 221,
-    "w": 278,
+    "w": 277,
     "h": 229
    },
    "sourceSize": {
@@ -1418,8 +1418,8 @@
   },
   "bulldozer_hit_04_team": {
    "frame": {
-    "x": 3265,
-    "y": 1211,
+    "x": 563,
+    "y": 1457,
     "w": 278,
     "h": 227
    },
@@ -1466,18 +1466,18 @@
   },
   "bulldozer_die_00_team": {
    "frame": {
-    "x": 2,
-    "y": 1687,
-    "w": 270,
-    "h": 223
+    "x": 2806,
+    "y": 1457,
+    "w": 269,
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 272,
     "y": 217,
-    "w": 270,
-    "h": 223
+    "w": 269,
+    "h": 224
    },
    "sourceSize": {
     "w": 804,
@@ -1492,15 +1492,15 @@
    "frame": {
     "x": 3185,
     "y": 631,
-    "w": 292,
+    "w": 294,
     "h": 285
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 261,
+    "x": 259,
     "y": 201,
-    "w": 292,
+    "w": 294,
     "h": 285
    },
    "sourceSize": {
@@ -1514,10 +1514,10 @@
   },
   "bulldozer_die_01_team": {
    "frame": {
-    "x": 1122,
-    "y": 1456,
+    "x": 1126,
+    "y": 1457,
     "w": 276,
-    "h": 225
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
@@ -1525,7 +1525,7 @@
     "x": 250,
     "y": 208,
     "w": 276,
-    "h": 225
+    "h": 226
    },
    "sourceSize": {
     "w": 804,
@@ -1562,8 +1562,8 @@
   },
   "bulldozer_die_02_team": {
    "frame": {
-    "x": 1958,
-    "y": 1687,
+    "x": 1963,
+    "y": 1689,
     "w": 288,
     "h": 219
    },
@@ -1658,18 +1658,18 @@
   },
   "bulldozer_die_04_team": {
    "frame": {
-    "x": 3214,
+    "x": 2886,
     "y": 925,
-    "w": 268,
-    "h": 242
+    "w": 269,
+    "h": 243
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 276,
+    "x": 275,
     "y": 214,
-    "w": 268,
-    "h": 242
+    "w": 269,
+    "h": 243
    },
    "sourceSize": {
     "w": 804,
@@ -1708,16 +1708,16 @@
    "frame": {
     "x": 2629,
     "y": 925,
-    "w": 254,
-    "h": 244
+    "w": 253,
+    "h": 245
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 286,
     "y": 210,
-    "w": 254,
-    "h": 244
+    "w": 253,
+    "h": 245
    },
    "sourceSize": {
     "w": 804,
@@ -1756,16 +1756,16 @@
    "frame": {
     "x": 2,
     "y": 1211,
-    "w": 312,
-    "h": 241
+    "w": 311,
+    "h": 242
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 228,
     "y": 213,
-    "w": 312,
-    "h": 241
+    "w": 311,
+    "h": 242
    },
    "sourceSize": {
     "w": 804,
@@ -1802,9 +1802,9 @@
   },
   "bulldozer_die_07_team": {
    "frame": {
-    "x": 2887,
+    "x": 3159,
     "y": 925,
-    "w": 323,
+    "w": 322,
     "h": 242
    },
    "rotated": false,
@@ -1812,7 +1812,7 @@
    "spriteSourceSize": {
     "x": 217,
     "y": 213,
-    "w": 323,
+    "w": 322,
     "h": 242
    },
    "sourceSize": {
@@ -1850,10 +1850,10 @@
   },
   "bulldozer_die_08_team": {
    "frame": {
-    "x": 318,
+    "x": 317,
     "y": 1211,
     "w": 342,
-    "h": 238
+    "h": 239
    },
    "rotated": false,
    "trimmed": true,
@@ -1861,7 +1861,7 @@
     "x": 199,
     "y": 217,
     "w": 342,
-    "h": 238
+    "h": 239
    },
    "sourceSize": {
     "w": 804,
@@ -1898,10 +1898,10 @@
   },
   "bulldozer_die_09_team": {
    "frame": {
-    "x": 944,
+    "x": 943,
     "y": 1211,
     "w": 357,
-    "h": 231
+    "h": 232
    },
    "rotated": false,
    "trimmed": true,
@@ -1909,7 +1909,7 @@
     "x": 187,
     "y": 225,
     "w": 357,
-    "h": 231
+    "h": 232
    },
    "sourceSize": {
     "w": 804,
@@ -2032,7 +2032,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 3584,
-   "h": 1912
+   "h": 1916
   },
   "scale": "3",
   "ageborn": {

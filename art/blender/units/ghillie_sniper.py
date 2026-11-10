@@ -17,17 +17,25 @@ Animation (ANIM_SPEC G1 creep at card 55 x 1.25 = 68.75 lu/s, appendix B guns):
             level no other pose has), crack, works the bolt lying down and pushes back up
   hit       light: the head snaps back, the tufts flutter, eyes squeezed
   die       D1 fling and spin: the rifle flies, tufts scatter; X eyes and tongue
+  aim       (items 51/52, extras sheet) the Aimed Shot's long hold: on one knee, cheek on the stock, the scope
+            glint pulsing (A's cheek and hold frames reused, so it costs no pixels)
+
+Art round W3 (the detail standard): both shots aimed up about 45 and 70 degrees at flyers (item 44), damage spots
+measured in posed frames (item 40) and the `aim` pose.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_modern as KM
 from ageborn_art import kit_modern_wave as W
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "ghillie_sniper"
 GAIT_NAME = "biped"
@@ -44,6 +52,20 @@ LENGTH = 54.0
 MUZ = (G0[0] + LENGTH + 1.0, G0[1], G0[2] + 1.8)
 SCOPE = (G0[0] + 6.0, G0[1], G0[2] + 5.4)
 BRASS = "#C8B27A"
+SCOPE_C = "#2F3336"
+TROUSERS = "#767B5A"     # kit_modern.legs_v3's olive trousers
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Ghillie Sniper is the shaggy suit of leaf tufts with team-dyed tufts woven in, the hood
+# band and the long scoped rifle: the team-dyed tufts in two tones (team and team-dark in turn, so the team reads as
+# woven-in colour, not a patch), lighter boots.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", R.HAIR: "fur", W.LEAF: "fur", W.LEAF_DK: "fur", W.LEAF_LT: "fur",
+                           R.KHAKI: "cloth", R.KHAKI_LT: "cloth", TROUSERS: "cloth", MW.BOOT: "leather",
+                           "#2B2A2E": "leather", R.LEATHER: "leather", R.WOOD: "wood", R.GUNMETAL: "iron",
+                           SCOPE_C: "iron", BRASS: "bronze", "team": "fur"})
 
 
 def _rifle(rig, joint):
@@ -57,7 +79,7 @@ def _rifle(rig, joint):
     g = Geo().capsule((SCOPE[0] - 6.0, gy, SCOPE[2]), (SCOPE[0] + 7.0, gy, SCOPE[2]), 1.6, 1.8)   # scope
     g.capsule((SCOPE[0] - 1.0, gy, SCOPE[2] - 1.0), (SCOPE[0] - 1.0, gy, gz + 2.0), 0.8)
     g.capsule((SCOPE[0] + 3.0, gy, SCOPE[2] - 1.0), (SCOPE[0] + 3.0, gy, gz + 2.0), 0.8)
-    rig.part(joint, g, "#2F3336", finish="metal", outline=0.7)
+    rig.part(joint, g, SCOPE_C, finish="metal", outline=0.7)
     g = Geo()   # leafy burlap wraps on the barrel
     for x in (gx + 22.0, gx + 30.0, gx + 38.0):
         g.blob((x, gy, gz + 1.8), (2.6, 2.2, 2.4), p=2.0)
@@ -74,7 +96,7 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, hat=None, brow_angry=False, mouth_w=4.6, chevrons=0)
+    W.trooper(rig, hat=None, brow_angry=False, mouth_w=4.6, chevrons=0, boot=MW.BOOT)
     # the ghillie hood: a team band, then leaf tufts all over the head, torso, arms and thighs
     g = Geo().lathe([(11.6, 0), (12.4, 1.6), (11.8, 3.2)], (1.0, 0, 54.0), (1.0, 0, 57.4), segs=22)
     rig.part("head", g, team=True, outline=0.6)
@@ -90,15 +112,23 @@ def build(rig):
             body.append((x, y, z + (1.5 if x > 0 else 0.0)))
     W.leaf_tufts(rig, "torso", body, size=3.4, seed=5, colors=(W.LEAF, W.LEAF_DK, None) if False else (W.LEAF, W.LEAF_DK, W.LEAF_LT))
     # team-dyed tufts woven in on the back and shoulders (the team cue on the leafy silhouette)
+    # (W3: in two tones, team and team-dark in turn)
+    tufts = ((-10.0, -4.0, 31.0), (-10.0, 4.0, 25.0), (-6.0, -10.0, 37.0), (-3.0, -11.0, 26.0),
+             (2.0, -11.6, 33.0), (-11.0, -2.0, 20.0), (6.0, -11.0, 22.0))
+    for dark in (False, True):
+        g = Geo()
+        for i, (x, y, z) in enumerate(tufts):
+            if (i % 2 == 1) == dark:
+                g.blob((x, y, z), (4.4, 3.2, 2.8), p=2.0)
+        if dark:
+            look.team_part(rig, "torso", g, finish="hair", outline=0.4)
+        else:
+            rig.part("torso", g, team=True, finish="hair", outline=0.4)
     g = Geo()
-    for x, y, z in ((-10.0, -4.0, 31.0), (-10.0, 4.0, 25.0), (-6.0, -10.0, 37.0), (-3.0, -11.0, 26.0),
-                    (2.0, -11.6, 33.0), (-11.0, -2.0, 20.0), (6.0, -11.0, 22.0)):
-        g.blob((x, y, z), (4.4, 3.2, 2.8), p=2.0)
-    rig.part("torso", g, team=True, finish="hair", outline=0.4)
-    g = Geo()
-    for x, y, z in ((-6.0, -8.0, 62.0), (4.0, -9.0, 63.0), (-10.0, 0.0, 60.0)):
+    for x, y, z in ((-6.0, -8.0, 62.0), (-10.0, 0.0, 60.0)):
         g.blob((x, y, z), (3.8, 3.0, 2.4), p=2.0)
     rig.part("head", g, team=True, finish="hair", outline=0.4)
+    look.team_part(rig, "head", Geo().blob((4.0, -9.0, 63.0), (3.8, 3.0, 2.4), p=2.0), finish="hair", outline=0.4)
     for s in ("l",):
         y = R.ARM_Y[s]
         W.leaf_tufts(rig, f"arm_{s}", [(-2.0, y, 34.0), (2.0, y, 30.0)], size=2.8, seed=7)
@@ -125,10 +155,28 @@ def build(rig):
     g.capsule((G0[0] + 34.0, G0[1], G0[2] + 1.0), (G0[0] + 36.0, G0[1] - 2.0, G0[2] - 9.0), 0.7)
     g.capsule((G0[0] + 34.0, G0[1], G0[2] + 1.0), (G0[0] + 36.0, G0[1] + 2.0, G0[2] - 9.0), 0.7)
     rig.part("bipod", g, R.GUNMETAL, finish="metal", outline=0.4)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
 
 
-def hold(gx, gz, deg):
-    return R.hold2("gun", G0, FORE, gx, gz, deg)
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: never on the face or skin."""
+    rig.damage_spot_at("suit", "torso", -6.0, 24.0, 8.0, "cloth", team=True)       # 100% in idle, walk, A and B
+    rig.damage_spot_at("hood", "head", 2.0, 62.0, 6.0, "cloth", team=True)         # 100%
+    rig.damage_spot_at("skirt", "hips", -6.0, 12.0, 7.0, "cloth", team=True)       # 75-96%
+
+
+def hold(gx, gz, deg, fore=FORE):
+    return R.hold2("gun", G0, fore, gx, gz, deg)
+
+
+# aimed shots (queue item 44, ageborn_art/aimed.py): kneeling (A) a turn of `turn` degrees up tips the rifle up about
+# the grip, which rises and draws back toward the cheek, he leans back and looks up along it, the far hand slides
+# down the fore-end (the arm's reach); prone (B) he arches up off the ground on his elbows (the chest lifts, the legs
+# stay flat), the rifle climbing with him.
+AIM_LEAN, AIM_RISE, AIM_DRAW, AIM_HEAD, AIM_FORE = 0.24, 0.10, 0.06, 0.26, 0.08
+AIM_ARCH = 0.62
+AIM_W = [0.0, 0.5, 0.9, 1.0, 1.0, 0.7, 0.45, 0.2, 0.0, 0.0]     # per unique frame (A and B: fire on 3)
 
 
 LOW = (5.0, 24.0, -8.0)
@@ -185,20 +233,24 @@ def _bolt_hand(pose, gx, gz, deg, b):
     pose.update(R.arm("r", a, fo))
 
 
-def _a_pose(f):
-    t = A_T[f]
-    deg = A_DEG[f] - t
-    pose = merge(hold(A_GX[f], A_GZ[f], deg), {
-        "torso": {"r": t}, "head": {"r": [-2, -5, -6, -6, 6, 0, 0, 0, 0, 0][f] - 0.3 * t,
+def _a_pose(f, turn=0.0):
+    t0 = A_T[f]
+    up = max(0.0, turn)
+    lean = AIM_LEAN * turn
+    t = t0 + lean
+    gx, gz = A_GX[f] - AIM_DRAW * up, A_GZ[f] + AIM_RISE * up
+    deg = A_DEG[f] - t0 + turn - lean
+    pose = merge(hold(gx, gz, deg, FORE - AIM_FORE * up), {
+        "torso": {"r": t}, "head": {"r": [-2, -5, -6, -6, 6, 0, 0, 0, 0, 0][f] - 0.3 * t0 + AIM_HEAD * turn,
                                      "x": 1.4 if f in (1, 2, 3) else 0.0, "z": -1.2 if f in (1, 2, 3) else 0.0},
         "flash": {"show": f == 3}, "glint": {"show": f == 2},
     }, M.body_about((0, 0, 22), x=[0, 1, 1.5, 1.5, -2.5, -1, -1, -0.5, 0, 0][f],
                     q=[0, -0.03, -0.05, 0.03, -0.10, -0.02, -0.02, 0, 0, 0][f]))
     if BOLT[f] is not None:
-        _bolt_hand(pose, A_GX[f], A_GZ[f], deg, BOLT[f])
+        _bolt_hand(pose, gx, gz, deg, BOLT[f])
     if CAS[f] is not None:
         x, z, r = CAS[f]
-        pose["casing"] = {"show": True, "x": x, "z": z - KNEEL_DROP, "r": r}
+        pose["casing"] = {"show": True, "x": x + gx - A_GX[f], "z": z - KNEEL_DROP + gz - A_GZ[f], "r": r}
     pose = KM.kneel(RIG, pose, LEGS, drop=KNEEL_DROP, front=12.0)
     if f in (1, 2, 3):
         pose = merge(pose, F.expr("squeeze"), {"brow": {"z": -1.0}})
@@ -215,13 +267,16 @@ B_DEG = [40.0, 76.0, 76.0, 84.0, 78.0, 78.0, 78.0, 40.0]   # torso space: the bo
 B_BOLT = [None, None, None, None, (0, 0, 70), (-3.8, 0, 70), (0, 0, 70), None]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i in (0, 9):
         return _a_pose(i)
     k = i - 1
-    gx, gz, deg = 8.0, 32.0, B_DEG[k]
-    pose = merge(hold(gx, gz, deg), {
-        "head": {"r": 50.0 if k in range(1, 7) else 25.0, "x": 1.0}, "flash": {"show": k == 2},
+    arch = AIM_ARCH * max(0.0, turn)          # the chest lifts off the ground (the legs stay flat)
+    gx, gz, deg = 8.0, 32.0, B_DEG[k] + turn - arch
+    pose = merge(hold(gx, gz, deg, FORE - AIM_FORE * max(0.0, turn)), {
+        "torso": {"r": arch},
+        "head": {"r": (50.0 if k in range(1, 7) else 25.0) - 0.75 * arch + AIM_HEAD * turn, "x": 1.0},
+        "flash": {"show": k == 2},
         "glint": {"show": k == 1}, "bipod": {"show": 1 <= k <= 6},
         "thigh_r": {"r": -8}, "shin_r": {"r": -6}, "thigh_l": {"r": -14}, "shin_l": {"r": -10},
     }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], r=B_ROLL[k]))
@@ -249,15 +304,27 @@ def _die(k):
 
 
 def clips():
+    attack = M.clip("attack", [_a_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays={3: _fx()},
+                    extra={"holdStep": 2})
+    attack_b = M.clip("attack_b", [_b_pose(i) for i in range(10)], ATTACK_MS, impact=ATTACK_IMPACT,
+                      overlays={3: _fx()}, reuse={0: ("attack", 0), 9: ("attack", 9)}, extra={"holdStep": 2})
+    # aimed up about 45 and 70 degrees at flyers (both shots; the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, lambda u, t: _a_pose(u, turn=t), AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, lambda u, t: _b_pose(u, turn=t), AIM_W, aims=("up45", "up70"))
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        M.clip("attack", [_a_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays={3: _fx()},
-               extra={"holdStep": 2}),
-        M.clip("attack_b", [_b_pose(i) for i in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays={3: _fx()},
-               reuse={0: ("attack", 0), 9: ("attack", 9)}, extra={"holdStep": 2}),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+        # items 51/52 pose: aim (the Aimed Shot's long hold: A's cheek and hold frames reused, the scope glint
+        # pulsing; it costs no pixels; the extras sheet, pipeline.POSE_CLIPS)
+        M.clip("aim", [_a_pose(2), _a_pose(1)], [420, 260], loop=True, reuse={0: ("attack", 2), 1: ("attack", 1)}),
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl, attack_ms=900, attack_impact_at=0.3778))

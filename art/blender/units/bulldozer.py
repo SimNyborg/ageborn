@@ -22,15 +22,20 @@ Animation (ANIM_SPEC G6 tracked, appendix B vehicles):
   hit       vehicle: a suspension bounce, the driver ducks with his eyes squeezed, the pennant whips
   die       D7 wreck and bail: struck, it hops, lands tilted on a snapped track, the blade drops askew,
             black smoke; the driver leaps out and runs
+
+Art round W3 (the detail standard): damage spots and the fire and smoke places (item 40).
 """
 import math
 
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_modern as KM
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "bulldozer"
 GAIT_NAME = "tracked"
@@ -56,6 +61,22 @@ BLADE_X = 44.0
 DRIVER = (-14.0, 0.0, 44.0)
 STEEL_LT = "#B9C0C6"
 _W = {}
+GRILLE = "#2F2E33"
+SEAM = "#4E5238"
+PLATE = ((-2.0, TY - 3.2, 23.0), (33.0, 1.8, 6.0))     # the team side armour (p 3.6)
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Bulldozer is the big steel blade, the olive hood with its stack, the team side armour over
+# the track and the driver under the team roof: the side armour in two tones (a team-dark lower band and two
+# team-dark panel seams, a row of rivets along its top), scratches and caked dirt on the blade, worn chips on the
+# hood, lighter rivet heads.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_MACHINE
+LOOK_SHADE = MW.SHADE_MACHINE
+MATERIAL_KINDS = MW.kinds({R.OLIVE: "iron", R.OLIVE_LT: "iron", SEAM: "iron", MW.CHIP: "iron", R.GUNMETAL: "iron",
+                           R.STEEL: "iron", STEEL_LT: "iron", GRILLE: "iron", R.RUBBER: "polymer",
+                           KM.STRIPE_DK: "polymer", KM.CREAM: "cloth", R.LEATHER: "leather", KM.MUD: "stone",
+                           KM.MUD_LT: "stone", R.GLASS: "glass", R.SKIN: "skin", R.HAIR: "fur", "team": "iron"})
 
 
 def build(rig):
@@ -73,7 +94,7 @@ def build(rig):
     g = Geo()
     for z in (29.0, 32.0, 35.0, 38.0):
         g.blob((26.4, -2.0, z), (0.6, 8.0, 0.6), p=3.0)
-    rig.part("hull", g, "#2F2E33", outline=0)                               # grille louvres
+    rig.part("hull", g, GRILLE, outline=0)                                  # grille louvres
     g = Geo().blob((26.0, 0, 33.4), (1.0, 10.0, 6.6), p=3.6)
     rig.part("hull", g, R.GUNMETAL, finish="metal", outline=0.6)
     g = Geo().capsule((18.0, -6.0, 40.0), (18.0, -6.0, 52.0), 2.0, 1.7)         # exhaust stack
@@ -82,11 +103,21 @@ def build(rig):
     rig.part("hull", g, "#1E1C1C", outline=0.5)
     g = Geo()
     hface.stroke(g, hface.hit(12.0, 40.0), [(-10.0, 0.0), (10.0, 0.0)], 0.8, 0.4)
-    rig.part("hull", g, "#4E5238", highlight=False, outline=0)
+    rig.part("hull", g, SEAM, highlight=False, outline=0)
+    hood_ref = Geo().blob((10.0, 0, 34.0), (16.0, 12.0, 8.0), p=3.6, taper=(1.0, 0.9))
+    MW.decals(rig, "hull", [hood_ref], [((3.0, 37.4), MW.CHIP_A), ((20.0, 35.4), MW.CHIP_C)], MW.CHIP)   # W3
     # team side armour with a chevron and hazard stripes
-    plate = Geo().blob((-2.0, TY - 3.2, 23.0), (33.0, 1.8, 6.0), p=3.6)
+    plate = Geo().blob(*PLATE, p=3.6)
     pface = F.Face(rig, "hull", [plate])
     rig.part("hull", plate, team=True)
+    # W3: the side armour in two tones: a team-dark lower band and two team-dark panel seams, rivets along its top
+    look.team_part(rig, "hull", KD.band_z(*PLATE, 16.0, 20.4, p=3.6, grow=0.3))
+    for x in (-14.0, 16.0):
+        MW.team_line(rig, "hull", Geo().blob(*PLATE, p=3.6), [(x, 28.0), (x - 0.4, 20.0)], 1.5, tone=look.TEAM_DARK)
+    g = Geo()
+    for x in range(-30, 32, 8):
+        g.sphere((x, TY - 5.0, 27.0), 1.25, cuts=2)
+    rig.part("hull", g, R.OLIVE_LT, finish="metal", outline=0.3)
     g = KM.chevron(pface, Geo(), (2.0, 23.4), s=1.0, n=2, w=1.8, gap=2.8)
     rig.part("hull", g, KM.CREAM, highlight=False, outline=0)
     g = KM.stripes(pface, Geo(), (-27.0, 23.0), 10.0, 8.0, n=4, slant=0.6)
@@ -123,6 +154,18 @@ def build(rig):
         x = BLADE_X + 4.0 * math.sin(math.pi * i / 7.0)
         blade.blob((x, 0, z), (2.6, 19.0, 2.8), p=3.0)
     rig.part("arms", blade, R.GUNMETAL, finish="metal")
+    # W3: bright scratches across the mouldboard, caked dirt on its lower half
+    bref = Geo()
+    for i in range(8):
+        bref.blob((BLADE_X + 4.0 * math.sin(math.pi * i / 7.0), 0, 2.0 + i * 4.6), (2.6, 19.0, 2.8), p=3.0)
+    bface = F.Face(rig, "arms", [bref])
+    g = Geo()
+    for (x, z), pts in (((BLADE_X + 2.0, 26.0), [(-1.6, 2.4), (1.4, -2.6)]),
+                        ((BLADE_X + 3.6, 16.0), [(-1.2, 3.0), (0.8, -1.8), (1.6, -3.0)])):
+        bface.stroke(g, bface.hit(x, z), pts, 0.9, 0.5)
+    rig.part("arms", g, STEEL_LT, highlight=False, outline=0)
+    g = KM.mud(bface, Geo(), [((BLADE_X + 1.5, 8.0), 3.2, 2.6), ((BLADE_X + 0.5, 4.6), 2.6, 1.8)])
+    rig.part("arms", g, KM.MUD, highlight=False, outline=0)
     g = Geo()                                                                    # crescent end plates
     for y in (-19.6, 19.6):
         for i in range(8):
@@ -170,6 +213,20 @@ def build(rig):
         g.capsule((TX0 - 6.0 - 4.0 * k, TY - 0.5, 1.6 + 0.4 * k), (TX0 - 10.0 - 4.0 * k, TY - 0.5, 1.6 + 0.4 * k), 1.8)
     rig.part("snap", g, R.RUBBER, finish="gloss", outline=0.5)
     rig.track("_foot", "odo", (0, 0, 0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: dents and holes on the team
+    side armour (the largest team surface, always in view), the olive hood and the blade; the hood's smoke (the
+    fire's place: below the driver's head and well ahead of it on every frame, DAMAGE's fireAt) and a second smoke
+    from the exhaust stack."""
+    rig.damage_spot_at("plate", "hull", 8.0, 22.6, 7.0, "metal", team=True)
+    rig.damage_spot_at("hood", "hull", 12.0, 35.0, 6.0, "metal", fill=R.OLIVE)
+    rig.damage_spot_at("blade", "arms", BLADE_X + 2.0, 21.0, 7.0, "metal", fill=R.OLIVE_LT)
+    rig.damage_spot("engine", "hull", (14.0, 0.0, 42.0), 7.0, "smoke", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("exhaust", "hull", (18.0, -6.0, 54.0), 5.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 def _tracks(step, moving=True):

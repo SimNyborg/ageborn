@@ -28,7 +28,7 @@
    "frame": {
     "x": 2,
     "y": 971,
-    "w": 86,
+    "w": 87,
     "h": 163
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 206,
     "y": 206,
-    "w": 86,
+    "w": 87,
     "h": 163
    },
    "sourceSize": {
@@ -74,7 +74,7 @@
   },
   "smg_squad_idle_01_team": {
    "frame": {
-    "x": 1098,
+    "x": 1103,
     "y": 800,
     "w": 91,
     "h": 163
@@ -172,7 +172,7 @@
    "frame": {
     "x": 476,
     "y": 620,
-    "w": 87,
+    "w": 88,
     "h": 172
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 209,
     "y": 195,
-    "w": 87,
+    "w": 88,
     "h": 172
    },
    "sourceSize": {
@@ -218,7 +218,7 @@
   },
   "smg_squad_idle_04_team": {
    "frame": {
-    "x": 790,
+    "x": 791,
     "y": 620,
     "w": 83,
     "h": 169
@@ -266,9 +266,9 @@
   },
   "smg_squad_idle_05_team": {
    "frame": {
-    "x": 385,
+    "x": 386,
     "y": 800,
-    "w": 84,
+    "w": 85,
     "h": 166
    },
    "rotated": false,
@@ -276,7 +276,7 @@
    "spriteSourceSize": {
     "x": 207,
     "y": 202,
-    "w": 84,
+    "w": 85,
     "h": 166
    },
    "sourceSize": {
@@ -314,7 +314,7 @@
   },
   "smg_squad_walk_00_team": {
    "frame": {
-    "x": 589,
+    "x": 591,
     "y": 800,
     "w": 102,
     "h": 165
@@ -362,7 +362,7 @@
   },
   "smg_squad_walk_01_team": {
    "frame": {
-    "x": 487,
+    "x": 488,
     "y": 971,
     "w": 89,
     "h": 162
@@ -410,9 +410,9 @@
   },
   "smg_squad_walk_02_team": {
    "frame": {
-    "x": 988,
+    "x": 989,
     "y": 620,
-    "w": 98,
+    "w": 99,
     "h": 168
    },
    "rotated": false,
@@ -420,7 +420,7 @@
    "spriteSourceSize": {
     "x": 204,
     "y": 202,
-    "w": 98,
+    "w": 99,
     "h": 168
    },
    "sourceSize": {
@@ -506,7 +506,7 @@
   },
   "smg_squad_walk_04_team": {
    "frame": {
-    "x": 796,
+    "x": 799,
     "y": 800,
     "w": 92,
     "h": 165
@@ -530,7 +530,7 @@
   },
   "smg_squad_walk_05": {
    "frame": {
-    "x": 473,
+    "x": 475,
     "y": 800,
     "w": 112,
     "h": 165
@@ -556,7 +556,7 @@
    "frame": {
     "x": 935,
     "y": 971,
-    "w": 89,
+    "w": 90,
     "h": 157
    },
    "rotated": false,
@@ -564,7 +564,7 @@
    "spriteSourceSize": {
     "x": 211,
     "y": 217,
-    "w": 89,
+    "w": 90,
     "h": 157
    },
    "sourceSize": {
@@ -602,9 +602,9 @@
   },
   "smg_squad_walk_06_team": {
    "frame": {
-    "x": 695,
+    "x": 697,
     "y": 800,
-    "w": 97,
+    "w": 98,
     "h": 165
    },
    "rotated": false,
@@ -612,7 +612,7 @@
    "spriteSourceSize": {
     "x": 205,
     "y": 203,
-    "w": 97,
+    "w": 98,
     "h": 165
    },
    "sourceSize": {
@@ -650,7 +650,7 @@
   },
   "smg_squad_walk_07_team": {
    "frame": {
-    "x": 892,
+    "x": 895,
     "y": 800,
     "w": 98,
     "h": 164
@@ -698,7 +698,7 @@
   },
   "smg_squad_attack_00_team": {
    "frame": {
-    "x": 1090,
+    "x": 1092,
     "y": 620,
     "w": 87,
     "h": 168
@@ -746,7 +746,7 @@
   },
   "smg_squad_attack_01_team": {
    "frame": {
-    "x": 580,
+    "x": 581,
     "y": 971,
     "w": 102,
     "h": 161
@@ -794,7 +794,7 @@
   },
   "smg_squad_attack_02_team": {
    "frame": {
-    "x": 1028,
+    "x": 1029,
     "y": 971,
     "w": 115,
     "h": 156
@@ -842,7 +842,7 @@
   },
   "smg_squad_attack_03_team": {
    "frame": {
-    "x": 877,
+    "x": 878,
     "y": 620,
     "w": 107,
     "h": 168
@@ -890,7 +890,7 @@
   },
   "smg_squad_attack_04_team": {
    "frame": {
-    "x": 288,
+    "x": 289,
     "y": 971,
     "w": 96,
     "h": 162
@@ -938,9 +938,9 @@
   },
   "smg_squad_attack_05_team": {
    "frame": {
-    "x": 994,
+    "x": 997,
     "y": 800,
-    "w": 100,
+    "w": 102,
     "h": 163
    },
    "rotated": false,
@@ -948,7 +948,7 @@
    "spriteSourceSize": {
     "x": 202,
     "y": 205,
-    "w": 100,
+    "w": 102,
     "h": 163
    },
    "sourceSize": {
@@ -988,7 +988,7 @@
    "frame": {
     "x": 290,
     "y": 800,
-    "w": 91,
+    "w": 92,
     "h": 166
    },
    "rotated": false,
@@ -996,7 +996,7 @@
    "spriteSourceSize": {
     "x": 208,
     "y": 202,
-    "w": 91,
+    "w": 92,
     "h": 166
    },
    "sourceSize": {
@@ -1034,9 +1034,9 @@
   },
   "smg_squad_attack_07_team": {
    "frame": {
-    "x": 1181,
+    "x": 1183,
     "y": 620,
-    "w": 85,
+    "w": 86,
     "h": 168
    },
    "rotated": false,
@@ -1044,7 +1044,7 @@
    "spriteSourceSize": {
     "x": 208,
     "y": 200,
-    "w": 85,
+    "w": 86,
     "h": 168
    },
    "sourceSize": {
@@ -1082,17 +1082,17 @@
   },
   "smg_squad_hit_00_team": {
    "frame": {
-    "x": 818,
+    "x": 819,
     "y": 971,
-    "w": 113,
+    "w": 112,
     "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 168,
+    "x": 169,
     "y": 211,
-    "w": 113,
+    "w": 112,
     "h": 159
    },
    "sourceSize": {
@@ -1226,7 +1226,7 @@
   },
   "smg_squad_hit_03_team": {
    "frame": {
-    "x": 388,
+    "x": 389,
     "y": 971,
     "w": 95,
     "h": 162
@@ -1298,7 +1298,7 @@
   },
   "smg_squad_die_00": {
    "frame": {
-    "x": 686,
+    "x": 687,
     "y": 971,
     "w": 128,
     "h": 159
@@ -1322,17 +1322,17 @@
   },
   "smg_squad_die_00_team": {
    "frame": {
-    "x": 1147,
+    "x": 1148,
     "y": 971,
-    "w": 103,
+    "w": 104,
     "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 187,
+    "x": 186,
     "y": 212,
-    "w": 103,
+    "w": 104,
     "h": 152
    },
    "sourceSize": {
@@ -1346,7 +1346,7 @@
   },
   "smg_squad_die_01": {
    "frame": {
-    "x": 92,
+    "x": 93,
     "y": 971,
     "w": 192,
     "h": 162
@@ -1370,7 +1370,7 @@
   },
   "smg_squad_die_01_team": {
    "frame": {
-    "x": 668,
+    "x": 669,
     "y": 620,
     "w": 118,
     "h": 169
@@ -1466,7 +1466,7 @@
   },
   "smg_squad_die_03_team": {
    "frame": {
-    "x": 567,
+    "x": 568,
     "y": 620,
     "w": 97,
     "h": 171
@@ -1538,7 +1538,7 @@
   },
   "smg_squad_die_05": {
    "frame": {
-    "x": 393,
+    "x": 394,
     "y": 1138,
     "w": 231,
     "h": 120
@@ -1564,15 +1564,15 @@
    "frame": {
     "x": 273,
     "y": 1138,
-    "w": 116,
+    "w": 117,
     "h": 127
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 146,
+    "x": 145,
     "y": 260,
-    "w": 116,
+    "w": 117,
     "h": 127
    },
    "sourceSize": {
@@ -1586,7 +1586,7 @@
   },
   "smg_squad_die_06": {
    "frame": {
-    "x": 628,
+    "x": 629,
     "y": 1138,
     "w": 262,
     "h": 115
@@ -1610,17 +1610,17 @@
   },
   "smg_squad_die_06_team": {
    "frame": {
-    "x": 894,
+    "x": 895,
     "y": 1138,
-    "w": 181,
+    "w": 182,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 75,
+    "x": 74,
     "y": 297,
-    "w": 181,
+    "w": 182,
     "h": 99
    },
    "sourceSize": {
@@ -1658,7 +1658,7 @@
   },
   "smg_squad_die_07_team": {
    "frame": {
-    "x": 1079,
+    "x": 1081,
     "y": 1138,
     "w": 189,
     "h": 95

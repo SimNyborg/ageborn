@@ -71,9 +71,17 @@ def on_surface(rig, joint, refs, x, z):
     return tuple(F.Face(rig, joint, refs).hit(x, z))
 
 
-def team_line(rig, joint, ref, pts, w, tone=0.78, depth=0.4):
+def team_line(rig, joint, ref, pts, w, tone=0.78, depth=0.4, step=None):
     """A line of width w (lu) through the side-view points `pts` on the surface of `ref` (a fresh Geo shaped like
-    the part), in the team tone `tone` (look.team_part; 1 is the team colour, look.TEAM_DARK the team-dark)."""
+    the part), in the team tone `tone` (look.team_part; 1 is the team colour, look.TEAM_DARK the team-dark). Each
+    segment is a flat decal at its middle's surface point, so on a long segment of a face the camera sees at an angle
+    one end sinks into the part: `step` (lu) cuts the segments that short first."""
+    if step:
+        fine = [pts[0]]
+        for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+            n = max(1, int(math.ceil(math.hypot(x1 - x0, z1 - z0) / step)))
+            fine += [(x0 + (x1 - x0) * k / n, z0 + (z1 - z0) * k / n) for k in range(1, n + 1)]
+        pts = fine
     fc = F.Face(rig, joint, [ref])
     g = Geo()
     for (x0, z0), (x1, z1) in zip(pts, pts[1:]):

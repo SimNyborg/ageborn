@@ -87,7 +87,7 @@ def build(rig):
     global RIG
     RIG = rig
     W.trooper(rig, hat=None, brow_angry=False, mouth_w=5.2, chevrons=1, boot=MW.BOOT)
-    MW.hat(rig, "round")                  # W3: a team-dark band round the helmet cover
+    MW.hat(rig, "round", band=4.2)        # W3: a wide team-dark band round the helmet cover (5.4 lu: it reads at 1x)
     MW.tunic_w3(rig, brace=None)          # W3: the tunic's team-dark hem, a side seam (the chest strap is his brace)
     MW.cuffs(rig)
     g = Geo().capsule((7.6, -10.0, 33.0), (6.0, -8.0, 21.0), 1.4)                     # chest strap

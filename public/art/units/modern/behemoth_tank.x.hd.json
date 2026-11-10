@@ -26,8 +26,8 @@
   },
   "behemoth_tank_attack_b_01_team": {
    "frame": {
-    "x": 1197,
-    "y": 423,
+    "x": 671,
+    "y": 415,
     "w": 338,
     "h": 329
    },
@@ -50,7 +50,7 @@
   },
   "behemoth_tank_attack_b_02": {
    "frame": {
-    "x": 2043,
+    "x": 1538,
     "y": 2,
     "w": 458,
     "h": 399
@@ -74,10 +74,10 @@
   },
   "behemoth_tank_attack_b_02_team": {
    "frame": {
-    "x": 1539,
-    "y": 423,
+    "x": 2009,
+    "y": 402,
     "w": 344,
-    "h": 326
+    "h": 327
    },
    "rotated": false,
    "trimmed": true,
@@ -85,7 +85,7 @@
     "x": 278,
     "y": 244,
     "w": 344,
-    "h": 326
+    "h": 327
    },
    "sourceSize": {
     "w": 942,
@@ -98,8 +98,8 @@
   },
   "behemoth_tank_attack_b_03": {
    "frame": {
-    "x": 2505,
-    "y": 2,
+    "x": 1548,
+    "y": 405,
     "w": 457,
     "h": 399
    },
@@ -122,10 +122,10 @@
   },
   "behemoth_tank_attack_b_03_team": {
    "frame": {
-    "x": 2583,
-    "y": 423,
+    "x": 2711,
+    "y": 326,
     "w": 344,
-    "h": 317
+    "h": 318
    },
    "rotated": false,
    "trimmed": true,
@@ -133,7 +133,7 @@
     "x": 278,
     "y": 252,
     "w": 344,
-    "h": 317
+    "h": 318
    },
    "sourceSize": {
     "w": 942,
@@ -170,10 +170,10 @@
   },
   "behemoth_tank_attack_b_04_team": {
    "frame": {
-    "x": 528,
+    "x": 2,
     "y": 423,
     "w": 329,
-    "h": 338
+    "h": 339
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 278,
     "y": 222,
     "w": 329,
-    "h": 338
+    "h": 339
    },
    "sourceSize": {
     "w": 942,
@@ -194,8 +194,8 @@
   },
   "behemoth_tank_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 423,
+    "x": 2000,
+    "y": 2,
     "w": 522,
     "h": 396
    },
@@ -218,10 +218,10 @@
   },
   "behemoth_tank_attack_b_05_team": {
    "frame": {
-    "x": 1887,
-    "y": 423,
+    "x": 2357,
+    "y": 402,
     "w": 350,
-    "h": 324
+    "h": 325
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 262,
     "y": 242,
     "w": 350,
-    "h": 324
+    "h": 325
    },
    "sourceSize": {
     "w": 942,
@@ -266,10 +266,10 @@
   },
   "behemoth_tank_attack_b_06_team": {
    "frame": {
-    "x": 861,
+    "x": 335,
     "y": 423,
     "w": 332,
-    "h": 330
+    "h": 331
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 280,
     "y": 234,
     "w": 332,
-    "h": 330
+    "h": 331
    },
    "sourceSize": {
     "w": 942,
@@ -290,8 +290,8 @@
   },
   "behemoth_tank_attack_b_07": {
    "frame": {
-    "x": 1538,
-    "y": 2,
+    "x": 1043,
+    "y": 407,
     "w": 501,
     "h": 400
    },
@@ -314,10 +314,10 @@
   },
   "behemoth_tank_attack_b_07_team": {
    "frame": {
-    "x": 2241,
-    "y": 423,
+    "x": 2711,
+    "y": 2,
     "w": 338,
-    "h": 319
+    "h": 320
    },
    "rotated": false,
    "trimmed": true,
@@ -325,7 +325,7 @@
     "x": 278,
     "y": 247,
     "w": 338,
-    "h": 319
+    "h": 320
    },
    "sourceSize": {
     "w": 942,
@@ -370,7 +370,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 3072,
-   "h": 824
+   "h": 812
   },
   "scale": "2.5",
   "ageborn": {
