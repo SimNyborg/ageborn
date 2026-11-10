@@ -31,10 +31,13 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import gait as GT
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge, squash
@@ -55,8 +58,27 @@ BRONZE_DK = "#8C7A5E"
 BORE = "#1E1C1C"
 HAIR = "#5A4B40"
 MATCH = "#FFB870"
-BALL = "#34363C"
+BALL = "#45474E"       # W2: the shot with a lit side (was #34363C)
 CHOCK = "#6E5A48"
+GAITER = "#38383E"     # W2: the gunner's gaiters with a lit side (was rigs_gunpowder.BLACK)
+HAIR_LT = "#76665A"    # W2: lighter tufts in the gunner's hair
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Bronze Cannon is the team carriage, the bronze barrel, the wheels and the gunner: a
+# team-dark border along the near cheek's top edge and iron straps across it (the big team cheek in two tones, with
+# panels), a team-dark ear flap and coat-tail hem on the gunner, lighter shot, gaiters and hair tufts. Item 40's
+# fire and smoke come from the carriage's front and the breech, well below and ahead of the gunner (W0 review: the
+# fire sat in front of his hands).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.93
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (the legs darken the far leg)
+MATERIAL_KINDS = {BRONZE: "bronze", BRONZE_DK: "bronze", BALL: "iron", CHOCK: "wood", B.IRON: "iron",
+                  B.WOOD: "wood", B.GUNWOOD: "wood", B.BRASS: "bronze", B.SKIN: "skin", HAIR: "fur", HAIR_LT: "fur",
+                  B.CREAM: "cloth", _FAR(B.CREAM): "cloth", GAITER: "leather", _FAR(GAITER): "leather",
+                  B.BLACK: "leather", _FAR(B.BLACK): "leather", B.LEATHER: "leather", "team": "cloth"}
+CHEEK_TOP = [(9.5, 33.0), (4.0, 37.0), (-5.0, 36.0), (-40.0, 8.5), (-47.0, 3.0)]   # the cheek's upper outline
 
 CREW_X = -44.0                 # the gunner stands this far behind the axle
 WHEEL_R = 17.0
@@ -91,6 +113,20 @@ def build(rig):
     B.wheel(rig, "wheel_l", (0.0, 13.0, WHEEL_R), WHEEL_R, 3.4)
     for y in (6.5, -6.5):
         rig.part("cart", _cheek(y), team=True)
+    # W2: a team-dark border along the near cheek's top edge (2.2 lu wide, just proud of its face) and two iron
+    # straps across it: the big team field in two tones, broken into panels
+    g = Geo()
+    for (x0, z0), (x1, z1) in zip(CHEEK_TOP, CHEEK_TOP[1:]):
+        dx, dz = x1 - x0, z1 - z0
+        L = math.hypot(dx, dz)
+        nx, nz = dz / L * 2.2, -dx / L * 2.2          # inward (the outline runs clockwise over the top)
+        g.slab([(x0, z0), (x1, z1), (x1 + nx, z1 + nz), (x0 + nx, z0 + nz)], -8.3, 0.4)
+    look.team_part(rig, "cart", g, outline=0)
+    g = Geo()
+    for xa, xb in ((-12.0, -17.0), (-27.0, -31.0)):
+        za, zb = 22.0 - (xa + 8.0) * 0.43, 2.0
+        g.slab([(xa - 1.2, za + 2.0), (xa + 1.2, za + 2.0), (xb + 1.2, zb), (xb - 1.2, zb)], -8.4, 0.5)
+    rig.part("cart", g, B.IRON, finish="metal", outline=0.3)
     g = Geo()
     for x, z in ((4.0, 30.0), (-2.0, 30.5), (-14.0, 20.0), (-26.0, 12.5), (-38.0, 5.5)):
         g.sphere((x, -8.3, z), 1.2, cuts=2)                                 # cheek bolts
@@ -150,7 +186,7 @@ def build(rig):
     # the gunner: a biped behind the breech
     rig.joint("crew", "unit", (0, 0, 0))
     B.skeleton(rig, parent="crew")
-    B.legs(rig, B.CREAM, B.BLACK, stocking=B.BLACK)
+    B.legs(rig, B.CREAM, B.BLACK, stocking=GAITER)
     g = Geo().blob((0, 0, 28.0), (10.8, 10.0, 11.8), p=2.4, taper=(1.08, 0.94))
     g.blob((0, 0, 18.0), (10.4, 9.8, 4.6), p=2.6)
     rig.part("torso", g, team=True)
@@ -166,6 +202,8 @@ def build(rig):
     rig.secondary("tails", "hips", (-4.0, 0, 18.0), (-7.5, 0, 6.0), max_deg=14, gain=1.0)
     g = Geo().blob((-5.4, 0, 12.0), (5.0, 10.0, 7.6), p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
     rig.part("tails", g, team=True)
+    g = KD.band_z((-5.4, 0, 12.0), (5.0, 10.0, 7.6), 5.0, 7.6, p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
+    look.team_part(rig, "tails", g)                                  # W2: a team-dark hem band
     head = G.head_geos(center=(2, 0, 48.5), nose=(13.8, -0.6, 46.8), nose_r=(3.8, 3.3, 3.5))
     hair = Geo().blob((-6.2, 0, 47.5), (5.8, 10.0, 7.0), p=2.2)
     K.face2(rig, [head, hair], B.SKIN, cx=12.0, cz=49.6, eye_dy=(-4.6, 4.4),
@@ -173,6 +211,11 @@ def build(rig):
             eye_at=(13.8, 49.8), mark_r=4.1)
     rig.part("head", head, B.SKIN)
     rig.part("head", hair, HAIR, finish="hair")
+    hf = F.Face(rig, "head", [Geo().blob((-6.2, 0, 47.5), (5.8, 10.0, 7.0), p=2.2)])
+    g = Geo()                                  # W2: lighter rounded tufts (two-tone hair, W1 review)
+    for (hx_, hz_), r in (((-8.6, 47.4), (2.3, 1.6, 2.2)), ((-6.0, 43.0), (2.1, 1.6, 2.0))):
+        g.blob(tuple(hf.hit(hx_, hz_)), r, p=2.2)
+    rig.part("head", g, HAIR_LT, finish="hair", outline=0)
     g = Geo().blob((13.6, -4.0, 43.8), (2.8, 4.6, 2.0), p=2.2, rot=(22, 0, 0))   # moustache
     g.blob((13.6, 3.0, 43.8), (2.8, 4.6, 2.0), p=2.2, rot=(-22, 0, 0))
     rig.part("head", g, HAIR, finish="hair")
@@ -186,7 +229,7 @@ def build(rig):
     rig.part("head", g, B.CREAM, finish="hair", outline=0.6)
     rig.secondary("flap", "head", (0.0, -11.0, 52.0), (-0.5, -11.8, 43.0), max_deg=18, gain=1.4)
     g = Geo().blob((0.0, -11.2, 47.5), (3.8, 1.8, 5.2), p=2.4)
-    rig.part("flap", g, team=True, outline=0.6)
+    look.team_part(rig, "flap", g, outline=0.6)                      # W2: team-dark ear flap
     for s in ("r", "l"):
         B.arm_parts(rig, s, team_sleeve=True, cuff=B.CREAM)
         y = B.ARM_Y[s]
@@ -209,6 +252,25 @@ def build(rig):
         LEGS[s] = GT.Leg(f"thigh_{s}", f"shin_{s}", (1.0, y, 1.2), bend=1.0)
     rig.joint("odo", "root", (0, 0, 0), hidden=True)
     rig.track("_foot", "odo", (0.0, 0.0, 0.0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, a gun with a crewman): never on his face or skin. The near cheek
+    (the largest team surface), the barrel's chase, the gunner's coat, a strip from his coat tails; two smoke
+    emitters. The first sits on the carriage's front under the trunnions (about 26 lu at rest, at most about 36 lu
+    when the gun hops and tilts on the shot) and 44 lu ahead of the gunner, below his head on every frame, so
+    DAMAGE's `fireAt` puts the stage-3 fire and the ignite flare on the gun, not by his hands (W0 review, W1
+    lesson 5); the second, on the breech, keeps the smoke rising above the barrel."""
+    rig.damage_spot_at("cheek", "cart", -22.0, 20.0, 7.0, "wood", team=True)
+    rig.damage_spot_at("chase", "barrel", 22.0, 40.0, 5.0, "metal", fill=BRONZE)
+    rig.damage_spot_at("coat", "torso", -8.0, 28.0, 7.0, "cloth", team=True)          # (his rest place)
+    rig.damage_spot_at("tails", "tails", -6.0, 13.0, 7.0, "cloth", kind="strip", team=True)
+    rig.damage_spot_at("smoke", "cart", 4.0, 27.0, 5.0, "smoke", kind="emit", team=True)
+    tx, _, tz = TRUN
+    rig.damage_spot("smoke_top", "barrel", (tx - 8.0, -2.0, tz + 10.0), 5.0, "smoke", kind="emit",
+                    normal=(0, 0, 1))
 
 
 # -- poses ---------------------------------------------------------------------------------

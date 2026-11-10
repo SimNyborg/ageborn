@@ -2,18 +2,18 @@
  "frames": {
   "drummer_boy_attack_b_02": {
    "frame": {
-    "x": 103,
+    "x": 2,
     "y": 2,
     "w": 47,
-    "h": 100
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
-    "y": 106,
+    "y": 105,
     "w": 47,
-    "h": 100
+    "h": 101
    },
    "sourceSize": {
     "w": 257,
@@ -26,18 +26,18 @@
   },
   "drummer_boy_attack_b_02_team": {
    "frame": {
-    "x": 486,
+    "x": 530,
     "y": 2,
-    "w": 40,
-    "h": 85
+    "w": 41,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 110,
     "y": 102,
-    "w": 40,
-    "h": 85
+    "w": 41,
+    "h": 84
    },
    "sourceSize": {
     "w": 257,
@@ -50,7 +50,7 @@
   },
   "drummer_boy_attack_b_03": {
    "frame": {
-    "x": 53,
+    "x": 104,
     "y": 2,
     "w": 46,
     "h": 101
@@ -74,7 +74,7 @@
   },
   "drummer_boy_attack_b_03_team": {
    "frame": {
-    "x": 351,
+    "x": 348,
     "y": 2,
     "w": 41,
     "h": 87
@@ -98,7 +98,7 @@
   },
   "drummer_boy_attack_b_04": {
    "frame": {
-    "x": 2,
+    "x": 53,
     "y": 2,
     "w": 47,
     "h": 101
@@ -122,7 +122,7 @@
   },
   "drummer_boy_attack_b_04_team": {
    "frame": {
-    "x": 396,
+    "x": 393,
     "y": 2,
     "w": 41,
     "h": 87
@@ -149,15 +149,15 @@
     "x": 154,
     "y": 2,
     "w": 58,
-    "h": 95
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 110,
-    "y": 111,
+    "y": 110,
     "w": 58,
-    "h": 95
+    "h": 96
    },
    "sourceSize": {
     "w": 257,
@@ -170,7 +170,7 @@
   },
   "drummer_boy_attack_b_05_team": {
    "frame": {
-    "x": 441,
+    "x": 438,
     "y": 2,
     "w": 41,
     "h": 85
@@ -194,7 +194,7 @@
   },
   "drummer_boy_attack_b_06": {
    "frame": {
-    "x": 284,
+    "x": 281,
     "y": 2,
     "w": 63,
     "h": 87
@@ -218,7 +218,7 @@
   },
   "drummer_boy_attack_b_06_team": {
    "frame": {
-    "x": 577,
+    "x": 575,
     "y": 2,
     "w": 45,
     "h": 82
@@ -244,7 +244,7 @@
    "frame": {
     "x": 216,
     "y": 2,
-    "w": 64,
+    "w": 61,
     "h": 92
    },
    "rotated": false,
@@ -252,7 +252,7 @@
    "spriteSourceSize": {
     "x": 114,
     "y": 113,
-    "w": 64,
+    "w": 61,
     "h": 92
    },
    "sourceSize": {
@@ -266,7 +266,7 @@
   },
   "drummer_boy_attack_b_07_team": {
    "frame": {
-    "x": 530,
+    "x": 483,
     "y": 2,
     "w": 43,
     "h": 84

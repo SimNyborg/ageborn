@@ -2,18 +2,18 @@
  "frames": {
   "powder_monkey_attack_b_01": {
    "frame": {
-    "x": 364,
-    "y": 2,
+    "x": 594,
+    "y": 159,
     "w": 170,
-    "h": 168
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 192,
-    "y": 268,
+    "y": 266,
     "w": 170,
-    "h": 168
+    "h": 170
    },
    "sourceSize": {
     "w": 582,
@@ -26,17 +26,17 @@
   },
   "powder_monkey_attack_b_01_team": {
    "frame": {
-    "x": 2,
-    "y": 694,
-    "w": 96,
+    "x": 1125,
+    "y": 339,
+    "w": 95,
     "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 254,
+    "x": 255,
     "y": 258,
-    "w": 96,
+    "w": 95,
     "h": 120
    },
    "sourceSize": {
@@ -50,18 +50,18 @@
   },
   "powder_monkey_attack_b_02": {
    "frame": {
-    "x": 2,
-    "y": 400,
+    "x": 406,
+    "y": 2,
     "w": 189,
-    "h": 151
+    "h": 153
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 177,
-    "y": 275,
+    "y": 273,
     "w": 189,
-    "h": 151
+    "h": 153
    },
    "sourceSize": {
     "w": 582,
@@ -74,8 +74,8 @@
   },
   "powder_monkey_attack_b_02_team": {
    "frame": {
-    "x": 389,
-    "y": 694,
+    "x": 1240,
+    "y": 2,
     "w": 95,
     "h": 116
    },
@@ -98,18 +98,18 @@
   },
   "powder_monkey_attack_b_03": {
    "frame": {
-    "x": 195,
-    "y": 400,
+    "x": 599,
+    "y": 2,
     "w": 186,
-    "h": 149
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 180,
-    "y": 277,
+    "y": 274,
     "w": 186,
-    "h": 149
+    "h": 152
    },
    "sourceSize": {
     "w": 582,
@@ -122,8 +122,8 @@
   },
   "powder_monkey_attack_b_03_team": {
    "frame": {
-    "x": 488,
-    "y": 694,
+    "x": 1415,
+    "y": 246,
     "w": 90,
     "h": 116
    },
@@ -146,18 +146,18 @@
   },
   "powder_monkey_attack_b_04": {
    "frame": {
-    "x": 183,
-    "y": 2,
-    "w": 177,
-    "h": 217
+    "x": 2,
+    "y": 235,
+    "w": 180,
+    "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 186,
-    "y": 260,
-    "w": 177,
-    "h": 217
+    "x": 183,
+    "y": 257,
+    "w": 180,
+    "h": 220
    },
    "sourceSize": {
     "w": 582,
@@ -170,17 +170,17 @@
   },
   "powder_monkey_attack_b_04_team": {
    "frame": {
-    "x": 2,
-    "y": 555,
-    "w": 83,
+    "x": 1339,
+    "y": 2,
+    "w": 81,
     "h": 135
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 268,
+    "x": 269,
     "y": 250,
-    "w": 83,
+    "w": 81,
     "h": 135
    },
    "sourceSize": {
@@ -197,15 +197,15 @@
     "x": 2,
     "y": 2,
     "w": 177,
-    "h": 227
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 261,
+    "y": 259,
     "w": 177,
-    "h": 227
+    "h": 229
    },
    "sourceSize": {
     "w": 582,
@@ -218,10 +218,10 @@
   },
   "powder_monkey_attack_b_05_team": {
    "frame": {
-    "x": 627,
-    "y": 555,
+    "x": 1229,
+    "y": 171,
     "w": 88,
-    "h": 122
+    "h": 126
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 266,
     "y": 251,
     "w": 88,
-    "h": 122
+    "h": 126
    },
    "sourceSize": {
     "w": 582,
@@ -242,18 +242,18 @@
   },
   "powder_monkey_attack_b_06": {
    "frame": {
-    "x": 688,
-    "y": 400,
+    "x": 768,
+    "y": 158,
     "w": 182,
-    "h": 139
+    "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 262,
-    "y": 294,
+    "y": 292,
     "w": 182,
-    "h": 139
+    "h": 141
    },
    "sourceSize": {
     "w": 582,
@@ -266,8 +266,8 @@
   },
   "powder_monkey_attack_b_06_team": {
    "frame": {
-    "x": 582,
-    "y": 694,
+    "x": 1424,
+    "y": 2,
     "w": 98,
     "h": 111
    },
@@ -290,18 +290,18 @@
   },
   "powder_monkey_attack_b_07": {
    "frame": {
-    "x": 385,
-    "y": 400,
+    "x": 789,
+    "y": 2,
     "w": 150,
-    "h": 147
+    "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 266,
-    "y": 281,
+    "y": 279,
     "w": 150,
-    "h": 147
+    "h": 149
    },
    "sourceSize": {
     "w": 582,
@@ -314,8 +314,8 @@
   },
   "powder_monkey_attack_b_07_team": {
    "frame": {
-    "x": 102,
-    "y": 694,
+    "x": 1321,
+    "y": 141,
     "w": 90,
     "h": 118
    },
@@ -338,18 +338,18 @@
   },
   "powder_monkey_attack_b_08": {
    "frame": {
-    "x": 2,
-    "y": 233,
+    "x": 954,
+    "y": 2,
     "w": 151,
-    "h": 163
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 270,
-    "y": 264,
+    "y": 262,
     "w": 151,
-    "h": 163
+    "h": 165
    },
    "sourceSize": {
     "w": 582,
@@ -362,18 +362,18 @@
   },
   "powder_monkey_attack_b_08_team": {
    "frame": {
-    "x": 196,
-    "y": 694,
-    "w": 86,
-    "h": 118
+    "x": 1321,
+    "y": 263,
+    "w": 85,
+    "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 272,
+    "x": 273,
     "y": 254,
-    "w": 86,
-    "h": 118
+    "w": 85,
+    "h": 121
    },
    "sourceSize": {
     "w": 582,
@@ -386,18 +386,18 @@
   },
   "powder_monkey_attack_c_01": {
    "frame": {
-    "x": 678,
-    "y": 2,
+    "x": 404,
+    "y": 166,
     "w": 186,
-    "h": 163
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 172,
-    "y": 263,
+    "y": 260,
     "w": 186,
-    "h": 163
+    "h": 166
    },
    "sourceSize": {
     "w": 582,
@@ -410,8 +410,8 @@
   },
   "powder_monkey_attack_c_01_team": {
    "frame": {
-    "x": 719,
-    "y": 555,
+    "x": 1224,
+    "y": 339,
     "w": 93,
     "h": 121
    },
@@ -434,18 +434,18 @@
   },
   "powder_monkey_attack_c_02": {
    "frame": {
-    "x": 423,
-    "y": 233,
+    "x": 186,
+    "y": 166,
     "w": 214,
-    "h": 159
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 141,
-    "y": 267,
+    "y": 265,
     "w": 214,
-    "h": 159
+    "h": 161
    },
    "sourceSize": {
     "w": 582,
@@ -458,10 +458,10 @@
   },
   "powder_monkey_attack_c_02_team": {
    "frame": {
-    "x": 684,
-    "y": 694,
+    "x": 446,
+    "y": 336,
     "w": 97,
-    "h": 111
+    "h": 116
    },
    "rotated": false,
    "trimmed": true,
@@ -469,7 +469,7 @@
     "x": 245,
     "y": 258,
     "w": 97,
-    "h": 111
+    "h": 116
    },
    "sourceSize": {
     "w": 582,
@@ -482,18 +482,18 @@
   },
   "powder_monkey_attack_c_03": {
    "frame": {
-    "x": 641,
-    "y": 233,
+    "x": 183,
+    "y": 2,
     "w": 219,
-    "h": 158
+    "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 134,
-    "y": 269,
+    "y": 267,
     "w": 219,
-    "h": 158
+    "h": 160
    },
    "sourceSize": {
     "w": 582,
@@ -506,10 +506,10 @@
   },
   "powder_monkey_attack_c_03_team": {
    "frame": {
-    "x": 785,
-    "y": 694,
+    "x": 1020,
+    "y": 345,
     "w": 101,
-    "h": 109
+    "h": 114
    },
    "rotated": false,
    "trimmed": true,
@@ -517,7 +517,7 @@
     "x": 238,
     "y": 260,
     "w": 101,
-    "h": 109
+    "h": 114
    },
    "sourceSize": {
     "w": 582,
@@ -530,18 +530,18 @@
   },
   "powder_monkey_attack_c_04": {
    "frame": {
-    "x": 538,
-    "y": 2,
+    "x": 954,
+    "y": 171,
     "w": 136,
-    "h": 167
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 235,
-    "y": 260,
+    "y": 257,
     "w": 136,
-    "h": 167
+    "h": 170
    },
    "sourceSize": {
     "w": 582,
@@ -554,9 +554,9 @@
   },
   "powder_monkey_attack_c_04_team": {
    "frame": {
-    "x": 349,
-    "y": 555,
-    "w": 89,
+    "x": 547,
+    "y": 336,
+    "w": 88,
     "h": 127
    },
    "rotated": false,
@@ -564,7 +564,7 @@
    "spriteSourceSize": {
     "x": 273,
     "y": 250,
-    "w": 89,
+    "w": 88,
     "h": 127
    },
    "sourceSize": {
@@ -578,18 +578,18 @@
   },
   "powder_monkey_attack_c_05": {
    "frame": {
-    "x": 288,
-    "y": 233,
+    "x": 1094,
+    "y": 171,
     "w": 131,
-    "h": 161
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 263,
-    "y": 267,
+    "y": 264,
     "w": 131,
-    "h": 161
+    "h": 164
    },
    "sourceSize": {
     "w": 582,
@@ -602,8 +602,8 @@
   },
   "powder_monkey_attack_c_05_team": {
    "frame": {
-    "x": 255,
-    "y": 555,
+    "x": 352,
+    "y": 336,
     "w": 90,
     "h": 129
    },
@@ -626,18 +626,18 @@
   },
   "powder_monkey_attack_c_06": {
    "frame": {
-    "x": 89,
-    "y": 555,
+    "x": 186,
+    "y": 331,
     "w": 162,
-    "h": 131
+    "h": 134
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 269,
-    "y": 296,
+    "y": 293,
     "w": 162,
-    "h": 131
+    "h": 134
    },
    "sourceSize": {
     "w": 582,
@@ -650,8 +650,8 @@
   },
   "powder_monkey_attack_c_06_team": {
    "frame": {
-    "x": 286,
-    "y": 694,
+    "x": 917,
+    "y": 345,
     "w": 99,
     "h": 117
    },
@@ -674,18 +674,18 @@
   },
   "powder_monkey_attack_c_07": {
    "frame": {
-    "x": 539,
-    "y": 400,
+    "x": 768,
+    "y": 303,
     "w": 145,
-    "h": 141
+    "h": 144
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 263,
-    "y": 287,
+    "y": 284,
     "w": 145,
-    "h": 141
+    "h": 144
    },
    "sourceSize": {
     "w": 582,
@@ -698,8 +698,8 @@
   },
   "powder_monkey_attack_c_07_team": {
    "frame": {
-    "x": 533,
-    "y": 555,
+    "x": 639,
+    "y": 333,
     "w": 90,
     "h": 124
    },
@@ -722,18 +722,18 @@
   },
   "powder_monkey_attack_c_08": {
    "frame": {
-    "x": 157,
-    "y": 233,
+    "x": 1109,
+    "y": 2,
     "w": 127,
-    "h": 163
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 251,
-    "y": 264,
+    "y": 262,
     "w": 127,
-    "h": 163
+    "h": 165
    },
    "sourceSize": {
     "w": 582,
@@ -746,18 +746,18 @@
   },
   "powder_monkey_attack_c_08_team": {
    "frame": {
-    "x": 442,
-    "y": 555,
-    "w": 87,
-    "h": 126
+    "x": 1424,
+    "y": 117,
+    "w": 86,
+    "h": 125
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 279,
     "y": 254,
-    "w": 87,
-    "h": 126
+    "w": 86,
+    "h": 125
    },
    "sourceSize": {
     "w": 582,
@@ -829,8 +829,8 @@
   "image": "powder_monkey.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 896,
-   "h": 816
+   "w": 1536,
+   "h": 468
   },
   "scale": "3",
   "ageborn": {

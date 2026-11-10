@@ -2,7 +2,7 @@
  "frames": {
   "rocket_cart_attack_b_01": {
    "frame": {
-    "x": 493,
+    "x": 1297,
     "y": 2,
     "w": 249,
     "h": 211
@@ -26,18 +26,18 @@
   },
   "rocket_cart_attack_b_01_team": {
    "frame": {
-    "x": 780,
-    "y": 439,
-    "w": 244,
-    "h": 147
+    "x": 526,
+    "y": 214,
+    "w": 243,
+    "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 242,
     "y": 198,
-    "w": 244,
-    "h": 147
+    "w": 243,
+    "h": 146
    },
    "sourceSize": {
     "w": 650,
@@ -50,17 +50,17 @@
   },
   "rocket_cart_attack_b_02": {
    "frame": {
-    "x": 746,
+    "x": 540,
     "y": 2,
-    "w": 258,
+    "w": 260,
     "h": 208
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 246,
+    "x": 244,
     "y": 197,
-    "w": 258,
+    "w": 260,
     "h": 208
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "rocket_cart_attack_b_02_team": {
    "frame": {
-    "x": 2,
-    "y": 439,
+    "x": 1792,
+    "y": 203,
     "w": 253,
     "h": 153
    },
@@ -98,17 +98,17 @@
   },
   "rocket_cart_attack_b_03": {
    "frame": {
-    "x": 2,
-    "y": 230,
-    "w": 264,
+    "x": 270,
+    "y": 2,
+    "w": 266,
     "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 242,
+    "x": 240,
     "y": 201,
-    "w": 264,
+    "w": 266,
     "h": 205
    },
    "sourceSize": {
@@ -122,18 +122,18 @@
   },
   "rocket_cart_attack_b_03_team": {
    "frame": {
-    "x": 1011,
-    "y": 230,
+    "x": 2,
+    "y": 214,
     "w": 259,
-    "h": 153
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 231,
-    "y": 208,
+    "y": 209,
     "w": 259,
-    "h": 153
+    "h": 152
    },
    "sourceSize": {
     "w": 650,
@@ -146,17 +146,17 @@
   },
   "rocket_cart_attack_b_04": {
    "frame": {
-    "x": 1008,
+    "x": 2,
     "y": 2,
-    "w": 263,
+    "w": 264,
     "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 242,
+    "x": 241,
     "y": 199,
-    "w": 263,
+    "w": 264,
     "h": 207
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "rocket_cart_attack_b_04_team": {
    "frame": {
-    "x": 259,
-    "y": 439,
+    "x": 265,
+    "y": 214,
     "w": 257,
     "h": 152
    },
@@ -194,17 +194,17 @@
   },
   "rocket_cart_attack_b_05": {
    "frame": {
-    "x": 243,
+    "x": 1046,
     "y": 2,
-    "w": 246,
+    "w": 247,
     "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 247,
+    "x": 246,
     "y": 182,
-    "w": 246,
+    "w": 247,
     "h": 214
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "rocket_cart_attack_b_05_team": {
    "frame": {
-    "x": 769,
-    "y": 230,
+    "x": 1550,
+    "y": 203,
     "w": 238,
     "h": 167
    },
@@ -242,17 +242,17 @@
   },
   "rocket_cart_attack_b_06": {
    "frame": {
-    "x": 2,
+    "x": 804,
     "y": 2,
-    "w": 237,
+    "w": 238,
     "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 248,
+    "x": 247,
     "y": 167,
-    "w": 237,
+    "w": 238,
     "h": 224
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "rocket_cart_attack_b_06_team": {
    "frame": {
-    "x": 270,
-    "y": 230,
+    "x": 1819,
+    "y": 2,
     "w": 227,
     "h": 197
    },
@@ -290,17 +290,17 @@
   },
   "rocket_cart_attack_b_07": {
    "frame": {
-    "x": 501,
-    "y": 230,
-    "w": 264,
+    "x": 1550,
+    "y": 2,
+    "w": 265,
     "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 241,
+    "x": 240,
     "y": 204,
-    "w": 264,
+    "w": 265,
     "h": 194
    },
    "sourceSize": {
@@ -314,18 +314,18 @@
   },
   "rocket_cart_attack_b_07_team": {
    "frame": {
-    "x": 520,
-    "y": 439,
-    "w": 256,
-    "h": 147
+    "x": 1046,
+    "y": 220,
+    "w": 255,
+    "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 231,
-    "y": 211,
-    "w": 256,
-    "h": 147
+    "y": 212,
+    "w": 255,
+    "h": 146
    },
    "sourceSize": {
     "w": 650,
@@ -373,8 +373,8 @@
   "image": "rocket_cart.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 596
+   "w": 2048,
+   "h": 372
   },
   "scale": "3",
   "ageborn": {

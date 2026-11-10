@@ -18,19 +18,25 @@ Animation (ANIM_SPEC G5 trot, appendix B for guns on horseback: aimed shot, low 
   attack_b  LOW SNAP SHOT: leans out of the saddle over the horse's shoulder with the carbine pointed
             down at a close foe (the held extreme, a low silhouette), BANG, the cloud rolls along
             the ground
+  wheel_back (items 51/52, extras sheet, unused until they ship) a short hop back after the shot: the horse
+            gathers, rears a little and hops back with its forelegs tucked, lands and settles
   hit       the horse shakes its head, the rider rocks back and squeezes his eyes
   die       D5 unhorsed: the horse rears, the rider is thrown off the back and lands flat
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import gait as GT
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "dragoon"
 GAIT_NAME = "rider"
@@ -42,8 +48,9 @@ FEET = (232, 312)
 ANCHORS = {"head": (0, 116), "hitCenter": (0, 50), "muzzle": (52, 72)}
 NO_RETIME = True
 
-COAT = "#5E4E44"       # dark bay
-COAT_DK = "#4C3F37"
+COAT = "#705C4E"       # dark bay (W2: a mid-value lit side, was #5E4E44)
+COAT_DK = "#5A493F"
+COAT_LT = "#88715F"    # W2: the bay's lit planes (neck crest)
 POINTS = "#3A3230"     # dark lower legs
 MANE = "#2C2826"
 HOOF = "#2F2E30"
@@ -52,6 +59,24 @@ DARK = "#23262E"
 BLADE = "#C9D0D8"
 EYE = "#FAF6EE"
 NOSE = "#6E5A4E"
+BRAID = "#CFC3A6"
+BOOT = "#3A3638"       # W2: the rider's tall boots with a lit side (was rigs_gunpowder.BLACK)
+HORSEHAIR = "#38363A"  # W2: the helmet's horsehair mane with a lit side (was rigs_gunpowder.BLACK)
+HELM = "#B8A570"       # dull brass helmet
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Dragoon is the shabraque, the bay's neck, chest and legs, and the rider with his carbine:
+# a team-dark band under the shabraque's brass studs, a team-dark turban band and team-dark epaulettes (the team zone
+# in two tones), a leather breastplate strap with a brass boss across the chest, creases at the throat and over the
+# forearm and a lighter plane on the neck's crest (big plain hide fields need bands and creases, W1 review), a
+# lighter bay, boots and horsehair (dark materials need a lit side), larger braid dashes and studs.
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", COAT_LT: "hide", POINTS: "hide", MANE: "fur", HOOF: "bone",
+                  STEEL: "iron", BLADE: "iron", NOSE: "hide", B.CREAM: "cloth", BRAID: "cloth", B.BRASS: "bronze",
+                  B.WOOD: "leather", B.BLACK: "leather", BOOT: "leather", HORSEHAIR: "fur", HELM: "bronze",
+                  B.GUNWOOD: "wood", B.GUNMETAL: "iron", B.SKIN: "skin", B.LEATHER: "leather", "team": "cloth"}
 
 # sabre: joint in the near hand (rider space, rest pose); blade modelled pointing up (+Z)
 SX, SY, SZ = 9.5, -14.0, 65.5
@@ -91,15 +116,25 @@ def build(rig):
     g.blob((-26.6, 0, 39.0), (2.0, 14.6, 10.6), p=3.2)
     rig.part("horse", g, B.CREAM)
     g = Geo()
-    for x in range(-22, 18, 4):                                # braid dashes on the edge
-        g.blob((x, -15.0, 29.0), (1.2, 0.6, 1.4), p=2.2, rot=(0, 30, 0))
-    rig.part("horse", g, "#CFC3A6", outline=0)
+    for x in range(-22, 18, 4):                                # braid dashes on the edge (W2: larger)
+        g.blob((x, -15.2, 29.0), (1.5, 0.7, 1.7), p=2.2, rot=(0, 30, 0))
+    rig.part("horse", g, BRAID, outline=0)
+    # W2: a team-dark band under the brass studs (the shabraque in two tones)
+    g = KD.band_z((-3.5, 0, 43.0), (23.5, 14.4, 14.4), 30.8, 36.6, p=3.2, taper=(1.12, 0.92), grow=0.3)
+    look.team_part(rig, "horse", g)
     g = G.anchor(cf, Geo(), K.scr(cf, (-6.0, -14.0, 40.5)), s=1.45, w=1.7)
     rig.part("horse", g, B.CREAM, highlight=False, outline=0)
     g = Geo()
     for x in (-18, -8, 2, 12):
-        g.sphere((x, -14.6, 33.8), 1.3, cuts=3)
+        g.sphere((x, -14.9, 33.8), 1.45, cuts=3)
     rig.part("horse", g, B.BRASS, finish="metal", outline=0.8)
+    # W2: a leather breastplate strap across the chest with a brass boss, the bay's creases and lit planes
+    chest = Geo().blob((14.0, 0, 42.0), (11.4, 12.4, 11.9), p=2.2)
+    KD.surface_line(rig, "horse", chest, [(13.0, 51.0), (19.5, 46.0), (24.0, 40.0), (25.5, 34.5)], 2.6, B.LEATHER)
+    c = GW.on_surface(rig, "horse", [Geo().blob((14.0, 0, 42.0), (11.8, 12.8, 12.3), p=2.2)], 21.8, 43.2)
+    rig.part("horse", Geo().blob(c, (2.2, 1.0, 2.2), p=2.2), B.BRASS, finish="metal", outline=0.6)
+    KD.surface_line(rig, "horse", Geo().blob((14.0, 0, 42.0), (11.0, 12.0, 11.5), p=2.2),
+                    [(17.0, 33.5), (20.5, 31.0), (23.5, 30.6)], 1.0, COAT_DK)
     g = Geo().blob((-2, 0, 54.5), (11.5, 9.5, 3.6), p=2.6)   # saddle
     g.blob((-11.5, 0, 57.0), (2.6, 8.5, 4.0), p=2.4)
     rig.part("horse", g, B.WOOD)
@@ -120,6 +155,14 @@ def build(rig):
     rig.joint("hhead", "neck", (32, 0, 66), scale=1.25)
     g = Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)
     rig.part("neck", g, COAT)
+    # W2: a lighter plane along the neck's crest and two creases at the throat
+    g = Geo().capsule((19.0, -1.2, 51.5), (28.4, -1.0, 67.0), 6.2, 4.4)
+    g.clip((0, -7.4, 0), (0, -1, 0))
+    rig.part("neck", g, COAT_LT, outline=0)
+    neck = Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)
+    KD.surface_line(rig, "neck", neck, [(29.5, 47.0), (33.0, 51.5), (35.5, 55.5)], 1.0, COAT_DK)
+    neck = Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)
+    KD.surface_line(rig, "neck", neck, [(26.5, 44.5), (29.6, 48.6), (31.8, 52.0)], 1.0, COAT_DK)
     g = Geo()
     for i in range(6):
         t = i / 5
@@ -168,7 +211,7 @@ def build(rig):
     g = Geo().capsule((8, -11.5, 53), (7, -11.5, 40), 4.8, 4.2)
     g.blob((9.5, -11.5, 38.0), (5.8, 4.2, 3.0), p=2.8)
     g.blob((7.6, -11.5, 53.0), (5.6, 5.0, 2.4), p=2.6)        # boot top
-    rig.part("rider", g, B.BLACK, finish="gloss")
+    rig.part("rider", g, BOOT, finish="gloss")
     g = Geo().lathe([(2.6, 0), (3.0, 0.4), (3.0, 1.4), (2.6, 1.8)], (9.5, -12.0, 34.6), segs=12)
     rig.part("rider", g, STEEL, finish="metal", outline=0.4)   # stirrup
     # torso: team coat, steel cuirass with brass rivets and a glint, coat tails
@@ -198,17 +241,17 @@ def build(rig):
     g.clip((0, 0, 91.6), (0, 0, -1))
     g.lathe([(0, -0.6), (8.4, -0.6), (9.2, 0.0), (8.4, 0.6), (0, 0.6)], (3.2, 0, 92.0), segs=24,
             squash=(1.0, 0.9), rot=(0, -8, 0))   # peak
-    rig.part("khead", g, "#B8A570", finish="metal")                  # dull brass helmet
+    rig.part("khead", g, HELM, finish="metal")                       # dull brass helmet
     g = Geo().lathe([(9.4, 0), (9.9, 0.3), (9.9, 2.6), (9.4, 2.9)], (0.4, 0, 91.8), segs=24)
-    rig.part("khead", g, team=True)                                 # team turban band
+    look.team_part(rig, "khead", g)                                 # team turban band (W2: team-dark)
     g = Geo().blob((0.0, 0, 100.4), (8.6, 2.3, 3.6), p=2.4)        # comb
-    rig.part("khead", g, "#B8A570", finish="metal", outline=0.7)
+    rig.part("khead", g, HELM, finish="metal", outline=0.7)
     rig.secondary("crest", "khead", (-2, 0, 102), (-22, 0, 82), max_deg=14, gain=1.2)
     g = Geo()
     for x, z, r in ((2.0, 103.0, 3.0), (-4.0, 103.0, 3.6), (-10.0, 99.0, 3.8), (-15.0, 93.0, 3.4),
                     (-18.5, 86.0, 2.8), (-20.0, 80.0, 2.0)):
         g.blob((x * 1.1, 0, 100.0 + (z - 100.0) * 1.25), (r * 1.3, r * 0.9, r * 1.3), p=2.1)
-    rig.part("crest", g, B.BLACK, finish="hair")                    # black horsehair mane
+    rig.part("crest", g, HORSEHAIR, finish="hair")                  # black horsehair mane
 
     # far arm: reins
     rig.joint("karm_l", "ktorso", (0, 10.5, 77))
@@ -226,9 +269,9 @@ def build(rig):
     g = Geo().capsule((3, -12, 68), (8.5, -13, 66), 3.8, 3.6)
     g.blob((6.8, -12.6, 66.8), (3.6, 5.0, 5.0), p=2.4)
     rig.part("kfore_r", g, B.CREAM)
-    for y in (-10.5, 10.5):   # team epaulettes with a cream fringe
+    for y in (-10.5, 10.5):   # team epaulettes with a cream fringe (W2: team-dark)
         g = Geo().blob((-0.5, y * 1.02, 78.5), (6.8, 5.8, 4.6), p=2.4)
-        rig.part("ktorso" if y > 0 else "karm_r", g, team=True)
+        look.team_part(rig, "ktorso" if y > 0 else "karm_r", g)
         g = Geo().blob((-0.5, y * 1.06, 75.0), (6.4, 5.2, 1.4), p=2.6)
         rig.part("ktorso" if y > 0 else "karm_r", g, B.CREAM, outline=0.5)
     g = Geo().blob((SX + 0.6, SY, SZ), (3.8, 3.6, 3.8), p=2.3)    # fist
@@ -253,6 +296,19 @@ def build(rig):
     rig.part("flash", g, glow=B.FLASH_CORE, outline=0)
     G.smoke_cloud(rig, "root", (64.0, -18.0, 72.0), size=1.15)
     G.smoke_cloud(rig, "root", (58.0, -18.0, 40.0), size=1.1, name="smoke_lo")
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The shabraque (the largest team
+    surface, under the rider's leg), the bay's neck, the rider's coat skirt over the saddle (his chest hides behind
+    the carbine arm), the brass helmet; a torn strip from the shabraque's cream edge."""
+    rig.damage_spot_at("shabraque", "horse", -12.0, 42.0, 9.0, "cloth", team=True)
+    rig.damage_spot_at("neck", "neck", 24.0, 54.0, 7.0, "hide", fill=COAT)
+    rig.damage_spot_at("coat", "ktorso", -8.0, 66.0, 6.0, "cloth", team=True)    # the skirt, clear of the arm
+    rig.damage_spot_at("helmet", "khead", -2.0, 110.0, 5.0, "metal", fill=HELM)
+    rig.damage_spot_at("hem", "horse", -14.0, 27.0, 9.0, "cloth", kind="strip", fill=B.CREAM)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -351,7 +407,15 @@ SAB = [96, 60, 20, 2, 1, 1, 8, 32, 70, IDLE_SABRE]
 A_TAIL = [0, 4, 6, 4, 4, 4, -6, -4, 0, 0]
 
 
-def _attack_pose(f):
+# down-aimed shots (queue item 44, ageborn_art/aimed.py; the "down" target, 35 degrees below the facing): a turn of
+# `turn` degrees (negative: down) tips the carbine in the fist, lowers the arm with it, leans the rider forward over
+# the horse's shoulder and drops his head along the barrel; the cloud billows lower in front of the lowered muzzle.
+AIM_ARM, AIM_LEAN, AIM_HEAD, AIM_SMOKE = 0.5, 0.25, 0.3, 0.4
+AIM_W = [0.0, 0.4, 0.85, 1.0, 1.0, 1.0, 1.0, 0.7, 0.3, 0.0]       # per unique frame of A; the shot is frame 6
+AIM_W_B = [0.0, 0.4, 0.85, 1.0, 1.0, 1.0, 1.0, 0.7, 0.0, 0.0]     # B (frames 0, 8 and 9 are A's)
+
+
+def _attack_pose(f, turn=0.0):
     pose = merge(STANCE, M.body_about(HX, x=A_X[f]), {
         "horse": {"r": A_R[f]},
         "leg_fr": {"r": LFR[f][0]}, "leg_fr2": {"r": LFR[f][1]},
@@ -359,12 +423,14 @@ def _attack_pose(f):
         "leg_br": {"r": LBR[f][0]}, "leg_br2": {"r": LBR[f][1]},
         "leg_bl": {"r": LBL[f][0]}, "leg_bl2": {"r": LBL[f][1]},
         "neck": {"r": NECK[f]}, "hhead": {"r": HHEAD[f]},
-        "ktorso": {"r": KT[f]}, "khead": {"r": -0.5 * KT[f] - (6 if 3 <= f <= 5 else 0)},
-        "karm_r": {"r": KARM_R[f] - KR0}, "kfore_r": {"r": KFORE_R[f] - KF0},
+        "ktorso": {"r": KT[f] + AIM_LEAN * turn},
+        "khead": {"r": -0.5 * KT[f] - (6 if 3 <= f <= 5 else 0) + AIM_HEAD * turn},
+        "karm_r": {"r": KARM_R[f] - KR0 + AIM_ARM * turn}, "kfore_r": {"r": KFORE_R[f] - KF0},
         "tail": {"r": A_TAIL[f]},
         "flash": {"show": f == 6},
         "smoke": {"show": f in (7, 8), "s": [1, 1, 1, 1, 1, 1, 1, 0.9, 1.1, 1][f],
-                  "x": [0, 0, 0, 0, 0, 0, 0, 0, 6, 0][f], "z": [0, 0, 0, 0, 0, 0, 0, 0, 5, 0][f]},
+                  "x": [0, 0, 0, 0, 0, 0, 0, 0, 6, 0][f],
+                  "z": [0, 0, 0, 0, 0, 0, 0, 0, 5, 0][f] + AIM_SMOKE * min(turn, 0.0)},
     })
     if f in (2, 3, 4, 5):
         pose = merge(pose, F.expr("squeeze", "grit"), {"brow": {"z": -0.7}})
@@ -372,7 +438,7 @@ def _attack_pose(f):
         pose = merge(pose, F.expr("squeeze", "yell"))
     if f in (6, 7):
         pose = merge(pose, H_BLINK)
-    return sabre_at(pose, SAB[f])
+    return sabre_at(pose, SAB[f] + turn)
 
 
 def _attack_clip():
@@ -391,18 +457,18 @@ B_SAB = [96, 20, -14, -24, -25, -25, -18, 4, 70, IDLE_SABRE]
 B_RZ = [0, -0.5, -1.5, -2.0, -2.0, -2.0, -1.0, -0.5, 0.0, 0.0]
 
 
-def _b_pose(f):
+def _b_pose(f, turn=0.0):
     if f in (0, 8, 9):
         return _attack_pose(f)
     pose = merge(_attack_pose(f), {
-        "ktorso": {"r": B_KT[f], "rz": -8}, "khead": {"r": -0.4 * B_KT[f]},
+        "ktorso": {"r": B_KT[f] + AIM_LEAN * turn, "rz": -8}, "khead": {"r": -0.4 * B_KT[f] + AIM_HEAD * turn},
         "rider": {"z": B_RZ[f]},
-        "karm_r": {"r": B_ARM[f] - KR0}, "kfore_r": {"r": B_FORE[f] - KF0},
+        "karm_r": {"r": B_ARM[f] - KR0 + AIM_ARM * turn}, "kfore_r": {"r": B_FORE[f] - KF0},
         "smoke": {"hide": True},
         "smoke_lo": {"show": f in (7,), "s": 1.0},
         "neck": {"r": [0, 4, 8, 10, 10, 10, 16, 12, 4, 0][f]},
     })
-    return sabre_at(pose, B_SAB[f])
+    return sabre_at(pose, B_SAB[f] + turn)
 
 
 def _attack_b():
@@ -412,6 +478,32 @@ def _attack_b():
     return M.clip("attack_b", [_b_pose(f) for f in range(10)], M.HEAVY_MELEE_MS, impact=6,
                   sequence=ATTACK_SEQ, overlays=ov, reuse={0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9)},
                   extra={"holdStep": 3})
+
+
+# items 51/52 `wheel_back` (W2): gather, push, air, land, settle (6 poses, 500 ms, not looped)
+WB_X = [0.0, -1.0, -5.0, -9.0, -11.0, -11.0]
+WB_Z = [0.0, -1.5, 3.5, 4.0, 0.0, 0.0]
+WB_R = [0, -2, 8, 6, -2, 0]                  # horse pitch (+: the forehand rises)
+WB_LF = [(0, 0), (6, -10), (30, -60), (20, -40), (-4, 4), (0, 0)]
+WB_LB = [(0, 0), (10, 4), (-10, -6), (-6, -4), (4, 2), (0, 0)]
+WB_NECK = [0, 6, 14, 8, 2, 0]
+WB_HH = [0, -4, -10, -6, 0, 0]
+WB_KT = [0, 2, 6, 4, 0, 0]
+
+
+def _wheel_back(k):
+    pose = merge(STANCE, M.body_about(HX, x=WB_X[k], z=WB_Z[k], r=WB_R[k]), {
+        "leg_fr": {"r": WB_LF[k][0]}, "leg_fr2": {"r": WB_LF[k][1]},
+        "leg_fl": {"r": WB_LF[k][0] - 4}, "leg_fl2": {"r": WB_LF[k][1] + 6},
+        "leg_br": {"r": WB_LB[k][0]}, "leg_br2": {"r": WB_LB[k][1]},
+        "leg_bl": {"r": WB_LB[k][0] + 3}, "leg_bl2": {"r": WB_LB[k][1]},
+        "neck": {"r": WB_NECK[k]}, "hhead": {"r": WB_HH[k]},
+        "ktorso": {"r": WB_KT[k]}, "khead": {"r": -0.5 * WB_KT[k]},
+        "tail": {"r": [0, 6, 14, 10, -4, 0][k]},
+    })
+    if k in (2, 3):
+        pose = merge(pose, F.expr("grit"))
+    return sabre_at(pose, IDLE_SABRE + [0, 4, 10, 6, -2, 0][k])
 
 
 def _hit(k):
@@ -466,14 +558,24 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed down about 35 degrees at close foes (both attacks; the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("down",))
+    aimed_b = AIMED.variants(RIG, attack_b, _b_pose, AIM_W_B, aims=("down",))
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
         M.walk_clip("walk", RIG, _walk, _gait(), "rider"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
+    ] + aimed_a + aimed_b + [
+        M.clip("wheel_back", [_wheel_back(k) for k in range(6)], [80, 70, 90, 90, 80, 90]),
     ]
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl, heavy=True))

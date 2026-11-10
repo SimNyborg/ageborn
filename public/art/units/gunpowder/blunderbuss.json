@@ -2,63 +2,15 @@
  "frames": {
   "blunderbuss_idle_00": {
    "frame": {
-    "x": 291,
-    "y": 201,
-    "w": 65,
-    "h": 88
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 91,
-    "y": 100,
-    "w": 65,
-    "h": 88
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 215
-   },
-   "anchor": {
-    "x": 0.41971,
-    "y": 0.83256
-   }
-  },
-  "blunderbuss_idle_00_team": {
-   "frame": {
-    "x": 247,
-    "y": 472,
-    "w": 45,
-    "h": 79
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 93,
-    "y": 94,
-    "w": 45,
-    "h": 79
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 215
-   },
-   "anchor": {
-    "x": 0.41971,
-    "y": 0.83256
-   }
-  },
-  "blunderbuss_idle_01": {
-   "frame": {
-    "x": 550,
-    "y": 105,
+    "x": 451,
+    "y": 99,
     "w": 65,
     "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 91,
     "y": 98,
     "w": 65,
     "h": 90
@@ -72,10 +24,58 @@
     "y": 0.83256
    }
   },
+  "blunderbuss_idle_00_team": {
+   "frame": {
+    "x": 863,
+    "y": 166,
+    "w": 45,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 94,
+    "w": 45,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_idle_01": {
+   "frame": {
+    "x": 382,
+    "y": 100,
+    "w": 65,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 97,
+    "w": 65,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
   "blunderbuss_idle_01_team": {
    "frame": {
-    "x": 296,
-    "y": 472,
+    "x": 814,
+    "y": 170,
     "w": 45,
     "h": 79
    },
@@ -98,18 +98,18 @@
   },
   "blunderbuss_idle_02": {
    "frame": {
-    "x": 2,
-    "y": 105,
+    "x": 245,
+    "y": 294,
     "w": 65,
-    "h": 92
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 95,
+    "y": 94,
     "w": 65,
-    "h": 92
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -122,8 +122,8 @@
   },
   "blunderbuss_idle_02_team": {
    "frame": {
-    "x": 304,
-    "y": 385,
+    "x": 838,
+    "y": 337,
     "w": 43,
     "h": 81
    },
@@ -146,18 +146,18 @@
   },
   "blunderbuss_idle_03": {
    "frame": {
-    "x": 257,
-    "y": 2,
+    "x": 245,
+    "y": 194,
     "w": 65,
-    "h": 94
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 93,
+    "y": 91,
     "w": 65,
-    "h": 94
+    "h": 96
    },
    "sourceSize": {
     "w": 274,
@@ -170,17 +170,17 @@
   },
   "blunderbuss_idle_03_team": {
    "frame": {
-    "x": 148,
-    "y": 385,
-    "w": 44,
+    "x": 791,
+    "y": 337,
+    "w": 43,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 94,
+    "x": 95,
     "y": 88,
-    "w": 44,
+    "w": 43,
     "h": 82
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "blunderbuss_idle_04": {
    "frame": {
-    "x": 326,
-    "y": 2,
+    "x": 314,
+    "y": 190,
     "w": 64,
-    "h": 93
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 94,
+    "y": 93,
     "w": 64,
-    "h": 93
+    "h": 94
    },
    "sourceSize": {
     "w": 274,
@@ -218,10 +218,10 @@
   },
   "blunderbuss_idle_04_team": {
    "frame": {
-    "x": 196,
-    "y": 385,
+    "x": 865,
+    "y": 248,
     "w": 43,
-    "h": 82
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 94,
     "y": 89,
     "w": 43,
-    "h": 82
+    "h": 81
    },
    "sourceSize": {
     "w": 274,
@@ -242,18 +242,18 @@
   },
   "blunderbuss_idle_05": {
    "frame": {
-    "x": 2,
-    "y": 201,
+    "x": 314,
+    "y": 288,
     "w": 65,
-    "h": 90
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 91,
-    "y": 98,
+    "y": 96,
     "w": 65,
-    "h": 90
+    "h": 92
    },
    "sourceSize": {
     "w": 274,
@@ -266,8 +266,8 @@
   },
   "blunderbuss_idle_05_team": {
    "frame": {
-    "x": 107,
-    "y": 472,
+    "x": 817,
+    "y": 253,
     "w": 44,
     "h": 80
    },
@@ -290,18 +290,18 @@
   },
   "blunderbuss_walk_00": {
    "frame": {
-    "x": 491,
-    "y": 201,
+    "x": 594,
+    "y": 284,
     "w": 55,
-    "h": 87
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 91,
-    "y": 101,
+    "y": 100,
     "w": 55,
-    "h": 87
+    "h": 88
    },
    "sourceSize": {
     "w": 274,
@@ -314,18 +314,18 @@
   },
   "blunderbuss_walk_00_team": {
    "frame": {
-    "x": 592,
-    "y": 472,
-    "w": 42,
-    "h": 78
+    "x": 764,
+    "y": 171,
+    "w": 46,
+    "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 93,
     "y": 96,
-    "w": 42,
-    "h": 78
+    "w": 46,
+    "h": 80
    },
    "sourceSize": {
     "w": 274,
@@ -338,18 +338,18 @@
   },
   "blunderbuss_walk_01": {
    "frame": {
-    "x": 221,
-    "y": 295,
+    "x": 651,
+    "y": 180,
     "w": 54,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 104,
+    "y": 103,
     "w": 54,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 274,
@@ -362,10 +362,10 @@
   },
   "blunderbuss_walk_01_team": {
    "frame": {
-    "x": 309,
-    "y": 556,
+    "x": 978,
+    "y": 253,
     "w": 44,
-    "h": 75
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
@@ -373,7 +373,7 @@
     "x": 93,
     "y": 99,
     "w": 44,
-    "h": 75
+    "h": 76
    },
    "sourceSize": {
     "w": 274,
@@ -386,18 +386,18 @@
   },
   "blunderbuss_walk_02": {
    "frame": {
-    "x": 71,
-    "y": 201,
+    "x": 593,
+    "y": 189,
     "w": 54,
-    "h": 89
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 98,
+    "y": 96,
     "w": 54,
-    "h": 89
+    "h": 91
    },
    "sourceSize": {
     "w": 274,
@@ -410,8 +410,8 @@
   },
   "blunderbuss_walk_02_team": {
    "frame": {
-    "x": 544,
-    "y": 472,
+    "x": 955,
+    "y": 86,
     "w": 44,
     "h": 78
    },
@@ -434,18 +434,18 @@
   },
   "blunderbuss_walk_03": {
    "frame": {
-    "x": 264,
-    "y": 105,
+    "x": 536,
+    "y": 297,
     "w": 54,
-    "h": 91
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 93,
+    "y": 91,
     "w": 54,
-    "h": 91
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -458,8 +458,8 @@
   },
   "blunderbuss_walk_03_team": {
    "frame": {
-    "x": 495,
-    "y": 472,
+    "x": 906,
+    "y": 83,
     "w": 45,
     "h": 78
    },
@@ -482,18 +482,18 @@
   },
   "blunderbuss_walk_04": {
    "frame": {
-    "x": 484,
-    "y": 295,
+    "x": 640,
+    "y": 91,
     "w": 57,
-    "h": 84
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 89,
-    "y": 101,
+    "y": 100,
     "w": 57,
-    "h": 84
+    "h": 85
    },
    "sourceSize": {
     "w": 274,
@@ -506,8 +506,8 @@
   },
   "blunderbuss_walk_04_team": {
    "frame": {
-    "x": 213,
-    "y": 556,
+    "x": 932,
+    "y": 335,
     "w": 42,
     "h": 77
    },
@@ -530,18 +530,18 @@
   },
   "blunderbuss_walk_05": {
    "frame": {
-    "x": 422,
-    "y": 295,
+    "x": 623,
+    "y": 2,
     "w": 58,
-    "h": 84
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 104,
+    "y": 103,
     "w": 58,
-    "h": 84
+    "h": 85
    },
    "sourceSize": {
     "w": 274,
@@ -554,10 +554,10 @@
   },
   "blunderbuss_walk_05_team": {
    "frame": {
-    "x": 165,
-    "y": 556,
+    "x": 932,
+    "y": 168,
     "w": 44,
-    "h": 77
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
@@ -565,7 +565,7 @@
     "x": 98,
     "y": 99,
     "w": 44,
-    "h": 77
+    "h": 78
    },
    "sourceSize": {
     "w": 274,
@@ -578,18 +578,18 @@
   },
   "blunderbuss_walk_06": {
    "frame": {
-    "x": 72,
-    "y": 295,
+    "x": 560,
+    "y": 2,
     "w": 59,
-    "h": 86
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 97,
+    "y": 96,
     "w": 59,
-    "h": 86
+    "h": 87
    },
    "sourceSize": {
     "w": 274,
@@ -602,10 +602,10 @@
   },
   "blunderbuss_walk_06_team": {
    "frame": {
-    "x": 2,
-    "y": 472,
+    "x": 709,
+    "y": 176,
     "w": 51,
-    "h": 80
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
@@ -613,7 +613,7 @@
     "x": 95,
     "y": 92,
     "w": 51,
-    "h": 80
+    "h": 83
    },
    "sourceSize": {
     "w": 274,
@@ -626,18 +626,18 @@
   },
   "blunderbuss_walk_07": {
    "frame": {
-    "x": 205,
-    "y": 105,
+    "x": 581,
+    "y": 93,
     "w": 55,
-    "h": 91
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 92,
+    "y": 91,
     "w": 55,
-    "h": 91
+    "h": 92
    },
    "sourceSize": {
     "w": 274,
@@ -650,17 +650,17 @@
   },
   "blunderbuss_walk_07_team": {
    "frame": {
-    "x": 57,
-    "y": 472,
-    "w": 46,
+    "x": 691,
+    "y": 347,
+    "w": 48,
     "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 95,
     "y": 87,
-    "w": 46,
+    "w": 48,
     "h": 80
    },
    "sourceSize": {
@@ -674,18 +674,18 @@
   },
   "blunderbuss_attack_00": {
    "frame": {
-    "x": 322,
-    "y": 105,
+    "x": 88,
+    "y": 282,
     "w": 75,
-    "h": 90
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 97,
+    "y": 95,
     "w": 75,
-    "h": 90
+    "h": 92
    },
    "sourceSize": {
     "w": 274,
@@ -698,8 +698,8 @@
   },
   "blunderbuss_attack_00_team": {
    "frame": {
-    "x": 202,
-    "y": 472,
+    "x": 978,
+    "y": 333,
     "w": 41,
     "h": 80
    },
@@ -722,18 +722,18 @@
   },
   "blunderbuss_attack_01": {
    "frame": {
-    "x": 337,
-    "y": 295,
+    "x": 128,
+    "y": 190,
     "w": 81,
-    "h": 84
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 89,
-    "y": 103,
+    "y": 102,
     "w": 81,
-    "h": 84
+    "h": 85
    },
    "sourceSize": {
     "w": 274,
@@ -746,8 +746,8 @@
   },
   "blunderbuss_attack_01_team": {
    "frame": {
-    "x": 259,
-    "y": 556,
+    "x": 910,
+    "y": 2,
     "w": 46,
     "h": 75
    },
@@ -770,18 +770,18 @@
   },
   "blunderbuss_attack_02": {
    "frame": {
-    "x": 129,
-    "y": 201,
+    "x": 126,
+    "y": 2,
     "w": 80,
-    "h": 88
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 100,
+    "y": 99,
     "w": 80,
-    "h": 88
+    "h": 89
    },
    "sourceSize": {
     "w": 274,
@@ -794,8 +794,8 @@
   },
   "blunderbuss_attack_02_team": {
    "frame": {
-    "x": 445,
-    "y": 472,
+    "x": 767,
+    "y": 255,
     "w": 46,
     "h": 78
    },
@@ -818,8 +818,56 @@
   },
   "blunderbuss_attack_03": {
    "frame": {
-    "x": 550,
-    "y": 201,
+    "x": 124,
+    "y": 99,
+    "w": 82,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 101,
+    "w": 82,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_03_team": {
+   "frame": {
+    "x": 808,
+    "y": 2,
+    "w": 48,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 97,
+    "w": 48,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_04": {
+   "frame": {
+    "x": 2,
+    "y": 282,
     "w": 82,
     "h": 86
    },
@@ -840,58 +888,10 @@
     "y": 0.83256
    }
   },
-  "blunderbuss_attack_03_team": {
-   "frame": {
-    "x": 64,
-    "y": 556,
-    "w": 47,
-    "h": 77
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 90,
-    "y": 97,
-    "w": 47,
-    "h": 77
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 215
-   },
-   "anchor": {
-    "x": 0.41971,
-    "y": 0.83256
-   }
-  },
-  "blunderbuss_attack_04": {
-   "frame": {
-    "x": 135,
-    "y": 295,
-    "w": 82,
-    "h": 85
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 85,
-    "y": 103,
-    "w": 82,
-    "h": 85
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 215
-   },
-   "anchor": {
-    "x": 0.41971,
-    "y": 0.83256
-   }
-  },
   "blunderbuss_attack_04_team": {
    "frame": {
-    "x": 393,
-    "y": 472,
+    "x": 715,
+    "y": 263,
     "w": 48,
     "h": 78
    },
@@ -914,18 +914,18 @@
   },
   "blunderbuss_attack_05": {
    "frame": {
-    "x": 394,
+    "x": 2,
     "y": 2,
     "w": 120,
-    "h": 92
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 88,
-    "y": 96,
+    "y": 95,
     "w": 120,
-    "h": 92
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -938,8 +938,8 @@
   },
   "blunderbuss_attack_05_team": {
    "frame": {
-    "x": 52,
-    "y": 385,
+    "x": 809,
+    "y": 83,
     "w": 44,
     "h": 83
    },
@@ -962,18 +962,18 @@
   },
   "blunderbuss_attack_06": {
    "frame": {
-    "x": 490,
-    "y": 385,
+    "x": 2,
+    "y": 197,
     "w": 122,
-    "h": 80
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 66,
-    "y": 108,
+    "y": 107,
     "w": 122,
-    "h": 80
+    "h": 81
    },
    "sourceSize": {
     "w": 274,
@@ -986,10 +986,10 @@
   },
   "blunderbuss_attack_06_team": {
    "frame": {
-    "x": 357,
-    "y": 556,
+    "x": 448,
+    "y": 359,
     "w": 64,
-    "h": 73
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
@@ -997,7 +997,7 @@
     "x": 68,
     "y": 103,
     "w": 64,
-    "h": 73
+    "h": 74
    },
    "sourceSize": {
     "w": 274,
@@ -1010,18 +1010,18 @@
   },
   "blunderbuss_attack_07": {
    "frame": {
-    "x": 518,
-    "y": 2,
+    "x": 2,
+    "y": 99,
     "w": 118,
-    "h": 92
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 94,
+    "y": 92,
     "w": 118,
-    "h": 92
+    "h": 94
    },
    "sourceSize": {
     "w": 274,
@@ -1034,8 +1034,8 @@
   },
   "blunderbuss_attack_07_team": {
    "frame": {
-    "x": 398,
-    "y": 385,
+    "x": 980,
+    "y": 168,
     "w": 42,
     "h": 81
    },
@@ -1058,18 +1058,18 @@
   },
   "blunderbuss_attack_08": {
    "frame": {
-    "x": 420,
-    "y": 201,
+    "x": 382,
+    "y": 195,
     "w": 67,
-    "h": 87
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 89,
-    "y": 100,
+    "y": 99,
     "w": 67,
-    "h": 87
+    "h": 88
    },
    "sourceSize": {
     "w": 274,
@@ -1082,8 +1082,8 @@
   },
   "blunderbuss_attack_08_team": {
    "frame": {
-    "x": 115,
-    "y": 556,
+    "x": 860,
+    "y": 2,
     "w": 46,
     "h": 77
    },
@@ -1106,18 +1106,18 @@
   },
   "blunderbuss_attack_09": {
    "frame": {
-    "x": 185,
-    "y": 2,
+    "x": 213,
+    "y": 95,
     "w": 68,
-    "h": 94
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 94,
+    "y": 93,
     "w": 68,
-    "h": 94
+    "h": 95
    },
    "sourceSize": {
     "w": 274,
@@ -1130,8 +1130,8 @@
   },
   "blunderbuss_attack_09_team": {
    "frame": {
-    "x": 100,
-    "y": 385,
+    "x": 743,
+    "y": 345,
     "w": 44,
     "h": 83
    },
@@ -1154,18 +1154,18 @@
   },
   "blunderbuss_attack_10": {
    "frame": {
-    "x": 401,
-    "y": 105,
+    "x": 167,
+    "y": 279,
     "w": 74,
-    "h": 90
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 97,
+    "y": 95,
     "w": 74,
-    "h": 90
+    "h": 92
    },
    "sourceSize": {
     "w": 274,
@@ -1178,8 +1178,8 @@
   },
   "blunderbuss_attack_10_team": {
    "frame": {
-    "x": 155,
-    "y": 472,
+    "x": 960,
+    "y": 2,
     "w": 43,
     "h": 80
    },
@@ -1202,18 +1202,18 @@
   },
   "blunderbuss_hit_00": {
    "frame": {
-    "x": 2,
-    "y": 295,
+    "x": 490,
+    "y": 2,
     "w": 66,
-    "h": 86
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 75,
-    "y": 101,
+    "y": 100,
     "w": 66,
-    "h": 86
+    "h": 87
    },
    "sourceSize": {
     "w": 274,
@@ -1226,8 +1226,8 @@
   },
   "blunderbuss_hit_00_team": {
    "frame": {
-    "x": 2,
-    "y": 556,
+    "x": 746,
+    "y": 2,
     "w": 58,
     "h": 77
    },
@@ -1250,18 +1250,18 @@
   },
   "blunderbuss_hit_01": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 520,
+    "y": 93,
     "w": 57,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 75,
-    "y": 87,
+    "y": 86,
     "w": 57,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 274,
@@ -1274,8 +1274,8 @@
   },
   "blunderbuss_hit_01_team": {
    "frame": {
-    "x": 360,
-    "y": 201,
+    "x": 288,
+    "y": 2,
     "w": 56,
     "h": 88
    },
@@ -1298,18 +1298,18 @@
   },
   "blunderbuss_hit_02": {
    "frame": {
-    "x": 63,
-    "y": 2,
+    "x": 383,
+    "y": 287,
     "w": 61,
-    "h": 95
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 92,
+    "y": 91,
     "w": 61,
-    "h": 95
+    "h": 96
    },
    "sourceSize": {
     "w": 274,
@@ -1322,10 +1322,10 @@
   },
   "blunderbuss_hit_02_team": {
    "frame": {
-    "x": 2,
-    "y": 385,
+    "x": 759,
+    "y": 83,
     "w": 46,
-    "h": 83
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
@@ -1333,7 +1333,7 @@
     "x": 88,
     "y": 87,
     "w": 46,
-    "h": 83
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -1346,18 +1346,18 @@
   },
   "blunderbuss_hit_03": {
    "frame": {
-    "x": 479,
-    "y": 105,
+    "x": 285,
+    "y": 95,
     "w": 67,
-    "h": 90
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 98,
+    "y": 97,
     "w": 67,
-    "h": 90
+    "h": 91
    },
    "sourceSize": {
     "w": 274,
@@ -1370,17 +1370,17 @@
   },
   "blunderbuss_hit_03_team": {
    "frame": {
-    "x": 345,
-    "y": 472,
-    "w": 44,
+    "x": 857,
+    "y": 83,
+    "w": 45,
     "h": 79
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 94,
     "y": 93,
-    "w": 44,
+    "w": 45,
     "h": 79
    },
    "sourceSize": {
@@ -1394,18 +1394,18 @@
   },
   "blunderbuss_hit_04": {
    "frame": {
-    "x": 71,
-    "y": 105,
+    "x": 423,
+    "y": 2,
     "w": 63,
-    "h": 92
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 96,
+    "y": 95,
     "w": 63,
-    "h": 92
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -1418,8 +1418,8 @@
   },
   "blunderbuss_hit_04_team": {
    "frame": {
-    "x": 351,
-    "y": 385,
+    "x": 885,
+    "y": 333,
     "w": 43,
     "h": 81
    },
@@ -1442,8 +1442,8 @@
   },
   "blunderbuss_die_00": {
    "frame": {
-    "x": 545,
-    "y": 295,
+    "x": 453,
+    "y": 197,
     "w": 65,
     "h": 83
    },
@@ -1466,8 +1466,8 @@
   },
   "blunderbuss_die_00_team": {
    "frame": {
-    "x": 425,
-    "y": 556,
+    "x": 653,
+    "y": 270,
     "w": 58,
     "h": 73
    },
@@ -1490,18 +1490,18 @@
   },
   "blunderbuss_die_01": {
    "frame": {
-    "x": 128,
-    "y": 2,
+    "x": 536,
+    "y": 197,
     "w": 53,
-    "h": 95
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 70,
-    "y": 89,
+    "y": 88,
     "w": 53,
-    "h": 95
+    "h": 96
    },
    "sourceSize": {
     "w": 274,
@@ -1514,10 +1514,10 @@
   },
   "blunderbuss_die_01_team": {
    "frame": {
-    "x": 279,
-    "y": 295,
+    "x": 701,
+    "y": 88,
     "w": 54,
-    "h": 85
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
@@ -1525,7 +1525,7 @@
     "x": 72,
     "y": 84,
     "w": 54,
-    "h": 85
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -1538,18 +1538,18 @@
   },
   "blunderbuss_die_02": {
    "frame": {
-    "x": 138,
-    "y": 105,
+    "x": 356,
+    "y": 2,
     "w": 63,
-    "h": 92
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 85,
-    "y": 94,
+    "y": 92,
     "w": 63,
-    "h": 92
+    "h": 94
    },
    "sourceSize": {
     "w": 274,
@@ -1562,8 +1562,8 @@
   },
   "blunderbuss_die_02_team": {
    "frame": {
-    "x": 444,
-    "y": 385,
+    "x": 932,
+    "y": 250,
     "w": 42,
     "h": 81
    },
@@ -1586,18 +1586,18 @@
   },
   "blunderbuss_die_03": {
    "frame": {
-    "x": 213,
-    "y": 201,
+    "x": 210,
+    "y": 2,
     "w": 74,
-    "h": 88
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 100,
-    "y": 96,
+    "y": 95,
     "w": 74,
-    "h": 88
+    "h": 89
    },
    "sourceSize": {
     "w": 274,
@@ -1610,10 +1610,10 @@
   },
   "blunderbuss_die_03_team": {
    "frame": {
-    "x": 243,
-    "y": 385,
+    "x": 685,
+    "y": 2,
     "w": 57,
-    "h": 81
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 106,
     "y": 91,
     "w": 57,
-    "h": 81
+    "h": 82
    },
    "sourceSize": {
     "w": 274,
@@ -1634,8 +1634,8 @@
   },
   "blunderbuss_die_04": {
    "frame": {
-    "x": 487,
-    "y": 556,
+    "x": 448,
+    "y": 287,
     "w": 84,
     "h": 68
    },
@@ -1659,9 +1659,9 @@
   "blunderbuss_die_04_team": {
    "frame": {
     "x": 82,
-    "y": 637,
+    "y": 378,
     "w": 79,
-    "h": 59
+    "h": 60
    },
    "rotated": false,
    "trimmed": true,
@@ -1669,7 +1669,7 @@
     "x": 123,
     "y": 115,
     "w": 79,
-    "h": 59
+    "h": 60
    },
    "sourceSize": {
     "w": 274,
@@ -1683,7 +1683,7 @@
   "blunderbuss_die_05": {
    "frame": {
     "x": 2,
-    "y": 637,
+    "y": 372,
     "w": 76,
     "h": 63
    },
@@ -1706,8 +1706,8 @@
   },
   "blunderbuss_die_05_team": {
    "frame": {
-    "x": 360,
-    "y": 637,
+    "x": 223,
+    "y": 391,
     "w": 48,
     "h": 43
    },
@@ -1730,8 +1730,8 @@
   },
   "blunderbuss_die_06": {
    "frame": {
-    "x": 165,
-    "y": 637,
+    "x": 314,
+    "y": 387,
     "w": 94,
     "h": 48
    },
@@ -1754,8 +1754,8 @@
   },
   "blunderbuss_die_06_team": {
    "frame": {
-    "x": 487,
-    "y": 637,
+    "x": 165,
+    "y": 391,
     "w": 54,
     "h": 39
    },
@@ -1778,8 +1778,8 @@
   },
   "blunderbuss_die_07": {
    "frame": {
-    "x": 263,
-    "y": 637,
+    "x": 594,
+    "y": 376,
     "w": 93,
     "h": 48
    },
@@ -1802,8 +1802,8 @@
   },
   "blunderbuss_die_07_team": {
    "frame": {
-    "x": 412,
-    "y": 637,
+    "x": 516,
+    "y": 394,
     "w": 71,
     "h": 39
    },
@@ -1935,8 +1935,8 @@
   "image": "blunderbuss.png",
   "format": "RGBA8888",
   "size": {
-   "w": 640,
-   "h": 704
+   "w": 1024,
+   "h": 440
   },
   "scale": "1.5",
   "ageborn": {

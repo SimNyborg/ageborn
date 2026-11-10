@@ -2,18 +2,18 @@
  "frames": {
   "blunderbuss_attack_b_01": {
    "frame": {
-    "x": 158,
-    "y": 192,
+    "x": 760,
+    "y": 186,
     "w": 153,
-    "h": 174
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 185,
-    "y": 201,
+    "y": 198,
     "w": 153,
-    "h": 174
+    "h": 177
    },
    "sourceSize": {
     "w": 548,
@@ -26,10 +26,10 @@
   },
   "blunderbuss_attack_b_01_team": {
    "frame": {
-    "x": 2,
-    "y": 542,
+    "x": 1914,
+    "y": 502,
     "w": 94,
-    "h": 155
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 187,
     "y": 190,
     "w": 94,
-    "h": 155
+    "h": 156
    },
    "sourceSize": {
     "w": 548,
@@ -50,18 +50,18 @@
   },
   "blunderbuss_attack_b_02": {
    "frame": {
-    "x": 2,
-    "y": 192,
+    "x": 627,
+    "y": 2,
     "w": 152,
-    "h": 178
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 183,
-    "y": 197,
+    "y": 195,
     "w": 152,
-    "h": 178
+    "h": 180
    },
    "sourceSize": {
     "w": 548,
@@ -74,10 +74,10 @@
   },
   "blunderbuss_attack_b_02_team": {
    "frame": {
-    "x": 456,
-    "y": 374,
+    "x": 2037,
+    "y": 2,
     "w": 91,
-    "h": 156
+    "h": 157
    },
    "rotated": false,
    "trimmed": true,
@@ -85,7 +85,7 @@
     "x": 188,
     "y": 188,
     "w": 91,
-    "h": 156
+    "h": 157
    },
    "sourceSize": {
     "w": 548,
@@ -98,18 +98,18 @@
   },
   "blunderbuss_attack_b_03": {
    "frame": {
-    "x": 315,
-    "y": 192,
+    "x": 831,
+    "y": 566,
     "w": 157,
-    "h": 173
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 179,
-    "y": 202,
+    "y": 200,
     "w": 157,
-    "h": 173
+    "h": 175
    },
    "sourceSize": {
     "w": 548,
@@ -122,8 +122,8 @@
   },
   "blunderbuss_attack_b_03_team": {
    "frame": {
-    "x": 100,
-    "y": 542,
+    "x": 2095,
+    "y": 321,
     "w": 94,
     "h": 153
    },
@@ -146,18 +146,18 @@
   },
   "blunderbuss_attack_b_04": {
    "frame": {
-    "x": 476,
-    "y": 192,
+    "x": 1052,
+    "y": 364,
     "w": 158,
-    "h": 172
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 179,
-    "y": 203,
+    "y": 201,
     "w": 158,
-    "h": 172
+    "h": 174
    },
    "sourceSize": {
     "w": 548,
@@ -170,8 +170,8 @@
   },
   "blunderbuss_attack_b_04_team": {
    "frame": {
-    "x": 198,
-    "y": 542,
+    "x": 2193,
+    "y": 315,
     "w": 93,
     "h": 151
    },
@@ -194,18 +194,18 @@
   },
   "blunderbuss_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 277,
+    "y": 212,
     "w": 236,
-    "h": 186
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 180,
-    "y": 189,
+    "y": 186,
     "w": 236,
-    "h": 186
+    "h": 189
    },
    "sourceSize": {
     "w": 548,
@@ -218,17 +218,17 @@
   },
   "blunderbuss_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 374,
-    "w": 78,
+    "x": 1568,
+    "y": 173,
+    "w": 79,
     "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 195,
+    "x": 194,
     "y": 179,
-    "w": 78,
+    "w": 79,
     "h": 164
    },
    "sourceSize": {
@@ -242,18 +242,18 @@
   },
   "blunderbuss_attack_b_06": {
    "frame": {
-    "x": 84,
-    "y": 374,
+    "x": 1368,
+    "y": 348,
     "w": 281,
-    "h": 163
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 153,
-    "y": 212,
+    "y": 210,
     "w": 281,
-    "h": 163
+    "h": 165
    },
    "sourceSize": {
     "w": 548,
@@ -266,8 +266,8 @@
   },
   "blunderbuss_attack_b_06_team": {
    "frame": {
-    "x": 295,
-    "y": 542,
+    "x": 2266,
+    "y": 623,
     "w": 102,
     "h": 143
    },
@@ -290,18 +290,18 @@
   },
   "blunderbuss_attack_b_07": {
    "frame": {
-    "x": 242,
-    "y": 2,
+    "x": 305,
+    "y": 596,
     "w": 276,
-    "h": 184
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 175,
-    "y": 191,
+    "y": 188,
     "w": 276,
-    "h": 184
+    "h": 187
    },
    "sourceSize": {
     "w": 548,
@@ -314,8 +314,8 @@
   },
   "blunderbuss_attack_b_07_team": {
    "frame": {
-    "x": 369,
-    "y": 374,
+    "x": 1412,
+    "y": 517,
     "w": 83,
     "h": 163
    },
@@ -325,6 +325,1350 @@
     "x": 187,
     "y": 180,
     "w": 83,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_01": {
+   "frame": {
+    "x": 1126,
+    "y": 542,
+    "w": 156,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 205,
+    "w": 156,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_01_team": {
+   "frame": {
+    "x": 2309,
+    "y": 158,
+    "w": 95,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 197,
+    "w": 95,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_02": {
+   "frame": {
+    "x": 932,
+    "y": 2,
+    "w": 147,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 199,
+    "w": 147,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_02_team": {
+   "frame": {
+    "x": 2080,
+    "y": 163,
+    "w": 105,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 191,
+    "w": 105,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_03": {
+   "frame": {
+    "x": 1194,
+    "y": 180,
+    "w": 146,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 204,
+    "w": 146,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_03_team": {
+   "frame": {
+    "x": 2251,
+    "y": 2,
+    "w": 113,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 196,
+    "w": 113,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_04": {
+   "frame": {
+    "x": 1215,
+    "y": 2,
+    "w": 147,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 205,
+    "w": 147,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_04_team": {
+   "frame": {
+    "x": 2132,
+    "y": 2,
+    "w": 115,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 198,
+    "w": 115,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_05": {
+   "frame": {
+    "x": 140,
+    "y": 2,
+    "w": 197,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 169,
+    "w": 197,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_05_team": {
+   "frame": {
+    "x": 1707,
+    "y": 506,
+    "w": 104,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 184,
+    "w": 104,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_06": {
+   "frame": {
+    "x": 1738,
+    "y": 340,
+    "w": 258,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 217,
+    "w": 258,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_06_team": {
+   "frame": {
+    "x": 2408,
+    "y": 154,
+    "w": 140,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 210,
+    "w": 140,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_07": {
+   "frame": {
+    "x": 517,
+    "y": 193,
+    "w": 239,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 185,
+    "w": 239,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up45_07_team": {
+   "frame": {
+    "x": 1653,
+    "y": 340,
+    "w": 81,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 178,
+    "w": 81,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_01": {
+   "frame": {
+    "x": 1214,
+    "y": 355,
+    "w": 150,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 205,
+    "w": 150,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_01_team": {
+   "frame": {
+    "x": 2290,
+    "y": 315,
+    "w": 99,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 197,
+    "w": 99,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_02": {
+   "frame": {
+    "x": 1083,
+    "y": 2,
+    "w": 128,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 157,
+    "y": 201,
+    "w": 128,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_02_team": {
+   "frame": {
+    "x": 2189,
+    "y": 159,
+    "w": 116,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 193,
+    "w": 116,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_03": {
+   "frame": {
+    "x": 1344,
+    "y": 176,
+    "w": 120,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 152,
+    "y": 207,
+    "w": 120,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_03_team": {
+   "frame": {
+    "x": 2368,
+    "y": 2,
+    "w": 125,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 150,
+    "y": 199,
+    "w": 125,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_04": {
+   "frame": {
+    "x": 1286,
+    "y": 528,
+    "w": 122,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 208,
+    "w": 122,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_04_team": {
+   "frame": {
+    "x": 2136,
+    "y": 633,
+    "w": 126,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 150,
+    "y": 201,
+    "w": 126,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_05": {
+   "frame": {
+    "x": 2,
+    "y": 299,
+    "w": 152,
+    "h": 249
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 157,
+    "y": 126,
+    "w": 152,
+    "h": 249
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_05_team": {
+   "frame": {
+    "x": 1844,
+    "y": 163,
+    "w": 116,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 156,
+    "y": 186,
+    "w": 116,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_06": {
+   "frame": {
+    "x": 1768,
+    "y": 2,
+    "w": 265,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 218,
+    "w": 265,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_06_team": {
+   "frame": {
+    "x": 1815,
+    "y": 662,
+    "w": 147,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 214,
+    "w": 147,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_07": {
+   "frame": {
+    "x": 585,
+    "y": 596,
+    "w": 242,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 185,
+    "w": 242,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_up70_07_team": {
+   "frame": {
+    "x": 1616,
+    "y": 517,
+    "w": 87,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 178,
+    "w": 87,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_01": {
+   "frame": {
+    "x": 783,
+    "y": 2,
+    "w": 145,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 198,
+    "w": 145,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_01_team": {
+   "frame": {
+    "x": 2000,
+    "y": 324,
+    "w": 91,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 190,
+    "w": 91,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_02": {
+   "frame": {
+    "x": 593,
+    "y": 384,
+    "w": 133,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 195,
+    "w": 133,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_02_team": {
+   "frame": {
+    "x": 1744,
+    "y": 169,
+    "w": 96,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 187,
+    "w": 96,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_03": {
+   "frame": {
+    "x": 992,
+    "y": 566,
+    "w": 130,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 200,
+    "w": 130,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_03_team": {
+   "frame": {
+    "x": 2012,
+    "y": 484,
+    "w": 101,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 192,
+    "w": 101,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_04": {
+   "frame": {
+    "x": 1060,
+    "y": 182,
+    "w": 130,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 201,
+    "w": 130,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_04_team": {
+   "frame": {
+    "x": 2117,
+    "y": 478,
+    "w": 101,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 194,
+    "w": 101,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_05": {
+   "frame": {
+    "x": 2,
+    "y": 552,
+    "w": 180,
+    "h": 247
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 128,
+    "w": 180,
+    "h": 247
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_05_team": {
+   "frame": {
+    "x": 1468,
+    "y": 173,
+    "w": 96,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 178,
+    "w": 96,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_06": {
+   "frame": {
+    "x": 1366,
+    "y": 2,
+    "w": 306,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 208,
+    "w": 306,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_06_team": {
+   "frame": {
+    "x": 2346,
+    "y": 468,
+    "w": 128,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 205,
+    "w": 128,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_07": {
+   "frame": {
+    "x": 341,
+    "y": 2,
+    "w": 282,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 188,
+    "w": 282,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up45_07_team": {
+   "frame": {
+    "x": 1676,
+    "y": 2,
+    "w": 88,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 180,
+    "w": 88,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_01": {
+   "frame": {
+    "x": 917,
+    "y": 183,
+    "w": 139,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 198,
+    "w": 139,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_01_team": {
+   "frame": {
+    "x": 1815,
+    "y": 502,
+    "w": 95,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 190,
+    "w": 95,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_02": {
+   "frame": {
+    "x": 186,
+    "y": 407,
+    "w": 113,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 185,
+    "w": 113,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_02_team": {
+   "frame": {
+    "x": 1964,
+    "y": 163,
+    "w": 112,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 163,
+    "y": 188,
+    "w": 112,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_03": {
+   "frame": {
+    "x": 158,
+    "y": 212,
+    "w": 115,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 153,
+    "y": 184,
+    "w": 115,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_03_team": {
+   "frame": {
+    "x": 2012,
+    "y": 641,
+    "w": 120,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 156,
+    "y": 194,
+    "w": 120,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_04": {
+   "frame": {
+    "x": 186,
+    "y": 601,
+    "w": 115,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 153,
+    "y": 187,
+    "w": 115,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_04_team": {
+   "frame": {
+    "x": 2222,
+    "y": 470,
+    "w": 120,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 156,
+    "y": 196,
+    "w": 120,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 134,
+    "h": 293
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 157,
+    "y": 82,
+    "w": 134,
+    "h": 293
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_05_team": {
+   "frame": {
+    "x": 1499,
+    "y": 517,
+    "w": 113,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 181,
+    "w": 113,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_06": {
+   "frame": {
+    "x": 730,
+    "y": 384,
+    "w": 318,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 197,
+    "w": 318,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_06_team": {
+   "frame": {
+    "x": 2408,
+    "y": 302,
+    "w": 140,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 209,
+    "w": 140,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_07": {
+   "frame": {
+    "x": 303,
+    "y": 405,
+    "w": 286,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 188,
+    "w": 286,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "blunderbuss_attack_b_up70_07_team": {
+   "frame": {
+    "x": 1651,
+    "y": 173,
+    "w": 89,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 180,
+    "w": 89,
     "h": 163
    },
    "sourceSize": {
@@ -365,6 +1709,118 @@
    "blunderbuss_attack_08_team",
    "blunderbuss_attack_09_team",
    "blunderbuss_attack_10_team"
+  ],
+  "attack_up45": [
+   "blunderbuss_attack_00",
+   "blunderbuss_attack_up45_01",
+   "blunderbuss_attack_up45_02",
+   "blunderbuss_attack_up45_03",
+   "blunderbuss_attack_up45_04",
+   "blunderbuss_attack_up45_05",
+   "blunderbuss_attack_up45_06",
+   "blunderbuss_attack_up45_06",
+   "blunderbuss_attack_up45_07",
+   "blunderbuss_attack_08",
+   "blunderbuss_attack_09",
+   "blunderbuss_attack_10"
+  ],
+  "attack_up45_team": [
+   "blunderbuss_attack_00_team",
+   "blunderbuss_attack_up45_01_team",
+   "blunderbuss_attack_up45_02_team",
+   "blunderbuss_attack_up45_03_team",
+   "blunderbuss_attack_up45_04_team",
+   "blunderbuss_attack_up45_05_team",
+   "blunderbuss_attack_up45_06_team",
+   "blunderbuss_attack_up45_06_team",
+   "blunderbuss_attack_up45_07_team",
+   "blunderbuss_attack_08_team",
+   "blunderbuss_attack_09_team",
+   "blunderbuss_attack_10_team"
+  ],
+  "attack_up70": [
+   "blunderbuss_attack_00",
+   "blunderbuss_attack_up70_01",
+   "blunderbuss_attack_up70_02",
+   "blunderbuss_attack_up70_03",
+   "blunderbuss_attack_up70_04",
+   "blunderbuss_attack_up70_05",
+   "blunderbuss_attack_up70_06",
+   "blunderbuss_attack_up70_06",
+   "blunderbuss_attack_up70_07",
+   "blunderbuss_attack_08",
+   "blunderbuss_attack_09",
+   "blunderbuss_attack_10"
+  ],
+  "attack_up70_team": [
+   "blunderbuss_attack_00_team",
+   "blunderbuss_attack_up70_01_team",
+   "blunderbuss_attack_up70_02_team",
+   "blunderbuss_attack_up70_03_team",
+   "blunderbuss_attack_up70_04_team",
+   "blunderbuss_attack_up70_05_team",
+   "blunderbuss_attack_up70_06_team",
+   "blunderbuss_attack_up70_06_team",
+   "blunderbuss_attack_up70_07_team",
+   "blunderbuss_attack_08_team",
+   "blunderbuss_attack_09_team",
+   "blunderbuss_attack_10_team"
+  ],
+  "attack_b_up45": [
+   "blunderbuss_attack_00",
+   "blunderbuss_attack_b_up45_01",
+   "blunderbuss_attack_b_up45_02",
+   "blunderbuss_attack_b_up45_03",
+   "blunderbuss_attack_b_up45_04",
+   "blunderbuss_attack_b_up45_05",
+   "blunderbuss_attack_b_up45_06",
+   "blunderbuss_attack_b_up45_06",
+   "blunderbuss_attack_b_up45_07",
+   "blunderbuss_attack_08",
+   "blunderbuss_attack_09",
+   "blunderbuss_attack_10"
+  ],
+  "attack_b_up45_team": [
+   "blunderbuss_attack_00_team",
+   "blunderbuss_attack_b_up45_01_team",
+   "blunderbuss_attack_b_up45_02_team",
+   "blunderbuss_attack_b_up45_03_team",
+   "blunderbuss_attack_b_up45_04_team",
+   "blunderbuss_attack_b_up45_05_team",
+   "blunderbuss_attack_b_up45_06_team",
+   "blunderbuss_attack_b_up45_06_team",
+   "blunderbuss_attack_b_up45_07_team",
+   "blunderbuss_attack_08_team",
+   "blunderbuss_attack_09_team",
+   "blunderbuss_attack_10_team"
+  ],
+  "attack_b_up70": [
+   "blunderbuss_attack_00",
+   "blunderbuss_attack_b_up70_01",
+   "blunderbuss_attack_b_up70_02",
+   "blunderbuss_attack_b_up70_03",
+   "blunderbuss_attack_b_up70_04",
+   "blunderbuss_attack_b_up70_05",
+   "blunderbuss_attack_b_up70_06",
+   "blunderbuss_attack_b_up70_06",
+   "blunderbuss_attack_b_up70_07",
+   "blunderbuss_attack_08",
+   "blunderbuss_attack_09",
+   "blunderbuss_attack_10"
+  ],
+  "attack_b_up70_team": [
+   "blunderbuss_attack_00_team",
+   "blunderbuss_attack_b_up70_01_team",
+   "blunderbuss_attack_b_up70_02_team",
+   "blunderbuss_attack_b_up70_03_team",
+   "blunderbuss_attack_b_up70_04_team",
+   "blunderbuss_attack_b_up70_05_team",
+   "blunderbuss_attack_b_up70_06_team",
+   "blunderbuss_attack_b_up70_06_team",
+   "blunderbuss_attack_b_up70_07_team",
+   "blunderbuss_attack_08_team",
+   "blunderbuss_attack_09_team",
+   "blunderbuss_attack_10_team"
   ]
  },
  "meta": {
@@ -373,8 +1829,8 @@
   "image": "blunderbuss.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 640,
-   "h": 700
+   "w": 2560,
+   "h": 804
   },
   "scale": "3",
   "ageborn": {
@@ -504,6 +1960,414 @@
       "atLu": [
        34.5,
        32.6
+      ]
+     }
+    },
+    "attack_up45": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      50,
+      54,
+      160,
+      70,
+      70,
+      60,
+      60,
+      56,
+      50,
+      50,
+      70
+     ],
+     "durationMs": 790,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4734,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        37.9,
+        30.8
+       ],
+       [
+        35.0,
+        32.7
+       ],
+       [
+        26.6,
+        39.9
+       ],
+       [
+        23.8,
+        41.1
+       ],
+       [
+        24.0,
+        40.6
+       ],
+       [
+        21.8,
+        45.3
+       ],
+       [
+        -1.6,
+        46.6
+       ],
+       [
+        24.1,
+        47.9
+       ],
+       [
+        26.5,
+        45.9
+       ],
+       [
+        30.8,
+        45.6
+       ],
+       [
+        37.5,
+        31.5
+       ]
+      ]
+     },
+     "muzzle": [
+      21.8,
+      45.3
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 5,
+      "atLu": [
+       21.8,
+       45.3
+      ]
+     }
+    },
+    "attack_up70": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      50,
+      54,
+      160,
+      70,
+      70,
+      60,
+      60,
+      56,
+      50,
+      50,
+      70
+     ],
+     "durationMs": 790,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4734,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        37.9,
+        30.8
+       ],
+       [
+        30.0,
+        38.4
+       ],
+       [
+        14.8,
+        48.5
+       ],
+       [
+        8.7,
+        49.6
+       ],
+       [
+        8.7,
+        49.0
+       ],
+       [
+        7.6,
+        54.4
+       ],
+       [
+        -15.2,
+        48.8
+       ],
+       [
+        20.5,
+        51.5
+       ],
+       [
+        26.5,
+        45.9
+       ],
+       [
+        30.8,
+        45.6
+       ],
+       [
+        37.5,
+        31.5
+       ]
+      ]
+     },
+     "muzzle": [
+      7.6,
+      54.4
+     ],
+     "aimDeg": 70.1,
+     "release": {
+      "frame": 5,
+      "atLu": [
+       7.6,
+       54.4
+      ]
+     }
+    },
+    "attack_b_up45": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      50,
+      54,
+      160,
+      70,
+      70,
+      60,
+      60,
+      56,
+      50,
+      50,
+      70
+     ],
+     "durationMs": 790,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4734,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        37.9,
+        30.8
+       ],
+       [
+        31.6,
+        44.4
+       ],
+       [
+        23.6,
+        54.4
+       ],
+       [
+        20.2,
+        55.3
+       ],
+       [
+        20.4,
+        54.7
+       ],
+       [
+        17.1,
+        61.7
+       ],
+       [
+        5.1,
+        55.1
+       ],
+       [
+        25.1,
+        48.1
+       ],
+       [
+        26.5,
+        45.9
+       ],
+       [
+        30.8,
+        45.6
+       ],
+       [
+        37.5,
+        31.5
+       ]
+      ]
+     },
+     "muzzle": [
+      17.1,
+      61.7
+     ],
+     "aimDeg": 45.1,
+     "release": {
+      "frame": 5,
+      "atLu": [
+       17.1,
+       61.7
+      ]
+     }
+    },
+    "attack_b_up70": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      50,
+      54,
+      160,
+      70,
+      70,
+      60,
+      60,
+      56,
+      50,
+      50,
+      70
+     ],
+     "durationMs": 790,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4734,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        37.9,
+        30.8
+       ],
+       [
+        25.6,
+        50.8
+       ],
+       [
+        9.6,
+        64.3
+       ],
+       [
+        2.1,
+        65.1
+       ],
+       [
+        2.1,
+        64.3
+       ],
+       [
+        0.3,
+        72.0
+       ],
+       [
+        -10.0,
+        60.4
+       ],
+       [
+        21.2,
+        52.5
+       ],
+       [
+        26.5,
+        45.9
+       ],
+       [
+        30.8,
+        45.6
+       ],
+       [
+        37.5,
+        31.5
+       ]
+      ]
+     },
+     "muzzle": [
+      0.3,
+      72.0
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 5,
+      "atLu": [
+       0.3,
+       72.0
       ]
      }
     }

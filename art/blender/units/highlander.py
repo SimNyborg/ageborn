@@ -26,13 +26,17 @@ stab, spin cut):
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "highlander"
 GAIT_NAME = "biped"
@@ -44,16 +48,49 @@ ANCHORS = {"head": (2, 66), "hitCenter": (0, 32)}
 NO_RETIME = True
 
 BEARD = "#8A6C5A"        # ginger-brown beard (desaturated so the colour rule holds)
+BEARD_LT = "#A08A7A"     # W2: the beard's lighter tufts
 BONNET = "#2B2A30"
+BAND = "#3A3940"         # W2: the bonnet's headband, a mid-value lit side (was the bonnet's black)
 HOSE = "#E6DCC4"
 HOSE_DK = "#B9A98A"
-SHOE = "#2E2A2A"
-TARGE = "#5A4B40"
-TARGE_DK = "#433830"
+SHOE = "#3B3432"         # W2: a lit side that separates from the outline (was #2E2A2A)
+TARGE = "#6A5848"        # W2: a lighter leather face on the targe (was #5A4B40)
+TARGE_DK = "#4A3E34"
 BLADE = "#C9D0D8"
 BLADE_DK = "#8C96A2"
 TARTAN = "#3A3F3A"
 SPORRAN = "#EDE4CF"
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Highlander is the targe, the doublet's back half, the kilt and the bonnet, so the
+# detail goes there: a tooled ring and larger brass studs on a lighter leather targe, team-dark piping down the
+# doublet's front, team-dark wings, a team-dark sett band and pleat folds on the kilt's back (the team zone in two
+# tones), a diced band on the bonnet, a brass cantle on the sporran, lighter tufts in the beard, larger dicing on
+# the hose and lighter brogues and headband (dark materials need a mid-value lit side, W1 review).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.93
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", BEARD: "fur", BEARD_LT: "fur", BONNET: "fur",
+                  BAND: "cloth", HOSE: "cloth", _FAR(HOSE): "cloth", HOSE_DK: "cloth", "#978A70": "cloth",
+                  SHOE: "leather", _FAR(SHOE): "leather", TARGE: "leather", TARGE_DK: "leather", BLADE: "iron",
+                  BLADE_DK: "iron", TARTAN: "cloth", SPORRAN: "fur", B.CREAM: "cloth", B.LEATHER: "leather",
+                  B.BRASS: "bronze", B.BLACK: "leather", "team": "cloth"}
+DOUBLET = ((0, 0, 28.5), (11.6, 10.6, 11.8))   # the team doublet's blob (centre, radii)
+KILT = [(10.4, 0), (11.6, -3.0), (12.6, -6.4), (13.2, -8.4), (0, -8.6)]   # (radius, height below the waist)
+
+
+def _on_kilt(a_deg, z, lift=0.15):
+    """The point on the kilt's surface at the angle a (degrees; -90 faces the camera) and the height z."""
+    d = 18.4 - z
+    r = KILT[-2][0]
+    for (r0, h0), (r1, h1) in zip(KILT, KILT[1:-1]):
+        if -h1 >= d >= -h0:
+            r = r0 + (r1 - r0) * (d + h0) / (h0 - h1)
+            break
+    a = math.radians(a_deg)
+    return ((r + lift) * math.cos(a) + 0.4, (r + lift) * math.sin(a) * 0.92, z)
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand: broadsword
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)   # far hand: targe on the forearm
@@ -69,7 +106,12 @@ def _bonnet(rig, joint):
     g.blob((x - 3.0, y, z + 6.0), (10.2, 10.0, 3.8), p=2.4)           # the floppy crown
     rig.part(joint, g, team=True)                                    # the blue bonnet, in team colour
     g = Geo().lathe([(11.0, 0), (11.6, 0.3), (11.6, 1.7), (11.0, 2.0)], (x, y, z - 1.6), segs=24)
-    rig.part(joint, g, BONNET, outline=0.5)                          # dark headband
+    rig.part(joint, g, BAND, outline=0.5)                            # dark headband
+    g = Geo()                                                        # W2: a diced band (cream checks)
+    for a in (-162, -126, -90, -54, -18):
+        r = math.radians(a)
+        g.blob((x + 11.8 * math.cos(r), y + 11.8 * math.sin(r), z - 0.6), (1.3, 0.5, 1.0), p=3.0, rot=(0, 0, a + 90))
+    rig.part(joint, g, B.CREAM, outline=0, highlight=False)
     g = Geo().sphere((x - 2.0, y, z + 10.6), 3.0, cuts=4)            # cream toorie
     rig.part(joint, g, B.CREAM, outline=0.8)
     g = Geo().blob((x - 7.0, -9.8, z + 2.6), (3.2, 1.6, 3.2), p=2.2)   # cream cockade
@@ -95,8 +137,8 @@ def build(rig):
         g = Geo().blob((0.6, y - (4.2 if s == "r" else -4.2), K.V3_KNEE_Z - 2.4), (1.6, 0.9, 2.0), p=2.4)
         rig.part(f"shin_{s}", g, team=True, outline=0.4)              # garter flash
         g = Geo()
-        for zz in (6.0, 8.6):
-            g.blob((1.6, y - (3.6 if s == "r" else -3.6), zz), (1.2, 0.6, 1.0), p=2.2)
+        for zz in (5.4, 8.8):               # W2: larger dicing (new parts under 2.5 lu vanish at game scale)
+            g.blob((1.6, y - (3.6 if s == "r" else -3.6), zz), (1.6, 0.7, 1.6), p=1.6)
         rig.part(f"shin_{s}", g, HOSE_DK if s == "r" else "#978A70", outline=0, highlight=False)
 
     # torso: team doublet with cream facings, a cream jabot, a cross belt and a brass buckle
@@ -106,6 +148,8 @@ def build(rig):
     g = Geo().blob((8.6, -1.4, 29.0), (3.6, 4.8, 8.2), p=2.6)
     g.clip((7.6, 0, 0), (-1, 0, 0))
     rig.part("torso", g, B.CREAM, outline=0.6)                       # facing / jabot
+    g = KD.stripe_x(*DOUBLET, 5.0, 8.0, z0=22.0, z1=37.4, p=2.4, taper=(1.1, 0.95), grow=0.3)
+    look.team_part(rig, "torso", g)                                  # W2: team-dark piping down the front
     g = Geo().capsule((-1.0, 9.8, 37.0), (10.6, -3.0, 22.0), 1.9)
     rig.part("torso", g, B.LEATHER, outline=0.6)                    # cross belt
     g = Geo().blob((10.8, -2.6, 24.0), (1.6, 2.4, 2.4), p=2.4)
@@ -118,21 +162,30 @@ def build(rig):
     # the kilt: a pleated team skirt with tartan bands, swishing late (hem 10 lu above the soles)
     rig.secondary("kilt", "hips", (0.0, 0, 18.0), (0.0, 0, 10.0), max_deg=12, gain=1.1)
     rig.rest_offset["kilt"] = (0, 0, K.V3_LIFT + 1.0)
-    kilt = Geo().lathe([(10.4, 0), (11.6, -3.0), (12.6, -6.4), (13.2, -8.4), (0, -8.6)],
-                       (0.4, 0, 18.4), (0.4, 0, 17.4), segs=24, squash=(1.0, 0.92))
+    # W2: the lathe's axis points up, so the profile hangs down from the waist (it used to point down, which
+    # turned the kilt over into the doublet and left only its stripes and pleat lines floating over bare thighs)
+    kilt = Geo().lathe(KILT, (0.4, 0, 18.4), (0.4, 0, 19.4), segs=24, squash=(1.0, 0.92))
     kf = F.Face(rig, "kilt", [kilt])
     rig.part("kilt", kilt, team=True)
     g = G.stripes(kf, Geo(), (15.6, 12.2), -9.0, 13.0, 1.3)
     rig.part("kilt", g, TARTAN, highlight=False, outline=0)
     g = Geo()
     for a in range(-80, 81, 32):
-        r = math.radians(a)
-        g.capsule((12.6 * math.cos(r) + 0.4, 12.6 * math.sin(r) * 0.92, 15.5),
-                  (13.2 * math.cos(r) + 0.4, 13.2 * math.sin(r) * 0.92, 10.6), 0.45)
+        g.capsule(_on_kilt(a, 16.6), _on_kilt(a, 10.6), 0.5)
     rig.part("kilt", g, B.CREAM, outline=0, highlight=False)       # cream pleat lines
+    # W2: the kilt in two tones: a team-dark sett band between the dark lines and team-dark pleat folds round
+    # the back (the pleated half of a kilt; the plain front is its apron)
+    g = G.stripes(kf, Geo(), (13.9,), -12.0, 12.4, 2.2)
+    look.team_part(rig, "kilt", g, highlight=False, outline=0)
+    g = Geo()
+    for a in (-106, -130, -154, -178):
+        g.capsule(_on_kilt(a, 17.4), _on_kilt(a, 10.4), 0.85)
+    look.team_part(rig, "kilt", g, highlight=False, outline=0)
     # sporran with two dark tassels
     g = Geo().blob((11.8, -1.0, 14.8), (2.6, 5.0, 4.6), p=2.4, taper=(1.0, 0.85))
     rig.part("kilt", g, SPORRAN, finish="hair", outline=0.6)
+    g = Geo().blob((12.0, -1.0, 18.6), (2.9, 5.2, 1.2), p=2.8)      # W2: the sporran's brass cantle
+    rig.part("kilt", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo()
     for yy in (-2.6, 1.4):
         g.capsule((13.8, yy - 1.0, 14.0), (14.0, yy - 1.0, 10.2), 0.8)
@@ -148,6 +201,13 @@ def build(rig):
             eye_at=(14.0, 50.2), mark_r=4.2)
     rig.part("head", head, B.SKIN)
     rig.part("head", beard, BEARD, finish="hair")
+    refs = [Geo().blob((7.2, 0, 41.4), (8.8, 10.4, 6.0), p=2.3), Geo().blob((10.2, 0, 37.4), (5.0, 6.0, 4.4), p=2.2)]
+    fc = F.Face(rig, "head", refs)
+    g = Geo()                                  # W2: lighter rounded tufts in the beard (two-tone hair, W1 review)
+    for (x, z), r in (((12.6, 40.4), (2.4, 1.6, 2.2)), ((8.6, 42.6), (2.3, 1.6, 2.4)),
+                      ((13.6, 36.8), (2.2, 1.6, 2.0)), ((4.6, 39.6), (2.2, 1.6, 2.2))):
+        g.blob(tuple(fc.hit(x, z)), r, p=2.2)
+    rig.part("head", g, BEARD_LT, finish="hair", outline=0)
     rig.part("head", hair, BEARD, finish="hair")
     B.moustache(rig, BEARD, cx=13.8, z=44.8)
     rig.joint("hat", "head", HAT_C)
@@ -160,7 +220,7 @@ def build(rig):
         B.arm_parts(rig, s, team_sleeve=True, cuff=B.CREAM)
     for s, y in (("r", -12.4), ("l", 11.8)):
         g = Geo().blob((0, y, 37.0), (5.8, 5.2, 4.6), p=2.4)
-        rig.part(f"arm_{s}", g, team=True)
+        look.team_part(rig, f"arm_{s}", g)                           # W2: team-dark wings
 
     # targe on the far forearm: dark wood disc, brass stud rings, brass boss with a spike, anchor
     tx, ty, tz = TG_C
@@ -171,12 +231,16 @@ def build(rig):
     g2 = Geo().lathe([(TG_R - 1.2, -0.8), (TG_R + 0.7, -0.8), (TG_R + 0.7, 1.0), (TG_R - 1.2, 1.0)],
                      (tx, ty + 0.2, tz), (tx, ty - 1.4, tz), segs=32)
     rig.part("fore_l", g2, TARGE_DK, finish="matte", outline=0.5)
+    ref = Geo().lathe([(0, -1.2), (TG_R, -1.2), (TG_R + 0.6, 0), (TG_R, 1.4), (0, 2.2)],
+                      (tx, ty + 1.0, tz), (tx, ty - 1.0, tz), segs=32)
+    KD.surface_line(rig, "fore_l", ref, [(tx + 8.1 * math.cos(math.radians(a)), tz + 8.1 * math.sin(math.radians(a)))
+                                         for a in range(0, 361, 15)], 1.3, TARGE_DK)   # W2: a tooled ring
     g = Geo()
-    for ring, n in ((10.0, 12), (6.2, 8)):
+    for ring, n in ((10.2, 12), (5.9, 7)):    # W2: larger studs (r 0.9 vanished at game scale)
         for i in range(n):
-            a = 2 * math.pi * i / n
-            g.sphere((tx + ring * math.cos(a), ty - 2.4, tz + ring * math.sin(a)), 0.9, cuts=2)
-    rig.part("fore_l", g, B.BRASS, finish="metal", outline=0)
+            a = 2 * math.pi * (i + 0.5 * (n == 7)) / n
+            g.sphere((tx + ring * math.cos(a), ty - 2.4, tz + ring * math.sin(a)), 1.3, cuts=2)
+    rig.part("fore_l", g, B.BRASS, finish="metal", outline=0.3)
     g = Geo().lathe([(3.6, 0), (3.2, 1.4), (1.4, 2.6), (0.6, 5.6), (0, 6.2)], (tx, ty - 2.0, tz),
                     (tx, ty - 3.0, tz), segs=16)
     rig.part("fore_l", g, B.BRASS, finish="metal", outline=0.6)
@@ -199,6 +263,18 @@ def build(rig):
     g = Geo().blob((hx + 1.0, hy - 3.6, hz + 1.4), (3.4, 0.6, 2.6), p=2.4)
     rig.part("hand_r", g, team=True, outline=0)                       # team lining in the basket
     rig.track("bladeTip", "hand_r", (hx + 0.2, hy, hz + 4 + BL))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The doublet's back half
+    (the largest team surface the sword arm and the targe leave clear), the kilt's pleated back, the bonnet; a torn
+    strip from the kilt's hem."""
+    rig.damage_spot_at("doublet", "torso", -9.0, 26.0, 8.0, "cloth", team=True)   # clear of the arm in every frame
+    rig.damage_spot_at("kilt", "kilt", -6.0, 17.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("bonnet", "hat", 1.0, 63.5, 5.5, "cloth", team=True)
+    rig.damage_spot_at("hem", "kilt", -7.0, 11.5, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

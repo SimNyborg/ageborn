@@ -20,17 +20,24 @@ Animation (ANIM_SPEC G5 trot, appendix B for a sabre rider):
   attack_c  POINT THRUST: the blade level over the horse's head, then a long lunge along its neck
   hit       the horse shakes its head, the Marshal rocks back
   die       D5 unhorsed: the horse rears, he is thrown off the back and lands flat, the bicorne rolls
+
+Art round W2: the detail standard (below), damage spots, and B1' (item 38 Phase B): A and C lunged 26.7 and
+29.5 lu at the impact (the runtime's atlasCombat.lungeCurve), so the horse now travels less on the strike frames
+(4.5 and 6 horse lu, about 7 and 9 lu at the Legendary scale); timing and impactAt unchanged.
 """
 import math
 
 from ageborn_art import face as F
 from ageborn_art import gait as GT
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "grand_marshal"
 GAIT_NAME = "rider"
@@ -53,6 +60,26 @@ DARK = "#23262E"
 BLADE = "#C9D0D8"
 EYE = "#FAF6EE"
 NOSE = "#C9B8B0"
+BRAID = "#CFC3A6"
+BREECH = "#F2EEE6"
+GILT = "#C8B88A"       # dull brass (epaulettes, buttons)
+DAPPLE = "#DAD4CA"     # W2: faint dapples on the white charger
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Grand Marshal is the white charger's neck, chest and legs, the shabraque and the rider
+# with his huge bicorne: a team-dark band under the shabraque's studs, a team-dark band round the bicorne and a
+# team-dark hem on the coat tails (the team zone in two tones), a leather breastplate strap with a brass boss,
+# throat creases and faint dapples on the charger (a big plain white field needs breakup, W1 review), and larger
+# dull-brass buttons.
+DETAIL_STANDARD = True
+# (a stronger gradient and cavity than the other riders: the white charger and the big team fields need modelling)
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 3.0, "cavity": 0.8, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", DAPPLE: "hide", POINTS: "hide", MANE: "fur", HOOF: "bone",
+                  STEEL: "iron", BLADE: "iron", NOSE: "hide", B.CREAM: "cloth", BRAID: "cloth", BREECH: "cloth",
+                  GILT: "gold", B.BRASS: "bronze", B.WOOD: "leather", B.BLACK: "leather", B.GUNWOOD: "wood",
+                  B.SKIN: "skin", B.LEATHER: "leather", "#8C96A2": "iron", "team": "hide"}
+# (the team kind as hide: his shabraque and coat fill half of him, and as cloth they read flat, micro 3.43)
 
 # sabre: joint in the near hand (rider space, rest pose); blade modelled pointing up (+Z)
 SX, SY, SZ = 9.5, -14.0, 65.5
@@ -88,19 +115,33 @@ def build(rig):
     cap.clip((0, 0, 27.4), (0, 0, -1))
     cf = F.Face(rig, "horse", [cap])
     rig.part("horse", cap, team=True)
+    # W2: folds in the shabraque's hanging cloth either side of the anchor
+    for x in (-20.0, -15.0, 8.0, 13.0):
+        GW.team_line(rig, "horse", Geo().blob((-3.5, 0, 43.5), (21.5, 13.8, 12.8), p=3.2, taper=(1.12, 0.92)),
+                     [(x, 43.4), (x - 0.4, 40.0), (x - 0.2, 37.0)], 1.2)     # (the band covers below 36.6)
     g = Geo().blob((-3.5, 0, 29.0), (22.4, 14.4, 2.4), p=3.4)
     g.blob((-24.4, 0, 40.0), (2.2, 14.2, 10.0), p=3.2)
     rig.part("horse", g, B.CREAM)
     g = Geo()
     for x in range(-22, 18, 4):                                # braid dashes on the edge
         g.blob((x, -15.0, 29.0), (1.2, 0.6, 1.4), p=2.2, rot=(0, 30, 0))
-    rig.part("horse", g, "#CFC3A6", outline=0)
+    rig.part("horse", g, BRAID, outline=0)
+    # W2: a team-dark band under the brass studs (the shabraque in two tones)
+    g = KD.band_z((-3.5, 0, 43.5), (21.5, 13.8, 12.8), 30.8, 36.6, p=3.2, taper=(1.12, 0.92), grow=0.3)
+    look.team_part(rig, "horse", g)
     g = G.anchor(cf, Geo(), K.scr(cf, (-6.0, -14.0, 40.5)), s=1.45, w=1.7)
     rig.part("horse", g, B.CREAM, highlight=False, outline=0)
     g = Geo()
     for x in (-18, -8, 2, 12):
-        g.sphere((x, -14.6, 33.8), 1.3, cuts=3)
+        g.sphere((x, -14.9, 33.8), 1.45, cuts=3)
     rig.part("horse", g, B.BRASS, finish="metal", outline=0.8)
+    # W2: a leather breastplate strap across the chest with a brass boss, a crease over the forearm
+    chest = Geo().blob((14.0, 0, 42.0), (11.4, 12.4, 11.9), p=2.2)
+    KD.surface_line(rig, "horse", chest, [(13.0, 51.0), (19.5, 46.0), (24.0, 40.0), (25.5, 34.5)], 2.6, B.LEATHER)
+    c = GW.on_surface(rig, "horse", [Geo().blob((14.0, 0, 42.0), (11.8, 12.8, 12.3), p=2.2)], 21.8, 43.2)
+    rig.part("horse", Geo().blob(c, (2.2, 1.0, 2.2), p=2.2), B.BRASS, finish="metal", outline=0.6)
+    KD.surface_line(rig, "horse", Geo().blob((14.0, 0, 42.0), (11.0, 12.0, 11.5), p=2.2),
+                    [(17.0, 33.5), (20.5, 31.0), (23.5, 30.6)], 1.0, COAT_DK)
     g = Geo().blob((-2, 0, 54.5), (11.5, 9.5, 3.6), p=2.6)   # saddle
     g.blob((-11.5, 0, 57.0), (2.6, 8.5, 4.0), p=2.4)
     rig.part("horse", g, B.WOOD)
@@ -121,6 +162,14 @@ def build(rig):
     rig.joint("hhead", "neck", (32, 0, 66), scale=1.25)
     g = Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)
     rig.part("neck", g, COAT)
+    # W2: two creases at the throat and faint dapples down the neck
+    for pts in ([(29.5, 47.0), (33.0, 51.5), (35.5, 55.5)], [(26.5, 44.5), (29.6, 48.6), (31.8, 52.0)]):
+        KD.surface_line(rig, "neck", Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8), pts, 1.0, COAT_DK)
+    fc = F.Face(rig, "neck", [Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)])
+    g = Geo()
+    for (x, z), r in (((22.5, 52.0), 1.6), ((25.0, 56.5), 1.4), ((20.5, 47.0), 1.7), ((27.0, 50.5), 1.3)):
+        fc.decal(g, fc.hit(x, z), F.ellipse(0.0, 0.0, r, r * 0.85, 10))
+    rig.part("neck", g, DAPPLE, highlight=False, outline=0)
     g = Geo()
     for i in range(6):
         t = i / 5
@@ -165,7 +214,7 @@ def build(rig):
     rig.joint("ktorso", "rider", (-1, 0, 58))
     rig.joint("khead", "ktorso", (0, 0, 79))
     g = Geo().capsule((-1, -8.5, 58), (8, -11.5, 52), 5.2, 4.6)
-    rig.part("rider", g, "#F2EEE6")                                  # white breeches
+    rig.part("rider", g, BREECH)                                     # white breeches
     g = Geo().capsule((8, -11.5, 53), (7, -11.5, 40), 4.8, 4.2)
     g.blob((9.5, -11.5, 38.0), (5.8, 4.2, 3.0), p=2.8)
     g.blob((7.6, -11.5, 53.0), (5.6, 5.0, 2.4), p=2.6)        # boot top
@@ -175,17 +224,24 @@ def build(rig):
     # torso: team coat, steel cuirass with brass rivets and a glint, coat tails
     g = Geo().blob((-1, 0, 69.5), (9.4, 10.4, 11.6), p=2.4, taper=(1.0, 1.06))
     rig.part("ktorso", g, team=True)
+    # W2: folds down the coat's back (a big plain team field needs creases, W1 review)
+    for pts in (((-4.0, 77.0), (-4.8, 71.0), (-4.2, 64.6)), ((-7.6, 75.0), (-8.4, 69.6), (-8.0, 64.4))):
+        GW.team_line(rig, "ktorso", Geo().blob((-1, 0, 69.5), (9.4, 10.4, 11.6), p=2.4, taper=(1.0, 1.06)),
+                     pts, 1.2)
     g = Geo().capsule((-1.0, -10.4, 79.0), (9.0, 6.0, 64.0), 2.0)
     rig.part("ktorso", g, B.CREAM, outline=0.5)                     # the cream sash
     g = Geo()
     for z in (75.0, 71.0, 67.0):
-        g.sphere((9.6, -2.6, z), 0.9, cuts=2)
-    rig.part("ktorso", g, "#C8B88A", finish="metal", outline=0)
+        g.sphere((9.8, -2.6, z), 1.25, cuts=2)       # W2: 0.9 -> 1.25 lu (they read at game scale)
+    rig.part("ktorso", g, GILT, finish="metal", outline=0.3)
     g = Geo().blob((-0.6, 0, 63.4), (10.8, 11.6, 1.8), p=3.0)
     rig.part("ktorso", g, B.WOOD)
     rig.secondary("ktails", "ktorso", (-8.0, 0, 63.0), (-15.0, 0, 55.0), max_deg=16, gain=1.1)
     g = Geo().blob((-12.0, 0, 58.5), (6.0, 9.6, 3.2), p=2.6, rot=(0, -35, 0))
     rig.part("ktails", g, team=True)
+    g = KD.shell((-12.0, 0, 58.5), (6.0, 9.6, 3.2), p=2.6, rot=(0, -35, 0), grow=0.3,
+                 keep=(((-14.0, 0, 0), (1, 0, 0)),))
+    look.team_part(rig, "ktails", g)                 # W2: the tails' team-dark turnbacks
     # head: face kit, moustache, helmet with a brass comb and a streaming team crest
     kh = Geo().blob((1.5, 0, 87), (8.8, 8.4, 8.6), p=2.3)
     kh.blob((10.4, -0.5, 85.8), (2.8, 2.5, 2.8), p=2.0)
@@ -201,6 +257,8 @@ def build(rig):
     g = Geo().blob((-0.5, 0, 96.0), (19.0, 7.0, 9.2), p=2.2)
     g.clip((0, 0, 91.0), (0, 0, -1))
     rig.part("hat", g, team=True)                                    # the bicorne, athwart
+    g = KD.band_z((-0.5, 0, 96.0), (19.0, 7.0, 9.2), 91.0, 94.2, p=2.2, grow=0.3)
+    look.team_part(rig, "hat", g)                                    # W2: a team-dark band (two tones)
     g = Geo().blob((-0.5, 0, 96.2), (19.6, 6.6, 9.8), p=2.2)
     g.clip((0, 0, 104.6), (0, 0, 1))
     rig.part("hat", g, B.CREAM, outline=0.5)                         # cream edge
@@ -211,6 +269,11 @@ def build(rig):
     rig.part("crest", g, B.CREAM, finish="hair")                     # cream plume along the crown
     g = Geo().blob((3.0, -7.4, 98.0), (2.6, 1.2, 2.6), p=2.2)
     rig.part("hat", g, team=True, outline=0.5)                       # cockade
+    # W2: a gilt loop over the cockade and gilt tassels at the bicorne's points (the big team field breaks up)
+    g = Geo().capsule((3.4, -7.6, 100.4), (4.6, -7.2, 104.2), 0.95)
+    for x in (-18.4, 17.4):
+        g.blob((x, -1.0, 93.6), (2.0, 2.0, 2.8), p=2.2, taper=(1.2, 0.7))
+    rig.part("hat", g, GILT, finish="metal", outline=0.4)
     rig.joint("hat_loose", "root", (0.0, 0, 92.0), hidden=True)
     g = Geo().blob((-0.5, 0, 96.0), (19.0, 7.0, 9.2), p=2.2)
     g.clip((0, 0, 91.0), (0, 0, -1))
@@ -221,6 +284,8 @@ def build(rig):
     rig.joint("kfore_l", "karm_l", (3, 12, 68))
     g = Geo().capsule((0, 10.5, 77), (3, 12, 68), 4.0, 3.6)
     rig.part("karm_l", g, team=True)
+    GW.team_line(rig, "karm_l", Geo().capsule((0, 10.5, 77), (3, 12, 68), 4.0, 3.6),
+                 [(-2.4, 72.8), (0.6, 72.0), (4.0, 71.2)], 1.2)        # W2: a crease across the sleeve
     g = Geo().capsule((3, 12, 68), (10, 11, 65.5), 3.6, 3.4).blob((10.5, 11, 65), (3.8, 3.8, 3.8), p=2.6)
     rig.part("kfore_l", g, B.CREAM)
     # near arm: team sleeve, cream gauntlet, sabre
@@ -229,6 +294,8 @@ def build(rig):
     rig.joint("sabre", "kfore_r", (SX, SY, SZ))
     g = Geo().capsule((0, -10.5, 77), (3, -12, 68), 4.2, 3.8)
     rig.part("karm_r", g, team=True)
+    GW.team_line(rig, "karm_r", Geo().capsule((0, -10.5, 77), (3, -12, 68), 4.2, 3.8),
+                 [(-2.6, 72.8), (0.6, 72.0), (4.2, 71.2)], 1.2)        # W2: a crease across the sleeve
     g = Geo().capsule((3, -12, 68), (8.5, -13, 66), 3.8, 3.6)
     g.blob((6.8, -12.6, 66.8), (3.6, 5.0, 5.0), p=2.4)
     rig.part("kfore_r", g, B.CREAM)
@@ -236,7 +303,7 @@ def build(rig):
         g = Geo().blob((-0.5, y * 1.02, 78.5), (6.8, 5.8, 4.6), p=2.4)
         rig.part("ktorso" if y > 0 else "karm_r", g, team=True)
         g = Geo().blob((-0.5, y * 1.06, 75.0), (6.6, 5.4, 1.8), p=2.6)
-        rig.part("ktorso" if y > 0 else "karm_r", g, "#C8B88A", finish="metal", outline=0.5)   # epaulette fringe
+        rig.part("ktorso" if y > 0 else "karm_r", g, GILT, finish="metal", outline=0.5)   # epaulette fringe
     g = Geo().blob((SX + 0.6, SY, SZ), (3.8, 3.6, 3.8), p=2.3)    # fist
     rig.part("sabre", g, B.CREAM)
     back = [(SX - 1.2, SZ + 4.0), (SX - 0.8, SZ + 18), (SX + 0.8, SZ + 30), (SX + 3.8, SZ + 40),
@@ -252,6 +319,18 @@ def build(rig):
     g.clip((SX - 1.0, SY, SZ), (-1, 0, 0))
     rig.part("sabre", g, B.BRASS, finish="metal", outline=0.7)
     rig.track("sabreTip", "sabre", (SX + 7.0, SY, SZ + SABRE))
+    _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The shabraque (the largest
+    team surface, under the rider's leg), the charger's neck, the rider's coat and the bicorne; a torn strip from the
+    shabraque's cream edge."""
+    rig.damage_spot_at("shabraque", "horse", -28.0, 58.0, 10.0, "cloth", team=True)
+    rig.damage_spot_at("neck", "neck", 31.0, 82.0, 9.0, "hide", fill=COAT)
+    rig.damage_spot_at("coat", "ktorso", -16.0, 104.0, 8.0, "cloth", team=True)   # the back, clear of the arm
+    rig.damage_spot_at("hat", "hat", -14.0, 155.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "horse", -20.0, 41.0, 10.0, "cloth", kind="strip", fill=B.CREAM)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -335,7 +414,7 @@ def _walk(f, report=None):
 # attack: 10 unique poses in the 12 heavy steps (moves.HEAVY_MELEE_MS), impact on pose 6
 ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
 #      shift  dip  coil HOLD leap  reach IMPACT skid follow settle
-A_X = [-1.0, -3.0, -6.0, -8.0, 2.0, 9.0, 13.0, 12.0, 6.0, 1.0]
+A_X = [-1.0, -3.0, -6.0, -8.0, 1.0, 5.0, 8.5, 8.0, 4.0, 1.0]       # B1': 4.5 horse lu less at the strike (was 13)
 A_Z = [0.0, -1.5, -3.0, -4.0, 5.0, 7.0, 0.0, -1.0, 0.0, 0.0]
 A_R = [3, 10, 18, 22, 14, 4, -6, -5, -2, 0]          # horse pitch: it rears for the call
 A_Q = [-0.02, -0.05, -0.07, -0.08, 0.06, 0.04, -0.08, 0.02, 0.0, 0.0]
@@ -382,15 +461,19 @@ TIP = (SX + 7.0, SY, SZ + SABRE)
 SIN = (SX + 3.0, SY, SZ + SABRE * 0.45)
 CUT = {"kind": "arc", "joint": "sabre", "inner": SIN, "outer": TIP, "color": BLADE, "taper": 0.2,
        "white": 0.3, "t0": 0.0, "t1": 0.95, "lines": 3, "samples": 18}
+# W2: hollow smears (the outer band of the swept area and four speed lines): a filled crescent the size of the
+# charger is one flat field, so the smear frames fell under the cavalry floors (micro 2.4 on B's sweep; 3.1 with
+# band 0.4)
+HOLLOW = {"band": 0.28, "lines": 4}
 
 
 def _attack_clip():
     ov = {
-        4: [dict(CUT, **{"from": 3}),
+        4: [dict(CUT, **{"from": 3}, **HOLLOW),
             {"kind": "dust", "ground": (-24.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 61, "spread": 1.2,
              "dir": -1.0}],
-        5: [dict(CUT, **{"from": 3, "t0": 0.2})],
-        6: [dict(CUT, **{"from": 5, "t1": 1.0, "lines": 2}),
+        5: [dict(CUT, **{"from": 3, "t0": 0.2}, **HOLLOW)],
+        6: [dict(CUT, **{"from": 5, "t1": 1.0, "lines": 2, "band": HOLLOW["band"]}),
             {"kind": "burst", "joint": "sabre", "point": TIP, "r0_lu": 8.0, "r1_lu": 15.0, "n": 6,
              "a0": -80.0, "arc": 160.0},
             {"kind": "dust", "ground": (32.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 62, "spread": 1.2}],
@@ -418,7 +501,7 @@ VAR = {
         SAB=[40, -100, -140, -40, 10, 25, 45], TAIL=[2, 6, 10, -10, -14, -8, 4]),
     # point thrust: the arm drawn back with the blade level at his hip, then a long lunge
     "c": dict(
-        X=[-1.0, -3.0, -5.0, 2.0, 8.0, 13.0, 12.0], Z=[-0.5, -1.5, -2.5, 0.0, 1.0, -0.5, -0.5],
+        X=[-1.0, -3.0, -5.0, 0.0, 4.0, 7.0, 7.0], Z=[-0.5, -1.5, -2.5, 0.0, 1.0, -0.5, -0.5],   # B1': was 13
         R=[2, 4, 6, 2, -2, -5, -4], Q=[-0.02, -0.04, -0.06, 0.04, 0.03, -0.08, 0.02],
         SXX=[1.0, 1.0, 0.97, 1.04, 1.04, 1.02, 1.0],
         FR=[(4, -10), (8, -20), (12, -30), (30, -50), (34, -30), (20, 0), (16, 0)],
@@ -466,20 +549,20 @@ THRUST = {"kind": "streak", "joint": "sabre", "point": TIP, "color": BLADE, "wid
 def _attack_v(v):
     if v == "b":
         ov = {
-            4: [dict(CUT, **{"from": 3, "t0": 0.0, "t1": 1.0}),
+            4: [dict(CUT, **{"from": 3, "t0": 0.0, "t1": 1.0}, **HOLLOW),
                 {"kind": "dust", "ground": (-24.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 64,
                  "spread": 1.2, "dir": -1.0}],
-            5: [dict(CUT, **{"from": 3, "t0": 0.3, "t1": 1.0})],
-            6: [dict(CUT, **{"from": 5, "t1": 1.0, "lines": 2}),
+            5: [dict(CUT, **{"from": 3, "t0": 0.3, "t1": 1.0}, **HOLLOW)],
+            6: [dict(CUT, **{"from": 5, "t1": 1.0, "lines": 2, "band": HOLLOW["band"]}),
                 {"kind": "burst", "joint": "sabre", "point": TIP, "r0_lu": 8.0, "r1_lu": 15.0, "n": 6,
                  "a0": -40.0, "arc": 160.0},
                 {"kind": "dust", "ground": (32.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 65, "spread": 1.2}],
         }
     else:
         ov = {
-            4: [dict(THRUST, **{"from": 3, "t0": 0.0, "t1": 1.0})],
-            5: [dict(THRUST, **{"from": 3, "t0": 0.3, "t1": 1.0, "width_lu": 8.0})],
-            6: [dict(THRUST, **{"from": 4, "t0": 0.4, "t1": 1.0, "width_lu": 6.0}),
+            4: [dict(THRUST, **{"from": 3, "t0": 0.0, "t1": 1.0, "width_lu": 7.0})],     # W2: narrower (the floors)
+            5: [dict(THRUST, **{"from": 3, "t0": 0.3, "t1": 1.0, "width_lu": 6.0})],
+            6: [dict(THRUST, **{"from": 4, "t0": 0.4, "t1": 1.0, "width_lu": 5.0}),
                 {"kind": "burst", "joint": "sabre", "point": TIP, "r0_lu": 7.0, "r1_lu": 14.0, "n": 6,
                  "a0": -70.0, "arc": 140.0},
                 {"kind": "dust", "ground": (34.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 66, "spread": 1.2}],

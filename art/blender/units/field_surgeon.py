@@ -24,14 +24,19 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 """
 import math
 
+from ageborn_art import aimed as AIMED
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import gait as GT  # noqa: F401
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "field_surgeon"
 GAIT_NAME = "biped"
@@ -43,10 +48,38 @@ ANCHORS = {"head": (2, 70), "hitCenter": (0, 32), "muzzle": (30, 38)}
 NO_RETIME = True
 
 HAIR = "#B8B2A8"      # grey whiskers
-SHOE = "#2F2B2B"
+HAIR_DK = "#958F86"   # W2: the whiskers' darker roots (two-tone hair)
+SHOE = "#3B3432"      # W2: a lit side that separates from the outline (was #2F2B2B)
 BAG = "#6E5646"
-BREECH = "#4A3B2E"
+BREECH = "#76644F"    # W2: lighter breeches (was the dark #4A3B2E)
 SAW = "#B6BCC4"
+HAT = "#423D3D"       # W2: a mid-value lit side on the black bicorne (was rigs_gunpowder.BLACK)
+TRIM = "#D2C9B4"      # W2: the bicorne's lace a dull cream (bright cream on the dark hat was the extras' top highlight)
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of the Field Surgeon is the bicorne, the coat with its apron and strap, the doctor's bag and the
+# pistol: a team-dark band round the bicorne, a team-dark flap on the bag and team-dark wings (the team zone in two
+# tones), a team-dark band over the tails' hem, larger brass buttons, brass buttons on the cream cuffs, two-tone
+# whiskers, a lighter hat, breeches and shoes (dark materials need a lit side).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.78       # W2: 0.93 put the extras sheet at highlight 0.103 (the whiskers, apron and steel)
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", HAIR: "fur", HAIR_DK: "fur", B.CREAM: "cloth", _FAR(B.CREAM): "cloth",
+                  BREECH: "cloth", _FAR(BREECH): "cloth", SHOE: "leather", _FAR(SHOE): "leather", HAT: "cloth",
+                  TRIM: "cloth", BAG: "leather", SAW: "iron", B.BRASS: "bronze", B.LEATHER: "leather", B.GUNWOOD: "wood",
+                  B.GUNMETAL: "iron", B.IRON: "iron", "team": "cloth"}
+
+
+def _hat(rig, joint):
+    """The bicorne (rigs_gunpowder.bicorne, a lighter black) with a team-dark band round its base (W2)."""
+    B.bicorne(rig, joint=joint, c=HAT_C, scale=0.98, trim=TRIM, color=HAT)
+    x, y, z = HAT_C
+    k = 0.98
+    g = KD.band_z((x, y, z + 4.0 * k), (16.5 * k, 3.4 * k, 8.4 * k), z - 0.5 * k, z + 2.4 * k, p=2.5,
+                  taper=(1.0, 0.72), grow=0.3)
+    look.team_part(rig, joint, g, outline=0.4)
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # pistol: near hand
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)
@@ -75,7 +108,7 @@ def build(rig):
     rig.part("torso", g, B.CREAM)
     g = Geo()
     for z in (32.0, 27.5, 23.0):
-        g.sphere((8.4, -8.6, z), 1.0, cuts=3)
+        g.sphere((8.4, -8.8, z), 1.3, cuts=3)       # W2: 1.0 -> 1.3 lu (they read at game scale)
     rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo().blob((1.2, 0, 37.4), (6.8, 7.2, 2.4), p=2.4)
     rig.part("torso", g, B.CREAM)                # neck cloth
@@ -91,6 +124,8 @@ def build(rig):
     rig.part("tails", tl, team=True)
     g = G.anchor(tf, Geo(), (-6.6, 12.0), s=0.9)
     rig.part("tails", g, B.CREAM, highlight=False, outline=0)
+    g = KD.band_z((-5.6, 0, 11.5), (5.4, 10.4, 7.8), 4.2, 7.0, p=2.6, taper=(0.75, 1.0), rot=(0, 10, 0))
+    look.team_part(rig, "tails", g)          # W2: a team-dark hem band
     # the belt and a bone saw hanging at the back hip
     g = Geo().blob((0.4, 0, 19.6), (11.8, 10.9, 1.7), p=3.0)
     rig.part("torso", g, B.LEATHER)
@@ -116,6 +151,8 @@ def build(rig):
     bf.decal(g, c, [(-1.1, 3.4), (1.1, 3.4), (1.1, -3.4), (-1.1, -3.4)], 0.4)
     bf.decal(g, c, [(-3.4, 1.1), (3.4, 1.1), (3.4, -1.1), (-3.4, -1.1)], 0.4)
     rig.part("bag", g, B.CREAM, highlight=False, outline=0)
+    g = KD.band_z((3.4, -14.2, 12.4), (7.8, 4.4, 6.0), 15.4, 18.6, p=3.0, taper=(1.05, 0.86), grow=0.3)
+    look.team_part(rig, "bag", g)            # W2: a team-dark flap over the bag's top (two tones)
 
     # head: round, bald crown with grey whiskers, spectacles, bicorne
     head = G.head_geos(center=(2, 0, 48.5), nose=(14.0, -0.6, 46.6), nose_r=(3.8, 3.3, 3.5))
@@ -127,6 +164,10 @@ def build(rig):
             eye_at=(13.8, 49.8), mark_r=3.8, mouth_shape="smile")
     rig.part("head", head, B.SKIN)
     rig.part("head", hair, HAIR, finish="hair")
+    g = Geo()                                  # W2: darker roots along the near mutton chop (two-tone hair)
+    for c, r in (((4.6, -11.4, 41.0), (2.4, 1.4, 2.6)), ((8.0, -11.0, 40.2), (2.2, 1.4, 2.4))):
+        g.blob(c, r, p=2.2)
+    rig.part("head", g, HAIR_DK, finish="hair", outline=0)
     rig.joint("specs", "head", (13.6, 0, 49.6))
     g = Geo()
     for y, ax in ((-5.2, (0.55, -1.0)), (4.4, (1.0, 0.0))):   # round brass spectacles (the near
@@ -140,9 +181,9 @@ def build(rig):
     g = Geo().blob((15.0, -8.0, 51.4), (0.6, 1.3, 1.5), p=2.2)       # glint
     rig.part("specs", g, glow="#FFFFFF", outline=0)
     rig.joint("hat", "head", HAT_C)
-    B.bicorne(rig, joint="hat", c=HAT_C, scale=0.98, trim=B.CREAM)
+    _hat(rig, "hat")
     rig.joint("hat_loose", "root", HAT_C, hidden=True)
-    B.bicorne(rig, joint="hat_loose", c=HAT_C, scale=0.98, trim=B.CREAM)
+    _hat(rig, "hat_loose")
 
     # arms: team sleeves, cream cuffs, thumbs
     for s in ("r", "l"):
@@ -150,9 +191,11 @@ def build(rig):
         y = B.ARM_Y[s]
         g = Geo().blob((2.8, y - 1.4 * (1 if s == "r" else -1), B.HAND_Z + 1.0), (1.6, 1.5, 2.2), p=2.2)
         rig.part(f"hand_{s}", g, B.SKIN, outline=0.5)
+        cuff = Geo().blob((0, y, B.HAND_Z + 3.4), (5.0, 5.0, 2.0), p=2.6)   # W2: brass buttons on the cuffs
+        GW.studs(rig, f"fore_{s}", [cuff], [(-1.9, B.HAND_Z + 3.4), (1.9, B.HAND_Z + 3.4)], r=1.25)
     for s, y in (("r", -12.4), ("l", 11.8)):
         g = Geo().blob((0, y, 37.0), (5.8, 5.0, 4.4), p=2.4)
-        rig.part(f"arm_{s}", g, team=True)
+        look.team_part(rig, f"arm_{s}", g)                                  # W2: team-dark wings
 
     # pistol in the near fist, modelled pointing down: a curved wooden grip with a brass
     # butt cap, a long barrel with brass bands, a lock and a hammer; a trigger guard
@@ -186,6 +229,18 @@ def build(rig):
     for dx, dz, r in ((0, -4, 3.6), (2.6, -8, 3.0), (-2.4, -7, 2.6), (0.5, -11.5, 2.4)):
         g.sphere((mx + dx, my - 2, mz + dz), r, cuts=4)
     rig.part("smoke", g, B.SMOKE, finish="dust", outline=0.8)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The coat's back half (the
+    largest team surface the pistol arm and the bag leave clear), the coat tails, the bicorne; a torn strip from
+    the cream apron."""
+    rig.damage_spot_at("coat", "torso", -8.0, 26.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("tails", "tails", -10.0, 18.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("hat", "hat", -6.0, 63.0, 5.5, "cloth", fill=HAT)
+    rig.damage_spot_at("apron", "apron", 9.0, 13.0, 7.0, "cloth", kind="strip", fill=B.CREAM)
 
 
 
@@ -253,13 +308,22 @@ TH_L = [0, -4, -8, -20, -20, -20, -16, -10, -6, -6, 0]
 SH_L = [0, 0, -2, -14, -14, -14, -10, -6, -2, -2, 0]
 
 
-def _attack_pose(f):
-    t = T_R[f]
+# aimed attacks (queue item 44, ageborn_art/aimed.py): a turn of `turn` degrees up raises the pistol arm about the
+# shoulder (the barrel by the whole turn, the forearm by most of it, the upper arm by half at the hip and by all of
+# it with the arm extended), leans him back a little and lifts his head with it.
+AIM_LEAN, AIM_HEAD = 0.12, 0.3
+AIM_W = [0.0, 0.0, 0.3, 0.85, 1.0, 1.0, 0.75, 0.3, 0.0, 0.0, 0.0]    # per unique frame (A); the shot is frame 5
+AIM_W_B = [0.0, 0.3, 0.7, 1.0, 1.0, 1.0, 0.75, 0.3, 0.0, 0.0, 0.0]   # B (frames 0 and 8-10 are A's)
+
+
+def _attack_pose(f, turn=0.0):
+    t = T_R[f] + AIM_LEAN * turn
     a, fo, w = PA[f]
+    a, fo, w = a + 0.5 * turn, fo + 0.85 * turn, w + turn
     fa, ff = FA[f]
     pose = merge(pistol(a - t, fo - t, w - t), free(fa - t, ff - t), {
         "torso": {"r": t},
-        "head": {"r": HEAD[f] - 0.4 * t},
+        "head": {"r": HEAD[f] - 0.4 * t + AIM_HEAD * turn},
         "thigh_r": {"r": TH_R[f]}, "shin_r": {"r": SH_R[f]},
         "thigh_l": {"r": TH_L[f]}, "shin_l": {"r": SH_L[f]},
         "hammer": {"r": [0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0][f]},
@@ -313,13 +377,14 @@ FTB = [((4.0, 0, 0), (-4.0, 0, 0)), ((6.0, 0, 0), (-6.0, 0, 0)), ((7.0, 0, 0), (
 HIP = (6.0, 22.0)   # the free fist on the hip (torso space)
 
 
-def _b_pose(k):
-    t = TB[k]
+def _b_pose(k, turn=0.0):
+    t = TB[k] + AIM_LEAN * turn
     a, fo, w = PB[k]
+    a, fo, w = a + turn, fo + turn, w + turn       # the extended arm pivots at the shoulder
     fa, ff = B.ik2(SH, HIP, elbow_down=False)
     pose = merge(pistol(a - t, fo - t, w - t), free(fa, ff), {
         "torso": {"r": t, "rz": YB[k]},
-        "head": {"r": HB[k] - 0.4 * t, "rz": -0.7 * YB[k]},
+        "head": {"r": HB[k] - 0.4 * t + AIM_HEAD * turn, "rz": -0.7 * YB[k]},
         "hammer": {"r": 38 if k == 3 else 0},
         "flash": {"show": k == 4},
         "smoke": {"show": k in (5, 6), "s": [1, 1, 1, 1, 1, 0.8, 1.1][k]},
@@ -340,11 +405,16 @@ def _attack_b():
         4: [{"kind": "burst", "joint": "hand_r", "point": (PMUZ[0], PMUZ[1], PMUZ[2] - 6.0), "r0_lu": 7.0,
              "r1_lu": 12.0, "n": 5, "a0": -60.0, "arc": 120.0, "color": "#FFF4D6"}],
     }
-    poses = [_attack_pose(0)] + [_b_pose(k) for k in range(7)] + [_attack_pose(f) for f in (8, 9, 10)]
+    poses = [_b_turned(u, 0.0) for u in range(11)]
     ov = {k + 1: v for k, v in ov.items()}
     reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
     return M.clip("attack_b", poses, ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov, reuse=reuse,
                   extra={"holdStep": 3})
+
+
+def _b_turned(u, t):
+    """B's unique pose u (A's first twirl, B's own 1-7, A's 8-10) turned t degrees up."""
+    return _attack_pose(0) if u == 0 else _b_pose(u - 1, t) if u <= 7 else _attack_pose(u)
 
 
 def _hit(k):
@@ -378,13 +448,21 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (both attacks; the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, _b_turned, AIM_W_B, aims=("up45", "up70"))
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl, attack_ms=832, attack_impact_at=0.4002))

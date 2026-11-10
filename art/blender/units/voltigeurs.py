@@ -22,14 +22,19 @@ Animation (ANIM_SPEC G1, appendix B for guns: kneeling shot, hip snap shot):
 """
 import math
 
+from ageborn_art import aimed as AIMED
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import gait as GT  # noqa: F401
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import gunpowder_w2 as GW
 
 SLUG = "voltigeurs"
 GAIT_NAME = "biped"
@@ -41,8 +46,24 @@ ANCHORS = {"head": (2, 64), "hitCenter": (0, 30), "muzzle": (54, 33)}
 NO_RETIME = True
 
 HAIR = "#5A4B40"
-GAITER = B.BLACK
-SHOE = "#2F2B2B"
+HAIR_LT = "#76665A"      # W2: lighter tufts in the hair (two-tone hair)
+GAITER = "#38383E"       # W2: a lit side on the black gaiters (was rigs_gunpowder.BLACK)
+SHOE = "#3B3432"         # W2: a lit side that separates from the outline (was #2F2B2B)
+
+# the detail standard (art round W2, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Voltigeur is the shako with its plume, the jacket with its crossbelt, the tails and the
+# musket: a team-dark band round the shako and a team-dark lapel (the team zone in two tones), team-dark hems on the
+# skirts and the tails, larger brass buttons, brass buttons on the cream cuffs, lighter gaiters and shoes. As the
+# Fusilier, a lower finish highlight: the thin cream belts and brass read as highlights already.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.65
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, 0.8)        # noqa: E731 (kit_gunpowder.legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", HAIR: "fur", HAIR_LT: "fur", B.CREAM: "cloth", _FAR(B.CREAM): "cloth",
+                  GAITER: "leather", _FAR(GAITER): "leather", SHOE: "leather", _FAR(SHOE): "leather",
+                  B.BLACK: "leather", B.BRASS: "bronze", _FAR(B.BRASS): "bronze", B.WOOD: "wood",
+                  B.GUNWOOD: "wood", B.GUNMETAL: "iron", B.STEEL: "iron", "team": "cloth"}
 
 ARM_Y = {"r": -12.5, "l": 10.5}
 SH = (0.0, B.SHOULDER_Z)            # shoulder in torso space (x, z)
@@ -82,6 +103,10 @@ def _shako(rig, joint):
     rig.part(joint, g, team=True, outline=0.8)
     g = Geo().capsule((x + 6.1, y - 0.4, z + 13.0), (x + 5.4, y - 0.4, z + 17.0), 2.5, 2.6)
     rig.part(joint, g, B.CREAM, outline=0.5)
+    # W2: a team-dark band round the shako's body (the team zone in two tones)
+    g = Geo().lathe([(9.95, 0), (10.5, 0.3), (10.7, 2.3), (10.2, 2.6)], (x, y, z + 2.8), (x, y, z + 15.0),
+                    segs=24, squash=(1.0, 0.94))
+    look.team_part(rig, joint, g, outline=0.4)
 
 
 RIG = None
@@ -99,7 +124,7 @@ def build(rig):
     rig.part("torso", g, team=True)
     g = Geo().blob((5.2, -1.0, 27.5), (6.8, 4.8, 9.2), p=2.6, taper=(1.05, 0.7))
     g.clip((7.8, 0, 0), (-1, 0, 0))
-    rig.part("torso", g, team=True)   # buttoned lapel front (team, with brass buttons)
+    look.team_part(rig, "torso", g)   # buttoned lapel front (W2: team-dark, with brass buttons)
     g = Geo().capsule((1.0, 10.0, 37.0), (10.4, -3.0, 25.0), 2.1).capsule((10.4, -3.0, 25.0), (1.0, -10.6, 18.5), 2.1)
     rig.part("torso", g, B.CREAM, outline=0.8)   # one cream crossbelt
     g = Geo().blob((0.4, 0, 21.0), (11.6, 10.6, 2.6), p=3.0)
@@ -108,7 +133,7 @@ def build(rig):
     rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo()
     for z in (33.0, 29.0, 25.0):
-        g.sphere((11.6, -2.4, z), 1.15, cuts=3)
+        g.sphere((11.8, -2.4, z), 1.35, cuts=3)      # W2: 1.15 -> 1.35 lu (they read at game scale)
     rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo().blob((1.2, 0, 37.2), (6.8, 7.2, 2.4), p=2.4)     # black neck stock
     rig.part("torso", g, B.BLACK)
@@ -122,6 +147,8 @@ def build(rig):
     g = Geo().blob((0.5, 0, 17.6), (11.8, 10.8, 6.6), p=2.6, taper=(1.12, 1.0))
     g.clip((0, 0, 13.4), (0, 0, -1))
     rig.part("hips", g, team=True)
+    g = KD.band_z((0.5, 0, 17.6), (11.8, 10.8, 6.6), 13.4, 15.6, p=2.6, taper=(1.12, 1.0))
+    look.team_part(rig, "hips", g)                  # W2: a team-dark hem on the coat skirts
     # coat tails with cream turnbacks and a cream anchor, swinging behind the legs (lifted with
     # the upper body so the longer legs show; they kick with the knees)
     rig.secondary("tails", "hips", (-4.0, 0, 18.0), (-7.5, 0, 6.0), max_deg=16, gain=1.2)
@@ -133,6 +160,8 @@ def build(rig):
     rig.part("tails", g, B.CREAM, highlight=False, outline=0)
     g = Geo().blob((-6.5, 0, 5.4), (3.8, 10.8, 2.4), p=2.6, rot=(0, 10, 0))
     rig.part("tails", g, B.CREAM)
+    g = KD.band_z((-5.2, 0, 12.0), (5.4, 10.2, 8.0), 6.8, 9.4, p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
+    look.team_part(rig, "tails", g)          # W2: a team-dark band over the cream hem
 
     # head: face kit, hair with a queue at the back, the shako on its own joint
     head = G.head_geos(center=(2, 0, 48.5), nose=(13.6, -0.6, 46.8))
@@ -143,6 +172,12 @@ def build(rig):
             eye_at=(13.8, 49.8), mark_r=4.1)
     rig.part("head", head, B.SKIN)
     rig.part("head", hair, HAIR, finish="hair")
+    hf = F.Face(rig, "head", [Geo().blob((-6.4, 0, 48.0), (6.0, 10.2, 7.6), p=2.2)])
+    g = Geo()                                  # W2: lighter rounded tufts (two-tone hair, W1 review)
+    for (x, z), r in (((-8.6, 50.4), (2.3, 1.6, 2.2)), ((-10.6, 46.0), (2.2, 1.6, 2.3)),
+                      ((-6.6, 43.6), (2.1, 1.6, 2.0))):
+        g.blob(tuple(hf.hit(x, z)), r, p=2.2)
+    rig.part("head", g, HAIR_LT, finish="hair", outline=0)
     rig.secondary("queue", "head", (-10.0, 0, 46.0), (-13.0, 0, 37.0), max_deg=16, gain=1.1)
     g = Geo().capsule((-10.5, 0, 45.5), (-13.0, 0, 38.0), 2.2, 1.6)
     rig.part("queue", g, HAIR, finish="hair")
@@ -156,6 +191,9 @@ def build(rig):
     # arms: team sleeves, cream cuffs
     for s in ("r", "l"):
         B.arm_parts(rig, s, team_sleeve=True, cuff=B.CREAM, arm_y=ARM_Y)
+        y = ARM_Y[s]                                 # W2: two brass buttons on each cream cuff
+        cuff = Geo().blob((0, y, B.HAND_Z + 3.4), (5.0, 5.0, 2.0), p=2.6)
+        GW.studs(rig, f"fore_{s}", [cuff], [(-1.9, B.HAND_Z + 3.4), (1.9, B.HAND_Z + 3.4)], r=1.25)
     for s, y in (("r", -12.4), ("l", 10.4)):
         g = Geo().blob((0, y, 37.0), (5.8, 5.2, 4.4), p=2.4)  # shoulder with a cream wing
         rig.part(f"arm_{s}", g, team=True)
@@ -187,6 +225,20 @@ def build(rig):
     rig.part("cart", g, B.CREAM, outline=0.5)
     # the big powder cloud (world placed in front of the kneeling muzzle)
     G.smoke_cloud(rig, "root", (MUZZ_KNEEL[0] + 9.0, -16.0, MUZZ_KNEEL[1]), size=1.6)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. Placed where the posed frames
+    show them (the probe's camera rays in idle, walk and both shots, W1 lesson 4): the coat skirt's front flap
+    (the largest team surface the musket and the near arm leave clear), the jacket's back edge behind the arm, the
+    coat tails, the shako's team body; a torn strip from the skirt's back hem."""
+    rig.damage_spot_at("coat", "hips", 4.0, 12.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("back", "torso", -10.0, 30.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("tails", "tails", -8.0, 14.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("shako", "hat", -4.0, 64.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -201,14 +253,17 @@ def gun_point(gx, gz, deg, p):
     return (gx + dx * c - dz * s, gz + dx * s + dz * c)
 
 
-def hold(gx, gz, deg, near=None):
+def hold(gx, gz, deg, near=None, fore=FORE):
     """Musket grip at (gx, gz) in torso space pointing `deg`; both arms solved to hold it.
-    near=(x, z) moves the near hand off the grip to that point (the reload beat)."""
+    near=(x, z) moves the near hand off the grip to that point (the reload beat); `fore` slides the far hand
+    along the stock (W2: the aimed shots)."""
     pose = {"gun": {"x": gx - G0[0], "z": gz - G0[2], "r": deg}}
+    if fore != FORE:
+        pose["gunhand"] = {"x": fore - FORE}
     tx, tz = near if near else (gx - 0.4, gz + 0.4)
     a, f = B.ik2(SH, (tx, tz))
     pose.update(B.arm("r", a, f))
-    fx_, fz = gx + FORE * math.cos(math.radians(deg)), gz + FORE * math.sin(math.radians(deg))
+    fx_, fz = gx + fore * math.cos(math.radians(deg)), gz + fore * math.sin(math.radians(deg))
     a, f = B.ik2(SH, (fx_ - 1.0, fz - 1.0))
     pose.update(B.arm("l", a, f))
     return pose
@@ -286,19 +341,35 @@ def _kneel(k):
     }, M.body_about((0, 0, 22), z=-10.5 * k))
 
 
-def _attack_pose(f):
+# aimed attacks (queue item 44, ageborn_art/aimed.py): a turn of `turn` degrees up tips the musket up about the grip
+# (kneeling, the grip rises and draws back toward the cheek; at the hip the butt drops along the thigh), leans the
+# body back into the shot and the head with it; the far hand slides down the stock as the muzzle climbs, and the
+# powder cloud follows the raised muzzle a little.
+AIM_LEAN, AIM_RISE, AIM_DRAW = 0.24, 0.11, 0.05           # the kneeling shoulder shot (as the Fusilier's B)
+AIM_LEAN_H, AIM_RISE_H, AIM_DRAW_H = 0.12, 0.04, 0.03     # the hip snap shot
+AIM_HEAD = 0.30
+AIM_W = [0.0, 0.45, 0.85, 1.0, 1.0, 1.0, 0.75, 0.3, 0.0, 0.0, 0.0]   # per unique frame; the reload stays A's
+KEEP = [f for f in range(12) if f != 7]     # A's unique poses (the kick is held while the cloud billows)
+
+
+def _attack_pose(f, turn=0.0):
     gx, gz, deg = GUN[f]
+    up = max(0.0, turn)
+    lean = AIM_LEAN * turn
+    if turn:
+        gx, gz, deg = gx - AIM_DRAW * up, gz + AIM_RISE * up, deg + turn - lean
     near = None
     if f in RELOAD:
         # the reload: cartridge box, mouth, then the pan
         near = RELOAD[f] if f != 10 else gun_point(gx, gz, deg, (G0[0] + 3.0, G0[2] + 5.0))
-    pose = merge(hold(gx, gz, deg, near=near), _kneel(KN[f]), {
-        "torso": {"r": LEAN[f]},
-        "head": {"r": HEAD[f], "x": [0, 0.4, 1.0, 1.4, 1.4, 1.2, 0, 0, 0, 0, 0, 0][f]},
+    pose = merge(hold(gx, gz, deg, near=near, fore=FORE - 0.06 * up), _kneel(KN[f]), {
+        "torso": {"r": LEAN[f] + lean},
+        "head": {"r": HEAD[f] + AIM_HEAD * turn, "x": [0, 0.4, 1.0, 1.4, 1.4, 1.2, 0, 0, 0, 0, 0, 0][f]},
         "pan": {"show": f == 4},
         "flash": {"show": f == 5},
         "smoke": {"show": f in (6, 7, 8), "s": [1, 1, 1, 1, 1, 1, 0.8, 1.0, 1.0, 1, 1, 1][f],
-                  "x": [0, 0, 0, 0, 0, 0, -4, 2, 8, 0, 0, 0][f], "z": [0, 0, 0, 0, 0, 0, 0, 3, 8, 0, 0, 0][f]},
+                  "x": [0, 0, 0, 0, 0, 0, -4, 2, 8, 0, 0, 0][f] + 0.1 * up,
+                  "z": [0, 0, 0, 0, 0, 0, 0, 3, 8, 0, 0, 0][f] + 0.35 * up},
     }, M.body_about((0, 0, 20), x=B_X[f] + HOP_X[f], z=HOP_Z[f], q=B_Q[f]))
     if f in RELOAD:
         pose["cart"] = {"show": True}
@@ -322,7 +393,7 @@ def _attack_clip():
              "dir": -1.0}],
     }
     # 11 unique poses (atlas budget): the kick pose is held while the cloud billows (no frame 7)
-    keep = [f for f in range(12) if f != 7]
+    keep = KEEP
     ov = {keep.index(k): v for k, v in ov.items() if k in keep}
     # the hold loops with the pan-fizz frame while the sim wind-up lasts (2.7x, ANIM_SPEC R5)
     return M.clip("attack", [_attack_pose(f) for f in keep], ATTACK_MS, impact=keep.index(ATTACK_IMPACT),
@@ -346,16 +417,20 @@ FEET_B = [None, ((4.5, 0, 0), (-4.5, 0, 0)), ((6.5, 0, 0), (-7.0, 0, 0)), ((7.5,
           ((3.0, 0, 0), (-5.0, 0, 0))]
 
 
-def _b_pose(f):
+def _b_pose(f, turn=0.0):
     gx, gz, deg = GUN_B[f]
-    pose = merge(hold(gx, gz, deg), {
-        "torso": {"r": LEAN_B[f]},
-        "head": {"r": HEAD_B[f], "x": [0, 0.4, 1.0, 1.4, 1.4, 1.2, 0, 0][f]},
+    up = max(0.0, turn)
+    lean = AIM_LEAN_H * turn
+    if turn:
+        gx, gz, deg = gx - AIM_DRAW_H * up, gz + AIM_RISE_H * up, deg + turn - lean
+    pose = merge(hold(gx, gz, deg, fore=FORE - 0.06 * up), {
+        "torso": {"r": LEAN_B[f] + lean},
+        "head": {"r": HEAD_B[f] + AIM_HEAD * turn, "x": [0, 0.4, 1.0, 1.4, 1.4, 1.2, 0, 0][f]},
         "pan": {"show": f == 4},
         "flash": {"show": f == 5},
         # the cloud billows in front of the standing muzzle (about 11 lu higher than the kneel)
         "smoke": {"show": f in (6, 7), "s": [1, 1, 1, 1, 1, 1, 0.9, 1.0][f],
-                  "x": [0, 0, 0, 0, 0, 0, -6, 0][f], "z": [0, 0, 0, 0, 0, 0, 1, 6][f]},
+                  "x": [0, 0, 0, 0, 0, 0, -6, 0][f] + 0.1 * up, "z": [0, 0, 0, 0, 0, 0, 1, 6][f] + 0.35 * up},
     }, M.body_about((0, 0, 20), x=BX_B[f], z=BZ_B[f], q=BQ_B[f]))
     r, l = FEET_B[f]
     pose = G.plant(RIG, pose, LEGS, r=r, l=l, max_drop=6.0)
@@ -375,11 +450,16 @@ def _attack_b():
         6: [{"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 33, "spread": 0.8,
              "dir": -1.0}],
     }
-    poses = [_attack_pose(0)] + [_b_pose(f) for f in range(1, 8)] + [_attack_pose(f) for f in (9, 10, 11)]
+    poses = [_b_turned(u, 0.0) for u in range(11)]
     reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
     return M.clip("attack_b", poses, ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
                   sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 8, 9, 10], reuse=reuse,
                   extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+def _b_turned(u, t):
+    """B's unique pose u (A's read, B's own 1-7, A's reload 9-11) turned t degrees up."""
+    return _attack_pose(0) if u == 0 else _b_pose(u, t) if u <= 7 else _attack_pose(u + 1)
 
 
 STANCE = hold(*PORT)
@@ -425,13 +505,21 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (both attacks; the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, lambda u, t: _attack_pose(KEEP[u], turn=t), AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, _b_turned, AIM_W, aims=("up45", "up70"))
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 9)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl, attack_ms=790, attack_impact_at=0.4734))

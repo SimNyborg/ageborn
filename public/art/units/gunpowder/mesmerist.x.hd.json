@@ -26,8 +26,8 @@
   },
   "mesmerist_attack_b_02_team": {
    "frame": {
-    "x": 899,
-    "y": 2,
+    "x": 444,
+    "y": 207,
     "w": 74,
     "h": 148
    },
@@ -74,8 +74,8 @@
   },
   "mesmerist_attack_b_03_team": {
    "frame": {
-    "x": 727,
-    "y": 2,
+    "x": 272,
+    "y": 217,
     "w": 82,
     "h": 150
    },
@@ -122,10 +122,10 @@
   },
   "mesmerist_attack_b_04_team": {
    "frame": {
-    "x": 813,
-    "y": 2,
+    "x": 358,
+    "y": 207,
     "w": 82,
-    "h": 148
+    "h": 149
    },
    "rotated": false,
    "trimmed": true,
@@ -133,7 +133,7 @@
     "x": 243,
     "y": 303,
     "w": 82,
-    "h": 148
+    "h": 149
    },
    "sourceSize": {
     "w": 566,
@@ -170,7 +170,7 @@
   },
   "mesmerist_attack_b_05_team": {
    "frame": {
-    "x": 977,
+    "x": 522,
     "y": 2,
     "w": 83,
     "h": 138
@@ -194,8 +194,8 @@
   },
   "mesmerist_attack_b_06": {
    "frame": {
-    "x": 580,
-    "y": 2,
+    "x": 125,
+    "y": 219,
     "w": 143,
     "h": 186
    },
@@ -218,8 +218,8 @@
   },
   "mesmerist_attack_b_06_team": {
    "frame": {
-    "x": 1160,
-    "y": 2,
+    "x": 522,
+    "y": 285,
     "w": 98,
     "h": 128
    },
@@ -242,8 +242,8 @@
   },
   "mesmerist_attack_b_07": {
    "frame": {
-    "x": 457,
-    "y": 2,
+    "x": 2,
+    "y": 219,
     "w": 119,
     "h": 195
    },
@@ -266,8 +266,8 @@
   },
   "mesmerist_attack_b_07_team": {
    "frame": {
-    "x": 1064,
-    "y": 2,
+    "x": 522,
+    "y": 144,
     "w": 92,
     "h": 137
    },
@@ -323,8 +323,8 @@
   "image": "mesmerist.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 220
+   "w": 640,
+   "h": 416
   },
   "scale": "3",
   "ageborn": {

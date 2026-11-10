@@ -2,7 +2,7 @@
  "frames": {
   "grand_marshal_idle_00": {
    "frame": {
-    "x": 405,
+    "x": 194,
     "y": 2,
     "w": 183,
     "h": 254
@@ -26,18 +26,18 @@
   },
   "grand_marshal_idle_00_team": {
    "frame": {
-    "x": 2234,
-    "y": 553,
-    "w": 92,
-    "h": 162
+    "x": 2445,
+    "y": 340,
+    "w": 93,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 281,
     "y": 186,
-    "w": 92,
-    "h": 162
+    "w": 93,
+    "h": 163
    },
    "sourceSize": {
     "w": 616,
@@ -50,8 +50,8 @@
   },
   "grand_marshal_idle_01": {
    "frame": {
-    "x": 592,
-    "y": 2,
+    "x": 213,
+    "y": 260,
     "w": 183,
     "h": 253
    },
@@ -74,18 +74,18 @@
   },
   "grand_marshal_idle_01_team": {
    "frame": {
-    "x": 2330,
-    "y": 553,
-    "w": 92,
-    "h": 162
+    "x": 2458,
+    "y": 173,
+    "w": 93,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 281,
     "y": 188,
-    "w": 92,
-    "h": 162
+    "w": 93,
+    "h": 163
    },
    "sourceSize": {
     "w": 616,
@@ -98,7 +98,7 @@
   },
   "grand_marshal_idle_02": {
    "frame": {
-    "x": 1537,
+    "x": 762,
     "y": 2,
     "w": 184,
     "h": 247
@@ -122,9 +122,9 @@
   },
   "grand_marshal_idle_02_team": {
    "frame": {
-    "x": 796,
-    "y": 789,
-    "w": 94,
+    "x": 2750,
+    "y": 2,
+    "w": 95,
     "h": 158
    },
    "rotated": false,
@@ -132,7 +132,7 @@
    "spriteSourceSize": {
     "x": 280,
     "y": 195,
-    "w": 94,
+    "w": 95,
     "h": 158
    },
    "sourceSize": {
@@ -146,8 +146,8 @@
   },
   "grand_marshal_idle_03": {
    "frame": {
-    "x": 1202,
-    "y": 305,
+    "x": 1771,
+    "y": 493,
     "w": 188,
     "h": 239
    },
@@ -170,18 +170,18 @@
   },
   "grand_marshal_idle_03_team": {
    "frame": {
-    "x": 1741,
-    "y": 789,
-    "w": 96,
-    "h": 155
+    "x": 2753,
+    "y": 488,
+    "w": 97,
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 279,
     "y": 199,
-    "w": 96,
-    "h": 155
+    "w": 97,
+    "h": 156
    },
    "sourceSize": {
     "w": 616,
@@ -194,8 +194,8 @@
   },
   "grand_marshal_idle_04": {
    "frame": {
-    "x": 618,
-    "y": 305,
+    "x": 1526,
+    "y": 2,
     "w": 190,
     "h": 242
    },
@@ -218,9 +218,9 @@
   },
   "grand_marshal_idle_04_team": {
    "frame": {
-    "x": 1227,
-    "y": 789,
-    "w": 96,
+    "x": 2847,
+    "y": 327,
+    "w": 97,
     "h": 156
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 280,
     "y": 197,
-    "w": 96,
+    "w": 97,
     "h": 156
    },
    "sourceSize": {
@@ -242,8 +242,8 @@
   },
   "grand_marshal_idle_05": {
    "frame": {
-    "x": 1349,
-    "y": 2,
+    "x": 589,
+    "y": 254,
     "w": 184,
     "h": 248
    },
@@ -266,18 +266,18 @@
   },
   "grand_marshal_idle_05_team": {
    "frame": {
-    "x": 2,
-    "y": 789,
-    "w": 93,
-    "h": 160
+    "x": 2553,
+    "y": 2,
+    "w": 94,
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 281,
     "y": 190,
-    "w": 93,
-    "h": 160
+    "w": 94,
+    "h": 161
    },
    "sourceSize": {
     "w": 616,
@@ -290,8 +290,8 @@
   },
   "grand_marshal_walk_00": {
    "frame": {
-    "x": 2106,
-    "y": 2,
+    "x": 970,
+    "y": 252,
     "w": 189,
     "h": 245
    },
@@ -314,18 +314,18 @@
   },
   "grand_marshal_walk_00_team": {
    "frame": {
-    "x": 2030,
-    "y": 553,
-    "w": 98,
-    "h": 162
+    "x": 2342,
+    "y": 340,
+    "w": 99,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 280,
     "y": 196,
-    "w": 98,
-    "h": 162
+    "w": 99,
+    "h": 163
    },
    "sourceSize": {
     "w": 616,
@@ -338,8 +338,8 @@
   },
   "grand_marshal_walk_01": {
    "frame": {
-    "x": 1762,
-    "y": 305,
+    "x": 1789,
+    "y": 245,
     "w": 198,
     "h": 237
    },
@@ -362,18 +362,18 @@
   },
   "grand_marshal_walk_01_team": {
    "frame": {
-    "x": 694,
-    "y": 789,
-    "w": 98,
-    "h": 158
+    "x": 2648,
+    "y": 331,
+    "w": 99,
+    "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 280,
     "y": 204,
-    "w": 98,
-    "h": 158
+    "w": 99,
+    "h": 159
    },
    "sourceSize": {
     "w": 616,
@@ -386,8 +386,8 @@
   },
   "grand_marshal_walk_02": {
    "frame": {
-    "x": 2,
-    "y": 553,
+    "x": 1991,
+    "y": 242,
     "w": 190,
     "h": 232
    },
@@ -410,18 +410,18 @@
   },
   "grand_marshal_walk_02_team": {
    "frame": {
-    "x": 1841,
-    "y": 789,
-    "w": 90,
-    "h": 155
+    "x": 2854,
+    "y": 487,
+    "w": 91,
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 280,
     "y": 210,
-    "w": 90,
-    "h": 155
+    "w": 91,
+    "h": 156
    },
    "sourceSize": {
     "w": 616,
@@ -434,8 +434,8 @@
   },
   "grand_marshal_walk_03": {
    "frame": {
-    "x": 1016,
-    "y": 305,
+    "x": 1585,
+    "y": 493,
     "w": 182,
     "h": 241
    },
@@ -458,18 +458,18 @@
   },
   "grand_marshal_walk_03_team": {
    "frame": {
-    "x": 600,
-    "y": 789,
-    "w": 90,
-    "h": 159
+    "x": 2555,
+    "y": 504,
+    "w": 91,
+    "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 280,
     "y": 202,
-    "w": 90,
-    "h": 159
+    "w": 91,
+    "h": 160
    },
    "sourceSize": {
     "w": 616,
@@ -482,8 +482,8 @@
   },
   "grand_marshal_walk_04": {
    "frame": {
-    "x": 1725,
-    "y": 2,
+    "x": 777,
+    "y": 253,
     "w": 189,
     "h": 246
    },
@@ -506,18 +506,18 @@
   },
   "grand_marshal_walk_04_team": {
    "frame": {
-    "x": 2132,
-    "y": 553,
-    "w": 98,
-    "h": 162
+    "x": 2342,
+    "y": 507,
+    "w": 99,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 280,
     "y": 196,
-    "w": 98,
-    "h": 162
+    "w": 99,
+    "h": 163
    },
    "sourceSize": {
     "w": 616,
@@ -530,8 +530,8 @@
   },
   "grand_marshal_walk_05": {
    "frame": {
-    "x": 1964,
-    "y": 305,
+    "x": 1899,
+    "y": 2,
     "w": 194,
     "h": 236
    },
@@ -554,9 +554,9 @@
   },
   "grand_marshal_walk_05_team": {
    "frame": {
-    "x": 303,
-    "y": 789,
-    "w": 98,
+    "x": 2650,
+    "y": 494,
+    "w": 99,
     "h": 159
    },
    "rotated": false,
@@ -564,7 +564,7 @@
    "spriteSourceSize": {
     "x": 280,
     "y": 203,
-    "w": 98,
+    "w": 99,
     "h": 159
    },
    "sourceSize": {
@@ -578,8 +578,8 @@
   },
   "grand_marshal_walk_06": {
    "frame": {
-    "x": 473,
-    "y": 553,
+    "x": 2097,
+    "y": 2,
     "w": 187,
     "h": 230
    },
@@ -602,9 +602,9 @@
   },
   "grand_marshal_walk_06_team": {
    "frame": {
-    "x": 1132,
-    "y": 789,
-    "w": 91,
+    "x": 2751,
+    "y": 327,
+    "w": 92,
     "h": 157
    },
    "rotated": false,
@@ -612,7 +612,7 @@
    "spriteSourceSize": {
     "x": 280,
     "y": 208,
-    "w": 91,
+    "w": 92,
     "h": 157
    },
    "sourceSize": {
@@ -626,8 +626,8 @@
   },
   "grand_marshal_walk_07": {
    "frame": {
-    "x": 1573,
-    "y": 305,
+    "x": 1391,
+    "y": 496,
     "w": 185,
     "h": 238
    },
@@ -650,9 +650,9 @@
   },
   "grand_marshal_walk_07_team": {
    "frame": {
-    "x": 99,
-    "y": 789,
-    "w": 91,
+    "x": 2555,
+    "y": 167,
+    "w": 92,
     "h": 160
    },
    "rotated": false,
@@ -660,7 +660,7 @@
    "spriteSourceSize": {
     "x": 280,
     "y": 201,
-    "w": 91,
+    "w": 92,
     "h": 160
    },
    "sourceSize": {
@@ -674,7 +674,7 @@
   },
   "grand_marshal_attack_00": {
    "frame": {
-    "x": 779,
+    "x": 381,
     "y": 2,
     "w": 188,
     "h": 249
@@ -698,9 +698,9 @@
   },
   "grand_marshal_attack_00_team": {
    "frame": {
-    "x": 1327,
-    "y": 789,
-    "w": 92,
+    "x": 2865,
+    "y": 163,
+    "w": 93,
     "h": 156
    },
    "rotated": false,
@@ -708,7 +708,7 @@
    "spriteSourceSize": {
     "x": 278,
     "y": 196,
-    "w": 92,
+    "w": 93,
     "h": 156
    },
    "sourceSize": {
@@ -722,8 +722,8 @@
   },
   "grand_marshal_attack_01": {
    "frame": {
-    "x": 424,
-    "y": 305,
+    "x": 1391,
+    "y": 249,
     "w": 190,
     "h": 243
    },
@@ -746,17 +746,17 @@
   },
   "grand_marshal_attack_01_team": {
    "frame": {
-    "x": 1535,
-    "y": 789,
-    "w": 100,
+    "x": 2962,
+    "y": 163,
+    "w": 101,
     "h": 155
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 267,
+    "x": 266,
     "y": 201,
-    "w": 100,
+    "w": 101,
     "h": 155
    },
    "sourceSize": {
@@ -770,8 +770,8 @@
   },
   "grand_marshal_attack_02": {
    "frame": {
-    "x": 910,
-    "y": 553,
+    "x": 213,
+    "y": 517,
     "w": 183,
     "h": 217
    },
@@ -794,18 +794,18 @@
   },
   "grand_marshal_attack_02_team": {
    "frame": {
-    "x": 1018,
-    "y": 789,
-    "w": 110,
-    "h": 157
+    "x": 2749,
+    "y": 165,
+    "w": 112,
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 252,
-    "y": 204,
-    "w": 110,
-    "h": 157
+    "x": 251,
+    "y": 203,
+    "w": 112,
+    "h": 158
    },
    "sourceSize": {
     "w": 616,
@@ -818,8 +818,8 @@
   },
   "grand_marshal_attack_03": {
    "frame": {
-    "x": 1097,
-    "y": 553,
+    "x": 2156,
+    "y": 478,
     "w": 182,
     "h": 208
    },
@@ -842,17 +842,17 @@
   },
   "grand_marshal_attack_03_team": {
    "frame": {
-    "x": 1909,
-    "y": 553,
-    "w": 117,
+    "x": 2336,
+    "y": 173,
+    "w": 118,
     "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 243,
+    "x": 242,
     "y": 201,
-    "w": 117,
+    "w": 118,
     "h": 163
    },
    "sourceSize": {
@@ -874,7 +874,7 @@
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 258,
+    "x": 257,
     "y": 112,
     "w": 188,
     "h": 299
@@ -890,18 +890,18 @@
   },
   "grand_marshal_attack_04_team": {
    "frame": {
-    "x": 1283,
-    "y": 553,
-    "w": 109,
-    "h": 175
+    "x": 645,
+    "y": 506,
+    "w": 111,
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 263,
+    "x": 260,
     "y": 174,
-    "w": 109,
-    "h": 175
+    "w": 111,
+    "h": 176
    },
    "sourceSize": {
     "w": 616,
@@ -914,17 +914,17 @@
   },
   "grand_marshal_attack_05": {
    "frame": {
-    "x": 2,
-    "y": 305,
-    "w": 223,
+    "x": 1163,
+    "y": 251,
+    "w": 224,
     "h": 244
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 263,
+    "x": 258,
     "y": 155,
-    "w": 223,
+    "w": 224,
     "h": 244
    },
    "sourceSize": {
@@ -938,18 +938,18 @@
   },
   "grand_marshal_attack_05_team": {
    "frame": {
-    "x": 1545,
-    "y": 553,
-    "w": 95,
-    "h": 168
+    "x": 1054,
+    "y": 501,
+    "w": 96,
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 291,
-    "y": 175,
-    "w": 95,
-    "h": 168
+    "x": 286,
+    "y": 178,
+    "w": 96,
+    "h": 166
    },
    "sourceSize": {
     "w": 616,
@@ -962,17 +962,17 @@
   },
   "grand_marshal_attack_06": {
    "frame": {
-    "x": 664,
-    "y": 553,
-    "w": 242,
+    "x": 400,
+    "y": 507,
+    "w": 241,
     "h": 218
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 266,
+    "x": 261,
     "y": 192,
-    "w": 242,
+    "w": 241,
     "h": 218
    },
    "sourceSize": {
@@ -986,18 +986,18 @@
   },
   "grand_marshal_attack_06_team": {
    "frame": {
-    "x": 2162,
-    "y": 789,
+    "x": 3067,
+    "y": 161,
     "w": 136,
-    "h": 141
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 292,
-    "y": 213,
+    "x": 287,
+    "y": 212,
     "w": 136,
-    "h": 141
+    "h": 142
    },
    "sourceSize": {
     "w": 616,
@@ -1010,15 +1010,15 @@
   },
   "grand_marshal_attack_07": {
    "frame": {
-    "x": 1394,
-    "y": 305,
+    "x": 1720,
+    "y": 2,
     "w": 175,
     "h": 239
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 281,
+    "x": 276,
     "y": 174,
     "w": 175,
     "h": 239
@@ -1034,17 +1034,17 @@
   },
   "grand_marshal_attack_07_team": {
    "frame": {
-    "x": 894,
-    "y": 789,
-    "w": 120,
+    "x": 2849,
+    "y": 2,
+    "w": 121,
     "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 296,
+    "x": 291,
     "y": 197,
-    "w": 120,
+    "w": 121,
     "h": 157
    },
    "sourceSize": {
@@ -1058,15 +1058,15 @@
   },
   "grand_marshal_attack_08": {
    "frame": {
-    "x": 2162,
-    "y": 305,
+    "x": 1163,
+    "y": 499,
     "w": 201,
     "h": 235
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 271,
+    "x": 268,
     "y": 178,
     "w": 201,
     "h": 235
@@ -1082,18 +1082,18 @@
   },
   "grand_marshal_attack_08_team": {
    "frame": {
-    "x": 194,
-    "y": 789,
-    "w": 105,
-    "h": 159
+    "x": 2445,
+    "y": 507,
+    "w": 106,
+    "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 287,
+    "x": 285,
     "y": 193,
-    "w": 105,
-    "h": 159
+    "w": 106,
+    "h": 160
    },
    "sourceSize": {
     "w": 616,
@@ -1106,8 +1106,8 @@
   },
   "grand_marshal_attack_09": {
    "frame": {
-    "x": 971,
-    "y": 2,
+    "x": 400,
+    "y": 255,
     "w": 185,
     "h": 248
    },
@@ -1130,9 +1130,9 @@
   },
   "grand_marshal_attack_09_team": {
    "frame": {
-    "x": 405,
-    "y": 789,
-    "w": 94,
+    "x": 2651,
+    "y": 2,
+    "w": 95,
     "h": 159
    },
    "rotated": false,
@@ -1140,7 +1140,7 @@
    "spriteSourceSize": {
     "x": 281,
     "y": 193,
-    "w": 94,
+    "w": 95,
     "h": 159
    },
    "sourceSize": {
@@ -1154,8 +1154,8 @@
   },
   "grand_marshal_hit_00": {
    "frame": {
-    "x": 229,
-    "y": 305,
+    "x": 1331,
+    "y": 2,
     "w": 191,
     "h": 243
    },
@@ -1178,17 +1178,17 @@
   },
   "grand_marshal_hit_00_team": {
    "frame": {
-    "x": 1423,
-    "y": 789,
-    "w": 108,
+    "x": 2948,
+    "y": 323,
+    "w": 109,
     "h": 155
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 259,
+    "x": 258,
     "y": 199,
-    "w": 108,
+    "w": 109,
     "h": 155
    },
    "sourceSize": {
@@ -1202,8 +1202,8 @@
   },
   "grand_marshal_hit_01": {
    "frame": {
-    "x": 812,
-    "y": 305,
+    "x": 1585,
+    "y": 248,
     "w": 200,
     "h": 241
    },
@@ -1226,17 +1226,17 @@
   },
   "grand_marshal_hit_01_team": {
    "frame": {
-    "x": 1935,
-    "y": 789,
-    "w": 115,
+    "x": 2949,
+    "y": 482,
+    "w": 116,
     "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 251,
+    "x": 250,
     "y": 203,
-    "w": 115,
+    "w": 116,
     "h": 152
    },
    "sourceSize": {
@@ -1250,7 +1250,7 @@
   },
   "grand_marshal_hit_02": {
    "frame": {
-    "x": 1918,
+    "x": 950,
     "y": 2,
     "w": 184,
     "h": 246
@@ -1274,17 +1274,17 @@
   },
   "grand_marshal_hit_02_team": {
    "frame": {
-    "x": 1639,
-    "y": 789,
-    "w": 98,
+    "x": 2974,
+    "y": 2,
+    "w": 99,
     "h": 155
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
+    "x": 269,
     "y": 198,
-    "w": 98,
+    "w": 99,
     "h": 155
    },
    "sourceSize": {
@@ -1298,7 +1298,7 @@
   },
   "grand_marshal_hit_03": {
    "frame": {
-    "x": 2299,
+    "x": 1138,
     "y": 2,
     "w": 189,
     "h": 245
@@ -1322,9 +1322,9 @@
   },
   "grand_marshal_hit_03_team": {
    "frame": {
-    "x": 2426,
-    "y": 553,
-    "w": 101,
+    "x": 2542,
+    "y": 340,
+    "w": 102,
     "h": 160
    },
    "rotated": false,
@@ -1332,7 +1332,7 @@
    "spriteSourceSize": {
     "x": 280,
     "y": 192,
-    "w": 101,
+    "w": 102,
     "h": 160
    },
    "sourceSize": {
@@ -1346,7 +1346,7 @@
   },
   "grand_marshal_hit_04": {
    "frame": {
-    "x": 1160,
+    "x": 573,
     "y": 2,
     "w": 185,
     "h": 248
@@ -1370,9 +1370,9 @@
   },
   "grand_marshal_hit_04_team": {
    "frame": {
-    "x": 503,
-    "y": 789,
-    "w": 93,
+    "x": 2651,
+    "y": 165,
+    "w": 94,
     "h": 159
    },
    "rotated": false,
@@ -1380,7 +1380,7 @@
    "spriteSourceSize": {
     "x": 280,
     "y": 193,
-    "w": 93,
+    "w": 94,
     "h": 159
    },
    "sourceSize": {
@@ -1394,8 +1394,8 @@
   },
   "grand_marshal_die_00": {
    "frame": {
-    "x": 2367,
-    "y": 305,
+    "x": 1963,
+    "y": 486,
     "w": 189,
     "h": 234
    },
@@ -1418,17 +1418,17 @@
   },
   "grand_marshal_die_00_team": {
    "frame": {
-    "x": 2054,
-    "y": 789,
-    "w": 104,
+    "x": 3061,
+    "y": 322,
+    "w": 105,
     "h": 148
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 261,
+    "x": 260,
     "y": 207,
-    "w": 104,
+    "w": 105,
     "h": 148
    },
    "sourceSize": {
@@ -1442,8 +1442,8 @@
   },
   "grand_marshal_die_01": {
    "frame": {
-    "x": 194,
-    "y": 2,
+    "x": 2,
+    "y": 305,
     "w": 207,
     "h": 286
    },
@@ -1466,18 +1466,18 @@
   },
   "grand_marshal_die_01_team": {
    "frame": {
-    "x": 1396,
-    "y": 553,
-    "w": 145,
-    "h": 171
+    "x": 2185,
+    "y": 236,
+    "w": 147,
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 179,
+    "x": 178,
     "y": 182,
-    "w": 145,
-    "h": 171
+    "w": 147,
+    "h": 172
    },
    "sourceSize": {
     "w": 616,
@@ -1490,8 +1490,8 @@
   },
   "grand_marshal_die_02": {
    "frame": {
-    "x": 196,
-    "y": 553,
+    "x": 777,
+    "y": 503,
     "w": 273,
     "h": 230
    },
@@ -1514,9 +1514,9 @@
   },
   "grand_marshal_die_02_team": {
    "frame": {
-    "x": 988,
-    "y": 953,
-    "w": 178,
+    "x": 3397,
+    "y": 2,
+    "w": 179,
     "h": 127
    },
    "rotated": false,
@@ -1524,7 +1524,7 @@
    "spriteSourceSize": {
     "x": 154,
     "y": 226,
-    "w": 178,
+    "w": 179,
     "h": 127
    },
    "sourceSize": {
@@ -1538,18 +1538,18 @@
   },
   "grand_marshal_die_03": {
    "frame": {
-    "x": 1644,
-    "y": 553,
+    "x": 2288,
+    "y": 2,
     "w": 261,
-    "h": 164
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 177,
-    "y": 246,
+    "y": 243,
     "w": 261,
-    "h": 164
+    "h": 167
    },
    "sourceSize": {
     "w": 616,
@@ -1562,18 +1562,18 @@
   },
   "grand_marshal_die_03_team": {
    "frame": {
-    "x": 1477,
-    "y": 953,
+    "x": 2,
+    "y": 595,
     "w": 122,
-    "h": 110
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 240,
-    "y": 240,
+    "y": 239,
     "w": 122,
-    "h": 110
+    "h": 111
    },
    "sourceSize": {
     "w": 616,
@@ -1586,8 +1586,8 @@
   },
   "grand_marshal_die_04": {
    "frame": {
-    "x": 650,
-    "y": 953,
+    "x": 3207,
+    "y": 277,
     "w": 334,
     "h": 128
    },
@@ -1610,10 +1610,10 @@
   },
   "grand_marshal_die_04_team": {
    "frame": {
-    "x": 2025,
-    "y": 953,
+    "x": 3157,
+    "y": 633,
     "w": 213,
-    "h": 88
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 168,
     "y": 306,
     "w": 213,
-    "h": 88
+    "h": 89
    },
    "sourceSize": {
     "w": 616,
@@ -1634,8 +1634,8 @@
   },
   "grand_marshal_die_05": {
    "frame": {
-    "x": 322,
-    "y": 953,
+    "x": 3207,
+    "y": 141,
     "w": 324,
     "h": 132
    },
@@ -1658,8 +1658,8 @@
   },
   "grand_marshal_die_05_team": {
    "frame": {
-    "x": 1811,
-    "y": 953,
+    "x": 3069,
+    "y": 538,
     "w": 210,
     "h": 91
    },
@@ -1682,8 +1682,8 @@
   },
   "grand_marshal_die_06": {
    "frame": {
-    "x": 2,
-    "y": 953,
+    "x": 3077,
+    "y": 2,
     "w": 316,
     "h": 135
    },
@@ -1706,8 +1706,8 @@
   },
   "grand_marshal_die_06_team": {
    "frame": {
-    "x": 1603,
-    "y": 953,
+    "x": 2949,
+    "y": 638,
     "w": 204,
     "h": 92
    },
@@ -1730,8 +1730,8 @@
   },
   "grand_marshal_die_07": {
    "frame": {
-    "x": 1170,
-    "y": 953,
+    "x": 3170,
+    "y": 409,
     "w": 303,
     "h": 125
    },
@@ -1754,8 +1754,8 @@
   },
   "grand_marshal_die_07_team": {
    "frame": {
-    "x": 2242,
-    "y": 953,
+    "x": 3283,
+    "y": 538,
     "w": 195,
     "h": 85
    },
@@ -1891,8 +1891,8 @@
   "image": "grand_marshal.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2560,
-   "h": 1092
+   "w": 3584,
+   "h": 736
   },
   "scale": "1.5",
   "ageborn": {
@@ -2125,24 +2125,24 @@
         150.3
        ],
        [
-        8.5,
-        228.6
+        7.5,
+        228.7
        ],
        [
-        121.1,
-        127.8
+        117.2,
+        127.9
        ],
        [
-        126.6,
-        47.6
+        122.2,
+        47.8
        ],
        [
-        95.0,
-        26.2
+        91.1,
+        26.4
        ],
        [
-        109.5,
-        114.3
+        107.5,
+        114.4
        ],
        [
         26.0,

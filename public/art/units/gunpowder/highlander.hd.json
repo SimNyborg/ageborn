@@ -2,8 +2,8 @@
  "frames": {
   "highlander_idle_00": {
    "frame": {
-    "x": 1712,
-    "y": 291,
+    "x": 1211,
+    "y": 203,
     "w": 129,
     "h": 195
    },
@@ -26,17 +26,17 @@
   },
   "highlander_idle_00_team": {
    "frame": {
-    "x": 1295,
-    "y": 694,
-    "w": 97,
+    "x": 1994,
+    "y": 173,
+    "w": 98,
     "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
+    "x": 268,
     "y": 261,
-    "w": 97,
+    "w": 98,
     "h": 165
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "highlander_idle_01": {
    "frame": {
-    "x": 1446,
-    "y": 291,
+    "x": 1096,
+    "y": 2,
     "w": 123,
     "h": 197
    },
@@ -74,17 +74,17 @@
   },
   "highlander_idle_01_team": {
    "frame": {
-    "x": 1095,
-    "y": 694,
-    "w": 96,
+    "x": 1879,
+    "y": 528,
+    "w": 97,
     "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 271,
+    "x": 270,
     "y": 258,
-    "w": 96,
+    "w": 97,
     "h": 167
    },
    "sourceSize": {
@@ -98,8 +98,8 @@
   },
   "highlander_idle_02": {
    "frame": {
-    "x": 1882,
-    "y": 2,
+    "x": 595,
+    "y": 427,
     "w": 112,
     "h": 207
    },
@@ -122,17 +122,17 @@
   },
   "highlander_idle_02_team": {
    "frame": {
-    "x": 100,
-    "y": 694,
-    "w": 94,
+    "x": 1707,
+    "y": 358,
+    "w": 95,
     "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 272,
+    "x": 270,
     "y": 251,
-    "w": 94,
+    "w": 95,
     "h": 171
    },
    "sourceSize": {
@@ -146,8 +146,8 @@
   },
   "highlander_idle_03": {
    "frame": {
-    "x": 1378,
-    "y": 2,
+    "x": 374,
+    "y": 221,
     "w": 116,
     "h": 212
    },
@@ -170,17 +170,17 @@
   },
   "highlander_idle_03_team": {
    "frame": {
-    "x": 1767,
-    "y": 501,
-    "w": 94,
+    "x": 1580,
+    "y": 573,
+    "w": 96,
     "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 272,
+    "x": 270,
     "y": 248,
-    "w": 94,
+    "w": 96,
     "h": 173
    },
    "sourceSize": {
@@ -194,8 +194,8 @@
   },
   "highlander_idle_04": {
    "frame": {
-    "x": 1634,
-    "y": 2,
+    "x": 494,
+    "y": 215,
     "w": 123,
     "h": 208
    },
@@ -218,17 +218,17 @@
   },
   "highlander_idle_04_team": {
    "frame": {
-    "x": 198,
-    "y": 694,
-    "w": 93,
+    "x": 1680,
+    "y": 550,
+    "w": 96,
     "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 271,
+    "x": 268,
     "y": 251,
-    "w": 93,
+    "w": 96,
     "h": 171
    },
    "sourceSize": {
@@ -242,8 +242,8 @@
   },
   "highlander_idle_05": {
    "frame": {
-    "x": 883,
-    "y": 291,
+    "x": 921,
+    "y": 209,
     "w": 128,
     "h": 200
    },
@@ -266,17 +266,17 @@
   },
   "highlander_idle_05_team": {
    "frame": {
-    "x": 587,
-    "y": 694,
-    "w": 95,
+    "x": 1837,
+    "y": 2,
+    "w": 98,
     "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
+    "x": 267,
     "y": 257,
-    "w": 95,
+    "w": 98,
     "h": 168
    },
    "sourceSize": {
@@ -290,8 +290,8 @@
   },
   "highlander_walk_00": {
    "frame": {
-    "x": 1288,
-    "y": 291,
+    "x": 1053,
+    "y": 206,
     "w": 154,
     "h": 198
    },
@@ -314,17 +314,17 @@
   },
   "highlander_walk_00_team": {
    "frame": {
-    "x": 1195,
-    "y": 694,
-    "w": 96,
+    "x": 1902,
+    "y": 346,
+    "w": 97,
     "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
+    "x": 269,
     "y": 266,
-    "w": 96,
+    "w": 97,
     "h": 166
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "highlander_walk_01": {
    "frame": {
-    "x": 154,
-    "y": 501,
+    "x": 1280,
+    "y": 402,
     "w": 140,
     "h": 188
    },
@@ -362,18 +362,18 @@
   },
   "highlander_walk_01_team": {
    "frame": {
-    "x": 197,
-    "y": 870,
-    "w": 87,
-    "h": 153
+    "x": 2201,
+    "y": 167,
+    "w": 92,
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 272,
+    "x": 267,
     "y": 272,
-    "w": 87,
-    "h": 153
+    "w": 92,
+    "h": 158
    },
    "sourceSize": {
     "w": 616,
@@ -386,8 +386,8 @@
   },
   "highlander_walk_02": {
    "frame": {
-    "x": 1573,
-    "y": 291,
+    "x": 1141,
+    "y": 408,
     "w": 135,
     "h": 196
    },
@@ -410,17 +410,17 @@
   },
   "highlander_walk_02_team": {
    "frame": {
-    "x": 878,
-    "y": 694,
-    "w": 86,
+    "x": 1806,
+    "y": 356,
+    "w": 92,
     "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 273,
-    "y": 256,
-    "w": 86,
+    "x": 267,
+    "y": 257,
+    "w": 92,
     "h": 168
    },
    "sourceSize": {
@@ -434,8 +434,8 @@
   },
   "highlander_walk_03": {
    "frame": {
-    "x": 426,
-    "y": 291,
+    "x": 772,
+    "y": 211,
     "w": 145,
     "h": 204
    },
@@ -458,18 +458,18 @@
   },
   "highlander_walk_03_team": {
    "frame": {
-    "x": 783,
-    "y": 694,
-    "w": 91,
-    "h": 168
+    "x": 1804,
+    "y": 182,
+    "w": 93,
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 271,
+    "x": 269,
     "y": 247,
-    "w": 91,
-    "h": 168
+    "w": 93,
+    "h": 170
    },
    "sourceSize": {
     "w": 616,
@@ -482,8 +482,8 @@
   },
   "highlander_walk_04": {
    "frame": {
-    "x": 1845,
-    "y": 291,
+    "x": 1141,
+    "y": 608,
     "w": 154,
     "h": 192
    },
@@ -506,18 +506,18 @@
   },
   "highlander_walk_04_team": {
    "frame": {
-    "x": 2,
-    "y": 870,
-    "w": 96,
-    "h": 156
+    "x": 2003,
+    "y": 342,
+    "w": 94,
+    "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
+    "x": 272,
     "y": 266,
-    "w": 96,
-    "h": 156
+    "w": 94,
+    "h": 162
    },
    "sourceSize": {
     "w": 616,
@@ -530,8 +530,8 @@
   },
   "highlander_walk_05": {
    "frame": {
-    "x": 1036,
-    "y": 501,
+    "x": 1549,
+    "y": 190,
     "w": 149,
     "h": 180
    },
@@ -554,18 +554,18 @@
   },
   "highlander_walk_05_team": {
    "frame": {
-    "x": 102,
-    "y": 870,
-    "w": 91,
-    "h": 155
+    "x": 2359,
+    "y": 2,
+    "w": 94,
+    "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 274,
+    "x": 271,
     "y": 271,
-    "w": 91,
-    "h": 155
+    "w": 94,
+    "h": 157
    },
    "sourceSize": {
     "w": 616,
@@ -578,8 +578,8 @@
   },
   "highlander_walk_06": {
    "frame": {
-    "x": 2,
-    "y": 501,
+    "x": 1223,
+    "y": 2,
     "w": 148,
     "h": 189
    },
@@ -602,18 +602,18 @@
   },
   "highlander_walk_06_team": {
    "frame": {
-    "x": 1797,
-    "y": 694,
-    "w": 89,
-    "h": 158
+    "x": 595,
+    "y": 638,
+    "w": 96,
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 274,
+    "x": 267,
     "y": 257,
-    "w": 89,
-    "h": 158
+    "w": 96,
+    "h": 164
    },
    "sourceSize": {
     "w": 616,
@@ -626,8 +626,8 @@
   },
   "highlander_walk_07": {
    "frame": {
-    "x": 725,
-    "y": 291,
+    "x": 840,
+    "y": 419,
     "w": 154,
     "h": 201
    },
@@ -650,17 +650,17 @@
   },
   "highlander_walk_07_team": {
    "frame": {
-    "x": 2,
-    "y": 694,
-    "w": 94,
+    "x": 1702,
+    "y": 182,
+    "w": 98,
     "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 272,
+    "x": 268,
     "y": 246,
-    "w": 94,
+    "w": 98,
     "h": 172
    },
    "sourceSize": {
@@ -674,8 +674,8 @@
   },
   "highlander_attack_00": {
    "frame": {
-    "x": 1015,
-    "y": 291,
+    "x": 966,
+    "y": 2,
     "w": 126,
     "h": 200
    },
@@ -698,17 +698,17 @@
   },
   "highlander_attack_00_team": {
    "frame": {
-    "x": 397,
-    "y": 694,
-    "w": 96,
+    "x": 711,
+    "y": 633,
+    "w": 100,
     "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 271,
+    "x": 266,
     "y": 255,
-    "w": 96,
+    "w": 100,
     "h": 169
    },
    "sourceSize": {
@@ -722,8 +722,8 @@
   },
   "highlander_attack_01": {
    "frame": {
-    "x": 826,
-    "y": 2,
+    "x": 237,
+    "y": 533,
     "w": 116,
     "h": 222
    },
@@ -746,17 +746,17 @@
   },
   "highlander_attack_01_team": {
    "frame": {
-    "x": 1592,
-    "y": 694,
-    "w": 87,
+    "x": 2159,
+    "y": 2,
+    "w": 85,
     "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 267,
+    "x": 269,
     "y": 264,
-    "w": 87,
+    "w": 85,
     "h": 161
    },
    "sourceSize": {
@@ -770,8 +770,8 @@
   },
   "highlander_attack_02": {
    "frame": {
-    "x": 482,
-    "y": 501,
+    "x": 1299,
+    "y": 594,
     "w": 181,
     "h": 183
    },
@@ -794,18 +794,18 @@
   },
   "highlander_attack_02_team": {
    "frame": {
-    "x": 288,
-    "y": 870,
-    "w": 91,
-    "h": 152
+    "x": 2457,
+    "y": 2,
+    "w": 90,
+    "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 264,
+    "x": 265,
     "y": 273,
-    "w": 91,
-    "h": 152
+    "w": 90,
+    "h": 157
    },
    "sourceSize": {
     "w": 616,
@@ -818,8 +818,8 @@
   },
   "highlander_attack_03": {
    "frame": {
-    "x": 1500,
-    "y": 501,
+    "x": 1666,
+    "y": 2,
     "w": 167,
     "h": 176
    },
@@ -842,18 +842,18 @@
   },
   "highlander_attack_03_team": {
    "frame": {
-    "x": 383,
-    "y": 870,
-    "w": 91,
-    "h": 147
+    "x": 2080,
+    "y": 508,
+    "w": 98,
+    "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 266,
-    "y": 278,
-    "w": 91,
-    "h": 147
+    "x": 258,
+    "y": 279,
+    "w": 98,
+    "h": 160
    },
    "sourceSize": {
     "w": 616,
@@ -866,9 +866,9 @@
   },
   "highlander_attack_04": {
    "frame": {
-    "x": 1185,
+    "x": 219,
     "y": 2,
-    "w": 189,
+    "w": 192,
     "h": 215
    },
    "rotated": false,
@@ -876,7 +876,7 @@
    "spriteSourceSize": {
     "x": 166,
     "y": 234,
-    "w": 189,
+    "w": 192,
     "h": 215
    },
    "sourceSize": {
@@ -890,18 +890,18 @@
   },
   "highlander_attack_04_team": {
    "frame": {
-    "x": 1493,
-    "y": 694,
-    "w": 95,
-    "h": 163
+    "x": 2066,
+    "y": 2,
+    "w": 89,
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 263,
+    "x": 264,
     "y": 261,
-    "w": 95,
-    "h": 163
+    "w": 89,
+    "h": 165
    },
    "sourceSize": {
     "w": 616,
@@ -914,8 +914,8 @@
   },
   "highlander_attack_05": {
    "frame": {
-    "x": 219,
-    "y": 2,
+    "x": 2,
+    "y": 291,
     "w": 207,
     "h": 272
    },
@@ -938,18 +938,18 @@
   },
   "highlander_attack_05_team": {
    "frame": {
-    "x": 497,
-    "y": 694,
-    "w": 86,
-    "h": 169
+    "x": 1484,
+    "y": 573,
+    "w": 92,
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 288,
+    "x": 282,
     "y": 255,
-    "w": 86,
-    "h": 169
+    "w": 92,
+    "h": 174
    },
    "sourceSize": {
     "w": 616,
@@ -986,18 +986,18 @@
   },
   "highlander_attack_06_team": {
    "frame": {
-    "x": 1103,
-    "y": 870,
-    "w": 114,
-    "h": 131
+    "x": 2434,
+    "y": 315,
+    "w": 108,
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 286,
+    "x": 291,
     "y": 300,
-    "w": 114,
-    "h": 131
+    "w": 108,
+    "h": 147
    },
    "sourceSize": {
     "w": 616,
@@ -1010,8 +1010,8 @@
   },
   "highlander_attack_07": {
    "frame": {
-    "x": 575,
-    "y": 291,
+    "x": 816,
+    "y": 2,
     "w": 146,
     "h": 203
    },
@@ -1034,18 +1034,18 @@
   },
   "highlander_attack_07_team": {
    "frame": {
-    "x": 716,
-    "y": 870,
-    "w": 113,
-    "h": 140
+    "x": 2248,
+    "y": 2,
+    "w": 107,
+    "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 287,
+    "x": 293,
     "y": 289,
-    "w": 113,
-    "h": 140
+    "w": 107,
+    "h": 157
    },
    "sourceSize": {
     "w": 616,
@@ -1058,8 +1058,8 @@
   },
   "highlander_attack_08": {
    "frame": {
-    "x": 298,
-    "y": 501,
+    "x": 1375,
+    "y": 2,
     "w": 180,
     "h": 184
    },
@@ -1082,18 +1082,18 @@
   },
   "highlander_attack_08_team": {
    "frame": {
-    "x": 1890,
-    "y": 694,
-    "w": 105,
-    "h": 157
+    "x": 2096,
+    "y": 171,
+    "w": 101,
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 281,
+    "x": 285,
     "y": 269,
-    "w": 105,
-    "h": 157
+    "w": 101,
+    "h": 161
    },
    "sourceSize": {
     "w": 616,
@@ -1106,8 +1106,8 @@
   },
   "highlander_attack_09": {
    "frame": {
-    "x": 1145,
-    "y": 291,
+    "x": 998,
+    "y": 413,
     "w": 139,
     "h": 199
    },
@@ -1130,17 +1130,17 @@
   },
   "highlander_attack_09_team": {
    "frame": {
-    "x": 686,
-    "y": 694,
-    "w": 93,
+    "x": 1901,
+    "y": 174,
+    "w": 89,
     "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
+    "x": 274,
     "y": 256,
-    "w": 93,
+    "w": 89,
     "h": 168
    },
    "sourceSize": {
@@ -1154,8 +1154,8 @@
   },
   "highlander_hit_00": {
    "frame": {
-    "x": 667,
-    "y": 501,
+    "x": 1424,
+    "y": 386,
     "w": 160,
     "h": 183
    },
@@ -1178,8 +1178,8 @@
   },
   "highlander_hit_00_team": {
    "frame": {
-    "x": 1683,
-    "y": 694,
+    "x": 2101,
+    "y": 336,
     "w": 110,
     "h": 159
    },
@@ -1202,8 +1202,8 @@
   },
   "highlander_hit_01": {
    "frame": {
-    "x": 2,
-    "y": 291,
+    "x": 621,
+    "y": 214,
     "w": 147,
     "h": 206
    },
@@ -1226,9 +1226,9 @@
   },
   "highlander_hit_01_team": {
    "frame": {
-    "x": 1189,
-    "y": 501,
-    "w": 110,
+    "x": 1559,
+    "y": 2,
+    "w": 103,
     "h": 180
    },
    "rotated": false,
@@ -1236,7 +1236,7 @@
    "spriteSourceSize": {
     "x": 229,
     "y": 240,
-    "w": 110,
+    "w": 103,
     "h": 180
    },
    "sourceSize": {
@@ -1250,8 +1250,8 @@
   },
   "highlander_hit_02": {
    "frame": {
-    "x": 153,
-    "y": 291,
+    "x": 672,
+    "y": 2,
     "w": 140,
     "h": 205
    },
@@ -1274,8 +1274,8 @@
   },
   "highlander_hit_02_team": {
    "frame": {
-    "x": 1671,
-    "y": 501,
+    "x": 1037,
+    "y": 616,
     "w": 92,
     "h": 175
    },
@@ -1298,8 +1298,8 @@
   },
   "highlander_hit_03": {
    "frame": {
-    "x": 297,
-    "y": 291,
+    "x": 711,
+    "y": 424,
     "w": 125,
     "h": 205
    },
@@ -1322,17 +1322,17 @@
   },
   "highlander_hit_03_team": {
    "frame": {
-    "x": 1396,
-    "y": 694,
-    "w": 93,
+    "x": 1980,
+    "y": 516,
+    "w": 96,
     "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
+    "x": 267,
     "y": 260,
-    "w": 93,
+    "w": 96,
     "h": 164
    },
    "sourceSize": {
@@ -1346,7 +1346,7 @@
   },
   "highlander_hit_04": {
    "frame": {
-    "x": 1761,
+    "x": 551,
     "y": 2,
     "w": 117,
     "h": 208
@@ -1370,18 +1370,18 @@
   },
   "highlander_hit_04_team": {
    "frame": {
-    "x": 295,
-    "y": 694,
-    "w": 98,
-    "h": 169
+    "x": 1780,
+    "y": 533,
+    "w": 95,
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 268,
-    "y": 255,
-    "w": 98,
-    "h": 169
+    "x": 271,
+    "y": 256,
+    "w": 95,
+    "h": 168
    },
    "sourceSize": {
     "w": 616,
@@ -1394,8 +1394,8 @@
   },
   "highlander_die_00": {
    "frame": {
-    "x": 968,
-    "y": 694,
+    "x": 1939,
+    "y": 2,
     "w": 123,
     "h": 167
    },
@@ -1418,18 +1418,18 @@
   },
   "highlander_die_00_team": {
    "frame": {
-    "x": 615,
-    "y": 870,
-    "w": 97,
-    "h": 145
+    "x": 2434,
+    "y": 163,
+    "w": 92,
+    "h": 148
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 256,
     "y": 267,
-    "w": 97,
-    "h": 145
+    "w": 92,
+    "h": 148
    },
    "sourceSize": {
     "w": 616,
@@ -1442,8 +1442,8 @@
   },
   "highlander_die_01": {
    "frame": {
-    "x": 1303,
-    "y": 501,
+    "x": 840,
+    "y": 624,
     "w": 193,
     "h": 178
    },
@@ -1466,10 +1466,10 @@
   },
   "highlander_die_01_team": {
    "frame": {
-    "x": 478,
-    "y": 870,
+    "x": 2297,
+    "y": 163,
     "w": 133,
-    "h": 145
+    "h": 153
    },
    "rotated": false,
    "trimmed": true,
@@ -1477,7 +1477,7 @@
     "x": 222,
     "y": 242,
     "w": 133,
-    "h": 145
+    "h": 153
    },
    "sourceSize": {
     "w": 616,
@@ -1490,7 +1490,7 @@
   },
   "highlander_die_02": {
    "frame": {
-    "x": 1498,
+    "x": 415,
     "y": 2,
     "w": 132,
     "h": 209
@@ -1514,17 +1514,17 @@
   },
   "highlander_die_02_team": {
    "frame": {
-    "x": 1865,
-    "y": 501,
-    "w": 100,
+    "x": 1588,
+    "y": 374,
+    "w": 115,
     "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 255,
+    "x": 240,
     "y": 230,
-    "w": 100,
+    "w": 115,
     "h": 172
    },
    "sourceSize": {
@@ -1538,10 +1538,10 @@
   },
   "highlander_die_03": {
    "frame": {
-    "x": 430,
-    "y": 2,
+    "x": 2,
+    "y": 567,
     "w": 231,
-    "h": 228
+    "h": 225
    },
    "rotated": false,
    "trimmed": true,
@@ -1549,7 +1549,7 @@
     "x": 173,
     "y": 224,
     "w": 231,
-    "h": 228
+    "h": 225
    },
    "sourceSize": {
     "w": 616,
@@ -1562,10 +1562,10 @@
   },
   "highlander_die_03_team": {
    "frame": {
-    "x": 665,
-    "y": 2,
+    "x": 213,
+    "y": 291,
     "w": 157,
-    "h": 228
+    "h": 238
    },
    "rotated": false,
    "trimmed": true,
@@ -1573,7 +1573,7 @@
     "x": 238,
     "y": 224,
     "w": 157,
-    "h": 228
+    "h": 238
    },
    "sourceSize": {
     "w": 616,
@@ -1586,9 +1586,9 @@
   },
   "highlander_die_04": {
    "frame": {
-    "x": 946,
-    "y": 2,
-    "w": 235,
+    "x": 357,
+    "y": 533,
+    "w": 234,
     "h": 216
    },
    "rotated": false,
@@ -1596,7 +1596,7 @@
    "spriteSourceSize": {
     "x": 168,
     "y": 242,
-    "w": 235,
+    "w": 234,
     "h": 216
    },
    "sourceSize": {
@@ -1610,10 +1610,10 @@
   },
   "highlander_die_04_team": {
    "frame": {
-    "x": 831,
-    "y": 501,
+    "x": 1344,
+    "y": 195,
     "w": 201,
-    "h": 181
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 209,
     "y": 254,
     "w": 201,
-    "h": 181
+    "h": 187
    },
    "sourceSize": {
     "w": 616,
@@ -1634,10 +1634,10 @@
   },
   "highlander_die_05": {
    "frame": {
-    "x": 833,
-    "y": 870,
+    "x": 2080,
+    "y": 672,
     "w": 266,
-    "h": 134
+    "h": 129
    },
    "rotated": false,
    "trimmed": true,
@@ -1645,7 +1645,7 @@
     "x": 154,
     "y": 313,
     "w": 266,
-    "h": 134
+    "h": 129
    },
    "sourceSize": {
     "w": 616,
@@ -1658,10 +1658,10 @@
   },
   "highlander_die_05_team": {
    "frame": {
-    "x": 1221,
-    "y": 870,
+    "x": 2215,
+    "y": 329,
     "w": 192,
-    "h": 129
+    "h": 135
    },
    "rotated": false,
    "trimmed": true,
@@ -1669,7 +1669,7 @@
     "x": 228,
     "y": 318,
     "w": 192,
-    "h": 129
+    "h": 135
    },
    "sourceSize": {
     "w": 616,
@@ -1682,8 +1682,8 @@
   },
   "highlander_die_06": {
    "frame": {
-    "x": 1417,
-    "y": 870,
+    "x": 2182,
+    "y": 499,
     "w": 263,
     "h": 114
    },
@@ -1706,10 +1706,10 @@
   },
   "highlander_die_06_team": {
    "frame": {
-    "x": 1684,
-    "y": 870,
+    "x": 374,
+    "y": 437,
     "w": 194,
-    "h": 95
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
@@ -1717,7 +1717,7 @@
     "x": 234,
     "y": 352,
     "w": 194,
-    "h": 95
+    "h": 92
    },
    "sourceSize": {
     "w": 616,
@@ -1837,8 +1837,8 @@
   "image": "highlander.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2048,
-   "h": 1028
+   "w": 2560,
+   "h": 804
   },
   "scale": "3",
   "ageborn": {

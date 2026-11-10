@@ -3,7 +3,7 @@
   "drummer_boy_idle_00": {
    "frame": {
     "x": 562,
-    "y": 215,
+    "y": 217,
     "w": 94,
     "h": 189
    },
@@ -26,9 +26,9 @@
   },
   "drummer_boy_idle_00_team": {
    "frame": {
-    "x": 692,
-    "y": 588,
-    "w": 81,
+    "x": 597,
+    "y": 590,
+    "w": 80,
     "h": 165
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 224,
     "y": 218,
-    "w": 81,
+    "w": 80,
     "h": 165
    },
    "sourceSize": {
@@ -50,8 +50,8 @@
   },
   "drummer_boy_idle_01": {
    "frame": {
-    "x": 121,
-    "y": 215,
+    "x": 231,
+    "y": 217,
     "w": 94,
     "h": 190
    },
@@ -74,8 +74,8 @@
   },
   "drummer_boy_idle_01_team": {
    "frame": {
-    "x": 168,
-    "y": 588,
+    "x": 172,
+    "y": 590,
     "w": 80,
     "h": 167
    },
@@ -98,7 +98,7 @@
   },
   "drummer_boy_idle_02": {
    "frame": {
-    "x": 781,
+    "x": 780,
     "y": 2,
     "w": 91,
     "h": 196
@@ -122,8 +122,8 @@
   },
   "drummer_boy_idle_02_team": {
    "frame": {
-    "x": 1051,
-    "y": 409,
+    "x": 945,
+    "y": 411,
     "w": 81,
     "h": 172
    },
@@ -146,7 +146,7 @@
   },
   "drummer_boy_idle_03": {
    "frame": {
-    "x": 686,
+    "x": 685,
     "y": 2,
     "w": 91,
     "h": 199
@@ -170,8 +170,8 @@
   },
   "drummer_boy_idle_03_team": {
    "frame": {
-    "x": 353,
-    "y": 409,
+    "x": 251,
+    "y": 411,
     "w": 80,
     "h": 174
    },
@@ -194,7 +194,7 @@
   },
   "drummer_boy_idle_04": {
    "frame": {
-    "x": 876,
+    "x": 875,
     "y": 2,
     "w": 91,
     "h": 196
@@ -218,8 +218,8 @@
   },
   "drummer_boy_idle_04_team": {
    "frame": {
-    "x": 1136,
-    "y": 409,
+    "x": 1030,
+    "y": 411,
     "w": 81,
     "h": 172
    },
@@ -266,9 +266,9 @@
   },
   "drummer_boy_idle_05_team": {
    "frame": {
-    "x": 2,
-    "y": 588,
-    "w": 79,
+    "x": 1833,
+    "y": 411,
+    "w": 80,
     "h": 169
    },
    "rotated": false,
@@ -276,7 +276,7 @@
    "spriteSourceSize": {
     "x": 224,
     "y": 213,
-    "w": 79,
+    "w": 80,
     "h": 169
    },
    "sourceSize": {
@@ -291,7 +291,7 @@
   "drummer_boy_walk_00": {
    "frame": {
     "x": 774,
-    "y": 215,
+    "y": 217,
     "w": 124,
     "h": 184
    },
@@ -314,9 +314,9 @@
   },
   "drummer_boy_walk_00_team": {
    "frame": {
-    "x": 528,
-    "y": 588,
-    "w": 80,
+    "x": 430,
+    "y": 590,
+    "w": 81,
     "h": 166
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 224,
     "y": 220,
-    "w": 80,
+    "w": 81,
     "h": 166
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "drummer_boy_walk_01": {
    "frame": {
-    "x": 1551,
-    "y": 215,
+    "x": 1544,
+    "y": 217,
     "w": 119,
     "h": 178
    },
@@ -362,9 +362,9 @@
   },
   "drummer_boy_walk_01_team": {
    "frame": {
-    "x": 623,
-    "y": 409,
-    "w": 80,
+    "x": 603,
+    "y": 411,
+    "w": 79,
     "h": 173
    },
    "rotated": false,
@@ -372,7 +372,7 @@
    "spriteSourceSize": {
     "x": 225,
     "y": 225,
-    "w": 80,
+    "w": 79,
     "h": 173
    },
    "sourceSize": {
@@ -387,7 +387,7 @@
   "drummer_boy_walk_02": {
    "frame": {
     "x": 2,
-    "y": 215,
+    "y": 217,
     "w": 115,
     "h": 190
    },
@@ -410,9 +410,9 @@
   },
   "drummer_boy_walk_02_team": {
    "frame": {
-    "x": 437,
-    "y": 409,
-    "w": 79,
+    "x": 419,
+    "y": 411,
+    "w": 78,
     "h": 174
    },
    "rotated": false,
@@ -420,7 +420,7 @@
    "spriteSourceSize": {
     "x": 227,
     "y": 211,
-    "w": 79,
+    "w": 78,
     "h": 174
    },
    "sourceSize": {
@@ -434,7 +434,7 @@
   },
   "drummer_boy_walk_03": {
    "frame": {
-    "x": 971,
+    "x": 970,
     "y": 2,
     "w": 118,
     "h": 194
@@ -458,8 +458,8 @@
   },
   "drummer_boy_walk_03_team": {
    "frame": {
-    "x": 252,
-    "y": 588,
+    "x": 256,
+    "y": 590,
     "w": 80,
     "h": 167
    },
@@ -482,8 +482,8 @@
   },
   "drummer_boy_walk_04": {
    "frame": {
-    "x": 1422,
-    "y": 215,
+    "x": 1415,
+    "y": 217,
     "w": 125,
     "h": 178
    },
@@ -506,9 +506,9 @@
   },
   "drummer_boy_walk_04_team": {
    "frame": {
-    "x": 612,
-    "y": 588,
-    "w": 76,
+    "x": 515,
+    "y": 590,
+    "w": 78,
     "h": 166
    },
    "rotated": false,
@@ -516,7 +516,7 @@
    "spriteSourceSize": {
     "x": 226,
     "y": 220,
-    "w": 76,
+    "w": 78,
     "h": 166
    },
    "sourceSize": {
@@ -530,8 +530,8 @@
   },
   "drummer_boy_walk_05": {
    "frame": {
-    "x": 1553,
-    "y": 409,
+    "x": 1533,
+    "y": 411,
     "w": 127,
     "h": 170
    },
@@ -554,8 +554,8 @@
   },
   "drummer_boy_walk_05_team": {
    "frame": {
-    "x": 707,
-    "y": 409,
+    "x": 686,
+    "y": 411,
     "w": 79,
     "h": 173
    },
@@ -578,8 +578,8 @@
   },
   "drummer_boy_walk_06": {
    "frame": {
-    "x": 1032,
-    "y": 215,
+    "x": 1177,
+    "y": 217,
     "w": 118,
     "h": 182
    },
@@ -602,10 +602,10 @@
   },
   "drummer_boy_walk_06_team": {
    "frame": {
-    "x": 2,
-    "y": 409,
+    "x": 335,
+    "y": 411,
     "w": 80,
-    "h": 175
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
@@ -613,7 +613,7 @@
     "x": 227,
     "y": 212,
     "w": 80,
-    "h": 175
+    "h": 174
    },
    "sourceSize": {
     "w": 514,
@@ -650,8 +650,8 @@
   },
   "drummer_boy_walk_07_team": {
    "frame": {
-    "x": 85,
-    "y": 588,
+    "x": 2,
+    "y": 590,
     "w": 79,
     "h": 169
    },
@@ -698,9 +698,9 @@
   },
   "drummer_boy_attack_00_team": {
    "frame": {
-    "x": 1304,
-    "y": 409,
-    "w": 79,
+    "x": 1287,
+    "y": 411,
+    "w": 78,
     "h": 171
    },
    "rotated": false,
@@ -708,7 +708,7 @@
    "spriteSourceSize": {
     "x": 225,
     "y": 211,
-    "w": 79,
+    "w": 78,
     "h": 171
    },
    "sourceSize": {
@@ -722,8 +722,8 @@
   },
   "drummer_boy_attack_01": {
    "frame": {
-    "x": 341,
-    "y": 215,
+    "x": 451,
+    "y": 217,
     "w": 107,
     "h": 189
    },
@@ -746,8 +746,8 @@
   },
   "drummer_boy_attack_01_team": {
    "frame": {
-    "x": 1941,
-    "y": 409,
+    "x": 1917,
+    "y": 411,
     "w": 80,
     "h": 169
    },
@@ -770,8 +770,8 @@
   },
   "drummer_boy_attack_02": {
    "frame": {
-    "x": 219,
-    "y": 215,
+    "x": 329,
+    "y": 217,
     "w": 118,
     "h": 189
    },
@@ -794,8 +794,8 @@
   },
   "drummer_boy_attack_02_team": {
    "frame": {
-    "x": 1684,
-    "y": 409,
+    "x": 1664,
+    "y": 411,
     "w": 79,
     "h": 170
    },
@@ -818,18 +818,18 @@
   },
   "drummer_boy_attack_03": {
    "frame": {
-    "x": 590,
+    "x": 589,
     "y": 2,
     "w": 92,
-    "h": 199
+    "h": 201
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 209,
-    "y": 212,
+    "y": 210,
     "w": 92,
-    "h": 199
+    "h": 201
    },
    "sourceSize": {
     "w": 514,
@@ -842,10 +842,10 @@
   },
   "drummer_boy_attack_03_team": {
    "frame": {
-    "x": 963,
-    "y": 409,
+    "x": 1199,
+    "y": 411,
     "w": 84,
-    "h": 172
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
@@ -853,7 +853,7 @@
     "x": 215,
     "y": 203,
     "w": 84,
-    "h": 172
+    "h": 171
    },
    "sourceSize": {
     "w": 514,
@@ -866,18 +866,18 @@
   },
   "drummer_boy_attack_04": {
    "frame": {
-    "x": 493,
+    "x": 381,
     "y": 2,
     "w": 93,
-    "h": 200
+    "h": 202
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 211,
+    "y": 209,
     "w": 93,
-    "h": 200
+    "h": 202
    },
    "sourceSize": {
     "w": 514,
@@ -890,9 +890,9 @@
   },
   "drummer_boy_attack_04_team": {
    "frame": {
-    "x": 872,
-    "y": 409,
-    "w": 87,
+    "x": 852,
+    "y": 411,
+    "w": 89,
     "h": 172
    },
    "rotated": false,
@@ -900,7 +900,7 @@
    "spriteSourceSize": {
     "x": 210,
     "y": 201,
-    "w": 87,
+    "w": 89,
     "h": 172
    },
    "sourceSize": {
@@ -914,18 +914,18 @@
   },
   "drummer_boy_attack_05": {
    "frame": {
-    "x": 452,
-    "y": 215,
+    "x": 121,
+    "y": 217,
     "w": 106,
-    "h": 189
+    "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 222,
+    "y": 221,
     "w": 106,
-    "h": 189
+    "h": 190
    },
    "sourceSize": {
     "w": 514,
@@ -938,17 +938,17 @@
   },
   "drummer_boy_attack_05_team": {
    "frame": {
-    "x": 1767,
-    "y": 409,
-    "w": 83,
+    "x": 1747,
+    "y": 411,
+    "w": 82,
     "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 224,
+    "x": 225,
     "y": 214,
-    "w": 83,
+    "w": 82,
     "h": 169
    },
    "sourceSize": {
@@ -962,9 +962,9 @@
   },
   "drummer_boy_attack_06": {
    "frame": {
-    "x": 226,
-    "y": 409,
-    "w": 123,
+    "x": 128,
+    "y": 411,
+    "w": 119,
     "h": 174
    },
    "rotated": false,
@@ -972,7 +972,7 @@
    "spriteSourceSize": {
     "x": 228,
     "y": 236,
-    "w": 123,
+    "w": 119,
     "h": 174
    },
    "sourceSize": {
@@ -986,8 +986,8 @@
   },
   "drummer_boy_attack_06_team": {
    "frame": {
-    "x": 777,
-    "y": 588,
+    "x": 783,
+    "y": 590,
     "w": 90,
     "h": 164
    },
@@ -1011,8 +1011,8 @@
   "drummer_boy_attack_07": {
    "frame": {
     "x": 902,
-    "y": 215,
-    "w": 126,
+    "y": 217,
+    "w": 119,
     "h": 183
    },
    "rotated": false,
@@ -1020,7 +1020,7 @@
    "spriteSourceSize": {
     "x": 229,
     "y": 227,
-    "w": 126,
+    "w": 119,
     "h": 183
    },
    "sourceSize": {
@@ -1034,10 +1034,10 @@
   },
   "drummer_boy_attack_07_team": {
    "frame": {
-    "x": 1854,
-    "y": 409,
+    "x": 85,
+    "y": 590,
     "w": 83,
-    "h": 169
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
@@ -1045,7 +1045,7 @@
     "x": 232,
     "y": 221,
     "w": 83,
-    "h": 169
+    "h": 168
    },
    "sourceSize": {
     "w": 514,
@@ -1082,9 +1082,9 @@
   },
   "drummer_boy_attack_08_team": {
    "frame": {
-    "x": 790,
-    "y": 409,
-    "w": 78,
+    "x": 769,
+    "y": 411,
+    "w": 79,
     "h": 173
    },
    "rotated": false,
@@ -1092,7 +1092,7 @@
    "spriteSourceSize": {
     "x": 228,
     "y": 212,
-    "w": 78,
+    "w": 79,
     "h": 173
    },
    "sourceSize": {
@@ -1106,7 +1106,7 @@
   },
   "drummer_boy_attack_09": {
    "frame": {
-    "x": 1221,
+    "x": 1339,
     "y": 2,
     "w": 114,
     "h": 193
@@ -1130,9 +1130,9 @@
   },
   "drummer_boy_attack_09_team": {
    "frame": {
-    "x": 1387,
-    "y": 409,
-    "w": 79,
+    "x": 1369,
+    "y": 411,
+    "w": 78,
     "h": 171
    },
    "rotated": false,
@@ -1140,7 +1140,7 @@
    "spriteSourceSize": {
     "x": 225,
     "y": 211,
-    "w": 79,
+    "w": 78,
     "h": 171
    },
    "sourceSize": {
@@ -1178,9 +1178,9 @@
   },
   "drummer_boy_attack_10_team": {
    "frame": {
-    "x": 1470,
-    "y": 409,
-    "w": 79,
+    "x": 1451,
+    "y": 411,
+    "w": 78,
     "h": 171
    },
    "rotated": false,
@@ -1188,7 +1188,7 @@
    "spriteSourceSize": {
     "x": 225,
     "y": 211,
-    "w": 79,
+    "w": 78,
     "h": 171
    },
    "sourceSize": {
@@ -1202,18 +1202,18 @@
   },
   "drummer_boy_hit_00": {
    "frame": {
-    "x": 1154,
-    "y": 215,
+    "x": 1025,
+    "y": 217,
     "w": 148,
-    "h": 181
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 186,
-    "y": 229,
+    "y": 228,
     "w": 148,
-    "h": 181
+    "h": 182
    },
    "sourceSize": {
     "w": 514,
@@ -1226,17 +1226,17 @@
   },
   "drummer_boy_hit_00_team": {
    "frame": {
-    "x": 968,
-    "y": 588,
-    "w": 107,
+    "x": 974,
+    "y": 590,
+    "w": 109,
     "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 194,
+    "x": 193,
     "y": 220,
-    "w": 107,
+    "w": 109,
     "h": 160
    },
    "sourceSize": {
@@ -1250,18 +1250,18 @@
   },
   "drummer_boy_hit_01": {
    "frame": {
-    "x": 114,
+    "x": 113,
     "y": 2,
     "w": 138,
-    "h": 207
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 182,
-    "y": 202,
+    "y": 200,
     "w": 138,
-    "h": 207
+    "h": 209
    },
    "sourceSize": {
     "w": 514,
@@ -1274,18 +1274,18 @@
   },
   "drummer_boy_hit_01_team": {
    "frame": {
-    "x": 1674,
-    "y": 215,
+    "x": 1667,
+    "y": 217,
     "w": 105,
-    "h": 176
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 187,
+    "x": 188,
     "y": 193,
     "w": 105,
-    "h": 176
+    "h": 177
    },
    "sourceSize": {
     "w": 514,
@@ -1298,18 +1298,18 @@
   },
   "drummer_boy_hit_02": {
    "frame": {
-    "x": 256,
+    "x": 255,
     "y": 2,
     "w": 122,
-    "h": 201
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 208,
-    "y": 209,
+    "y": 207,
     "w": 122,
-    "h": 201
+    "h": 203
    },
    "sourceSize": {
     "w": 514,
@@ -1322,9 +1322,9 @@
   },
   "drummer_boy_hit_02_team": {
    "frame": {
-    "x": 1783,
-    "y": 215,
-    "w": 86,
+    "x": 1776,
+    "y": 217,
+    "w": 88,
     "h": 176
    },
    "rotated": false,
@@ -1332,7 +1332,7 @@
    "spriteSourceSize": {
     "x": 212,
     "y": 200,
-    "w": 86,
+    "w": 88,
     "h": 176
    },
    "sourceSize": {
@@ -1347,7 +1347,7 @@
   "drummer_boy_hit_03": {
    "frame": {
     "x": 660,
-    "y": 215,
+    "y": 217,
     "w": 110,
     "h": 188
    },
@@ -1370,8 +1370,8 @@
   },
   "drummer_boy_hit_03_team": {
    "frame": {
-    "x": 438,
-    "y": 588,
+    "x": 340,
+    "y": 590,
     "w": 86,
     "h": 166
    },
@@ -1394,18 +1394,18 @@
   },
   "drummer_boy_hit_04": {
    "frame": {
-    "x": 1339,
+    "x": 1092,
     "y": 2,
     "w": 114,
-    "h": 193
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 217,
+    "y": 216,
     "w": 114,
-    "h": 193
+    "h": 194
    },
    "sourceSize": {
     "w": 514,
@@ -1418,9 +1418,9 @@
   },
   "drummer_boy_hit_04_team": {
    "frame": {
-    "x": 1221,
-    "y": 409,
-    "w": 79,
+    "x": 1115,
+    "y": 411,
+    "w": 80,
     "h": 172
    },
    "rotated": false,
@@ -1428,7 +1428,7 @@
    "spriteSourceSize": {
     "x": 224,
     "y": 209,
-    "w": 79,
+    "w": 80,
     "h": 172
    },
    "sourceSize": {
@@ -1442,18 +1442,18 @@
   },
   "drummer_boy_die_00": {
    "frame": {
-    "x": 86,
-    "y": 409,
+    "x": 1868,
+    "y": 217,
     "w": 136,
-    "h": 174
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 207,
-    "y": 229,
+    "y": 228,
     "w": 136,
-    "h": 174
+    "h": 175
    },
    "sourceSize": {
     "w": 514,
@@ -1466,18 +1466,18 @@
   },
   "drummer_boy_die_00_team": {
    "frame": {
-    "x": 1079,
-    "y": 588,
-    "w": 91,
-    "h": 155
+    "x": 1087,
+    "y": 590,
+    "w": 90,
+    "h": 154
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 213,
     "y": 221,
-    "w": 91,
-    "h": 155
+    "w": 90,
+    "h": 154
    },
    "sourceSize": {
     "w": 514,
@@ -1492,16 +1492,16 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 108,
-    "h": 209
+    "w": 107,
+    "h": 211
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 207,
-    "y": 195,
-    "w": 108,
-    "h": 209
+    "x": 208,
+    "y": 193,
+    "w": 107,
+    "h": 211
    },
    "sourceSize": {
     "w": 514,
@@ -1514,10 +1514,10 @@
   },
   "drummer_boy_die_01_team": {
    "frame": {
-    "x": 1306,
-    "y": 215,
+    "x": 1299,
+    "y": 217,
     "w": 112,
-    "h": 180
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
@@ -1525,7 +1525,7 @@
     "x": 203,
     "y": 185,
     "w": 112,
-    "h": 180
+    "h": 182
    },
    "sourceSize": {
     "w": 514,
@@ -1538,18 +1538,18 @@
   },
   "drummer_boy_die_02": {
    "frame": {
-    "x": 382,
+    "x": 478,
     "y": 2,
     "w": 107,
-    "h": 200
+    "h": 201
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 190,
-    "y": 204,
+    "y": 203,
     "w": 107,
-    "h": 200
+    "h": 201
    },
    "sourceSize": {
     "w": 514,
@@ -1562,17 +1562,17 @@
   },
   "drummer_boy_die_02_team": {
    "frame": {
-    "x": 520,
-    "y": 409,
-    "w": 99,
+    "x": 501,
+    "y": 411,
+    "w": 98,
     "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 194,
+    "x": 195,
     "y": 195,
-    "w": 99,
+    "w": 98,
     "h": 173
    },
    "sourceSize": {
@@ -1586,17 +1586,17 @@
   },
   "drummer_boy_die_03": {
    "frame": {
-    "x": 1093,
+    "x": 1210,
     "y": 2,
-    "w": 124,
+    "w": 125,
     "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 202,
     "y": 220,
-    "w": 124,
+    "w": 125,
     "h": 193
    },
    "sourceSize": {
@@ -1610,8 +1610,8 @@
   },
   "drummer_boy_die_03_team": {
    "frame": {
-    "x": 871,
-    "y": 588,
+    "x": 877,
+    "y": 590,
     "w": 93,
     "h": 163
    },
@@ -1634,8 +1634,8 @@
   },
   "drummer_boy_die_04": {
    "frame": {
-    "x": 1872,
-    "y": 588,
+    "x": 1874,
+    "y": 590,
     "w": 166,
     "h": 127
    },
@@ -1658,17 +1658,17 @@
   },
   "drummer_boy_die_04_team": {
    "frame": {
-    "x": 1738,
-    "y": 588,
-    "w": 130,
+    "x": 1745,
+    "y": 590,
+    "w": 125,
     "h": 129
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 164,
+    "x": 162,
     "y": 265,
-    "w": 130,
+    "w": 125,
     "h": 129
    },
    "sourceSize": {
@@ -1682,8 +1682,8 @@
   },
   "drummer_boy_die_05": {
    "frame": {
-    "x": 1873,
-    "y": 215,
+    "x": 2,
+    "y": 411,
     "w": 122,
     "h": 175
    },
@@ -1706,18 +1706,18 @@
   },
   "drummer_boy_die_05_team": {
    "frame": {
-    "x": 336,
-    "y": 588,
+    "x": 681,
+    "y": 590,
     "w": 98,
-    "h": 166
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 185,
+    "x": 186,
     "y": 237,
     "w": 98,
-    "h": 166
+    "h": 164
    },
    "sourceSize": {
     "w": 514,
@@ -1730,18 +1730,18 @@
   },
   "drummer_boy_die_06": {
    "frame": {
-    "x": 1174,
-    "y": 588,
+    "x": 1181,
+    "y": 590,
     "w": 149,
-    "h": 148
+    "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 164,
-    "y": 261,
+    "y": 260,
     "w": 149,
-    "h": 148
+    "h": 149
    },
    "sourceSize": {
     "w": 514,
@@ -1754,18 +1754,18 @@
   },
   "drummer_boy_die_06_team": {
    "frame": {
-    "x": 1468,
-    "y": 588,
-    "w": 136,
-    "h": 146
+    "x": 1334,
+    "y": 590,
+    "w": 137,
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 172,
+    "x": 171,
     "y": 253,
-    "w": 136,
-    "h": 146
+    "w": 137,
+    "h": 147
    },
    "sourceSize": {
     "w": 514,
@@ -1778,18 +1778,18 @@
   },
   "drummer_boy_die_07": {
    "frame": {
-    "x": 1327,
-    "y": 588,
+    "x": 1475,
+    "y": 590,
     "w": 137,
-    "h": 148
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 171,
-    "y": 260,
+    "y": 261,
     "w": 137,
-    "h": 148
+    "h": 147
    },
    "sourceSize": {
     "w": 514,
@@ -1802,17 +1802,17 @@
   },
   "drummer_boy_die_07_team": {
    "frame": {
-    "x": 1608,
-    "y": 588,
-    "w": 126,
+    "x": 1616,
+    "y": 590,
+    "w": 125,
     "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 177,
+    "x": 178,
     "y": 254,
-    "w": 126,
+    "w": 125,
     "h": 142
    },
    "sourceSize": {
@@ -1934,7 +1934,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 2048,
-   "h": 760
+   "h": 764
   },
   "scale": "3",
   "ageborn": {
