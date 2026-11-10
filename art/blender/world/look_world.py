@@ -12,7 +12,10 @@ three world knobs that `look.py` reads:
 
   LOOK_HEIGHT_LU  a turret's dirt bands in its authored lu (its parts are built at authored size and scaled by
                   TURRET_SCALE at render, while HEIGHT_LU is the rendered height)
-  LOOK_OUTLINE    a decoration keeps its own thinner prop line, with outline v4's inner cover (0.35 lu)
+  LOOK_OUTLINE    a decoration keeps its own thinner prop line, with outline v4's inner cover (0.35 lu); a base
+                  keeps the v3 line's outer width (2.5 px: the base skins' footprint contract measures the
+                  standard base's silhouette, which v4's 2.3 px would pull in by a pixel) with v4's colour and
+                  inner cover
   LOOK_CHECKS     `checks` below in place of the unit checks: a turret's team zone is a pennant or a band (not 18%
                   of the silhouette), bases are outside the A11 colour rule, and the reference is the installed
                   world sheet (not public/art/units)
@@ -33,9 +36,8 @@ git ref, default HEAD: pass the wave's base commit so a re-render is measured ag
             pixels (audit 5.1 rule 11: decoded memory must not grow)
   colour    turrets: the A11 colour rule <= 10% on the RGBA frames and the encoded sheet; bases, skins, forts,
             decorations and kits (outside the rule's scope): no frame worse than the reference's (+0.5 points)
-  team      no frame's team share below the reference frame's (-1.0 point: outline v4 at the 1x density takes up to
-            0.7 off a thin flag's frame) and the composed item's visible team share not below the reference's
-            (-0.3 points): never less team than today
+  team      no frame's team share below the reference frame's (-0.5 points) and the composed item's visible team
+            share not below the reference's (-0.3 points): never less team than today
   orange    bases and skins: the blue side's share of non-team pixels that read as the orange team (README "Orange
             check": hue 10-45 degrees, saturation and value >= 45%) not above the reference's (+0.5 points)
   metrics   the composed item at game scale (`look2d.game_metrics` at the sheet's own density) against its class's
@@ -69,9 +71,8 @@ CONTRACT_META = ("kind", "age", "pxPerLu", "feetPx", "heightLu", "pivotLu", "aim
                  "auraLu", "glowLu", "glintsLu", "shadowLu", "motion", "mirror", "id", "style", "fortKind", "material",
                  "footLu", "flag", "door", "crew", "muzzleLu", "pieces", "heaps")
 CLIP_KEYS = ("frames", "sequence", "durations", "loop", "impact")
-# a frame's team share may sit this far below the installed frame's: outline v4 at the 1x density takes up to 0.7 points
-# off a thin team flag's frame (its silhouette and team area both shrink a little); the composed item may not drop
-TEAM_FRAME_TOL = 1.0
+# a frame's team share may sit this far below the installed frame's (points); the composed item's may not drop
+TEAM_FRAME_TOL = 0.5
 TEAM_BLUE = (0x2F / 255, 0x7D / 255, 0xF6 / 255)
 ALT_TINT = (1.0, 0.0, 1.0)
 
@@ -93,6 +94,10 @@ def opt_in(mod, kinds, *, highlight=None, shade=None, rim=None):
         mod.LOOK_HEIGHT_LU = round(mod.HEIGHT_LU / mod.EXTRA_META.get("modelScale", 1.0), 2)
     if kind == "decoration":
         mod.LOOK_OUTLINE = tuple(mod.OUTER_OUTLINE[:3]) + (look.UNIT_OUTLINE_V4[3],)
+    if kind == "base":
+        from ageborn_art import config
+        width = getattr(mod, "OUTER_OUTLINE", config.UNIT_OUTLINE_V3)[0]
+        mod.LOOK_OUTLINE = (width,) + tuple(look.UNIT_OUTLINE_V4[1:])
     mod.LOOK_CHECKS = checks
     return mod
 

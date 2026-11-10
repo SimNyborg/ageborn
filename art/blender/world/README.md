@@ -189,7 +189,9 @@ for world items only:
 
 - `LOOK_HEIGHT_LU`: a turret's dirt bands in its authored lu (its parts are built at authored size and scaled by
   `TURRET_SCALE` at the `all` joint, while `HEIGHT_LU` is the rendered height);
-- `LOOK_OUTLINE`: a decoration keeps its thinner prop line (`PROP_OUTLINE`) with outline v4's inner cover;
+- `LOOK_OUTLINE`: a decoration keeps its thinner prop line (`PROP_OUTLINE`) with outline v4's inner cover; a base
+  keeps the v3 line's outer width (2.5 px) with v4's colour and inner cover, because the base skins' footprint test
+  (`cosmetics.bases.test.ts`) measures the standard base's silhouette and v4's 2.3 px pulls it in by a pixel;
 - `LOOK_CHECKS`: `look_world.checks` replaces the unit checks (a turret's team zone is a pennant or a band, bases are
   outside the A11 colour rule, and the reference is the installed world sheet, not `public/art/units`).
 
@@ -203,8 +205,8 @@ scene). Render with `AGEBORN_LOOK_REF=<the wave's base commit>` so a re-render i
 - pixels: the 1x sheet (and a fort's HD sheet, which the game loads on dense screens) within +2% of the installed one;
 - colour: turrets the A11 rule at most 10% on the RGBA frames and the encoded sheet; bases, skins, forts, decorations
   and kits no frame worse than the installed one (+0.5 points);
-- team: no frame's team share more than 1 point below the installed frame's (outline v4 at the 1x density takes up to
-  0.7 off a thin flag's frame), and the composed item's visible team share not below the installed one's;
+- team: no frame's team share more than 0.5 points below the installed frame's, and the composed item's visible team
+  share not below the installed one's;
 - orange: bases and skins, the blue side's orange-reading share (the orange check above) not above the installed one's;
 - metrics (soft, reported): the composed item at game scale against its class's floors.
 `<venv>/bin/python art/blender/world/look_world.py <installed sheets...> --ref <commit>` runs the same comparison on
