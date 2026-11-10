@@ -29,6 +29,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "barrier_trooper"
 GAIT_NAME = "biped"
@@ -38,6 +39,14 @@ CANVAS = (300, 256)
 FEET = (130, 222)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 32)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the white soldiers' lifts; the wave kit's plates in the troopers' off-white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SKIN_PALETTE = FW.KIT_TROOPER
+MATERIAL_KINDS = FW.kinds_future()
 
 HR = (0.0, F.ARM_Y["r"], F.HAND_Z)
 HL = (0.0, F.ARM_Y["l"], F.HAND_Z)
@@ -53,7 +62,8 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, helmet_kind="dome", team_greave=True, bulk=1.06)
+    W.trooper(rig, helmet_kind="dome", team_greave=True, bulk=1.06, strip=False)
+    FW.strip(rig)
     rig.joint("shield", "hand_l", HL)
     px, py, pz = PANE
     import math
@@ -80,6 +90,11 @@ def build(rig):
     rig.part("shield", g, glow=W.HOLO, outline=1.0, outline_hex=W.HOLO_DK)
     g = Geo().blob(at(0.6, -2.0, 4.0), (0.8, 6.0, 7.0), p=3.0, rot=rot)
     rig.part("shield", g, glow=W.MINT_CORE, outline=0)
+    # W4: the hardlight's scan lines (one flat glow field read as a plain card at game scale)
+    g = Geo()
+    for z in (-11.5, -6.5, -1.5, 3.5, 8.5, 12.5):
+        g.capsule(at(1.0, -9.4, z), at(1.0, 9.4, z), 0.32, segs=6, rings=2)
+    rig.part("shield", g, glow=W.HOLO_DK, outline=0)
     rig.joint("pulse", "shield", (px + 2.0, py, pz), hidden=True)
     g = Geo().blob(at(1.8, 0, 0), (1.0, 12.4, 18.0), p=4.0, rot=rot)
     rig.part("pulse", g, glow=W.MINT_CORE, outline=1.2, outline_hex=W.MINT)
@@ -93,9 +108,21 @@ def build(rig):
     rig.part("blade", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((hx, hy - 0.6, hz + 5.5 + BLADE / 2), (3.0, 1.4, BLADE / 2 + 0.4), p=2.3, taper=(1.0, 0.45))
     rig.part("blade", g, glow=W.MINT, outline=1.0, outline_hex=W.MINT)
-    g = Geo().blob((hx + 0.2, hy - 1.4, hz + 5.0 + BLADE / 2), (1.2, 0.8, BLADE / 2 - 1.5), p=2.3, taper=(1.0, 0.35))
+    g = Geo().blob((hx + 0.2, hy - 1.4, hz + 5.0 + BLADE / 2), (0.9, 0.8, BLADE / 2 - 1.5), p=2.3, taper=(1.0, 0.35))
     rig.part("blade", g, glow=W.MINT_CORE, outline=0)
     rig.track("clubHead", "blade", TIP)
+    FW.wave_trooper(rig, helmet_kind="dome", bulk=1.06, team_greave=True)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, armoured; never on the face): the near shoulder pad, the team cap,
+    the white faulds, the near greave."""
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("cap", "head", -3.0, 58.0, 5.5, "metal", team=True)
+    rig.damage_spot_at("faulds", "hips", -5.0, 16.0, 5.0, "metal")
+    rig.damage_spot("greave", "shin_r", (1.9, -F.LEG_Y - 4.2, 8.6), 5.0, "metal", team=True, normal=(0, -1, 0))
 
 
 def arms(blade_hand, bw, shield_hand, sw=90.0):
@@ -218,16 +245,26 @@ def _die(k):
     return pose
 
 
+# -- shield_lock (items 51/52, extras sheet): the pose of Cover and the Shield Wall --------------------------------
+# braced low behind the hardlight, the shoulder into it and the blade held back low; the pane hums (a pulse on 1, 3)
+LOCK_Z = [-5.0, -5.4, -5.0, -4.6]
+
+
+def _lock_pose(f):
+    return _pose((-3.0, 18.0), -150.0, (12.0, 25.0), -14.0, 0.0, 1.5, LOCK_Z[f], -0.06, 3, pulse=f in (1, 3))
+
+
 def clips():
     rr = {0: ("attack", 0), 9: ("attack", 9)}
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        W.melee_clip("attack", _a_pose, BASH, _bash_fx()),
-        W.melee_clip("attack_b", _b_pose, CUT, W.impact_fx("blade", TIP, 132, a0=-120.0, ground_x=22.0), rr),
-        W.melee_clip("attack_c", _c_pose, CUT, W.impact_fx("blade", TIP, 133, a0=-20.0, ground_x=22.0), rr),
+        FW.melee_clip("attack", _a_pose, BASH, _bash_fx()),
+        FW.melee_clip("attack_b", _b_pose, CUT, W.impact_fx("blade", TIP, 132, a0=-120.0, ground_x=22.0), rr),
+        FW.melee_clip("attack_c", _c_pose, CUT, W.impact_fx("blade", TIP, 133, a0=-20.0, ground_x=22.0), rr),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
+        M.clip("shield_lock", [_lock_pose(f) for f in range(4)], [220, 180, 220, 180], loop=True),
     ]
     return M.check_variants(M.check_contract(cl))

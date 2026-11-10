@@ -63,6 +63,16 @@ LINE_ON_SUIT = "#1F2229"
 WEAR_ON_SUIT = "#565D6B"
 # creases on the charcoal suit: about 20 levels over it (WEAR_ON_SUIT's 42 counted every crease as highlight)
 FOLD_ON_SUIT = "#41464F"
+FOLD_ON_SUIT_LT = "#535A67"     # the same on rigs_future.SUIT_LT (cowls, light suits)
+# the wave kits (kit_future_wave.trooper, the legs and arms kits) build their plates in rigs_future.ARMOR: a unit built
+# on them sets SKIN_PALETTE = KIT_WHITE (look.remap, with the far leg's shaded copy) to get the W4 off-white
+KIT_WHITE = skin_palette({RF.ARMOR: ARMOR})
+# the rank-and-file troopers' white, a step greyer (the Pulse Trooper's: white legs, gloves and faceplates on the
+# charcoal suit held their highlight share over 0.10) and their guns' light grey (a long white barrel's lit edge
+# rang the highlight share)
+TROOPER_WHITE = "#CBD1DA"
+KIT_TROOPER = skin_palette({RF.ARMOR: TROOPER_WHITE})
+GUN_LT, GUN_SEAM = "#B4BBC6", "#8A929F"
 
 
 def panel_lines(rig, joint, face, lines, fill=LINE_ON_WHITE, w=0.7, depth=0.35):
@@ -108,12 +118,113 @@ def fx(rig, skins, hex_):
     return skins.get(skin, {}).get("palette", {}).get(hex_.upper(), hex_)
 
 
+def wave_pack(rig, bulk=1.0, cell_r=0.95):
+    """kit_future_wave.trooper's backpack and its team band (call the trooper with pack=False), with slimmer mint
+    cells (`pack`). Not for melee troopers: the slim cells bare the band's back edge, which moves the lunge proxy."""
+    pack(rig, k=bulk, cell_r=cell_r)
+    g = Geo().blob((-11.4 * bulk, 0, 36.6), (4.8, 8.8, 2.2), p=3.4)
+    rig.part("torso", g, team=True, outline=0.6)
+
+
+def strip(rig, r=0.65):
+    """kit_future_wave.trooper's mint light strip over the near shoulder pad, slimmer (call the trooper with
+    strip=False): the kit's r 0.8 strip was highlight all through."""
+    from ageborn_art import kit_future as KF
+    KF.strip(rig, "arm_r", [(-4.0, -18.0, 38.0), (0.6, -18.4, 39.4), (5.2, -17.8, 38.0)], r=r)
+
+
+def wave_trooper(rig, helmet_kind="dome", bulk=1.0, team_greave=False, team_thigh=False, team_sleeve=False,
+                 hips=True, shoulders=True, far_shoulder=True):
+    """The W4 detail on kit_future_wave.trooper's body (call it after the trooper, with the same arguments): the
+    helmet's seams, bands and wear per kind; the team chest plate in two plates with two vents, the gorget's seam;
+    the faulds in three chipped plates; the shoulder pads' team-dark rims, the bracers' cuff seams, elbow creases;
+    knee creases, the greaves' team-dark rims, the boots' seams and a scuffed toe (char space; decals cast)."""
+    from ageborn_art import kit_medieval as KM
+    from ageborn_art import face as FC_
+    k = bulk
+    if helmet_kind == "dome":
+        band(rig, "head", (2, 0, 52.1), (11.75, 11.35, 11.95), 2.5, 48.7, 49.5, team=True)
+        band(rig, "head", (2, 0, 52.1), (11.75, 11.35, 11.95), 2.5, 55.4, 56.1, team=True)
+        band(rig, "head", (0, 0, 43.2), (7.5, 7.5, 3.2), 2.4, 42.0, 42.7, fill=LINE_ON_WHITE)
+        hf = FC_.Face(rig, "head", [Geo().blob((2, 0, 52), (11.4, 11.0, 11.6), p=2.5)])
+        panel_lines(rig, "head", hf, [[sc(hf, -8.0, 47.6, -9.6), sc(hf, -1.0, 46.0, -11.0), sc(hf, 5.0, 46.4, -10.4)]],
+                    w=0.75)
+        wear(rig, "head", hf, [(*sc(hf, -8.8, 45.0, -8.4), 1.3, 0.7), (*sc(hf, 6.0, 45.2, -9.6), 1.1, 0.6)])
+    elif helmet_kind == "android":
+        band(rig, "head", (3.0, 0, 41.5), (6.0, 6.4, 3.4), 2.4, 42.4, 43.1, fill=LINE_ON_WHITE)
+        hf = FC_.Face(rig, "head", [Geo().blob((2.0, 0, 50.5), (11.0, 10.4, 12.4), p=2.3)])
+        panel_lines(rig, "head", hf, [[sc(hf, -6.4, 58.0, -7.6), sc(hf, -8.6, 51.0, -8.2), sc(hf, -6.8, 44.6, -7.8)]],
+                    w=0.75)
+        wear(rig, "head", hf, [(*sc(hf, -5.6, 59.6, -6.6), 1.2, 0.6), (*sc(hf, -7.6, 45.6, -6.8), 1.0, 0.5)])
+    elif helmet_kind == "hardhat":
+        band(rig, "head", (1.0, 0, 55.4), (11.6, 11.2, 7.6), 2.4, 58.4, 59.1, team=True)
+        band(rig, "head", (1, 0, 42.6), (7.2, 7.2, 3.0), 2.4, 41.6, 42.3, fill=LINE_ON_WHITE)
+        hf = FC_.Face(rig, "head", [Geo().blob((2, 0, 49.5), (10.6, 10.2, 10.6), p=2.4)])
+        panel_lines(rig, "head", hf, [[sc(hf, -7.4, 51.6, -8.0), sc(hf, -2.0, 47.0, -9.8), sc(hf, 4.0, 46.0, -9.2)]],
+                    w=0.75)
+        wear(rig, "head", hf, [(*sc(hf, -8.0, 45.4, -7.4), 1.2, 0.6)])
+    elif helmet_kind == "hood":
+        hf = FC_.Face(rig, "head", [Geo().blob((1.5, 0, 50.0), (11.2, 10.8, 11.4), p=2.2)])
+        folds(rig, "head", hf, [[sc(hf, -7.0, 50.0, -8.0), sc(hf, -4.0, 45.4, -9.4), sc(hf, 1.0, 43.2, -9.6)],
+                                [sc(hf, -9.2, 46.0, -6.0), sc(hf, -6.0, 42.4, -7.6)]], w=0.8, team=False,
+              fill=FOLD_ON_SUIT_LT)
+    # the team chest plate in two plates (team-dark) with two vents; the gorget's seam
+    cf = FC_.Face(rig, "torso", [Geo().blob((1.8, 0, 32.0), (9.8 * k, 10.6 * k, 7.6), p=3.0, taper=(0.9, 1.0))])
+    yy = -10.4 * k
+    folds(rig, "torso", cf, [[sc(cf, -6.0 * k, 27.6, yy), sc(cf, 3.0 * k, 27.4, yy), sc(cf, 10.0 * k, 28.2, -9.0 * k)],
+                             [sc(cf, -3.0 * k, 37.6, yy), sc(cf, -3.4 * k, 28.0, yy)]], w=0.8, team=True)
+    folds(rig, "torso", cf, [[sc(cf, 3.2 * k, 29.6, yy), sc(cf, 6.4 * k, 29.6, yy)],
+                             [sc(cf, 3.2 * k, 31.2, yy), sc(cf, 6.4 * k, 31.2, yy)]], w=0.6, team=True)
+    band(rig, "torso", (1.0, 0, 39.0), (7.6, 7.8, 1.8), 2.6, 37.8, 38.5, fill=LINE_ON_WHITE)
+    if hips:
+        ff = FC_.Face(rig, "hips", [Geo().blob((0.6, 0, 16.6), (10.4, 10.2, 4.0), p=2.8, taper=(1.1, 1.0))])
+        panel_lines(rig, "hips", ff, [[sc(ff, -3.6, 19.8, -10.2), sc(ff, -4.0, 13.4, -10.2)],
+                                      [sc(ff, 3.4, 19.8, -10.2), sc(ff, 3.8, 13.4, -10.2)]], w=0.7)
+        wear(rig, "hips", ff, [(*sc(ff, -7.0, 13.8, -9.0), 1.4, 0.6), (*sc(ff, 0.0, 13.6, -10.2), 1.2, 0.5),
+                               (*sc(ff, 7.2, 14.0, -8.0), 1.0, 0.5)])
+    for s in ("r", "l"):
+        y = RF.ARM_Y[s]
+        if shoulders and (s == "r" or far_shoulder):
+            band(rig, f"arm_{s}", (0.5, y - 0.3 * RF.SIDE_Y[s], 37.6), (6.8, 5.8, 5.4), 2.6, 33.6, 34.4, team=True)
+        band(rig, f"fore_{s}", (0.3, y, RF.HAND_Z + 4.2), (4.9, 4.8, 3.6), 2.8, 26.0, 26.7, fill=LINE_ON_WHITE,
+             taper=(0.9, 1.1))
+        sleeve = FC_.Face(rig, f"arm_{s}", [Geo().capsule((0, y, RF.SHOULDER_Z), (0, y, RF.ELBOW_Z), 4.1, 3.8)])
+        folds(rig, f"arm_{s}", sleeve, [[sc(sleeve, -2.6, 30.6, y - 3.8), sc(sleeve, 0.2, 29.8, y - 4.0),
+                                         sc(sleeve, 2.8, 30.8, y - 3.8)]], w=0.8, team=team_sleeve,
+              fill=None if team_sleeve else FOLD_ON_SUIT)
+    for s in ("r", "l"):
+        y = RF.LEG_Y * RF.SIDE_Y[s]
+        th = FC_.Face(rig, f"thigh_{s}", [Geo().capsule((0, y, KM.V3_THIGH_Z + 0.5), (0.5, y, KM.V3_KNEE_Z), 4.6, 4.1)])
+        tt = team_thigh and s == "r"
+        folds(rig, f"thigh_{s}", th, [[sc(th, -2.4, 14.4, y - 4.4), sc(th, 0.4, 13.6, y - 4.6),
+                                       sc(th, 3.0, 14.6, y - 4.2)]], w=0.8, team=tt, fill=None if tt else FOLD_ON_SUIT)
+        if team_greave:
+            band(rig, f"shin_{s}", (1.9, y, 8.6), (3.4, 4.2, 2.6), 2.6, 6.4, 7.1, team=True)
+        band(rig, f"foot_{s}", (2.8, y, 2.4), (4.4, 4.7, 2.5), 2.9, 3.0, 3.6, fill=LINE_ON_WHITE, taper=(1.02, 0.84))
+    tf = FC_.Face(rig, "foot_r", [Geo().blob((2.8, -RF.LEG_Y, 2.4), (4.4, 4.7, 2.5), p=2.9, taper=(1.02, 0.84))])
+    wear(rig, "foot_r", tf, [(*sc(tf, 6.2, 2.0, -RF.LEG_Y - 3.0), 1.2, 0.6)])
+
+
+def melee_clip(name, fn, smear, fx, reuse=None, hold_step=3, band=0.55, soft=True):
+    """kit_future_wave.melee_clip with two-tone arc smears (`smear_soft`; a streak stays one tone): a SMALL_MELEE_MS
+    attack (impact on step 6) from 10 unique poses played 0-9 then 0, the smear on frames 4-6, `fx` on the impact."""
+    from ageborn_art import moves as M
+
+    def sm(spec):
+        if spec.get("kind") != "arc":
+            return [spec]
+        return smear_soft(spec, band=band) if soft else smear_two_tone(spec, band=band)
+    ov = {4: sm(dict(smear, **{"from": 3})), 5: sm(dict(smear, **{"from": 4})), 6: sm(dict(smear, **{"from": 5})) + fx}
+    return M.clip(name, [fn(f) for f in range(10)], M.SMALL_MELEE_MS, impact=M.SMALL_MELEE_IMPACT, smear=4,
+                  overlays=ov, sequence=list(range(10)) + [0], reuse=reuse, extra={"holdStep": hold_step})
+
+
 def kinds_future(extra=None):
     """MATERIAL_KINDS for the Future palette (rigs_future), plus the unit's own colours in `extra`."""
     base = {RF.ARMOR: "ceramic", ARMOR: "ceramic", RF.TRIM: "iron", RF.STEEL: "iron", RF.GUNMETAL: "iron", RF.SUIT: "cloth",
             RF.SUIT_LT: "cloth", RF.CHARCOAL: "cloth", RF.VISOR_DARK: "glass", RF.SKIN: "skin",
             LINE_ON_WHITE: "ceramic", WEAR_ON_WHITE: "ceramic", LINE_ON_SUIT: "cloth", WEAR_ON_SUIT: "cloth",
-            FOLD_ON_SUIT: "cloth",
+            FOLD_ON_SUIT: "cloth", FOLD_ON_SUIT_LT: "cloth", TROOPER_WHITE: "ceramic", GUN_LT: "iron", GUN_SEAM: "iron",
             "team": "polymer"}
     base.update(extra or {})
     return kinds(base)
