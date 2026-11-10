@@ -90,7 +90,11 @@ SPEC = {
     "standard_bearer": {"*": {"joint": "dart", "release": "before"}},
     "javelineer": {"*": {"joint": "jav", "release": "before"}},
     # axis-less throws, bombs and spits: item 44's angles
-    "alchemist": _thrown(10, 15, release="impact"),
+    # W2: the alchemist's vials aimed up at flyers too (hand-posed variants, kit_bronze_detail.aimed_hand): the vial
+    # leaves on the impact frame, where the throwing forearm points along the lob at the target
+    "alchemist": dict(_thrown(10, 15, release="impact"), **{c + s: {"deg": d, "release": "impact"}
+                                                            for c in ("attack", "attack_b")
+                                                            for s, d in (("_up45", 45), ("_up70", 70))}),
     "balloon_admiral": _thrown(0, 0),
     "bolas_thrower": _thrown(5, 10),
     "bomb_bowler": _thrown(50, 45),
@@ -99,7 +103,10 @@ SPEC = {
     # the hand at the variant's angle on the impact frame, where the throwing arm and the cord point it
     "discus_thrower": dict(_thrown(5, 5), **{c + s: {"deg": d, "release": "impact"} for c in ("attack", "attack_b")
                                              for s, d in (("_up45", 45), ("_up70", 70))}),
-    "friar": _thrown(0, 0),
+    # W2: the friar's sling stone aimed up at flyers too (hand-posed variants, kit_bronze_detail.aimed_hand), like the
+    # slingers': the stone leaves on the impact frame, where the cord streams at the target
+    "friar": dict(_thrown(0, 0), **{c + s: {"deg": d, "release": "impact"} for c in ("attack", "attack_b")
+                                    for s, d in (("_up45", 45), ("_up70", 70))}),
     "grenadier": _thrown(50, 55),
     "herbalist": _thrown(15, 10),
     "mangonel_cart": _thrown(50, 50),

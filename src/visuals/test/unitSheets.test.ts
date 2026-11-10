@@ -28,6 +28,10 @@ const HD_SHEETS = import.meta.glob<SheetJson>('/public/art/units/*/*.hd.json', {
 const X_SHEETS = import.meta.glob<SheetJson>('/public/art/units/*/*.x.json', { eager: true, import: 'default' });
 const PNGS = new Set(Object.keys(import.meta.glob('/public/art/units/*/*.png', { query: '?url', import: 'default' })));
 const PORTRAITS = import.meta.glob('/public/art/portraits/*.png', { query: '?url', import: 'default' });
+/** What an extras sheet holds besides aimed variants: the attack variants (ANIM_SPEC P4) and the items 51/52 signature
+ * and formation poses (`art/blender/ageborn_art/pipeline.py` POSE_CLIPS; nothing plays them until those items ship). */
+const X_VARIANTS = ['attack_b', 'attack_c', 'attack_alt'];
+const POSE_CLIPS = ['kneel_fire', 'square', 'charge', 'wheel_back', 'aim', 'pike_set', 'shield_lock'];
 
 describe('HD unit sheets', () => {
   it('every HD sheet matches its plain sheet frame for frame', () => {
@@ -66,12 +70,12 @@ describe('unit sprite sheets in the manifest', () => {
       }
     }
     // every extras sheet belongs to a core sheet and holds only variant clips (and their aimed variants, contract
-    // C2: `<clip>_up45`, `_up70`, `_down`), each with its team layer
+    // C2: `<clip>_up45`, `_up70`, `_down`) and the items 51/52 pose clips (`pipeline.POSE_CLIPS`), each with its team layer
     for (const [path, x] of Object.entries(X_SHEETS)) {
       expect(SHEETS[path.replace(/\.x\.json$/, '.json')], path).toBeDefined();
       expect(PNGS.has(path.replace(/\.json$/, '.png')), path).toBe(true);
       for (const name of Object.keys(x.animations).filter((n) => !n.endsWith('_team'))) {
-        if (aimedBaseOf(name) === null) expect(['attack_b', 'attack_c', 'attack_alt'], `${path} ${name}`).toContain(name);
+        if (aimedBaseOf(name) === null) expect([...X_VARIANTS, ...POSE_CLIPS], `${path} ${name}`).toContain(name);
         expect(x.animations[`${name}_team`]?.length, `${path} ${name}_team`).toBe(x.animations[name]?.length);
       }
     }

@@ -1660,7 +1660,7 @@
       15.7,
       46.9
      ],
-     "aimDeg": 10.0,
+     "aimDeg": 45.0,
      "release": {
       "frame": 6,
       "atLu": [
@@ -1761,7 +1761,7 @@
       9.6,
       52.0
      ],
-     "aimDeg": 10.0,
+     "aimDeg": 70.0,
      "release": {
       "frame": 6,
       "atLu": [
@@ -1862,7 +1862,7 @@
       16.6,
       43.5
      ],
-     "aimDeg": 15.0,
+     "aimDeg": 45.0,
      "release": {
       "frame": 6,
       "atLu": [
@@ -1963,7 +1963,7 @@
       9.0,
       46.3
      ],
-     "aimDeg": 15.0,
+     "aimDeg": 70.0,
      "release": {
       "frame": 6,
       "atLu": [
