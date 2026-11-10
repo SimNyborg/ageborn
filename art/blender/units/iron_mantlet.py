@@ -21,13 +21,27 @@ guard-and-cut from behind the shield, over-the-rim drive):
   attack_c  OVER-THE-RIM DRIVE: lifts the rifle high over the plate and drives the bayonet down
   hit       light: he ducks behind the plate, the helmet clanks
   die       D1 fling: the helmet pops off, the rifle flies; the mantlet tips over
+  shield_lock  (items 51/52, extras sheet) crouched in a brace behind the mantlet, his shoulder to the plate and
+            his eyes at the sight slot, the bayonet held level through it: the pose of Cover and of the Shield Wall
+            (a held loop: he leans in and the plate nudges forward on its wheels; the feet never move)
+
+Detail standard (art round W3, Track INDUSTRIAL): riveted steel. The mantlet's plate with its team panel, cream cog,
+sight slot and hazard bands laid conforming (the flat decals sank into the turned plate: the panel read as a narrow
+strip), rivet rows along its top and bottom edges, a polished top edge, scuffs and grime toward the wheels; the
+helmet's team-dark brim band and brass rivets; the jacket's team-dark yoke and back seams and hem band; the belt
+stitched with a brass buckle; puttees wound in spirals. Damage spots (armoured; posed frames measured): the plate's
+team panel (r 8), the plate's iron beside it, the helmet, the jacket's back, a strip torn from the jacket's hem.
 """
+import math
+
 from ageborn_art import face as F
+from ageborn_art import gait as GT
 from ageborn_art import kit_industrial as KI
 from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "iron_mantlet"
 GAIT_NAME = "biped"
@@ -48,6 +62,21 @@ WOOD = "#8A6A4E"
 PUTTEE = "#8F8670"
 PLATE = "#6E747C"
 MX = 19.0           # the mantlet sits ahead of his feet (root space)
+PUTTEE_DK = "#77705C"      # W3: the puttees' spiral wraps
+IRON_HI = "#9AA2AC"        # the plate's polished top edge and scuffs
+GRIME = "#555A60"          # grime on the plate toward the wheels
+THREAD = "#CFC6B2"
+
+# the detail standard (art round W3): the pilot's soldier lifts; cloth, leather, iron, brass, wood and skin apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", I.HAIR: "fur", I.DENIM: "cloth", PUTTEE: "cloth", PUTTEE_DK: "cloth",
+                           THREAD: "cloth", I.COAL_LT: "cloth", I.CREAM: "cloth", I.LEATHER: "leather",
+                           I.LEATHER_DK: "leather", I.BOOT: "leather", I.COAL: "leather", WOOD: "wood",
+                           PLATE: "iron", IRON_HI: "iron", GRIME: "iron", STEEL: "iron", I.IRON_DK: "iron",
+                           I.IRON_LT: "iron", I.BRASS: "bronze", I.BRASS_LT: "bronze", "team": "cloth"})
 
 
 def _drill(rig, joint, fist):
@@ -85,8 +114,10 @@ def build(rig):
     I.ear(rig)
     rig.joint("hat", "head", CAP_C)
     _cap(rig, "hat")
+    _cap_detail(rig)
     KI.loose(rig, "hat_loose", CAP_C, lambda j: _cap(rig, j))
     _mantlet(rig)
+    _jacket_detail(rig)
 
     for s in ("r", "l"):
         I.arm_parts(rig, s, sleeve=None, team_sleeve=True, fist=4.4, cuff=I.COAL_LT)
@@ -97,6 +128,60 @@ def build(rig):
     KI.loose(rig, "rifle_loose", FIST, lambda j: _drill(rig, j, FIST))
     rig.track("bayonetTip", "rifle", tip)
     I.fuse_spark(rig, "rifle", (tip[0] + 0.5, tip[1] - 2.0, tip[2] + 1.0), size=2.2, name="sparks", hidden=True)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _jacket_detail(rig):
+    """W3: the jacket's team-dark yoke and back seams and hem band, the belt stitched with a brass buckle, the puttees
+    wound in spirals (the surfaces rebuilt for the ray casts)."""
+    body = Geo().blob((0, 0, 28.0), (10.6, 9.6, 11.6), p=2.4, taper=(1.08, 0.94))
+    body.blob((0, 0, 18.4), (10.4, 9.6, 4.6), p=2.6)
+    face = F.Face(rig, "torso", [body])
+    IW.folds(rig, "torso", face, [[(-10.0, 34.0), (-5.0, 35.4), (0.0, 35.8)], [(-6.8, 35.0), (-7.4, 28.0), (-7.0, 23.0)]],
+             w=1.1, team=True)
+    belt = Geo().blob((0.2, 0, 20.6), (11.4, 10.6, 2.2), p=3.2)
+    bface = F.Face(rig, "torso", [belt])
+    IW.stitches(rig, "torso", bface, [(-10.4, 21.9), (-3.0, 22.1), (4.0, 22.1), (10.6, 21.8)], I.LEATHER_DK, w=0.6,
+                dash=1.0, gap=0.8)
+    g = Geo().blob((11.5, -2.4, 20.6), (1.0, 2.2, 1.8), p=3.2)
+    rig.part("torso", g, I.BRASS_LT, finish="metal", outline=0.4)
+    skirt = Geo().blob((0.5, 0, 15.8), (11.4, 10.4, 5.8), p=2.6, taper=(1.1, 1.0))
+    skirt.clip((0, 0, 13.0), (0, 0, -1))
+    sface = F.Face(rig, "hips", [skirt])
+    IW.folds(rig, "hips", sface, [[(-11.0, 14.2), (-4.0, 13.9), (4.0, 13.9), (11.4, 14.2)]], w=1.5, team=True)
+    for s in ("r", "l"):
+        y = I.LEG_Y * I.SIDE_Y[s]
+        shin = Geo().capsule((0.5, y, KI.V3_KNEE_Z), (1.0, y, KI.V3_ANKLE_Z + 0.6), 3.9, 3.3)
+        pface = F.Face(rig, f"shin_{s}", [shin])
+        wraps = [[(-3.6, z - 1.3), (4.6, z + 1.3)] for z in (6.8, 9.0, 11.2)]
+        g = Geo()
+        for pts in wraps:
+            IW.ribbon(g, pface, pts, 0.75, 0.3)
+        rig.part(f"shin_{s}", g, PUTTEE_DK if s == "r" else "#5F5A4A", outline=0, highlight=False)
+
+
+def _cap_detail(rig):
+    """W3: the helmet's team-dark brim band and a row of brass rivets round its dome."""
+    x, y, z = CAP_C
+    dome = Geo().blob((x, y, z + 1.2), (12.4, 11.8, 7.2), p=2.2)
+    dome.clip((x, y, z - 2.6), (0, 0, -1))
+    hface = F.Face(rig, "hat", [dome])
+    IW.folds(rig, "hat", hface, [[(x - 11.6, z - 0.8), (x - 3.0, z - 1.4), (x + 5.0, z - 1.4), (x + 11.6, z - 0.8)]],
+             w=1.8, team=True)
+    IW.rivets(rig, "hat", hface, [(x - 8.4, z + 1.6), (x - 3.0, z + 1.0), (x + 2.6, z + 1.0)], r=0.85,
+              fill=I.BRASS_LT)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, armoured; never on the face or skin), measured in the posed frames:
+    the plate's team panel (the biggest team field: he works behind the plate, r 8), the plate's iron beside it,
+    the helmet, the jacket's back, a strip torn from the jacket's hem."""
+    rig.damage_spot_at("plate", "mantlet", MX - 1.0, 24.4, 8.0, "metal", team=True)
+    rig.damage_spot_at("iron", "mantlet", MX - 9.0, 18.0, 5.0, "metal", fill=PLATE)
+    rig.damage_spot_at("helmet", "hat", -3.0, 62.0, 6.0, "metal", team=True)
+    rig.damage_spot_at("jacket", "torso", -7.4, 26.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hips", -4.0, 15.0, 7.0, "cloth", kind="strip", team=True)
 
 
 def _cap(rig, joint):
@@ -117,22 +202,30 @@ def _mantlet(rig):
     rig.part("mantlet", g, PLATE, finish="metal", outline=0.9)
     plate = Geo().blob((MX, -15.0, 22.0), (2.0, 12.0, 16.0), p=4.0, rot=(0, 0, 55))
     pf = F.Face(rig, "mantlet", [plate])
-    g = Geo()
-    pf.decal(g, pf.hit(MX - 1.0, 23.0), [(-6.0, -9.0), (6.0, -9.0), (6.0, 9.0), (-6.0, 9.0)], 0.5)
+    # W3: the panel, the cog, the slot and the hazard bands conforming to the turned plate (flat decals sank in)
+    g = IW.field(Geo(), pf, [(MX - 7.0, 14.0), (MX + 5.0, 14.0), (MX + 5.0, 32.0), (MX - 7.0, 32.0)], 0.5)
     rig.part("mantlet", g, team=True, outline=0)
-    g = KI.cog(pf, Geo(), (MX - 1.0, 19.0), s=0.85)
+    g = IW.cog(pf, Geo(), (MX - 1.0, 19.0), s=0.85, depth=0.75)       # in front of the panel
     rig.part("mantlet", g, I.CREAM, highlight=False, outline=0)
-    g = Geo()
-    pf.decal(g, pf.hit(MX - 1.0, 29.6), [(-5.0, -1.0), (5.0, -1.0), (5.0, 1.0), (-5.0, 1.0)], 0.6)
+    g = IW.field(Geo(), pf, [(MX - 6.0, 28.6), (MX + 4.0, 28.6), (MX + 4.0, 30.6), (MX - 6.0, 30.6)], 0.6)
     rig.part("mantlet", g, I.COAL, highlight=False, outline=0)          # sight slot
     g = Geo()
-    KI.stripes(pf, g, (MX - 1.0, 9.4), 14.0, 3.0, n=4)
+    w, h, n, x0 = 14.0, 3.0, 4, MX - 8.0
+    for k in range(n):
+        a = x0 + k * w / n
+        b = a + w / n * 0.5
+        IW.field(g, pf, [(a, 7.9), (b, 7.9), (min(b + 1.8, x0 + w), 10.9), (min(a + 1.8, x0 + w), 10.9)], 0.4)
     rig.part("mantlet", g, I.CREAM, highlight=False, outline=0)
+    # (the turned plate's outline seen from the camera: x 8-25 at its foot, 8-20 at its top edge, z 4-34)
+    IW.rivets(rig, "mantlet", pf, IW.rivet_line((MX - 8.6, 32.8), (MX - 1.6, 32.8), 3) +
+              IW.rivet_line((MX - 6.6, 12.2), (MX + 4.6, 12.2), 5), r=0.95, fill=I.IRON_LT)
+    IW.plate_band(rig, "mantlet", pf, [(MX - 9.4, 33.6), (MX - 6.5, 34.1), (MX - 3.5, 33.7)], IRON_HI, w=0.9)
     g = Geo()
-    for zz in (10.0, 38.0):
-        for yy in (-8.0, 4.0):
-            g.sphere((MX - 1.6 + yy * 0.6, -16.0 + yy * 0.6, zz - 1.0), 0.9, cuts=2)
-    rig.part("mantlet", g, I.IRON_LT, finish="metal", outline=0)
+    for pts in ([(MX - 9.6, 22.0), (MX - 7.4, 23.6)], [(MX - 10.0, 27.6), (MX - 8.2, 29.0)],
+                [(MX - 6.0, 33.0), (MX - 4.4, 31.9)]):
+        IW.ribbon(g, pf, pts, 0.6, 0.45)
+    rig.part("mantlet", g, IRON_HI, outline=0, highlight=False)
+    IW.soot(rig, "mantlet", pf, [(MX - 4.0, 6.6, 3.0, 1.2), (MX + 3.4, 6.2, 2.4, 1.0)], fill=GRIME)
     g = Geo().capsule((MX - 3.0, -12.0, 26.0), (MX - 7.0, -4.0, 27.0), 1.0)
     rig.part("mantlet", g, I.IRON_DK, finish="metal", outline=0.4)     # push bar
     WHEELS.extend(I.wheel_row(rig, "wheel", "mantlet", [MX - 4.0, MX + 4.0], 4.4, -21.0, 4.4, bolts=4))
@@ -328,6 +421,33 @@ C_X = [0.0, -1.0, -2.0, 2.0, 5.0, 8.0, 8.5, 5.0]
 C_Z = [-1.0, -4.0, -6.0, -4.0, -1.0, 1.5, 1.0, -0.6]
 
 
+# -- shield_lock (items 51/52, extras sheet): the pose of Cover and of the Shield Wall ------------------------------
+# Crouched in a brace behind the mantlet: the near foot forward and bent, the far leg driven back onto the ball of
+# its foot, the body low and leaning in so his shoulder meets the plate, his eyes at the sight slot and the bayonet
+# held level through it. A held loop of 4 frames: he leans in and the plate nudges forward on its wheels, then
+# settles. The feet are solved onto fixed marks: they never move.
+LOCK_FEET = {"r": (6.0, 0.0), "l": (-14.0, -26.0)}     # ankle x of each foot and its roll about the toe (deg)
+LOCK = {"grip": (-84.0, -34.0, 6.0), "torso": -14.0, "head": 10.0, "x": 2.5, "z": -6.0}
+
+
+def _lock_target(s, x, ang):
+    lift = 5.6 * math.sin(math.radians(-ang)) if ang < 0 else 0.0
+    return (LEGS[s], x, KI.V3_ANKLE_Z + lift, ang)
+
+
+def _lock_pose(f):
+    br = [0.0, 0.5, 1.0, 0.5][f]
+    a, fo, w = LOCK["grip"]
+    t = LOCK["torso"] - 2.0 * br
+    pose = merge(grip(a - 2.0 * br, fo, w, lean=t), {
+        "torso": {"r": t}, "head": {"r": LOCK["head"] + 1.5 * br, "z": -0.3 * br},
+        "hat": {"r": 1.5 * br}, "mantlet": {"x": 0.8 * br, "r": -0.8 * br},
+        "pupils": {"x": 0.8},
+    }, I.wheel_spin(WHEELS, 0.8 * br), M.body_about((0, 0, 22), x=LOCK["x"] + 0.5 * br, z=LOCK["z"] - 0.4 * br))
+    pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.9}})
+    return GT.solve(RIG, pose, {s: _lock_target(s, *LOCK_FEET[s]) for s in ("r", "l")})
+
+
 def _hit(k):
     def recoil(a):
         return {"head": {"r": 16 * a}, "torso": {"r": 12 * a},
@@ -381,5 +501,6 @@ def clips():
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
+        M.clip("shield_lock", [_lock_pose(f) for f in range(4)], [220, 180, 220, 180], loop=True),
     ]
     return M.check_variants(M.check_contract(cl))

@@ -2,18 +2,18 @@
  "frames": {
   "coal_miners_attack_b_02": {
    "frame": {
-    "x": 758,
-    "y": 2,
+    "x": 203,
+    "y": 323,
     "w": 168,
-    "h": 162
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 144,
-    "y": 254,
+    "y": 252,
     "w": 168,
-    "h": 162
+    "h": 164
    },
    "sourceSize": {
     "w": 506,
@@ -26,10 +26,10 @@
   },
   "coal_miners_attack_b_02_team": {
    "frame": {
-    "x": 81,
-    "y": 184,
+    "x": 944,
+    "y": 157,
     "w": 77,
-    "h": 161
+    "h": 160
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 219,
     "y": 245,
     "w": 77,
-    "h": 161
+    "h": 160
    },
    "sourceSize": {
     "w": 506,
@@ -50,8 +50,8 @@
   },
   "coal_miners_attack_b_03": {
    "frame": {
-    "x": 408,
-    "y": 350,
+    "x": 201,
+    "y": 165,
     "w": 186,
     "h": 154
    },
@@ -74,8 +74,8 @@
   },
   "coal_miners_attack_b_03_team": {
    "frame": {
-    "x": 2,
-    "y": 510,
+    "x": 758,
+    "y": 477,
     "w": 85,
     "h": 151
    },
@@ -99,17 +99,17 @@
   "coal_miners_attack_b_04": {
    "frame": {
     "x": 2,
-    "y": 350,
+    "y": 2,
     "w": 201,
-    "h": 156
+    "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
-    "y": 266,
+    "y": 263,
     "w": 201,
-    "h": 156
+    "h": 159
    },
    "sourceSize": {
     "w": 506,
@@ -122,17 +122,17 @@
   },
   "coal_miners_attack_b_04_team": {
    "frame": {
-    "x": 2,
-    "y": 184,
-    "w": 75,
+    "x": 938,
+    "y": 321,
+    "w": 76,
     "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 228,
+    "x": 227,
     "y": 256,
-    "w": 75,
+    "w": 76,
     "h": 162
    },
    "sourceSize": {
@@ -146,18 +146,18 @@
   },
   "coal_miners_attack_b_05": {
    "frame": {
-    "x": 207,
-    "y": 350,
+    "x": 2,
+    "y": 330,
     "w": 197,
-    "h": 155
+    "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 171,
-    "y": 267,
+    "y": 265,
     "w": 197,
-    "h": 155
+    "h": 157
    },
    "sourceSize": {
     "w": 506,
@@ -170,7 +170,7 @@
   },
   "coal_miners_attack_b_05_team": {
    "frame": {
-    "x": 930,
+    "x": 850,
     "y": 2,
     "w": 85,
     "h": 162
@@ -194,18 +194,18 @@
   },
   "coal_miners_attack_b_06": {
    "frame": {
-    "x": 628,
-    "y": 184,
+    "x": 2,
+    "y": 165,
     "w": 195,
-    "h": 158
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 207,
-    "y": 286,
+    "y": 283,
     "w": 195,
-    "h": 158
+    "h": 161
    },
    "sourceSize": {
     "w": 506,
@@ -218,9 +218,9 @@
   },
   "coal_miners_attack_b_06_team": {
    "frame": {
-    "x": 726,
-    "y": 510,
-    "w": 111,
+    "x": 324,
+    "y": 501,
+    "w": 110,
     "h": 138
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 232,
     "y": 276,
-    "w": 111,
+    "w": 110,
     "h": 138
    },
    "sourceSize": {
@@ -242,18 +242,18 @@
   },
   "coal_miners_attack_b_07": {
    "frame": {
-    "x": 688,
-    "y": 350,
+    "x": 207,
+    "y": 2,
     "w": 168,
-    "h": 151
+    "h": 153
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 270,
+    "y": 268,
     "w": 168,
-    "h": 151
+    "h": 153
    },
    "sourceSize": {
     "w": 506,
@@ -266,9 +266,9 @@
   },
   "coal_miners_attack_b_07_team": {
    "frame": {
-    "x": 827,
-    "y": 184,
-    "w": 97,
+    "x": 658,
+    "y": 2,
+    "w": 96,
     "h": 158
    },
    "rotated": false,
@@ -276,7 +276,7 @@
    "spriteSourceSize": {
     "x": 230,
     "y": 260,
-    "w": 97,
+    "w": 96,
     "h": 158
    },
    "sourceSize": {
@@ -290,18 +290,18 @@
   },
   "coal_miners_attack_b_08": {
    "frame": {
-    "x": 162,
-    "y": 184,
+    "x": 2,
+    "y": 491,
     "w": 160,
-    "h": 159
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 256,
+    "y": 254,
     "w": 160,
-    "h": 159
+    "h": 161
    },
    "sourceSize": {
     "w": 506,
@@ -314,10 +314,10 @@
   },
   "coal_miners_attack_b_08_team": {
    "frame": {
-    "x": 457,
-    "y": 184,
+    "x": 758,
+    "y": 2,
     "w": 88,
-    "h": 159
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
@@ -325,7 +325,7 @@
     "x": 222,
     "y": 247,
     "w": 88,
-    "h": 159
+    "h": 158
    },
    "sourceSize": {
     "w": 506,
@@ -338,18 +338,18 @@
   },
   "coal_miners_attack_c_01": {
    "frame": {
-    "x": 247,
-    "y": 2,
+    "x": 375,
+    "y": 323,
     "w": 135,
-    "h": 172
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 242,
+    "y": 240,
     "w": 135,
-    "h": 172
+    "h": 174
    },
    "sourceSize": {
     "w": 506,
@@ -362,8 +362,8 @@
   },
   "coal_miners_attack_c_01_team": {
    "frame": {
-    "x": 91,
-    "y": 510,
+    "x": 939,
+    "y": 2,
     "w": 82,
     "h": 151
    },
@@ -386,18 +386,18 @@
   },
   "coal_miners_attack_c_02": {
    "frame": {
-    "x": 622,
+    "x": 391,
     "y": 2,
     "w": 132,
-    "h": 165
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 177,
-    "y": 249,
+    "y": 247,
     "w": 132,
-    "h": 165
+    "h": 167
    },
    "sourceSize": {
     "w": 506,
@@ -410,8 +410,8 @@
   },
   "coal_miners_attack_c_02_team": {
    "frame": {
-    "x": 177,
-    "y": 510,
+    "x": 848,
+    "y": 320,
     "w": 80,
     "h": 149
    },
@@ -434,18 +434,18 @@
   },
   "coal_miners_attack_c_03": {
    "frame": {
-    "x": 326,
-    "y": 184,
+    "x": 527,
+    "y": 2,
     "w": 127,
-    "h": 159
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 175,
-    "y": 255,
+    "y": 253,
     "w": 127,
-    "h": 159
+    "h": 161
    },
    "sourceSize": {
     "w": 506,
@@ -458,18 +458,18 @@
   },
   "coal_miners_attack_c_03_team": {
    "frame": {
-    "x": 514,
-    "y": 510,
-    "w": 91,
-    "h": 143
+    "x": 847,
+    "y": 477,
+    "w": 87,
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
     "y": 246,
-    "w": 91,
-    "h": 143
+    "w": 87,
+    "h": 142
    },
    "sourceSize": {
     "w": 506,
@@ -482,18 +482,18 @@
   },
   "coal_miners_attack_c_04": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 514,
+    "y": 173,
     "w": 119,
-    "h": 178
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 210,
-    "y": 237,
+    "y": 235,
     "w": 119,
-    "h": 178
+    "h": 180
    },
    "sourceSize": {
     "w": 506,
@@ -506,8 +506,8 @@
   },
   "coal_miners_attack_c_04_team": {
    "frame": {
-    "x": 549,
-    "y": 184,
+    "x": 938,
+    "y": 487,
     "w": 75,
     "h": 159
    },
@@ -530,18 +530,18 @@
   },
   "coal_miners_attack_c_05": {
    "frame": {
-    "x": 125,
-    "y": 2,
+    "x": 514,
+    "y": 357,
     "w": 118,
-    "h": 174
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 230,
-    "y": 242,
+    "y": 239,
     "w": 118,
-    "h": 174
+    "h": 177
    },
    "sourceSize": {
     "w": 506,
@@ -554,15 +554,15 @@
   },
   "coal_miners_attack_c_05_team": {
    "frame": {
-    "x": 598,
-    "y": 350,
+    "x": 758,
+    "y": 319,
     "w": 86,
     "h": 154
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 240,
+    "x": 239,
     "y": 232,
     "w": 86,
     "h": 154
@@ -578,18 +578,18 @@
   },
   "coal_miners_attack_c_06": {
    "frame": {
-    "x": 356,
-    "y": 510,
+    "x": 166,
+    "y": 501,
     "w": 154,
-    "h": 145
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 231,
-    "y": 271,
+    "y": 269,
     "w": 154,
-    "h": 145
+    "h": 147
    },
    "sourceSize": {
     "w": 506,
@@ -602,18 +602,18 @@
   },
   "coal_miners_attack_c_06_team": {
    "frame": {
-    "x": 609,
-    "y": 510,
-    "w": 113,
-    "h": 139
+    "x": 391,
+    "y": 173,
+    "w": 112,
+    "h": 138
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 236,
     "y": 261,
-    "w": 113,
-    "h": 139
+    "w": 112,
+    "h": 138
    },
    "sourceSize": {
     "w": 506,
@@ -626,18 +626,18 @@
   },
   "coal_miners_attack_c_07": {
    "frame": {
-    "x": 386,
-    "y": 2,
+    "x": 637,
+    "y": 167,
     "w": 110,
-    "h": 171
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 241,
-    "y": 245,
+    "y": 243,
     "w": 110,
-    "h": 171
+    "h": 173
    },
    "sourceSize": {
     "w": 506,
@@ -650,8 +650,8 @@
   },
   "coal_miners_attack_c_07_team": {
    "frame": {
-    "x": 860,
-    "y": 350,
+    "x": 751,
+    "y": 164,
     "w": 94,
     "h": 151
    },
@@ -674,18 +674,18 @@
   },
   "coal_miners_attack_c_08": {
    "frame": {
-    "x": 500,
-    "y": 2,
+    "x": 636,
+    "y": 357,
     "w": 118,
-    "h": 170
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 222,
-    "y": 246,
+    "y": 244,
     "w": 118,
-    "h": 170
+    "h": 172
    },
    "sourceSize": {
     "w": 506,
@@ -698,8 +698,8 @@
   },
   "coal_miners_attack_c_08_team": {
    "frame": {
-    "x": 261,
-    "y": 510,
+    "x": 849,
+    "y": 168,
     "w": 91,
     "h": 148
    },
@@ -782,7 +782,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 1024,
-   "h": 664
+   "h": 656
   },
   "scale": "3",
   "ageborn": {
