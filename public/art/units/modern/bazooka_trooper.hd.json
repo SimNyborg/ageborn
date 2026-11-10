@@ -2,8 +2,8 @@
  "frames": {
   "bazooka_trooper_idle_00": {
    "frame": {
-    "x": 2311,
-    "y": 264,
+    "x": 1260,
+    "y": 582,
     "w": 190,
     "h": 184
    },
@@ -26,8 +26,8 @@
   },
   "bazooka_trooper_idle_00_team": {
    "frame": {
-    "x": 2380,
-    "y": 818,
+    "x": 3044,
+    "y": 142,
     "w": 164,
     "h": 136
    },
@@ -50,8 +50,8 @@
   },
   "bazooka_trooper_idle_01": {
    "frame": {
-    "x": 2119,
-    "y": 264,
+    "x": 1447,
+    "y": 386,
     "w": 188,
     "h": 186
    },
@@ -74,8 +74,8 @@
   },
   "bazooka_trooper_idle_01_team": {
    "frame": {
-    "x": 2,
-    "y": 962,
+    "x": 3204,
+    "y": 2,
     "w": 161,
     "h": 136
    },
@@ -98,8 +98,8 @@
   },
   "bazooka_trooper_idle_02": {
    "frame": {
-    "x": 1062,
-    "y": 264,
+    "x": 1091,
+    "y": 197,
     "w": 184,
     "h": 189
    },
@@ -122,8 +122,8 @@
   },
   "bazooka_trooper_idle_02_team": {
    "frame": {
-    "x": 1641,
-    "y": 818,
+    "x": 2883,
+    "y": 145,
     "w": 157,
     "h": 137
    },
@@ -146,8 +146,8 @@
   },
   "bazooka_trooper_idle_03": {
    "frame": {
-    "x": 2,
-    "y": 264,
+    "x": 734,
+    "y": 198,
     "w": 182,
     "h": 192
    },
@@ -170,8 +170,8 @@
   },
   "bazooka_trooper_idle_03_team": {
    "frame": {
-    "x": 2076,
-    "y": 647,
+    "x": 2542,
+    "y": 2,
     "w": 156,
     "h": 141
    },
@@ -194,8 +194,8 @@
   },
   "bazooka_trooper_idle_04": {
    "frame": {
-    "x": 1929,
-    "y": 2,
+    "x": 546,
+    "y": 201,
     "w": 184,
     "h": 193
    },
@@ -218,10 +218,10 @@
   },
   "bazooka_trooper_idle_04_team": {
    "frame": {
-    "x": 1915,
-    "y": 647,
+    "x": 2336,
+    "y": 317,
     "w": 157,
-    "h": 141
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 275,
     "y": 212,
     "w": 157,
-    "h": 141
+    "h": 142
    },
    "sourceSize": {
     "w": 650,
@@ -242,8 +242,8 @@
   },
   "bazooka_trooper_idle_05": {
    "frame": {
-    "x": 870,
-    "y": 264,
+    "x": 1068,
+    "y": 391,
     "w": 188,
     "h": 189
    },
@@ -266,10 +266,10 @@
   },
   "bazooka_trooper_idle_05_team": {
    "frame": {
-    "x": 664,
-    "y": 818,
+    "x": 2470,
+    "y": 607,
     "w": 161,
-    "h": 139
+    "h": 140
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 272,
     "y": 215,
     "w": 161,
-    "h": 139
+    "h": 140
    },
    "sourceSize": {
     "w": 650,
@@ -290,8 +290,8 @@
   },
   "bazooka_trooper_walk_00": {
    "frame": {
-    "x": 559,
-    "y": 460,
+    "x": 1068,
+    "y": 584,
     "w": 185,
     "h": 180
    },
@@ -314,9 +314,9 @@
   },
   "bazooka_trooper_walk_00_team": {
    "frame": {
-    "x": 993,
-    "y": 818,
-    "w": 159,
+    "x": 2721,
+    "y": 146,
+    "w": 158,
     "h": 139
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 281,
     "y": 223,
-    "w": 159,
+    "w": 158,
     "h": 139
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "bazooka_trooper_walk_01": {
    "frame": {
-    "x": 1507,
-    "y": 460,
+    "x": 1889,
+    "y": 2,
     "w": 183,
     "h": 175
    },
@@ -362,8 +362,8 @@
   },
   "bazooka_trooper_walk_01_team": {
    "frame": {
-    "x": 167,
-    "y": 962,
+    "x": 3369,
+    "y": 141,
     "w": 158,
     "h": 134
    },
@@ -386,8 +386,8 @@
   },
   "bazooka_trooper_walk_02": {
    "frame": {
-    "x": 1250,
-    "y": 264,
+    "x": 1208,
+    "y": 2,
     "w": 184,
     "h": 189
    },
@@ -410,10 +410,10 @@
   },
   "bazooka_trooper_walk_02_team": {
    "frame": {
-    "x": 1478,
-    "y": 818,
+    "x": 2497,
+    "y": 295,
     "w": 159,
-    "h": 138
+    "h": 140
    },
    "rotated": false,
    "trimmed": true,
@@ -421,7 +421,7 @@
     "x": 287,
     "y": 216,
     "w": 159,
-    "h": 138
+    "h": 140
    },
    "sourceSize": {
     "w": 650,
@@ -434,8 +434,8 @@
   },
   "bazooka_trooper_walk_03": {
    "frame": {
-    "x": 2307,
-    "y": 2,
+    "x": 690,
+    "y": 398,
     "w": 184,
     "h": 192
    },
@@ -458,9 +458,9 @@
   },
   "bazooka_trooper_walk_03_team": {
    "frame": {
-    "x": 2,
-    "y": 818,
-    "w": 160,
+    "x": 2558,
+    "y": 147,
+    "w": 159,
     "h": 140
    },
    "rotated": false,
@@ -468,7 +468,7 @@
    "spriteSourceSize": {
     "x": 284,
     "y": 206,
-    "w": 160,
+    "w": 159,
     "h": 140
    },
    "sourceSize": {
@@ -482,8 +482,8 @@
   },
   "bazooka_trooper_walk_04": {
    "frame": {
-    "x": 1318,
-    "y": 460,
+    "x": 1837,
+    "y": 186,
     "w": 185,
     "h": 176
    },
@@ -506,9 +506,9 @@
   },
   "bazooka_trooper_walk_04_team": {
    "frame": {
-    "x": 1156,
-    "y": 818,
-    "w": 159,
+    "x": 2863,
+    "y": 2,
+    "w": 158,
     "h": 139
    },
    "rotated": false,
@@ -516,7 +516,7 @@
    "spriteSourceSize": {
     "x": 281,
     "y": 223,
-    "w": 159,
+    "w": 158,
     "h": 139
    },
    "sourceSize": {
@@ -530,8 +530,8 @@
   },
   "bazooka_trooper_walk_05": {
    "frame": {
-    "x": 2,
-    "y": 647,
+    "x": 690,
+    "y": 594,
     "w": 181,
     "h": 167
    },
@@ -554,18 +554,18 @@
   },
   "bazooka_trooper_walk_05_team": {
    "frame": {
-    "x": 851,
-    "y": 962,
-    "w": 155,
-    "h": 128
+    "x": 3066,
+    "y": 282,
+    "w": 154,
+    "h": 130
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 282,
     "y": 230,
-    "w": 155,
-    "h": 128
+    "w": 154,
+    "h": 130
    },
    "sourceSize": {
     "w": 650,
@@ -578,8 +578,8 @@
   },
   "bazooka_trooper_walk_06": {
    "frame": {
-    "x": 748,
-    "y": 460,
+    "x": 1454,
+    "y": 576,
     "w": 181,
     "h": 179
    },
@@ -602,10 +602,10 @@
   },
   "bazooka_trooper_walk_06_team": {
    "frame": {
-    "x": 1802,
-    "y": 818,
+    "x": 2806,
+    "y": 434,
     "w": 152,
-    "h": 137
+    "h": 138
    },
    "rotated": false,
    "trimmed": true,
@@ -613,7 +613,7 @@
     "x": 282,
     "y": 216,
     "w": 152,
-    "h": 137
+    "h": 138
    },
    "sourceSize": {
     "w": 650,
@@ -626,8 +626,8 @@
   },
   "bazooka_trooper_walk_07": {
    "frame": {
-    "x": 1438,
-    "y": 264,
+    "x": 1260,
+    "y": 390,
     "w": 183,
     "h": 188
    },
@@ -650,8 +650,8 @@
   },
   "bazooka_trooper_walk_07_team": {
    "frame": {
-    "x": 1319,
-    "y": 818,
+    "x": 2800,
+    "y": 582,
     "w": 155,
     "h": 139
    },
@@ -674,8 +674,8 @@
   },
   "bazooka_trooper_attack_00": {
    "frame": {
-    "x": 1744,
-    "y": 2,
+    "x": 505,
+    "y": 414,
     "w": 181,
     "h": 194
    },
@@ -698,8 +698,8 @@
   },
   "bazooka_trooper_attack_00_team": {
    "frame": {
-    "x": 1263,
-    "y": 647,
+    "x": 2238,
+    "y": 168,
     "w": 153,
     "h": 145
    },
@@ -722,8 +722,8 @@
   },
   "bazooka_trooper_attack_01": {
    "frame": {
-    "x": 933,
-    "y": 460,
+    "x": 1639,
+    "y": 379,
     "w": 195,
     "h": 178
    },
@@ -746,10 +746,10 @@
   },
   "bazooka_trooper_attack_01_team": {
    "frame": {
-    "x": 679,
-    "y": 962,
+    "x": 3369,
+    "y": 2,
     "w": 168,
-    "h": 131
+    "h": 135
    },
    "rotated": false,
    "trimmed": true,
@@ -757,7 +757,7 @@
     "x": 276,
     "y": 224,
     "w": 168,
-    "h": 131
+    "h": 135
    },
    "sourceSize": {
     "w": 650,
@@ -770,8 +770,8 @@
   },
   "bazooka_trooper_attack_02": {
    "frame": {
-    "x": 1817,
-    "y": 460,
+    "x": 1762,
+    "y": 561,
     "w": 199,
     "h": 172
    },
@@ -794,8 +794,8 @@
   },
   "bazooka_trooper_attack_02_team": {
    "frame": {
-    "x": 329,
-    "y": 962,
+    "x": 2959,
+    "y": 576,
     "w": 171,
     "h": 131
    },
@@ -818,8 +818,8 @@
   },
   "bazooka_trooper_attack_03": {
    "frame": {
-    "x": 2020,
-    "y": 460,
+    "x": 1838,
+    "y": 366,
     "w": 199,
     "h": 171
    },
@@ -842,9 +842,9 @@
   },
   "bazooka_trooper_attack_03_team": {
    "frame": {
-    "x": 504,
-    "y": 962,
-    "w": 171,
+    "x": 2962,
+    "y": 430,
+    "w": 170,
     "h": 131
    },
    "rotated": false,
@@ -852,7 +852,7 @@
    "spriteSourceSize": {
     "x": 279,
     "y": 229,
-    "w": 171,
+    "w": 170,
     "h": 131
    },
    "sourceSize": {
@@ -866,8 +866,8 @@
   },
   "bazooka_trooper_attack_04": {
    "frame": {
-    "x": 1820,
-    "y": 264,
+    "x": 1396,
+    "y": 2,
     "w": 295,
     "h": 186
    },
@@ -890,8 +890,8 @@
   },
   "bazooka_trooper_attack_04_team": {
    "frame": {
-    "x": 166,
-    "y": 818,
+    "x": 2702,
+    "y": 2,
     "w": 157,
     "h": 140
    },
@@ -914,8 +914,8 @@
   },
   "bazooka_trooper_attack_05": {
    "frame": {
-    "x": 919,
-    "y": 2,
+    "x": 177,
+    "y": 482,
     "w": 324,
     "h": 202
    },
@@ -938,8 +938,8 @@
   },
   "bazooka_trooper_attack_05_team": {
    "frame": {
-    "x": 809,
-    "y": 647,
+    "x": 2150,
+    "y": 518,
     "w": 150,
     "h": 155
    },
@@ -962,8 +962,8 @@
   },
   "bazooka_trooper_attack_06": {
    "frame": {
-    "x": 2,
-    "y": 460,
+    "x": 1474,
+    "y": 192,
     "w": 359,
     "h": 183
    },
@@ -986,8 +986,8 @@
   },
   "bazooka_trooper_attack_06_team": {
    "frame": {
-    "x": 1420,
-    "y": 647,
+    "x": 2376,
+    "y": 2,
     "w": 162,
     "h": 144
    },
@@ -1010,8 +1010,8 @@
   },
   "bazooka_trooper_attack_07": {
    "frame": {
-    "x": 188,
-    "y": 264,
+    "x": 888,
+    "y": 2,
     "w": 316,
     "h": 191
    },
@@ -1034,8 +1034,8 @@
   },
   "bazooka_trooper_attack_07_team": {
    "frame": {
-    "x": 2201,
-    "y": 818,
+    "x": 3025,
+    "y": 2,
     "w": 175,
     "h": 136
    },
@@ -1058,7 +1058,7 @@
   },
   "bazooka_trooper_attack_08": {
    "frame": {
-    "x": 1430,
+    "x": 384,
     "y": 2,
     "w": 310,
     "h": 195
@@ -1082,8 +1082,8 @@
   },
   "bazooka_trooper_attack_08_team": {
    "frame": {
-    "x": 1586,
-    "y": 647,
+    "x": 2304,
+    "y": 504,
     "w": 162,
     "h": 143
    },
@@ -1106,9 +1106,9 @@
   },
   "bazooka_trooper_attack_09": {
    "frame": {
-    "x": 698,
-    "y": 264,
-    "w": 168,
+    "x": 920,
+    "y": 197,
+    "w": 167,
     "h": 190
    },
    "rotated": false,
@@ -1116,7 +1116,7 @@
    "spriteSourceSize": {
     "x": 258,
     "y": 192,
-    "w": 168,
+    "w": 167,
     "h": 190
    },
    "sourceSize": {
@@ -1130,10 +1130,10 @@
   },
   "bazooka_trooper_attack_09_team": {
    "frame": {
-    "x": 327,
-    "y": 818,
+    "x": 2470,
+    "y": 463,
     "w": 165,
-    "h": 139
+    "h": 140
    },
    "rotated": false,
    "trimmed": true,
@@ -1141,7 +1141,7 @@
     "x": 267,
     "y": 214,
     "w": 165,
-    "h": 139
+    "h": 140
    },
    "sourceSize": {
     "w": 650,
@@ -1154,8 +1154,8 @@
   },
   "bazooka_trooper_attack_10": {
    "frame": {
-    "x": 508,
-    "y": 264,
+    "x": 878,
+    "y": 394,
     "w": 186,
     "h": 190
    },
@@ -1178,9 +1178,9 @@
   },
   "bazooka_trooper_attack_10_team": {
    "frame": {
-    "x": 829,
-    "y": 818,
-    "w": 160,
+    "x": 2660,
+    "y": 291,
+    "w": 159,
     "h": 139
    },
    "rotated": false,
@@ -1188,7 +1188,7 @@
    "spriteSourceSize": {
     "x": 272,
     "y": 214,
-    "w": 160,
+    "w": 159,
     "h": 139
    },
    "sourceSize": {
@@ -1202,8 +1202,8 @@
   },
   "bazooka_trooper_hit_00": {
    "frame": {
-    "x": 365,
-    "y": 460,
+    "x": 1695,
+    "y": 2,
     "w": 190,
     "h": 180
    },
@@ -1226,8 +1226,8 @@
   },
   "bazooka_trooper_hit_00_team": {
    "frame": {
-    "x": 2236,
-    "y": 647,
+    "x": 2635,
+    "y": 607,
     "w": 161,
     "h": 140
    },
@@ -1250,7 +1250,7 @@
   },
   "bazooka_trooper_hit_01": {
    "frame": {
-    "x": 754,
+    "x": 219,
     "y": 2,
     "w": 161,
     "h": 206
@@ -1274,10 +1274,10 @@
   },
   "bazooka_trooper_hit_01_team": {
    "frame": {
-    "x": 672,
-    "y": 647,
+    "x": 2041,
+    "y": 354,
     "w": 133,
-    "h": 158
+    "h": 160
    },
    "rotated": false,
    "trimmed": true,
@@ -1285,7 +1285,7 @@
     "x": 265,
     "y": 191,
     "w": 133,
-    "h": 158
+    "h": 160
    },
    "sourceSize": {
     "w": 650,
@@ -1298,8 +1298,8 @@
   },
   "bazooka_trooper_hit_02": {
    "frame": {
-    "x": 1247,
-    "y": 2,
+    "x": 363,
+    "y": 212,
     "w": 179,
     "h": 198
    },
@@ -1322,8 +1322,8 @@
   },
   "bazooka_trooper_hit_02_team": {
    "frame": {
-    "x": 1105,
-    "y": 647,
+    "x": 2178,
+    "y": 354,
     "w": 154,
     "h": 146
    },
@@ -1346,8 +1346,8 @@
   },
   "bazooka_trooper_hit_03": {
    "frame": {
-    "x": 1625,
-    "y": 264,
+    "x": 1279,
+    "y": 195,
     "w": 191,
     "h": 187
    },
@@ -1370,9 +1370,9 @@
   },
   "bazooka_trooper_hit_03_team": {
    "frame": {
-    "x": 496,
-    "y": 818,
-    "w": 164,
+    "x": 2639,
+    "y": 439,
+    "w": 163,
     "h": 139
    },
    "rotated": false,
@@ -1380,7 +1380,7 @@
    "spriteSourceSize": {
     "x": 274,
     "y": 216,
-    "w": 164,
+    "w": 163,
     "h": 139
    },
    "sourceSize": {
@@ -1394,7 +1394,7 @@
   },
   "bazooka_trooper_hit_04": {
    "frame": {
-    "x": 2117,
+    "x": 698,
     "y": 2,
     "w": 186,
     "h": 192
@@ -1418,8 +1418,8 @@
   },
   "bazooka_trooper_hit_04_team": {
    "frame": {
-    "x": 1752,
-    "y": 647,
+    "x": 2395,
+    "y": 150,
     "w": 159,
     "h": 141
    },
@@ -1442,8 +1442,8 @@
   },
   "bazooka_trooper_die_00": {
    "frame": {
-    "x": 487,
-    "y": 647,
+    "x": 1965,
+    "y": 541,
     "w": 181,
     "h": 162
    },
@@ -1466,8 +1466,8 @@
   },
   "bazooka_trooper_die_00_team": {
    "frame": {
-    "x": 1010,
-    "y": 962,
+    "x": 3212,
+    "y": 142,
     "w": 151,
     "h": 127
    },
@@ -1490,8 +1490,8 @@
   },
   "bazooka_trooper_die_01": {
    "frame": {
-    "x": 2223,
-    "y": 460,
+    "x": 2026,
+    "y": 181,
     "w": 208,
     "h": 169
    },
@@ -1514,10 +1514,10 @@
   },
   "bazooka_trooper_die_01_team": {
    "frame": {
-    "x": 963,
-    "y": 647,
+    "x": 505,
+    "y": 612,
     "w": 138,
-    "h": 147
+    "h": 148
    },
    "rotated": false,
    "trimmed": true,
@@ -1525,7 +1525,7 @@
     "x": 291,
     "y": 179,
     "w": 138,
-    "h": 147
+    "h": 148
    },
    "sourceSize": {
     "w": 650,
@@ -1538,8 +1538,8 @@
   },
   "bazooka_trooper_die_02": {
    "frame": {
-    "x": 219,
-    "y": 2,
+    "x": 2,
+    "y": 264,
     "w": 159,
     "h": 249
    },
@@ -1562,8 +1562,8 @@
   },
   "bazooka_trooper_die_02_team": {
    "frame": {
-    "x": 1694,
-    "y": 460,
+    "x": 1639,
+    "y": 561,
     "w": 119,
     "h": 174
    },
@@ -1586,8 +1586,8 @@
   },
   "bazooka_trooper_die_03": {
    "frame": {
-    "x": 556,
-    "y": 2,
+    "x": 165,
+    "y": 264,
     "w": 194,
     "h": 214
    },
@@ -1610,8 +1610,8 @@
   },
   "bazooka_trooper_die_03_team": {
    "frame": {
-    "x": 1132,
-    "y": 460,
+    "x": 878,
+    "y": 588,
     "w": 182,
     "h": 178
    },
@@ -1619,7 +1619,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 273,
-    "y": 145,
+    "y": 146,
     "w": 182,
     "h": 178
    },
@@ -1658,18 +1658,18 @@
   },
   "bazooka_trooper_die_04_team": {
    "frame": {
-    "x": 382,
-    "y": 2,
-    "w": 170,
-    "h": 239
+    "x": 2,
+    "y": 517,
+    "w": 171,
+    "h": 240
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 285,
     "y": 151,
-    "w": 170,
-    "h": 239
+    "w": 171,
+    "h": 240
    },
    "sourceSize": {
     "w": 650,
@@ -1682,8 +1682,8 @@
   },
   "bazooka_trooper_die_05": {
    "frame": {
-    "x": 187,
-    "y": 647,
+    "x": 2076,
+    "y": 2,
     "w": 296,
     "h": 162
    },
@@ -1706,10 +1706,10 @@
   },
   "bazooka_trooper_die_05_team": {
    "frame": {
-    "x": 1958,
-    "y": 818,
+    "x": 2823,
+    "y": 289,
     "w": 239,
-    "h": 136
+    "h": 137
    },
    "rotated": false,
    "trimmed": true,
@@ -1717,7 +1717,7 @@
     "x": 261,
     "y": 235,
     "w": 239,
-    "h": 136
+    "h": 137
    },
    "sourceSize": {
     "w": 650,
@@ -1730,8 +1730,8 @@
   },
   "bazooka_trooper_die_06": {
    "frame": {
-    "x": 1165,
-    "y": 962,
+    "x": 3224,
+    "y": 279,
     "w": 344,
     "h": 122
    },
@@ -1754,18 +1754,18 @@
   },
   "bazooka_trooper_die_06_team": {
    "frame": {
-    "x": 1873,
-    "y": 962,
-    "w": 325,
-    "h": 88
+    "x": 3134,
+    "y": 621,
+    "w": 324,
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 181,
+    "x": 182,
     "y": 294,
-    "w": 325,
-    "h": 88
+    "w": 324,
+    "h": 89
    },
    "sourceSize": {
     "w": 650,
@@ -1778,8 +1778,8 @@
   },
   "bazooka_trooper_die_07": {
    "frame": {
-    "x": 1513,
-    "y": 962,
+    "x": 3224,
+    "y": 405,
     "w": 356,
     "h": 119
    },
@@ -1802,18 +1802,18 @@
   },
   "bazooka_trooper_die_07_team": {
    "frame": {
-    "x": 2202,
-    "y": 962,
+    "x": 3136,
+    "y": 528,
     "w": 336,
-    "h": 87
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 172,
-    "y": 297,
+    "y": 296,
     "w": 336,
-    "h": 87
+    "h": 89
    },
    "sourceSize": {
     "w": 650,
@@ -1933,8 +1933,8 @@
   "image": "bazooka_trooper.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2560,
-   "h": 1100
+   "w": 3584,
+   "h": 768
   },
   "scale": "3",
   "ageborn": {
