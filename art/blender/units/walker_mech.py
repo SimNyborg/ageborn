@@ -39,6 +39,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "walker_mech"
 GAIT_NAME = "walker"
@@ -49,6 +50,30 @@ CANVAS = (392, 320)
 FEET = (140, 296)
 ANCHORS = {"head": (6, 116), "hitCenter": (0, 78)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the big machines' lifts on the off-white Future armour (FW.ARMOR), the trims and
+# gunmetal as iron, the charcoal suit as cloth (the glows are never lifted)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.8
+LOOK_SHADE = FW.SHADE_BIG
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5)
+HAZARD = "#D9CFA8"
+MATERIAL_KINDS = FW.kinds_future({HAZARD: "polymer"})
+
+# Kaiju Walker (legendary skin, DESIGN A5.8 "Dinosaur-head plating"): scaly green plates, a lower jaw with teeth under
+# the visor, brow horns and dorsal spikes down the back (the silhouette sign), radioactive lime eyes and lights, violet
+# vents (yellow lights and orange vents broke the A11 colour rule: their dark outer outlines sit in the orange team's
+# hue band, 12% of the dying frame)
+PLATE, BONE, DORSAL = "#86A57E", "#EDE3C8", "#4E6A48"
+SKINS = {"kaiju_walker": {
+    "palette": FW.skin_palette({FW.ARMOR: PLATE, F.ARMOR: "#CFDDB4", F.TRIM: "#A8B89A", F.STEEL: "#8C9A80",
+                                F.GUNMETAL: "#46553F", F.SUIT: "#36432F", F.VISOR_DARK: "#1C2619", F.MINT: "#A6F06A",
+                                F.MINT_CORE: "#EAFFD0", F.MAGENTA: "#B45AF0", F.MAGENTA_CORE: "#EED6FF",
+                                HAZARD: "#D6CB98", FW.LINE_ON_WHITE: "#5E7A57", FW.WEAR_ON_WHITE: "#A4BE98"}),
+    # the plates take the hide kind's blotches (scales at game scale), the teeth and horns bone
+    "kinds": FW.kinds({PLATE: "hide", "#CFDDB4": "hide", "#5E7A57": "hide", "#A4BE98": "hide", DORSAL: "hide",
+                       BONE: "bone", "#A8B89A": "iron", "#8C9A80": "iron", "#46553F": "iron", "#36432F": "cloth",
+                       "#1C2619": "glass", "#D6CB98": "polymer"})}}
 
 HIP_Z = 50.0
 THIGH, SHIN = 27.0, 34.0
@@ -74,7 +99,7 @@ def _ram_parts(rig, j_fore, j_ram):
                     segs=18)
     rig.part(j_fore, g, F.GUNMETAL, finish="metal")
     g = Geo().blob((x, y, z - UP_L - 9.0), (6.4, 6.0, 10.0), p=3.2)    # cylinder housing
-    rig.part(j_fore, g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part(j_fore, g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((x + 5.8, y - 2.0, z - UP_L - 9.0), (1.0, 2.0, 6.0), p=3.0)
     rig.part(j_fore, g, glow=F.MAGENTA, outline=0)
     KF.rivets(rig, j_fore, [(x - 3.0, y - 6.0, z - UP_L - 4.0 - 4.0 * i) for i in range(3)], r=0.9)
@@ -82,7 +107,7 @@ def _ram_parts(rig, j_fore, j_ram):
     g = Geo().capsule((x, y, fz + 8.0), (x, y, fz - 2.0), 2.8)          # piston rod
     rig.part(j_ram, g, F.STEEL, finish="metal", outline=0.8)
     g = Geo().blob((x, y, fz - 7.0), (9.4, 8.6, 7.2), p=3.6)            # hammer fist (bigger)
-    rig.part(j_ram, g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part(j_ram, g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((x, y - 0.2, fz - 13.4), (9.0, 8.2, 1.9), p=3.4)     # team knuckle plate
     g.blob((x, y - 8.6, fz - 7.0), (7.2, 1.2, 4.8), p=3.2)
     rig.part(j_ram, g, team=True, outline=0.7)
@@ -90,6 +115,16 @@ def _ram_parts(rig, j_fore, j_ram):
     for dx in (-5.0, 0.0, 5.0):
         g.blob((x + dx, y - 9.4, fz - 7.0), (1.3, 0.8, 1.3), p=2.4)
     rig.part(j_ram, g, F.TRIM, finish="metal", outline=0)
+    # W4: the housing's two seams, the fist's top seam and its chipped edges (no team colour on the ram: the lunge
+    # proxy reads the team layer's box)
+    hz = z - UP_L - 9.0
+    for z0 in (hz + 6.2, hz - 6.6):
+        FW.band(rig, j_fore, (x, y, hz), (6.4, 6.0, 10.0), 3.2, z0, z0 + 0.7, fill=FW.LINE_ON_WHITE)
+    FW.band(rig, j_ram, (x, y, fz - 7.0), (9.4, 8.6, 7.2), 3.6, fz - 2.4, fz - 1.7, fill=FW.LINE_ON_WHITE)
+    ff = FC.Face(rig, j_ram, [Geo().blob((x, y, fz - 7.0), (9.4, 8.6, 7.2), p=3.6)], yaw_deg=YAW_DEG)
+    FW.wear(rig, j_ram, ff, [(*FW.sc(ff, x + 8.4, fz - 3.6, y - 5.0), 1.3, 0.7),
+                             (*FW.sc(ff, x - 6.8, fz - 1.4, y - 6.0), 1.1, 0.6),
+                             (*FW.sc(ff, x + 3.0, fz - 0.6, y - 4.0), 0.9, 0.5)])
 
 
 RIG = None
@@ -112,7 +147,7 @@ def build(rig):
         g = Geo().capsule((0, y, HIP_Z), (0, y, kz), 4.6, 3.8)
         rig.part(f"thigh_{s}", g, F.SUIT)
         g = Geo().blob((1.6, y - 1.2 * sg, HIP_Z - 8.0), (6.0, 5.4, 9.0), p=2.8, taper=(0.75, 1.05))
-        rig.part(f"thigh_{s}", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+        rig.part(f"thigh_{s}", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
         g = Geo().lathe([(0, -3.6), (5.6, -3.4), (6.0, 0), (5.6, 3.4), (0, 3.6)], (0, y, kz), (0, y + 1, kz), segs=18)
         rig.part(f"shin_{s}", g, F.GUNMETAL, finish="metal")
         g = Geo().capsule((0, y, kz), (0, y, ANK_REST), 3.6, 3.0)
@@ -126,7 +161,7 @@ def build(rig):
         a = ANK_REST
         g = Geo().blob((4.0, y, a - 3.8), (11.5, 7.2, 3.6), p=3.0, taper=(1.0, 0.8))
         g.blob((-6.0, y, a - 3.4), (4.4, 4.6, 3.0), p=2.8)
-        rig.part(f"foot_{s}", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+        rig.part(f"foot_{s}", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
         g = Geo()
         for dy in (-4.6, 0.0, 4.6):
             g.lathe([(2.2, 0), (1.6, 2.4), (0, 4.6)], (14.0, y + dy, a - 5.0), (18.6, y + dy, a - 5.8), segs=10)
@@ -141,7 +176,7 @@ def build(rig):
     rig.joint("fore_l", "arm_l", (SH_L[0], SH_L[1], SH_L[2] - UP_L))
     x, y, z = SH_L
     g = Geo().sphere((x, y, z), 6.4, cuts=4)
-    rig.part("arm_l", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("arm_l", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().capsule((x, y, z), (x, y, z - UP_L), 3.6)
     rig.part("arm_l", g, F.SUIT)
     g = Geo().capsule((x, y, z - UP_L), (x, y, z - UP_L - 13.0), 3.4, 3.0)
@@ -155,9 +190,9 @@ def build(rig):
     belly = Geo().blob((0.5, 0, 60.0), (17.4, 15.4, 9.4), p=2.6)
     bf = FC.Face(rig, "hull", [belly], yaw_deg=YAW_DEG)
     g = KI.stripes(bf, Geo(), K.scr(bf, (4.0, -14.0, 57.5)), 16.0, 3.4, n=5, slant=0.7)
-    rig.part("hull", g, "#D9CFA8", highlight=False, outline=0)
+    rig.part("hull", g, HAZARD, highlight=False, outline=0)
     g = Geo().blob((0, 0, 76.0), (25.0, 20.0, 17.0), p=3.0, taper=(0.9, 1.0))
-    rig.part("hull", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("hull", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     band = Geo().blob((0.5, 0, 76.4), (25.6, 20.6, 17.6), p=3.0, taper=(0.9, 1.0))
     band.clip((0, 0, 67.5), (0, 0, -1)).clip((0, 0, 82.5), (0, 0, 1))
     hf = FC.Face(rig, "hull", [band], yaw_deg=YAW_DEG)
@@ -200,7 +235,7 @@ def build(rig):
     # a side panel that pops open when hit
     rig.joint("panel", "hull", (-10.0, -20.0, 74.0))
     g = Geo().blob((-10.0, -20.6, 74.0), (5.4, 1.2, 4.0), p=3.4)
-    rig.part("panel", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("panel", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     F.sparks(rig, "hull", (26.0, -12.0, 70.0), size=1.4, name="hit_spark", rays=6, seed=5)
 
     # hose from the hull to the ram forearm (follow-through)
@@ -217,7 +252,7 @@ def build(rig):
     rig.joint("ram", "fore_r", (SH_R[0], SH_R[1], SH_R[2] - UP_L - FORE_L))
     x, y, z = SH_R
     g = Geo().blob((x, y - 1.0, z + 1.0), (9.6, 8.0, 8.4), p=2.6)
-    rig.part("arm_r", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("arm_r", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((x, y - 1.4, z + 1.0), (10.0, 8.4, 8.8), p=2.6)
     g.clip((x, y, z + 3.5), (0, 0, 1)).clip((x, y, z - 2.5), (0, 0, -1))
     rig.part("arm_r", g, team=True, outline=0.7)
@@ -241,6 +276,106 @@ def build(rig):
     g = Geo().slab([(-15.6, 110.0), (-33.0, 106.5), (-15.4, 100.0)], 8.0, 1.6)
     rig.part("ant_loose", g, team=True, outline=0.8)
     F.puff(rig, "root", (0.0, -10.0, 30.0), size=3.0, name="smoke", color="#B9BEC6", spread=1.6)
+    _detail(rig)
+    if getattr(rig, "skin", None) == "kaiju_walker":
+        _kaiju(rig)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _kaiju(rig):
+    """Kaiju Walker: two rows of dorsal spikes standing up from the dome on either side of the team roof stripe (the
+    near row taller; they stand clear of the dome's silhouette), bone brow horns over the visor, and a lower jaw
+    with four teeth jutting out under the hull's front (the snout reads in profile at game scale)."""
+    g = Geo()
+    rows = ((-8.0, ((13.0, 6.0, 2.5), (5.0, 8.5, 3.0), (-3.0, 9.5, 3.2), (-11.0, 8.5, 3.0), (-18.0, 6.0, 2.5))),
+            (8.0, ((9.0, 6.5, 2.6), (1.0, 7.5, 2.8), (-7.0, 7.0, 2.7))))       # (clear of the antenna at x -15)
+    lean = math.radians(18.0)
+    for y, spikes in rows:
+        for x, h, r in spikes:
+            k = max(0.0, 1.0 - abs(x / 25.0) ** 3 - abs(y / 20.0) ** 3)
+            base = (x, y, 76.0 + 17.0 * k ** (1.0 / 3.0) - 1.4)          # sunk into the dome's surface
+            g.lathe([(r, 0.0), (r * 0.55, h * 0.5), (0.0, h)], base,
+                    (base[0] - math.sin(lean), y, base[2] + math.cos(lean)), segs=10)
+    rig.part("hull", g, DORSAL, finish="gloss", outline_hex=F.SUIT)
+    g = Geo()
+    a = math.radians(35.0)
+    for y in (-6.5, 5.5):
+        base = (19.0, y, 88.2)
+        g.lathe([(2.3, 0.0), (1.2, 3.2), (0.0, 6.0)], base, (base[0] + math.sin(a), y, base[2] + math.cos(a)), segs=10)
+    rig.part("hull", g, BONE, finish="gloss", outline_hex=F.SUIT)
+    g = Geo().blob((23.5, -1.0, 64.0), (8.5, 12.5, 3.2), p=2.6)
+    rig.part("hull", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    g = Geo()
+    for x, y, z in ((19.0, -7.5, 66.4), (23.0, -8.0, 66.8), (27.0, -7.5, 66.4), (30.0, -6.0, 65.4)):
+        g.lathe([(1.35, 0.0), (0.7, 1.8), (0.0, 3.4)], (x, y, z - 0.8), (x, y, z + 0.2), segs=8)
+    rig.part("hull", g, BONE, finish="gloss", outline=0.5, outline_hex=F.SUIT)
+
+
+def _armor_col():
+    """The colour of the attack smears: the plates' (the overlays take no skin palette)."""
+    return PLATE if getattr(RIG, "skin", None) == "kaiju_walker" else FW.ARMOR
+
+
+def _detail(rig):
+    """W4: the detail standard on the hull, the shoulder and the legs (char space; decals cast at the unit's yaw):
+    the dome's plates (two seams over the top, a brow seam over the visor) with chipped edges, the team band split
+    into plates with a team-dark lower rim, the shoulder's seam and wear, seams round the thigh shells, team-dark
+    grooves on the shin guards and seams round the feet."""
+    shell = Geo().blob((0, 0, 76.0), (25.0, 20.0, 17.0), p=3.0, taper=(0.9, 1.0))
+    sf = FC.Face(rig, "hull", [shell], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", sf, [[FW.sc(sf, xx, zz, yy) for yy, zz in ((-18.6, 83.2), (-16.4, 88.0), (-11.5, 91.6))]
+                                     for xx in (-14.0, 12.0)] +
+                   [[FW.sc(sf, 17.0, 86.2, -13.0), FW.sc(sf, 20.6, 86.6, -4.0), FW.sc(sf, 20.6, 86.6, 6.0)]], w=0.9)
+    FW.wear(rig, "hull", sf, [(*FW.sc(sf, -21.0, 88.4, -13.6), 1.4, 0.7), (*FW.sc(sf, -6.0, 89.6, -16.0), 1.2, 0.6),
+                              (*FW.sc(sf, 17.0, 89.0, -13.4), 1.3, 0.6), (*FW.sc(sf, 23.2, 84.6, -6.0), 1.0, 0.6)])
+    band = Geo().blob((0.5, 0, 76.4), (25.6, 20.6, 17.6), p=3.0, taper=(0.9, 1.0))
+    bf = FC.Face(rig, "hull", [band], yaw_deg=YAW_DEG)
+    FW.folds(rig, "hull", bf, [[FW.sc(bf, -17.0, zz, -20.4) for zz in (81.8, 75.0, 68.4)]], w=0.9, team=True)
+    FW.folds(rig, "hull", bf, [[FW.sc(bf, xx, 68.7, -19.6) for xx in (-19.0, -12.0, -5.0, 2.0, 9.0, 16.0, 19.0)]],
+             w=0.8, team=True)
+    # the ram arm's shoulder: a seam over its white dome, chipped edges
+    x, y, z = SH_R
+    sh = FC.Face(rig, "arm_r", [Geo().blob((x, y - 1.0, z + 1.0), (9.6, 8.0, 8.4), p=2.6)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "arm_r", sh, [[FW.sc(sh, x, z + 3.8, y - 7.6), FW.sc(sh, x, z + 6.8, y - 5.6),
+                                       FW.sc(sh, x, z + 8.6, y - 2.0)]], w=0.8)
+    FW.wear(rig, "arm_r", sh, [(*FW.sc(sh, x + 6.6, z + 5.2, y - 5.6), 1.2, 0.6),
+                               (*FW.sc(sh, x - 5.6, z + 6.4, y - 5.0), 1.0, 0.6)])
+    # the legs
+    for s in ("r", "l"):
+        yy = LEG_Y[s]
+        sg = 1 if s == "r" else -1
+        kz = HIP_Z - THIGH
+        FW.band(rig, f"thigh_{s}", (1.6, yy - 1.2 * sg, HIP_Z - 8.0), (6.0, 5.4, 9.0), 2.8, HIP_Z - 4.4, HIP_Z - 3.7,
+                fill=FW.LINE_ON_WHITE, taper=(0.75, 1.05))
+        for z0 in (kz - 3.4, kz - 19.2):
+            FW.band(rig, f"shin_{s}", (-0.4, yy, kz - 12.0), (5.6, 5.6, 12.5), 2.8, z0, z0 + 0.7, team=True,
+                    taper=(0.8, 1.15))
+        a = ANK_REST
+        FW.band(rig, f"foot_{s}", (4.0, yy, a - 3.8), (11.5, 7.2, 3.6), 3.0, a - 2.0, a - 1.4, fill=FW.LINE_ON_WHITE,
+                taper=(1.0, 0.8))
+    tf = FC.Face(rig, "thigh_r", [Geo().blob((1.6, LEG_Y["r"] - 1.2, HIP_Z - 8.0), (6.0, 5.4, 9.0), p=2.8,
+                                             taper=(0.75, 1.05))], yaw_deg=YAW_DEG)
+    FW.wear(rig, "thigh_r", tf, [(*FW.sc(tf, 6.0, HIP_Z - 14.0, LEG_Y["r"] - 5.6), 1.2, 0.6)])
+    of = FC.Face(rig, "foot_r", [Geo().blob((4.0, LEG_Y["r"], ANK_REST - 3.8), (11.5, 7.2, 3.6), p=3.0,
+                                            taper=(1.0, 0.8))], yaw_deg=YAW_DEG)
+    FW.wear(rig, "foot_r", of, [(*FW.sc(of, 13.0, ANK_REST - 2.6, LEG_Y["r"] - 5.0), 1.3, 0.6)])
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, mech: dents and scratches, steam and sparks; never on the visor):
+    the team band behind the ram arm, the white dome, the fist's team side plate, the near shin guard, the near thigh
+    shell; steam from the engine pack and sparks at the near knee."""
+    # (screen positions, spotdebug.py: the band between the pop panel and the dome, the fist's team side plate
+    # between its studs and its seam)
+    rig.damage_spot_at("band", "hull", -19.5, 74.5, 5.0, "metal", team=True)
+    rig.damage_spot_at("dome", "hull", -14.0, 83.5, 5.5, "metal", fill=FW.ARMOR)
+    rig.damage_spot_at("fist", "ram", -7.0, 30.5, 5.0, "metal", team=True)
+    rig.damage_spot_at("shin", "shin_r", -6.5, 4.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("thigh", "thigh_r", -3.5, 35.0, 5.0, "metal", fill=FW.ARMOR)
+    rig.damage_spot("steam", "hull", (-29.0, -4.0, 86.0), 5.0, "steam", kind="emit", normal=(-0.6, 0, 0.8))
+    rig.damage_spot("knee", "shin_r", (0.0, LEG_Y["r"] - 3.8, HIP_Z - THIGH), 4.0, "spark", kind="emit",
+                    normal=(0, -1, 0))
 
 
 # -- poses -----------------------------------------------------------------------------------
@@ -345,11 +480,12 @@ def _attack_pose(f):
 
 def _attack_clip():
     swing = {"kind": "arc", "joint": "ram", "inner": (FIST[0], FIST[1], FIST[2] + 8.0), "outer": FIST_BOT,
-             "color": F.ARMOR, "white": 0.15, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
+             "color": _armor_col(), "white": 0.15, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
     ov = {
-        4: [dict(swing, **{"from": 3})],
-        5: [dict(swing, **{"from": 4})],
-        6: [dict(swing, **{"from": 5, "t0": 0.3, "lines": 2}),
+        # W4: two-tone arcs (one flat light crescent held the smear frames' micro down)
+        4: FW.smear_two_tone(dict(swing, **{"from": 3}), band=0.55),
+        5: FW.smear_two_tone(dict(swing, **{"from": 4}), band=0.55),
+        6: FW.smear_two_tone(dict(swing, **{"from": 5, "t0": 0.3, "lines": 2}), band=0.55) + [
             {"kind": "burst", "joint": "ram", "point": FIST_BOT, "r0_lu": 10.0, "r1_lu": 20.0, "n": 7,
              "a0": 10.0, "arc": 160.0},
             {"kind": "dust", "ground": (24.0, 0.0), "size_lu": 7.0, "puffs": 3, "seed": 11, "spread": 1.0, "dir": -1.0},
@@ -434,14 +570,16 @@ def _c_pose(i):
 
 def _variant(name, pose_fn, dust, streak=False):
     swing = {"kind": "arc", "joint": "ram", "inner": (FIST[0], FIST[1], FIST[2] + 8.0), "outer": FIST_BOT,
-             "color": F.ARMOR, "white": 0.15, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
+             "color": _armor_col(), "white": 0.15, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
     if streak:
-        swing = {"kind": "streak", "joint": "ram", "point": FIST, "color": F.ARMOR, "width_lu": 14.0,
+        swing = {"kind": "streak", "joint": "ram", "point": FIST, "color": _armor_col(), "width_lu": 14.0,
                  "white": 0.2, "t0": 0.0, "t1": 0.95}
+    def sm(spec):
+        return [spec] if streak else FW.smear_two_tone(spec, band=0.55)
     ov = {
-        4: [dict(swing, **{"from": 3})],
-        5: [dict(swing, **{"from": 4})],
-        6: [dict(swing, **{"from": 5, "t0": 0.3, "lines": 2}),
+        4: sm(dict(swing, **{"from": 3})),
+        5: sm(dict(swing, **{"from": 4})),
+        6: sm(dict(swing, **{"from": 5, "t0": 0.3, "lines": 2})) + [
             {"kind": "burst", "joint": "ram", "point": FIST_BOT, "r0_lu": 10.0, "r1_lu": 20.0, "n": 7,
              "a0": -70.0, "arc": 140.0}] + dust,
         7: [{"kind": "rings", "joint": "ram", "point": FIST_BOT, "radii_lu": (12.0, 18.0), "a0": -60.0, "a1": 60.0}],

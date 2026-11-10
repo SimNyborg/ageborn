@@ -2,8 +2,8 @@
  "frames": {
   "android_pair_attack_b_01": {
    "frame": {
-    "x": 2,
-    "y": 240,
+    "x": 837,
+    "y": 203,
     "w": 145,
     "h": 191
    },
@@ -26,8 +26,8 @@
   },
   "android_pair_attack_b_01_team": {
    "frame": {
-    "x": 621,
-    "y": 435,
+    "x": 1330,
+    "y": 317,
     "w": 89,
     "h": 151
    },
@@ -50,8 +50,8 @@
   },
   "android_pair_attack_b_02": {
    "frame": {
-    "x": 608,
-    "y": 240,
+    "x": 338,
+    "y": 402,
     "w": 173,
     "h": 183
    },
@@ -74,8 +74,8 @@
   },
   "android_pair_attack_b_02_team": {
    "frame": {
-    "x": 714,
-    "y": 435,
+    "x": 996,
+    "y": 383,
     "w": 108,
     "h": 150
    },
@@ -98,8 +98,8 @@
   },
   "android_pair_attack_b_03": {
    "frame": {
-    "x": 785,
-    "y": 240,
+    "x": 512,
+    "y": 203,
     "w": 173,
     "h": 177
    },
@@ -122,10 +122,10 @@
   },
   "android_pair_attack_b_03_team": {
    "frame": {
-    "x": 1037,
-    "y": 435,
+    "x": 1108,
+    "y": 383,
     "w": 110,
-    "h": 146
+    "h": 145
    },
    "rotated": false,
    "trimmed": true,
@@ -133,7 +133,7 @@
     "x": 244,
     "y": 243,
     "w": 110,
-    "h": 146
+    "h": 145
    },
    "sourceSize": {
     "w": 566,
@@ -146,7 +146,7 @@
   },
   "android_pair_attack_b_04": {
    "frame": {
-    "x": 154,
+    "x": 2,
     "y": 2,
     "w": 189,
     "h": 232
@@ -170,9 +170,9 @@
   },
   "android_pair_attack_b_04_team": {
    "frame": {
-    "x": 1236,
-    "y": 240,
-    "w": 87,
+    "x": 1439,
+    "y": 2,
+    "w": 88,
     "h": 165
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 268,
     "y": 238,
-    "w": 87,
+    "w": 88,
     "h": 165
    },
    "sourceSize": {
@@ -195,7 +195,7 @@
   "android_pair_attack_b_05": {
    "frame": {
     "x": 2,
-    "y": 2,
+    "y": 238,
     "w": 148,
     "h": 234
    },
@@ -218,8 +218,8 @@
   },
   "android_pair_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 435,
+    "x": 1338,
+    "y": 2,
     "w": 97,
     "h": 156
    },
@@ -242,8 +242,8 @@
   },
   "android_pair_attack_b_06": {
    "frame": {
-    "x": 962,
-    "y": 240,
+    "x": 837,
+    "y": 398,
     "w": 155,
     "h": 177
    },
@@ -266,10 +266,10 @@
   },
   "android_pair_attack_b_06_team": {
    "frame": {
-    "x": 1151,
-    "y": 435,
+    "x": 1434,
+    "y": 171,
     "w": 97,
-    "h": 142
+    "h": 141
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 270,
     "y": 247,
     "w": 97,
-    "h": 142
+    "h": 141
    },
    "sourceSize": {
     "w": 566,
@@ -290,8 +290,8 @@
   },
   "android_pair_attack_b_07": {
    "frame": {
-    "x": 151,
-    "y": 240,
+    "x": 986,
+    "y": 192,
     "w": 137,
     "h": 187
    },
@@ -314,9 +314,9 @@
   },
   "android_pair_attack_b_07_team": {
    "frame": {
-    "x": 523,
-    "y": 435,
-    "w": 94,
+    "x": 1233,
+    "y": 302,
+    "w": 93,
     "h": 151
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 271,
     "y": 238,
-    "w": 94,
+    "w": 93,
     "h": 151
    },
    "sourceSize": {
@@ -338,7 +338,7 @@
   },
   "android_pair_attack_b_08": {
    "frame": {
-    "x": 845,
+    "x": 693,
     "y": 2,
     "w": 147,
     "h": 197
@@ -362,8 +362,8 @@
   },
   "android_pair_attack_b_08_team": {
    "frame": {
-    "x": 205,
-    "y": 435,
+    "x": 1127,
+    "y": 157,
     "w": 102,
     "h": 153
    },
@@ -386,7 +386,7 @@
   },
   "android_pair_attack_c_01": {
    "frame": {
-    "x": 687,
+    "x": 535,
     "y": 2,
     "w": 154,
     "h": 197
@@ -410,8 +410,8 @@
   },
   "android_pair_attack_c_01_team": {
    "frame": {
-    "x": 103,
-    "y": 435,
+    "x": 1233,
+    "y": 144,
     "w": 98,
     "h": 154
    },
@@ -434,8 +434,8 @@
   },
   "android_pair_attack_c_02": {
    "frame": {
-    "x": 1170,
-    "y": 2,
+    "x": 681,
+    "y": 384,
     "w": 152,
     "h": 193
    },
@@ -458,8 +458,8 @@
   },
   "android_pair_attack_c_02_team": {
    "frame": {
-    "x": 424,
-    "y": 435,
+    "x": 1335,
+    "y": 162,
     "w": 95,
     "h": 151
    },
@@ -482,8 +482,8 @@
   },
   "android_pair_attack_c_03": {
    "frame": {
-    "x": 292,
-    "y": 240,
+    "x": 844,
+    "y": 2,
     "w": 146,
     "h": 186
    },
@@ -506,8 +506,8 @@
   },
   "android_pair_attack_c_03_team": {
    "frame": {
-    "x": 826,
-    "y": 435,
+    "x": 1434,
+    "y": 316,
     "w": 91,
     "h": 150
    },
@@ -530,7 +530,7 @@
   },
   "android_pair_attack_c_04": {
    "frame": {
-    "x": 347,
+    "x": 195,
     "y": 2,
     "w": 169,
     "h": 197
@@ -554,9 +554,9 @@
   },
   "android_pair_attack_c_04_team": {
    "frame": {
-    "x": 1121,
-    "y": 240,
-    "w": 111,
+    "x": 994,
+    "y": 2,
+    "w": 110,
     "h": 166
    },
    "rotated": false,
@@ -564,7 +564,7 @@
    "spriteSourceSize": {
     "x": 272,
     "y": 223,
-    "w": 111,
+    "w": 110,
     "h": 166
    },
    "sourceSize": {
@@ -578,8 +578,8 @@
   },
   "android_pair_attack_c_05": {
    "frame": {
-    "x": 996,
-    "y": 2,
+    "x": 338,
+    "y": 203,
     "w": 170,
     "h": 195
    },
@@ -602,10 +602,10 @@
   },
   "android_pair_attack_c_05_team": {
    "frame": {
-    "x": 1327,
-    "y": 240,
+    "x": 689,
+    "y": 203,
     "w": 116,
-    "h": 160
+    "h": 159
    },
    "rotated": false,
    "trimmed": true,
@@ -613,7 +613,7 @@
     "x": 286,
     "y": 230,
     "w": 116,
-    "h": 160
+    "h": 159
    },
    "sourceSize": {
     "w": 566,
@@ -626,8 +626,8 @@
   },
   "android_pair_attack_c_06": {
    "frame": {
-    "x": 1326,
-    "y": 2,
+    "x": 154,
+    "y": 238,
     "w": 180,
     "h": 192
    },
@@ -650,18 +650,18 @@
   },
   "android_pair_attack_c_06_team": {
    "frame": {
-    "x": 1252,
-    "y": 435,
-    "w": 114,
-    "h": 139
+    "x": 1221,
+    "y": 2,
+    "w": 113,
+    "h": 138
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 291,
-    "y": 250,
-    "w": 114,
-    "h": 139
+    "x": 292,
+    "y": 251,
+    "w": 113,
+    "h": 138
    },
    "sourceSize": {
     "w": 566,
@@ -674,8 +674,8 @@
   },
   "android_pair_attack_c_07": {
    "frame": {
-    "x": 442,
-    "y": 240,
+    "x": 515,
+    "y": 384,
     "w": 162,
     "h": 185
    },
@@ -698,8 +698,8 @@
   },
   "android_pair_attack_c_07_team": {
    "frame": {
-    "x": 921,
-    "y": 435,
+    "x": 154,
+    "y": 434,
     "w": 112,
     "h": 148
    },
@@ -722,7 +722,7 @@
   },
   "android_pair_attack_c_08": {
    "frame": {
-    "x": 520,
+    "x": 368,
     "y": 2,
     "w": 163,
     "h": 197
@@ -746,8 +746,8 @@
   },
   "android_pair_attack_c_08_team": {
    "frame": {
-    "x": 311,
-    "y": 435,
+    "x": 1108,
+    "y": 2,
     "w": 109,
     "h": 151
    },
@@ -830,7 +830,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 1536,
-   "h": 596
+   "h": 588
   },
   "scale": "3",
   "ageborn": {

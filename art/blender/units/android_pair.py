@@ -21,6 +21,7 @@ Animation (ANIM_SPEC G1 march jog at card 85 x 1.25 = 106.25 lu/s, appendix B cl
   hit       light: the head snaps back, the antenna whips, eyes > <
   die       D1 fling and spin, the baton flung away, X eyes
 """
+from ageborn_art import face as FC
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_future_wave as W
 from ageborn_art import kit_industrial as KI
@@ -28,6 +29,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "android_pair"
 GAIT_NAME = "biped"
@@ -37,6 +39,14 @@ CANVAS = (330, 290)
 FEET = (150, 232)
 ANCHORS = {"head": (2, 64), "hitCenter": (0, 31)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the white soldiers' lifts; the wave kit's plates in the troopers' off-white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SKIN_PALETTE = FW.KIT_TROOPER
+MATERIAL_KINDS = FW.kinds_future()
 
 HR = (0.0, F.ARM_Y["r"], F.HAND_Z)
 SHAFT = 26.0
@@ -64,18 +74,38 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, helmet_kind="android", pack=False, team_greave=True, team_thigh=True, team_sleeve=True, antenna=True, head=(1, 0, 38))
+    W.trooper(rig, helmet_kind="android", pack=False, team_greave=True, team_thigh=True, team_sleeve=True, antenna=True,
+              head=(1, 0, 38), strip=False)
+    FW.strip(rig)
     # a team stripe down the back so the team reads from every angle
     g = Geo().blob((-9.4, 0, 30.0), (2.4, 7.6, 8.4), p=3.0)
     rig.part("torso", g, team=True, outline=0.6)
     # chest light strips (androids glow a little)
-    KF.strip(rig, "torso", [(9.6, -6.0, 26.0), (10.2, -6.4, 30.0)], r=0.7)
+    KF.strip(rig, "torso", [(9.6, -6.0, 26.0), (10.2, -6.4, 30.0)], r=0.55)          # (W4: r 0.7)
     rig.joint("baton", "hand_r", HR)
     _baton(rig, "baton")
     rig.joint("crackle", "baton", TIP, hidden=True)
     F.sparks(rig, "baton", TIP, name="crackle", size=0.7, seed=3)
     KI.loose(rig, "baton_loose", HR, lambda j: _baton(rig, j))
     rig.track("clubHead", "baton", TIP)
+    FW.wave_trooper(rig, helmet_kind="android", team_greave=True, team_thigh=True, team_sleeve=True)
+    # W4: the back stripe's team-dark seam (the android's spine)
+    bf = FC.Face(rig, "torso", [Geo().blob((-9.4, 0, 30.0), (2.4, 7.6, 8.4), p=3.0)])
+    FW.folds(rig, "torso", bf, [[FW.sc(bf, -10.6, z, -6.0) for z in (36.0, 30.0, 24.0)]], w=0.7, team=True)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, mech: dents and scratches, sparks and steam; never on the visor): the
+    near shoulder pad, the team crown stripe, the team thigh, the white faulds; sparks at the neck, steam from the
+    back stripe."""
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("thigh", "thigh_r", 1.0, 13.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("faulds", "hips", -5.0, 16.0, 5.0, "metal")
+    rig.damage_spot("crown", "head", (0.0, -2.6, 62.6), 5.0, "metal", team=True, normal=(0, -0.4, 0.9))
+    rig.damage_spot("neck", "torso", (2.0, -6.4, 40.6), 3.5, "spark", kind="emit", normal=(0.3, -0.9, 0.3))
+    rig.damage_spot("vent", "torso", (-11.6, -2.0, 34.0), 4.0, "steam", kind="emit", normal=(-0.8, 0, 0.6))
 
 
 def arms(ha, hf, bw, la=-30.0, lf=10.0):
@@ -187,9 +217,10 @@ JAB = {"kind": "streak", "joint": "baton", "point": TIP, "color": W.MINT, "width
 def _attack_a():
     twirl = {"kind": "arc", "joint": "baton", "inner": (HR[0], HR[1], HR[2] + 2.0), "outer": TIP, "color": W.MINT,
              "white": 0.35, "taper": 0.1, "band": 0.4, "lines": 2, "t0": 0.0, "t1": 1.0, "samples": 18}
+    # W4: two-tone soft smears (one flat light crescent held the smear frames' micro down)
     ov = {1: [dict(twirl, **{"from": 0})], 2: [dict(twirl, **{"from": 1})],
-          4: [dict(CRACK, **{"from": 3})], 5: [dict(CRACK, **{"from": 4})],
-          6: [dict(CRACK, **{"from": 5})] + W.impact_fx("baton", TIP, 121, a0=-110.0, ground_x=20.0)}
+          4: FW.smear_soft(dict(CRACK, **{"from": 3})), 5: FW.smear_soft(dict(CRACK, **{"from": 4})),
+          6: FW.smear_soft(dict(CRACK, **{"from": 5})) + W.impact_fx("baton", TIP, 121, a0=-110.0, ground_x=20.0)}
     return M.clip("attack", [_a_pose(f) for f in range(10)], M.SMALL_MELEE_MS, impact=M.SMALL_MELEE_IMPACT, smear=4,
                   overlays=ov, sequence=list(range(10)) + [0], extra={"holdStep": 3})
 
@@ -210,8 +241,8 @@ def clips():
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_a(),
-        W.melee_clip("attack_b", _b_pose, CRACK, W.impact_fx("baton", TIP, 122, a0=-40.0, ground_x=22.0), rr),
-        W.melee_clip("attack_c", _c_pose, JAB, W.impact_fx("baton", TIP, 123, a0=-70.0, ground_x=24.0), rr),
+        FW.melee_clip("attack_b", _b_pose, CRACK, W.impact_fx("baton", TIP, 122, a0=-40.0, ground_x=22.0), rr),
+        FW.melee_clip("attack_c", _c_pose, JAB, W.impact_fx("baton", TIP, 123, a0=-70.0, ground_x=24.0), rr),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),

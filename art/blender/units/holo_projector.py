@@ -19,6 +19,11 @@ wind-up loops the charge hold):
   hit       light: the head snaps back, eyes > <
   die       D1 fling and spin, the lens mast snaps off, X eyes
 """
+import math
+
+from ageborn_art import aimdata
+from ageborn_art import aimed as AIMED
+from ageborn_art import face as FC
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_future_wave as W
 from ageborn_art import kit_industrial as KI
@@ -26,6 +31,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "holo_projector"
 GAIT_NAME = "biped"
@@ -35,6 +41,14 @@ CANVAS = (300, 330)
 FEET = (130, 290)
 ANCHORS = {"head": (2, 66), "hitCenter": (0, 31), "muzzle": (26, 30)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the white soldiers' lifts; the wave kit's plates in the troopers' off-white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SKIN_PALETTE = FW.KIT_TROOPER
+MATERIAL_KINDS = FW.kinds_future()
 
 HR = (0.0, F.ARM_Y["r"], F.HAND_Z)
 PALM = (HR[0] + 1.5, HR[1] - 1.0, HR[2] - 4.5)          # the emitter on the near hand (arm hangs down at rest)
@@ -48,7 +62,8 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, helmet_kind="hood", team_greave=True, team_thigh=True, team_sleeve=True, pack=True)
+    W.trooper(rig, helmet_kind="hood", team_greave=True, team_thigh=True, team_sleeve=True, pack=True, strip=False)
+    FW.strip(rig)
     g = Geo().blob((0.4, 0, 21.8), (10.6, 10.6, 2.6), p=3.4)      # a team sash belt
     rig.part("torso", g, team=True, outline=0.5)
     # backpack projector housing
@@ -56,6 +71,11 @@ def build(rig):
     rig.part("torso", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((-17.6, 0, 33.0), (2.0, 9.0, 2.2), p=3.0)
     rig.part("torso", g, team=True, outline=0.5)
+    # (W4) the housing's seams and scuffed corners
+    hf = FC.Face(rig, "torso", [Geo().blob((-15.0, 0, 32.0), (4.6, 8.8, 9.0), p=3.2)])
+    FW.panel_lines(rig, "torso", hf, [[FW.sc(hf, -13.4, 39.6, -8.4), FW.sc(hf, -13.0, 35.6, -8.6)],
+                                      [FW.sc(hf, -13.0, 30.4, -8.6), FW.sc(hf, -13.4, 24.6, -8.4)]], w=0.7)
+    FW.wear(rig, "torso", hf, [(*FW.sc(hf, -18.4, 39.4, -7.6), 1.2, 0.6), (*FW.sc(hf, -11.4, 24.8, -7.8), 1.0, 0.5)])
     # the swivelling mast with its lens
     rig.joint("mast", "torso", MAST0)
     mx, my, mz = MAST0
@@ -66,6 +86,8 @@ def build(rig):
     lx, ly, lz = LENS
     g = Geo().lathe([(0, 0), (5.2, 0.2), (5.6, 2.4), (5.0, 3.4), (0, 3.2)], (lx - 1.0, ly, lz), (lx + 2.4, ly, lz), segs=20)
     rig.part("mast", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    g = Geo().lathe([(0, -0.3), (5.75, -0.25), (5.75, 0.25), (0, 0.3)], (lx + 0.6, ly, lz), (lx + 1.6, ly, lz), segs=20)
+    rig.part("mast", g, FW.GUN_SEAM, outline=0, highlight=False)                # (W4: a seam round the lens rim)
     g = Geo().lathe([(0, 0), (3.8, 0.1), (3.6, 1.0), (0, 1.2)], (lx + 2.2, ly, lz), (lx + 3.4, ly, lz), segs=20)
     rig.part("mast", g, glow=W.HOLO, outline=0.8, outline_hex=W.HOLO_DK)
     rig.joint("lens_glow", "mast", (lx + 3.0, ly, lz), hidden=True)
@@ -84,13 +106,16 @@ def build(rig):
     rig.part("palm_glow", g, glow=W.MINT_CORE, outline=1.0, outline_hex=W.MINT)
     rig.track("muzzle", "hand_r", PALM)
     KI.loose(rig, "mast_loose", MAST0, lambda j: _loose_mast(rig, j))
+    FW.wave_trooper(rig, helmet_kind="hood", team_greave=True, team_thigh=True, team_sleeve=True)
+    if getattr(rig, "skin", None) is not None:
+        return
     # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
     # the team pauldron (it covers the chest from the camera) and thigh, the white backpack, the helmet shell,
     # the projector lens; motes drift from the lens at the last stage
     rig.damage_spot_at("shoulder", "arm_r", -2.0, 39.0, 5.0, "metal", team=True)
-    rig.damage_spot_at("pack", "torso", -18.0, 32.0, 5.0, "metal", fill="#E9EDF2")
+    rig.damage_spot_at("pack", "torso", -18.0, 32.0, 5.0, "metal", fill=FW.TROOPER_WHITE)
     rig.damage_spot_at("helmet", "head", -2.0, 50.0, 5.0, "metal", fill="#444A57")
-    rig.damage_spot_at("lens", "mast", -12.0, 77.0, 5.0, "glass", fill="#E9EDF2")
+    rig.damage_spot_at("lens", "mast", -12.0, 77.0, 5.0, "glass", fill=FW.TROOPER_WHITE)
     rig.damage_spot_at("thigh", "thigh_r", -1.0, 14.0, 5.0, "metal", team=True)
     rig.damage_spot("motes", "mast", (-9.5, -9.0, 76.0), 4.0, "motes", kind="emit", normal=(0, 0, 1))
 
@@ -144,10 +169,25 @@ A_H = [(5, 24), (12, 30), (17, 33), (18, 33), (18, 33), (18, 33), (19, 33), (15,
 A_TR = [-2, -4, -6, -7, -7, -7, -4, 6, 0, -2, -2]
 
 
-def _a_pose(f):
-    pose = merge(arms(A_H[f], (7.0, 25.0)), {
+# aimed pulses (queue item 44, ageborn_art/aimed.py; W4): a turn of `turn` degrees up swings the near hand's reach
+# round the shoulder (the arm, palm out, follows by IK) and leans the torso back; the head looks up the shot
+AIM_LEAN = 0.22           # torso r per degree of turn (positive leans back)
+AIM_HEAD = 0.30           # head r per degree, on top of the torso's lean
+#        read raise extend HOLD flick set  PULSE kick settle lower low
+AIM_W = [0.0, 0.35, 0.75, 1.0, 1.0, 1.0, 1.0, 0.85, 0.5, 0.2, 0.0]
+
+
+def _reach(f, turn):
+    """The near hand's target (torso space) turned `turn` degrees up about the shoulder, the torso's lean taken out."""
+    dx, dz = A_H[f][0] - F.SH[0], A_H[f][1] - F.SH[1]
+    a = math.radians(turn - AIM_LEAN * turn)
+    return (F.SH[0] + dx * math.cos(a) - dz * math.sin(a), F.SH[1] + dx * math.sin(a) + dz * math.cos(a))
+
+
+def _a_pose(f, turn=0.0):
+    pose = merge(arms(_reach(f, turn) if turn else A_H[f], (7.0, 25.0)), {
         "hand_r": {"r": [0, 40, 80, 90, 90, 90, 90, 60, 30, 0, 0][f]},
-        "torso": {"r": A_TR[f]}, "head": {"r": A_TR[f] - 2},
+        "torso": {"r": A_TR[f] + AIM_LEAN * turn}, "head": {"r": A_TR[f] - 2 + AIM_HEAD * turn},
         "palm_glow": {"show": f in (3, 5, 6)},
         "thigh_r": {"r": [0, 8, 12, 14, 14, 14, 12, 6, 2, 0, 0][f]}, "thigh_l": {"r": [0, -8, -12, -14, -14, -14, -16, -12, -4, 0, 0][f]},
     }, M.body_about((0, 0, 22), x=[0, 0.5, 1, 1, 1, 1.2, 0, -3, -1, 0, 0][f]))
@@ -214,14 +254,29 @@ def _die(k):
     return W.die_d1(k, STANCE, HEIGHT_LU, prop="mast", prop_path=MAST_PATH)
 
 
+def _aimed(attack):
+    """Aimed up about 45 and 70 degrees at flyers (the Holo Projector hits air; they go to the extras sheet). The
+    charge rings and the pulse ride the hand (aimdata measures the forearm): they turn with the shot as well."""
+    out = AIMED.variants(RIG, attack, _a_pose, AIM_W, aims=("up45", "up70"))
+    sp = aimdata.shot_spec(RIG, attack)
+    base = AIMED._drawn(RIG, _a_pose(aimdata.release_frame(attack, sp), 0.0), sp["joint"], sp["axis"])
+    for v in out:
+        AIMED.check_timing(attack, v)
+        turn = AIMED._wrap(AIMED.TARGETS[v.name.rsplit("_", 1)[1]] - base)
+        v.overlays2 = AIMED._turn_overlays(attack.overlays2, turn, AIM_W, "hand_r")
+    return out
+
+
 def clips():
+    attack = _attack_clip()
+    aimed = _aimed(attack)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
+        attack,
         _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed
     return M.check_variants(M.check_contract(cl))

@@ -1,0 +1,2225 @@
+{
+ "frames": {
+  "pulse_trooper@space_cadet_idle_00": {
+   "frame": {
+    "x": 878,
+    "y": 108,
+    "w": 109,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 75,
+    "w": 109,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_00_team": {
+   "frame": {
+    "x": 1741,
+    "y": 161,
+    "w": 57,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 84,
+    "w": 57,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_01": {
+   "frame": {
+    "x": 456,
+    "y": 2,
+    "w": 109,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 73,
+    "w": 109,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_01_team": {
+   "frame": {
+    "x": 1683,
+    "y": 94,
+    "w": 56,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 83,
+    "w": 56,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_02": {
+   "frame": {
+    "x": 111,
+    "y": 113,
+    "w": 106,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 69,
+    "w": 106,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_02_team": {
+   "frame": {
+    "x": 330,
+    "y": 220,
+    "w": 55,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 80,
+    "w": 55,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_03": {
+   "frame": {
+    "x": 2,
+    "y": 128,
+    "w": 105,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 67,
+    "w": 105,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_03_team": {
+   "frame": {
+    "x": 575,
+    "y": 216,
+    "w": 53,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 77,
+    "w": 53,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_04": {
+   "frame": {
+    "x": 221,
+    "y": 113,
+    "w": 105,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 69,
+    "w": 105,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_04_team": {
+   "frame": {
+    "x": 929,
+    "y": 213,
+    "w": 54,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 78,
+    "w": 54,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_05": {
+   "frame": {
+    "x": 766,
+    "y": 108,
+    "w": 108,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 74,
+    "w": 108,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_idle_05_team": {
+   "frame": {
+    "x": 1467,
+    "y": 201,
+    "w": 56,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 81,
+    "w": 56,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_00": {
+   "frame": {
+    "x": 1013,
+    "y": 2,
+    "w": 97,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 76,
+    "w": 97,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_00_team": {
+   "frame": {
+    "x": 1151,
+    "y": 209,
+    "w": 50,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 87,
+    "w": 50,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_01": {
+   "frame": {
+    "x": 1463,
+    "y": 102,
+    "w": 95,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 81,
+    "w": 95,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_01_team": {
+   "frame": {
+    "x": 878,
+    "y": 213,
+    "w": 47,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 89,
+    "w": 47,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_02": {
+   "frame": {
+    "x": 1225,
+    "y": 2,
+    "w": 96,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 76,
+    "w": 96,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_02_team": {
+   "frame": {
+    "x": 819,
+    "y": 214,
+    "w": 48,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 82,
+    "w": 48,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_03": {
+   "frame": {
+    "x": 569,
+    "y": 2,
+    "w": 98,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 69,
+    "w": 98,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_03_team": {
+   "frame": {
+    "x": 987,
+    "y": 213,
+    "w": 50,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 78,
+    "w": 50,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_04": {
+   "frame": {
+    "x": 1325,
+    "y": 2,
+    "w": 97,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 76,
+    "w": 97,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_04_team": {
+   "frame": {
+    "x": 1041,
+    "y": 211,
+    "w": 50,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 87,
+    "w": 50,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_05": {
+   "frame": {
+    "x": 1522,
+    "y": 2,
+    "w": 92,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 81,
+    "w": 92,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_05_team": {
+   "frame": {
+    "x": 632,
+    "y": 216,
+    "w": 50,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 89,
+    "w": 50,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_06": {
+   "frame": {
+    "x": 1426,
+    "y": 2,
+    "w": 92,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 75,
+    "w": 92,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_06_team": {
+   "frame": {
+    "x": 766,
+    "y": 214,
+    "w": 49,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 83,
+    "w": 49,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_07": {
+   "frame": {
+    "x": 668,
+    "y": 109,
+    "w": 94,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 68,
+    "w": 94,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_walk_07_team": {
+   "frame": {
+    "x": 1095,
+    "y": 211,
+    "w": 52,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 78,
+    "w": 52,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_00": {
+   "frame": {
+    "x": 344,
+    "y": 2,
+    "w": 108,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 72,
+    "w": 108,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_00_team": {
+   "frame": {
+    "x": 1741,
+    "y": 227,
+    "w": 57,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 81,
+    "w": 57,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_01": {
+   "frame": {
+    "x": 440,
+    "y": 110,
+    "w": 111,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 73,
+    "w": 111,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_01_team": {
+   "frame": {
+    "x": 1802,
+    "y": 131,
+    "w": 59,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 83,
+    "w": 59,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_02": {
+   "frame": {
+    "x": 671,
+    "y": 2,
+    "w": 120,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 74,
+    "w": 120,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_02_team": {
+   "frame": {
+    "x": 1863,
+    "y": 193,
+    "w": 59,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 85,
+    "w": 59,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_03": {
+   "frame": {
+    "x": 1104,
+    "y": 106,
+    "w": 131,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 77,
+    "w": 131,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_03_team": {
+   "frame": {
+    "x": 1924,
+    "y": 64,
+    "w": 60,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 88,
+    "w": 60,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_04": {
+   "frame": {
+    "x": 100,
+    "y": 2,
+    "w": 129,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 69,
+    "w": 129,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_04_team": {
+   "frame": {
+    "x": 1801,
+    "y": 67,
+    "w": 55,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 80,
+    "w": 55,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_05": {
+   "frame": {
+    "x": 1618,
+    "y": 2,
+    "w": 110,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 84,
+    "w": 110,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_05_team": {
+   "frame": {
+    "x": 1683,
+    "y": 228,
+    "w": 52,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 84,
+    "w": 52,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_06": {
+   "frame": {
+    "x": 795,
+    "y": 2,
+    "w": 102,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 74,
+    "w": 102,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_06_team": {
+   "frame": {
+    "x": 1792,
+    "y": 2,
+    "w": 51,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 77,
+    "w": 51,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_07": {
+   "frame": {
+    "x": 901,
+    "y": 2,
+    "w": 108,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 75,
+    "w": 108,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_07_team": {
+   "frame": {
+    "x": 1802,
+    "y": 193,
+    "w": 57,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 83,
+    "w": 57,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_08": {
+   "frame": {
+    "x": 330,
+    "y": 111,
+    "w": 106,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 71,
+    "w": 106,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_attack_08_team": {
+   "frame": {
+    "x": 1732,
+    "y": 2,
+    "w": 56,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 81,
+    "w": 56,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_hit_00": {
+   "frame": {
+    "x": 1562,
+    "y": 97,
+    "w": 117,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 68,
+    "y": 86,
+    "w": 117,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_hit_00_team": {
+   "frame": {
+    "x": 1860,
+    "y": 64,
+    "w": 60,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 87,
+    "w": 60,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_hit_01": {
+   "frame": {
+    "x": 1352,
+    "y": 104,
+    "w": 107,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 63,
+    "y": 78,
+    "w": 107,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_hit_01_team": {
+   "frame": {
+    "x": 1205,
+    "y": 209,
+    "w": 55,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 74,
+    "w": 55,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_hit_02": {
+   "frame": {
+    "x": 1114,
+    "y": 2,
+    "w": 107,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 76,
+    "w": 107,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_hit_02_team": {
+   "frame": {
+    "x": 1683,
+    "y": 161,
+    "w": 54,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 77,
+    "w": 54,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_hit_03": {
+   "frame": {
+    "x": 555,
+    "y": 109,
+    "w": 109,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 73,
+    "w": 109,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_hit_03_team": {
+   "frame": {
+    "x": 686,
+    "y": 216,
+    "w": 56,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 83,
+    "w": 56,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_hit_04": {
+   "frame": {
+    "x": 233,
+    "y": 2,
+    "w": 107,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 71,
+    "w": 107,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_hit_04_team": {
+   "frame": {
+    "x": 1264,
+    "y": 207,
+    "w": 55,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 80,
+    "w": 55,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_00": {
+   "frame": {
+    "x": 1562,
+    "y": 190,
+    "w": 117,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 81,
+    "w": 117,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_00_team": {
+   "frame": {
+    "x": 1865,
+    "y": 125,
+    "w": 64,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 86,
+    "w": 64,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_01": {
+   "frame": {
+    "x": 1239,
+    "y": 105,
+    "w": 109,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 54,
+    "w": 109,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 240,
+    "w": 65,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 98,
+    "w": 65,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 94,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 69,
+    "w": 94,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_02_team": {
+   "frame": {
+    "x": 233,
+    "y": 223,
+    "w": 57,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 108,
+    "w": 57,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_03": {
+   "frame": {
+    "x": 991,
+    "y": 107,
+    "w": 109,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 66,
+    "y": 58,
+    "w": 109,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_03_team": {
+   "frame": {
+    "x": 1743,
+    "y": 69,
+    "w": 54,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 67,
+    "w": 54,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_04": {
+   "frame": {
+    "x": 1352,
+    "y": 205,
+    "w": 111,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 107,
+    "w": 111,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_04_team": {
+   "frame": {
+    "x": 1971,
+    "y": 2,
+    "w": 65,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 50,
+    "y": 121,
+    "w": 65,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_05": {
+   "frame": {
+    "x": 440,
+    "y": 217,
+    "w": 131,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 34,
+    "y": 109,
+    "w": 131,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_05_team": {
+   "frame": {
+    "x": 1926,
+    "y": 230,
+    "w": 83,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 33,
+    "y": 128,
+    "w": 83,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_06": {
+   "frame": {
+    "x": 111,
+    "y": 223,
+    "w": 118,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 40,
+    "y": 122,
+    "w": 118,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_06_team": {
+   "frame": {
+    "x": 1933,
+    "y": 177,
+    "w": 72,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 131,
+    "w": 72,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_07": {
+   "frame": {
+    "x": 1847,
+    "y": 2,
+    "w": 120,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 38,
+    "y": 125,
+    "w": 120,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper@space_cadet_die_07_team": {
+   "frame": {
+    "x": 1933,
+    "y": 123,
+    "w": 72,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 128,
+    "w": 72,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "pulse_trooper@space_cadet_idle_00",
+   "pulse_trooper@space_cadet_idle_01",
+   "pulse_trooper@space_cadet_idle_02",
+   "pulse_trooper@space_cadet_idle_03",
+   "pulse_trooper@space_cadet_idle_04",
+   "pulse_trooper@space_cadet_idle_05"
+  ],
+  "idle_team": [
+   "pulse_trooper@space_cadet_idle_00_team",
+   "pulse_trooper@space_cadet_idle_01_team",
+   "pulse_trooper@space_cadet_idle_02_team",
+   "pulse_trooper@space_cadet_idle_03_team",
+   "pulse_trooper@space_cadet_idle_04_team",
+   "pulse_trooper@space_cadet_idle_05_team"
+  ],
+  "walk": [
+   "pulse_trooper@space_cadet_walk_00",
+   "pulse_trooper@space_cadet_walk_01",
+   "pulse_trooper@space_cadet_walk_02",
+   "pulse_trooper@space_cadet_walk_03",
+   "pulse_trooper@space_cadet_walk_04",
+   "pulse_trooper@space_cadet_walk_05",
+   "pulse_trooper@space_cadet_walk_06",
+   "pulse_trooper@space_cadet_walk_07"
+  ],
+  "walk_team": [
+   "pulse_trooper@space_cadet_walk_00_team",
+   "pulse_trooper@space_cadet_walk_01_team",
+   "pulse_trooper@space_cadet_walk_02_team",
+   "pulse_trooper@space_cadet_walk_03_team",
+   "pulse_trooper@space_cadet_walk_04_team",
+   "pulse_trooper@space_cadet_walk_05_team",
+   "pulse_trooper@space_cadet_walk_06_team",
+   "pulse_trooper@space_cadet_walk_07_team"
+  ],
+  "attack": [
+   "pulse_trooper@space_cadet_attack_00",
+   "pulse_trooper@space_cadet_attack_01",
+   "pulse_trooper@space_cadet_attack_02",
+   "pulse_trooper@space_cadet_attack_03",
+   "pulse_trooper@space_cadet_attack_04",
+   "pulse_trooper@space_cadet_attack_05",
+   "pulse_trooper@space_cadet_attack_06",
+   "pulse_trooper@space_cadet_attack_07",
+   "pulse_trooper@space_cadet_attack_08"
+  ],
+  "attack_team": [
+   "pulse_trooper@space_cadet_attack_00_team",
+   "pulse_trooper@space_cadet_attack_01_team",
+   "pulse_trooper@space_cadet_attack_02_team",
+   "pulse_trooper@space_cadet_attack_03_team",
+   "pulse_trooper@space_cadet_attack_04_team",
+   "pulse_trooper@space_cadet_attack_05_team",
+   "pulse_trooper@space_cadet_attack_06_team",
+   "pulse_trooper@space_cadet_attack_07_team",
+   "pulse_trooper@space_cadet_attack_08_team"
+  ],
+  "hit": [
+   "pulse_trooper@space_cadet_hit_00",
+   "pulse_trooper@space_cadet_hit_01",
+   "pulse_trooper@space_cadet_hit_02",
+   "pulse_trooper@space_cadet_hit_03",
+   "pulse_trooper@space_cadet_hit_04"
+  ],
+  "hit_team": [
+   "pulse_trooper@space_cadet_hit_00_team",
+   "pulse_trooper@space_cadet_hit_01_team",
+   "pulse_trooper@space_cadet_hit_02_team",
+   "pulse_trooper@space_cadet_hit_03_team",
+   "pulse_trooper@space_cadet_hit_04_team"
+  ],
+  "die": [
+   "pulse_trooper@space_cadet_die_00",
+   "pulse_trooper@space_cadet_die_01",
+   "pulse_trooper@space_cadet_die_02",
+   "pulse_trooper@space_cadet_die_03",
+   "pulse_trooper@space_cadet_die_04",
+   "pulse_trooper@space_cadet_die_05",
+   "pulse_trooper@space_cadet_die_06",
+   "pulse_trooper@space_cadet_die_06",
+   "pulse_trooper@space_cadet_die_07",
+   "pulse_trooper@space_cadet_die_07"
+  ],
+  "die_team": [
+   "pulse_trooper@space_cadet_die_00_team",
+   "pulse_trooper@space_cadet_die_01_team",
+   "pulse_trooper@space_cadet_die_02_team",
+   "pulse_trooper@space_cadet_die_03_team",
+   "pulse_trooper@space_cadet_die_04_team",
+   "pulse_trooper@space_cadet_die_05_team",
+   "pulse_trooper@space_cadet_die_06_team",
+   "pulse_trooper@space_cadet_die_06_team",
+   "pulse_trooper@space_cadet_die_07_team",
+   "pulse_trooper@space_cadet_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "pulse_trooper@space_cadet.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2048,
+   "h": 288
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.pulse_trooper@space_cadet",
+   "name": "Pulse Trooper",
+   "heightLu": 70,
+   "widthLu": 82.5,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    110.0,
+    167.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     54,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "skinOf": "unit.pulse_trooper",
+   "skin": "space_cadet",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        63.4,
+        13.5
+       ],
+       [
+        62.8,
+        12.4
+       ],
+       [
+        61.1,
+        11.0
+       ],
+       [
+        59.8,
+        10.5
+       ],
+       [
+        60.5,
+        11.7
+       ],
+       [
+        62.3,
+        13.2
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77
+     ],
+     "durationMs": 616,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 81.2,
+     "cycleMs": 616,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        53.7,
+        35.9
+       ],
+       [
+        52.6,
+        38.2
+       ],
+       [
+        53.7,
+        43.5
+       ],
+       [
+        54.5,
+        45.3
+       ],
+       [
+        53.7,
+        35.9
+       ],
+       [
+        49.0,
+        36.1
+       ],
+       [
+        48.6,
+        40.5
+       ],
+       [
+        50.8,
+        43.2
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 81.2,
+     "strideLu": 50.0,
+     "plantedDriftLu": 0.05,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.1,
+        -1.9
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.2,
+        1.4
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      50,
+      60,
+      80,
+      184,
+      90,
+      70,
+      70,
+      60,
+      84
+     ],
+     "durationMs": 748,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        63.2,
+        20.3
+       ],
+       [
+        66.1,
+        25.3
+       ],
+       [
+        67.4,
+        23.3
+       ],
+       [
+        70.4,
+        20.5
+       ],
+       [
+        61.9,
+        28.1
+       ],
+       [
+        47.5,
+        58.2
+       ],
+       [
+        53.4,
+        45.5
+       ],
+       [
+        62.3,
+        25.0
+       ],
+       [
+        61.9,
+        14.7
+       ]
+      ]
+     },
+     "holdStep": 3,
+     "muzzle": [
+      61.9,
+      28.1
+     ],
+     "aimDeg": -5.9,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       61.9,
+       28.1
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        58.5,
+        31.8
+       ],
+       [
+        45.7,
+        48.0
+       ],
+       [
+        56.8,
+        27.8
+       ],
+       [
+        62.3,
+        4.8
+       ],
+       [
+        61.5,
+        13.4
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        25.2
+       ],
+       "scale": 1.031
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        38.5
+       ],
+       "loops": 2,
+       "scale": 1.016
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        65.2,
+        40.7
+       ],
+       [
+        -42.5,
+        88.9
+       ],
+       [
+        -44.5,
+        -13.9
+       ],
+       [
+        51.0,
+        27.4
+       ],
+       [
+        34.6,
+        38.4
+       ],
+       [
+        41.0,
+        38.3
+       ],
+       [
+        36.4,
+        25.9
+       ],
+       [
+        36.8,
+        20.0
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}
