@@ -2,18 +2,18 @@
  "frames": {
   "hover_bike_attack_b_01": {
    "frame": {
-    "x": 191,
-    "y": 102,
+    "x": 404,
+    "y": 2,
     "w": 91,
-    "h": 76
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 105,
-    "y": 119,
+    "y": 122,
     "w": 91,
-    "h": 76
+    "h": 73
    },
    "sourceSize": {
     "w": 325,
@@ -26,8 +26,8 @@
   },
   "hover_bike_attack_b_01_team": {
    "frame": {
-    "x": 95,
-    "y": 340,
+    "x": 503,
+    "y": 77,
     "w": 93,
     "h": 67
    },
@@ -50,8 +50,8 @@
   },
   "hover_bike_attack_b_02": {
    "frame": {
-    "x": 2,
-    "y": 264,
+    "x": 408,
+    "y": 79,
     "w": 91,
     "h": 72
    },
@@ -74,8 +74,8 @@
   },
   "hover_bike_attack_b_02_team": {
    "frame": {
-    "x": 289,
-    "y": 412,
+    "x": 386,
+    "y": 232,
     "w": 93,
     "h": 65
    },
@@ -98,9 +98,9 @@
   },
   "hover_bike_attack_b_03": {
    "frame": {
-    "x": 97,
-    "y": 264,
-    "w": 91,
+    "x": 499,
+    "y": 2,
+    "w": 92,
     "h": 71
    },
    "rotated": false,
@@ -108,7 +108,7 @@
    "spriteSourceSize": {
     "x": 102,
     "y": 125,
-    "w": 91,
+    "w": 92,
     "h": 71
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "hover_bike_attack_b_03_team": {
    "frame": {
-    "x": 97,
-    "y": 483,
+    "x": 793,
+    "y": 138,
     "w": 93,
     "h": 63
    },
@@ -146,8 +146,8 @@
   },
   "hover_bike_attack_b_04": {
    "frame": {
-    "x": 208,
-    "y": 186,
+    "x": 308,
+    "y": 79,
     "w": 96,
     "h": 73
    },
@@ -170,8 +170,8 @@
   },
   "hover_bike_attack_b_04_team": {
    "frame": {
-    "x": 194,
-    "y": 483,
+    "x": 785,
+    "y": 205,
     "w": 91,
     "h": 63
    },
@@ -194,18 +194,18 @@
   },
   "hover_bike_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 186,
+    "x": 300,
+    "y": 2,
     "w": 100,
-    "h": 74
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 122,
+    "y": 123,
     "w": 100,
-    "h": 74
+    "h": 73
    },
    "sourceSize": {
     "w": 325,
@@ -218,9 +218,9 @@
   },
   "hover_bike_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 483,
-    "w": 91,
+    "x": 793,
+    "y": 70,
+    "w": 90,
     "h": 64
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 119,
     "y": 121,
-    "w": 91,
+    "w": 90,
     "h": 64
    },
    "sourceSize": {
@@ -242,8 +242,8 @@
   },
   "hover_bike_attack_b_06": {
    "frame": {
-    "x": 308,
-    "y": 186,
+    "x": 386,
+    "y": 156,
     "w": 109,
     "h": 72
    },
@@ -266,10 +266,10 @@
   },
   "hover_bike_attack_b_06_team": {
    "frame": {
-    "x": 386,
-    "y": 412,
+    "x": 788,
+    "y": 2,
     "w": 91,
-    "h": 65
+    "h": 64
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 123,
     "y": 121,
     "w": 91,
-    "h": 65
+    "h": 64
    },
    "sourceSize": {
     "w": 325,
@@ -290,8 +290,8 @@
   },
   "hover_bike_attack_b_07": {
    "frame": {
-    "x": 106,
-    "y": 186,
+    "x": 284,
+    "y": 165,
     "w": 98,
     "h": 73
    },
@@ -314,18 +314,18 @@
   },
   "hover_bike_attack_b_07_team": {
    "frame": {
-    "x": 98,
-    "y": 412,
-    "w": 94,
-    "h": 66
+    "x": 696,
+    "y": 73,
+    "w": 93,
+    "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 123,
     "y": 120,
-    "w": 94,
-    "h": 66
+    "w": 93,
+    "h": 65
    },
    "sourceSize": {
     "w": 325,
@@ -338,8 +338,8 @@
   },
   "hover_bike_attack_b_08": {
    "frame": {
-    "x": 386,
-    "y": 102,
+    "x": 209,
+    "y": 86,
     "w": 95,
     "h": 75
    },
@@ -362,8 +362,8 @@
   },
   "hover_bike_attack_b_08_team": {
    "frame": {
-    "x": 192,
-    "y": 340,
+    "x": 595,
+    "y": 2,
     "w": 93,
     "h": 67
    },
@@ -386,9 +386,9 @@
   },
   "hover_bike_attack_c_01": {
    "frame": {
-    "x": 97,
-    "y": 102,
-    "w": 90,
+    "x": 114,
+    "y": 95,
+    "w": 91,
     "h": 80
    },
    "rotated": false,
@@ -396,7 +396,7 @@
    "spriteSourceSize": {
     "x": 104,
     "y": 113,
-    "w": 90,
+    "w": 91,
     "h": 80
    },
    "sourceSize": {
@@ -410,18 +410,18 @@
   },
   "hover_bike_attack_c_01_team": {
    "frame": {
-    "x": 289,
-    "y": 264,
-    "w": 92,
-    "h": 68
+    "x": 687,
+    "y": 219,
+    "w": 91,
+    "h": 67
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 107,
+    "x": 108,
     "y": 115,
-    "w": 92,
-    "h": 68
+    "w": 91,
+    "h": 67
    },
    "sourceSize": {
     "w": 325,
@@ -434,9 +434,9 @@
   },
   "hover_bike_attack_c_02": {
    "frame": {
-    "x": 316,
-    "y": 2,
-    "w": 87,
+    "x": 2,
+    "y": 196,
+    "w": 88,
     "h": 87
    },
    "rotated": false,
@@ -444,7 +444,7 @@
    "spriteSourceSize": {
     "x": 103,
     "y": 106,
-    "w": 87,
+    "w": 88,
     "h": 87
    },
    "sourceSize": {
@@ -458,18 +458,18 @@
   },
   "hover_bike_attack_c_02_team": {
    "frame": {
-    "x": 196,
-    "y": 412,
+    "x": 692,
+    "y": 144,
     "w": 89,
-    "h": 66
+    "h": 67
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
-    "y": 118,
+    "y": 117,
     "w": 89,
-    "h": 66
+    "h": 67
    },
    "sourceSize": {
     "w": 325,
@@ -482,8 +482,8 @@
   },
   "hover_bike_attack_c_03": {
    "frame": {
-    "x": 407,
-    "y": 2,
+    "x": 94,
+    "y": 196,
     "w": 86,
     "h": 87
    },
@@ -506,8 +506,8 @@
   },
   "hover_bike_attack_c_03_team": {
    "frame": {
-    "x": 2,
-    "y": 340,
+    "x": 594,
+    "y": 228,
     "w": 89,
     "h": 68
    },
@@ -532,7 +532,7 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 89,
+    "w": 90,
     "h": 96
    },
    "rotated": false,
@@ -540,7 +540,7 @@
    "spriteSourceSize": {
     "x": 104,
     "y": 97,
-    "w": 89,
+    "w": 90,
     "h": 96
    },
    "sourceSize": {
@@ -554,8 +554,8 @@
   },
   "hover_bike_attack_c_04_team": {
    "frame": {
-    "x": 385,
-    "y": 264,
+    "x": 499,
+    "y": 228,
     "w": 91,
     "h": 68
    },
@@ -578,7 +578,7 @@
   },
   "hover_bike_attack_c_05": {
    "frame": {
-    "x": 207,
+    "x": 96,
     "y": 2,
     "w": 105,
     "h": 89
@@ -602,8 +602,8 @@
   },
   "hover_bike_attack_c_05_team": {
    "frame": {
-    "x": 289,
-    "y": 340,
+    "x": 596,
+    "y": 148,
     "w": 92,
     "h": 67
    },
@@ -626,8 +626,8 @@
   },
   "hover_bike_attack_c_06": {
    "frame": {
-    "x": 95,
-    "y": 2,
+    "x": 2,
+    "y": 102,
     "w": 108,
     "h": 90
    },
@@ -650,8 +650,8 @@
   },
   "hover_bike_attack_c_06_team": {
    "frame": {
-    "x": 385,
-    "y": 340,
+    "x": 600,
+    "y": 73,
     "w": 92,
     "h": 67
    },
@@ -674,8 +674,8 @@
   },
   "hover_bike_attack_c_07": {
    "frame": {
-    "x": 2,
-    "y": 102,
+    "x": 205,
+    "y": 2,
     "w": 91,
     "h": 80
    },
@@ -698,8 +698,8 @@
   },
   "hover_bike_attack_c_07_team": {
    "frame": {
-    "x": 192,
-    "y": 264,
+    "x": 499,
+    "y": 155,
     "w": 93,
     "h": 69
    },
@@ -722,8 +722,8 @@
   },
   "hover_bike_attack_c_08": {
    "frame": {
-    "x": 286,
-    "y": 102,
+    "x": 184,
+    "y": 179,
     "w": 96,
     "h": 75
    },
@@ -746,8 +746,8 @@
   },
   "hover_bike_attack_c_08_team": {
    "frame": {
-    "x": 2,
-    "y": 412,
+    "x": 692,
+    "y": 2,
     "w": 92,
     "h": 67
    },
@@ -829,8 +829,8 @@
   "image": "hover_bike.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 512,
-   "h": 552
+   "w": 896,
+   "h": 300
   },
   "scale": "1.5",
   "ageborn": {

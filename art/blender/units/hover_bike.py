@@ -88,8 +88,8 @@ def build(rig):
     for i, (x, z) in enumerate(PADS):
         g = Geo().lathe([(0, 0), (6.0, 0.2), (6.2, 1.4), (0, 1.6)], (x, 0, z + 4.0), (x, 0, z + 2.6), segs=20)
         rig.part("bike", g, F.SUIT, outline=0.6)
-        g = Geo().lathe([(4.6, 0), (6.4, 0.2), (6.4, 0.8), (4.6, 1.0)], (x, -0.2, z + 2.8), (x, -0.2, z + 2.2), segs=20)
-        rig.part("bike", g, glow=W.MINT, outline=0)
+        g = Geo().lathe([(5.0, 0), (6.4, 0.1), (6.4, 0.5), (5.0, 0.6)], (x, -0.2, z + 2.8), (x, -0.2, z + 2.2), segs=20)
+        rig.part("bike", g, glow=W.MINT, outline=0)          # (W4: the glow ring 1.8 x 1.0 lu: highlight share)
         rig.joint(f"cone{i}", "bike", (x, 0, z + 2.0))
         g = Geo().lathe([(4.6, 0), (3.6, 1.6), (1.6, 3.4), (0, 4.0)], (x, 0, z + 2.0), (x, 0, z + 1.0), segs=16)
         rig.part(f"cone{i}", g, glow=CONE, outline=0.8, outline_hex=W.MINT)
@@ -99,7 +99,7 @@ def build(rig):
     rig.joint("lance", "hand_r", HR)
     hx, hy, hz = HR
     g = Geo().capsule((hx, hy, hz - 8.0), (hx, hy, hz + LANCE), 1.4)
-    rig.part("lance", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("lance", g, FW.GUN_LT, finish="gloss", outline_hex=F.TRIM)     # (W4: the light gun grey)
     g = Geo().capsule((hx, hy - 0.2, hz + 6.0), (hx, hy - 0.2, hz + 10.0), 1.9)
     rig.part("lance", g, team=True, outline=0.5)
     g = Geo().blob((hx, hy - 0.5, hz + LANCE + 2.0), (2.4, 1.4, 4.2), p=2.2, taper=(1.0, 0.3))
@@ -137,7 +137,8 @@ def _damage_spots(rig):
     rig.damage_spot("fairing", "bike", (24.0, -6.8, 14.0), 5.0, "metal", team=True, normal=(0.2, -1, 0))
     rig.damage_spot("flank", "bike", (-4.0, -6.4, 12.0), 5.0, "metal", normal=(0, -1, 0))
     rig.damage_spot("tail", "bike", (-25.0, -5.8, 15.0), 5.0, "metal", team=True, normal=(0, -1, 0))
-    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot("pauldron", "arm_r", (0.5, -18.0, 38.4), 5.0, "metal", team=True, normal=(0, -1, 0))   # (the
+    #                                                          rider is drawn at 0.86: a screen point misses the pad)
     rig.damage_spot("exhaust", "bike", (-34.5, 0.0, 12.0), 4.0, "smoke", kind="emit", normal=(-1, 0, 0))
 
 
