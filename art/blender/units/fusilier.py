@@ -96,6 +96,7 @@ FORE = 12.0                          # far hand: this far along the musket from 
 LENGTH, BAYONET = 50.0, 13.0
 MUZZLE = (G0[0] + LENGTH + 1.0, G0[1], G0[2] + 1.6)
 HAT_C = (1.0, 0.0, 58.0)
+KEY = (-9.6, 0.0, 31.0)              # the Toy Soldier's wind-up key: its root in his back (its joint)
 
 
 def _shako(rig, joint):
@@ -238,13 +239,20 @@ def build(rig):
     rig.part("cart", g, B.CREAM, outline=0.5)
     # the big powder cloud (world placed in front of the kneeling muzzle)
     G.smoke_cloud(rig, "root", (MUZZ_KNEEL[0] + 9.0, -16.0, MUZZ_KNEEL[1]), size=1.6)
+    rig.joint("key", "torso", KEY)       # the Toy Soldier's wind-up key (no parts on the Fusilier)
     if getattr(rig, "skin", None) == "toy_soldier":
-        # a brass wind-up key in his back and painted cheeks
-        g = Geo().capsule((-9.6, 0, 31.0), (-14.6, 0, 31.0), 1.1)
-        g.sphere((-15.0, 0, 31.0), 1.5, cuts=3)
-        g.blob((-16.2, 0, 33.8), (2.0, 0.9, 2.5), p=2.2)
-        g.blob((-16.2, 0, 28.2), (2.0, 0.9, 2.5), p=2.2)
-        rig.part("torso", g, B.BRASS, finish="metal", outline=0.6)
+        # a brass wind-up key in his back (W2 review nit 2: twice the size, so it reads at 1x, and it turns in the
+        # idle and the walk) and painted cheeks. Matte, so the extras sheet's highlight share stays under 0.10.
+        x, y, z = KEY
+        g = Geo().capsule((x, y, z), (x - 6.8, y, z), 1.3)
+        g.sphere((x - 7.2, y, z), 1.9, cuts=3)
+        for dz in (-4.3, 4.3):
+            g.blob((x - 9.0, y, z + dz), (2.9, 1.1, 3.5), p=2.2)
+        rig.part("key", g, B.BRASS, outline=0.7, highlight=False)
+        g = Geo()
+        for dz in (-4.6, 4.6):
+            g.blob((x - 9.2, y - 1.0, z + dz), (1.2, 0.5, 1.6), p=2.2)
+        rig.part("key", g, CL.scale(B.BRASS, 0.62), outline=0, highlight=False)
         head = G.head_geos(center=(2, 0, 48.5), nose=(13.6, -0.6, 46.8))
         c = GW.on_surface(rig, "head", [head], 9.8, 44.6)
         rig.part("head", Geo().blob(c, (2.4, 0.7, 2.0), p=2.2), CHEEK, outline=0)
@@ -304,7 +312,8 @@ def _idle(f):
     def extra(ctx):
         return merge(hold(PORT[0] + 0.4 * ctx["lag"], PORT[1] + 0.6 * ctx["lag"] + 1.2 * bounce,
                           PORT[2] + 1.5 * ctx["lag"] - 4 * chk),
-                     {"head": {"r": -5 * chk}, "pupils": {"z": -0.6 * chk}})
+                     {"head": {"r": -5 * chk}, "pupils": {"z": -0.6 * chk},
+                      "key": {"rx": 30.0 * f}})     # the Toy Soldier's key turns (half a turn a loop)
     return M.idle_v2(f, {"torso": {"r": -1}}, frames=6, extra=extra, face_blink=F.expr("blink"), blink=5)
 
 
@@ -328,7 +337,8 @@ CARRY = merge(slope(*SLOPE), {"torso": {"r": -2}})
 def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"gun": {"z": 0.8 * lag, "r": 4.0 * lag}, "tails": {"r": 5 * lag}, "queue": {"r": 6 * lag}}
+        return {"gun": {"z": 0.8 * lag, "r": 4.0 * lag}, "tails": {"r": 5 * lag}, "queue": {"r": 6 * lag},
+                "key": {"rx": 22.5 * f}}     # the Toy Soldier's key turns as he marches (half a turn a loop)
     return M.walk_v3(RIG, f, CARRY, GAIT, legs=LEGS, lean=-8.0, twist=6.0, nod=3.0,
                      arms={"l": K.ArmChain("l")}, extra=extra, report=report)
 

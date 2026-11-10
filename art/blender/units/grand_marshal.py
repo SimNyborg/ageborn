@@ -75,7 +75,11 @@ DETAIL_STANDARD = True
 # (a stronger gradient and cavity than the other riders: the white charger and the big team fields need modelling)
 LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 3.0, "cavity": 0.8, "rim_mix": 0.5,
               "top": 0.08, "top_t": 0.62, "team_core": 0.4}
-MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", DAPPLE: "hide", POINTS: "hide", MANE: "fur", HOOF: "bone",
+# W2 review nit 5: the hide kind's 3-5 lu blotches (and the small dapples) read as grey grit on the white coat at 1x;
+# the coat takes the fur kind (fine hair streaks along the form: they read as a groomed coat, and keep the micro the
+# extras sheet needs; a smooth porcelain coat lost 0.2 of it) and five larger, soft dapples carry the breakup
+COAT_KIND = "fur"
+MATERIAL_KINDS = {COAT: COAT_KIND, COAT_DK: COAT_KIND, DAPPLE: COAT_KIND, POINTS: COAT_KIND, MANE: "fur", HOOF: "bone",
                   STEEL: "iron", BLADE: "iron", NOSE: "hide", B.CREAM: "cloth", BRAID: "cloth", BREECH: "cloth",
                   GILT: "gold", B.BRASS: "bronze", B.WOOD: "leather", B.BLACK: "leather", B.GUNWOOD: "wood",
                   B.SKIN: "skin", B.LEATHER: "leather", "#8C96A2": "iron", "team": "hide"}
@@ -111,6 +115,13 @@ def build(rig):
     g = Geo().blob((0, 0, 41), (25, 11.5, 12), p=2.3)
     g.blob((14.0, 0, 42.0), (11.0, 12.0, 11.5), p=2.2)      # deep chest
     rig.part("horse", g, COAT)
+    # W2 review nit 5: two larger, soft dapples on the chest in front of the shabraque
+    hf = F.Face(rig, "horse", [Geo().blob((0, 0, 41), (25, 11.5, 12), p=2.3),
+                               Geo().blob((14.0, 0, 42.0), (11.0, 12.0, 11.5), p=2.2)])
+    g = Geo()
+    for (x, z), r in (((18.8, 37.4), 3.0), ((21.0, 31.2), 2.3)):
+        hf.decal(g, hf.hit(x, z), F.ellipse(0.0, 0.0, r, r * 0.85, 14))
+    rig.part("horse", g, DAPPLE, highlight=False, outline=0)
     cap = Geo().blob((-3.5, 0, 43.5), (21.5, 13.8, 12.8), p=3.2, taper=(1.12, 0.92))
     cap.clip((0, 0, 27.4), (0, 0, -1))
     cf = F.Face(rig, "horse", [cap])
@@ -162,13 +173,14 @@ def build(rig):
     rig.joint("hhead", "neck", (32, 0, 66), scale=1.25)
     g = Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)
     rig.part("neck", g, COAT)
-    # W2: two creases at the throat and faint dapples down the neck
+    # W2: two creases at the throat; W2 review nit 5: three larger, soft dapples down the neck (were four of
+    # 1.3-1.7 lu that read as grit at 1x)
     for pts in ([(29.5, 47.0), (33.0, 51.5), (35.5, 55.5)], [(26.5, 44.5), (29.6, 48.6), (31.8, 52.0)]):
         KD.surface_line(rig, "neck", Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8), pts, 1.0, COAT_DK)
     fc = F.Face(rig, "neck", [Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)])
     g = Geo()
-    for (x, z), r in (((22.5, 52.0), 1.6), ((25.0, 56.5), 1.4), ((20.5, 47.0), 1.7), ((27.0, 50.5), 1.3)):
-        fc.decal(g, fc.hit(x, z), F.ellipse(0.0, 0.0, r, r * 0.85, 10))
+    for (x, z), r in (((21.6, 50.4), 3.0), ((26.4, 57.2), 2.6), ((17.6, 44.8), 2.4)):
+        fc.decal(g, fc.hit(x, z), F.ellipse(0.0, 0.0, r, r * 0.85, 14))
     rig.part("neck", g, DAPPLE, highlight=False, outline=0)
     g = Geo()
     for i in range(6):

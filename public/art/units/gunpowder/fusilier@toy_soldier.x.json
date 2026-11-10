@@ -2,17 +2,17 @@
  "frames": {
   "fusilier@toy_soldier_attack_b_01": {
    "frame": {
-    "x": 307,
-    "y": 554,
-    "w": 111,
+    "x": 743,
+    "y": 220,
+    "w": 115,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 89,
-    "w": 111,
+    "w": 115,
     "h": 99
    },
    "sourceSize": {
@@ -26,8 +26,8 @@
   },
   "fusilier@toy_soldier_attack_b_01_team": {
    "frame": {
-    "x": 329,
-    "y": 1041,
+    "x": 620,
+    "y": 726,
     "w": 45,
     "h": 87
    },
@@ -50,17 +50,17 @@
   },
   "fusilier@toy_soldier_attack_b_02": {
    "frame": {
-    "x": 524,
-    "y": 449,
-    "w": 110,
+    "x": 116,
+    "y": 352,
+    "w": 114,
     "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 87,
-    "w": 110,
+    "w": 114,
     "h": 101
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "fusilier@toy_soldier_attack_b_02_team": {
    "frame": {
-    "x": 264,
-    "y": 853,
+    "x": 770,
+    "y": 617,
     "w": 43,
     "h": 88
    },
@@ -98,17 +98,17 @@
   },
   "fusilier@toy_soldier_attack_b_03": {
    "frame": {
-    "x": 300,
-    "y": 657,
-    "w": 112,
+    "x": 396,
+    "y": 320,
+    "w": 116,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
+    "x": 83,
     "y": 90,
-    "w": 112,
+    "w": 116,
     "h": 98
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "fusilier@toy_soldier_attack_b_03_team": {
    "frame": {
-    "x": 513,
-    "y": 853,
+    "x": 720,
+    "y": 613,
     "w": 46,
     "h": 85
    },
@@ -146,17 +146,17 @@
   },
   "fusilier@toy_soldier_attack_b_04": {
    "frame": {
-    "x": 416,
-    "y": 657,
-    "w": 113,
+    "x": 621,
+    "y": 220,
+    "w": 118,
     "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
+    "x": 82,
     "y": 91,
-    "w": 113,
+    "w": 118,
     "h": 97
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "fusilier@toy_soldier_attack_b_04_team": {
    "frame": {
-    "x": 512,
-    "y": 1041,
+    "x": 618,
+    "y": 817,
     "w": 47,
     "h": 84
    },
@@ -194,17 +194,17 @@
   },
   "fusilier@toy_soldier_attack_b_05": {
    "frame": {
-    "x": 227,
-    "y": 237,
-    "w": 126,
+    "x": 487,
+    "y": 211,
+    "w": 130,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 83,
-    "w": 126,
+    "w": 130,
     "h": 105
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "fusilier@toy_soldier_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 853,
+    "x": 669,
+    "y": 639,
     "w": 42,
     "h": 92
    },
@@ -242,17 +242,17 @@
   },
   "fusilier@toy_soldier_attack_b_06": {
    "frame": {
-    "x": 533,
-    "y": 657,
-    "w": 146,
+    "x": 487,
+    "y": 113,
+    "w": 150,
     "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
+    "x": 73,
     "y": 94,
-    "w": 146,
+    "w": 150,
     "h": 94
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "fusilier@toy_soldier_attack_b_06_team": {
    "frame": {
-    "x": 628,
-    "y": 1041,
+    "x": 511,
+    "y": 640,
     "w": 54,
     "h": 82
    },
@@ -290,17 +290,17 @@
   },
   "fusilier@toy_soldier_attack_b_07": {
    "frame": {
-    "x": 77,
-    "y": 139,
-    "w": 146,
+    "x": 658,
+    "y": 2,
+    "w": 150,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 86,
+    "x": 82,
     "y": 83,
-    "w": 146,
+    "w": 150,
     "h": 105
    },
    "sourceSize": {
@@ -314,17 +314,17 @@
   },
   "fusilier@toy_soldier_attack_b_07_team": {
    "frame": {
-    "x": 666,
-    "y": 852,
-    "w": 40,
+    "x": 714,
+    "y": 796,
+    "w": 39,
     "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 96,
     "y": 79,
-    "w": 40,
+    "w": 39,
     "h": 93
    },
    "sourceSize": {
@@ -338,17 +338,17 @@
   },
   "fusilier@toy_soldier_attack_up45_01": {
    "frame": {
-    "x": 87,
-    "y": 660,
-    "w": 100,
+    "x": 468,
+    "y": 424,
+    "w": 104,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 90,
-    "w": 100,
+    "w": 104,
     "h": 98
    },
    "sourceSize": {
@@ -362,8 +362,8 @@
   },
   "fusilier@toy_soldier_attack_up45_01_team": {
    "frame": {
-    "x": 360,
-    "y": 949,
+    "x": 796,
+    "y": 893,
     "w": 40,
     "h": 87
    },
@@ -386,17 +386,17 @@
   },
   "fusilier@toy_soldier_attack_up45_02": {
    "frame": {
-    "x": 2,
-    "y": 463,
-    "w": 86,
+    "x": 449,
+    "y": 526,
+    "w": 90,
     "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
+    "x": 85,
     "y": 88,
-    "w": 86,
+    "w": 90,
     "h": 100
    },
    "sourceSize": {
@@ -410,8 +410,8 @@
   },
   "fusilier@toy_soldier_attack_up45_02_team": {
    "frame": {
-    "x": 285,
-    "y": 1041,
+    "x": 757,
+    "y": 801,
     "w": 40,
     "h": 88
    },
@@ -434,17 +434,17 @@
   },
   "fusilier@toy_soldier_attack_up45_03": {
    "frame": {
-    "x": 2,
-    "y": 567,
-    "w": 81,
+    "x": 98,
+    "y": 708,
+    "w": 85,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
+    "x": 85,
     "y": 89,
-    "w": 81,
+    "w": 85,
     "h": 99
    },
    "sourceSize": {
@@ -458,8 +458,8 @@
   },
   "fusilier@toy_soldier_attack_up45_03_team": {
    "frame": {
-    "x": 362,
-    "y": 853,
+    "x": 801,
+    "y": 801,
     "w": 40,
     "h": 87
    },
@@ -483,16 +483,16 @@
   "fusilier@toy_soldier_attack_up45_04": {
    "frame": {
     "x": 2,
-    "y": 670,
-    "w": 81,
+    "y": 749,
+    "w": 85,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
+    "x": 85,
     "y": 90,
-    "w": 81,
+    "w": 85,
     "h": 98
    },
    "sourceSize": {
@@ -506,8 +506,8 @@
   },
   "fusilier@toy_soldier_attack_up45_04_team": {
    "frame": {
-    "x": 470,
-    "y": 949,
+    "x": 751,
+    "y": 893,
     "w": 41,
     "h": 86
    },
@@ -530,17 +530,17 @@
   },
   "fusilier@toy_soldier_attack_up45_05": {
    "frame": {
-    "x": 629,
-    "y": 2,
-    "w": 95,
+    "x": 126,
+    "y": 457,
+    "w": 99,
     "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
+    "x": 86,
     "y": 78,
-    "w": 95,
+    "w": 99,
     "h": 110
    },
    "sourceSize": {
@@ -554,8 +554,8 @@
   },
   "fusilier@toy_soldier_attack_up45_05_team": {
    "frame": {
-    "x": 728,
-    "y": 657,
+    "x": 709,
+    "y": 893,
     "w": 38,
     "h": 93
    },
@@ -578,17 +578,17 @@
   },
   "fusilier@toy_soldier_attack_up45_06": {
    "frame": {
-    "x": 2,
-    "y": 949,
-    "w": 138,
+    "x": 336,
+    "y": 217,
+    "w": 139,
     "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
+    "x": 76,
     "y": 95,
-    "w": 138,
+    "w": 139,
     "h": 92
    },
    "sourceSize": {
@@ -602,8 +602,8 @@
   },
   "fusilier@toy_soldier_attack_up45_06_team": {
    "frame": {
-    "x": 515,
-    "y": 949,
+    "x": 455,
+    "y": 822,
     "w": 55,
     "h": 83
    },
@@ -626,17 +626,17 @@
   },
   "fusilier@toy_soldier_attack_up45_07": {
    "frame": {
-    "x": 602,
-    "y": 232,
-    "w": 145,
+    "x": 505,
+    "y": 2,
+    "w": 149,
     "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 81,
-    "w": 145,
+    "w": 149,
     "h": 107
    },
    "sourceSize": {
@@ -650,17 +650,17 @@
   },
   "fusilier@toy_soldier_attack_up45_07_team": {
    "frame": {
-    "x": 683,
-    "y": 657,
-    "w": 41,
+    "x": 817,
+    "y": 702,
+    "w": 40,
     "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 96,
     "y": 77,
-    "w": 41,
+    "w": 40,
     "h": 94
    },
    "sourceSize": {
@@ -674,17 +674,17 @@
   },
   "fusilier@toy_soldier_attack_up70_01": {
    "frame": {
-    "x": 206,
-    "y": 557,
-    "w": 90,
+    "x": 351,
+    "y": 525,
+    "w": 94,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 89,
-    "w": 90,
+    "w": 94,
     "h": 99
    },
    "sourceSize": {
@@ -698,8 +698,8 @@
   },
   "fusilier@toy_soldier_attack_up70_01_team": {
    "frame": {
-    "x": 308,
-    "y": 759,
+    "x": 761,
+    "y": 709,
     "w": 42,
     "h": 88
    },
@@ -722,17 +722,17 @@
   },
   "fusilier@toy_soldier_attack_up70_02": {
    "frame": {
-    "x": 611,
-    "y": 343,
-    "w": 63,
+    "x": 543,
+    "y": 534,
+    "w": 67,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 86,
-    "w": 63,
+    "w": 67,
     "h": 102
    },
    "sourceSize": {
@@ -746,8 +746,8 @@
   },
   "fusilier@toy_soldier_attack_up70_02_team": {
    "frame": {
-    "x": 144,
-    "y": 949,
+    "x": 568,
+    "y": 909,
     "w": 45,
     "h": 89
    },
@@ -770,17 +770,17 @@
   },
   "fusilier@toy_soldier_attack_up70_03": {
    "frame": {
-    "x": 111,
-    "y": 248,
-    "w": 54,
+    "x": 386,
+    "y": 628,
+    "w": 58,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 83,
-    "w": 54,
+    "w": 58,
     "h": 105
    },
    "sourceSize": {
@@ -794,8 +794,8 @@
   },
   "fusilier@toy_soldier_attack_up70_03_team": {
    "frame": {
-    "x": 213,
-    "y": 853,
+    "x": 567,
+    "y": 817,
     "w": 47,
     "h": 88
    },
@@ -818,17 +818,17 @@
   },
   "fusilier@toy_soldier_attack_up70_04": {
    "frame": {
-    "x": 169,
-    "y": 248,
-    "w": 54,
+    "x": 291,
+    "y": 733,
+    "w": 58,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 83,
-    "w": 54,
+    "w": 58,
     "h": 105
    },
    "sourceSize": {
@@ -842,8 +842,8 @@
   },
   "fusilier@toy_soldier_attack_up70_04_team": {
    "frame": {
-    "x": 311,
-    "y": 853,
+    "x": 839,
+    "y": 611,
     "w": 47,
     "h": 87
    },
@@ -866,17 +866,17 @@
   },
   "fusilier@toy_soldier_attack_up70_05": {
    "frame": {
-    "x": 77,
-    "y": 2,
-    "w": 67,
+    "x": 125,
+    "y": 571,
+    "w": 71,
     "h": 133
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
+    "x": 85,
     "y": 55,
-    "w": 67,
+    "w": 71,
     "h": 133
    },
    "sourceSize": {
@@ -890,8 +890,8 @@
   },
   "fusilier@toy_soldier_attack_up70_05_team": {
    "frame": {
-    "x": 535,
-    "y": 554,
+    "x": 848,
+    "y": 513,
     "w": 45,
     "h": 94
    },
@@ -914,8 +914,8 @@
   },
   "fusilier@toy_soldier_attack_up70_06": {
    "frame": {
-    "x": 315,
-    "y": 450,
+    "x": 336,
+    "y": 113,
     "w": 147,
     "h": 100
    },
@@ -938,8 +938,8 @@
   },
   "fusilier@toy_soldier_attack_up70_06_team": {
    "frame": {
-    "x": 563,
-    "y": 1041,
+    "x": 337,
+    "y": 935,
     "w": 61,
     "h": 82
    },
@@ -962,17 +962,17 @@
   },
   "fusilier@toy_soldier_attack_up70_07": {
    "frame": {
-    "x": 452,
+    "x": 2,
     "y": 121,
-    "w": 146,
+    "w": 150,
     "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 80,
-    "w": 146,
+    "w": 150,
     "h": 108
    },
    "sourceSize": {
@@ -986,17 +986,17 @@
   },
   "fusilier@toy_soldier_attack_up70_07_team": {
    "frame": {
-    "x": 466,
-    "y": 450,
-    "w": 41,
+    "x": 665,
+    "y": 905,
+    "w": 40,
     "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 96,
     "y": 76,
-    "w": 41,
+    "w": 40,
     "h": 95
    },
    "sourceSize": {
@@ -1010,17 +1010,17 @@
   },
   "fusilier@toy_soldier_attack_b_up45_01": {
    "frame": {
-    "x": 638,
-    "y": 553,
-    "w": 99,
+    "x": 741,
+    "y": 415,
+    "w": 103,
     "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 86,
+    "x": 82,
     "y": 88,
-    "w": 99,
+    "w": 103,
     "h": 100
    },
    "sourceSize": {
@@ -1034,8 +1034,8 @@
   },
   "fusilier@toy_soldier_attack_b_up45_01_team": {
    "frame": {
-    "x": 117,
-    "y": 1045,
+    "x": 614,
+    "y": 633,
     "w": 46,
     "h": 89
    },
@@ -1058,17 +1058,17 @@
   },
   "fusilier@toy_soldier_attack_b_up45_02": {
    "frame": {
-    "x": 105,
-    "y": 357,
-    "w": 86,
+    "x": 200,
+    "y": 601,
+    "w": 90,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 85,
+    "x": 81,
     "y": 86,
-    "w": 86,
+    "w": 90,
     "h": 102
    },
    "sourceSize": {
@@ -1082,8 +1082,8 @@
   },
   "fusilier@toy_soldier_attack_b_up45_02_team": {
    "frame": {
-    "x": 710,
-    "y": 852,
+    "x": 448,
+    "y": 727,
     "w": 51,
     "h": 91
    },
@@ -1106,17 +1106,17 @@
   },
   "fusilier@toy_soldier_attack_b_up45_03": {
    "frame": {
-    "x": 524,
-    "y": 343,
-    "w": 83,
+    "x": 200,
+    "y": 707,
+    "w": 87,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
+    "x": 79,
     "y": 86,
-    "w": 83,
+    "w": 87,
     "h": 102
    },
    "sourceSize": {
@@ -1130,8 +1130,8 @@
   },
   "fusilier@toy_soldier_attack_b_up45_03_team": {
    "frame": {
-    "x": 193,
-    "y": 949,
+    "x": 398,
+    "y": 826,
     "w": 53,
     "h": 88
    },
@@ -1154,17 +1154,17 @@
   },
   "fusilier@toy_soldier_attack_b_up45_04": {
    "frame": {
-    "x": 678,
-    "y": 448,
-    "w": 83,
+    "x": 294,
+    "y": 628,
+    "w": 88,
     "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
+    "x": 78,
     "y": 87,
-    "w": 83,
+    "w": 88,
     "h": 101
    },
    "sourceSize": {
@@ -1178,8 +1178,8 @@
   },
   "fusilier@toy_soldier_attack_b_up45_04_team": {
    "frame": {
-    "x": 303,
-    "y": 949,
+    "x": 402,
+    "y": 918,
     "w": 53,
     "h": 87
    },
@@ -1202,17 +1202,17 @@
   },
   "fusilier@toy_soldier_attack_b_up45_05": {
    "frame": {
-    "x": 148,
-    "y": 2,
-    "w": 95,
+    "x": 156,
+    "y": 220,
+    "w": 98,
     "h": 128
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
+    "x": 81,
     "y": 60,
-    "w": 95,
+    "w": 98,
     "h": 128
    },
    "sourceSize": {
@@ -1226,8 +1226,8 @@
   },
   "fusilier@toy_soldier_attack_b_up45_05_team": {
    "frame": {
-    "x": 546,
-    "y": 233,
+    "x": 614,
+    "y": 534,
     "w": 50,
     "h": 95
    },
@@ -1250,8 +1250,8 @@
   },
   "fusilier@toy_soldier_attack_b_up45_06": {
    "frame": {
-    "x": 357,
-    "y": 342,
+    "x": 179,
+    "y": 2,
     "w": 163,
     "h": 104
    },
@@ -1274,8 +1274,8 @@
   },
   "fusilier@toy_soldier_attack_b_up45_06_team": {
    "frame": {
-    "x": 686,
-    "y": 1041,
+    "x": 68,
+    "y": 936,
     "w": 67,
     "h": 80
    },
@@ -1298,17 +1298,17 @@
   },
   "fusilier@toy_soldier_attack_b_up45_07": {
    "frame": {
-    "x": 247,
-    "y": 127,
-    "w": 149,
+    "x": 179,
+    "y": 110,
+    "w": 153,
     "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 85,
+    "x": 81,
     "y": 82,
-    "w": 149,
+    "w": 153,
     "h": 106
    },
    "sourceSize": {
@@ -1322,8 +1322,8 @@
   },
   "fusilier@toy_soldier_attack_b_up45_07_team": {
    "frame": {
-    "x": 584,
-    "y": 554,
+    "x": 791,
+    "y": 519,
     "w": 44,
     "h": 94
    },
@@ -1346,17 +1346,17 @@
   },
   "fusilier@toy_soldier_attack_b_up70_01": {
    "frame": {
-    "x": 678,
-    "y": 343,
-    "w": 88,
+    "x": 2,
+    "y": 644,
+    "w": 92,
     "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 85,
+    "x": 81,
     "y": 87,
-    "w": 88,
+    "w": 92,
     "h": 101
    },
    "sourceSize": {
@@ -1370,8 +1370,8 @@
   },
   "fusilier@toy_soldier_attack_b_up70_01_team": {
    "frame": {
-    "x": 63,
-    "y": 1045,
+    "x": 459,
+    "y": 909,
     "w": 50,
     "h": 89
    },
@@ -1394,8 +1394,8 @@
   },
   "fusilier@toy_soldier_attack_b_up70_02": {
    "frame": {
-    "x": 313,
-    "y": 2,
+    "x": 668,
+    "y": 427,
     "w": 69,
     "h": 119
    },
@@ -1418,8 +1418,8 @@
   },
   "fusilier@toy_soldier_attack_b_up70_02_team": {
    "frame": {
-    "x": 92,
-    "y": 463,
+    "x": 207,
+    "y": 904,
     "w": 58,
     "h": 90
    },
@@ -1442,8 +1442,8 @@
   },
   "fusilier@toy_soldier_attack_b_up70_03": {
    "frame": {
-    "x": 247,
-    "y": 2,
+    "x": 91,
+    "y": 811,
     "w": 62,
     "h": 121
    },
@@ -1466,8 +1466,8 @@
   },
   "fusilier@toy_soldier_attack_b_up70_03_team": {
    "frame": {
-    "x": 87,
-    "y": 762,
+    "x": 157,
+    "y": 813,
     "w": 62,
     "h": 87
    },
@@ -1490,8 +1490,8 @@
   },
   "fusilier@toy_soldier_attack_b_up70_04": {
    "frame": {
-    "x": 386,
-    "y": 2,
+    "x": 2,
+    "y": 851,
     "w": 62,
     "h": 119
    },
@@ -1514,8 +1514,8 @@
   },
   "fusilier@toy_soldier_attack_b_up70_04_team": {
    "frame": {
-    "x": 404,
-    "y": 949,
+    "x": 223,
+    "y": 813,
     "w": 62,
     "h": 86
    },
@@ -1538,7 +1538,7 @@
   },
   "fusilier@toy_soldier_attack_b_up70_05": {
    "frame": {
-    "x": 2,
+    "x": 812,
     "y": 2,
     "w": 71,
     "h": 153
@@ -1562,8 +1562,8 @@
   },
   "fusilier@toy_soldier_attack_b_up70_05_team": {
    "frame": {
-    "x": 666,
-    "y": 755,
+    "x": 448,
+    "y": 630,
     "w": 59,
     "h": 93
    },
@@ -1586,7 +1586,7 @@
   },
   "fusilier@toy_soldier_attack_b_up70_06": {
    "frame": {
-    "x": 452,
+    "x": 2,
     "y": 2,
     "w": 173,
     "h": 115
@@ -1610,8 +1610,8 @@
   },
   "fusilier@toy_soldier_attack_b_up70_06_team": {
    "frame": {
-    "x": 2,
-    "y": 772,
+    "x": 258,
+    "y": 220,
     "w": 74,
     "h": 77
    },
@@ -1634,17 +1634,17 @@
   },
   "fusilier@toy_soldier_attack_b_up70_07": {
    "frame": {
-    "x": 602,
-    "y": 121,
-    "w": 150,
+    "x": 346,
+    "y": 2,
+    "w": 155,
     "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 85,
+    "x": 80,
     "y": 81,
-    "w": 150,
+    "w": 155,
     "h": 107
    },
    "sourceSize": {
@@ -1658,8 +1658,8 @@
   },
   "fusilier@toy_soldier_attack_b_up70_07_team": {
    "frame": {
-    "x": 400,
-    "y": 125,
+    "x": 848,
+    "y": 415,
     "w": 46,
     "h": 94
    },
@@ -1682,17 +1682,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_00": {
    "frame": {
-    "x": 2,
-    "y": 357,
-    "w": 99,
+    "x": 634,
+    "y": 321,
+    "w": 103,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
+    "x": 85,
     "y": 85,
-    "w": 99,
+    "w": 103,
     "h": 102
    },
    "sourceSize": {
@@ -1706,8 +1706,8 @@
   },
   "fusilier@toy_soldier_kneel_fire_00_team": {
    "frame": {
-    "x": 241,
-    "y": 660,
+    "x": 617,
+    "y": 909,
     "w": 44,
     "h": 90
    },
@@ -1730,17 +1730,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_01": {
    "frame": {
-    "x": 94,
-    "y": 853,
-    "w": 115,
+    "x": 2,
+    "y": 457,
+    "w": 120,
     "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
+    "x": 85,
     "y": 99,
-    "w": 115,
+    "w": 120,
     "h": 91
    },
    "sourceSize": {
@@ -1754,8 +1754,8 @@
   },
   "fusilier@toy_soldier_kneel_fire_01_team": {
    "frame": {
-    "x": 574,
-    "y": 949,
+    "x": 503,
+    "y": 727,
     "w": 55,
     "h": 82
    },
@@ -1778,17 +1778,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_02": {
    "frame": {
-    "x": 191,
-    "y": 759,
-    "w": 113,
+    "x": 229,
+    "y": 507,
+    "w": 118,
     "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 86,
     "y": 100,
-    "w": 113,
+    "w": 118,
     "h": 90
    },
    "sourceSize": {
@@ -1802,8 +1802,8 @@
   },
   "fusilier@toy_soldier_kneel_fire_02_team": {
    "frame": {
-    "x": 2,
-    "y": 159,
+    "x": 353,
+    "y": 737,
     "w": 58,
     "h": 85
    },
@@ -1826,17 +1826,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_03": {
    "frame": {
-    "x": 416,
-    "y": 758,
-    "w": 113,
+    "x": 741,
+    "y": 323,
+    "w": 118,
     "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 87,
     "y": 102,
-    "w": 113,
+    "w": 118,
     "h": 88
    },
    "sourceSize": {
@@ -1850,8 +1850,8 @@
   },
   "fusilier@toy_soldier_kneel_fire_03_team": {
    "frame": {
-    "x": 563,
-    "y": 853,
+    "x": 139,
+    "y": 936,
     "w": 64,
     "h": 82
    },
@@ -1874,17 +1874,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_04": {
    "frame": {
-    "x": 167,
-    "y": 1042,
-    "w": 114,
+    "x": 2,
+    "y": 552,
+    "w": 119,
     "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 87,
     "y": 102,
-    "w": 114,
+    "w": 119,
     "h": 88
    },
    "sourceSize": {
@@ -1898,8 +1898,8 @@
   },
   "fusilier@toy_soldier_kneel_fire_04_team": {
    "frame": {
-    "x": 633,
-    "y": 949,
+    "x": 269,
+    "y": 903,
     "w": 64,
     "h": 81
    },
@@ -1922,17 +1922,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_05": {
    "frame": {
-    "x": 533,
-    "y": 755,
-    "w": 129,
+    "x": 2,
+    "y": 233,
+    "w": 133,
     "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 87,
     "y": 97,
-    "w": 129,
+    "w": 133,
     "h": 94
    },
    "sourceSize": {
@@ -1946,8 +1946,8 @@
   },
   "fusilier@toy_soldier_kneel_fire_05_team": {
    "frame": {
-    "x": 2,
-    "y": 1045,
+    "x": 337,
+    "y": 842,
     "w": 57,
     "h": 89
    },
@@ -1970,17 +1970,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_06": {
    "frame": {
-    "x": 378,
-    "y": 1041,
-    "w": 130,
+    "x": 258,
+    "y": 313,
+    "w": 134,
     "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
+    "x": 77,
     "y": 103,
-    "w": 130,
+    "w": 134,
     "h": 86
    },
    "sourceSize": {
@@ -1994,8 +1994,8 @@
   },
   "fusilier@toy_soldier_kneel_fire_06_team": {
    "frame": {
-    "x": 461,
-    "y": 853,
+    "x": 668,
+    "y": 550,
     "w": 48,
     "h": 85
    },
@@ -2018,17 +2018,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_07": {
    "frame": {
-    "x": 400,
-    "y": 233,
-    "w": 142,
+    "x": 658,
+    "y": 111,
+    "w": 146,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
+    "x": 85,
     "y": 85,
-    "w": 142,
+    "w": 146,
     "h": 105
    },
    "sourceSize": {
@@ -2042,17 +2042,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_07_team": {
    "frame": {
-    "x": 48,
-    "y": 853,
-    "w": 42,
+    "x": 669,
+    "y": 735,
+    "w": 41,
     "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 96,
     "y": 82,
-    "w": 42,
+    "w": 41,
     "h": 92
    },
    "sourceSize": {
@@ -2066,17 +2066,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_08": {
    "frame": {
-    "x": 195,
-    "y": 453,
-    "w": 108,
+    "x": 234,
+    "y": 403,
+    "w": 113,
     "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 83,
     "y": 87,
-    "w": 108,
+    "w": 113,
     "h": 100
    },
    "sourceSize": {
@@ -2090,8 +2090,8 @@
   },
   "fusilier@toy_soldier_kneel_fire_08_team": {
    "frame": {
-    "x": 406,
-    "y": 853,
+    "x": 513,
+    "y": 909,
     "w": 51,
     "h": 85
    },
@@ -2115,16 +2115,16 @@
   "fusilier@toy_soldier_kneel_fire_09": {
    "frame": {
     "x": 2,
-    "y": 248,
-    "w": 105,
+    "y": 331,
+    "w": 110,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
+    "x": 85,
     "y": 83,
-    "w": 105,
+    "w": 110,
     "h": 105
    },
    "sourceSize": {
@@ -2138,8 +2138,8 @@
   },
   "fusilier@toy_soldier_kneel_fire_09_team": {
    "frame": {
-    "x": 191,
-    "y": 660,
+    "x": 741,
+    "y": 519,
     "w": 46,
     "h": 90
    },
@@ -2162,17 +2162,17 @@
   },
   "fusilier@toy_soldier_kneel_fire_10": {
    "frame": {
-    "x": 227,
-    "y": 346,
-    "w": 84,
+    "x": 576,
+    "y": 427,
+    "w": 88,
     "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 84,
     "y": 84,
-    "w": 84,
+    "w": 88,
     "h": 103
    },
    "sourceSize": {
@@ -2186,8 +2186,8 @@
   },
   "fusilier@toy_soldier_kneel_fire_10_team": {
    "frame": {
-    "x": 710,
-    "y": 947,
+    "x": 715,
+    "y": 702,
     "w": 42,
     "h": 90
    },
@@ -2210,17 +2210,17 @@
   },
   "fusilier@toy_soldier_square_00": {
    "frame": {
-    "x": 422,
-    "y": 554,
-    "w": 109,
+    "x": 351,
+    "y": 422,
+    "w": 113,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 87,
     "y": 89,
-    "w": 109,
+    "w": 113,
     "h": 99
    },
    "sourceSize": {
@@ -2234,8 +2234,8 @@
   },
   "fusilier@toy_soldier_square_00_team": {
    "frame": {
-    "x": 360,
-    "y": 759,
+    "x": 567,
+    "y": 726,
     "w": 49,
     "h": 87
    },
@@ -2258,17 +2258,17 @@
   },
   "fusilier@toy_soldier_square_01": {
    "frame": {
-    "x": 92,
-    "y": 557,
-    "w": 110,
+    "x": 516,
+    "y": 321,
+    "w": 114,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
+    "x": 87,
     "y": 89,
-    "w": 110,
+    "w": 114,
     "h": 99
    },
    "sourceSize": {
@@ -2282,8 +2282,8 @@
   },
   "fusilier@toy_soldier_square_01_team": {
    "frame": {
-    "x": 250,
-    "y": 949,
+    "x": 514,
+    "y": 813,
     "w": 49,
     "h": 88
    },
@@ -2489,15 +2489,15 @@
   "image": "fusilier@toy_soldier.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 1136
+   "w": 896,
+   "h": 1020
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.fusilier@toy_soldier",
    "name": "Fusilier",
    "heightLu": 70,
-   "widthLu": 61.4,
+   "widthLu": 65.0,
    "pxPerLu": 1.23,
    "feetPx": [
     115.0,

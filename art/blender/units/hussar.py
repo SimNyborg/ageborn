@@ -58,7 +58,7 @@ EYE = "#FAF6EE"
 NOSE = "#6E5A4E"
 BRAID = "#CFC3A6"
 COAT_LT = "#CDCAC4"    # W2: the grey's lit planes (neck crest)
-DAPPLE = "#A29E98"     # W2: the grey's dapples (darker rings of 3 lu and more)
+DAPPLE = "#ACA8A2"     # W2: the grey's dapples (W2 review nit 5: fewer, larger and softer, were #A29E98)
 BUSBY = "#3A3634"      # W2: the fur busby with a lit side (was #2B2826)
 BUSBY_LT = "#524D4A"   # W2: lighter fur tufts on the busby
 FLEECE = "#3E3A38"     # W2: the black sheepskin with a lit side (was #2E2B2A)
@@ -74,7 +74,11 @@ BOOT = "#3A3638"       # W2: the rider's boots with a lit side (was rigs_gunpowd
 DETAIL_STANDARD = True
 LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
               "top": 0.08, "top_t": 0.62, "team_core": 0.4}
-MATERIAL_KINDS = {COAT: "hide", COAT_DK: "hide", COAT_LT: "hide", DAPPLE: "hide", POINTS: "hide", MANE: "fur",
+# W2 review nit 5: the hide kind's 3-5 lu blotches (and the small dapples) read as grit on the grey at 1x; the
+# coat takes the fur kind (fine hair streaks along the form) and six larger, softer dapples carry the dappled grey
+COAT_KIND = "fur"
+MATERIAL_KINDS = {COAT: COAT_KIND, COAT_DK: COAT_KIND, COAT_LT: COAT_KIND, DAPPLE: COAT_KIND, POINTS: COAT_KIND,
+                  MANE: "fur",
                   HOOF: "bone", STEEL: "iron", BLADE: "iron", NOSE: "hide", B.CREAM: "cloth", BRAID: "cloth",
                   B.BRASS: "bronze", B.WOOD: "leather", B.BLACK: "leather", BOOT: "leather", B.GUNWOOD: "wood",
                   B.SKIN: "skin", B.LEATHER: "leather", BUSBY: "fur", BUSBY_LT: "fur", FLEECE: "fur", FUR_TRIM: "fur",
@@ -138,9 +142,8 @@ def build(rig):
                     [(17.0, 33.5), (20.5, 31.0), (23.5, 30.6)], 1.0, COAT_DK)
     hf = F.Face(rig, "horse", [Geo().blob((0, 0, 41), (25, 11.5, 12), p=2.3)])
     g = Geo()
-    for (x, z), r in (((-25.0, 36.0), 1.7), ((-22.0, 31.0), 1.5), ((-27.5, 31.5), 1.4), ((17.0, 36.0), 1.6),
-                      ((21.0, 33.0), 1.4)):
-        hf.decal(g, hf.hit(x, z), F.ellipse(0.0, 0.0, r, r * 0.85, 10))
+    for (x, z), r in (((-24.6, 35.4), 3.0), ((-20.8, 30.4), 2.3), ((18.4, 35.2), 2.7)):
+        hf.decal(g, hf.hit(x, z), F.ellipse(0.0, 0.0, r, r * 0.85, 14))
     rig.part("horse", g, DAPPLE, highlight=False, outline=0)
     g = Geo().blob((-2, 0, 55.5), (12.5, 10.5, 3.8), p=2.6)  # sheepskin
     rig.part("horse", g, FLEECE, finish="hair")
@@ -172,8 +175,8 @@ def build(rig):
         KD.surface_line(rig, "neck", Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8), pts, 1.0, COAT_DK)
     fc = F.Face(rig, "neck", [Geo().capsule((20, 0, 46), (31, 0, 64), 9.2, 6.8)])
     g = Geo()
-    for (x, z), r in (((22.5, 52.0), 1.6), ((25.0, 56.5), 1.4), ((20.5, 47.0), 1.7), ((27.0, 50.5), 1.3)):
-        fc.decal(g, fc.hit(x, z), F.ellipse(0.0, 0.0, r, r * 0.85, 10))
+    for (x, z), r in (((21.6, 50.4), 3.0), ((26.4, 57.2), 2.6), ((17.6, 44.8), 2.4)):
+        fc.decal(g, fc.hit(x, z), F.ellipse(0.0, 0.0, r, r * 0.85, 14))
     rig.part("neck", g, DAPPLE, highlight=False, outline=0)
     g = Geo()
     for i in range(6):
