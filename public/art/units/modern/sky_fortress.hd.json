@@ -2,18 +2,18 @@
  "frames": {
   "sky_fortress_idle_00": {
    "frame": {
-    "x": 2,
-    "y": 2034,
+    "x": 2144,
+    "y": 1834,
     "w": 379,
-    "h": 201
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 325,
+    "y": 323,
     "w": 379,
-    "h": 201
+    "h": 203
    },
    "sourceSize": {
     "w": 958,
@@ -26,9 +26,9 @@
   },
   "sky_fortress_idle_00_team": {
    "frame": {
-    "x": 331,
-    "y": 2239,
-    "w": 329,
+    "x": 332,
+    "y": 2251,
+    "w": 328,
     "h": 195
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 347,
     "y": 316,
-    "w": 329,
+    "w": 328,
     "h": 195
    },
    "sourceSize": {
@@ -50,18 +50,18 @@
   },
   "sky_fortress_idle_01": {
    "frame": {
-    "x": 2139,
-    "y": 1613,
+    "x": 1868,
+    "y": 1620,
     "w": 379,
-    "h": 205
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 320,
+    "y": 318,
     "w": 379,
-    "h": 205
+    "h": 207
    },
    "sourceSize": {
     "w": 958,
@@ -74,17 +74,17 @@
   },
   "sky_fortress_idle_01_team": {
    "frame": {
-    "x": 328,
-    "y": 1394,
-    "w": 327,
+    "x": 1092,
+    "y": 1401,
+    "w": 328,
     "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 349,
+    "x": 348,
     "y": 311,
-    "w": 327,
+    "w": 328,
     "h": 214
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "sky_fortress_idle_02": {
    "frame": {
-    "x": 1096,
-    "y": 1613,
+    "x": 767,
+    "y": 1620,
     "w": 379,
-    "h": 207
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 320,
+    "y": 318,
     "w": 379,
-    "h": 207
+    "h": 209
    },
    "sourceSize": {
     "w": 958,
@@ -122,18 +122,18 @@
   },
   "sky_fortress_idle_02_team": {
    "frame": {
-    "x": 1815,
-    "y": 1825,
-    "w": 325,
-    "h": 202
+    "x": 385,
+    "y": 1834,
+    "w": 326,
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 351,
+    "x": 350,
     "y": 310,
-    "w": 325,
-    "h": 202
+    "w": 326,
+    "h": 206
    },
    "sourceSize": {
     "w": 958,
@@ -146,18 +146,18 @@
   },
   "sky_fortress_idle_03": {
    "frame": {
-    "x": 1100,
-    "y": 1825,
+    "x": 1429,
+    "y": 1834,
     "w": 379,
-    "h": 203
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 325,
+    "y": 323,
     "w": 379,
-    "h": 203
+    "h": 205
    },
    "sourceSize": {
     "w": 958,
@@ -170,9 +170,9 @@
   },
   "sky_fortress_idle_03_team": {
    "frame": {
-    "x": 2135,
-    "y": 2034,
-    "w": 327,
+    "x": 2,
+    "y": 2251,
+    "w": 326,
     "h": 196
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 349,
     "y": 315,
-    "w": 327,
+    "w": 326,
     "h": 196
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "sky_fortress_walk_00": {
    "frame": {
-    "x": 326,
-    "y": 1172,
+    "x": 2,
+    "y": 1178,
     "w": 377,
-    "h": 217
+    "h": 219
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 352,
-    "y": 314,
+    "y": 312,
     "w": 377,
-    "h": 217
+    "h": 219
    },
    "sourceSize": {
     "w": 958,
@@ -218,18 +218,18 @@
   },
   "sky_fortress_walk_00_team": {
    "frame": {
-    "x": 384,
-    "y": 1613,
+    "x": 1806,
+    "y": 1401,
     "w": 322,
-    "h": 208
+    "h": 212
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 355,
+    "x": 354,
     "y": 305,
     "w": 322,
-    "h": 208
+    "h": 212
    },
    "sourceSize": {
     "w": 958,
@@ -242,18 +242,18 @@
   },
   "sky_fortress_walk_01": {
    "frame": {
-    "x": 2,
-    "y": 1613,
+    "x": 385,
+    "y": 1620,
     "w": 378,
-    "h": 208
+    "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 313,
+    "y": 311,
     "w": 378,
-    "h": 208
+    "h": 210
    },
    "sourceSize": {
     "w": 958,
@@ -266,17 +266,17 @@
   },
   "sky_fortress_walk_01_team": {
    "frame": {
-    "x": 2085,
-    "y": 701,
-    "w": 321,
+    "x": 2087,
+    "y": 704,
+    "w": 322,
     "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 355,
+    "x": 354,
     "y": 304,
-    "w": 321,
+    "w": 322,
     "h": 224
    },
    "sourceSize": {
@@ -290,18 +290,18 @@
   },
   "sky_fortress_walk_02": {
    "frame": {
-    "x": 2122,
-    "y": 1172,
+    "x": 1473,
+    "y": 1178,
     "w": 378,
-    "h": 215
+    "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 312,
+    "y": 310,
     "w": 378,
-    "h": 215
+    "h": 217
    },
    "sourceSize": {
     "w": 958,
@@ -315,8 +315,8 @@
   "sky_fortress_walk_02_team": {
    "frame": {
     "x": 2,
-    "y": 1394,
-    "w": 322,
+    "y": 1401,
+    "w": 321,
     "h": 215
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 355,
     "y": 302,
-    "w": 322,
+    "w": 321,
     "h": 215
    },
    "sourceSize": {
@@ -338,18 +338,18 @@
   },
   "sky_fortress_walk_03": {
    "frame": {
-    "x": 1795,
-    "y": 946,
+    "x": 1467,
+    "y": 952,
     "w": 377,
-    "h": 219
+    "h": 221
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 352,
-    "y": 311,
+    "y": 309,
     "w": 377,
-    "h": 219
+    "h": 221
    },
    "sourceSize": {
     "w": 958,
@@ -362,15 +362,15 @@
   },
   "sky_fortress_walk_03_team": {
    "frame": {
-    "x": 1413,
-    "y": 1172,
+    "x": 2180,
+    "y": 1178,
     "w": 320,
     "h": 216
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 357,
+    "x": 356,
     "y": 302,
     "w": 320,
     "h": 216
@@ -386,18 +386,18 @@
   },
   "sky_fortress_walk_04": {
    "frame": {
-    "x": 705,
-    "y": 946,
+    "x": 2,
+    "y": 952,
     "w": 377,
-    "h": 220
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 352,
-    "y": 311,
+    "y": 309,
     "w": 377,
-    "h": 220
+    "h": 222
    },
    "sourceSize": {
     "w": 958,
@@ -410,15 +410,15 @@
   },
   "sky_fortress_walk_04_team": {
    "frame": {
-    "x": 759,
-    "y": 701,
+    "x": 1453,
+    "y": 704,
     "w": 318,
     "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 358,
+    "x": 357,
     "y": 302,
     "w": 318,
     "h": 229
@@ -434,18 +434,18 @@
   },
   "sky_fortress_walk_05": {
    "frame": {
-    "x": 1086,
-    "y": 946,
+    "x": 383,
+    "y": 952,
     "w": 377,
-    "h": 220
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 352,
-    "y": 312,
+    "y": 310,
     "w": 377,
-    "h": 220
+    "h": 222
    },
    "sourceSize": {
     "w": 958,
@@ -458,17 +458,17 @@
   },
   "sky_fortress_walk_05_team": {
    "frame": {
-    "x": 1081,
-    "y": 701,
-    "w": 318,
+    "x": 1130,
+    "y": 704,
+    "w": 319,
     "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 358,
+    "x": 357,
     "y": 303,
-    "w": 318,
+    "w": 319,
     "h": 229
    },
    "sourceSize": {
@@ -482,18 +482,18 @@
   },
   "sky_fortress_walk_06": {
    "frame": {
-    "x": 324,
-    "y": 946,
+    "x": 764,
+    "y": 952,
     "w": 377,
-    "h": 221
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 352,
-    "y": 313,
+    "y": 312,
     "w": 377,
-    "h": 221
+    "h": 222
    },
    "sourceSize": {
     "w": 958,
@@ -506,15 +506,15 @@
   },
   "sky_fortress_walk_06_team": {
    "frame": {
-    "x": 2,
-    "y": 1172,
+    "x": 764,
+    "y": 1178,
     "w": 320,
     "h": 218
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 357,
+    "x": 356,
     "y": 304,
     "w": 320,
     "h": 218
@@ -530,18 +530,18 @@
   },
   "sky_fortress_walk_07": {
    "frame": {
-    "x": 707,
-    "y": 1172,
+    "x": 383,
+    "y": 1178,
     "w": 377,
-    "h": 217
+    "h": 218
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 352,
-    "y": 314,
+    "y": 313,
     "w": 377,
-    "h": 217
+    "h": 218
    },
    "sourceSize": {
     "w": 958,
@@ -554,15 +554,15 @@
   },
   "sky_fortress_walk_07_team": {
    "frame": {
-    "x": 1088,
-    "y": 1172,
+    "x": 1855,
+    "y": 1178,
     "w": 321,
     "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 356,
+    "x": 355,
     "y": 305,
     "w": 321,
     "h": 217
@@ -578,18 +578,18 @@
   },
   "sky_fortress_attack_00": {
    "frame": {
-    "x": 1806,
-    "y": 1394,
+    "x": 2,
+    "y": 1620,
     "w": 379,
-    "h": 208
+    "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 320,
+    "y": 318,
     "w": 379,
-    "h": 208
+    "h": 210
    },
    "sourceSize": {
     "w": 958,
@@ -602,18 +602,18 @@
   },
   "sky_fortress_attack_00_team": {
    "frame": {
-    "x": 2144,
-    "y": 1825,
-    "w": 325,
-    "h": 202
+    "x": 715,
+    "y": 1834,
+    "w": 326,
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 351,
+    "x": 350,
     "y": 310,
-    "w": 325,
-    "h": 202
+    "w": 326,
+    "h": 206
    },
    "sourceSize": {
     "w": 958,
@@ -627,17 +627,17 @@
   "sky_fortress_attack_01": {
    "frame": {
     "x": 1424,
-    "y": 1394,
+    "y": 1401,
     "w": 378,
-    "h": 210
+    "h": 212
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 319,
+    "y": 317,
     "w": 378,
-    "h": 210
+    "h": 212
    },
    "sourceSize": {
     "w": 958,
@@ -650,15 +650,15 @@
   },
   "sky_fortress_attack_01_team": {
    "frame": {
-    "x": 1467,
-    "y": 946,
+    "x": 2221,
+    "y": 952,
     "w": 324,
     "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 353,
+    "x": 352,
     "y": 309,
     "w": 324,
     "h": 220
@@ -674,18 +674,18 @@
   },
   "sky_fortress_attack_02": {
    "frame": {
-    "x": 1035,
-    "y": 1394,
+    "x": 327,
+    "y": 1401,
     "w": 385,
-    "h": 212
+    "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 348,
-    "y": 319,
+    "y": 317,
     "w": 385,
-    "h": 212
+    "h": 214
    },
    "sourceSize": {
     "w": 958,
@@ -698,18 +698,18 @@
   },
   "sky_fortress_attack_02_team": {
    "frame": {
-    "x": 1807,
-    "y": 1613,
+    "x": 1150,
+    "y": 1620,
     "w": 328,
-    "h": 206
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 351,
+    "x": 350,
     "y": 310,
     "w": 328,
-    "h": 206
+    "h": 209
    },
    "sourceSize": {
     "w": 958,
@@ -722,18 +722,18 @@
   },
   "sky_fortress_attack_03": {
    "frame": {
-    "x": 1737,
-    "y": 1172,
+    "x": 1088,
+    "y": 1178,
     "w": 381,
-    "h": 215
+    "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 350,
-    "y": 318,
+    "y": 316,
     "w": 381,
-    "h": 215
+    "h": 217
    },
    "sourceSize": {
     "w": 958,
@@ -746,18 +746,18 @@
   },
   "sky_fortress_attack_03_team": {
    "frame": {
-    "x": 1479,
-    "y": 1613,
-    "w": 324,
-    "h": 207
+    "x": 2132,
+    "y": 1401,
+    "w": 323,
+    "h": 211
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 353,
     "y": 309,
-    "w": 324,
-    "h": 207
+    "w": 323,
+    "h": 211
    },
    "sourceSize": {
     "w": 958,
@@ -770,18 +770,18 @@
   },
   "sky_fortress_attack_04": {
    "frame": {
-    "x": 659,
-    "y": 1394,
+    "x": 716,
+    "y": 1401,
     "w": 372,
-    "h": 213
+    "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 354,
-    "y": 317,
+    "y": 316,
     "w": 372,
-    "h": 213
+    "h": 214
    },
    "sourceSize": {
     "w": 958,
@@ -794,15 +794,15 @@
   },
   "sky_fortress_attack_04_team": {
    "frame": {
-    "x": 2,
-    "y": 946,
+    "x": 1145,
+    "y": 952,
     "w": 318,
     "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 356,
+    "x": 355,
     "y": 308,
     "w": 318,
     "h": 222
@@ -818,18 +818,18 @@
   },
   "sky_fortress_attack_05": {
    "frame": {
-    "x": 2176,
-    "y": 946,
+    "x": 1848,
+    "y": 952,
     "w": 369,
-    "h": 219
+    "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 355,
-    "y": 319,
+    "y": 318,
     "w": 369,
-    "h": 219
+    "h": 220
    },
    "sourceSize": {
     "w": 958,
@@ -842,8 +842,8 @@
   },
   "sky_fortress_attack_05_team": {
    "frame": {
-    "x": 1810,
-    "y": 2034,
+    "x": 2087,
+    "y": 2044,
     "w": 321,
     "h": 198
    },
@@ -866,18 +866,18 @@
   },
   "sky_fortress_attack_06": {
    "frame": {
-    "x": 2,
-    "y": 701,
+    "x": 378,
+    "y": 704,
     "w": 377,
-    "h": 241
+    "h": 242
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 320,
+    "y": 319,
     "w": 377,
-    "h": 241
+    "h": 242
    },
    "sourceSize": {
     "w": 958,
@@ -890,17 +890,17 @@
   },
   "sky_fortress_attack_06_team": {
    "frame": {
-    "x": 1011,
-    "y": 2239,
-    "w": 327,
+    "x": 1012,
+    "y": 2251,
+    "w": 328,
     "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 347,
+    "x": 346,
     "y": 311,
-    "w": 327,
+    "w": 328,
     "h": 192
    },
    "sourceSize": {
@@ -914,18 +914,18 @@
   },
   "sky_fortress_attack_07": {
    "frame": {
-    "x": 385,
-    "y": 2034,
+    "x": 333,
+    "y": 2044,
     "w": 379,
-    "h": 200
+    "h": 202
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 350,
-    "y": 320,
+    "y": 318,
     "w": 379,
-    "h": 200
+    "h": 202
    },
    "sourceSize": {
     "w": 958,
@@ -938,8 +938,8 @@
   },
   "sky_fortress_attack_07_team": {
    "frame": {
-    "x": 768,
-    "y": 2034,
+    "x": 1425,
+    "y": 2044,
     "w": 328,
     "h": 200
    },
@@ -962,18 +962,18 @@
   },
   "sky_fortress_attack_08": {
    "frame": {
-    "x": 333,
-    "y": 1825,
+    "x": 2,
+    "y": 1834,
     "w": 379,
-    "h": 204
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 321,
+    "y": 319,
     "w": 379,
-    "h": 204
+    "h": 206
    },
    "sourceSize": {
     "w": 958,
@@ -986,18 +986,18 @@
   },
   "sky_fortress_attack_08_team": {
    "frame": {
-    "x": 1479,
-    "y": 2034,
+    "x": 2,
+    "y": 2044,
     "w": 327,
-    "h": 198
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 349,
+    "x": 348,
     "y": 312,
     "w": 327,
-    "h": 198
+    "h": 203
    },
    "sourceSize": {
     "w": 958,
@@ -1010,18 +1010,18 @@
   },
   "sky_fortress_hit_00": {
    "frame": {
-    "x": 1693,
-    "y": 2239,
-    "w": 398,
-    "h": 187
+    "x": 1344,
+    "y": 2251,
+    "w": 399,
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 336,
-    "y": 347,
-    "w": 398,
-    "h": 187
+    "x": 335,
+    "y": 345,
+    "w": 399,
+    "h": 189
    },
    "sourceSize": {
     "w": 958,
@@ -1034,17 +1034,17 @@
   },
   "sky_fortress_hit_00_team": {
    "frame": {
-    "x": 1342,
-    "y": 2239,
-    "w": 347,
+    "x": 1747,
+    "y": 2251,
+    "w": 348,
     "h": 188
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 330,
+    "x": 329,
     "y": 338,
-    "w": 347,
+    "w": 348,
     "h": 188
    },
    "sourceSize": {
@@ -1058,18 +1058,18 @@
   },
   "sky_fortress_hit_01": {
    "frame": {
-    "x": 2095,
-    "y": 2239,
-    "w": 393,
-    "h": 176
+    "x": 2099,
+    "y": 2251,
+    "w": 394,
+    "h": 178
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 336,
-    "y": 352,
-    "w": 393,
-    "h": 176
+    "x": 335,
+    "y": 350,
+    "w": 394,
+    "h": 178
    },
    "sourceSize": {
     "w": 958,
@@ -1083,16 +1083,16 @@
   "sky_fortress_hit_01_team": {
    "frame": {
     "x": 664,
-    "y": 2239,
-    "w": 343,
+    "y": 2251,
+    "w": 344,
     "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 329,
+    "x": 328,
     "y": 342,
-    "w": 343,
+    "w": 344,
     "h": 192
    },
    "sourceSize": {
@@ -1106,18 +1106,18 @@
   },
   "sky_fortress_hit_02": {
    "frame": {
-    "x": 1100,
-    "y": 2034,
-    "w": 375,
-    "h": 198
+    "x": 1047,
+    "y": 2044,
+    "w": 374,
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 349,
-    "y": 332,
-    "w": 375,
-    "h": 198
+    "x": 350,
+    "y": 330,
+    "w": 374,
+    "h": 200
    },
    "sourceSize": {
     "w": 958,
@@ -1130,18 +1130,18 @@
   },
   "sky_fortress_hit_02_team": {
    "frame": {
-    "x": 2,
-    "y": 2239,
-    "w": 325,
-    "h": 196
+    "x": 1757,
+    "y": 2044,
+    "w": 326,
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 345,
+    "x": 344,
     "y": 323,
-    "w": 325,
-    "h": 196
+    "w": 326,
+    "h": 200
    },
    "sourceSize": {
     "w": 958,
@@ -1154,18 +1154,18 @@
   },
   "sky_fortress_hit_03": {
    "frame": {
-    "x": 710,
-    "y": 1613,
+    "x": 1482,
+    "y": 1620,
     "w": 382,
-    "h": 207
+    "h": 208
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 349,
-    "y": 320,
+    "y": 319,
     "w": 382,
-    "h": 207
+    "h": 208
    },
    "sourceSize": {
     "w": 958,
@@ -1178,17 +1178,17 @@
   },
   "sky_fortress_hit_03_team": {
    "frame": {
-    "x": 2,
-    "y": 1825,
-    "w": 327,
+    "x": 1812,
+    "y": 1834,
+    "w": 328,
     "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 350,
+    "x": 349,
     "y": 311,
-    "w": 327,
+    "w": 328,
     "h": 205
    },
    "sourceSize": {
@@ -1202,18 +1202,18 @@
   },
   "sky_fortress_hit_04": {
    "frame": {
-    "x": 716,
-    "y": 1825,
+    "x": 1045,
+    "y": 1834,
     "w": 380,
-    "h": 203
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 350,
-    "y": 323,
+    "y": 321,
     "w": 380,
-    "h": 203
+    "h": 205
    },
    "sourceSize": {
     "w": 958,
@@ -1226,9 +1226,9 @@
   },
   "sky_fortress_hit_04_team": {
    "frame": {
-    "x": 1483,
-    "y": 1825,
-    "w": 328,
+    "x": 716,
+    "y": 2044,
+    "w": 327,
     "h": 202
    },
    "rotated": false,
@@ -1236,7 +1236,7 @@
    "spriteSourceSize": {
     "x": 348,
     "y": 314,
-    "w": 328,
+    "w": 327,
     "h": 202
    },
    "sourceSize": {
@@ -1250,18 +1250,18 @@
   },
   "sky_fortress_die_00": {
    "frame": {
-    "x": 1403,
-    "y": 701,
+    "x": 759,
+    "y": 704,
     "w": 367,
-    "h": 228
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 352,
-    "y": 301,
+    "y": 299,
     "w": 367,
-    "h": 228
+    "h": 230
    },
    "sourceSize": {
     "w": 958,
@@ -1274,17 +1274,17 @@
   },
   "sky_fortress_die_00_team": {
    "frame": {
-    "x": 1774,
-    "y": 701,
-    "w": 307,
+    "x": 1775,
+    "y": 704,
+    "w": 308,
     "h": 227
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 361,
+    "x": 360,
     "y": 291,
-    "w": 307,
+    "w": 308,
     "h": 227
    },
    "sourceSize": {
@@ -1298,18 +1298,18 @@
   },
   "sky_fortress_die_01": {
    "frame": {
-    "x": 383,
-    "y": 701,
+    "x": 2,
+    "y": 704,
     "w": 372,
-    "h": 240
+    "h": 244
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 346,
-    "y": 302,
+    "y": 300,
     "w": 372,
-    "h": 240
+    "h": 244
    },
    "sourceSize": {
     "w": 958,
@@ -1322,17 +1322,17 @@
   },
   "sky_fortress_die_01_team": {
    "frame": {
-    "x": 1637,
-    "y": 367,
-    "w": 308,
+    "x": 1651,
+    "y": 370,
+    "w": 309,
     "h": 258
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 358,
+    "x": 357,
     "y": 293,
-    "w": 308,
+    "w": 309,
     "h": 258
    },
    "sourceSize": {
@@ -1346,18 +1346,18 @@
   },
   "sky_fortress_die_02": {
    "frame": {
-    "x": 1287,
-    "y": 367,
+    "x": 1301,
+    "y": 370,
     "w": 346,
-    "h": 267
+    "h": 268
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 356,
-    "y": 274,
+    "y": 273,
     "w": 346,
-    "h": 267
+    "h": 268
    },
    "sourceSize": {
     "w": 958,
@@ -1370,8 +1370,8 @@
   },
   "sky_fortress_die_02_team": {
    "frame": {
-    "x": 1949,
-    "y": 367,
+    "x": 1964,
+    "y": 370,
     "w": 283,
     "h": 256
    },
@@ -1394,18 +1394,18 @@
   },
   "sky_fortress_die_03": {
    "frame": {
-    "x": 678,
-    "y": 367,
+    "x": 452,
+    "y": 370,
     "w": 334,
-    "h": 304
+    "h": 305
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 362,
-    "y": 291,
+    "y": 290,
     "w": 334,
-    "h": 304
+    "h": 305
    },
    "sourceSize": {
     "w": 958,
@@ -1418,17 +1418,17 @@
   },
   "sky_fortress_die_03_team": {
    "frame": {
-    "x": 1016,
-    "y": 367,
-    "w": 267,
+    "x": 1029,
+    "y": 370,
+    "w": 268,
     "h": 303
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 384,
+    "x": 383,
     "y": 282,
-    "w": 267,
+    "w": 268,
     "h": 303
    },
    "sourceSize": {
@@ -1445,15 +1445,15 @@
     "x": 1153,
     "y": 2,
     "w": 289,
-    "h": 339
+    "h": 341
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 383,
-    "y": 270,
+    "y": 268,
     "w": 289,
-    "h": 339
+    "h": 341
    },
    "sourceSize": {
     "w": 958,
@@ -1466,9 +1466,9 @@
   },
   "sky_fortress_die_04_team": {
    "frame": {
-    "x": 443,
-    "y": 367,
-    "w": 231,
+    "x": 790,
+    "y": 370,
+    "w": 235,
     "h": 305
    },
    "rotated": false,
@@ -1476,7 +1476,7 @@
    "spriteSourceSize": {
     "x": 403,
     "y": 261,
-    "w": 231,
+    "w": 235,
     "h": 305
    },
    "sourceSize": {
@@ -1493,15 +1493,15 @@
     "x": 2,
     "y": 2,
     "w": 291,
-    "h": 361
+    "h": 364
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 379,
-    "y": 277,
+    "y": 274,
     "w": 291,
-    "h": 361
+    "h": 364
    },
    "sourceSize": {
     "w": 958,
@@ -1514,18 +1514,18 @@
   },
   "sky_fortress_die_05_team": {
    "frame": {
-    "x": 2170,
+    "x": 1948,
     "y": 2,
-    "w": 228,
-    "h": 332
+    "w": 232,
+    "h": 333
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 403,
     "y": 266,
-    "w": 228,
-    "h": 332
+    "w": 232,
+    "h": 333
    },
    "sourceSize": {
     "w": 958,
@@ -1538,18 +1538,18 @@
   },
   "sky_fortress_die_06": {
    "frame": {
-    "x": 1671,
+    "x": 1446,
     "y": 2,
     "w": 268,
-    "h": 335
+    "h": 338
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 392,
-    "y": 279,
+    "y": 276,
     "w": 268,
-    "h": 335
+    "h": 338
    },
    "sourceSize": {
     "w": 958,
@@ -1562,9 +1562,9 @@
   },
   "sky_fortress_die_06_team": {
    "frame": {
-    "x": 225,
-    "y": 367,
-    "w": 214,
+    "x": 229,
+    "y": 370,
+    "w": 219,
     "h": 324
    },
    "rotated": false,
@@ -1572,7 +1572,7 @@
    "spriteSourceSize": {
     "x": 411,
     "y": 269,
-    "w": 214,
+    "w": 219,
     "h": 324
    },
    "sourceSize": {
@@ -1589,15 +1589,15 @@
     "x": 585,
     "y": 2,
     "w": 282,
-    "h": 356
+    "h": 358
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 384,
-    "y": 276,
+    "y": 274,
     "w": 282,
-    "h": 356
+    "h": 358
    },
    "sourceSize": {
     "w": 958,
@@ -1610,17 +1610,17 @@
   },
   "sky_fortress_die_07_team": {
    "frame": {
-    "x": 1446,
+    "x": 1718,
     "y": 2,
-    "w": 221,
+    "w": 226,
     "h": 336
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 408,
+    "x": 407,
     "y": 266,
-    "w": 221,
+    "w": 226,
     "h": 336
    },
    "sourceSize": {
@@ -1637,15 +1637,15 @@
     "x": 871,
     "y": 2,
     "w": 278,
-    "h": 353
+    "h": 355
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 386,
-    "y": 277,
+    "y": 275,
     "w": 278,
-    "h": 353
+    "h": 355
    },
    "sourceSize": {
     "w": 958,
@@ -1659,8 +1659,8 @@
   "sky_fortress_die_08_team": {
    "frame": {
     "x": 2,
-    "y": 367,
-    "w": 219,
+    "y": 370,
+    "w": 223,
     "h": 330
    },
    "rotated": false,
@@ -1668,7 +1668,7 @@
    "spriteSourceSize": {
     "x": 409,
     "y": 267,
-    "w": 219,
+    "w": 223,
     "h": 330
    },
    "sourceSize": {
@@ -1685,15 +1685,15 @@
     "x": 297,
     "y": 2,
     "w": 284,
-    "h": 357
+    "h": 360
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 383,
-    "y": 276,
+    "y": 273,
     "w": 284,
-    "h": 357
+    "h": 360
    },
    "sourceSize": {
     "w": 958,
@@ -1706,17 +1706,17 @@
   },
   "sky_fortress_die_09_team": {
    "frame": {
-    "x": 1943,
+    "x": 2184,
     "y": 2,
-    "w": 223,
+    "w": 228,
     "h": 333
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 407,
+    "x": 406,
     "y": 266,
-    "w": 223,
+    "w": 228,
     "h": 333
    },
    "sourceSize": {
@@ -1830,14 +1830,14 @@
   "format": "RGBA8888",
   "size": {
    "w": 2560,
-   "h": 2440
+   "h": 2452
   },
   "scale": "3",
   "ageborn": {
    "visualId": "unit.sky_fortress",
    "name": "Sky Fortress",
    "heightLu": 78,
-   "widthLu": 149.2,
+   "widthLu": 149.6,
    "pxPerLu": 2.46,
    "feetPx": [
     538,
@@ -2124,7 +2124,7 @@
         0,
         28.1
        ],
-       "scale": 1.865
+       "scale": 1.87
       },
       {
        "id": "fx.ko_stars",
@@ -2134,7 +2134,7 @@
         42.9
        ],
        "loops": 2,
-       "scale": 1.366
+       "scale": 1.367
       }
      ],
      "hideUnitAtMs": 695,

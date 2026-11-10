@@ -33,15 +33,25 @@ Animation standard (ANIM_SPEC 2026-10-02, G6 tracked; the track pilot):
   attack_b  TURRET TRAVERSE AND QUICK SHOT: the commander ducks, the turret swings round toward the
             camera with the barrel cocked up (the held extreme, holdLoop), a quick snap shot, and the
             hull rocks from side to side on its tracks instead of hopping back
+
+Art round W3 (the detail standard): damage spots and the fire and smoke places (item 40), the `charge` pose clip
+(items 51/52: the Momentum rush) and the Tin Tankette skin (item 46).
+  charge    TRACKED RUSH: nose down, the tracks spinning at the charge speed (+50%: 93.75 lu/s), the hull
+            pounding on its springs, the commander up in the hatch pointing ahead and yelling, the exhaust
+            pumping and a dust trail behind
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_modern as KM
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "tankette"
 GAIT_NAME = "tracked"
@@ -69,9 +79,69 @@ MUZZLE = (48.0, -1.0, BARREL_Z)
 SCALE = 1.15                 # the whole vehicle, so the Heavy reads big next to 68 lu infantry
 CMDR = (-6.0, 0.0, 54.5)     # commander's waist in the hatch (character space)
 _W = {}
+SEAM = "#4E5238"             # the hull's panel lines
+HEADLIGHT = "#FFF3C8"
+CHIP = "#7E8264"             # W3: worn paint (a step lighter than the olive)
+SKIRT = ((0.0, TY - 3.2, 22.0), (38.0, 1.8, 6.6))              # the team side skirt (p 3.6)
+CHEEK = ((TURRET[0] + 2.0, -11.8, TURRET[2] + 5.6), (11.5, 2.4, 5.4))   # the turret's team cheek (p 2.6)
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Tankette is the team skirt over the track, the olive hull and turret, the gun and the
+# commander: the skirt in two tones (a team-dark lower band and two team-dark panel seams, bigger rivets along its
+# top), the turret cheek's team-dark lower band, weld seams and panel lines on the hull side, worn paint chips on
+# the hull and the turret, studs round the turret ring, mud on the lower glacis.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_MACHINE
+LOOK_SHADE = MW.SHADE_MACHINE
+MATERIAL_KINDS = MW.kinds({R.OLIVE: "iron", R.OLIVE_LT: "iron", SEAM: "iron", CHIP: "iron", R.GUNMETAL: "iron",
+                           R.STEEL: "iron", R.RUBBER: "polymer", R.SIGNAL: "polymer", KM.STRIPE_DK: "polymer",
+                           KM.CREAM: "cloth", R.KHAKI: "cloth", R.WOOD: "wood", R.LEATHER: "leather",
+                           KM.MUD: "stone", HEADLIGHT: "glass", R.GLASS: "glass", R.SKIN: "skin", R.HAIR: "fur",
+                           "team": "iron"})
+
+
+def _far(pal):
+    out = dict(pal)
+    for h, v in pal.items():
+        out.setdefault(CL.scale(h, 0.8), CL.scale(v, 0.8))
+    return out
+
+
+# Tin Tankette (DESIGN A5.8, epic: "a painted wind-up tin toy with a big key on the back"): the same tankette as a
+# tin toy: a silver tin hull and turret with folded tin tabs for rivets, cream lithographed panel lines, dark tin
+# tracks and wheels, a gilt wind-up key in the back that turns as it rolls, a painted tin commander (porcelain
+# paint for the skin, a black painted cap). The skirt, the turret cheek, the jacket and the pennant stay team.
+TIN = "#A7ADB2"
+TIN_LT = "#C3C8CB"
+TIN_DK = "#5E646A"
+GILT = "#C9B07E"
+TIN_PAL = _far({R.OLIVE: TIN, R.OLIVE_LT: TIN_LT, SEAM: "#DCD3BC", CHIP: "#BDC2C6", R.RUBBER: "#43474D",
+                R.GUNMETAL: TIN_DK, KM.MUD: "#8F959A", R.LEATHER: "#34343A", R.SKIN: "#E3CDBC", R.KHAKI: "#DCD3BC",
+                R.WOOD: "#8A6E5A"})
+TIN_KINDS = MW.kinds({TIN: "iron", TIN_LT: "iron", "#DCD3BC": "ceramic", "#BDC2C6": "iron", "#43474D": "iron",
+                      TIN_DK: "iron", "#8F959A": "iron", "#34343A": "ceramic", "#E3CDBC": "ceramic",
+                      "#8A6E5A": "wood", GILT: "gold"})
+SKINS = {"tin_tankette": {"palette": TIN_PAL, "kinds": TIN_KINDS}}
+KEY = (-36.0, 0.0, 33.0)     # the wind-up key's root at the back of the hull (its joint; empty on the tankette)
+
+
+def _key(rig, joint):
+    """The Tin Tankette's gilt wind-up key: a shaft out of the back plate and a two-lobed bow in the side plane (it
+    turns about the shaft, so the bow flashes broad and thin as it rolls)."""
+    x, y, z = KEY
+    g = Geo().capsule((x + 2.0, y, z), (x - 9.0, y, z), 1.5)
+    g.blob((x - 9.4, y, z), (1.9, 2.4, 2.4), p=2.2)
+    for dz in (-5.2, 5.2):
+        g.blob((x - 11.0, y, z + dz), (2.7, 1.1, 4.4), p=2.3)
+    rig.part(joint, g, GILT, finish="metal", outline=0.7)
+    g = Geo()
+    for dz in (-5.2, 5.2):
+        g.blob((x - 11.0, y - 1.0, z + dz), (1.2, 0.5, 2.3), p=2.3)
+    rig.part(joint, g, CL.scale(GILT, 0.72), outline=0, highlight=False)
 
 
 def build(rig):
+    tin = getattr(rig, "skin", None) == "tin_tankette"
     rig.joint("body", "root", (0, 0, 0), scale=SCALE)
     rig.joint("odo", "root", (0, 0, 0))
     rig.joint("hull", "body", (0, 0, 16.0))
@@ -86,15 +156,25 @@ def build(rig):
     rig.part("hull", hull, R.OLIVE)
     g = Geo()   # panel line along the glacis, rivets along the deck edge
     hface.stroke(g, hface.hit(22.0, 33.0), [(-4.0, 1.4), (8.0, -3.6)], 0.8, 0.4)
-    rig.part("hull", g, "#4E5238", highlight=False, outline=0)
+    # W3: a weld seam along the hull side above the skirt and two panel lines down it
+    hface.stroke(g, hface.hit(-6.0, 31.6), [(-26.0, 0.2), (-8.0, 0.0), (10.0, -0.2), (24.0, -0.8)], 1.0, 0.4)
+    for x in (-18.0, 8.0):
+        hface.stroke(g, hface.hit(x, 33.0), [(0.0, 3.2), (0.4, -2.0)], 1.0, 0.4)
+    rig.part("hull", g, SEAM, highlight=False, outline=0)
     g = Geo()
     for x in range(-32, 22, 6):
         g.sphere((x, -14.6, 34.6), 0.8, cuts=2)
     rig.part("hull", g, R.OLIVE_LT, finish="metal", outline=0)
+    # W3: worn paint chips along the deck edge and the glacis, mud on the lower glacis
+    hull_ref = Geo().blob((-1.0, 0, 26.0), (37.0, 15.5, 10.5), p=3.4, taper=(1.0, 0.94), shift=(0.05, 0))
+    MW.decals(rig, "hull", [hull_ref], [((-27.0, 34.4), MW.CHIP_A), ((-3.0, 35.2), MW.CHIP_B),
+                                        ((17.0, 33.8), MW.CHIP_C), ((28.5, 30.4), MW.CHIP_B)], CHIP)
+    g = KM.mud(hface, Geo(), [((31.0, 22.4), 3.0, 2.2), ((25.0, 20.6), 2.2, 1.6)])
+    rig.part("hull", g, KM.MUD, highlight=False, outline=0)
     g = Geo()   # headlights (cream glass, gunmetal hoods) and a vision slit
     for y in (-11.0, 9.0):
         g.blob((36.0, y, 32.0), (2.2, 2.6, 2.4), p=2.4)
-    rig.part("hull", g, "#FFF3C8", finish="gloss", outline=0.8, outline_hex=R.GUNMETAL)
+    rig.part("hull", g, HEADLIGHT, finish="gloss", outline=0.8, outline_hex=R.GUNMETAL)
     g = Geo().blob((24.0, -5.0, 36.4), (6.0, 4.0, 1.2), p=3.2)
     rig.part("hull", g, R.GUNMETAL, finish="metal", outline=0.6)
     g = Geo()   # rear exhaust pipe and a spare road wheel on the back
@@ -104,18 +184,25 @@ def build(rig):
     rig.part("hull", g, R.RUBBER, finish="gloss", outline=0.6)
     g = Geo().lathe([(0, -0.8), (3.0, -0.8), (3.0, 0.8), (0, 0.8)], (-40.0, 0.0, 26.0), (-41.4, 0.0, 26.0), segs=14)
     rig.part("hull", g, R.OLIVE_LT, finish="gloss", outline=0.4)
+    rig.joint("key", "hull", KEY)       # the Tin Tankette's wind-up key (no parts on the tankette)
+    if tin:
+        _key(rig, "key")
     # team side skirt with rivets, a cream chevron and hazard stripes at the rear
-    skirt = Geo().blob((0.0, TY - 3.2, 22.0), (38.0, 1.8, 6.6), p=3.6)
+    skirt = Geo().blob(*SKIRT, p=3.6)
     sface = F.Face(rig, "hull", [skirt])
     rig.part("hull", skirt, team=True)
+    # W3: the skirt in two tones: a team-dark lower band and two team-dark panel seams
+    look.team_part(rig, "hull", KD.band_z(*SKIRT, 14.0, 18.6, p=3.6, grow=0.3))
+    MW.team_line(rig, "hull", Geo().blob(*SKIRT, p=3.6), [(-17.0, 27.4), (-17.4, 18.0)], 1.5, tone=look.TEAM_DARK)
+    MW.team_line(rig, "hull", Geo().blob(*SKIRT, p=3.6), [(17.0, 27.4), (16.6, 18.0)], 1.5, tone=look.TEAM_DARK)
     g = KM.chevron(sface, Geo(), (5.0, 22.4), s=1.0, n=2, w=1.8, gap=2.8)
     rig.part("hull", g, KM.CREAM, highlight=False, outline=0)
     g = KM.stripes(sface, Geo(), (-29.0, 22.0), 12.0, 8.4, n=4, slant=0.6)
     rig.part("hull", g, KM.STRIPE_DK, highlight=False, outline=0)
-    g = Geo()
+    g = Geo()   # W3: bigger rivets along the top edge (2.6 lu: they read at game scale)
     for x in range(-32, 36, 8):
-        g.sphere((x, TY - 5.2, 25.6), 0.9, cuts=2)
-    rig.part("hull", g, R.OLIVE_LT, finish="metal", outline=0)
+        g.sphere((x, TY - 5.0, 25.8), 1.3, cuts=2)
+    rig.part("hull", g, R.OLIVE_LT, finish="metal", outline=0.3)
     # tools strapped on the fender: a shovel and a pick handle with leather straps
     g = Geo().capsule((-22.0, TY - 2.0, 30.2), (4.0, TY - 2.0, 30.2), 0.9)
     g.capsule((8.0, TY - 2.0, 31.2), (22.0, TY - 2.0, 31.2), 0.9)
@@ -143,9 +230,17 @@ def build(rig):
     g = Geo().blob((tx, 0, tz + 7.0), (17.0, 14.0, 10.0), p=2.4, taper=(1.0, 0.78))
     g.clip((tx, 0, tz - 0.5), (0, 0, -1))
     rig.part("turret", g, R.OLIVE, finish="gloss")
-    cheek = Geo().blob((tx + 2.0, -11.8, tz + 5.6), (11.5, 2.4, 5.4), p=2.6)
+    cheek = Geo().blob(*CHEEK, p=2.6)
     cface = F.Face(rig, "turret", [cheek])
     rig.part("turret", cheek, team=True)
+    # W3: the cheek's lower band team-dark, studs round the turret ring, worn chips on the dome
+    look.team_part(rig, "turret", KD.band_z(*CHEEK, tz - 0.5, tz + 2.6, p=2.6, grow=0.3))
+    dome = Geo().blob((tx, 0, tz + 7.0), (17.0, 14.0, 10.0), p=2.4, taper=(1.0, 0.78))
+    MW.studs(rig, "turret", [dome], [(tx - 14.0, tz + 1.2), (tx + 13.5, tz + 1.4)], r=1.3, color=R.OLIVE_LT,
+             outline=0.3)
+    dome = Geo().blob((tx, 0, tz + 7.0), (17.0, 14.0, 10.0), p=2.4, taper=(1.0, 0.78))
+    MW.decals(rig, "turret", [dome], [((tx - 10.0, tz + 12.6), MW.CHIP_A), ((tx + 8.0, tz + 13.4), MW.CHIP_C)],
+              CHIP)
     g = KM.chevron(cface, Geo(), (tx + 1.0, tz + 5.4), s=0.8, n=1, w=1.9)
     rig.part("turret", g, KM.CREAM, highlight=False, outline=0)
     g = Geo().blob((tx - 2.0, 0, tz + 16.2), (7.4, 7.4, 1.5), p=2.6)   # hatch ring
@@ -225,6 +320,20 @@ def build(rig):
         g.capsule((TX0 - 6.0 - 4.0 * k, TY - 0.5, 1.6 + 0.4 * k), (TX0 - 10.0 - 4.0 * k, TY - 0.5, 1.6 + 0.4 * k), 1.8)
     rig.part("snap", g, R.RUBBER, finish="gloss", outline=0.5)
     rig.track("_foot", "odo", (0, 0, 0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: dents and holes on the team
+    skirt (the largest surface, always in view), on the olive hull side above it and on the turret's team cheek; the
+    engine deck's smoke (the fire's place: below the commander's head and well behind it on every frame, DAMAGE's
+    fireAt) and a second smoke from the exhaust."""
+    rig.damage_spot_at("skirt", "hull", 12.0, 21.0, 8.0, "metal", team=True)
+    rig.damage_spot_at("hull", "hull", -24.0, 32.6, 6.0, "metal", fill=R.OLIVE)
+    rig.damage_spot_at("cheek", "turret", TURRET[0] + 4.0, TURRET[2] + 6.0, 6.0, "metal", team=True)
+    rig.damage_spot("engine", "hull", (-34.0, 0.0, 33.4), 7.0, "smoke", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("exhaust", "hull", (-42.5, -9.0, 30.0), 5.0, "smoke", kind="emit", normal=(-1, 0, 0))
 
 
 # -- poses ------------------------------------------------------------------------------------------
@@ -245,6 +354,7 @@ def _idle(f):
     up = [0.0, 0.3, 1.0, 1.0, 0.8, 0.3][f]
     t = f / 6 * 2 * math.pi
     pose = merge(_tracks(0, False), c_arm(REST_ARM - 20 * up), {
+        "key": {"rx": 15.0 * f},      # the Tin Tankette's key ticks round
         "hull": dict(squash(0.012 * math.cos(2 * t)), z=0.45 * math.cos(2 * t)),
         "cmdr": {"z": -6.0 + 6.0 * up, "r": [0, 0, 4, -3, -4, 0][f]},
         "c_head": {"rz": [0, 0, 8, -10, -6, 0][f], "r": [0, 0, 4, -3, 2, 0][f]},
@@ -262,6 +372,7 @@ def _walk(f):
     lag = -abs(math.sin(p - 0.8))
     return merge(_tracks(f), c_arm(REST_ARM - 10 + 12 * lag), {
         "odo": {"x": 2.0 * STEP_LU * SCALE * math.cos(p)},   # ground speed of the scaled track
+        "key": {"rx": 22.5 * f},      # the Tin Tankette's key turns as it rolls
         "hull": dict(squash(0.03 * math.cos(2 * p)), z=2.6 * bump + 1.3, r=1.5 * math.sin(p)),
         "turret": {"r": -0.8 * math.sin(p - 0.6)},
         "cmdr": {"r": -4.0 * math.sin(p - 0.8), "z": 1.4 * lag + 0.7},
@@ -276,6 +387,40 @@ def _walk_clip():
     ov = {f: [{"kind": "dust", "ground": (-40.0 - 4.0 * (f % 4), 0.0), "size_lu": 4.5 + 1.2 * (f % 4), "puffs": 3,
                "seed": 60 + f, "spread": 1.0, "dir": -1.0}] for f in range(8)}
     return M.clip("walk", [_walk(f) for f in range(8)], WALK_MS, loop=True, overlays=ov)
+
+
+# -- charge (items 51/52, Momentum's tell): the tracked rush at the charge speed, the walk's 62.5 lu/s + 50% =
+# 93.75 lu/s: one grouser phase per frame as in the walk, so the frames are 38-39 ms (cycle 307 ms)
+CHARGE_MS = [38, 39, 38, 38, 39, 38, 38, 39]
+CHARGE_SPEED = 93.75
+
+
+def _charge(f):
+    p = 2 * math.pi * f / 8
+    pound = -abs(math.sin(2 * p))           # two hard bumps per cycle at the rush
+    lag = -abs(math.sin(2 * p - 0.9))
+    pose = merge(_tracks(f), c_arm(-104.0 + 6.0 * math.sin(2 * p - 0.9)), {     # pointing ahead, under his face
+        "odo": {"x": 2.0 * STEP_LU * SCALE * math.cos(p)},
+        "body": dict(squash(-0.02 + 0.025 * math.cos(4 * p)), z=-0.6),
+        "hull": {"z": 2.2 * pound + 1.1, "r": -3.2 + 1.2 * math.sin(2 * p)},     # nose down, pitching
+        "turret": {"r": -1.0 * math.sin(2 * p - 0.6)},
+        "barrel": {"r": -1.5},
+        "cmdr": {"z": 1.6 + 1.2 * lag, "r": -12.0 - 3.0 * math.sin(2 * p - 0.9)},
+        "c_head": {"r": -5.0 + 2.5 * math.sin(2 * p - 1.3)},
+        "lid": {"r": 14.0 + 6.0 * math.sin(2 * p - 1.2)},
+        "exhaust": {"show": f % 2 == 0, "s": [1.15, 1, 1.3, 1][f % 4], "x": [0, 0, -3.0, 0][f % 4],
+                    "z": [0, 0, 2.0, 0][f % 4]},
+        "key": {"rx": 45.0 * f},
+    })
+    return merge(pose, F.expr("yell"), {"brow": {"z": -1.0}})
+
+
+def _charge_clip():
+    # a heavy dust trail behind the track, a fresh cloud every frame
+    ov = {f: [{"kind": "dust", "ground": (-42.0 - 5.0 * (f % 4), 0.0), "size_lu": 6.0 + 1.4 * (f % 4), "puffs": 4,
+               "seed": 70 + f, "spread": 1.2, "dir": -1.0}] for f in range(8)}
+    return M.clip("charge", [_charge(f) for f in range(8)], CHARGE_MS, loop=True, overlays=ov,
+                  extra={"gait": "tracked", "gaitSpeedLuPerS": CHARGE_SPEED, "cycleMs": sum(CHARGE_MS)})
 
 
 # 11 unique frames in 790 ms; fire on frame 4 at 291 ms (impactAt 0.3684, as shipped). The shipped
@@ -456,5 +601,6 @@ def clips():
         _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
+        _charge_clip(),
     ]
     return M.check_variants(M.check_contract(cl, attack_ms=790, attack_impact_at=0.3684))

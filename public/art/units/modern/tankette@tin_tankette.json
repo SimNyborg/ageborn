@@ -1,0 +1,2420 @@
+{
+ "frames": {
+  "tankette@tin_tankette_idle_00": {
+   "frame": {
+    "x": 1301,
+    "y": 2,
+    "w": 147,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 107,
+    "w": 147,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_00_team": {
+   "frame": {
+    "x": 237,
+    "y": 773,
+    "w": 112,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 110,
+    "w": 112,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_01": {
+   "frame": {
+    "x": 639,
+    "y": 319,
+    "w": 153,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 110,
+    "w": 153,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_01_team": {
+   "frame": {
+    "x": 1087,
+    "y": 901,
+    "w": 114,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 115,
+    "w": 114,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_02": {
+   "frame": {
+    "x": 953,
+    "y": 319,
+    "w": 149,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 110,
+    "w": 149,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_02_team": {
+   "frame": {
+    "x": 1205,
+    "y": 901,
+    "w": 114,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 115,
+    "w": 114,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_03": {
+   "frame": {
+    "x": 2,
+    "y": 162,
+    "w": 147,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 107,
+    "w": 147,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_03_team": {
+   "frame": {
+    "x": 353,
+    "y": 773,
+    "w": 112,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 110,
+    "w": 112,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_04": {
+   "frame": {
+    "x": 775,
+    "y": 162,
+    "w": 154,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 109,
+    "w": 154,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_04_team": {
+   "frame": {
+    "x": 596,
+    "y": 901,
+    "w": 114,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 114,
+    "w": 114,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_05": {
+   "frame": {
+    "x": 1247,
+    "y": 162,
+    "w": 150,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 109,
+    "w": 150,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_idle_05_team": {
+   "frame": {
+    "x": 714,
+    "y": 901,
+    "w": 114,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 114,
+    "w": 114,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_00": {
+   "frame": {
+    "x": 151,
+    "y": 2,
+    "w": 143,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 104,
+    "w": 143,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_00_team": {
+   "frame": {
+    "x": 469,
+    "y": 773,
+    "w": 111,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 109,
+    "w": 111,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_01": {
+   "frame": {
+    "x": 1091,
+    "y": 162,
+    "w": 152,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 109,
+    "w": 152,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 773,
+    "w": 114,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 111,
+    "w": 114,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_02": {
+   "frame": {
+    "x": 667,
+    "y": 474,
+    "w": 166,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 114,
+    "w": 166,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_02_team": {
+   "frame": {
+    "x": 400,
+    "y": 1027,
+    "w": 117,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 118,
+    "w": 117,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_03": {
+   "frame": {
+    "x": 616,
+    "y": 162,
+    "w": 155,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 109,
+    "w": 155,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_03_team": {
+   "frame": {
+    "x": 1323,
+    "y": 901,
+    "w": 114,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 115,
+    "w": 114,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 145,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 104,
+    "w": 145,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_04_team": {
+   "frame": {
+    "x": 584,
+    "y": 773,
+    "w": 111,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 109,
+    "w": 111,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_05": {
+   "frame": {
+    "x": 933,
+    "y": 162,
+    "w": 154,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 109,
+    "w": 154,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_05_team": {
+   "frame": {
+    "x": 810,
+    "y": 626,
+    "w": 114,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 110,
+    "w": 114,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_06": {
+   "frame": {
+    "x": 339,
+    "y": 474,
+    "w": 167,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 113,
+    "w": 167,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_06_team": {
+   "frame": {
+    "x": 475,
+    "y": 901,
+    "w": 117,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 117,
+    "w": 117,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_07": {
+   "frame": {
+    "x": 456,
+    "y": 162,
+    "w": 156,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 109,
+    "w": 156,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_walk_07_team": {
+   "frame": {
+    "x": 123,
+    "y": 901,
+    "w": 114,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 114,
+    "w": 114,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_00": {
+   "frame": {
+    "x": 154,
+    "y": 319,
+    "w": 147,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 109,
+    "w": 147,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_00_team": {
+   "frame": {
+    "x": 821,
+    "y": 773,
+    "w": 114,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 112,
+    "w": 114,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_01": {
+   "frame": {
+    "x": 510,
+    "y": 474,
+    "w": 153,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 114,
+    "w": 153,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 901,
+    "w": 117,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 116,
+    "w": 117,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_02": {
+   "frame": {
+    "x": 1346,
+    "y": 474,
+    "w": 157,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 118,
+    "w": 157,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_02_team": {
+   "frame": {
+    "x": 521,
+    "y": 1027,
+    "w": 120,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 123,
+    "w": 120,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_03": {
+   "frame": {
+    "x": 1187,
+    "y": 474,
+    "w": 155,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 116,
+    "w": 155,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_03_team": {
+   "frame": {
+    "x": 645,
+    "y": 1027,
+    "w": 118,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 121,
+    "w": 118,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_04": {
+   "frame": {
+    "x": 796,
+    "y": 2,
+    "w": 176,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 103,
+    "w": 176,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 1027,
+    "w": 109,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 110,
+    "w": 109,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_05": {
+   "frame": {
+    "x": 976,
+    "y": 2,
+    "w": 174,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 97,
+    "w": 174,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_05_team": {
+   "frame": {
+    "x": 928,
+    "y": 626,
+    "w": 113,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 100,
+    "w": 113,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_06": {
+   "frame": {
+    "x": 319,
+    "y": 626,
+    "w": 200,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 123,
+    "w": 200,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_06_team": {
+   "frame": {
+    "x": 767,
+    "y": 1027,
+    "w": 126,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 123,
+    "w": 126,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_07": {
+   "frame": {
+    "x": 298,
+    "y": 2,
+    "w": 192,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 102,
+    "w": 192,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_07_team": {
+   "frame": {
+    "x": 1054,
+    "y": 773,
+    "w": 110,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 107,
+    "w": 110,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_08": {
+   "frame": {
+    "x": 183,
+    "y": 474,
+    "w": 152,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 112,
+    "w": 152,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_08_team": {
+   "frame": {
+    "x": 966,
+    "y": 901,
+    "w": 117,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 116,
+    "w": 117,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_09": {
+   "frame": {
+    "x": 153,
+    "y": 162,
+    "w": 147,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 107,
+    "w": 147,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_09_team": {
+   "frame": {
+    "x": 241,
+    "y": 901,
+    "w": 113,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 112,
+    "w": 113,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_10": {
+   "frame": {
+    "x": 304,
+    "y": 162,
+    "w": 148,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 108,
+    "w": 148,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_attack_10_team": {
+   "frame": {
+    "x": 358,
+    "y": 901,
+    "w": 113,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 113,
+    "w": 113,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_hit_00": {
+   "frame": {
+    "x": 158,
+    "y": 626,
+    "w": 157,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 120,
+    "w": 157,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_hit_00_team": {
+   "frame": {
+    "x": 1020,
+    "y": 1027,
+    "w": 122,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 125,
+    "w": 122,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_hit_01": {
+   "frame": {
+    "x": 2,
+    "y": 626,
+    "w": 152,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 117,
+    "w": 152,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_hit_01_team": {
+   "frame": {
+    "x": 897,
+    "y": 1027,
+    "w": 119,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 122,
+    "w": 119,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_hit_02": {
+   "frame": {
+    "x": 1154,
+    "y": 2,
+    "w": 143,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 106,
+    "w": 143,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_hit_02_team": {
+   "frame": {
+    "x": 939,
+    "y": 773,
+    "w": 111,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 110,
+    "w": 111,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_hit_03": {
+   "frame": {
+    "x": 1106,
+    "y": 319,
+    "w": 151,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 111,
+    "w": 151,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_hit_03_team": {
+   "frame": {
+    "x": 1045,
+    "y": 626,
+    "w": 115,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 111,
+    "w": 115,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_hit_04": {
+   "frame": {
+    "x": 2,
+    "y": 319,
+    "w": 148,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 109,
+    "w": 148,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_hit_04_team": {
+   "frame": {
+    "x": 120,
+    "y": 773,
+    "w": 113,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 111,
+    "w": 113,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_00": {
+   "frame": {
+    "x": 647,
+    "y": 2,
+    "w": 145,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 102,
+    "w": 145,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_00_team": {
+   "frame": {
+    "x": 1168,
+    "y": 773,
+    "w": 110,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 108,
+    "w": 110,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_01": {
+   "frame": {
+    "x": 1261,
+    "y": 319,
+    "w": 148,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 102,
+    "w": 148,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_01_team": {
+   "frame": {
+    "x": 832,
+    "y": 901,
+    "w": 130,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 108,
+    "w": 130,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_02": {
+   "frame": {
+    "x": 523,
+    "y": 626,
+    "w": 167,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 124,
+    "w": 167,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_02_team": {
+   "frame": {
+    "x": 1146,
+    "y": 1027,
+    "w": 135,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 131,
+    "w": 135,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_03": {
+   "frame": {
+    "x": 494,
+    "y": 2,
+    "w": 149,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 103,
+    "w": 149,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_03_team": {
+   "frame": {
+    "x": 694,
+    "y": 626,
+    "w": 112,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 109,
+    "w": 112,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_04": {
+   "frame": {
+    "x": 1024,
+    "y": 474,
+    "w": 159,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 115,
+    "w": 159,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_04_team": {
+   "frame": {
+    "x": 277,
+    "y": 1027,
+    "w": 119,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 121,
+    "w": 119,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_05": {
+   "frame": {
+    "x": 796,
+    "y": 319,
+    "w": 153,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 110,
+    "w": 153,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_05_team": {
+   "frame": {
+    "x": 699,
+    "y": 773,
+    "w": 118,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 116,
+    "w": 118,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_06": {
+   "frame": {
+    "x": 475,
+    "y": 319,
+    "w": 160,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 110,
+    "w": 160,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_06_team": {
+   "frame": {
+    "x": 1310,
+    "y": 626,
+    "w": 136,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 115,
+    "w": 136,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_07": {
+   "frame": {
+    "x": 305,
+    "y": 319,
+    "w": 166,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 110,
+    "w": 166,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_07_team": {
+   "frame": {
+    "x": 1164,
+    "y": 626,
+    "w": 142,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 115,
+    "w": 142,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_08": {
+   "frame": {
+    "x": 2,
+    "y": 474,
+    "w": 177,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 112,
+    "w": 177,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_08_team": {
+   "frame": {
+    "x": 1282,
+    "y": 773,
+    "w": 152,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 118,
+    "w": 152,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_09": {
+   "frame": {
+    "x": 837,
+    "y": 474,
+    "w": 183,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 68,
+    "y": 115,
+    "w": 183,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette@tin_tankette_die_09_team": {
+   "frame": {
+    "x": 115,
+    "y": 1027,
+    "w": 158,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 121,
+    "w": 158,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "tankette@tin_tankette_idle_00",
+   "tankette@tin_tankette_idle_01",
+   "tankette@tin_tankette_idle_02",
+   "tankette@tin_tankette_idle_03",
+   "tankette@tin_tankette_idle_04",
+   "tankette@tin_tankette_idle_05"
+  ],
+  "idle_team": [
+   "tankette@tin_tankette_idle_00_team",
+   "tankette@tin_tankette_idle_01_team",
+   "tankette@tin_tankette_idle_02_team",
+   "tankette@tin_tankette_idle_03_team",
+   "tankette@tin_tankette_idle_04_team",
+   "tankette@tin_tankette_idle_05_team"
+  ],
+  "walk": [
+   "tankette@tin_tankette_walk_00",
+   "tankette@tin_tankette_walk_01",
+   "tankette@tin_tankette_walk_02",
+   "tankette@tin_tankette_walk_03",
+   "tankette@tin_tankette_walk_04",
+   "tankette@tin_tankette_walk_05",
+   "tankette@tin_tankette_walk_06",
+   "tankette@tin_tankette_walk_07"
+  ],
+  "walk_team": [
+   "tankette@tin_tankette_walk_00_team",
+   "tankette@tin_tankette_walk_01_team",
+   "tankette@tin_tankette_walk_02_team",
+   "tankette@tin_tankette_walk_03_team",
+   "tankette@tin_tankette_walk_04_team",
+   "tankette@tin_tankette_walk_05_team",
+   "tankette@tin_tankette_walk_06_team",
+   "tankette@tin_tankette_walk_07_team"
+  ],
+  "attack": [
+   "tankette@tin_tankette_attack_00",
+   "tankette@tin_tankette_attack_01",
+   "tankette@tin_tankette_attack_02",
+   "tankette@tin_tankette_attack_03",
+   "tankette@tin_tankette_attack_04",
+   "tankette@tin_tankette_attack_05",
+   "tankette@tin_tankette_attack_06",
+   "tankette@tin_tankette_attack_07",
+   "tankette@tin_tankette_attack_08",
+   "tankette@tin_tankette_attack_09",
+   "tankette@tin_tankette_attack_10"
+  ],
+  "attack_team": [
+   "tankette@tin_tankette_attack_00_team",
+   "tankette@tin_tankette_attack_01_team",
+   "tankette@tin_tankette_attack_02_team",
+   "tankette@tin_tankette_attack_03_team",
+   "tankette@tin_tankette_attack_04_team",
+   "tankette@tin_tankette_attack_05_team",
+   "tankette@tin_tankette_attack_06_team",
+   "tankette@tin_tankette_attack_07_team",
+   "tankette@tin_tankette_attack_08_team",
+   "tankette@tin_tankette_attack_09_team",
+   "tankette@tin_tankette_attack_10_team"
+  ],
+  "hit": [
+   "tankette@tin_tankette_hit_00",
+   "tankette@tin_tankette_hit_01",
+   "tankette@tin_tankette_hit_02",
+   "tankette@tin_tankette_hit_03",
+   "tankette@tin_tankette_hit_04"
+  ],
+  "hit_team": [
+   "tankette@tin_tankette_hit_00_team",
+   "tankette@tin_tankette_hit_01_team",
+   "tankette@tin_tankette_hit_02_team",
+   "tankette@tin_tankette_hit_03_team",
+   "tankette@tin_tankette_hit_04_team"
+  ],
+  "die": [
+   "tankette@tin_tankette_die_00",
+   "tankette@tin_tankette_die_01",
+   "tankette@tin_tankette_die_02",
+   "tankette@tin_tankette_die_03",
+   "tankette@tin_tankette_die_04",
+   "tankette@tin_tankette_die_05",
+   "tankette@tin_tankette_die_06",
+   "tankette@tin_tankette_die_07",
+   "tankette@tin_tankette_die_08",
+   "tankette@tin_tankette_die_09"
+  ],
+  "die_team": [
+   "tankette@tin_tankette_die_00_team",
+   "tankette@tin_tankette_die_01_team",
+   "tankette@tin_tankette_die_02_team",
+   "tankette@tin_tankette_die_03_team",
+   "tankette@tin_tankette_die_04_team",
+   "tankette@tin_tankette_die_05_team",
+   "tankette@tin_tankette_die_06_team",
+   "tankette@tin_tankette_die_07_team",
+   "tankette@tin_tankette_die_08_team",
+   "tankette@tin_tankette_die_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "tankette@tin_tankette.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1536,
+   "h": 1152
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.tankette@tin_tankette",
+   "name": "Tankette",
+   "heightLu": 96,
+   "widthLu": 112.2,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    187.0,
+    245.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     86
+    ],
+    "hitCenter": [
+     0,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "tracked",
+   "skinOf": "unit.tankette",
+   "skin": "tin_tankette",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        53.6,
+        51.1
+       ],
+       [
+        54.4,
+        50.1
+       ],
+       [
+        54.4,
+        50.1
+       ],
+       [
+        53.6,
+        51.1
+       ],
+       [
+        54.5,
+        49.2
+       ],
+       [
+        54.5,
+        49.2
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      57,
+      58,
+      57,
+      58,
+      57,
+      58,
+      57,
+      58
+     ],
+     "durationMs": 460,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        52.6,
+        53.2
+       ],
+       [
+        53.5,
+        50.4
+       ],
+       [
+        54.8,
+        48.3
+       ],
+       [
+        53.6,
+        49.7
+       ],
+       [
+        52.8,
+        52.2
+       ],
+       [
+        54.8,
+        48.6
+       ],
+       [
+        56.4,
+        46.7
+       ],
+       [
+        54.7,
+        49.3
+       ]
+      ]
+     },
+     "strideLu": 28.4,
+     "naturalSpeedLuPerS": 61.7,
+     "gait": "tracked"
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      60,
+      80,
+      70,
+      70,
+      70,
+      75,
+      74
+     ],
+     "durationMs": 790,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3684,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        53.9,
+        52.5
+       ],
+       [
+        57.2,
+        50.0
+       ],
+       [
+        59.9,
+        46.8
+       ],
+       [
+        58.3,
+        49.4
+       ],
+       [
+        37.2,
+        65.7
+       ],
+       [
+        30.8,
+        73.3
+       ],
+       [
+        46.3,
+        46.1
+       ],
+       [
+        40.6,
+        59.6
+       ],
+       [
+        50.3,
+        48.3
+       ],
+       [
+        50.4,
+        51.3
+       ],
+       [
+        53.2,
+        50.2
+       ]
+      ]
+     },
+     "muzzle": [
+      37.2,
+      65.7
+     ],
+     "aimDeg": 10.2,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       37.2,
+       65.7
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        52.6,
+        49.8
+       ],
+       [
+        49.4,
+        53.0
+       ],
+       [
+        49.6,
+        54.6
+       ],
+       [
+        55.5,
+        47.7
+       ],
+       [
+        53.9,
+        50.3
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        34.6
+       ],
+       "scale": 1.402
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        52.8
+       ],
+       "loops": 2,
+       "scale": 1.184
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        43.6,
+        63.7
+       ],
+       [
+        34.7,
+        78.8
+       ],
+       [
+        49.1,
+        46.4
+       ],
+       [
+        43.0,
+        51.9
+       ],
+       [
+        46.1,
+        47.1
+       ],
+       [
+        44.3,
+        49.2
+       ],
+       [
+        44.3,
+        49.2
+       ],
+       [
+        44.3,
+        49.2
+       ],
+       [
+        45.2,
+        48.1
+       ],
+       [
+        46.1,
+        47.1
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

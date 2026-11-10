@@ -2,8 +2,8 @@
  "frames": {
   "tankette_attack_b_01": {
    "frame": {
-    "x": 634,
-    "y": 2,
+    "x": 1659,
+    "y": 314,
     "w": 274,
     "h": 305
    },
@@ -26,10 +26,10 @@
   },
   "tankette_attack_b_01_team": {
    "frame": {
-    "x": 243,
-    "y": 626,
+    "x": 1900,
+    "y": 623,
     "w": 227,
-    "h": 250
+    "h": 251
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 248,
     "y": 219,
     "w": 227,
-    "h": 250
+    "h": 251
    },
    "sourceSize": {
     "w": 718,
@@ -50,7 +50,7 @@
   },
   "tankette_attack_b_02": {
    "frame": {
-    "x": 1198,
+    "x": 1952,
     "y": 2,
     "w": 272,
     "h": 302
@@ -74,8 +74,8 @@
   },
   "tankette_attack_b_02_team": {
    "frame": {
-    "x": 474,
-    "y": 626,
+    "x": 914,
+    "y": 612,
     "w": 231,
     "h": 248
    },
@@ -98,8 +98,8 @@
   },
   "tankette_attack_b_03": {
    "frame": {
-    "x": 2,
-    "y": 320,
+    "x": 2223,
+    "y": 308,
     "w": 272,
     "h": 302
    },
@@ -122,8 +122,8 @@
   },
   "tankette_attack_b_03_team": {
    "frame": {
-    "x": 1172,
-    "y": 626,
+    "x": 1149,
+    "y": 632,
     "w": 231,
     "h": 242
    },
@@ -146,7 +146,7 @@
   },
   "tankette_attack_b_04": {
    "frame": {
-    "x": 2,
+    "x": 1344,
     "y": 2,
     "w": 289,
     "h": 314
@@ -170,18 +170,18 @@
   },
   "tankette_attack_b_04_team": {
    "frame": {
-    "x": 896,
-    "y": 320,
-    "w": 220,
-    "h": 259
+    "x": 2223,
+    "y": 614,
+    "w": 219,
+    "h": 260
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 250,
+    "x": 251,
     "y": 210,
-    "w": 220,
-    "h": 259
+    "w": 219,
+    "h": 260
    },
    "sourceSize": {
     "w": 718,
@@ -194,8 +194,8 @@
   },
   "tankette_attack_b_05": {
    "frame": {
-    "x": 562,
-    "y": 320,
+    "x": 692,
+    "y": 2,
     "w": 330,
     "h": 294
    },
@@ -218,10 +218,10 @@
   },
   "tankette_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 626,
+    "x": 1659,
+    "y": 623,
     "w": 237,
-    "h": 250
+    "h": 251
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 241,
     "y": 229,
     "w": 237,
-    "h": 250
+    "h": 251
    },
    "sourceSize": {
     "w": 718,
@@ -242,8 +242,8 @@
   },
   "tankette_attack_b_06": {
    "frame": {
-    "x": 295,
-    "y": 2,
+    "x": 353,
+    "y": 297,
     "w": 335,
     "h": 313
    },
@@ -266,10 +266,10 @@
   },
   "tankette_attack_b_06_team": {
    "frame": {
-    "x": 1120,
-    "y": 320,
+    "x": 460,
+    "y": 614,
     "w": 221,
-    "h": 254
+    "h": 255
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 252,
     "y": 210,
     "w": 221,
-    "h": 254
+    "h": 255
    },
    "sourceSize": {
     "w": 718,
@@ -290,8 +290,8 @@
   },
   "tankette_attack_b_07": {
    "frame": {
-    "x": 278,
-    "y": 320,
+    "x": 2228,
+    "y": 2,
     "w": 280,
     "h": 301
    },
@@ -314,10 +314,10 @@
   },
   "tankette_attack_b_07_team": {
    "frame": {
-    "x": 709,
-    "y": 626,
+    "x": 2675,
+    "y": 556,
     "w": 228,
-    "h": 243
+    "h": 244
    },
    "rotated": false,
    "trimmed": true,
@@ -325,7 +325,7 @@
     "x": 247,
     "y": 228,
     "w": 228,
-    "h": 243
+    "h": 244
    },
    "sourceSize": {
     "w": 718,
@@ -338,8 +338,8 @@
   },
   "tankette_attack_b_08": {
    "frame": {
-    "x": 912,
-    "y": 2,
+    "x": 1937,
+    "y": 314,
     "w": 282,
     "h": 303
    },
@@ -362,8 +362,8 @@
   },
   "tankette_attack_b_08_team": {
    "frame": {
-    "x": 941,
-    "y": 626,
+    "x": 2738,
+    "y": 251,
     "w": 227,
     "h": 243
    },
@@ -371,9 +371,393 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 248,
-    "y": 225,
+    "y": 226,
     "w": 227,
     "h": 243
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_00": {
+   "frame": {
+    "x": 1344,
+    "y": 320,
+    "w": 311,
+    "h": 308
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 213,
+    "w": 311,
+    "h": 308
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_00_team": {
+   "frame": {
+    "x": 2446,
+    "y": 614,
+    "w": 225,
+    "h": 255
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 216,
+    "w": 225,
+    "h": 255
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_01": {
+   "frame": {
+    "x": 354,
+    "y": 2,
+    "w": 307,
+    "h": 290
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 232,
+    "w": 307,
+    "h": 290
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_01_team": {
+   "frame": {
+    "x": 1384,
+    "y": 632,
+    "w": 236,
+    "h": 241
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 238,
+    "w": 236,
+    "h": 241
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_02": {
+   "frame": {
+    "x": 692,
+    "y": 300,
+    "w": 322,
+    "h": 308
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 213,
+    "w": 322,
+    "h": 308
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 614,
+    "w": 225,
+    "h": 255
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 216,
+    "w": 225,
+    "h": 255
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_03": {
+   "frame": {
+    "x": 2,
+    "y": 297,
+    "w": 347,
+    "h": 291
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 231,
+    "w": 347,
+    "h": 291
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_03_team": {
+   "frame": {
+    "x": 2499,
+    "y": 307,
+    "w": 235,
+    "h": 245
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 237,
+    "w": 235,
+    "h": 245
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_04": {
+   "frame": {
+    "x": 1637,
+    "y": 2,
+    "w": 311,
+    "h": 308
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 213,
+    "w": 311,
+    "h": 308
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_04_team": {
+   "frame": {
+    "x": 685,
+    "y": 614,
+    "w": 225,
+    "h": 254
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 217,
+    "w": 225,
+    "h": 254
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_05": {
+   "frame": {
+    "x": 1026,
+    "y": 2,
+    "w": 307,
+    "h": 290
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 232,
+    "w": 307,
+    "h": 290
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_05_team": {
+   "frame": {
+    "x": 2751,
+    "y": 2,
+    "w": 236,
+    "h": 240
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 239,
+    "w": 236,
+    "h": 240
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_06": {
+   "frame": {
+    "x": 1018,
+    "y": 300,
+    "w": 322,
+    "h": 308
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 213,
+    "w": 322,
+    "h": 308
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_06_team": {
+   "frame": {
+    "x": 231,
+    "y": 614,
+    "w": 225,
+    "h": 255
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 216,
+    "w": 225,
+    "h": 255
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 348,
+    "h": 291
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 231,
+    "w": 348,
+    "h": 291
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_charge_07_team": {
+   "frame": {
+    "x": 2512,
+    "y": 2,
+    "w": 235,
+    "h": 245
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 237,
+    "w": 235,
+    "h": 245
    },
    "sourceSize": {
     "w": 718,
@@ -411,6 +795,26 @@
    "tankette_attack_b_08_team",
    "tankette_attack_09_team",
    "tankette_attack_10_team"
+  ],
+  "charge": [
+   "tankette_charge_00",
+   "tankette_charge_01",
+   "tankette_charge_02",
+   "tankette_charge_03",
+   "tankette_charge_04",
+   "tankette_charge_05",
+   "tankette_charge_06",
+   "tankette_charge_07"
+  ],
+  "charge_team": [
+   "tankette_charge_00_team",
+   "tankette_charge_01_team",
+   "tankette_charge_02_team",
+   "tankette_charge_03_team",
+   "tankette_charge_04_team",
+   "tankette_charge_05_team",
+   "tankette_charge_06_team",
+   "tankette_charge_07_team"
   ]
  },
  "meta": {
@@ -419,8 +823,8 @@
   "image": "tankette.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 880
+   "w": 3072,
+   "h": 876
   },
   "scale": "3",
   "ageborn": {
@@ -544,6 +948,70 @@
       "atLu": [
        32.2,
        51.0
+      ]
+     }
+    },
+    "charge": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      38,
+      39,
+      38,
+      38,
+      39,
+      38,
+      38,
+      39
+     ],
+     "durationMs": 307,
+     "gait": "tracked",
+     "gaitSpeedLuPerS": 93.75,
+     "cycleMs": 307,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        55.7,
+        47.4
+       ],
+       [
+        57.7,
+        42.2
+       ],
+       [
+        55.8,
+        46.3
+       ],
+       [
+        58.9,
+        41.5
+       ],
+       [
+        55.7,
+        47.4
+       ],
+       [
+        57.7,
+        42.2
+       ],
+       [
+        55.8,
+        46.3
+       ],
+       [
+        58.9,
+        41.5
+       ]
       ]
      }
     }
