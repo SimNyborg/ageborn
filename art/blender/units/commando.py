@@ -20,6 +20,8 @@ Animation (ANIM_SPEC G1 sprint at card 110 x 1.25 = 137.5 lu/s, appendix B for a
             ring smear) and pops up on one knee jabbing the butt straight in (a thrust)
   hit       light: the head snaps back, the beret lifts, eyes squeezed
   die       D1 fling and spin: the beret pops off and the carbine flies; X eyes and tongue
+
+Art round W3 (the detail standard): damage spots measured in posed frames (item 40). A melee unit: no aimed clips.
 """
 import math
 
@@ -31,6 +33,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "commando"
 GAIT_NAME = "biped"
@@ -47,6 +50,25 @@ LENGTH = 36.0
 BUTT = (G0[0] - 15.0, G0[1], G0[2] - 3.4)
 BUTT_IN = (G0[0] - 4.0, G0[1], G0[2] - 1.0)
 CAMO = "#4A5236"
+ROPE = "#B8A27E"
+TROUSERS = "#767B5A"     # kit_modern.legs_v3's olive trousers
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Commando is the floppy beret, the smock round the near arm and the carbine: the smock in two
+# tones as a commando's camouflage smock (team-dark blotches over the team: the back, the front below the arm, the
+# shoulder and the skirt), its team-dark hem, pocket flap and cuffs with a side seam and the khaki front brace,
+# lighter boots.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", R.HAIR: "fur", R.KHAKI: "cloth", R.KHAKI_LT: "cloth", KM.FELT: "cloth",
+                           KM.CREAM: "cloth", TROUSERS: "cloth", ROPE: "fur", MW.BOOT: "leather",
+                           "#2B2A2E": "leather", R.LEATHER: "leather", KM.MUD: "stone", R.WOOD: "wood",
+                           R.GUNMETAL: "iron", R.STEEL: "iron", KM.BRASS: "bronze", "team": "cloth"})
+# camouflage blotches on the smock: (joint, side-view centre, outline)
+CAMO_SMOCK = {"torso": [((-6.8, 31.0), MW.BLOT_A), ((-3.6, 24.2), MW.BLOT_B), ((7.0, 25.6), MW.BLOT_C),
+                        ((-8.6, 21.6), MW.BLOT_C), ((5.2, 34.4), MW.BLOT_B)],
+              "hips": [((4.6, 15.6), MW.BLOT_A), ((-6.0, 16.0), MW.BLOT_B)]}
 
 
 def _carbine(rig, joint):
@@ -74,10 +96,19 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    face = W.trooper(rig, hat="beret", mud=True, mouth_shape="smile", mouth_w=6.0)
+    face = W.trooper(rig, hat="beret", mud=True, mouth_shape="smile", mouth_w=6.0, boot=MW.BOOT)
+    # W3: the camouflage smock (team-dark blotches), its hem, pocket flap and cuffs, a side seam, the front brace
+    MW.tunic_w3(rig, pocket=KM.BRASS)
+    MW.cuffs(rig)
+    MW.team_decals(rig, "torso", [MW.torso_ref()], CAMO_SMOCK["torso"])
+    MW.team_decals(rig, "hips", [Geo().blob(*MW.SKIRT, p=2.6, taper=(1.1, 1.0))], CAMO_SMOCK["hips"])
+    for s in ("r", "l"):     # a blotch on each shoulder
+        y = R.ARM_Y[s]
+        sh = Geo().blob((0, y - 0.1 * R.SIDE_Y[s], 37.0), (5.6, 5.0, 4.4), p=2.4)
+        MW.team_decals(rig, f"arm_{s}", [sh], [((1.2, 38.6), MW.BLOT_B)])
     # a rope coil on his back
     g = Geo().lathe([(4.6, -1.4), (5.6, 0), (4.6, 1.4), (3.2, 0)], (-10.4, -2.0, 30.0), (-11.0, 3.0, 30.0), segs=20)
-    rig.part("torso", g, "#B8A27E", finish="hair", outline=0.6)
+    rig.part("torso", g, ROPE, finish="hair", outline=0.6)
     # camouflage streaks on the near cheek
     g = Geo()
     for dx, dz in ((0.0, 0.0), (1.4, -2.8)):
@@ -100,6 +131,16 @@ def build(rig):
     rig.part("gun", g, R.SKIN)
     KI.loose(rig, "gun_loose", G0, lambda j: _carbine(rig, j))
     rig.track("clubHead", "gun", BUTT)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: never on the face or skin."""
+    rig.damage_spot_at("smock", "torso", -10.0, 32.0, 8.0, "cloth", team=True)     # 82-100% (at (-7, 27): 25%)
+    rig.damage_spot_at("skirt", "hips", -2.0, 10.0, 7.0, "cloth", team=True)       # 70-100%
+    rig.damage_spot_at("beret", "hat", -3.0, 60.0, 6.0, "cloth", team=True)        # 98-100%
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ------------------------------------------------------------------------------------------

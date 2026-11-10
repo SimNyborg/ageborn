@@ -23,15 +23,20 @@ Animation (ANIM_SPEC G6 tracked, appendix B vehicles):
   hit       vehicle: a suspension bounce, the commander ducks with his eyes squeezed, the pennant whips
   die       D7 wreck and bail: struck, it hops, lands tilted on a snapped track with the gun drooping and
             black smoke; the commander leaps out of the hatch and runs
+
+Art round W3 (the detail standard): damage spots and the fire and smoke places (item 40).
 """
 import math
 
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_modern as KM
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "assault_gun"
 GAIT_NAME = "tracked"
@@ -59,6 +64,24 @@ MUZZLE = (62.0, -1.0, BARREL_Z)
 SCALE = 1.15                 # the whole vehicle, so the Heavy reads big next to 68 lu infantry
 CMDR = (-12.0, 0.0, 47.5)     # commander's waist in the hatch (character space)
 _W = {}
+SEAM = "#4E5238"              # the hull's panel lines
+HEADLIGHT = "#FFF3C8"
+SKIRT = ((0.0, TY - 3.2, 22.0), (44.0, 1.8, 6.0))                         # the team side skirt (p 3.6)
+CHEEK = ((TURRET[0] - 2.0, -13.6, TURRET[2] + 4.6), (21.0, 1.8, 5.2))     # the casemate's team side armour (p 3.2)
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of an Assault Gun is the long team skirt over the track, the olive hull, the casemate with its
+# team side armour and the long gun: the skirt in two tones (a team-dark lower band and two team-dark panel seams,
+# bigger rivets along its top), the side armour's team-dark lower band, weld seams and panel lines on the hull side,
+# worn paint chips on the hull and the casemate, mud on the lower glacis.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_MACHINE
+LOOK_SHADE = MW.SHADE_MACHINE
+MATERIAL_KINDS = MW.kinds({R.OLIVE: "iron", R.OLIVE_LT: "iron", SEAM: "iron", MW.CHIP: "iron", R.GUNMETAL: "iron",
+                           R.STEEL: "iron", R.RUBBER: "polymer", R.SIGNAL: "polymer", KM.STRIPE_DK: "polymer",
+                           KM.CREAM: "cloth", R.KHAKI: "cloth", R.WOOD: "wood", R.LEATHER: "leather",
+                           KM.MUD: "stone", HEADLIGHT: "glass", R.GLASS: "glass", R.SKIN: "skin", R.HAIR: "fur",
+                           "team": "iron"})
 
 
 def build(rig):
@@ -76,15 +99,25 @@ def build(rig):
     rig.part("hull", hull, R.OLIVE)
     g = Geo()   # panel line along the glacis, rivets along the deck edge
     hface.stroke(g, hface.hit(22.0, 33.0), [(-4.0, 1.4), (8.0, -3.6)], 0.8, 0.4)
-    rig.part("hull", g, "#4E5238", highlight=False, outline=0)
+    # W3: a weld seam along the hull side above the skirt and two panel lines down it
+    hface.stroke(g, hface.hit(-8.0, 31.4), [(-30.0, 0.2), (-10.0, 0.0), (12.0, -0.2), (34.0, -1.0)], 1.0, 0.4)
+    for x in (-24.0, 10.0):
+        hface.stroke(g, hface.hit(x, 32.8), [(0.0, 3.0), (0.4, -2.0)], 1.0, 0.4)
+    rig.part("hull", g, SEAM, highlight=False, outline=0)
     g = Geo()
     for x in range(-32, 22, 6):
         g.sphere((x, -14.6, 34.6), 0.8, cuts=2)
     rig.part("hull", g, R.OLIVE_LT, finish="metal", outline=0)
+    # W3: worn paint chips along the deck edge and the glacis, mud on the lower glacis
+    hull_ref = Geo().blob((-1.0, 0, 26.0), (43.0, 15.5, 9.5), p=3.4, taper=(1.0, 0.94), shift=(0.05, 0))
+    MW.decals(rig, "hull", [hull_ref], [((-33.0, 33.4), MW.CHIP_A), ((-6.0, 34.6), MW.CHIP_B),
+                                        ((20.0, 33.2), MW.CHIP_C), ((36.0, 29.4), MW.CHIP_B)], MW.CHIP)
+    g = KM.mud(hface, Geo(), [((38.0, 21.6), 3.0, 2.2), ((31.0, 19.8), 2.2, 1.6)])
+    rig.part("hull", g, KM.MUD, highlight=False, outline=0)
     g = Geo()   # headlights (cream glass, gunmetal hoods) and a vision slit
     for y in (-11.0, 9.0):
         g.blob((42.0, y, 31.0), (2.2, 2.6, 2.4), p=2.4)
-    rig.part("hull", g, "#FFF3C8", finish="gloss", outline=0.8, outline_hex=R.GUNMETAL)
+    rig.part("hull", g, HEADLIGHT, finish="gloss", outline=0.8, outline_hex=R.GUNMETAL)
     g = Geo().blob((24.0, -5.0, 36.4), (6.0, 4.0, 1.2), p=3.2)
     rig.part("hull", g, R.GUNMETAL, finish="metal", outline=0.6)
     g = Geo()   # rear exhaust pipe and a spare road wheel on the back
@@ -95,17 +128,21 @@ def build(rig):
     g = Geo().lathe([(0, -0.8), (3.0, -0.8), (3.0, 0.8), (0, 0.8)], (-46.0, 0.0, 26.0), (-47.4, 0.0, 26.0), segs=14)
     rig.part("hull", g, R.OLIVE_LT, finish="gloss", outline=0.4)
     # team side skirt with rivets, a cream chevron and hazard stripes at the rear
-    skirt = Geo().blob((0.0, TY - 3.2, 22.0), (44.0, 1.8, 6.0), p=3.6)
+    skirt = Geo().blob(*SKIRT, p=3.6)
     sface = F.Face(rig, "hull", [skirt])
     rig.part("hull", skirt, team=True)
+    # W3: the skirt in two tones: a team-dark lower band and two team-dark panel seams
+    look.team_part(rig, "hull", KD.band_z(*SKIRT, 15.0, 18.6, p=3.6, grow=0.3))
+    for x in (-19.0, 20.0):
+        MW.team_line(rig, "hull", Geo().blob(*SKIRT, p=3.6), [(x, 27.0), (x - 0.4, 18.0)], 1.5, tone=look.TEAM_DARK)
     g = KM.chevron(sface, Geo(), (5.0, 22.4), s=1.0, n=2, w=1.8, gap=2.8)
     rig.part("hull", g, KM.CREAM, highlight=False, outline=0)
     g = KM.stripes(sface, Geo(), (-35.0, 22.0), 12.0, 8.0, n=4, slant=0.6)
     rig.part("hull", g, KM.STRIPE_DK, highlight=False, outline=0)
-    g = Geo()
+    g = Geo()   # W3: bigger rivets along the top edge (2.6 lu: they read at game scale)
     for x in range(-38, 42, 8):
-        g.sphere((x, TY - 5.2, 25.6), 0.9, cuts=2)
-    rig.part("hull", g, R.OLIVE_LT, finish="metal", outline=0)
+        g.sphere((x, TY - 5.0, 25.8), 1.3, cuts=2)
+    rig.part("hull", g, R.OLIVE_LT, finish="metal", outline=0.3)
     # tools strapped on the fender: a shovel and a pick handle with leather straps
     g = Geo().capsule((-22.0, TY - 2.0, 30.2), (4.0, TY - 2.0, 30.2), 0.9)
     g.capsule((8.0, TY - 2.0, 31.2), (22.0, TY - 2.0, 31.2), 0.9)
@@ -134,9 +171,14 @@ def build(rig):
     g.blob((tx + 20.0, 0, tz + 3.4), (8.0, 14.0, 6.0), p=2.6, rot=(0, 34, 0))       # sloped front plate
     g.clip((tx, 0, tz - 1.0), (0, 0, -1))
     rig.part("turret", g, R.OLIVE, finish="gloss")
-    cheek = Geo().blob((tx - 2.0, -13.6, tz + 4.6), (21.0, 1.8, 5.2), p=3.2)
+    cheek = Geo().blob(*CHEEK, p=3.2)
     cface = F.Face(rig, "turret", [cheek])
     rig.part("turret", cheek, team=True)
+    # W3: the side armour's lower band team-dark, worn chips on the casemate roof
+    look.team_part(rig, "turret", KD.band_z(*CHEEK, tz - 1.0, tz + 1.9, p=3.2, grow=0.3))
+    roof = Geo().blob((tx - 2.0, 0, tz + 5.0), (25.0, 14.6, 7.0), p=3.4, taper=(1.0, 0.82), shift=(0.10, 0))
+    MW.decals(rig, "turret", [roof], [((tx - 16.0, tz + 10.6), MW.CHIP_A), ((tx + 8.0, tz + 10.8), MW.CHIP_C)],
+              MW.CHIP)
     g = KM.chevron(cface, Geo(), (tx - 6.0, tz + 4.6), s=0.9, n=2, w=1.8, gap=2.8)
     rig.part("turret", g, KM.CREAM, highlight=False, outline=0)
     g = Geo()
@@ -226,6 +268,20 @@ def build(rig):
         g.capsule((TX0 - 6.0 - 4.0 * k, TY - 0.5, 1.6 + 0.4 * k), (TX0 - 10.0 - 4.0 * k, TY - 0.5, 1.6 + 0.4 * k), 1.8)
     rig.part("snap", g, R.RUBBER, finish="gloss", outline=0.5)
     rig.track("_foot", "odo", (0, 0, 0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: dents and holes on the team
+    skirt (the largest surface, always in view), the olive hull side above it and the casemate's team side armour;
+    the engine deck's smoke (the fire's place: below the commander's head and well behind it on every frame,
+    DAMAGE's fireAt) and a second smoke from the exhaust."""
+    rig.damage_spot_at("skirt", "hull", 14.0, 21.0, 8.0, "metal", team=True)
+    rig.damage_spot_at("hull", "hull", -30.0, 32.4, 6.0, "metal", fill=R.OLIVE)
+    rig.damage_spot_at("cheek", "turret", TURRET[0] + 6.0, TURRET[2] + 5.0, 6.0, "metal", team=True)
+    rig.damage_spot("engine", "hull", (-38.0, 0.0, 33.6), 7.0, "smoke", kind="emit", normal=(0, 0, 1))
+    rig.damage_spot("exhaust", "hull", (-48.5, -9.0, 30.0), 5.0, "smoke", kind="emit", normal=(-1, 0, 0))
 
 
 # -- poses ------------------------------------------------------------------------------------------

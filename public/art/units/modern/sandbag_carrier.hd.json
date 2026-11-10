@@ -2,8 +2,8 @@
  "frames": {
   "sandbag_carrier_idle_00": {
    "frame": {
-    "x": 253,
-    "y": 457,
+    "x": 1378,
+    "y": 2,
     "w": 122,
     "h": 190
    },
@@ -26,10 +26,10 @@
   },
   "sandbag_carrier_idle_00_team": {
    "frame": {
-    "x": 1163,
-    "y": 1000,
+    "x": 2509,
+    "y": 156,
     "w": 107,
-    "h": 149
+    "h": 150
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 219,
     "y": 260,
     "w": 107,
-    "h": 149
+    "h": 150
    },
    "sourceSize": {
     "w": 548,
@@ -50,8 +50,8 @@
   },
   "sandbag_carrier_idle_01": {
    "frame": {
-    "x": 1143,
-    "y": 254,
+    "x": 1183,
+    "y": 199,
     "w": 122,
     "h": 193
    },
@@ -74,8 +74,8 @@
   },
   "sandbag_carrier_idle_01_team": {
    "frame": {
-    "x": 736,
-    "y": 1000,
+    "x": 2438,
+    "y": 312,
     "w": 108,
     "h": 150
    },
@@ -98,8 +98,8 @@
   },
   "sandbag_carrier_idle_02": {
    "frame": {
-    "x": 2,
-    "y": 254,
+    "x": 613,
+    "y": 2,
     "w": 119,
     "h": 199
    },
@@ -122,8 +122,8 @@
   },
   "sandbag_carrier_idle_02_team": {
    "frame": {
-    "x": 752,
-    "y": 838,
+    "x": 2078,
+    "y": 162,
     "w": 104,
     "h": 153
    },
@@ -146,8 +146,8 @@
   },
   "sandbag_carrier_idle_03": {
    "frame": {
-    "x": 921,
-    "y": 2,
+    "x": 447,
+    "y": 210,
     "w": 118,
     "h": 202
    },
@@ -170,17 +170,17 @@
   },
   "sandbag_carrier_idle_03_team": {
    "frame": {
-    "x": 326,
-    "y": 838,
-    "w": 105,
+    "x": 1961,
+    "y": 2,
+    "w": 104,
     "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 226,
+    "x": 227,
     "y": 250,
-    "w": 105,
+    "w": 104,
     "h": 157
    },
    "sourceSize": {
@@ -194,7 +194,7 @@
   },
   "sandbag_carrier_idle_04": {
    "frame": {
-    "x": 1043,
+    "x": 488,
     "y": 2,
     "w": 121,
     "h": 201
@@ -218,8 +218,8 @@
   },
   "sandbag_carrier_idle_04_team": {
    "frame": {
-    "x": 546,
-    "y": 838,
+    "x": 1968,
+    "y": 163,
     "w": 106,
     "h": 156
    },
@@ -242,8 +242,8 @@
   },
   "sandbag_carrier_idle_05": {
    "frame": {
-    "x": 635,
-    "y": 254,
+    "x": 940,
+    "y": 203,
     "w": 121,
     "h": 196
    },
@@ -266,8 +266,8 @@
   },
   "sandbag_carrier_idle_05_team": {
    "frame": {
-    "x": 968,
-    "y": 838,
+    "x": 2165,
+    "y": 2,
     "w": 108,
     "h": 152
    },
@@ -290,8 +290,8 @@
   },
   "sandbag_carrier_walk_00": {
    "frame": {
-    "x": 644,
-    "y": 457,
+    "x": 1305,
+    "y": 396,
     "w": 125,
     "h": 185
    },
@@ -314,18 +314,18 @@
   },
   "sandbag_carrier_walk_00_team": {
    "frame": {
-    "x": 214,
-    "y": 1000,
-    "w": 99,
-    "h": 152
+    "x": 2381,
+    "y": 2,
+    "w": 107,
+    "h": 151
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 245,
-    "y": 264,
-    "w": 99,
-    "h": 152
+    "x": 237,
+    "y": 265,
+    "w": 107,
+    "h": 151
    },
    "sourceSize": {
     "w": 548,
@@ -338,8 +338,8 @@
   },
   "sandbag_carrier_walk_01": {
    "frame": {
-    "x": 2,
-    "y": 654,
+    "x": 1631,
+    "y": 2,
     "w": 120,
     "h": 180
    },
@@ -362,18 +362,18 @@
   },
   "sandbag_carrier_walk_01_team": {
    "frame": {
-    "x": 108,
-    "y": 1156,
-    "w": 94,
-    "h": 147
+    "x": 2712,
+    "y": 2,
+    "w": 95,
+    "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 246,
+    "x": 245,
     "y": 271,
-    "w": 94,
-    "h": 147
+    "w": 95,
+    "h": 146
    },
    "sourceSize": {
     "w": 548,
@@ -386,8 +386,8 @@
   },
   "sandbag_carrier_walk_02": {
    "frame": {
-    "x": 2,
-    "y": 457,
+    "x": 1254,
+    "y": 2,
     "w": 120,
     "h": 193
    },
@@ -410,17 +410,17 @@
   },
   "sandbag_carrier_walk_02_team": {
    "frame": {
-    "x": 1080,
-    "y": 838,
-    "w": 105,
+    "x": 2128,
+    "y": 319,
+    "w": 106,
     "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 239,
+    "x": 238,
     "y": 258,
-    "w": 105,
+    "w": 106,
     "h": 152
    },
    "sourceSize": {
@@ -434,8 +434,8 @@
   },
   "sandbag_carrier_walk_03": {
    "frame": {
-    "x": 760,
-    "y": 254,
+    "x": 989,
+    "y": 2,
     "w": 121,
     "h": 196
    },
@@ -458,18 +458,18 @@
   },
   "sandbag_carrier_walk_03_team": {
    "frame": {
-    "x": 860,
-    "y": 838,
-    "w": 104,
-    "h": 153
+    "x": 2019,
+    "y": 323,
+    "w": 105,
+    "h": 154
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 239,
+    "x": 238,
     "y": 248,
-    "w": 104,
-    "h": 153
+    "w": 105,
+    "h": 154
    },
    "sourceSize": {
     "w": 548,
@@ -482,8 +482,8 @@
   },
   "sandbag_carrier_walk_04": {
    "frame": {
-    "x": 1045,
-    "y": 457,
+    "x": 1579,
+    "y": 190,
     "w": 130,
     "h": 182
    },
@@ -506,8 +506,8 @@
   },
   "sandbag_carrier_walk_04_team": {
    "frame": {
-    "x": 633,
-    "y": 1000,
+    "x": 2335,
+    "y": 313,
     "w": 99,
     "h": 151
    },
@@ -515,7 +515,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 245,
-    "y": 264,
+    "y": 265,
     "w": 99,
     "h": 151
    },
@@ -530,8 +530,8 @@
   },
   "sandbag_carrier_walk_05": {
    "frame": {
-    "x": 415,
-    "y": 654,
+    "x": 1579,
+    "y": 376,
     "w": 125,
     "h": 172
    },
@@ -554,10 +554,10 @@
   },
   "sandbag_carrier_walk_05_team": {
    "frame": {
-    "x": 663,
-    "y": 1156,
+    "x": 2724,
+    "y": 152,
     "w": 109,
-    "h": 139
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
@@ -565,7 +565,7 @@
     "x": 232,
     "y": 272,
     "w": 109,
-    "h": 139
+    "h": 142
    },
    "sourceSize": {
     "w": 548,
@@ -578,8 +578,8 @@
   },
   "sandbag_carrier_walk_06": {
    "frame": {
-    "x": 918,
-    "y": 457,
+    "x": 1504,
+    "y": 2,
     "w": 123,
     "h": 184
    },
@@ -602,8 +602,8 @@
   },
   "sandbag_carrier_walk_06_team": {
    "frame": {
-    "x": 414,
-    "y": 1000,
+    "x": 2293,
+    "y": 158,
     "w": 110,
     "h": 151
    },
@@ -626,8 +626,8 @@
   },
   "sandbag_carrier_walk_07": {
    "frame": {
-    "x": 126,
-    "y": 457,
+    "x": 1309,
+    "y": 199,
     "w": 123,
     "h": 192
    },
@@ -650,10 +650,10 @@
   },
   "sandbag_carrier_walk_07_team": {
    "frame": {
-    "x": 1048,
-    "y": 1000,
+    "x": 2492,
+    "y": 2,
     "w": 111,
-    "h": 149
+    "h": 150
    },
    "rotated": false,
    "trimmed": true,
@@ -661,7 +661,7 @@
     "x": 233,
     "y": 248,
     "w": 111,
-    "h": 149
+    "h": 150
    },
    "sourceSize": {
     "w": 548,
@@ -674,8 +674,8 @@
   },
   "sandbag_carrier_attack_00": {
    "frame": {
-    "x": 125,
-    "y": 254,
+    "x": 683,
+    "y": 205,
     "w": 118,
     "h": 198
    },
@@ -698,9 +698,9 @@
   },
   "sandbag_carrier_attack_00_team": {
    "frame": {
-    "x": 2,
-    "y": 1000,
-    "w": 104,
+    "x": 2186,
+    "y": 158,
+    "w": 103,
     "h": 152
    },
    "rotated": false,
@@ -708,7 +708,7 @@
    "spriteSourceSize": {
     "x": 224,
     "y": 254,
-    "w": 104,
+    "w": 103,
     "h": 152
    },
    "sourceSize": {
@@ -722,17 +722,17 @@
   },
   "sandbag_carrier_attack_01": {
    "frame": {
-    "x": 805,
+    "x": 367,
     "y": 2,
-    "w": 112,
+    "w": 117,
     "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 212,
+    "x": 207,
     "y": 233,
-    "w": 112,
+    "w": 117,
     "h": 204
    },
    "sourceSize": {
@@ -746,15 +746,15 @@
   },
   "sandbag_carrier_attack_01_team": {
    "frame": {
-    "x": 435,
-    "y": 838,
+    "x": 1908,
+    "y": 327,
     "w": 107,
     "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 209,
+    "x": 210,
     "y": 249,
     "w": 107,
     "h": 156
@@ -770,17 +770,17 @@
   },
   "sandbag_carrier_attack_02": {
    "frame": {
-    "x": 537,
+    "x": 243,
     "y": 2,
-    "w": 117,
+    "w": 120,
     "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 195,
+    "x": 192,
     "y": 231,
-    "w": 117,
+    "w": 120,
     "h": 205
    },
    "sourceSize": {
@@ -794,17 +794,17 @@
   },
   "sandbag_carrier_attack_02_team": {
    "frame": {
-    "x": 2,
-    "y": 838,
-    "w": 118,
+    "x": 1841,
+    "y": 165,
+    "w": 123,
     "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 195,
+    "x": 191,
     "y": 247,
-    "w": 118,
+    "w": 123,
     "h": 158
    },
    "sourceSize": {
@@ -818,17 +818,17 @@
   },
   "sandbag_carrier_attack_03": {
    "frame": {
-    "x": 413,
-    "y": 2,
-    "w": 120,
+    "x": 172,
+    "y": 230,
+    "w": 124,
     "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 185,
+    "x": 181,
     "y": 229,
-    "w": 120,
+    "w": 124,
     "h": 207
    },
    "sourceSize": {
@@ -842,17 +842,17 @@
   },
   "sandbag_carrier_attack_03_team": {
    "frame": {
-    "x": 1095,
-    "y": 654,
-    "w": 125,
+    "x": 548,
+    "y": 416,
+    "w": 130,
     "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 185,
+    "x": 181,
     "y": 245,
-    "w": 125,
+    "w": 130,
     "h": 159
    },
    "sourceSize": {
@@ -866,8 +866,8 @@
   },
   "sandbag_carrier_attack_04": {
    "frame": {
-    "x": 1168,
-    "y": 2,
+    "x": 569,
+    "y": 207,
     "w": 110,
     "h": 201
    },
@@ -890,9 +890,9 @@
   },
   "sandbag_carrier_attack_04_team": {
    "frame": {
-    "x": 124,
-    "y": 838,
-    "w": 97,
+    "x": 1859,
+    "y": 2,
+    "w": 98,
     "h": 158
    },
    "rotated": false,
@@ -900,7 +900,7 @@
    "spriteSourceSize": {
     "x": 224,
     "y": 251,
-    "w": 97,
+    "w": 98,
     "h": 158
    },
    "sourceSize": {
@@ -914,8 +914,8 @@
   },
   "sandbag_carrier_attack_05": {
    "frame": {
-    "x": 885,
-    "y": 254,
+    "x": 1065,
+    "y": 202,
     "w": 114,
     "h": 194
    },
@@ -938,18 +938,18 @@
   },
   "sandbag_carrier_attack_05_team": {
    "frame": {
-    "x": 225,
-    "y": 838,
-    "w": 97,
-    "h": 158
+    "x": 1755,
+    "y": 2,
+    "w": 100,
+    "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 255,
+    "x": 252,
     "y": 258,
-    "w": 97,
-    "h": 158
+    "w": 100,
+    "h": 159
    },
    "sourceSize": {
     "w": 548,
@@ -962,8 +962,8 @@
   },
   "sandbag_carrier_attack_06": {
    "frame": {
-    "x": 126,
-    "y": 654,
+    "x": 683,
+    "y": 407,
     "w": 144,
     "h": 175
    },
@@ -986,17 +986,17 @@
   },
   "sandbag_carrier_attack_06_team": {
    "frame": {
-    "x": 776,
-    "y": 1156,
-    "w": 129,
+    "x": 2837,
+    "y": 145,
+    "w": 130,
     "h": 136
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 255,
+    "x": 254,
     "y": 283,
-    "w": 129,
+    "w": 130,
     "h": 136
    },
    "sourceSize": {
@@ -1010,8 +1010,8 @@
   },
   "sandbag_carrier_attack_07": {
    "frame": {
-    "x": 274,
-    "y": 654,
+    "x": 831,
+    "y": 405,
     "w": 137,
     "h": 175
    },
@@ -1034,10 +1034,10 @@
   },
   "sandbag_carrier_attack_07_team": {
    "frame": {
-    "x": 331,
-    "y": 1156,
+    "x": 2648,
+    "y": 308,
     "w": 124,
-    "h": 141
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
@@ -1045,7 +1045,7 @@
     "x": 256,
     "y": 277,
     "w": 124,
-    "h": 141
+    "h": 142
    },
    "sourceSize": {
     "w": 548,
@@ -1058,8 +1058,8 @@
   },
   "sandbag_carrier_attack_08": {
    "frame": {
-    "x": 522,
-    "y": 457,
+    "x": 1183,
+    "y": 396,
     "w": 118,
     "h": 186
    },
@@ -1082,17 +1082,17 @@
   },
   "sandbag_carrier_attack_08_team": {
    "frame": {
-    "x": 2,
-    "y": 1156,
-    "w": 102,
+    "x": 2620,
+    "y": 156,
+    "w": 100,
     "h": 148
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 251,
+    "x": 253,
     "y": 265,
-    "w": 102,
+    "w": 100,
     "h": 148
    },
    "sourceSize": {
@@ -1106,8 +1106,8 @@
   },
   "sandbag_carrier_attack_09": {
    "frame": {
-    "x": 247,
-    "y": 254,
+    "x": 736,
+    "y": 2,
     "w": 114,
     "h": 198
    },
@@ -1130,8 +1130,8 @@
   },
   "sandbag_carrier_attack_09_team": {
    "frame": {
-    "x": 110,
-    "y": 1000,
+    "x": 2277,
+    "y": 2,
     "w": 100,
     "h": 152
    },
@@ -1154,8 +1154,8 @@
   },
   "sandbag_carrier_hit_00": {
    "frame": {
-    "x": 379,
-    "y": 457,
+    "x": 1436,
+    "y": 196,
     "w": 139,
     "h": 188
    },
@@ -1178,10 +1178,10 @@
   },
   "sandbag_carrier_hit_00_team": {
    "frame": {
-    "x": 848,
-    "y": 1000,
+    "x": 2407,
+    "y": 157,
     "w": 98,
-    "h": 150
+    "h": 151
    },
    "rotated": false,
    "trimmed": true,
@@ -1189,7 +1189,7 @@
     "x": 222,
     "y": 259,
     "w": 98,
-    "h": 150
+    "h": 151
    },
    "sourceSize": {
     "w": 548,
@@ -1202,8 +1202,8 @@
   },
   "sandbag_carrier_hit_01": {
    "frame": {
-    "x": 773,
-    "y": 457,
+    "x": 1434,
+    "y": 395,
     "w": 141,
     "h": 184
    },
@@ -1226,18 +1226,18 @@
   },
   "sandbag_carrier_hit_01_team": {
    "frame": {
-    "x": 528,
-    "y": 1000,
+    "x": 2607,
+    "y": 2,
     "w": 101,
-    "h": 151
+    "h": 150
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 214,
-    "y": 259,
+    "y": 260,
     "w": 101,
-    "h": 151
+    "h": 150
    },
    "sourceSize": {
     "w": 548,
@@ -1250,8 +1250,8 @@
   },
   "sandbag_carrier_hit_02": {
    "frame": {
-    "x": 1003,
-    "y": 254,
+    "x": 1114,
+    "y": 2,
     "w": 136,
     "h": 193
    },
@@ -1274,8 +1274,8 @@
   },
   "sandbag_carrier_hit_02_team": {
    "frame": {
-    "x": 950,
-    "y": 1000,
+    "x": 2550,
+    "y": 310,
     "w": 94,
     "h": 150
    },
@@ -1298,8 +1298,8 @@
   },
   "sandbag_carrier_hit_03": {
    "frame": {
-    "x": 365,
-    "y": 254,
+    "x": 805,
+    "y": 204,
     "w": 131,
     "h": 197
    },
@@ -1322,8 +1322,8 @@
   },
   "sandbag_carrier_hit_03_team": {
    "frame": {
-    "x": 317,
-    "y": 1000,
+    "x": 2238,
+    "y": 314,
     "w": 93,
     "h": 152
    },
@@ -1346,8 +1346,8 @@
   },
   "sandbag_carrier_hit_04": {
    "frame": {
-    "x": 500,
-    "y": 254,
+    "x": 854,
+    "y": 2,
     "w": 131,
     "h": 197
    },
@@ -1370,8 +1370,8 @@
   },
   "sandbag_carrier_hit_04_team": {
    "frame": {
-    "x": 656,
-    "y": 838,
+    "x": 2069,
+    "y": 2,
     "w": 92,
     "h": 156
    },
@@ -1394,8 +1394,8 @@
   },
   "sandbag_carrier_die_00": {
    "frame": {
-    "x": 744,
-    "y": 654,
+    "x": 1713,
+    "y": 186,
     "w": 124,
     "h": 167
    },
@@ -1418,18 +1418,18 @@
   },
   "sandbag_carrier_die_00_team": {
    "frame": {
-    "x": 206,
-    "y": 1156,
-    "w": 121,
-    "h": 142
+    "x": 172,
+    "y": 441,
+    "w": 122,
+    "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 202,
-    "y": 261,
-    "w": 121,
-    "h": 142
+    "y": 262,
+    "w": 122,
+    "h": 141
    },
    "sourceSize": {
     "w": 548,
@@ -1442,8 +1442,8 @@
   },
   "sandbag_carrier_die_01": {
    "frame": {
-    "x": 544,
-    "y": 654,
+    "x": 1708,
+    "y": 376,
     "w": 196,
     "h": 169
    },
@@ -1466,8 +1466,8 @@
   },
   "sandbag_carrier_die_01_team": {
    "frame": {
-    "x": 970,
-    "y": 654,
+    "x": 300,
+    "y": 419,
     "w": 121,
     "h": 160
    },
@@ -1514,8 +1514,8 @@
   },
   "sandbag_carrier_die_02_team": {
    "frame": {
-    "x": 1179,
-    "y": 457,
+    "x": 1065,
+    "y": 400,
     "w": 80,
     "h": 181
    },
@@ -1538,8 +1538,8 @@
   },
   "sandbag_carrier_die_03": {
    "frame": {
-    "x": 658,
-    "y": 2,
+    "x": 300,
+    "y": 211,
     "w": 143,
     "h": 204
    },
@@ -1562,18 +1562,18 @@
   },
   "sandbag_carrier_die_03_team": {
    "frame": {
-    "x": 872,
-    "y": 654,
-    "w": 94,
-    "h": 164
+    "x": 447,
+    "y": 416,
+    "w": 97,
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 205,
+    "x": 202,
     "y": 213,
-    "w": 94,
-    "h": 164
+    "w": 97,
+    "h": 165
    },
    "sourceSize": {
     "w": 548,
@@ -1586,8 +1586,8 @@
   },
   "sandbag_carrier_die_04": {
    "frame": {
-    "x": 139,
-    "y": 2,
+    "x": 2,
+    "y": 254,
     "w": 166,
     "h": 233
    },
@@ -1610,10 +1610,10 @@
   },
   "sandbag_carrier_die_04_team": {
    "frame": {
-    "x": 309,
+    "x": 139,
     "y": 2,
     "w": 100,
-    "h": 223
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 201,
     "y": 221,
     "w": 100,
-    "h": 223
+    "h": 224
    },
    "sourceSize": {
     "w": 548,
@@ -1634,8 +1634,8 @@
   },
   "sandbag_carrier_die_05": {
    "frame": {
-    "x": 459,
-    "y": 1156,
+    "x": 2811,
+    "y": 2,
     "w": 200,
     "h": 139
    },
@@ -1658,10 +1658,10 @@
   },
   "sandbag_carrier_die_05_team": {
    "frame": {
-    "x": 909,
-    "y": 1156,
+    "x": 2648,
+    "y": 454,
     "w": 129,
-    "h": 127
+    "h": 128
    },
    "rotated": false,
    "trimmed": true,
@@ -1669,7 +1669,7 @@
     "x": 178,
     "y": 308,
     "w": 129,
-    "h": 127
+    "h": 128
    },
    "sourceSize": {
     "w": 548,
@@ -1682,8 +1682,8 @@
   },
   "sandbag_carrier_die_06": {
    "frame": {
-    "x": 262,
-    "y": 1308,
+    "x": 2776,
+    "y": 298,
     "w": 246,
     "h": 114
    },
@@ -1706,18 +1706,18 @@
   },
   "sandbag_carrier_die_06_team": {
    "frame": {
-    "x": 512,
-    "y": 1308,
-    "w": 200,
-    "h": 92
+    "x": 1908,
+    "y": 487,
+    "w": 199,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 110,
+    "x": 111,
     "y": 348,
-    "w": 200,
-    "h": 92
+    "w": 199,
+    "h": 94
    },
    "sourceSize": {
     "w": 548,
@@ -1730,8 +1730,8 @@
   },
   "sandbag_carrier_die_07": {
    "frame": {
-    "x": 2,
-    "y": 1308,
+    "x": 2335,
+    "y": 468,
     "w": 256,
     "h": 114
    },
@@ -1754,18 +1754,18 @@
   },
   "sandbag_carrier_die_07_team": {
    "frame": {
-    "x": 716,
-    "y": 1308,
-    "w": 209,
-    "h": 91
+    "x": 2111,
+    "y": 481,
+    "w": 208,
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
+    "x": 102,
     "y": 350,
-    "w": 209,
-    "h": 91
+    "w": 208,
+    "h": 93
    },
    "sourceSize": {
     "w": 548,
@@ -1885,8 +1885,8 @@
   "image": "sandbag_carrier.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 1424
+   "w": 3072,
+   "h": 584
   },
   "scale": "3",
   "ageborn": {

@@ -2,8 +2,8 @@
  "frames": {
   "assault_gun_attack_b_01": {
    "frame": {
-    "x": 1427,
-    "y": 2,
+    "x": 2,
+    "y": 590,
     "w": 334,
     "h": 288
    },
@@ -26,10 +26,10 @@
   },
   "assault_gun_attack_b_01_team": {
    "frame": {
-    "x": 1115,
-    "y": 305,
+    "x": 758,
+    "y": 2,
     "w": 253,
-    "h": 228
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 253,
     "y": 196,
     "w": 253,
-    "h": 228
+    "h": 229
    },
    "sourceSize": {
     "w": 804,
@@ -50,8 +50,8 @@
   },
   "assault_gun_attack_b_02": {
    "frame": {
-    "x": 758,
-    "y": 2,
+    "x": 344,
+    "y": 593,
     "w": 331,
     "h": 289
    },
@@ -74,10 +74,10 @@
   },
   "assault_gun_attack_b_02_team": {
    "frame": {
-    "x": 866,
-    "y": 305,
+    "x": 344,
+    "y": 886,
     "w": 245,
-    "h": 231
+    "h": 232
    },
    "rotated": false,
    "trimmed": true,
@@ -85,7 +85,7 @@
     "x": 250,
     "y": 197,
     "w": 245,
-    "h": 231
+    "h": 232
    },
    "sourceSize": {
     "w": 804,
@@ -98,8 +98,8 @@
   },
   "assault_gun_attack_b_03": {
    "frame": {
-    "x": 1093,
-    "y": 2,
+    "x": 679,
+    "y": 593,
     "w": 330,
     "h": 289
    },
@@ -122,10 +122,10 @@
   },
   "assault_gun_attack_b_03_team": {
    "frame": {
-    "x": 1372,
-    "y": 305,
+    "x": 593,
+    "y": 886,
     "w": 246,
-    "h": 227
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
@@ -133,7 +133,7 @@
     "x": 250,
     "y": 201,
     "w": 246,
-    "h": 227
+    "h": 228
    },
    "sourceSize": {
     "w": 804,
@@ -170,10 +170,10 @@
   },
   "assault_gun_attack_b_04_team": {
    "frame": {
-    "x": 629,
-    "y": 305,
+    "x": 771,
+    "y": 1118,
     "w": 233,
-    "h": 235
+    "h": 236
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 255,
     "y": 190,
     "w": 233,
-    "h": 235
+    "h": 236
    },
    "sourceSize": {
     "w": 804,
@@ -218,10 +218,10 @@
   },
   "assault_gun_attack_b_05_team": {
    "frame": {
-    "x": 1622,
-    "y": 305,
+    "x": 758,
+    "y": 235,
     "w": 253,
-    "h": 225
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 243,
     "y": 211,
     "w": 253,
-    "h": 225
+    "h": 226
    },
    "sourceSize": {
     "w": 804,
@@ -266,10 +266,10 @@
   },
   "assault_gun_attack_b_06_team": {
    "frame": {
-    "x": 385,
-    "y": 305,
+    "x": 527,
+    "y": 1122,
     "w": 240,
-    "h": 235
+    "h": 236
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 258,
     "y": 186,
     "w": 240,
-    "h": 235
+    "h": 236
    },
    "sourceSize": {
     "w": 804,
@@ -290,8 +290,8 @@
   },
   "assault_gun_attack_b_07": {
    "frame": {
-    "x": 2108,
-    "y": 2,
+    "x": 2,
+    "y": 882,
     "w": 338,
     "h": 284
    },
@@ -314,8 +314,8 @@
   },
   "assault_gun_attack_b_07_team": {
    "frame": {
-    "x": 1879,
-    "y": 305,
+    "x": 2,
+    "y": 1170,
     "w": 258,
     "h": 224
    },
@@ -338,8 +338,8 @@
   },
   "assault_gun_attack_b_08": {
    "frame": {
-    "x": 1765,
-    "y": 2,
+    "x": 385,
+    "y": 305,
     "w": 339,
     "h": 284
    },
@@ -362,8 +362,8 @@
   },
   "assault_gun_attack_b_08_team": {
    "frame": {
-    "x": 2141,
-    "y": 305,
+    "x": 264,
+    "y": 1170,
     "w": 259,
     "h": 221
    },
@@ -419,8 +419,8 @@
   "image": "assault_gun.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2560,
-   "h": 588
+   "w": 1024,
+   "h": 1396
   },
   "scale": "3",
   "ageborn": {

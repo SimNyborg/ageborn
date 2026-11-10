@@ -5,15 +5,15 @@
     "x": 122,
     "y": 2,
     "w": 49,
-    "h": 91
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 112,
-    "y": 117,
+    "y": 115,
     "w": 49,
-    "h": 91
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -26,9 +26,9 @@
   },
   "commando_attack_b_01_team": {
    "frame": {
-    "x": 862,
-    "y": 2,
-    "w": 41,
+    "x": 589,
+    "y": 85,
+    "w": 42,
     "h": 79
    },
    "rotated": false,
@@ -36,7 +36,7 @@
    "spriteSourceSize": {
     "x": 117,
     "y": 112,
-    "w": 41,
+    "w": 42,
     "h": 79
    },
    "sourceSize": {
@@ -53,15 +53,15 @@
     "x": 175,
     "y": 2,
     "w": 48,
-    "h": 91
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
-    "y": 116,
+    "y": 114,
     "w": 48,
-    "h": 91
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -74,8 +74,8 @@
   },
   "commando_attack_b_02_team": {
    "frame": {
-    "x": 463,
-    "y": 2,
+    "x": 474,
+    "y": 87,
     "w": 43,
     "h": 81
    },
@@ -101,15 +101,15 @@
     "x": 64,
     "y": 2,
     "w": 54,
-    "h": 92
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 102,
-    "y": 115,
+    "y": 114,
     "w": 54,
-    "h": 92
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -122,18 +122,18 @@
   },
   "commando_attack_b_03_team": {
    "frame": {
-    "x": 510,
-    "y": 2,
-    "w": 43,
-    "h": 81
+    "x": 346,
+    "y": 92,
+    "w": 44,
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 113,
     "y": 110,
-    "w": 43,
-    "h": 81
+    "w": 44,
+    "h": 82
    },
    "sourceSize": {
     "w": 274,
@@ -170,7 +170,7 @@
   },
   "commando_attack_b_04_team": {
    "frame": {
-    "x": 816,
+    "x": 591,
     "y": 2,
     "w": 42,
     "h": 79
@@ -197,15 +197,15 @@
     "x": 227,
     "y": 2,
     "w": 66,
-    "h": 89
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 108,
-    "y": 119,
+    "y": 118,
     "w": 66,
-    "h": 89
+    "h": 90
    },
    "sourceSize": {
     "w": 274,
@@ -218,17 +218,17 @@
   },
   "commando_attack_b_05_team": {
    "frame": {
-    "x": 413,
-    "y": 2,
-    "w": 46,
+    "x": 297,
+    "y": 92,
+    "w": 45,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 125,
+    "x": 126,
     "y": 114,
-    "w": 46,
+    "w": 45,
     "h": 82
    },
    "sourceSize": {
@@ -242,18 +242,18 @@
   },
   "commando_attack_b_06": {
    "frame": {
-    "x": 2,
-    "y": 99,
+    "x": 635,
+    "y": 85,
     "w": 87,
-    "h": 77
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 111,
-    "y": 131,
+    "y": 130,
     "w": 87,
-    "h": 77
+    "h": 78
    },
    "sourceSize": {
     "w": 274,
@@ -266,17 +266,17 @@
   },
   "commando_attack_b_06_team": {
    "frame": {
-    "x": 812,
-    "y": 99,
-    "w": 55,
+    "x": 885,
+    "y": 78,
+    "w": 56,
     "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 127,
+    "x": 126,
     "y": 126,
-    "w": 55,
+    "w": 56,
     "h": 71
    },
    "sourceSize": {
@@ -290,18 +290,18 @@
   },
   "commando_attack_b_07": {
    "frame": {
-    "x": 685,
+    "x": 413,
     "y": 2,
     "w": 70,
-    "h": 79
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 129,
+    "y": 127,
     "w": 70,
-    "h": 79
+    "h": 81
    },
    "sourceSize": {
     "w": 274,
@@ -314,18 +314,18 @@
   },
   "commando_attack_b_07_team": {
    "frame": {
-    "x": 489,
+    "x": 70,
     "y": 99,
-    "w": 54,
-    "h": 73
+    "w": 55,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 128,
+    "x": 127,
     "y": 124,
-    "w": 54,
-    "h": 73
+    "w": 55,
+    "h": 74
    },
    "sourceSize": {
     "w": 274,
@@ -341,15 +341,15 @@
     "x": 297,
     "y": 2,
     "w": 54,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 122,
-    "y": 123,
+    "y": 122,
     "w": 54,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 274,
@@ -362,8 +362,8 @@
   },
   "commando_attack_b_08_team": {
    "frame": {
-    "x": 162,
-    "y": 99,
+    "x": 637,
+    "y": 2,
     "w": 49,
     "h": 77
    },
@@ -386,18 +386,18 @@
   },
   "commando_attack_c_01": {
    "frame": {
-    "x": 93,
-    "y": 99,
+    "x": 227,
+    "y": 96,
     "w": 65,
-    "h": 77
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 118,
-    "y": 130,
+    "y": 129,
     "w": 65,
-    "h": 77
+    "h": 78
    },
    "sourceSize": {
     "w": 274,
@@ -410,15 +410,15 @@
   },
   "commando_attack_c_01_team": {
    "frame": {
-    "x": 755,
-    "y": 99,
+    "x": 874,
+    "y": 2,
     "w": 53,
     "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 119,
+    "x": 118,
     "y": 125,
     "w": 53,
     "h": 72
@@ -434,18 +434,18 @@
   },
   "commando_attack_c_02": {
    "frame": {
-    "x": 421,
+    "x": 2,
     "y": 99,
     "w": 64,
-    "h": 74
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
-    "y": 138,
+    "y": 137,
     "w": 64,
-    "h": 74
+    "h": 75
    },
    "sourceSize": {
     "w": 274,
@@ -458,17 +458,17 @@
   },
   "commando_attack_c_02_team": {
    "frame": {
-    "x": 871,
-    "y": 99,
-    "w": 60,
+    "x": 931,
+    "y": 2,
+    "w": 61,
     "h": 68
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 117,
+    "x": 116,
     "y": 133,
-    "w": 60,
+    "w": 61,
     "h": 68
    },
    "sourceSize": {
@@ -482,18 +482,18 @@
   },
   "commando_attack_c_03": {
    "frame": {
-    "x": 621,
+    "x": 129,
     "y": 99,
     "w": 67,
-    "h": 72
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 143,
+    "y": 142,
     "w": 67,
-    "h": 72
+    "h": 73
    },
    "sourceSize": {
     "w": 274,
@@ -506,8 +506,8 @@
   },
   "commando_attack_c_03_team": {
    "frame": {
-    "x": 935,
-    "y": 99,
+    "x": 945,
+    "y": 74,
     "w": 65,
     "h": 66
    },
@@ -530,7 +530,7 @@
   },
   "commando_attack_c_04": {
    "frame": {
-    "x": 759,
+    "x": 534,
     "y": 2,
     "w": 53,
     "h": 79
@@ -554,17 +554,17 @@
   },
   "commando_attack_c_04_team": {
    "frame": {
-    "x": 637,
+    "x": 487,
     "y": 2,
-    "w": 44,
+    "w": 43,
     "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 121,
+    "x": 122,
     "y": 143,
-    "w": 44,
+    "w": 43,
     "h": 80
    },
    "sourceSize": {
@@ -578,8 +578,8 @@
   },
   "commando_attack_c_05": {
    "frame": {
-    "x": 547,
-    "y": 99,
+    "x": 800,
+    "y": 2,
     "w": 70,
     "h": 72
    },
@@ -602,10 +602,10 @@
   },
   "commando_attack_c_05_team": {
    "frame": {
-    "x": 907,
-    "y": 2,
+    "x": 521,
+    "y": 86,
     "w": 64,
-    "h": 78
+    "h": 79
    },
    "rotated": false,
    "trimmed": true,
@@ -613,7 +613,7 @@
     "x": 112,
     "y": 111,
     "w": 64,
-    "h": 78
+    "h": 79
    },
    "sourceSize": {
     "w": 274,
@@ -626,18 +626,18 @@
   },
   "commando_attack_c_06": {
    "frame": {
-    "x": 325,
-    "y": 99,
+    "x": 726,
+    "y": 83,
     "w": 92,
-    "h": 75
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 111,
-    "y": 136,
+    "y": 135,
     "w": 92,
-    "h": 75
+    "h": 76
    },
    "sourceSize": {
     "w": 274,
@@ -650,8 +650,8 @@
   },
   "commando_attack_c_06_team": {
    "frame": {
-    "x": 692,
-    "y": 99,
+    "x": 822,
+    "y": 78,
     "w": 59,
     "h": 72
    },
@@ -674,18 +674,18 @@
   },
   "commando_attack_c_07": {
    "frame": {
-    "x": 557,
-    "y": 2,
+    "x": 394,
+    "y": 90,
     "w": 76,
-    "h": 80
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 111,
-    "y": 132,
+    "y": 131,
     "w": 76,
-    "h": 80
+    "h": 81
    },
    "sourceSize": {
     "w": 274,
@@ -698,8 +698,8 @@
   },
   "commando_attack_c_07_team": {
    "frame": {
-    "x": 266,
-    "y": 99,
+    "x": 741,
+    "y": 2,
     "w": 55,
     "h": 76
    },
@@ -725,15 +725,15 @@
     "x": 355,
     "y": 2,
     "w": 54,
-    "h": 82
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 124,
-    "y": 126,
+    "y": 124,
     "w": 54,
-    "h": 82
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -746,8 +746,8 @@
   },
   "commando_attack_c_08_team": {
    "frame": {
-    "x": 215,
-    "y": 99,
+    "x": 690,
+    "y": 2,
     "w": 47,
     "h": 77
    },
@@ -830,7 +830,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 1024,
-   "h": 180
+   "h": 176
   },
   "scale": "1.5",
   "ageborn": {

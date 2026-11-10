@@ -17,7 +17,11 @@ Animation (ANIM_SPEC G1 jog at card 65 x 1.25 = 81.25 lu/s, appendix B guns):
             (the held extreme), fires, rides the kick and stays low
   hit       light: the head snaps back, the helmet lifts, eyes squeezed
   die       D1 fling and spin: the helmet pops off and the gun flies; X eyes and tongue
+
+Art round W3 (the detail standard): both bursts aimed up about 45 and 70 degrees at flyers (item 44) and damage
+spots measured in posed frames (item 40).
 """
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_modern as KM
@@ -26,6 +30,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "smg_squad"
 GAIT_NAME = "biped"
@@ -41,6 +46,19 @@ FORE = 9.0
 LENGTH = 25.0
 MUZ = (G0[0] + LENGTH + 0.8, G0[1], G0[2] + 1.6)
 BRASS = "#C8B27A"
+HOLE = "#1E1C1C"
+TROUSERS = "#767B5A"     # kit_modern.legs_v3's olive trousers
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of an SMG trooper is the team-covered helmet, the tunic with the chest pouches and the stubby
+# gun: a team-dark band round the helmet cover, the tunic's team-dark hem and cuffs with a side seam, lighter boots.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", R.HAIR: "fur", R.KHAKI: "cloth", R.KHAKI_LT: "cloth", KM.NET: "cloth",
+                           KM.FELT: "cloth", KM.CREAM: "cloth", TROUSERS: "cloth", R.OLIVE: "iron",
+                           MW.BOOT: "leather", "#2B2A2E": "leather", R.LEATHER: "leather", R.WOOD: "wood",
+                           R.GUNMETAL: "iron", R.STEEL: "iron", BRASS: "bronze", "team": "cloth"})
 
 
 def _smg(rig, joint):
@@ -57,7 +75,7 @@ def _smg(rig, joint):
     for i in range(4):                                                               # cooling holes
         c = sface.hit(gx + 13.5 + 3.0 * i, gz + 1.6)
         sface.decal(g, c, F.ellipse(0, 0, 0.7, 0.7, 8), 0.3)
-    rig.part(joint, g, "#1E1C1C", outline=0, highlight=False)
+    rig.part(joint, g, HOLE, outline=0, highlight=False)
     g = Geo().blob((gx + 7.0, gy - 2.6, gz - 1.0), (1.5, 1.2, 5.2), p=3.0, rot=(0, -6, 0))   # magazine
     rig.part(joint, g, R.GUNMETAL, finish="metal", outline=0.7)
 
@@ -68,7 +86,10 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, hat="round", brow_angry=False, mouth_w=5.2, chevrons=1)
+    W.trooper(rig, hat=None, brow_angry=False, mouth_w=5.2, chevrons=1, boot=MW.BOOT)
+    MW.hat(rig, "round")                  # W3: a team-dark band round the helmet cover
+    MW.tunic_w3(rig, brace=None)          # W3: the tunic's team-dark hem, a side seam (the chest strap is his brace)
+    MW.cuffs(rig)
     g = Geo().capsule((7.6, -10.0, 33.0), (6.0, -8.0, 21.0), 1.4)                     # chest strap
     rig.part("torso", g, R.KHAKI, outline=0.5)
     KM.pouches(rig, "torso", [(10.4, -4.4, 26.6), (10.2, -0.2, 26.6), (10.0, 4.0, 26.6)], size=(1.6, 1.6, 3.2))
@@ -83,10 +104,34 @@ def build(rig):
     for dx, dz in ((0.0, 0.0), (-3.0, 3.0), (-6.0, 0.8)):
         g.capsule((G0[0] + 5.0 + dx, G0[1] - 3.5, G0[2] + 6.0 + dz), (G0[0] + 7.4 + dx, G0[1] - 3.5, G0[2] + 7.2 + dz), 0.9)
     rig.part("casing", g, BRASS, finish="metal", outline=0.4)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
 
 
-def hold(gx, gz, deg):
-    return R.hold2("gun", G0, FORE, gx, gz, deg)
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: never on the face or skin."""
+    rig.damage_spot_at("back", "torso", -10.0, 24.0, 8.0, "cloth", team=True)     # 77-80% (at (-7, 27): 35%)
+    rig.damage_spot_at("helmet", "hat", -3.0, 64.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("skirt", "hips", 5.0, 12.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 7.0, "cloth", kind="strip", team=True)
+
+
+def hold(gx, gz, deg, fore=FORE):
+    return R.hold2("gun", G0, fore, gx, gz, deg)
+
+
+# aimed bursts (queue item 44, ageborn_art/aimed.py): a turn of `turn` degrees up tips the gun up about the grip,
+# which rises up the chest and draws back; he leans back into it and looks up along it; the far hand slides back
+# along the gun as it climbs (the arm's reach); the casings leave the raised breech.
+AIM_LEAN, AIM_RISE, AIM_DRAW, AIM_HEAD, AIM_FORE = 0.22, 0.11, 0.05, 0.26, 0.04
+AIM_W = [0.0, 0.5, 0.9, 1.0, 1.0, 0.8, 0.4, 0.0]
+
+
+def _aimed(gx, gz, deg, t, turn):
+    """(grip x, grip z, torso-space gun angle, torso lean, far-hand distance) of a burst turned `turn` up."""
+    up = max(0.0, turn)
+    lean = AIM_LEAN * turn
+    return gx - AIM_DRAW * up, gz + AIM_RISE * up, deg - t + turn - lean, t + lean, FORE - AIM_FORE * up
 
 
 PORT = (5.0, 26.0, 30.0)
@@ -130,18 +175,19 @@ A_X = [0.0, 0.5, 1.0, 1.0, -1.5, -0.5, 0.0, 0.0]
 A_Q = [0.0, -0.03, -0.05, 0.04, -0.06, -0.02, 0.0, 0.0]
 
 
-def _a_pose(f):
-    t = A_T[f]
-    pose = merge(hold(A_GX[f], A_GZ[f], A_DEG[f] - t), {
-        "torso": {"r": t}, "head": {"r": -0.4 * t + [0, -2, -4, -4, 4, 2, 0, 0][f]},
+def _a_pose(f, turn=0.0):
+    t0 = A_T[f]
+    gx, gz, deg, t, fore = _aimed(A_GX[f], A_GZ[f], A_DEG[f], t0, turn)
+    pose = merge(hold(gx, gz, deg, fore), {
+        "torso": {"r": t}, "head": {"r": -0.4 * t0 + [0, -2, -4, -4, 4, 2, 0, 0][f] + AIM_HEAD * turn},
         "hat": {"r": [0, 0, 0, 0, 5, 2, 0, 0][f], "z": [0, 0, 0, 0, 0.8, 0.3, 0, 0][f]},
         "thigh_r": {"r": [4, 14, 18, 18, 14, 12, 8, 4][f]}, "shin_r": {"r": [0, -8, -12, -12, -10, -8, -4, 0][f]},
         "thigh_l": {"r": [-4, -14, -18, -18, -16, -14, -10, -4][f]},
         "flash": {"show": f == 3},
     }, M.body_about((0, 0, 22), x=A_X[f], q=A_Q[f]))
     if f in (4, 5):
-        pose["casing"] = {"show": True, "x": [0, 0, 0, 0, -2, -6, 0, 0][f], "z": [0, 0, 0, 0, 3, 5, 0, 0][f],
-                          "r": [0, 0, 0, 0, 80, 200, 0, 0][f]}
+        pose["casing"] = {"show": True, "x": [0, 0, 0, 0, -2, -6, 0, 0][f] + gx - A_GX[f],
+                          "z": [0, 0, 0, 0, 3, 5, 0, 0][f] + gz - A_GZ[f], "r": [0, 0, 0, 0, 80, 200, 0, 0][f]}
     if f in (1, 2):
         pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
     elif f in (3, 4):
@@ -168,18 +214,20 @@ KB_T = [-6, -8, -8, 0, -4, -4]
 KB_Q = [-0.04, -0.06, 0.03, -0.08, -0.02, 0.0]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i in (0, 7):
         return _a_pose(i)
     k = i - 1
-    t = KB_T[k]
-    pose = merge(hold(KB_GX[k], KB_GZ[k], KB_DEG[k] - t), {
-        "torso": {"r": t}, "head": {"r": -0.3 * t + [-4, -6, -6, 6, 0, 0][k], "x": 1.4 if k in (1, 2) else 0.0,
-                                     "z": -1.2 if k in (1, 2) else 0.0},
+    t0 = KB_T[k]
+    gx, gz, deg, t, fore = _aimed(KB_GX[k], KB_GZ[k], KB_DEG[k], t0, turn)
+    pose = merge(hold(gx, gz, deg, fore), {
+        "torso": {"r": t}, "head": {"r": -0.3 * t0 + [-4, -6, -6, 6, 0, 0][k] + AIM_HEAD * turn,
+                                     "x": 1.4 if k in (1, 2) else 0.0, "z": -1.2 if k in (1, 2) else 0.0},
         "hat": {"r": [0, 0, 0, 7, 2, 0][k]}, "flash": {"show": k == 2},
     }, M.body_about((0, 0, 22), x=[0.5, 1.0, 1.0, -2.0, -1.0, 0.0][k], q=KB_Q[k]))
     if k in (3, 4):
-        pose["casing"] = {"show": True, "x": [0, 0, 0, -2, -6, 0][k], "z": [0, 0, 0, 3 - KB_DROP[k], 5 - KB_DROP[k], 0][k],
+        pose["casing"] = {"show": True, "x": [0, 0, 0, -2, -6, 0][k] + gx - KB_GX[k],
+                          "z": [0, 0, 0, 3 - KB_DROP[k], 5 - KB_DROP[k], 0][k] + gz - KB_GZ[k],
                           "r": [0, 0, 0, 80, 200, 0][k]}
     pose = KM.kneel(RIG, pose, LEGS, drop=KB_DROP[k], front=12.0)
     if k in (0, 1):
@@ -206,13 +254,21 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (both bursts; the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, lambda u, t: _a_pose(u, turn=t), AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, lambda u, t: _b_pose(u, turn=t), AIM_W, aims=("up45", "up70"))
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl, attack_ms=520, attack_impact_at=0.4808))
