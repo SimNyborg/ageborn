@@ -25,15 +25,31 @@ Animation standard (ANIM_SPEC 2026-10-02, G7 walker):
             rears back
   attack_c  SHOULDER RAM WITH A STEAM BLAST: turns away and leans back with the fist tucked to his
             chest (the held extreme), then lunges shoulder first, every valve blasting steam
+  charge    (items 51/52, Momentum; extras sheet) HEAD DOWN, STEAM TRAIL: a lumbering stomping run at twice the
+            walk's speed, the hull pitched forward and the ram couched like a battering ram, a puff on every step
+
+Detail standard (art round W3, Track INDUSTRIAL): the boiler built of riveted plates (darker seams with rivet columns
+above and below the armour band), the team band in armour plates (team-dark plate seams, brass rivets along its
+edges), soot round the furnace mouth and down from the chimney, a polished band on the piston rod; mech lifts.
+B1' (attack B, item 38's tossed clips): the uppercut's contact is on the impact step (the fist up under the foe's
+chin, (47.2, 52.2) lu; it showed the skyward finish over the golem's own dome), the skyward finish follows.
+Damage spots (mech: dents, scratches, steam; posed frames measured): the shoulder dome (r 8), the knuckle plate,
+the armour band's back, the boiler, the near shin; steam from the chimney, sparks at the near knee.
+Teapot Golem (epic skin): glazed white porcelain with a soft blue floral trim, gilt bands and rivets, a gilt lid
+knob, the chimney become a curved spout with a gilt lip; the team band stays.
 """
 from ageborn_art import gait as GK
 import math
 
+from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
+from ageborn_art import kit_medieval as KM
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "steam_golem"
 GAIT_NAME = "walker"
@@ -59,14 +75,45 @@ SH_L = (2.0, 25.0, 72.0)
 UP_L, FORE_L = 13.0, 15.0
 FIST = (SH_R[0], SH_R[1], SH_R[2] - UP_L - FORE_L - 10.0)
 CHIMNEY = (-16.0, 6.0, 80.0)
+SEAM = "#3E4349"            # W3: the boiler's plate seams (darker than IRON_DK, so they read on the plates)
+SOOT_IRON = "#3B3A3D"       # soot round the furnace and under the chimney
+ROD_HI = "#A9B0B8"          # the piston rod's polished band
+
+# the detail standard (art round W3): the big units' lifts; iron, copper, brass, glass and the glowing fire apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.0           # rivet rows, brass and the polished rod already shine (and the porcelain skin)
+LOOK_SHADE = IW.SHADE_BIG
+LOOK_RIM = dict(IW.RIM_SOLDIER, lift=0.6)
+MATERIAL_KINDS = IW.kinds({I.IRON: "iron", I.IRON_LT: "iron", I.IRON_DK: "iron", SEAM: "iron", SOOT_IRON: "iron",
+                           ROD_HI: "iron", I.COAL: "iron", I.COAL_LT: "iron", "#4A3A33": "iron", I.COPPER: "bronze",
+                           I.BRASS: "bronze", I.BRASS_LT: "bronze", "#8A3A2A": "polymer", KI.CREAM: "ceramic",
+                           I.EMBER: "energy", I.FIRE: "energy", I.FLASH: "energy", I.STEAM: "cloth",
+                           "team": "iron"})
+
+# Teapot Golem (epic skin, DESIGN A5.8): glazed porcelain with a soft blue floral trim and gilt; the team band stays
+PORCELAIN, PORCELAIN_LT, PORCELAIN_DK = "#D9D2C4", "#D0C9BA", "#C3BBAA"     # an ivory glaze (pure white read
+#                                                                                 as a cut-out, all shine)
+GILT, GILT_LT, BLUE = "#C9B385", "#D6C396", "#8A9AB8"
+SKINS = {"teapot_golem": {
+    "palette": IW.skin_palette({I.IRON: PORCELAIN, I.IRON_LT: PORCELAIN_LT, I.IRON_DK: PORCELAIN_DK,
+                                SEAM: "#C8C2B6", SOOT_IRON: "#B9C2D2", ROD_HI: "#FBFAF6", I.COPPER: GILT,
+                                I.BRASS: GILT, I.BRASS_LT: GILT_LT}),
+    # the glaze takes the stone kind's fine crackle (the ceramic speckle left the pale body under the micro floor)
+    "kinds": IW.kinds({PORCELAIN: "stone", PORCELAIN_LT: "stone", PORCELAIN_DK: "stone", "#C8C2B6": "ceramic",
+                       "#B9C2D2": "ceramic", "#FBFAF6": "ceramic", GILT: "gold", GILT_LT: "gold", BLUE: "ceramic"})}}
 
 
 RIG = None
+MET = "metal"
 
 
 def build(rig):
     global RIG
     RIG = rig
+    global MET
+    # the Teapot's glaze is glossy, not metal: a tighter highlight on the pale ivory (the metal finish's broad
+    # highlights took its highlight share over the audit's 0.10)
+    MET = "gloss" if getattr(rig, "skin", None) == "teapot_golem" else "metal"
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("hips", "body", (0, 0, HIP_Z))
     rig.joint("hull", "hips", BOILER)
@@ -79,37 +126,37 @@ def build(rig):
         sy = 1 if s == "r" else -1
         kz = HIP_Z - THIGH
         g = Geo().capsule((0, y, HIP_Z), (0, y, kz), 6.4, 5.8)
-        rig.part(f"thigh_{s}", g, I.IRON_DK, finish="metal")
+        rig.part(f"thigh_{s}", g, I.IRON_DK, finish=MET)
         g = Geo().blob((1.0, y - 1.0 * sy, HIP_Z - 6.0), (7.4, 6.8, 7.0), p=2.8)
         rig.part(f"thigh_{s}", g, team=True)
         g = Geo().lathe([(0, -3.4), (5.4, -3.2), (5.8, 0), (5.4, 3.2), (0, 3.4)], (1.0, y, kz), (1.0, y - sy, kz),
                         segs=18)
-        rig.part(f"shin_{s}", g, I.COPPER, finish="metal", outline=0.8)
+        rig.part(f"shin_{s}", g, I.COPPER, finish=MET, outline=0.8)
         g = Geo().capsule((0, y, kz), (0, y, ANK_REST + 1.0), 5.8, 6.8)
-        rig.part(f"shin_{s}", g, I.IRON, finish="metal")
+        rig.part(f"shin_{s}", g, I.IRON, finish=MET)
         g = Geo()
         I.rivets(g, [(4.6, y - 3.8 * sy, kz - 6.0), (5.4, y - 3.4 * sy, kz - 12.0)], r=0.9)
-        rig.part(f"shin_{s}", g, I.IRON_LT, finish="metal", outline=0)
+        rig.part(f"shin_{s}", g, I.IRON_LT, finish=MET, outline=0)
         a = ANK_REST
         g = Geo().blob((3.6, y, a - 2.6), (11.8, 8.2, 3.4), p=3.4, taper=(1.0, 0.85))
-        rig.part(f"foot_{s}", g, I.IRON_DK, finish="metal")
+        rig.part(f"foot_{s}", g, I.IRON_DK, finish=MET)
         g = Geo()
         I.rivets(g, [(dx, y - 8.2 * sy, a - 2.4) for dx in (-4.0, 2.0, 8.0)], r=0.9)
-        rig.part(f"foot_{s}", g, I.BRASS_LT, finish="metal", outline=0)
+        rig.part(f"foot_{s}", g, I.BRASS_LT, finish=MET, outline=0)
     rig.track("_foot", "foot_r", (3.6, LEG_Y["r"], ANK_REST - 5.0))
     rig.track("_foot_l", "foot_l", (3.6, LEG_Y["l"], ANK_REST - 5.0))
 
     # the boiler belly: iron barrel, copper bands, team armour band, firebox with a glowing grate
     hx, hy, hz = BOILER
     g = Geo().blob((0, 0, hz), (25.0, 23.0, 24.0), p=2.6, taper=(0.86, 0.94))
-    rig.part("hull", g, I.IRON, finish="metal")
+    rig.part("hull", g, I.IRON, finish=MET)
     g = Geo().blob((0.3, 0, hz - 1.0), (25.6, 23.6, 24.4), p=2.6, taper=(0.86, 0.94))
     g.clip((0, 0, hz - 12.0), (0, 0, -1)).clip((0, 0, hz + 4.0), (0, 0, 1))
     rig.part("hull", g, team=True)
     g = Geo()
     for z in (hz + 8.0, hz - 16.0):
         g.blob((0.3, 0, z), (25.4 * (0.93 if z < hz else 0.99), 23.4, 1.6), p=2.6)
-    rig.part("hull", g, I.COPPER, finish="metal", outline=0.6)
+    rig.part("hull", g, I.COPPER, finish=MET, outline=0.6)
     # rivet rows along the top and bottom bands (front half, facing the camera)
     g = Geo()
     for z in (hz + 11.0, hz - 19.0):
@@ -117,7 +164,7 @@ def build(rig):
         for a in range(-150, -20, 18):
             t = math.radians(a)
             g.sphere((rr * math.cos(t) * 1.0, rr * 0.93 * math.sin(t), z), 1.1, cuts=2)
-    rig.part("hull", g, I.IRON_LT, finish="metal", outline=0)
+    rig.part("hull", g, I.IRON_LT, finish=MET, outline=0)
     # the furnace face on the boiler front (turned toward the camera): a dark rounded furnace
     # mouth with a glowing grate of horizontal bars and two angry glowing eye slits above it
     ang = math.radians(-42.0)
@@ -128,7 +175,7 @@ def build(rig):
         return (24.2 * nx + ux * u + nx * d, 22.4 * ny + uy * u + ny * d, hz + v)
     g = Geo().lathe([(0, 0), (11.4, 0), (12.2, 1.8), (11.2, 3.2), (0, 3.4)], on(0, -5.0, -1.8), on(0, -5.0, 1.6),
                     segs=24, squash=(1.0, 0.72))
-    rig.part("hull", g, I.COAL_LT, finish="metal", outline=0.8)
+    rig.part("hull", g, I.COAL_LT, finish=MET, outline=0.8)
     rig.joint("fire", "hull", on(0, -5.0, 1.8))
     g = Geo().lathe([(0, 0), (9.0, 0), (8.8, 0.6), (0, 0.8)], on(0, -5.0, 1.4), on(0, -5.0, 2.4), segs=24,
                     squash=(1.0, 0.66))
@@ -148,7 +195,7 @@ def build(rig):
     g = Geo()
     for sgn in (-1, 1):
         g.blob(on(7.4 * sgn, 13.4, 0.8), (4.6, 4.6, 1.4), p=2.6, rot=(0, 0, 0))
-    rig.part("hull", g, I.IRON_DK, finish="metal", outline=0.6)          # brow plates
+    rig.part("hull", g, I.IRON_DK, finish=MET, outline=0.6)          # brow plates
     rig.joint("eyes_x", "hull", on(0, 9.0, 1.0), hidden=True)
     g = Geo()
     for sgn in (-1, 1):
@@ -164,18 +211,26 @@ def build(rig):
     rig.joint("bolt", "hull", (18.0, -16.0, hz + 2.0), hidden=True)
     g = Geo().blob((18.0, -18.0, hz + 2.0), (1.8, 1.4, 1.8), p=2.6)
     g.capsule((18.0, -16.5, hz + 2.0), (18.0, -14.0, hz + 2.0), 0.8)
-    rig.part("bolt", g, I.BRASS_LT, finish="metal", outline=0.6)
+    rig.part("bolt", g, I.BRASS_LT, finish=MET, outline=0.6)
     I.fuse_spark(rig, "hull", (20.0, -22.0, hz + 6.0), size=2.2, name="hitspark", seed=4, hidden=True)
     for s_ in ("r", "l"):
         I.steam_puff(rig, f"shin_{s_}", (4.0, LEG_Y[s_] - 6.0, HIP_Z - THIGH), size=0.9, name=f"ksteam_{s_}")
-    # the chimney on the back and the pennant pole behind it
+    # the chimney on the back and the pennant pole behind it (the Teapot Golem's chimney is a curved spout)
     cx, cy, cz = CHIMNEY
-    g = Geo()
-    I_cyl = [(4.4, 0), (4.6, 2.0), (4.0, 20.0), (5.8, 22.0), (6.2, 26.0), (5.0, 27.0), (3.6, 26.4)]
-    g.lathe(I_cyl, (cx, cy, cz), (cx - 3.0, cy, cz + 27.0), segs=20)
-    rig.part("hull", g, I.COAL_LT, finish="metal")
+    teapot = getattr(rig, "skin", None) == "teapot_golem"
+    if teapot:
+        _spout(rig)
+    else:
+        g = Geo()
+        I_cyl = [(4.4, 0), (4.6, 2.0), (4.0, 20.0), (5.8, 22.0), (6.2, 26.0), (5.0, 27.0), (3.6, 26.4)]
+        g.lathe(I_cyl, (cx, cy, cz), (cx - 3.0, cy, cz + 27.0), segs=20)
+        rig.part("hull", g, I.COAL_LT, finish=MET)
+        # W3: a second copper band and soot blackening the chimney's mouth
+        g = Geo().lathe([(6.4, -0.6), (6.5, 0), (6.4, 0.6)], (cx - 2.7, cy, cz + 24.6), (cx - 2.8, cy, cz + 25.6),
+                        segs=18)
+        rig.part("hull", g, SOOT_IRON, outline=0)
     g = Geo().lathe([(5.2, -1.0), (5.5, 0), (5.2, 1.0)], (cx - 1.0, cy, cz + 9.0), (cx - 1.1, cy, cz + 10.0), segs=18)
-    rig.part("hull", g, I.COPPER, finish="metal", outline=0.5)
+    rig.part("hull", g, I.COPPER, finish=MET, outline=0.5)
     I.steam_puff(rig, "hull", (cx - 3.0, cy - 3.0, cz + 31.0), size=1.5, name="puff")
     I.steam_puff(rig, "hull", (cx - 4.0, cy - 3.0, cz + 38.0), size=1.1, name="puff2")
 
@@ -184,15 +239,15 @@ def build(rig):
     rig.joint("head", "hull", (8.0, 0, hz + 22.0))
     g = Geo().blob((6.0, 0, hz + 23.0), (13.0, 12.4, 8.4), p=2.3)
     g.clip((6.0, 0, hz + 18.0), (0, 0, -1))
-    rig.part("head", g, I.IRON_LT, finish="metal")
+    rig.part("head", g, I.IRON_LT, finish=MET)
     g = Geo()
     for a_ in range(-150, -20, 26):
         t = math.radians(a_)
         g.sphere((6.0 + 12.4 * math.cos(t), 11.8 * math.sin(t), hz + 21.0), 0.9, cuts=2)
-    rig.part("head", g, I.BRASS_LT, finish="metal", outline=0)
+    rig.part("head", g, I.BRASS_LT, finish=MET, outline=0)
     g = Geo().sphere((5.0, 0, hz + 31.4), 2.6, cuts=3)
     g.capsule((12.0, -4.0, hz + 27.0), (13.0, -4.0, hz + 33.0), 1.3)
-    rig.part("head", g, I.COPPER, finish="metal", outline=0.5)
+    rig.part("head", g, I.COPPER, finish=MET, outline=0.5)
 
     # far arm: a smaller clamp
     rig.joint("arm_l", "hull", SH_L)
@@ -201,14 +256,14 @@ def build(rig):
     g = Geo().sphere((x, y, z), 7.6, cuts=4)
     rig.part("arm_l", g, team=True)
     g = Geo().blob((x - 1.0, y, z + 6.0), (9.0, 8.0, 2.0), p=2.8)             # shoulder plate
-    rig.part("arm_l", g, I.IRON_DK, finish="metal", outline=0.6)
+    rig.part("arm_l", g, I.IRON_DK, finish=MET, outline=0.6)
     I.pennant(rig, "arm_l", (x - 3.0, y, z + 7.0), 34.0, length=18.0, w=10.0, max_deg=18)
     g = Geo().capsule((x, y, z), (x, y, z - UP_L), 4.2)
-    rig.part("arm_l", g, I.IRON_DK, finish="metal")
+    rig.part("arm_l", g, I.IRON_DK, finish=MET)
     g = Geo().capsule((x, y, z - UP_L), (x, y, z - UP_L - FORE_L), 6.0, 5.2)
     g.lathe([(2.4, 0), (1.8, 4.0), (0, 7.0)], (x + 2.6, y, z - UP_L - FORE_L), (x + 5.0, y, z - UP_L - FORE_L - 7.0), segs=10)
     g.lathe([(2.4, 0), (1.8, 4.0), (0, 7.0)], (x - 2.6, y, z - UP_L - FORE_L), (x - 4.0, y, z - UP_L - FORE_L - 7.5), segs=10)
-    rig.part("fore_l", g, I.IRON, finish="metal")
+    rig.part("fore_l", g, I.IRON, finish=MET)
 
     # near arm: shoulder dome (team), piston cylinder, ram, riveted fist with a team knuckle plate
     rig.joint("arm_r", "hull", SH_R)
@@ -220,48 +275,133 @@ def build(rig):
     g = Geo()
     I.rivets(g, [(x + 9.0 * math.cos(math.radians(a)), y - 8.0, z + 1.0 + 8.0 * math.sin(math.radians(a)))
                  for a in (20, 60, 100, 140)], r=1.0)
-    rig.part("arm_r", g, I.IRON_LT, finish="metal", outline=0)
+    rig.part("arm_r", g, I.IRON_LT, finish=MET, outline=0)
     g = Geo().capsule((x, y, z), (x, y, z - UP_L), 6.2, 5.8)
-    rig.part("arm_r", g, I.IRON_DK, finish="metal")
+    rig.part("arm_r", g, I.IRON_DK, finish=MET)
     g = Geo().lathe([(0, -3.6), (5.6, -3.4), (6.0, 0), (5.6, 3.4), (0, 3.6)], (x, y, z - UP_L), (x, y - 1, z - UP_L),
                     segs=18)
-    rig.part("fore_r", g, I.COPPER, finish="metal", outline=0.7)
+    rig.part("fore_r", g, I.COPPER, finish=MET, outline=0.7)
     g = Geo().lathe([(7.8, 0), (8.6, 1.2), (8.6, FORE_L - 3.0), (7.8, FORE_L - 1.0), (5.0, FORE_L)],
                     (x, y, z - UP_L - 1.0), (x, y, z - UP_L - FORE_L - 1.0), segs=20)
-    rig.part("fore_r", g, I.IRON, finish="metal")
+    rig.part("fore_r", g, I.IRON, finish=MET)
     g = Geo().capsule((x + 5.0, y - 4.0, z - UP_L - 4.0), (x + 7.0, y - 4.0, z - UP_L - 1.0), 1.4)   # valve
-    rig.part("fore_r", g, I.BRASS, finish="metal", outline=0.5)
+    rig.part("fore_r", g, I.BRASS, finish=MET, outline=0.5)
     fz = z - UP_L - FORE_L
     g = Geo().capsule((x, y, fz + 26.0), (x, y, fz - 3.0), 3.2)          # the piston rod (slides out)
-    rig.part("ram", g, I.IRON_LT, finish="metal", outline=0.8)
+    rig.part("ram", g, I.IRON_LT, finish=MET, outline=0.8)
+    g = Geo().capsule((x + 1.4, y - 2.9, fz + 24.0), (x + 1.4, y - 2.9, fz - 1.0), 0.55, segs=8, rings=2)
+    rig.part("ram", g, ROD_HI, finish=MET, outline=0)          # W3: the rod's polished band
     g = Geo()
     for dz in (2.0, 8.0):
         g.lathe([(3.4, -0.6), (3.8, 0), (3.4, 0.6)], (x, y, fz - dz), (x, y, fz - dz + 1), segs=14)
-    rig.part("ram", g, I.BRASS_LT, finish="metal", outline=0.4)
+    rig.part("ram", g, I.BRASS_LT, finish=MET, outline=0.4)
     g = Geo().blob((x, y, fz - 10.0), (13.4, 11.6, 9.6), p=3.4)
-    rig.part("ram", g, I.IRON_DK, finish="metal")
+    rig.part("ram", g, I.IRON_DK, finish=MET)
     g = Geo()
     for dx in (-7.5, -2.5, 2.5, 7.5):   # knuckles
         g.blob((x + dx, y - 1.0, fz - 19.0), (2.5, 10.4, 2.8), p=2.6)
-    rig.part("ram", g, I.IRON, finish="metal", outline=0.6)
+    rig.part("ram", g, I.IRON, finish=MET, outline=0.6)
     g = Geo().blob((x, y - 11.8, fz - 10.0), (11.0, 1.4, 7.0), p=3.2)
     rig.part("ram", g, team=True, outline=0.7)
     g = Geo()
     I.rivets(g, [(x + dx, y - 13.4, fz - 10.0 + dz) for dx in (-7.6, 7.6) for dz in (-4.6, 4.6)], r=1.1)
-    rig.part("ram", g, I.BRASS_LT, finish="metal", outline=0)
+    rig.part("ram", g, I.BRASS_LT, finish=MET, outline=0)
     rig.track("fist", "ram", FIST)
     I.fuse_spark(rig, "ram", (x, y - 3.0, fz - 22.0), size=2.6, name="sparks", seed=2, hidden=True)
     I.steam_puff(rig, "fore_r", (x + 8.0, y - 4.0, z - UP_L - 2.0), size=1.6, name="steam")
-    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
-    # the iron boiler's shoulder above the near arm and its team band beside the furnace, the ram fist's knuckle
-    # plate, the near shin, the dome cap; steam from the chimney and sparks at the near knee
-    rig.damage_spot_at("boiler", "hull", -10.0, 78.0, 6.0, "metal", fill="#5B6168")
-    rig.damage_spot_at("band", "hull", 22.0, 54.0, 5.0, "metal", team=True)
+    _boiler_detail(rig, getattr(rig, "skin", None) == "teapot_golem")
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, mech: dents, scratches, steam; never on the face), measured in the
+    posed frames: the team shoulder dome (the biggest team field the ram and the arms leave clear: its centre on team
+    in every base frame, 0.93 of an r 8 mark on team; the armour band behind the near arm is broken up by it, 0.19), the
+    ram fist's knuckle plate, the armour band's back, the boiler's iron shoulder above the near arm, the near shin
+    (five marks: the mech family's representative, tests/integrity/damageBundles); steam from the chimney and sparks
+    at the near knee."""
+    rig.damage_spot_at("dome", "arm_r", -7.0, 65.0, 8.0, "metal", team=True)
     rig.damage_spot_at("ram", "ram", -14.0, 22.0, 6.0, "metal", team=True)
+    rig.damage_spot_at("band", "hull", -23.5, 51.5, 5.0, "metal", team=True)
+    rig.damage_spot_at("boiler", "hull", -10.0, 78.0, 6.0, "metal", fill="#5B6168")
     rig.damage_spot_at("shin", "shin_r", -6.0, 4.0, 5.0, "metal", fill="#5B6168")
-    rig.damage_spot_at("dome", "head", 6.0, 82.0, 5.0, "metal", fill="#767D86")
     rig.damage_spot("stack", "hull", (-19.0, 6.0, 107.0), 5.0, "steam", kind="emit", normal=(0, 0, 1))
     rig.damage_spot("knee", "shin_r", (2.0, -19.0, 19.0), 4.0, "spark", kind="emit", normal=(0, -1, 0))
+
+
+def _boiler_detail(rig, teapot):
+    """W3: the boiler built of riveted plates, the team band in armour plates, soot (the Teapot Golem: a blue
+    floral trim instead of the soot)."""
+    hz = BOILER[2]
+    boiler = Geo().blob((0, 0, hz), (25.0, 23.0, 24.0), p=2.6, taper=(0.86, 0.94))
+    band = Geo().blob((0.3, 0, hz - 1.0), (25.6, 23.6, 24.4), p=2.6, taper=(0.86, 0.94))
+    band.clip((0, 0, hz - 12.0), (0, 0, -1)).clip((0, 0, hz + 4.0), (0, 0, 1))
+    face = F.Face(rig, "hull", [boiler, band])
+
+    def surf(a, dz):
+        """A point on the boiler at the angle a (deg, about z; -90 = the near side) and height hz + dz."""
+        s = (1.0 - min(0.98, abs(dz / 24.0)) ** 2.6) ** (1 / 2.6)
+        r = 1.0 / ((abs(math.cos(math.radians(a))) / 25.0) ** 2.6 + (abs(math.sin(math.radians(a))) / 23.0) ** 2.6) ** (1 / 2.6)
+        return (r * s * math.cos(math.radians(a)), r * s * math.sin(math.radians(a)), hz + dz)
+
+    def scr(p):
+        return KM.scr(face, p)
+    seams_up, seams_lo, band_seams, rivs = [], [], [], []
+    for a in (-162.0, -128.0, -96.0):
+        seams_up.append([scr(surf(a, dz)) for dz in (5.4, 9.0, 13.0, 17.0, 19.6)])
+        seams_lo.append([scr(surf(a, dz)) for dz in (-13.4, -16.0, -19.0)])
+        band_seams.append([scr(surf(a + 3.0, dz)) for dz in (-11.4, -7.0, -3.0, 3.4)])
+        rivs += [scr(surf(a + 4.0, dz)) for dz in (6.6, 10.4, 14.2)]
+    for dz in (-11.0, 3.0):     # rivets along the band's edges
+        rivs += [scr(surf(a, dz)) for a in (-170.0, -150.0, -138.0, -116.0, -104.0, -84.0)]
+    if not teapot:
+        IW.folds(rig, "hull", face, seams_up + seams_lo, w=1.1, team=False, fill=SEAM)
+        IW.folds(rig, "hull", face, band_seams, w=1.1, team=True)
+        IW.rivets(rig, "hull", face, rivs, r=0.95, fill=I.BRASS_LT)
+        # soot: over the furnace mouth (it breathes fire) and down the back under the chimney
+        ang = math.radians(-42.0)
+        nx, ny = math.cos(ang), math.sin(ang)
+        fx, fy = 24.2 * nx, 22.4 * ny
+        soot = [scr((fx - 2.0 * ny, fy + 2.0 * nx, hz + 3.0)) + (5.6, 1.6)]
+        soot += [scr(surf(-170.0, dz)) + (1.8, 3.2) for dz in (14.0,)]
+        IW.soot(rig, "hull", face, [(x, z, rx, rz) for x, z, rx, rz in soot], fill=SOOT_IRON)
+    else:
+        # a soft blue floral trim: double bands above and below the armour band, five-petal flowers with leaf
+        # sprigs between them on the upper boiler and smaller ones on the lower
+        lines = []
+        for dz in (6.4, 8.4, -13.6, -15.4):
+            lines.append([scr(surf(a, dz)) for a in (-178.0, -152.0, -126.0, -100.0, -78.0, -62.0)])
+        IW.folds(rig, "hull", face, lines, w=0.9, team=False, fill=BLUE)
+        g = Geo()
+        for a, dz, s in ((-166.0, 14.6, 1.25), (-136.0, 15.4, 1.35), (-106.0, 14.6, 1.25), (-150.0, -19.2, 0.9),
+                         (-120.0, -19.4, 0.9), (-90.0, -19.0, 0.9)):
+            cx, cz = scr(surf(a, dz))
+            for k in range(5):
+                u = math.radians(90 + 72 * k)
+                IW.field(g, face, F.ellipse(cx + 1.7 * s * math.cos(u), cz + 1.7 * s * math.sin(u), 1.15 * s, 1.15 * s,
+                                            10), 0.35)
+        for a0, a1, dz in ((-160.0, -142.0, 13.2), (-130.0, -112.0, 13.2)):   # leaf sprigs between the flowers
+            ribbon_pts = [scr(surf(a, dz + 1.6 * math.sin(math.pi * (a - a0) / (a1 - a0)))) for a in
+                          (a0, (a0 + a1) / 2, a1)]
+            IW.ribbon(g, face, ribbon_pts, 0.9, 0.35)
+        rig.part("hull", g, BLUE, outline=0, highlight=False)
+
+
+def _spout(rig):
+    """The Teapot Golem's spout where the chimney stands: a porcelain tube curving up and back from the boiler's
+    back, tapering to a flared gilt lip (the chimney's footprint, so the silhouette keeps its parity)."""
+    cx, cy, cz = CHIMNEY
+    g = Geo()
+    pts = [(cx + 1.0, cy, cz - 2.0), (cx - 1.0, cy, cz + 8.0), (cx - 2.4, cy, cz + 16.0), (cx - 2.0, cy, cz + 22.0),
+           (cx - 0.4, cy, cz + 26.0)]
+    rads = [5.2, 4.6, 4.0, 3.6, 3.3]
+    for (a, ra), (b, rb) in zip(zip(pts, rads), zip(pts[1:], rads[1:])):
+        g.capsule(a, b, ra, rb, segs=18, rings=3)
+    rig.part("hull", g, PORCELAIN, finish="gloss")
+    g = Geo().lathe([(3.0, 0), (4.6, 0.6), (5.4, 1.6), (4.8, 2.2), (3.0, 1.8)], (cx - 0.4, cy, cz + 25.4),
+                    (cx + 0.6, cy, cz + 27.4), segs=20)
+    rig.part("hull", g, GILT, finish=MET, outline=0.6)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -343,6 +483,46 @@ def _walk_clip():
     return M.walk_clip("walk", RIG, _walk, GAIT, "walker")
 
 
+# -- charge (items 51/52, Momentum "Piston Punch"; the extras sheet, pipeline.POSE_CLIPS) ----------------------
+# HEAD DOWN, STEAM TRAIL: the walk's stomp broken into a lumbering run at twice its speed (137.5 lu/s, 8 frames in
+# 560 ms, a hard contact every 280 ms), planted feet solved like the walk's. The hull pitches forward (the furnace
+# face leading, the eye slits narrowed, the fire roaring), the ram couched forward like a battering ram, the clamp
+# arm pumping, and the chimney blowing a puff on every step (the steam trail); the knees vent on each contact and
+# the pennant streams. The game plays it frame-locked at the charge's speed (the clip's gait meta, as for the walk).
+CHARGE_SPEED = 137.5
+CHARGE_N = 8
+CHARGE_GAIT = GK.Gait(CHARGE_N, 560, CHARGE_SPEED, GK.biped_feet(LEGS_G["l"], LEGS_G["r"], x_mid=2.0, ground=ANKLE_H),
+                      0.5, yaw_deg=YAW_DEG, lift=13.0, kick=3.0, reach=3.0, toe_off=12.0, heel_strike=6.0,
+                      lift_peak=0.42)
+# hips per frame of each half cycle: CONTACT (the jolt), DOWN (deep), PASSING, UP
+C_BOB = [-2.4, -5.2, -1.6, 1.0]
+C_LAG = [1.0, -2.4, -5.2, -1.6]
+
+
+def _charge(f, report=None):
+    h = f % 4
+    bob, lag = C_BOB[h], C_LAG[h]
+    p = 2 * math.pi * f / CHARGE_N
+    pose = merge(arms(-58 + 6 * math.cos(p), -64 + 6 * math.cos(p), -60 + 22 * math.cos(p - 0.9),
+                      -40 + 18 * math.cos(p - 0.9), 6.0 + 2.0 * max(0.0, -lag)), {
+        "hips": {"z": bob},
+        "hull": dict(r=-13.0 + 2.0 * math.cos(2 * p), rz=5.0 * math.sin(p), z=-0.5 * lag),
+        "head": {"r": -5.0 + 1.6 * lag, "z": -0.3 * lag},
+        "puff": {"show": True, "x": [-2, -6, -9, -4][h], "s": [1.0, 1.25, 1.35, 1.1][h], "z": [0, 2, 4, 1][h]},
+        "puff2": {"show": h in (1, 2), "x": [0, -10, -14, 0][h], "s": 1.15},
+        "ksteam_r": {"show": f == 0, "s": 1.0}, "ksteam_l": {"show": f == 4, "s": 1.0},
+        "foot_r": {"sz": 0.86 if f == 0 else 1.0}, "foot_l": {"sz": 0.86 if f == 4 else 1.0},
+        "gauge_needle": {"r": -70.0 + 6.0 * math.sin(2 * p)},
+        "eyes": {"sz": 0.62 if h == 0 else 0.72},     # narrowed, head down
+        "fire": {"s": 1.22 + 0.06 * math.cos(2 * p)},
+    })
+    return GK.solve(RIG, pose, CHARGE_GAIT.targets(f), report=report)
+
+
+def _charge_clip():
+    return M.walk_clip("charge", RIG, _charge, CHARGE_GAIT, "walker")
+
+
 # attack: 10 unique frames in the 12 heavy steps (moves.HEAVY_MELEE_MS; impact on step 6 at 570 ms)
 #        shift dip  coil HOLD smear smear IMP  shock follow recover
 RA = [-110, -130, -160, -178, -84, -38, -22, -24, -46, -86]
@@ -403,18 +583,21 @@ def _attack_clip():
 
 # -- attack B: rising uppercut piston ----------------------------------------------------------
 # unique frames: 0 = A shift, 1 dip, 2 coil low, 3 HOLD (crouched over, the ram cocked low behind
-# him), 4-5 smear (swinging up), 6 IMPACT (the piston fired skyward, the hull rearing back), 7 shock,
-# 8 follow, 9 = A recover. World angles in hull space.
+# him), 4-5 smear (swinging up and in), 6 IMPACT (the piston fires up into the foe's chest and chin, the
+# hull rearing), 7 shock (the fist carried on up, skyward), 8 follow, 9 = A recover. World angles in hull space.
+# W3 B1' (item 38's tossed clips): the impact step showed the skyward finish (the fist at (7.9, 122.0) lu, over the
+# golem's own dome); now the contact is on the impact step (the fist up under the foe's chin, about (45, 50) lu)
+# and the skyward finish follows on the shock step. Steps, durations and impactAt unchanged.
 #        dip  coil HOLD smear smear IMP  shock follow
-UB_RA = [-112, -116, -118, -96, -30, 34, 30, -30]
-UB_RF = [-110, -100, -96, -40, 20, 66, 62, -20]
-UB_RAM = [-2, -5, -7, 6, 18, 28, 24, 8]
-UB_HR = [-5, -11, -15, -6, 6, 12, 10, 4]
+UB_RA = [-112, -116, -118, -96, -44, -26, 34, 4]
+UB_RF = [-110, -100, -96, -40, -20, -7, 66, 30]
+UB_RAM = [-2, -5, -7, 6, 18, 28, 24, 10]
+UB_HR = [-5, -11, -15, -6, 2, 7, 12, 4]
 UB_RZ = [4, 8, 12, 4, -4, -8, -6, -2]
-UB_HX = [-1, -2, -3, 1, 4, 5, 4.5, 2]
-UB_HZ = [-3.5, -7.0, -9.0, -5.0, -1.0, 1.5, 0.5, -1.0]
-UB_LA = [-80, -70, -64, -96, -120, -136, -130, -110]
-UB_LF = [-40, -30, -26, -60, -90, -100, -96, -76]
+UB_HX = [-1, -2, -3, 1, 4, 5.5, 4.5, 2]
+UB_HZ = [-3.5, -7.0, -9.0, -5.0, -1.5, 0.5, 1.5, -1.0]
+UB_LA = [-80, -70, -64, -96, -116, -132, -136, -110]
+UB_LF = [-40, -30, -26, -60, -86, -98, -100, -76]
 UB_NEEDLE = [-30, -60, -95, -80, -60, -20, -10, -8]
 
 
@@ -579,5 +762,6 @@ def clips():
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
+        _charge_clip(),
     ]
     return M.check_variants(M.check_contract(cl, heavy=True))

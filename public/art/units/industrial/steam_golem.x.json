@@ -2,8 +2,8 @@
  "frames": {
   "steam_golem_attack_b_01": {
    "frame": {
-    "x": 478,
-    "y": 211,
+    "x": 296,
+    "y": 360,
     "w": 89,
     "h": 162
    },
@@ -26,8 +26,8 @@
   },
   "steam_golem_attack_b_01_team": {
    "frame": {
-    "x": 2,
-    "y": 681,
+    "x": 243,
+    "y": 667,
     "w": 82,
     "h": 125
    },
@@ -50,8 +50,8 @@
   },
   "steam_golem_attack_b_02": {
    "frame": {
-    "x": 92,
-    "y": 211,
+    "x": 503,
+    "y": 189,
     "w": 86,
     "h": 164
    },
@@ -74,8 +74,8 @@
   },
   "steam_golem_attack_b_02_team": {
    "frame": {
-    "x": 251,
-    "y": 681,
+    "x": 640,
+    "y": 667,
     "w": 76,
     "h": 117
    },
@@ -98,17 +98,17 @@
   },
   "steam_golem_attack_b_03": {
    "frame": {
-    "x": 474,
-    "y": 2,
-    "w": 84,
+    "x": 133,
+    "y": 189,
+    "w": 86,
     "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 94,
+    "x": 92,
     "y": 75,
-    "w": 84,
+    "w": 86,
     "h": 167
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "steam_golem_attack_b_03_team": {
    "frame": {
-    "x": 331,
-    "y": 681,
+    "x": 720,
+    "y": 667,
     "w": 71,
     "h": 115
    },
@@ -146,17 +146,17 @@
   },
   "steam_golem_attack_b_04": {
    "frame": {
-    "x": 218,
-    "y": 380,
-    "w": 78,
+    "x": 495,
+    "y": 360,
+    "w": 80,
     "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
+    "x": 100,
     "y": 82,
-    "w": 78,
+    "w": 80,
     "h": 160
    },
    "sourceSize": {
@@ -170,17 +170,17 @@
   },
   "steam_golem_attack_b_04_team": {
    "frame": {
-    "x": 460,
-    "y": 380,
-    "w": 69,
+    "x": 77,
+    "y": 527,
+    "w": 73,
     "h": 135
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 100,
     "y": 82,
-    "w": 69,
+    "w": 73,
     "h": 135
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "steam_golem_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 380,
+    "x": 593,
+    "y": 189,
     "w": 106,
-    "h": 161
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 104,
-    "y": 81,
+    "y": 79,
     "w": 106,
-    "h": 161
+    "h": 163
    },
    "sourceSize": {
     "w": 308,
@@ -218,18 +218,18 @@
   },
   "steam_golem_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 545,
-    "w": 83,
-    "h": 132
+    "x": 405,
+    "y": 527,
+    "w": 86,
+    "h": 133
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 107,
-    "y": 74,
-    "w": 83,
-    "h": 132
+    "x": 105,
+    "y": 75,
+    "w": 86,
+    "h": 133
    },
    "sourceSize": {
     "w": 308,
@@ -243,17 +243,17 @@
   "steam_golem_attack_b_06": {
    "frame": {
     "x": 2,
-    "y": 2,
-    "w": 94,
-    "h": 205
+    "y": 189,
+    "w": 127,
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 103,
-    "y": 37,
-    "w": 94,
-    "h": 205
+    "y": 75,
+    "w": 127,
+    "h": 167
    },
    "sourceSize": {
     "w": 308,
@@ -266,18 +266,18 @@
   },
   "steam_golem_attack_b_06_team": {
    "frame": {
-    "x": 384,
-    "y": 380,
-    "w": 72,
-    "h": 137
+    "x": 312,
+    "y": 527,
+    "w": 89,
+    "h": 133
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 66,
-    "w": 72,
-    "h": 137
+    "y": 71,
+    "w": 89,
+    "h": 133
    },
    "sourceSize": {
     "w": 308,
@@ -290,18 +290,18 @@
   },
   "steam_golem_attack_b_07": {
    "frame": {
-    "x": 211,
+    "x": 2,
     "y": 2,
-    "w": 88,
-    "h": 179
+    "w": 93,
+    "h": 183
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 93,
-    "y": 63,
-    "w": 88,
-    "h": 179
+    "x": 90,
+    "y": 59,
+    "w": 93,
+    "h": 183
    },
    "sourceSize": {
     "w": 308,
@@ -314,18 +314,18 @@
   },
   "steam_golem_attack_b_07_team": {
    "frame": {
-    "x": 545,
-    "y": 545,
-    "w": 71,
-    "h": 130
+    "x": 495,
+    "y": 527,
+    "w": 72,
+    "h": 132
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 74,
-    "w": 71,
-    "h": 130
+    "y": 71,
+    "w": 72,
+    "h": 132
    },
    "sourceSize": {
     "w": 308,
@@ -338,9 +338,9 @@
   },
   "steam_golem_attack_b_08": {
    "frame": {
-    "x": 100,
+    "x": 99,
     "y": 2,
-    "w": 107,
+    "w": 106,
     "h": 182
    },
    "rotated": false,
@@ -348,7 +348,7 @@
    "spriteSourceSize": {
     "x": 92,
     "y": 60,
-    "w": 107,
+    "w": 106,
     "h": 182
    },
    "sourceSize": {
@@ -362,18 +362,18 @@
   },
   "steam_golem_attack_b_08_team": {
    "frame": {
-    "x": 389,
-    "y": 545,
-    "w": 76,
-    "h": 130
+    "x": 720,
+    "y": 527,
+    "w": 75,
+    "h": 131
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 76,
-    "w": 76,
-    "h": 130
+    "x": 105,
+    "y": 75,
+    "w": 75,
+    "h": 131
    },
    "sourceSize": {
     "w": 308,
@@ -386,17 +386,17 @@
   },
   "steam_golem_attack_c_01": {
    "frame": {
-    "x": 2,
-    "y": 211,
-    "w": 86,
+    "x": 223,
+    "y": 189,
+    "w": 87,
     "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 96,
     "y": 77,
-    "w": 86,
+    "w": 87,
     "h": 165
    },
    "sourceSize": {
@@ -410,17 +410,17 @@
   },
   "steam_golem_attack_c_01_team": {
    "frame": {
-    "x": 89,
-    "y": 545,
-    "w": 67,
+    "x": 571,
+    "y": 527,
+    "w": 71,
     "h": 132
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
+    "x": 97,
     "y": 75,
-    "w": 67,
+    "w": 71,
     "h": 132
    },
    "sourceSize": {
@@ -434,18 +434,18 @@
   },
   "steam_golem_attack_c_02": {
    "frame": {
-    "x": 182,
-    "y": 211,
+    "x": 402,
+    "y": 189,
     "w": 97,
-    "h": 163
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 79,
+    "y": 78,
     "w": 97,
-    "h": 163
+    "h": 164
    },
    "sourceSize": {
     "w": 308,
@@ -458,17 +458,17 @@
   },
   "steam_golem_attack_c_02_team": {
    "frame": {
-    "x": 533,
-    "y": 380,
-    "w": 77,
+    "x": 228,
+    "y": 527,
+    "w": 80,
     "h": 134
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 99,
+    "x": 95,
     "y": 74,
-    "w": 77,
+    "w": 80,
     "h": 134
    },
    "sourceSize": {
@@ -482,8 +482,8 @@
   },
   "steam_golem_attack_c_03": {
    "frame": {
-    "x": 112,
-    "y": 380,
+    "x": 389,
+    "y": 360,
     "w": 102,
     "h": 161
    },
@@ -506,18 +506,18 @@
   },
   "steam_golem_attack_c_03_team": {
    "frame": {
-    "x": 160,
-    "y": 545,
-    "w": 81,
-    "h": 131
+    "x": 76,
+    "y": 667,
+    "w": 86,
+    "h": 130
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 92,
     "y": 78,
-    "w": 81,
-    "h": 131
+    "w": 86,
+    "h": 130
    },
    "sourceSize": {
     "w": 308,
@@ -530,17 +530,17 @@
   },
   "steam_golem_attack_c_04": {
    "frame": {
-    "x": 283,
-    "y": 211,
-    "w": 82,
+    "x": 98,
+    "y": 360,
+    "w": 85,
     "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 100,
     "y": 79,
-    "w": 82,
+    "w": 85,
     "h": 163
    },
    "sourceSize": {
@@ -554,17 +554,17 @@
   },
   "steam_golem_attack_c_04_team": {
    "frame": {
-    "x": 319,
-    "y": 545,
-    "w": 66,
+    "x": 2,
+    "y": 667,
+    "w": 70,
     "h": 131
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 105,
+    "x": 101,
     "y": 75,
-    "w": 66,
+    "w": 70,
     "h": 131
    },
    "sourceSize": {
@@ -578,8 +578,8 @@
   },
   "steam_golem_attack_c_05": {
    "frame": {
-    "x": 300,
-    "y": 380,
+    "x": 579,
+    "y": 360,
     "w": 80,
     "h": 159
    },
@@ -602,17 +602,17 @@
   },
   "steam_golem_attack_c_05_team": {
    "frame": {
-    "x": 469,
-    "y": 545,
-    "w": 72,
+    "x": 166,
+    "y": 667,
+    "w": 73,
     "h": 130
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 112,
+    "x": 111,
     "y": 79,
-    "w": 72,
+    "w": 73,
     "h": 130
    },
    "sourceSize": {
@@ -626,8 +626,8 @@
   },
   "steam_golem_attack_c_06": {
    "frame": {
-    "x": 369,
-    "y": 211,
+    "x": 187,
+    "y": 360,
     "w": 105,
     "h": 162
    },
@@ -650,8 +650,8 @@
   },
   "steam_golem_attack_c_06_team": {
    "frame": {
-    "x": 88,
-    "y": 681,
+    "x": 477,
+    "y": 667,
     "w": 79,
     "h": 123
    },
@@ -674,7 +674,7 @@
   },
   "steam_golem_attack_c_07": {
    "frame": {
-    "x": 385,
+    "x": 662,
     "y": 2,
     "w": 85,
     "h": 169
@@ -698,8 +698,8 @@
   },
   "steam_golem_attack_c_07_team": {
    "frame": {
-    "x": 171,
-    "y": 681,
+    "x": 560,
+    "y": 667,
     "w": 76,
     "h": 123
    },
@@ -722,7 +722,7 @@
   },
   "steam_golem_attack_c_08": {
    "frame": {
-    "x": 303,
+    "x": 305,
     "y": 2,
     "w": 78,
     "h": 178
@@ -746,18 +746,402 @@
   },
   "steam_golem_attack_c_08_team": {
    "frame": {
-    "x": 245,
-    "y": 545,
-    "w": 70,
+    "x": 799,
+    "y": 527,
+    "w": 71,
     "h": 131
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 109,
+    "x": 108,
+    "y": 82,
+    "w": 71,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_00": {
+   "frame": {
+    "x": 2,
+    "y": 360,
+    "w": 92,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 78,
+    "w": 92,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_00_team": {
+   "frame": {
+    "x": 404,
+    "y": 667,
+    "w": 69,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 98,
+    "w": 69,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_01": {
+   "frame": {
+    "x": 469,
+    "y": 2,
+    "w": 94,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 70,
+    "w": 94,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_01_team": {
+   "frame": {
+    "x": 329,
+    "y": 667,
+    "w": 71,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 104,
+    "w": 71,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_02": {
+   "frame": {
+    "x": 209,
+    "y": 2,
+    "w": 92,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 62,
+    "w": 92,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 527,
+    "w": 71,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 95,
+    "w": 71,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_03": {
+   "frame": {
+    "x": 567,
+    "y": 2,
+    "w": 91,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 69,
+    "w": 91,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_03_team": {
+   "frame": {
+    "x": 646,
+    "y": 527,
+    "w": 70,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 89,
+    "w": 70,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_04": {
+   "frame": {
+    "x": 703,
+    "y": 189,
+    "w": 100,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 78,
+    "w": 100,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_04_team": {
+   "frame": {
+    "x": 814,
+    "y": 360,
+    "w": 72,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 88,
+    "w": 72,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_05": {
+   "frame": {
+    "x": 751,
+    "y": 2,
+    "w": 84,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 69,
+    "w": 84,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_05_team": {
+   "frame": {
+    "x": 737,
+    "y": 360,
+    "w": 73,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 87,
+    "w": 73,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_06": {
+   "frame": {
+    "x": 387,
+    "y": 2,
+    "w": 78,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 61,
+    "w": 78,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_06_team": {
+   "frame": {
+    "x": 663,
+    "y": 360,
+    "w": 70,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
     "y": 82,
     "w": 70,
-    "h": 131
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_07": {
+   "frame": {
+    "x": 314,
+    "y": 189,
+    "w": 84,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 69,
+    "w": 84,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.44481,
+    "y": 0.90476
+   }
+  },
+  "steam_golem_charge_07_team": {
+   "frame": {
+    "x": 154,
+    "y": 527,
+    "w": 70,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 86,
+    "w": 70,
+    "h": 135
    },
    "sourceSize": {
     "w": 308,
@@ -825,6 +1209,26 @@
    "steam_golem_attack_09_team",
    "steam_golem_attack_09_team",
    "steam_golem_attack_09_team"
+  ],
+  "charge": [
+   "steam_golem_charge_00",
+   "steam_golem_charge_01",
+   "steam_golem_charge_02",
+   "steam_golem_charge_03",
+   "steam_golem_charge_04",
+   "steam_golem_charge_05",
+   "steam_golem_charge_06",
+   "steam_golem_charge_07"
+  ],
+  "charge_team": [
+   "steam_golem_charge_00_team",
+   "steam_golem_charge_01_team",
+   "steam_golem_charge_02_team",
+   "steam_golem_charge_03_team",
+   "steam_golem_charge_04_team",
+   "steam_golem_charge_05_team",
+   "steam_golem_charge_06_team",
+   "steam_golem_charge_07_team"
   ]
  },
  "meta": {
@@ -833,15 +1237,15 @@
   "image": "steam_golem.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 640,
-   "h": 808
+   "w": 896,
+   "h": 800
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.steam_golem",
    "name": "Steam Golem",
    "heightLu": 110,
-   "widthLu": 54.5,
+   "widthLu": 55.3,
    "pxPerLu": 1.23,
    "feetPx": [
     137.0,
@@ -921,20 +1325,20 @@
         22.9
        ],
        [
-        38.8,
-        71.0
+        39.7,
+        35.1
        ],
        [
-        7.9,
-        122.0
+        47.2,
+        52.2
        ],
        [
-        13.7,
-        115.3
+        8.1,
+        119.4
        ],
        [
-        31.7,
-        44.6
+        30.4,
+        79.6
        ],
        [
         -0.7,
@@ -1025,6 +1429,70 @@
       ]
      },
      "holdStep": 3
+    },
+    "charge": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "durationMs": 560,
+     "gait": "walker",
+     "gaitSpeedLuPerS": 137.5,
+     "cycleMs": 560,
+     "anchorsLu": {
+      "fist": [
+       [
+        10.6,
+        17.0
+       ],
+       [
+        11.9,
+        10.6
+       ],
+       [
+        9.4,
+        8.9
+       ],
+       [
+        5.1,
+        16.7
+       ],
+       [
+        2.5,
+        15.5
+       ],
+       [
+        1.5,
+        9.4
+       ],
+       [
+        3.7,
+        8.6
+       ],
+       [
+        7.3,
+        17.4
+       ]
+      ]
+     }
     }
    },
    "team": {

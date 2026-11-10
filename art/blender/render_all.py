@@ -45,6 +45,12 @@ AGE_OF = {
                   "highlander", "powder_monkey", "voltigeurs", "blunderbuss", "dragoon", "coehorn_crew",
                   "wall_gunner", "drummer_boy", "bagpiper", "rocket_cart", "hussar", "mesmerist",
                   "grand_marshal"],
+    "industrial": ["carbineer", "flare_spotter", "harpoon_gunner", "land_dreadnought", "riveter", "sapper",
+                   "steam_golem",
+                   # W5 Industrial wave (CONTENT_PLAN 5.5)
+                   "coal_miners", "iron_mantlet", "dispatch_rider", "bomb_bowler", "steam_tractor",
+                   "trench_mortar", "steam_driller", "bandmaster", "clockwork_tinker", "armoured_car",
+                   "alpine_climber", "spark_scientist", "armoured_train", "clockwork_soldier"],
     "modern": ["bazooka_trooper", "behemoth_tank", "gyrocopter", "radio_operator", "rifleman",
                "tankette", "trench_raider",
                # W6 Modern wave (CONTENT_PLAN 5.6)

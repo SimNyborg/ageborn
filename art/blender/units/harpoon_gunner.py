@@ -22,15 +22,26 @@ Animation standard (ANIM_SPEC 2026-10-02):
             (the held extreme, holdLoop), fires and the kick rocks him back onto his heel, cranks
             the reel on one knee and rises (the appendix's standing shoulder shot would read like
             A at 62 px, so B changes the body level instead)
+
+Detail standard (art round W3, Track INDUSTRIAL): the pea jacket as worn wool (a team-dark yoke and back seam, a
+pocket flap and a team-dark hem band on its skirt), the watch cap knitted (ribs in a darker wool over a mid-grey
+knit with a lit crown; the coal knit read as a hole; a deeper team cuff and a team pompom), the harpoon gun's
+barrel riveted (brass rivet rows by the
+copper bands) with a team-dark middle sleeve. Aimed (item 44): both shots up 45 and 70 degrees (aimed.variants on
+the barrel: the gun rises on his shoulder, he leans back under it). Damage spots (posed frames measured): the
+jacket's back (r 7.5), the barrel, the near sleeve, the cap, a strip torn from the jacket's hem.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "harpoon_gunner"
 GAIT_NAME = "biped"
@@ -52,6 +63,20 @@ HEAD_LEN = 14.0
 REEL = (-1.0, TZ - 10.5)
 CRANK_R = 5.6
 APRON = "#3C3A3A"
+KNIT = "#5A5652"            # W3: the watch cap's knit (a mid grey; the coal knit read as a hole at 62 px)
+KNIT_RIB = "#45423F"
+
+# the detail standard (art round W3): the pilot's soldier lifts; wool, rope, leather, rubber, iron, copper apart
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 1.2           # under the soldier lift (1.35): goggles, rivet rows and copper bands shine
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+MATERIAL_KINDS = IW.kinds({I.SKIN: "skin", I.HAIR_RED: "fur", KNIT: "cloth", KNIT_RIB: "cloth", I.COAL_LT: "cloth",
+                           I.CREAM: "cloth", I.CREAM_DK: "cloth", I.DENIM: "cloth", I.LEATHER: "leather",
+                           I.LEATHER_DK: "leather", I.BOOT: "leather", I.COAL: "leather", APRON: "polymer",
+                           I.IRON: "iron", I.IRON_LT: "iron", I.IRON_DK: "iron", I.COPPER: "bronze",
+                           I.BRASS: "bronze", I.BRASS_LT: "bronze", I.WOOD: "wood", I.WOOD_LT: "wood",
+                           I.SMOKE: "cloth", "team": "cloth"})
 
 
 RIG = None
@@ -77,6 +102,7 @@ def build(rig):
     g = Geo().capsule((7.0, -9.4, 37.0), (-6.0, -9.0, 18.0), 1.6)   # coil strap across the chest
     rig.part("torso", g, I.LEATHER, outline=0.6)
     I.jacket(rig, collar=I.COAL_LT, hem_z=13.0)
+    _jacket_detail(rig)
     g = Geo().blob((0.4, 0, 18.8), (11.2, 10.4, 3.8), p=3.2)   # apron belt with a hook
     rig.part("torso", g, I.LEATHER_DK)
     g = Geo().capsule((9.0, -8.6, 18.0), (10.6, -9.6, 12.0), 0.9)
@@ -95,10 +121,18 @@ def build(rig):
     # brass goggles pushed up on the brow (they read at 1x)
     g = Geo().blob((-1.4, 0, 58.6), (11.6, 11.2, 10.0), p=2.3, shift=(-0.22, 0), rot=(0, -8, 0))
     g.clip((0, 0, 56.0), (0, 0, -1))
-    rig.part("head", g, I.COAL_LT)
-    g = Geo().sphere((-8.0, 0, 67.6), 3.4, cuts=3)                     # pompom
-    rig.part("head", g, I.CREAM_DK, finish="hair")
-    g = Geo().lathe([(12.0, 0), (12.6, 1.4), (12.2, 3.4), (11.5, 4.0)], (0.2, 0, 54.8), (0.2, 0, 58.8), segs=24)
+    cap = Geo().blob((-1.4, 0, 58.6), (11.6, 11.2, 10.0), p=2.3, shift=(-0.22, 0), rot=(0, -8, 0))
+    cap.clip((0, 0, 56.0), (0, 0, -1))
+    capface = F.Face(rig, "head", [cap])
+    rig.part("head", g, KNIT)
+    IW.folds(rig, "head", capface, [[(x0, 57.8), (x1, 66.0)] for x0, x1 in ((-9.8, -9.0), (-5.6, -5.2), (-1.4, -1.6),
+                                                                              (2.8, 2.0), (6.6, 5.2))],
+             w=0.9, team=False, fill=KNIT_RIB)
+    g = Geo().sphere((-8.0, 0, 67.6), 3.4, cuts=3)                     # pompom (W3: team, the cap's team cue)
+    rig.part("head", g, team=True, finish="hair")
+    # the rolled cuff (W3: a deeper roll, so the team reads on the cap and the fire frames keep 18% team fill)
+    g = Geo().lathe([(12.0, 0), (12.6, 1.6), (12.6, 3.6), (12.1, 5.0), (11.5, 5.6)], (0.2, 0, 54.6), (0.2, 0, 60.2),
+                    segs=24)
     rig.part("head", g, team=True, outline=0.6)
     I.goggles(rig, at=(10.4, 0, 59.6), k=1.4, dy=(-5.2, 4.6))
 
@@ -128,6 +162,16 @@ def build(rig):
     for x in (-6.0, 8.0):
         g.lathe([(TR + 0.5, -1.4), (TR + 0.7, 0), (TR + 0.5, 1.4)], (x, TY, TZ), (x + 1, TY, TZ), segs=20)
     rig.part("tube", g, I.COPPER, finish="metal", outline=0.5)
+    # W3: a team-dark sleeve round the barrel's middle and brass rivet rows beside the copper bands
+    g = Geo().lathe([(TR + 0.25, -0.2), (TR + 0.45, 0.6), (TR + 0.45, 11.4), (TR + 0.25, 12.2)], (-4.6, TY, TZ),
+                    (-3.6, TY, TZ), segs=22)
+    look.team_part(rig, "tube", g, outline=0.4)
+    g = Geo()
+    for x in (-9.2, -7.4, 10.6, 12.4, 18.0, 19.8):
+        for a in (-38.0, 0.0, 38.0):
+            ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
+            g.sphere((x, TY - (TR + 0.35) * ca, TZ + (TR + 0.35) * sa), 0.62, cuts=2)
+    rig.part("tube", g, I.BRASS_LT, finish="metal", outline=0)
     g = Geo().blob((-3.0, TY + 1.0, TZ - 4.4), (6.0, 2.6, 1.8), p=3.0)   # shoulder pad
     rig.part("tube", g, I.LEATHER, outline=0.6)
     g = Geo().capsule((GRIP[0], GRIP[1], TZ - TR), (GRIP[0] - 1.5, GRIP[1], GRIP[2]), 1.5)
@@ -178,6 +222,34 @@ def build(rig):
     for dx, dz, r in ((0, 0, 5.2), (6, 3, 4.2), (-4, 6, 4.0), (3, 8, 3.4), (10, -1, 3.2)):
         g.sphere((T1 + 14 + dx, -20, TZ + 4 + dz), r, cuts=4)
     rig.part("smoke", g, I.SMOKE, finish="dust", outline=0.8)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _jacket_detail(rig):
+    """W3: the pea jacket as worn wool (rigs_industrial.jacket's surfaces rebuilt for the ray casts)."""
+    body = Geo().blob((0, 0, 28.0), (10.6, 9.6, 11.6), p=2.4, taper=(1.08, 0.94))
+    body.blob((0, 0, 18.4), (10.4, 9.6, 4.6), p=2.6)
+    tface = F.Face(rig, "torso", [body])
+    IW.folds(rig, "torso", tface, [[(-9.4, 31.4), (-4.0, 33.4), (2.0, 34.0)], [(-8.0, 30.8), (-7.6, 24.0),
+                                                                              (-7.2, 22.6)]], w=1.1, team=True)
+    skirt = Geo().blob((0.5, 0, 15.8), (11.4, 10.4, 5.8), p=2.6, taper=(1.1, 1.0))
+    skirt.clip((0, 0, 13.0), (0, 0, -1))
+    hface = F.Face(rig, "hips", [skirt])
+    IW.panel(rig, "hips", hface, [(-6.4, 18.2), (-1.0, 18.0), (-1.2, 15.8), (-6.2, 16.0)], team=True)
+    IW.rivets(rig, "hips", hface, [(-3.7, 16.6)], r=0.85, fill=I.BRASS_LT)
+    IW.folds(rig, "hips", hface, [[(-10.8, 14.0), (-4.0, 13.6), (4.0, 13.6), (10.6, 14.0)]], w=1.5, team=True)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face or skin), measured in the posed frames: the
+    jacket's back (the biggest team field the gun and the arms leave clear, r 7.5), the barrel's team sleeve, the
+    near sleeve, the cap, a strip torn from the jacket's hem."""
+    rig.damage_spot_at("jacket", "torso", -4.4, 26.0, 7.5, "cloth", team=True)
+    rig.damage_spot_at("barrel", "tube", 0.0, 34.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("sleeve", "arm_r", -1.0, 33.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("cap", "head", -4.0, 62.0, 5.0, "cloth", fill=KNIT)
+    rig.damage_spot_at("hem", "hips", -3.0, 13.4, 7.0, "cloth", kind="strip", team=True)
 
 
 def _world(p, deg, dx, dz):
@@ -255,13 +327,27 @@ HZ = [-2.0, -2.4, -3.0, -3.0, -3.4, -1.6, -1.6, -1.6, -0.8, -0.5]
 TRS = [-3, -4, -6, -6, 5, 2, 3, 2, 0, 0]
 
 
-def _attack_pose(f):
+# aimed shots (queue item 44, ageborn_art/aimed.py): a turn of `turn` degrees up tips the gun up on his shoulder
+# (about its shoulder pivot), leans him back under it and tips his head up; the arms follow the grips (aim()).
+# The torso carries the gun, so its lean is part of the turn.
+AIM_LEAN = 0.2            # torso r per degree of turn (positive leans back)
+AIM_HEAD = 0.3            # head r per degree, on top of the torso's lean
+#        brace aim HOLD wob FIRE kick crank crank crank seat settle
+AIM_W = [0.0, 0.5, 1.0, 1.0, 1.0, 0.8, 0.5, 0.3, 0.15, 0.0, 0.0]
+#          A    drop HOLD wob FIRE stag crank crank rise  A    A
+AIM_W_B = [0.0, 0.4, 1.0, 1.0, 1.0, 1.0, 0.7, 0.5, 0.25, 0.0, 0.0]
+
+
+def _attack_pose(f, turn=0.0):
     wob = f == 3
     f = U_OF[f]
-    pose = merge(aim(DEG[f] + (1.6 if wob else 0.0), DX[f], DZ[f] + (0.6 if wob else 0.0), crank=CRANK[f]), {
+    lean = AIM_LEAN * turn
+    pose = merge(aim(DEG[f] + (1.6 if wob else 0.0) + turn - lean, DX[f], DZ[f] + (0.6 if wob else 0.0),
+                     crank=CRANK[f]), {
         "hips": {"z": HZ[f]},
-        "torso": {"r": TRS[f]},
-        "head": {"r": [-3, -6, -9, -9, 4, -4, -4, -4, 0, 0][f], "x": [0, 0.6, 1.2, 1.2, 0, 0, 0, 0, 0, 0][f]},
+        "torso": {"r": TRS[f] + lean},
+        "head": {"r": [-3, -6, -9, -9, 4, -4, -4, -4, 0, 0][f] + AIM_HEAD * turn,
+                 "x": [0, 0.6, 1.2, 1.2, 0, 0, 0, 0, 0, 0][f]},
         "thigh_r": {"r": [12, 15, 18, 18, 12, 10, 10, 10, 6, 2][f]},
         "shin_r": {"r": [-10, -12, -16, -16, -12, -8, -8, -8, -4, 0][f]},
         "thigh_l": {"r": [-14, -16, -20, -20, -24, -14, -14, -14, -8, -4][f]},
@@ -318,13 +404,14 @@ KB_HR = [-4, -8, -9, -8, 8, -4, -4, 0]
 KB_FRONT = [8.0, 12.5, 12.5, 12.5, 14.0, 12.5, 12.5, 7.0]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i in (0, 9, 10):
-        return _attack_pose(i)
+        return _attack_pose(i, turn)
     k = i - 1
-    pose = merge(aim(KB_DEG[k], KB_DX[k], KB_DZ[k], crank=KB_CRANK[k]), {
-        "torso": {"r": KB_TR[k]},
-        "head": {"r": KB_HR[k], "x": 1.2 if k in (1, 2) else 0.0},
+    lean = AIM_LEAN * turn
+    pose = merge(aim(KB_DEG[k] + turn - lean, KB_DX[k], KB_DZ[k], crank=KB_CRANK[k]), {
+        "torso": {"r": KB_TR[k] + lean},
+        "head": {"r": KB_HR[k] + AIM_HEAD * turn, "x": 1.2 if k in (1, 2) else 0.0},
         "flash": {"show": k == 3},
         "harpoon": {"hide": k in (3, 4, 5, 6)},
         "cable": {"show": k == 3},
@@ -385,13 +472,21 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (the Harpoon Gunner hits air; they go to the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, _b_pose, AIM_W_B, aims=("up45", "up70"))
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
     return M.check_variants(M.check_contract(cl, attack_ms=824, attack_impact_at=0.3532))

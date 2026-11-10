@@ -2,7 +2,7 @@
  "frames": {
   "clockwork_soldier_attack_b_02": {
    "frame": {
-    "x": 341,
+    "x": 834,
     "y": 2,
     "w": 58,
     "h": 106
@@ -26,8 +26,8 @@
   },
   "clockwork_soldier_attack_b_02_team": {
    "frame": {
-    "x": 382,
-    "y": 232,
+    "x": 610,
+    "y": 112,
     "w": 48,
     "h": 82
    },
@@ -50,7 +50,7 @@
   },
   "clockwork_soldier_attack_b_03": {
    "frame": {
-    "x": 88,
+    "x": 536,
     "y": 2,
     "w": 70,
     "h": 112
@@ -74,8 +74,8 @@
   },
   "clockwork_soldier_attack_b_03_team": {
    "frame": {
-    "x": 215,
-    "y": 232,
+    "x": 755,
+    "y": 112,
     "w": 42,
     "h": 86
    },
@@ -98,7 +98,7 @@
   },
   "clockwork_soldier_attack_b_04": {
    "frame": {
-    "x": 162,
+    "x": 88,
     "y": 2,
     "w": 86,
     "h": 111
@@ -122,8 +122,8 @@
   },
   "clockwork_soldier_attack_b_04_team": {
    "frame": {
-    "x": 171,
-    "y": 232,
+    "x": 711,
+    "y": 106,
     "w": 40,
     "h": 92
    },
@@ -170,8 +170,8 @@
   },
   "clockwork_soldier_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 332,
+    "x": 451,
+    "y": 118,
     "w": 46,
     "h": 79
    },
@@ -194,8 +194,8 @@
   },
   "clockwork_soldier_attack_b_06": {
    "frame": {
-    "x": 2,
-    "y": 232,
+    "x": 267,
+    "y": 2,
     "w": 88,
     "h": 96
    },
@@ -218,8 +218,8 @@
   },
   "clockwork_soldier_attack_b_06_team": {
    "frame": {
-    "x": 439,
-    "y": 332,
+    "x": 896,
+    "y": 106,
     "w": 58,
     "h": 65
    },
@@ -242,8 +242,8 @@
   },
   "clockwork_soldier_attack_b_07": {
    "frame": {
-    "x": 2,
-    "y": 125,
+    "x": 961,
+    "y": 2,
     "w": 59,
     "h": 103
    },
@@ -266,8 +266,8 @@
   },
   "clockwork_soldier_attack_b_07_team": {
    "frame": {
-    "x": 52,
-    "y": 332,
+    "x": 344,
+    "y": 118,
     "w": 49,
     "h": 78
    },
@@ -290,8 +290,8 @@
   },
   "clockwork_soldier_attack_b_08": {
    "frame": {
-    "x": 277,
-    "y": 125,
+    "x": 359,
+    "y": 2,
     "w": 86,
     "h": 97
    },
@@ -314,8 +314,8 @@
   },
   "clockwork_soldier_attack_b_08_team": {
    "frame": {
-    "x": 295,
-    "y": 332,
+    "x": 501,
+    "y": 118,
     "w": 48,
     "h": 75
    },
@@ -338,8 +338,8 @@
   },
   "clockwork_soldier_attack_c_01": {
    "frame": {
-    "x": 212,
-    "y": 125,
+    "x": 896,
+    "y": 2,
     "w": 61,
     "h": 100
    },
@@ -362,18 +362,18 @@
   },
   "clockwork_soldier_attack_c_01_team": {
    "frame": {
-    "x": 154,
-    "y": 332,
+    "x": 801,
+    "y": 112,
     "w": 40,
-    "h": 77
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 118,
+    "y": 119,
     "w": 40,
-    "h": 77
+    "h": 76
    },
    "sourceSize": {
     "w": 274,
@@ -386,8 +386,8 @@
   },
   "clockwork_soldier_attack_c_02": {
    "frame": {
-    "x": 94,
-    "y": 232,
+    "x": 267,
+    "y": 103,
     "w": 73,
     "h": 93
    },
@@ -410,17 +410,17 @@
   },
   "clockwork_soldier_attack_c_02_team": {
    "frame": {
-    "x": 396,
-    "y": 332,
-    "w": 39,
+    "x": 845,
+    "y": 112,
+    "w": 38,
     "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 109,
+    "x": 110,
     "y": 125,
-    "w": 39,
+    "w": 38,
     "h": 71
    },
    "sourceSize": {
@@ -434,8 +434,8 @@
   },
   "clockwork_soldier_attack_c_03": {
    "frame": {
-    "x": 261,
-    "y": 232,
+    "x": 178,
+    "y": 113,
     "w": 68,
     "h": 84
    },
@@ -458,9 +458,9 @@
   },
   "clockwork_soldier_attack_c_03_team": {
    "frame": {
-    "x": 347,
-    "y": 332,
-    "w": 45,
+    "x": 2,
+    "y": 125,
+    "w": 44,
     "h": 72
    },
    "rotated": false,
@@ -468,7 +468,7 @@
    "spriteSourceSize": {
     "x": 102,
     "y": 132,
-    "w": 45,
+    "w": 44,
     "h": 72
    },
    "sourceSize": {
@@ -482,8 +482,8 @@
   },
   "clockwork_soldier_attack_c_04": {
    "frame": {
-    "x": 136,
-    "y": 125,
+    "x": 687,
+    "y": 2,
     "w": 72,
     "h": 100
    },
@@ -506,8 +506,8 @@
   },
   "clockwork_soldier_attack_c_04_team": {
    "frame": {
-    "x": 198,
-    "y": 332,
+    "x": 135,
+    "y": 117,
     "w": 39,
     "h": 77
    },
@@ -530,7 +530,7 @@
   },
   "clockwork_soldier_attack_c_05": {
    "frame": {
-    "x": 403,
+    "x": 610,
     "y": 2,
     "w": 73,
     "h": 104
@@ -554,8 +554,8 @@
   },
   "clockwork_soldier_attack_c_05_team": {
    "frame": {
-    "x": 434,
-    "y": 232,
+    "x": 88,
+    "y": 117,
     "w": 43,
     "h": 81
    },
@@ -578,7 +578,7 @@
   },
   "clockwork_soldier_attack_c_06": {
    "frame": {
-    "x": 252,
+    "x": 178,
     "y": 2,
     "w": 85,
     "h": 107
@@ -602,8 +602,8 @@
   },
   "clockwork_soldier_attack_c_06_team": {
    "frame": {
-    "x": 333,
-    "y": 232,
+    "x": 662,
+    "y": 112,
     "w": 45,
     "h": 83
    },
@@ -626,8 +626,8 @@
   },
   "clockwork_soldier_attack_c_07": {
    "frame": {
-    "x": 367,
-    "y": 125,
+    "x": 449,
+    "y": 2,
     "w": 83,
     "h": 97
    },
@@ -650,8 +650,8 @@
   },
   "clockwork_soldier_attack_c_07_team": {
    "frame": {
-    "x": 241,
-    "y": 332,
+    "x": 397,
+    "y": 118,
     "w": 50,
     "h": 76
    },
@@ -674,8 +674,8 @@
   },
   "clockwork_soldier_attack_c_08": {
    "frame": {
-    "x": 65,
-    "y": 125,
+    "x": 763,
+    "y": 2,
     "w": 67,
     "h": 101
    },
@@ -698,18 +698,18 @@
   },
   "clockwork_soldier_attack_c_08_team": {
    "frame": {
-    "x": 105,
-    "y": 332,
+    "x": 553,
+    "y": 118,
     "w": 45,
-    "h": 78
+    "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 120,
-    "y": 117,
+    "y": 118,
     "w": 45,
-    "h": 78
+    "h": 77
    },
    "sourceSize": {
     "w": 274,
@@ -781,8 +781,8 @@
   "image": "clockwork_soldier.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 512,
-   "h": 416
+   "w": 1024,
+   "h": 200
   },
   "scale": "1.5",
   "ageborn": {

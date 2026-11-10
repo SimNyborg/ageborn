@@ -18,13 +18,22 @@ Animation (ANIM_SPEC G1 march, appendix B for a bayonet: thrust, overhead drive,
   attack_c  RISING JAB: crouched with the bayonet low, then a rising stab
   hit       a stiff jolt (tin), the shako wobbles
   die       D1 fling: the key and the shako pop off, springs, X eyes
+
+Detail standard (art round W3, Track INDUSTRIAL): painted tin. The tunic pressed from two halves (a seam down the
+side with brass tabs folded over it, a team-dark painted collar and hem band, gilt epaulettes), the crossbelts
+buckled with a brass buckle at the crossing, the shako with a team-dark band and cream cords, the trousers' team
+stripe, a polished band on the key's shaft. Mech damage (item 40 3.3: dents and scratches, never flesh): spots on
+the tunic (r 7.5), the shako, the near trouser leg, a strip of paint peeling from the tunic's hem; sparks from
+the wind-up key and steam from its vent.
 """
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import industrial_w3 as IW
 
 SLUG = "clockwork_soldier"
 GAIT_NAME = "biped"
@@ -41,10 +50,27 @@ BIT_L = 9.0
 TIP = (FIST[0], FIST[1], FIST[2] + BODY_L + BIT_L)
 CAP_C = (1.0, 0.0, 57.0)
 STEEL = "#A9B0B8"
-TIN = "#E6DED0"
+TIN = "#DAD1C2"             # W3: a shade deeper than the shipped #E6DED0 (light tin against the v4 outline)
 CHEEK = "#D99A8E"
 GLOSS = "#2A2829"
 WOOD = "#9C7652"
+GILT = "#C8B07A"            # the epaulettes' gilt
+GILT_FAR = "#A08C62"
+FRINGE = "#B09A68"          # the epaulettes' bullion fringe (a mid gilt: cloth, not shine)
+FRINGE_FAR = "#8E7D56"
+KEY_HI = "#E2D2A0"          # the key shaft's polished band
+
+# the detail standard (art round W3): the soldier lifts on painted tin (gloss), brass and wood
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.8           # the gloss tin and the brass already shine (light tin next to dark paint: hl share)
+LOOK_SHADE = IW.SHADE_SOLDIER
+LOOK_RIM = IW.RIM_SOLDIER
+# the toy's gilt and brass trim is gold paint on tin (polymer: the metal kinds' hot spec on a dozen small studs
+# took the highlight share past 0.10); the wind-up key is real brass
+MATERIAL_KINDS = IW.kinds({TIN: "polymer", GLOSS: "polymer", CHEEK: "polymer", STEEL: "iron",
+                           WOOD: "wood", I.IRON_DK: "iron", I.BRASS: "bronze", I.BRASS_LT: "polymer", GILT: "polymer",
+                           KEY_HI: "gold", GILT_FAR: "polymer", FRINGE: "cloth", FRINGE_FAR: "cloth", I.STEAM: "cloth",
+                           "team": "polymer"})
 
 
 def _drill(rig, joint, fist):
@@ -89,10 +115,13 @@ def build(rig):
     rig.part("torso", g, I.BRASS_LT, finish="metal", outline=0.3)
     g = Geo().blob((0.2, 0, 20.4), (10.8, 9.8, 1.8), p=3.2)
     rig.part("torso", g, GLOSS, finish="gloss")
+    _tin_detail(rig)
     # the wind-up key in his back (it turns on its own joint)
     rig.joint("key", "torso", (-12.0, 0, 29.0))
     g = Geo().capsule((-9.0, 0, 29.0), (-15.0, 0, 29.0), 1.2)
     rig.part("key", g, I.BRASS, finish="metal", outline=0.5)
+    g = Geo().capsule((-9.4, -0.9, 29.7), (-14.6, -0.9, 29.7), 0.42, segs=8, rings=2)
+    rig.part("key", g, KEY_HI, finish="metal", outline=0)          # W3: the shaft's polished band
     g = Geo()
     for sz in (-1, 1):
         g.blob((-16.0, 0, 29.0 + sz * 4.4), (1.4, 1.4, 3.8), p=2.4)
@@ -111,19 +140,60 @@ def build(rig):
     for s in ("r", "l"):
         I.arm_parts(rig, s, sleeve=None, team_sleeve=True, hand=TIN, fist=4.2, cuff=TIN, glove_finish="gloss")
     I.shoulders(rig, team=True)
+    for s in ("r", "l"):     # W3: gilt epaulettes, their fringe a solid skirt (strands broke into sparkle at 62 px)
+        y = I.ARM_Y[s]
+        g = Geo().blob((0.4, y - 0.1 * I.SIDE_Y[s], 41.2), (5.0, 4.6, 1.5), p=2.4)
+        rig.part(f"arm_{s}", g, GILT if s == "r" else GILT_FAR, finish="metal", outline=0.4)
+        g = Geo().lathe([(5.7, 0), (5.8, 0.6), (5.4, 2.4), (5.0, 3.0)], (0.4, y, 37.8), (0.4, y, 40.8), segs=20)
+        rig.part(f"arm_{s}", g, FRINGE if s == "r" else FRINGE_FAR, outline=0.3)
 
     rig.joint("rifle", "hand_r", FIST)
     tip = _drill(rig, "rifle", FIST)
     KI.loose(rig, "rifle_loose", FIST, lambda j: _drill(rig, j, FIST))
     rig.track("bayonet", "rifle", tip)
     I.fuse_spark(rig, "rifle", (tip[0] + 0.5, tip[1] - 2.0, tip[2] + 1.0), size=2.2, name="sparks", hidden=True)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry
+        _damage_spots(rig)
+
+
+def _tin_detail(rig):
+    """W3: the tunic as pressed and painted tin (the tunic's surfaces rebuilt for the ray casts)."""
+    tunic = Geo().blob((0, 0, 27.6), (10.2, 9.2, 11.2), p=2.4, taper=(1.04, 0.96))
+    tunic.blob((0.3, 0, 17.6), (10.6, 9.6, 4.6), p=2.6)
+    face = F.Face(rig, "torso", [tunic])
+    # the side seam where the two pressed halves meet, with brass tabs folded over it
+    IW.seam(rig, "torso", face, [(-2.6, 37.0), (-3.2, 30.0), (-3.0, 23.0), (-2.6, 18.8)], fill=None, w=0.9,
+            team=True)
+    g = Geo()
+    for z in (34.0, 27.4, 21.6):
+        IW.field(g, face, [(-4.0, z - 1.0), (-1.8, z - 1.0), (-1.8, z + 1.0), (-4.0, z + 1.0)], 0.4)
+    rig.part("torso", g, I.BRASS_LT, finish="metal", outline=0.3)
+    # a team-dark painted collar band and the hem band above the belt
+    IW.folds(rig, "torso", face, [[(-7.0, 37.6), (-1.0, 38.6), (6.0, 38.0)]], w=1.8, team=True)
+    IW.folds(rig, "torso", face, [[(-9.0, 22.6), (-2.0, 22.4), (6.0, 22.4), (10.0, 22.8)]], w=1.3, team=True)
+    # the crossbelts' brass buckle where they cross on the chest
+    g = Geo().blob((10.6, -0.6, 27.6), (1.0, 2.2, 1.9), p=3.4)
+    rig.part("torso", g, I.BRASS_LT, finish="metal", outline=0.4)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, mech: dents and scratches on the painted tin, never flesh), measured
+    in the posed frames: the tunic (its biggest team field, r 7.5), the shako, the near trouser leg, a strip of
+    paint peeling from the tunic's hem; sparks from the wind-up key, steam from its vent."""
+    rig.damage_spot_at("tunic", "torso", -4.6, 29.0, 7.5, "metal", team=True)
+    rig.damage_spot_at("shako", "hat", -1.0, 63.0, 6.0, "metal", team=True)
+    rig.damage_spot_at("leg", "thigh_r", -1.6, 14.0, 5.0, "metal", fill=TIN)
+    rig.damage_spot_at("hem", "torso", 5.0, 17.6, 7.0, "metal", kind="strip", team=True)
+    rig.damage_spot("key", "key", (-16.0, -1.6, 29.0), 3.0, "spark", kind="emit", normal=(-1, 0, 0))
+    rig.damage_spot("vent", "key", (-14.0, 0.0, 34.0), 4.0, "steam", kind="emit", normal=(0, 0, 1))
 
 
 def _cap(rig, joint):
     """A tall team shako with a brass plate, a glossy peak and a cream plume."""
     x, y, z = CAP_C
-    g = Geo().lathe([(0, 0), (9.6, 0), (10.6, 9.0), (10.8, 11.0), (0, 11.4)], (x - 0.6, y, z - 2.0), (x - 1.0, y, z + 9.4),
-                    segs=24)
+    # W3: the crown's edge rounded off (a hard edge between the lit top and the side read as a white line at 62 px)
+    g = Geo().lathe([(0, 0), (9.6, 0), (10.6, 8.6), (10.6, 10.0), (10.0, 11.0), (8.6, 11.35), (0, 11.5)],
+                    (x - 0.6, y, z - 2.0), (x - 1.0, y, z + 9.4), segs=24)
     rig.part(joint, g, team=True, finish="gloss")
     g = Geo().blob((x + 10.0, y, z - 1.4), (4.6, 8.4, 0.9), p=2.8, rot=(0, -12, 0))
     rig.part(joint, g, GLOSS, finish="gloss")
@@ -131,6 +201,16 @@ def _cap(rig, joint):
     rig.part(joint, g, I.BRASS_LT, finish="metal", outline=0.4)
     g = Geo().blob((x, y, z + 13.4), (2.4, 2.4, 3.6), p=2.2)
     rig.part(joint, g, TIN, outline=0.5)
+    # W3: a team-dark band round the shako's base and cream cords looped across its front
+    g = Geo().lathe([(9.75, 0), (10.05, 0.6), (10.05, 2.0), (9.85, 2.6)], (x - 0.6, y, z - 1.6), (x - 0.65, y, z + 1.0),
+                    segs=24)
+    look.team_part(rig, joint, g, outline=0.4)
+    g = Geo()
+    pts = [(x + 8.6, y - 4.6, z + 6.6), (x + 9.4, y - 2.0, z + 3.6), (x + 9.6, y + 1.0, z + 3.2),
+           (x + 9.0, y + 3.8, z + 6.0)]
+    for a, b in zip(pts, pts[1:]):
+        g.capsule(a, b, 0.5, segs=8, rings=2)
+    rig.part(joint, g, TIN, outline=0.3)
 
 
 def grip(a, f, w, la=None, lf=None, lean=0.0):
