@@ -29,17 +29,25 @@ Animation standard (ANIM_SPEC 2026-10-02):
   attack_b  KNEELING BRACED FIRE: he drops to one knee, the tube level on his shoulder, squints down
             the sight (the held extreme, holdLoop), fires (front and back blast), the kick rocks him
             back onto his heel, he slaps the spare rocket home on one knee and rises
+
+Art round W3 (the detail standard): both shots aimed up about 45 and 70 degrees at flyers (item 44) and damage
+spots measured in posed frames (item 40).
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_gunpowder as KG
 from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_modern as KM
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
+from units import stone_w1 as W1
 
 SLUG = "bazooka_trooper"
 GAIT_NAME = "biped"
@@ -60,6 +68,31 @@ MUZZLE = (T1 + 1.0, TY, TZ)
 WARHEAD = "#50565C"
 HELM_C = (1.0, 0.0, 55.0)
 SPARE = (-15.0, 3.0, 40.0)   # the spare rocket's base in the pack
+PACK = ((-12.4, 1.0, 29.0), (5.4, 9.0, 9.0))          # the olive backpack's blob (p 3.2)
+SOLE = "#2B2A2E"
+BOOT = "#4A3F36"             # W3: a lit side on the boots (was rigs_modern.BOOT #3E342D)
+HELMET = "#63674B"           # the helmet's olive paint (steel; rigs_modern.OLIVE stays cloth: pack and trousers)
+CHIP = "#7E8264"             # W3: worn paint on the olive helmet (a step lighter than the olive)
+# worn paint chips on the helmet's dome above the team band (side-view centre, outline offsets), 3 lu across
+CHIPS = [((-6.0, 61.2), [(-1.7, -1.1), (1.3, -1.5), (1.8, 0.9), (-0.6, 1.5), (-1.9, 0.4)]),
+         ((3.6, 63.6), [(-1.5, -1.2), (1.6, -1.0), (1.4, 1.2), (-1.2, 1.4)]),
+         ((-2.2, 65.2), [(-1.3, -0.9), (1.5, -1.1), (1.2, 1.0), (-1.5, 1.1)])]
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Bazooka Trooper is the team tube across him, the helmet with its goggles, the tunic below
+# the tube and the pack: the tube in two tones (its front section team-dark, the business end, against the bright
+# middle with the khaki pad and the striped rear), a team-dark hem on the tunic skirt, a side seam and the khaki
+# front brace, team-dark folds on the rolled sleeves, the olive pack's lighter flap with a khaki strap and a steel
+# buckle, worn paint chips on the olive helmet, lighter boots.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", R.HAIR: "fur", R.KHAKI: "cloth", R.KHAKI_LT: "cloth", KM.CREAM: "cloth",
+                           KM.STRIPE_LT: "polymer", R.OLIVE: "cloth", R.OLIVE_LT: "cloth", HELMET: "iron",
+                           CHIP: "iron",
+                           BOOT: "leather", SOLE: "leather", R.LEATHER: "leather", R.GUNMETAL: "iron",
+                           R.STEEL: "iron", WARHEAD: "iron", R.SIGNAL: "polymer", R.GLASS: "glass",
+                           "team": "cloth"})
 
 
 def _tube(rig, joint):
@@ -72,6 +105,10 @@ def _tube(rig, joint):
             (T0 + 7.5, TY, TZ), (T0 - 2, TY, TZ), segs=22)
     g.lathe([(TR + 0.8, 0), (TR + 1.0, 3.0), (TR - 0.2, 3.6)], (T1 - 3.5, TY, TZ), (T1 + 2, TY, TZ), segs=22)
     rig.part(joint, g, R.GUNMETAL, finish="metal")
+    # W3: the front section team-dark (the tube in two tones), from the front band into the front ring
+    g = Geo().lathe([(TR + 0.05, 0.0), (TR + 0.32, 0.3), (TR + 0.32, 18.1), (TR + 0.05, 18.4)], (8.4, TY, TZ),
+                    (26.8, TY, TZ), segs=22)
+    look.team_part(rig, joint, g)
     g = Geo()   # olive bands, a shoulder pad
     for x in (-13.0, 7.0):
         g.lathe([(TR + 0.5, -1.7), (TR + 0.7, 0), (TR + 0.5, 1.7)], (x, TY, TZ), (x + 1, TY, TZ), segs=20)
@@ -110,10 +147,15 @@ def build(rig):
     global RIG
     RIG = rig
     KM.skeleton_v3(rig)
-    KM.legs_v3(rig, trousers=R.OLIVE, thigh_r=4.9)
+    KM.legs_v3(rig, trousers=R.OLIVE, thigh_r=4.9, boot=BOOT)
     # backpack with the spare rocket (fins down in the pack, warhead up)
-    g = Geo().blob((-12.4, 1.0, 29.0), (5.4, 9.0, 9.0), p=3.2)
+    g = Geo().blob(*PACK, p=3.2)
     rig.part("torso", g, R.OLIVE)
+    # W3: the pack's flap a step lighter, a khaki strap down it with a steel buckle
+    rig.part("torso", KD.band_z(*PACK, 31.0, 40.0, p=3.2, grow=0.3), R.OLIVE_LT, outline=0.4)
+    g = KD.stripe_x(*PACK, -14.1, -11.3, z0=21.5, z1=37.5, p=3.2, grow=0.55)
+    rig.part("torso", g, R.KHAKI, outline=0.4)
+    MW.studs(rig, "torso", [Geo().blob(*PACK, p=3.2)], [(-12.7, 31.2)], r=1.35, color=R.STEEL, outline=0.4)
     g = Geo().blob((-16.2, -3.6, 25.0), (2.4, 4.0, 4.0), p=3.2)
     rig.part("torso", g, R.KHAKI, outline=0.6)
     rig.joint("spare", "torso", SPARE)
@@ -121,6 +163,7 @@ def build(rig):
     rig.part("spare", g, R.GUNMETAL, finish="metal", outline=0.5)
     _rocket(rig, "spare", SPARE, axis=(0, 0, 1), L=8.0)
     R.tunic(rig, hem_z=13.0)
+    MW.tunic_w3(rig)     # W3: a team-dark skirt hem, a side seam, the webbing's front brace
     KM.pouches(rig, "torso", [(9.2, -6.8, 19.2), (-4.0, -10.6, 19.0)], size=(2.4, 1.8, 3.4))
     g = Geo().capsule((2.0, -10.6, 37.0), (-8.0, -9.4, 22.0), 1.5)   # pack strap
     rig.part("torso", g, R.KHAKI, outline=0.6)
@@ -132,7 +175,9 @@ def build(rig):
     rig.part("head", g, R.SKIN)
 
     def helmet(j):
-        R.helmet_round(rig, c=HELM_C, net=False, strap=(j == "hat"), joint=j)
+        R.helmet_round(rig, c=HELM_C, color=HELMET, net=False, strap=(j == "hat"), joint=j)
+        x, y, z = HELM_C
+        MW.decals(rig, j, [Geo().blob((x, y, z + 1.5), (12.6, 12.2, 10.4), p=2.3)], CHIPS, CHIP)
         g = Geo()   # goggles pushed up on the helmet front
         for y in (-4.8, 4.4):
             g.lathe([(0, 0), (3.2, 0.2), (3.4, 2.4), (0, 2.6)], (11.4, y, 59.0), (14.0, y, 59.6), segs=14)
@@ -147,6 +192,8 @@ def build(rig):
 
     for s in ("r", "l"):
         R.arm_parts(rig, s, rolled=True, fist=4.6)
+        # W3: the rolled sleeve's lower fold in team-dark (the roll in two tones)
+        W1.ring(rig, f"fore_{s}", (0, R.ARM_Y[s], R.ELBOW_Z - 1.7), 4.75, height=1.9, team=True, outline=0.4)
     R.shoulders(rig)
     sleeve = Geo().capsule((0, R.ARM_Y["r"], R.SHOULDER_Z), (0, R.ARM_Y["r"], R.ELBOW_Z), 4.4, 4.1)
     sface = F.Face(rig, "arm_r", [sleeve])
@@ -174,11 +221,25 @@ def build(rig):
                    balls=((0, 0, 5.4), (6.4, 2.0, 4.6), (-5.0, 4.0, 4.4), (1.6, 7.4, 4.0), (-9.4, -1.0, 3.6),
                           (8.8, 6.6, 3.2)))
     KG.smoke_cloud(rig, "root", (MUZZLE[0] + 8.0, -8.0, TZ + 2.0), size=0.75, name="puff", seed=3)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. Placed where the posed frames
+    show them (the probe's camera rays in idle, walk and both shots, W2 lesson 1): the tunic skirt's front (the
+    largest team surface the tube and the arms leave clear, 100% visible: the first mark), the tunic's lower back
+    behind the near arm (83-100%), the helmet's dome; a torn strip from the skirt's back hem."""
+    rig.damage_spot_at("skirt", "hips", 2.0, 14.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("tunic", "torso", -6.0, 23.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("helmet", "hat", -2.0, 63.0, 6.0, "metal", fill=HELMET)
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ------------------------------------------------------------------------------------------
-def aim(deg, dx=0.0, dz=0.0, far=True):
-    """Tube pointing `deg` (torso space; pivot shifted dx, dz); both hands on its grips by IK."""
+def aim(deg, dx=0.0, dz=0.0, far=True, fore=FORE):
+    """Tube pointing `deg` (torso space; pivot shifted dx, dz); both hands on its grips by IK (`fore`: where the far
+    hand holds the tube, W3: closer to the shoulder in the steep aimed shots, within the arm's reach)."""
     pose = {"tube": {"r": deg, "x": dx, "z": dz}}
     c, s = math.cos(math.radians(deg)), math.sin(math.radians(deg))
 
@@ -189,9 +250,64 @@ def aim(deg, dx=0.0, dz=0.0, far=True):
     a, f = R.ik2(R.SH, (gx - 0.4, gz + 0.8))
     pose.update(R.arm("r", a, f))
     if far:
-        fx_, fz = world(FORE)
+        fx_, fz = world(fore)
         a, f = R.ik2(R.SH, (fx_ - 0.6, fz))
         pose.update(R.arm("l", a, f))
+    return pose
+
+
+# aimed attacks (queue item 44, ageborn_art/aimed.py): a turn of `turn` degrees up tips the tube up about the
+# shoulder, which settles a little lower and back, and slides forward along its axis (the rear bell stays off the
+# ground, kneeling too); he leans back under it and looks up along the sight; the far hand slides back along the
+# tube toward the shoulder as it climbs (the arm's reach). The back-blast cloud and the muzzle puff are left where
+# the fire frame's tube put them (they hang in the air, root-level). The feet stay planted.
+AIM_LEAN, AIM_HEAD, AIM_DX, AIM_DZ, AIM_SLIDE = 0.20, 0.25, -0.03, -0.04, 0.12
+FORE_UP = (8.0, TY + 1.0, TZ - 5.0)      # the far hand's hold on the tube at a full 90-degree climb
+AIM_W = [0.0, 0.5, 1.0, 1.0, 1.0, 0.7, 0.4, 0.0, 0.0, 0.0, 0.0]   # per unique frame (A and B: fire on 4)
+REAR = (T0 - 6.0, TZ)                    # where the back-blast leaves the rear bell (x, z)
+FRONT = (T1 + 6.0, TZ)                   # where the muzzle puff hangs
+
+
+def _turned(deg, dx, dz, turn):
+    """(tube angle, dx, dz, lean, far-hand hold) of a tube at torso-space angle deg turned `turn` up."""
+    up = max(0.0, turn)
+    lean = AIM_LEAN * turn
+    k = min(1.0, up / 90.0)
+    fore = tuple(a + (b - a) * k for a, b in zip(FORE, FORE_UP))
+    d = deg + turn - lean
+    slide = AIM_SLIDE * up
+    dx += AIM_DX * up + slide * math.cos(math.radians(d))
+    dz += AIM_DZ * up + slide * math.sin(math.radians(d))
+    return d, dx, dz, lean, fore
+
+
+def _tube_at(deg, dx, dz, p):
+    c, s = math.cos(math.radians(deg)), math.sin(math.radians(deg))
+    x, z = p[0] - PIVOT[0], p[1] - PIVOT[2]
+    return PIVOT[0] + dx + x * c - z * s, PIVOT[2] + dz + x * s + z * c
+
+
+def _blast_shift(deg0, dx0, full):
+    """How far the back-blast cloud and the muzzle puff move (torso space, (dx, dz) each) when the fire frame's tube
+    (torso-space angle deg0, pivot shift dx0) is turned `full` degrees up."""
+    deg1, dx1, dz1, _, _ = _turned(deg0, dx0, 0.0, full)
+    r0, r1 = _tube_at(deg0, dx0, 0.0, REAR), _tube_at(deg1, dx1, dz1, REAR)
+    f0, f1 = _tube_at(deg0, dx0, 0.0, FRONT), _tube_at(deg1, dx1, dz1, FRONT)
+    return (r1[0] - r0[0], r1[1] - r0[1]), (f1[0] - f0[0], f1[1] - f0[1])
+
+
+def _shift_clouds(pose, rear, front, low=(-29.0, -34.0), full=0.0):
+    """Moves the back-blast clouds by `rear` and the puff by `front` (kept above the ground: `low` caps the clouds'
+    drop); the back-blast flash shortens as the tube climbs (it fires at the ground behind him)."""
+    if "blast" in pose and pose["blast"].get("show"):
+        pose["blast"]["s"] = 1.0 - 0.005 * max(0.0, full)
+    for name, lo in (("smoke", low[0]), ("smoke2", low[1])):
+        if name in pose and pose[name].get("show"):
+            pose[name]["x"] = pose[name].get("x", 0.0) + rear[0]
+            pose[name]["z"] = max(lo, pose[name].get("z", 0.0) + rear[1])
+    if "puff" in pose and pose["puff"].get("show"):
+        pose["puff"]["x"] = pose["puff"].get("x", 0.0) + front[0]
+        pose["puff"]["z"] = pose["puff"].get("z", 0.0) + front[1]
     return pose
 
 
@@ -247,14 +363,17 @@ TH_L = [-4, -18, -22, -22, -18, -12, -20, -14, -8, -4]
 SH_L = [0, -8, -12, -12, -6, -2, -10, -4, -2, 0]
 
 
-def _attack_pose(i):
+A_DX = [0, 0.5, 0.8, 0.8, -2.5, -1.5, -0.5, 0, 0, 0]
+
+
+def _attack_pose(i, turn=0.0):
     wob = i == 3
     f = U_OF[i]
     t = LEAN[f]
-    pose = merge(aim(DEG[f] - t + (1.6 if wob else 0.0), dx=[0, 0.5, 0.8, 0.8, -2.5, -1.5, -0.5, 0, 0, 0][f],
-                     dz=0.6 if wob else 0.0, far=f not in (8,)), {
-        "torso": {"r": t},
-        "head": {"r": [-2, -5, -8, -8, 6, 8, -2, 2, 0, 0][f] - 0.3 * t,
+    deg, dx, dz, lean, fore = _turned(DEG[f] - t + (1.6 if wob else 0.0), A_DX[f], 0.6 if wob else 0.0, turn)
+    pose = merge(aim(deg, dx=dx, dz=dz, far=f not in (8,), fore=fore), {
+        "torso": {"r": t + lean},
+        "head": {"r": [-2, -5, -8, -8, 6, 8, -2, 2, 0, 0][f] - 0.3 * t + AIM_HEAD * turn,
                  "x": [0, 0.8, 1.4, 1.4, 0, 0, 0, 0, 0, 0][f]},
         "hat": {"r": [0, 0, 2, 2, 10, 6, -3, 1, 0, 0][f], "z": [0, 0, 0, 0, 1.5, 0.8, 0, 0, 0, 0][f]},
         "thigh_r": {"r": TH_R[f]}, "shin_r": {"r": SH_R[f]},
@@ -285,6 +404,9 @@ def _attack_pose(i):
         pose = merge(pose, F.expr("grit"))
     if wob:
         pose = merge(pose, {"brow": {"z": -0.4}, "head": {"z": -0.3}})
+    if turn and AIM_W[i]:     # the clouds hang where the fire frame's tube left them
+        full = turn / AIM_W[i]
+        pose = _shift_clouds(pose, *_blast_shift(DEG[3] - LEAN[3], A_DX[3], full), full=full)
     return KM.ground_feet(RIG, pose, LEGS)
 
 
@@ -320,15 +442,19 @@ KB_BQ = [-0.04, -0.07, -0.07, 0.03, 0.06, -0.02, 0.0, 0.0]
 KB_FRONT = [8.0, 12.5, 12.5, 12.5, 14.0, 12.5, 12.5, 7.0]
 
 
-def _b_pose(i):
+KB_DX = [0.4, 0.8, 0.8, 0.8, -2.5, -0.5, 0, 0]
+
+
+def _b_pose(i, turn=0.0):
     if i in (0, 9, 10):
         return _attack_pose(i)
     k = i - 1
     t = KB_LEAN[k]
-    pose = merge(aim(KB_DEG[k] - t, dx=[0.4, 0.8, 0.8, 0.8, -2.5, -0.5, 0, 0][k],
-                     dz=0.5 if k == 2 else 0.0, far=k != 5), {
-        "torso": {"r": t},
-        "head": {"r": [-4, -8, -8, -8, 6, -2, 0, 0][k] - 0.3 * t, "x": 1.4 if k in (1, 2, 3) else 0.0},
+    deg, dx, dz, lean, fore = _turned(KB_DEG[k] - t, KB_DX[k], 0.5 if k == 2 else 0.0, turn)
+    pose = merge(aim(deg, dx=dx, dz=dz, far=k != 5, fore=fore), {
+        "torso": {"r": t + lean},
+        "head": {"r": [-4, -8, -8, -8, 6, -2, 0, 0][k] - 0.3 * t + AIM_HEAD * turn,
+                 "x": 1.4 if k in (1, 2, 3) else 0.0},
         "hat": {"r": [0, 2, 2, 2, 10, 2, 0, 0][k], "z": [0, 0, 0, 0, 1.5, 0, 0, 0][k]},
         "flash": {"show": k == 3},
         "blast": {"show": k == 3},
@@ -345,6 +471,10 @@ def _b_pose(i):
         pose["spare"] = {"hide": True}
         pose["reload"] = {"show": True}
         pose["hand_l"] = {"r": 150.0}
+    if turn and AIM_W[i]:     # the clouds hang where the fire frame's tube left them (kneeling: lower)
+        full = turn / AIM_W[i]
+        pose = _shift_clouds(pose, *_blast_shift(KB_DEG[3] - KB_LEAN[3], KB_DX[3], full), low=(-26.0, -31.0),
+                             full=full)
     pose = KM.kneel(RIG, pose, LEGS, drop=KB_DROP[k], front=KB_FRONT[k])
     if k in (1, 2):
         pose = merge(pose, F.expr("squeeze", "grit"), {"brow": {"z": -1.0 - (0.4 if k == 2 else 0.0)}})
@@ -419,13 +549,21 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (both shots; the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, lambda u, t: _attack_pose(u, turn=t), AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, lambda u, t: _b_pose(u, turn=t), AIM_W, aims=("up45", "up70"))
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl, attack_ms=790, attack_impact_at=0.3684))

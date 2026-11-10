@@ -26,10 +26,10 @@
   },
   "trench_raider_idle_00_team": {
    "frame": {
-    "x": 314,
-    "y": 1395,
+    "x": 221,
+    "y": 1396,
     "w": 100,
-    "h": 149
+    "h": 150
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 212,
     "y": 238,
     "w": 100,
-    "h": 149
+    "h": 150
    },
    "sourceSize": {
     "w": 514,
@@ -74,10 +74,10 @@
   },
   "trench_raider_idle_01_team": {
    "frame": {
-    "x": 1065,
-    "y": 1237,
+    "x": 325,
+    "y": 1396,
     "w": 99,
-    "h": 151
+    "h": 150
    },
    "rotated": false,
    "trimmed": true,
@@ -85,7 +85,7 @@
     "x": 213,
     "y": 235,
     "w": 99,
-    "h": 151
+    "h": 150
    },
    "sourceSize": {
     "w": 514,
@@ -122,7 +122,7 @@
   },
   "trench_raider_idle_02_team": {
    "frame": {
-    "x": 332,
+    "x": 208,
     "y": 1237,
     "w": 100,
     "h": 153
@@ -170,7 +170,7 @@
   },
   "trench_raider_idle_03_team": {
    "frame": {
-    "x": 790,
+    "x": 795,
     "y": 1064,
     "w": 97,
     "h": 157
@@ -218,8 +218,8 @@
   },
   "trench_raider_idle_04_team": {
    "frame": {
-    "x": 1096,
-    "y": 1064,
+    "x": 2,
+    "y": 1237,
     "w": 97,
     "h": 155
    },
@@ -266,7 +266,7 @@
   },
   "trench_raider_idle_05_team": {
    "frame": {
-    "x": 749,
+    "x": 738,
     "y": 1237,
     "w": 101,
     "h": 152
@@ -314,10 +314,10 @@
   },
   "trench_raider_walk_00_team": {
    "frame": {
-    "x": 117,
+    "x": 519,
     "y": 1237,
     "w": 106,
-    "h": 153
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
@@ -325,7 +325,7 @@
     "x": 218,
     "y": 246,
     "w": 106,
-    "h": 153
+    "h": 152
    },
    "sourceSize": {
     "w": 514,
@@ -362,8 +362,8 @@
   },
   "trench_raider_walk_01_team": {
    "frame": {
-    "x": 536,
-    "y": 1395,
+    "x": 546,
+    "y": 1396,
     "w": 99,
     "h": 145
    },
@@ -410,17 +410,17 @@
   },
   "trench_raider_walk_02_team": {
    "frame": {
-    "x": 2,
-    "y": 1395,
-    "w": 100,
+    "x": 116,
+    "y": 1396,
+    "w": 101,
     "h": 150
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 223,
+    "x": 222,
     "y": 239,
-    "w": 100,
+    "w": 101,
     "h": 150
    },
    "sourceSize": {
@@ -458,7 +458,7 @@
   },
   "trench_raider_walk_03_team": {
    "frame": {
-    "x": 991,
+    "x": 1112,
     "y": 1064,
     "w": 101,
     "h": 155
@@ -506,7 +506,7 @@
   },
   "trench_raider_walk_04_team": {
    "frame": {
-    "x": 955,
+    "x": 1047,
     "y": 1237,
     "w": 106,
     "h": 151
@@ -554,8 +554,8 @@
   },
   "trench_raider_walk_05_team": {
    "frame": {
-    "x": 749,
-    "y": 1395,
+    "x": 759,
+    "y": 1396,
     "w": 100,
     "h": 143
    },
@@ -602,10 +602,10 @@
   },
   "trench_raider_walk_06_team": {
    "frame": {
-    "x": 106,
-    "y": 1395,
+    "x": 312,
+    "y": 1237,
     "w": 100,
-    "h": 150
+    "h": 153
    },
    "rotated": false,
    "trimmed": true,
@@ -613,7 +613,7 @@
     "x": 223,
     "y": 239,
     "w": 100,
-    "h": 150
+    "h": 153
    },
    "sourceSize": {
     "w": 514,
@@ -650,18 +650,18 @@
   },
   "trench_raider_walk_07_team": {
    "frame": {
-    "x": 210,
-    "y": 1395,
-    "w": 100,
-    "h": 150
+    "x": 1157,
+    "y": 1237,
+    "w": 101,
+    "h": 151
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 224,
+    "x": 223,
     "y": 229,
-    "w": 100,
-    "h": 150
+    "w": 101,
+    "h": 151
    },
    "sourceSize": {
     "w": 514,
@@ -698,7 +698,7 @@
   },
   "trench_raider_attack_00_team": {
    "frame": {
-    "x": 227,
+    "x": 103,
     "y": 1237,
     "w": 101,
     "h": 153
@@ -746,9 +746,9 @@
   },
   "trench_raider_attack_01_team": {
    "frame": {
-    "x": 970,
-    "y": 1395,
-    "w": 118,
+    "x": 981,
+    "y": 1396,
+    "w": 117,
     "h": 136
    },
    "rotated": false,
@@ -756,7 +756,7 @@
    "spriteSourceSize": {
     "x": 225,
     "y": 253,
-    "w": 118,
+    "w": 117,
     "h": 136
    },
    "sourceSize": {
@@ -794,7 +794,7 @@
   },
   "trench_raider_attack_02_team": {
    "frame": {
-    "x": 484,
+    "x": 488,
     "y": 1064,
     "w": 98,
     "h": 159
@@ -842,10 +842,10 @@
   },
   "trench_raider_attack_03_team": {
    "frame": {
-    "x": 418,
-    "y": 1395,
+    "x": 428,
+    "y": 1396,
     "w": 114,
-    "h": 145
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
@@ -853,7 +853,7 @@
     "x": 186,
     "y": 249,
     "w": 114,
-    "h": 145
+    "h": 147
    },
    "sourceSize": {
     "w": 514,
@@ -890,10 +890,10 @@
   },
   "trench_raider_attack_04_team": {
    "frame": {
-    "x": 689,
+    "x": 590,
     "y": 1064,
     "w": 97,
-    "h": 158
+    "h": 159
    },
    "rotated": false,
    "trimmed": true,
@@ -901,7 +901,7 @@
     "x": 220,
     "y": 228,
     "w": 97,
-    "h": 158
+    "h": 159
    },
    "sourceSize": {
     "w": 514,
@@ -938,17 +938,17 @@
   },
   "trench_raider_attack_05_team": {
    "frame": {
-    "x": 891,
+    "x": 896,
     "y": 1064,
-    "w": 96,
+    "w": 97,
     "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 238,
+    "x": 237,
     "y": 229,
-    "w": 96,
+    "w": 97,
     "h": 157
    },
    "sourceSize": {
@@ -986,17 +986,17 @@
   },
   "trench_raider_attack_06_team": {
    "frame": {
-    "x": 586,
+    "x": 691,
     "y": 1064,
-    "w": 99,
+    "w": 100,
     "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 245,
+    "x": 244,
     "y": 231,
-    "w": 99,
+    "w": 100,
     "h": 158
    },
    "sourceSize": {
@@ -1034,17 +1034,17 @@
   },
   "trench_raider_attack_07_team": {
    "frame": {
-    "x": 642,
+    "x": 629,
     "y": 1237,
-    "w": 103,
+    "w": 105,
     "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 244,
+    "x": 242,
     "y": 237,
-    "w": 103,
+    "w": 105,
     "h": 152
    },
    "sourceSize": {
@@ -1058,7 +1058,7 @@
   },
   "trench_raider_attack_08": {
    "frame": {
-    "x": 997,
+    "x": 998,
     "y": 681,
     "w": 206,
     "h": 185
@@ -1082,8 +1082,8 @@
   },
   "trench_raider_attack_08_team": {
    "frame": {
-    "x": 639,
-    "y": 1395,
+    "x": 649,
+    "y": 1396,
     "w": 106,
     "h": 144
    },
@@ -1130,7 +1130,7 @@
   },
   "trench_raider_attack_09_team": {
    "frame": {
-    "x": 854,
+    "x": 946,
     "y": 1237,
     "w": 97,
     "h": 152
@@ -1178,10 +1178,10 @@
   },
   "trench_raider_attack_10_team": {
    "frame": {
-    "x": 436,
+    "x": 843,
     "y": 1237,
     "w": 99,
-    "h": 153
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
@@ -1189,7 +1189,7 @@
     "x": 217,
     "y": 233,
     "w": 99,
-    "h": 153
+    "h": 152
    },
    "sourceSize": {
     "w": 514,
@@ -1226,10 +1226,10 @@
   },
   "trench_raider_hit_00_team": {
    "frame": {
-    "x": 2,
-    "y": 1237,
+    "x": 997,
+    "y": 1064,
     "w": 111,
-    "h": 154
+    "h": 155
    },
    "rotated": false,
    "trimmed": true,
@@ -1237,7 +1237,7 @@
     "x": 188,
     "y": 233,
     "w": 111,
-    "h": 154
+    "h": 155
    },
    "sourceSize": {
     "w": 514,
@@ -1276,15 +1276,15 @@
    "frame": {
     "x": 755,
     "y": 877,
-    "w": 98,
+    "w": 100,
     "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
+    "x": 192,
     "y": 205,
-    "w": 98,
+    "w": 100,
     "h": 177
    },
    "sourceSize": {
@@ -1322,7 +1322,7 @@
   },
   "trench_raider_hit_02_team": {
    "frame": {
-    "x": 262,
+    "x": 265,
     "y": 1064,
     "w": 96,
     "h": 164
@@ -1370,8 +1370,8 @@
   },
   "trench_raider_hit_03_team": {
    "frame": {
-    "x": 1168,
-    "y": 1237,
+    "x": 2,
+    "y": 1396,
     "w": 110,
     "h": 150
    },
@@ -1418,7 +1418,7 @@
   },
   "trench_raider_hit_04_team": {
    "frame": {
-    "x": 539,
+    "x": 416,
     "y": 1237,
     "w": 99,
     "h": 153
@@ -1466,18 +1466,18 @@
   },
   "trench_raider_die_00_team": {
    "frame": {
-    "x": 853,
-    "y": 1395,
-    "w": 113,
-    "h": 141
+    "x": 863,
+    "y": 1396,
+    "w": 114,
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 194,
     "y": 240,
-    "w": 113,
-    "h": 141
+    "w": 114,
+    "h": 142
    },
    "sourceSize": {
     "w": 514,
@@ -1490,7 +1490,7 @@
   },
   "trench_raider_die_01": {
    "frame": {
-    "x": 1069,
+    "x": 1071,
     "y": 877,
     "w": 197,
     "h": 169
@@ -1514,9 +1514,9 @@
   },
   "trench_raider_die_01_team": {
    "frame": {
-    "x": 362,
+    "x": 365,
     "y": 1064,
-    "w": 118,
+    "w": 119,
     "h": 159
    },
    "rotated": false,
@@ -1524,7 +1524,7 @@
    "spriteSourceSize": {
     "x": 184,
     "y": 194,
-    "w": 118,
+    "w": 119,
     "h": 159
    },
    "sourceSize": {
@@ -1564,15 +1564,15 @@
    "frame": {
     "x": 902,
     "y": 681,
-    "w": 91,
+    "w": 92,
     "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 205,
+    "x": 204,
     "y": 175,
-    "w": 91,
+    "w": 92,
     "h": 186
    },
    "sourceSize": {
@@ -1612,16 +1612,16 @@
    "frame": {
     "x": 166,
     "y": 1064,
-    "w": 92,
-    "h": 167
+    "w": 95,
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 189,
+    "x": 186,
     "y": 191,
-    "w": 92,
-    "h": 167
+    "w": 95,
+    "h": 168
    },
    "sourceSize": {
     "w": 514,
@@ -1682,7 +1682,7 @@
   },
   "trench_raider_die_05": {
    "frame": {
-    "x": 857,
+    "x": 859,
     "y": 877,
     "w": 208,
     "h": 170
@@ -1707,8 +1707,8 @@
   "trench_raider_die_05_team": {
    "frame": {
     "x": 344,
-    "y": 1549,
-    "w": 118,
+    "y": 1550,
+    "w": 120,
     "h": 124
    },
    "rotated": false,
@@ -1716,7 +1716,7 @@
    "spriteSourceSize": {
     "x": 161,
     "y": 286,
-    "w": 118,
+    "w": 120,
     "h": 124
    },
    "sourceSize": {
@@ -1731,7 +1731,7 @@
   "trench_raider_die_06": {
    "frame": {
     "x": 2,
-    "y": 1549,
+    "y": 1550,
     "w": 338,
     "h": 127
    },
@@ -1754,18 +1754,18 @@
   },
   "trench_raider_die_06_team": {
    "frame": {
-    "x": 1018,
-    "y": 1549,
+    "x": 1020,
+    "y": 1550,
     "w": 178,
-    "h": 89
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 94,
-    "y": 327,
+    "x": 95,
+    "y": 326,
     "w": 178,
-    "h": 89
+    "h": 90
    },
    "sourceSize": {
     "w": 514,
@@ -1778,8 +1778,8 @@
   },
   "trench_raider_die_07": {
    "frame": {
-    "x": 466,
-    "y": 1549,
+    "x": 468,
+    "y": 1550,
     "w": 365,
     "h": 107
    },
@@ -1802,8 +1802,8 @@
   },
   "trench_raider_die_07_team": {
    "frame": {
-    "x": 835,
-    "y": 1549,
+    "x": 837,
+    "y": 1550,
     "w": 179,
     "h": 91
    },

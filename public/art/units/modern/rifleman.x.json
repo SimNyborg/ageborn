@@ -2,18 +2,18 @@
  "frames": {
   "rifleman_attack_b_01": {
    "frame": {
-    "x": 339,
-    "y": 2,
+    "x": 505,
+    "y": 271,
     "w": 106,
-    "h": 82
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 104,
+    "y": 102,
     "w": 106,
-    "h": 82
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -26,8 +26,8 @@
   },
   "rifleman_attack_b_01_team": {
    "frame": {
-    "x": 2,
-    "y": 91,
+    "x": 760,
+    "y": 2,
     "w": 56,
     "h": 81
    },
@@ -50,18 +50,18 @@
   },
   "rifleman_attack_b_02": {
    "frame": {
-    "x": 226,
-    "y": 176,
+    "x": 911,
+    "y": 406,
     "w": 110,
-    "h": 72
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 114,
+    "y": 113,
     "w": 110,
-    "h": 72
+    "h": 73
    },
    "sourceSize": {
     "w": 274,
@@ -74,8 +74,8 @@
   },
   "rifleman_attack_b_02_team": {
    "frame": {
-    "x": 252,
-    "y": 91,
+    "x": 937,
+    "y": 84,
     "w": 60,
     "h": 78
    },
@@ -98,8 +98,8 @@
   },
   "rifleman_attack_b_03": {
    "frame": {
-    "x": 122,
-    "y": 91,
+    "x": 820,
+    "y": 2,
     "w": 126,
     "h": 78
    },
@@ -107,7 +107,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 96,
-    "y": 109,
+    "y": 108,
     "w": 126,
     "h": 78
    },
@@ -122,8 +122,8 @@
   },
   "rifleman_attack_b_03_team": {
    "frame": {
-    "x": 163,
-    "y": 2,
+    "x": 617,
+    "y": 447,
     "w": 56,
     "h": 84
    },
@@ -146,18 +146,18 @@
   },
   "rifleman_attack_b_04": {
    "frame": {
-    "x": 109,
-    "y": 176,
+    "x": 901,
+    "y": 166,
     "w": 113,
-    "h": 75
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 111,
+    "y": 110,
     "w": 113,
-    "h": 75
+    "h": 76
    },
    "sourceSize": {
     "w": 274,
@@ -170,17 +170,17 @@
   },
   "rifleman_attack_b_04_team": {
    "frame": {
-    "x": 62,
-    "y": 91,
-    "w": 56,
+    "x": 726,
+    "y": 262,
+    "w": 57,
     "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 87,
     "y": 106,
-    "w": 56,
+    "w": 57,
     "h": 80
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "rifleman_attack_b_05": {
    "frame": {
-    "x": 316,
-    "y": 91,
+    "x": 776,
+    "y": 170,
     "w": 121,
-    "h": 77
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 109,
+    "y": 108,
     "w": 121,
-    "h": 77
+    "h": 78
    },
    "sourceSize": {
     "w": 274,
@@ -218,8 +218,8 @@
   },
   "rifleman_attack_b_05_team": {
    "frame": {
-    "x": 223,
-    "y": 2,
+    "x": 552,
+    "y": 179,
     "w": 54,
     "h": 83
    },
@@ -242,18 +242,18 @@
   },
   "rifleman_attack_b_06": {
    "frame": {
-    "x": 2,
-    "y": 176,
+    "x": 830,
+    "y": 84,
     "w": 103,
-    "h": 77
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 109,
+    "y": 108,
     "w": 103,
-    "h": 77
+    "h": 78
    },
    "sourceSize": {
     "w": 274,
@@ -266,8 +266,8 @@
   },
   "rifleman_attack_b_06_team": {
    "frame": {
-    "x": 281,
-    "y": 2,
+    "x": 609,
+    "y": 90,
     "w": 54,
     "h": 83
    },
@@ -290,18 +290,18 @@
   },
   "rifleman_attack_b_07": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 372,
+    "y": 418,
     "w": 100,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 101,
+    "y": 100,
     "w": 100,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 274,
@@ -314,8 +314,8 @@
   },
   "rifleman_attack_b_07_team": {
    "frame": {
-    "x": 106,
-    "y": 2,
+    "x": 442,
+    "y": 192,
     "w": 53,
     "h": 85
    },
@@ -325,6 +325,1350 @@
     "x": 93,
     "y": 96,
     "w": 53,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_01": {
+   "frame": {
+    "x": 303,
+    "y": 323,
+    "w": 99,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 95,
+    "w": 99,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_01_team": {
+   "frame": {
+    "x": 677,
+    "y": 437,
+    "w": 54,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 91,
+    "w": 54,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_02": {
+   "frame": {
+    "x": 350,
+    "y": 99,
+    "w": 89,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 97,
+    "w": 89,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_02_team": {
+   "frame": {
+    "x": 792,
+    "y": 429,
+    "w": 51,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 93,
+    "w": 51,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_03": {
+   "frame": {
+    "x": 2,
+    "y": 409,
+    "w": 95,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 66,
+    "w": 95,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_03_team": {
+   "frame": {
+    "x": 537,
+    "y": 2,
+    "w": 47,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 87,
+    "w": 47,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_04": {
+   "frame": {
+    "x": 73,
+    "y": 125,
+    "w": 73,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 76,
+    "w": 73,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_04_team": {
+   "frame": {
+    "x": 950,
+    "y": 2,
+    "w": 61,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 95,
+    "w": 61,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_05": {
+   "frame": {
+    "x": 150,
+    "y": 114,
+    "w": 97,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 78,
+    "w": 97,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_05_team": {
+   "frame": {
+    "x": 610,
+    "y": 177,
+    "w": 51,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 88,
+    "w": 51,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_06": {
+   "frame": {
+    "x": 251,
+    "y": 113,
+    "w": 95,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 92,
+    "w": 95,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_06_team": {
+   "frame": {
+    "x": 670,
+    "y": 264,
+    "w": 52,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 89,
+    "w": 52,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_07": {
+   "frame": {
+    "x": 200,
+    "y": 328,
+    "w": 99,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 91,
+    "w": 99,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up45_07_team": {
+   "frame": {
+    "x": 552,
+    "y": 91,
+    "w": 53,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 87,
+    "w": 53,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_01": {
+   "frame": {
+    "x": 347,
+    "y": 210,
+    "w": 91,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 95,
+    "w": 91,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_01_team": {
+   "frame": {
+    "x": 684,
+    "y": 350,
+    "w": 51,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 91,
+    "w": 51,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_02": {
+   "frame": {
+    "x": 225,
+    "y": 2,
+    "w": 65,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 79,
+    "w": 65,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_02_team": {
+   "frame": {
+    "x": 735,
+    "y": 435,
+    "w": 53,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 93,
+    "w": 53,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 67,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 42,
+    "w": 67,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_03_team": {
+   "frame": {
+    "x": 499,
+    "y": 182,
+    "w": 49,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 87,
+    "w": 49,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_04": {
+   "frame": {
+    "x": 73,
+    "y": 2,
+    "w": 64,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 66,
+    "w": 64,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_04_team": {
+   "frame": {
+    "x": 911,
+    "y": 246,
+    "w": 69,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 97,
+    "w": 69,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_05": {
+   "frame": {
+    "x": 2,
+    "y": 282,
+    "w": 78,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 62,
+    "w": 78,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_05_team": {
+   "frame": {
+    "x": 702,
+    "y": 2,
+    "w": 54,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 89,
+    "w": 54,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_06": {
+   "frame": {
+    "x": 294,
+    "y": 2,
+    "w": 87,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 92,
+    "w": 87,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_06_team": {
+   "frame": {
+    "x": 721,
+    "y": 88,
+    "w": 51,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 89,
+    "w": 51,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_07": {
+   "frame": {
+    "x": 245,
+    "y": 225,
+    "w": 98,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 91,
+    "w": 98,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_up70_07_team": {
+   "frame": {
+    "x": 588,
+    "y": 2,
+    "w": 53,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 87,
+    "w": 53,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_01": {
+   "frame": {
+    "x": 527,
+    "y": 359,
+    "w": 96,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 102,
+    "w": 96,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_01_team": {
+   "frame": {
+    "x": 627,
+    "y": 351,
+    "w": 53,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 98,
+    "w": 53,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_02": {
+   "frame": {
+    "x": 101,
+    "y": 459,
+    "w": 88,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 111,
+    "w": 88,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_02_team": {
+   "frame": {
+    "x": 739,
+    "y": 346,
+    "w": 52,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 108,
+    "w": 52,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_03": {
+   "frame": {
+    "x": 101,
+    "y": 350,
+    "w": 95,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 81,
+    "w": 95,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_03_team": {
+   "frame": {
+    "x": 476,
+    "y": 395,
+    "w": 47,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 103,
+    "w": 47,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_04": {
+   "frame": {
+    "x": 167,
+    "y": 225,
+    "w": 74,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 87,
+    "w": 74,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_04_team": {
+   "frame": {
+    "x": 847,
+    "y": 416,
+    "w": 60,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 108,
+    "w": 60,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_05": {
+   "frame": {
+    "x": 200,
+    "y": 426,
+    "w": 98,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 94,
+    "w": 98,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_05_team": {
+   "frame": {
+    "x": 615,
+    "y": 264,
+    "w": 51,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 104,
+    "w": 51,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_06": {
+   "frame": {
+    "x": 787,
+    "y": 252,
+    "w": 95,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 108,
+    "w": 95,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_06_team": {
+   "frame": {
+    "x": 645,
+    "y": 2,
+    "w": 53,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 104,
+    "w": 53,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_07": {
+   "frame": {
+    "x": 406,
+    "y": 305,
+    "w": 95,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 100,
+    "w": 95,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up45_07_team": {
+   "frame": {
+    "x": 443,
+    "y": 93,
+    "w": 53,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 96,
+    "w": 53,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_01": {
+   "frame": {
+    "x": 527,
+    "y": 447,
+    "w": 86,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 102,
+    "w": 86,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_01_team": {
+   "frame": {
+    "x": 720,
+    "y": 176,
+    "w": 52,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 98,
+    "w": 52,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_02": {
+   "frame": {
+    "x": 302,
+    "y": 426,
+    "w": 66,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 94,
+    "w": 66,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_02_team": {
+   "frame": {
+    "x": 776,
+    "y": 87,
+    "w": 50,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 108,
+    "w": 50,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_03": {
+   "frame": {
+    "x": 2,
+    "y": 150,
+    "w": 67,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 58,
+    "w": 67,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_03_team": {
+   "frame": {
+    "x": 500,
+    "y": 91,
+    "w": 48,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 103,
+    "w": 48,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_04": {
+   "frame": {
+    "x": 141,
+    "y": 2,
+    "w": 80,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 78,
+    "w": 80,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_04_team": {
+   "frame": {
+    "x": 886,
+    "y": 326,
+    "w": 67,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 110,
+    "w": 67,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_05": {
+   "frame": {
+    "x": 84,
+    "y": 238,
+    "w": 79,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 78,
+    "w": 79,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_05_team": {
+   "frame": {
+    "x": 665,
+    "y": 177,
+    "w": 51,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 104,
+    "w": 51,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_06": {
+   "frame": {
+    "x": 795,
+    "y": 334,
+    "w": 87,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 108,
+    "w": 87,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_06_team": {
+   "frame": {
+    "x": 667,
+    "y": 89,
+    "w": 50,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 104,
+    "w": 50,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_07": {
+   "frame": {
+    "x": 385,
+    "y": 2,
+    "w": 92,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 99,
+    "w": 92,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_attack_b_up70_07_team": {
+   "frame": {
+    "x": 481,
+    "y": 2,
+    "w": 52,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 96,
+    "w": 52,
     "h": 85
    },
    "sourceSize": {
@@ -361,6 +1705,102 @@
    "rifleman_attack_b_07_team",
    "rifleman_attack_08_team",
    "rifleman_attack_09_team"
+  ],
+  "attack_up45": [
+   "rifleman_attack_00",
+   "rifleman_attack_up45_01",
+   "rifleman_attack_up45_02",
+   "rifleman_attack_up45_03",
+   "rifleman_attack_up45_04",
+   "rifleman_attack_up45_05",
+   "rifleman_attack_up45_06",
+   "rifleman_attack_up45_07",
+   "rifleman_attack_08",
+   "rifleman_attack_09"
+  ],
+  "attack_up45_team": [
+   "rifleman_attack_00_team",
+   "rifleman_attack_up45_01_team",
+   "rifleman_attack_up45_02_team",
+   "rifleman_attack_up45_03_team",
+   "rifleman_attack_up45_04_team",
+   "rifleman_attack_up45_05_team",
+   "rifleman_attack_up45_06_team",
+   "rifleman_attack_up45_07_team",
+   "rifleman_attack_08_team",
+   "rifleman_attack_09_team"
+  ],
+  "attack_up70": [
+   "rifleman_attack_00",
+   "rifleman_attack_up70_01",
+   "rifleman_attack_up70_02",
+   "rifleman_attack_up70_03",
+   "rifleman_attack_up70_04",
+   "rifleman_attack_up70_05",
+   "rifleman_attack_up70_06",
+   "rifleman_attack_up70_07",
+   "rifleman_attack_08",
+   "rifleman_attack_09"
+  ],
+  "attack_up70_team": [
+   "rifleman_attack_00_team",
+   "rifleman_attack_up70_01_team",
+   "rifleman_attack_up70_02_team",
+   "rifleman_attack_up70_03_team",
+   "rifleman_attack_up70_04_team",
+   "rifleman_attack_up70_05_team",
+   "rifleman_attack_up70_06_team",
+   "rifleman_attack_up70_07_team",
+   "rifleman_attack_08_team",
+   "rifleman_attack_09_team"
+  ],
+  "attack_b_up45": [
+   "rifleman_attack_00",
+   "rifleman_attack_b_up45_01",
+   "rifleman_attack_b_up45_02",
+   "rifleman_attack_b_up45_03",
+   "rifleman_attack_b_up45_04",
+   "rifleman_attack_b_up45_05",
+   "rifleman_attack_b_up45_06",
+   "rifleman_attack_b_up45_07",
+   "rifleman_attack_08",
+   "rifleman_attack_09"
+  ],
+  "attack_b_up45_team": [
+   "rifleman_attack_00_team",
+   "rifleman_attack_b_up45_01_team",
+   "rifleman_attack_b_up45_02_team",
+   "rifleman_attack_b_up45_03_team",
+   "rifleman_attack_b_up45_04_team",
+   "rifleman_attack_b_up45_05_team",
+   "rifleman_attack_b_up45_06_team",
+   "rifleman_attack_b_up45_07_team",
+   "rifleman_attack_08_team",
+   "rifleman_attack_09_team"
+  ],
+  "attack_b_up70": [
+   "rifleman_attack_00",
+   "rifleman_attack_b_up70_01",
+   "rifleman_attack_b_up70_02",
+   "rifleman_attack_b_up70_03",
+   "rifleman_attack_b_up70_04",
+   "rifleman_attack_b_up70_05",
+   "rifleman_attack_b_up70_06",
+   "rifleman_attack_b_up70_07",
+   "rifleman_attack_08",
+   "rifleman_attack_09"
+  ],
+  "attack_b_up70_team": [
+   "rifleman_attack_00_team",
+   "rifleman_attack_b_up70_01_team",
+   "rifleman_attack_b_up70_02_team",
+   "rifleman_attack_b_up70_03_team",
+   "rifleman_attack_b_up70_04_team",
+   "rifleman_attack_b_up70_05_team",
+   "rifleman_attack_b_up70_06_team",
+   "rifleman_attack_b_up70_07_team",
+   "rifleman_attack_08_team",
+   "rifleman_attack_09_team"
   ]
  },
  "meta": {
@@ -369,8 +1809,8 @@
   "image": "rifleman.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 448,
-   "h": 256
+   "w": 1024,
+   "h": 536
   },
   "scale": "1.5",
   "ageborn": {
@@ -488,6 +1928,366 @@
       "atLu": [
        53.7,
        18.9
+      ]
+     }
+    },
+    "attack_up45": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      191,
+      60,
+      70,
+      60,
+      70,
+      60,
+      67,
+      70
+     ],
+     "durationMs": 748,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.389,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        49.2,
+        36.7
+       ],
+       [
+        49.2,
+        47.4
+       ],
+       [
+        41.6,
+        59.4
+       ],
+       [
+        35.5,
+        68.4
+       ],
+       [
+        17.1,
+        67.2
+       ],
+       [
+        36.6,
+        58.6
+       ],
+       [
+        43.7,
+        49.5
+       ],
+       [
+        49.0,
+        39.0
+       ],
+       [
+        47.1,
+        41.9
+       ],
+       [
+        41.7,
+        48.4
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "muzzle": [
+      35.5,
+      68.4
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       35.5,
+       68.4
+      ]
+     }
+    },
+    "attack_up70": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      191,
+      60,
+      70,
+      60,
+      70,
+      60,
+      67,
+      70
+     ],
+     "durationMs": 748,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.389,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        49.2,
+        36.7
+       ],
+       [
+        41.9,
+        57.5
+       ],
+       [
+        22.5,
+        72.6
+       ],
+       [
+        14.7,
+        82.5
+       ],
+       [
+        -8.9,
+        74.9
+       ],
+       [
+        23.1,
+        70.0
+       ],
+       [
+        36.9,
+        58.4
+       ],
+       [
+        47.2,
+        43.5
+       ],
+       [
+        47.1,
+        41.9
+       ],
+       [
+        41.7,
+        48.4
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "muzzle": [
+      14.7,
+      82.5
+     ],
+     "aimDeg": 70.1,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       14.7,
+       82.5
+      ]
+     }
+    },
+    "attack_b_up45": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      191,
+      60,
+      70,
+      60,
+      70,
+      60,
+      67,
+      70
+     ],
+     "durationMs": 748,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.389,
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        49.2,
+        36.7
+       ],
+       [
+        45.4,
+        42.1
+       ],
+       [
+        39.3,
+        47.9
+       ],
+       [
+        33.3,
+        55.9
+       ],
+       [
+        14.5,
+        57.7
+       ],
+       [
+        37.2,
+        45.9
+       ],
+       [
+        43.7,
+        37.5
+       ],
+       [
+        44.9,
+        39.3
+       ],
+       [
+        47.1,
+        41.9
+       ],
+       [
+        41.7,
+        48.4
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "muzzle": [
+      33.3,
+      55.9
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       33.3,
+       55.9
+      ]
+     }
+    },
+    "attack_b_up70": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      191,
+      60,
+      70,
+      60,
+      70,
+      60,
+      67,
+      70
+     ],
+     "durationMs": 748,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.389,
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        49.2,
+        36.7
+       ],
+       [
+        37.3,
+        51.5
+       ],
+       [
+        19.8,
+        60.7
+       ],
+       [
+        12.2,
+        69.7
+       ],
+       [
+        -11.9,
+        64.6
+       ],
+       [
+        23.8,
+        57.4
+       ],
+       [
+        36.8,
+        46.3
+       ],
+       [
+        42.3,
+        43.5
+       ],
+       [
+        47.1,
+        41.9
+       ],
+       [
+        41.7,
+        48.4
+       ]
+      ]
+     },
+     "holdStep": 2,
+     "muzzle": [
+      12.2,
+      69.7
+     ],
+     "aimDeg": 70.1,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       12.2,
+       69.7
       ]
      }
     }

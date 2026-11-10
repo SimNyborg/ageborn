@@ -29,16 +29,22 @@ Animation standard (ANIM_SPEC 2026-10-02):
   attack_c  SPADE-EDGE STAB: he drops into a low crouch with the spade drawn back at his hip, the
             blade edge pointing at the enemy (the held extreme), then lunges and drives the edge
             straight in (a thrust from a low body level)
+
+Art round W3 (the detail standard): damage spots measured in posed frames (item 40) and the Desert Raider skin
+(item 46). A melee unit: no aimed clips.
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_modern as KM
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
-from ageborn_art.anim import merge, squash
+from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "trench_raider"
 GAIT_NAME = "biped"
@@ -56,6 +62,51 @@ BLADE_W = 8.2          # half width
 HELM_C = (1.5, 0.0, 59.6)
 BLADE_C = (FIST[0], FIST[1], FIST[2] + HANDLE + BLADE * 0.55)
 TIP = (FIST[0], FIST[1], FIST[2] + HANDLE + BLADE + 1.0)
+GRAIN = "#6A5240"
+EDGE = "#BCC3C9"
+STUBBLE = "#C9A88E"
+TROUSERS = "#767B5A"     # kit_modern.legs_v3's olive trousers
+SOLE = "#2B2A2E"
+BOOT = "#4A3F36"         # W3: a lit side on the boots (was rigs_modern.BOOT #3E342D)
+CHIP = "#7E8264"         # W3: worn paint on the helmet (a step lighter than the olive)
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Trench Raider is the wide Brodie, the scarf, the tunic between his arms and the spade: the
+# team zone in two tones (a team-dark knot and tail end on the scarf, a team-dark flap with a brass button on the
+# near breast pocket, a team-dark hem on the tunic skirt, team-dark cuffs, a side seam), the webbing's khaki front
+# brace (3 lu), worn paint chips on the olive helmet, lighter boots.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", STUBBLE: "skin", R.HAIR: "fur", R.KHAKI: "cloth", R.KHAKI_LT: "cloth",
+                           KM.NET: "cloth", KM.FELT: "cloth", KM.CREAM: "cloth", TROUSERS: "cloth", R.OLIVE: "iron",
+                           CHIP: "iron", "#4E5238": "iron", BOOT: "leather", SOLE: "leather", R.LEATHER: "leather",
+                           KM.MUD: "stone", R.WOOD: "wood", GRAIN: "wood", R.GUNMETAL: "iron", R.STEEL: "iron",
+                           EDGE: "iron", KM.BRASS: "bronze", "team": "cloth"})
+
+
+def _far(pal):
+    """A skin palette plus the far side's shaded copies (the legs kit darkens the far leg by 0.8)."""
+    out = dict(pal)
+    for h, v in pal.items():
+        out.setdefault(CL.scale(h, 0.8), CL.scale(v, 0.8))
+    return out
+
+
+# Desert Raider (DESIGN A5.8, rare: "a sand-coloured kit, goggles on the helmet and a scarf"): the same raider in
+# desert kit: a sand-painted Brodie with dust goggles on its dome and a sand neck cloth hanging from the brim at the
+# back, sand trousers, pale sand puttees and webbing, suede desert boots. The tunic, the scarf and the helmet band
+# stay team.
+SAND = "#B9A27A"
+GOGGLE_RIM = "#5E4A3C"
+LENS = "#93B4BA"
+NECK_CLOTH = "#C8B48C"
+DESERT = _far({R.OLIVE: SAND, CHIP: "#CDB993", TROUSERS: "#A8946E", R.KHAKI: "#D2C2A0", R.KHAKI_LT: "#DFD3B6",
+               KM.NET: "#8C7958", BOOT: "#8A6E52", KM.MUD: "#9C8462"})
+DESERT_KINDS = MW.kinds({SAND: "iron", "#CDB993": "iron", "#A8946E": "cloth", "#D2C2A0": "cloth", "#DFD3B6": "cloth",
+                         "#8C7958": "cloth", "#8A6E52": "leather", "#9C8462": "stone", LENS: "glass",
+                         GOGGLE_RIM: "leather", NECK_CLOTH: "cloth"})
+SKINS = {"desert_raider": {"palette": DESERT, "kinds": DESERT_KINDS}}
 
 
 def _spade(rig, joint):
@@ -65,7 +116,7 @@ def _spade(rig, joint):
     g = Geo()   # grain strokes and a leather grip wrap
     g.capsule((cx + 0.2, cy - 1.7, cz + 6.0), (cx + 0.2, cy - 1.7, cz + 12.0), 0.35)
     g.capsule((cx - 0.3, cy - 1.7, cz + 15.0), (cx - 0.3, cy - 1.7, cz + 19.0), 0.35)
-    rig.part(joint, g, "#6A5240", outline=0, highlight=False)
+    rig.part(joint, g, GRAIN, outline=0, highlight=False)
     g = Geo()
     for z in (cz + 2.4, cz + 4.4):
         g.blob((cx, cy, z), (2.4, 2.4, 0.9), p=2.4)
@@ -84,7 +135,7 @@ def _spade(rig, joint):
     face = F.Face(rig, joint, [blade])
     rig.part(joint, blade, R.STEEL, finish="metal")
     g = Geo().blob((cx, cy - 1.0, bz + 2.2), (BLADE_W * 0.5, 1.0, BLADE * 0.26), p=2.2, taper=(1.0, 0.5))
-    rig.part(joint, g, "#BCC3C9", finish="metal", outline=0)   # sharpened bright edge
+    rig.part(joint, g, EDGE, finish="metal", outline=0)   # sharpened bright edge
     g = Geo()   # rivets on the socket strap
     for dx in (-2.6, 2.6):
         g.sphere((cx + dx, cy - 1.5, cz + HANDLE + 3.0), 0.9, cuts=2)
@@ -95,47 +146,78 @@ def _spade(rig, joint):
 
 
 RIG = None
+# worn paint chips on the Brodie's dome (side-view centre, outline offsets): 3 lu across, above the team band
+CHIPS = [((-6.1, 66.4), [(-1.7, -1.1), (1.3, -1.5), (1.8, 0.9), (-0.6, 1.5), (-1.9, 0.4)]),
+         ((4.9, 67.9), [(-1.5, -1.2), (1.6, -1.0), (1.4, 1.2), (-1.2, 1.4)]),
+         ((-1.2, 68.9), [(-1.3, -0.9), (1.5, -1.1), (1.2, 1.0), (-1.5, 1.1)])]
+
+
+def _brodie(rig, joint):
+    """The Brodie (kit_modern) with worn paint chips on the dome; the Desert Raider's dust goggles on the dome and
+    a sand neck cloth hanging from the brim at the back."""
+    KM.brodie(rig, joint, c=HELM_C)
+    x, y, z = HELM_C
+    dome = Geo().blob((x, y, z + 0.6), (12.6, 12.2, 9.4), p=2.2)
+    MW.decals(rig, joint, [dome], CHIPS, CHIP)
+    if getattr(rig, "skin", None) != "desert_raider":
+        return
+    g = Geo().lathe([(12.2, 0), (12.45, 0.7), (12.0, 1.5)], (x, y, z + 5.2), (x, y, z + 6.7), segs=24)
+    rig.part(joint, g, GOGGLE_RIM, outline=0.4)                     # the goggles' strap round the dome
+    dome = Geo().blob((x, y, z + 0.6), (12.6, 12.2, 9.4), p=2.2)
+    lenses = [(x + 4.4, z + 6.4), (x + 9.4, z + 5.9)]
+    MW.decals(rig, joint, [dome], [(c, F.ellipse(0, 0, 2.9, 2.7, 12)) for c in lenses], GOGGLE_RIM, depth=0.9,
+              outline=0.5)
+    dome = Geo().blob((x, y, z + 0.6), (12.6, 12.2, 9.4), p=2.2)
+    MW.decals(rig, joint, [dome], [(c, F.ellipse(0, 0, 1.9, 1.8, 12)) for c in lenses], LENS, depth=1.5,
+              finish="gloss", highlight=True)
+    g = Geo().blob((x - 12.4, y, z - 6.6), (2.6, 10.6, 6.0), p=2.4, rot=(0, -10, 0))
+    g.clip((x, y, z - 1.0), (0, 0, 1))
+    rig.part(joint, g, NECK_CLOTH, outline=0.6)                     # the neck cloth under the brim
 
 
 def build(rig):
     global RIG
     RIG = rig
     KM.skeleton_v3(rig)
-    KM.legs_v3(rig, mud=True)       # muddy boot toes
+    KM.legs_v3(rig, boot=BOOT, mud=True)       # muddy boot toes
     R.tunic(rig, hem_z=13.0)
+    # W3: a team-dark hem on the tunic skirt, a side seam behind the arm, the webbing's front brace, a team-dark
+    # flap with a brass button on the near breast pocket
+    MW.tunic_w3(rig, pocket=KM.BRASS)
     # webbing: grenades at the front of the belt, pouches, a canteen at the back hip
     KM.grenade(rig, "torso", (9.6, -8.4, 17.4), r=2.4)
     KM.grenade(rig, "torso", (4.6, -11.0, 17.0), r=2.3)
     KM.canteen(rig, "torso", (-8.4, -9.8, 16.4), r=3.2)
-    # a team scarf round the neck with a fluttering tail
+    # a team scarf round the neck with a fluttering tail (W3: a team-dark knot and tail end)
     g = Geo().lathe([(8.0, 0), (8.7, 1.8), (8.2, 3.6)], (1.0, 0, 35.6), (1.0, 0, 39.4), segs=18)
-    g.blob((7.6, -4.6, 36.6), (3.4, 3.2, 3.0), p=2.4)
     rig.part("torso", g, team=True, outline=0.6)
+    look.team_part(rig, "torso", Geo().blob((7.6, -4.6, 36.6), (3.4, 3.2, 3.0), p=2.4), outline=0.6)
     rig.secondary("scarf", "torso", (-4.0, -6.0, 38.0), (-14.0, -6.5, 33.0), max_deg=28, gain=1.6)
     g = Geo().blob((-9.0, -6.5, 35.6), (5.6, 1.2, 2.2), p=2.4, taper=(1.0, 0.7), rot=(0, 18, 0))
-    g.blob((-14.0, -6.5, 33.2), (2.2, 1.1, 2.0), p=2.2)
     rig.part("scarf", g, team=True, outline=0.6)
+    look.team_part(rig, "scarf", Geo().blob((-14.0, -6.5, 33.2), (2.2, 1.1, 2.0), p=2.2), outline=0.6)
 
     # head: stubble, angry brow, the face kit; the helmet on its own joint (it pops off)
     stub = Geo().blob((7.0, 0, 41.2), (8.2, 9.6, 4.4), p=2.2)
     stub.clip((3.0, 0, 0), (-1, 0, 0))
     KI.head_face(rig, brow=R.HAIR, brow_angry=True, mouth_dz=-9.2, mouth_w=6.2, extra_geos=[stub])
-    rig.part("head", stub, "#C9A88E", outline=0.5)
+    rig.part("head", stub, STUBBLE, outline=0.5)
     g = Geo().blob((-6.4, 0, 47.5), (6.0, 10.0, 7.0), p=2.2)
     rig.part("head", g, R.HAIR, finish="hair")
     g = Geo().blob((-2.0, -11.2, 50.0), (2.6, 1.6, 3.4), p=2.2)   # ear
     rig.part("head", g, R.SKIN)
     rig.joint("hat", "head", HELM_C)
-    KM.brodie(rig, "hat", c=HELM_C)
+    _brodie(rig, "hat")
     g = Geo().capsule((6.0, -9.8, 57.5), (9.5, -8.0, 40.5), 0.7)   # chin strap
     rig.part("hat", g, R.LEATHER, outline=0.4)
-    KI.loose(rig, "hat_loose", HELM_C, lambda j: KM.brodie(rig, j, c=HELM_C))
+    KI.loose(rig, "hat_loose", HELM_C, lambda j: _brodie(rig, j))
 
     for s in ("r", "l"):
         R.arm_parts(rig, s, fist=4.6)
         y = R.ARM_Y[s]
         g = Geo().blob((2.6, y - 1.5 * (1 if s == "r" else -1), R.HAND_Z + 0.6), (1.7, 1.6, 2.3), p=2.2)
         rig.part(f"hand_{s}", g, R.SKIN)                     # thumb
+    MW.cuffs(rig, dz=3.0)     # W3: team-dark cuffs above the fists
     R.shoulders(rig)
     # rank chevrons on the near sleeve (cream, the Modern emblem)
     sleeve = Geo().capsule((0, R.ARM_Y["r"], R.SHOULDER_Z), (0, R.ARM_Y["r"], R.ELBOW_Z), 4.4, 4.1)
@@ -147,6 +229,19 @@ def build(rig):
     _spade(rig, "spade")
     KI.loose(rig, "spade_loose", FIST, lambda j: _spade(rig, j))
     rig.track("spadeTip", "spade", TIP)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. Placed where the posed frames
+    show them (the probe's camera rays in idle, walk and the three attacks, W2 lesson 1): the tunic skirt's front
+    (the largest team surface the spade and the arms leave clear, 92-100% visible: the first mark), the tunic's back
+    edge (64-84%), the Brodie's dome (always visible); a torn strip from the skirt's back hem."""
+    rig.damage_spot_at("skirt", "hips", 5.0, 13.0, 8.0, "cloth", team=True)
+    rig.damage_spot_at("back", "torso", -10.5, 27.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("helmet", "hat", 2.0, 66.0, 6.0, "metal", fill=R.OLIVE)
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 7.0, "cloth", kind="strip", team=True)
 
 
 # -- poses (WORLD angles; KM.two_hand subtracts the torso lean) ------------------------------------
