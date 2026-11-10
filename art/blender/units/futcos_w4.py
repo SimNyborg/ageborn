@@ -208,6 +208,85 @@ def wave_trooper(rig, helmet_kind="dome", bulk=1.0, team_greave=False, team_thig
     wear(rig, "foot_r", tf, [(*sc(tf, 6.2, 2.0, -RF.LEG_Y - 3.0), 1.2, 0.6)])
 
 
+# the Cosmic kit's tones (rigs_cosmic): a seam and wear on the violet plates, a crease on the void suit, a seam on the
+# star-white plates
+LINE_ON_VIOLET = "#5A2A86"
+WEAR_ON_VIOLET = "#B48BDC"
+FOLD_ON_VOID = "#3C2F59"
+LINE_ON_STAR = "#ADA5C8"
+
+
+def cosmic_helmet(rig, kind="dome"):
+    """The W4 detail on kit_cosmic_wave.helmet / hood (call it after the helmet, with its kind): the dome's seam over
+    the crown behind the visor with chipped edges; the crown cap's seam; the cowl's folds."""
+    from ageborn_art import face as FC_
+    if kind == "dome":
+        hf = FC_.Face(rig, "head", [Geo().blob((2.0, 0, 51.0), (11.6, 11.0, 11.8), p=2.4)])
+        panel_lines(rig, "head", hf, [[sc(hf, -5.6, 60.2, -7.4), sc(hf, -8.6, 52.6, -8.8), sc(hf, -6.8, 46.0, -8.4)]],
+                    fill=LINE_ON_VIOLET, w=0.75)
+        wear(rig, "head", hf, [(*sc(hf, -9.4, 47.4, -7.2), 1.2, 0.6), (*sc(hf, -1.0, 61.6, -6.8), 1.1, 0.5)],
+             fill=WEAR_ON_VIOLET)
+    elif kind == "crown":
+        hf = FC_.Face(rig, "head", [Geo().blob((1.5, 0, 50.5), (11.0, 10.6, 11.2), p=2.3)])
+        folds(rig, "head", hf, [[sc(hf, -6.4, 57.6, -7.6), sc(hf, -8.4, 51.0, -8.4), sc(hf, -6.8, 45.0, -8.0)]], w=0.8,
+              team=False, fill=FOLD_ON_VOID)
+    elif kind == "hood":
+        hf = FC_.Face(rig, "head", [Geo().blob((0.5, 0, 50.0), (12.4, 11.6, 12.6), p=2.4)])
+        folds(rig, "head", hf, [[sc(hf, -4.0, 59.0, -8.4), sc(hf, -7.0, 52.0, -10.2), sc(hf, -6.4, 44.6, -10.0)],
+                                [sc(hf, -10.0, 54.0, -6.8), sc(hf, -11.0, 47.0, -6.4)]], w=0.8, team=False,
+              fill=LINE_ON_VIOLET)
+
+
+def cosmic_body(rig, bulk=1.0, team_shin=True, plate=True, hips=True, shoulders=True, far_shoulder=True,
+                bracers=True, boots=True, pad_r=(7.6, 6.6, 6.2), knee=None):
+    """The W4 detail on the Cosmic body (kit_cosmic legs_v3, rigs_cosmic torso, arms and pads; call it after them
+    with the same arguments): the team chest plate in two plates (team-dark), the collar's and belt's seams, the
+    violet hip skirt in plates, the pads' team-dark ridges, the sleeves' elbow creases, the bracers' cuff seams, knee
+    creases on the void legs, the team shins' rims, the boots' seams and a scuffed toe (char space; decals cast)."""
+    from ageborn_art import face as FC_
+    from ageborn_art import kit_medieval as KM
+    from ageborn_art import rigs_cosmic as RC
+    k = bulk
+    if plate:
+        cf = FC_.Face(rig, "torso", [Geo().blob((1.8, 0, 31.4), (9.8 * k, 10.5 * k, 8.0), p=3.0, taper=(0.88, 1.0))])
+        yy = -10.3 * k
+        folds(rig, "torso", cf, [[sc(cf, -6.0 * k, 27.4, yy), sc(cf, 1.0 * k, 27.0, yy), sc(cf, 9.6 * k, 27.8, -8.8 * k)],
+                                 [sc(cf, -3.0 * k, 37.4, yy), sc(cf, -3.4 * k, 27.6, yy)]], w=0.8, team=True)
+    band(rig, "torso", (1.0, 0, 38.8), (7.6, 7.8, 2.0), 2.6, 37.4, 38.0, fill=LINE_ON_VIOLET)
+    band(rig, "torso", (0.4, 0, 21.8), (10.2 * k, 10.2 * k, 2.3), 3.4, 21.4, 22.1, fill=LINE_ON_STAR)
+    if hips:
+        ff = FC_.Face(rig, "hips", [Geo().blob((0.6, 0, 16.6), (10.6 * k, 10.4 * k, 4.2), p=2.8, taper=(1.12, 1.0))])
+        panel_lines(rig, "hips", ff, [[sc(ff, -3.6, 19.6, -10.2 * k), sc(ff, -4.0, 13.6, -10.2 * k)],
+                                      [sc(ff, 3.0, 19.6, -10.2 * k), sc(ff, 3.4, 13.6, -10.2 * k)]], fill=LINE_ON_VIOLET,
+                    w=0.7)
+    for s in ("r", "l"):
+        y = RC.ARM_Y[s]
+        if shoulders and (s == "r" or far_shoulder):
+            c = (0.5, y - 0.3 * RC.SIDE_Y[s], 37.6)
+            pf = FC_.Face(rig, f"arm_{s}", [Geo().blob(c, pad_r, p=2.6)])
+            yy = c[1] + (pad_r[1] - 0.8) * RC.SIDE_Y[s]
+            folds(rig, f"arm_{s}", pf, [[sc(pf, -4.6, 40.2, yy), sc(pf, 0.5, 41.8, yy), sc(pf, 5.4, 40.2, yy)]],
+                  w=0.75, team=True)
+        sleeve = FC_.Face(rig, f"arm_{s}", [Geo().capsule((0, y, RC.SHOULDER_Z), (0, y, RC.ELBOW_Z), 4.0, 3.7)])
+        folds(rig, f"arm_{s}", sleeve, [[sc(sleeve, -2.6, 30.6, y - 3.8), sc(sleeve, 0.2, 29.8, y - 4.0),
+                                         sc(sleeve, 2.8, 30.8, y - 3.8)]], w=0.8, team=False, fill=FOLD_ON_VOID)
+        if bracers:
+            band(rig, f"fore_{s}", (0.3, y, RC.HAND_Z + 4.2), (4.8, 4.7, 3.6), 2.8, 26.0, 26.7, fill=LINE_ON_VIOLET,
+                 taper=(0.9, 1.1))
+    for s in ("r", "l"):
+        y = RC.LEG_Y * RC.SIDE_Y[s]
+        th = FC_.Face(rig, f"thigh_{s}", [Geo().capsule((0, y, KM.V3_THIGH_Z + 0.5), (0.5, y, KM.V3_KNEE_Z), 4.6, 4.1)])
+        folds(rig, f"thigh_{s}", th, [[sc(th, -2.4, 14.4, y - 4.4), sc(th, 0.4, 13.6, y - 4.6),
+                                       sc(th, 3.0, 14.6, y - 4.2)]], w=0.8, team=False, fill=FOLD_ON_VOID)
+        if team_shin:
+            band(rig, f"shin_{s}", (1.9, y, 8.8), (3.4, 4.2, 2.8), 2.6, 6.6, 7.3, team=True)
+        if boots:
+            band(rig, f"foot_{s}", (2.8, y, 2.4), (4.4, 4.7, 2.5), 2.9, 3.0, 3.6, fill=LINE_ON_VIOLET, taper=(1.02, 0.84))
+    if boots:
+        tf = FC_.Face(rig, "foot_r", [Geo().blob((2.8, -RC.LEG_Y, 2.4), (4.4, 4.7, 2.5), p=2.9, taper=(1.02, 0.84))])
+        wear(rig, "foot_r", tf, [(*sc(tf, 0.0, 3.6, -RC.LEG_Y - 3.6), 1.1, 0.5)], fill=WEAR_ON_VIOLET)
+
+
 def melee_clip(name, fn, smear, fx, reuse=None, hold_step=3, band=0.55, soft=True):
     """kit_future_wave.melee_clip with two-tone arc smears (`smear_soft`; a streak stays one tone): a SMALL_MELEE_MS
     attack (impact on step 6) from 10 unique poses played 0-9 then 0, the smear on frames 4-6, `fx` on the impact."""
@@ -228,6 +307,16 @@ def kinds_future(extra=None):
             RF.SUIT_LT: "cloth", RF.CHARCOAL: "cloth", RF.VISOR_DARK: "glass", RF.SKIN: "skin",
             LINE_ON_WHITE: "ceramic", WEAR_ON_WHITE: "ceramic", LINE_ON_SUIT: "cloth", WEAR_ON_SUIT: "cloth",
             FOLD_ON_SUIT: "cloth", FOLD_ON_SUIT_LT: "cloth", TROOPER_WHITE: "ceramic", GUN_LT: "iron", GUN_SEAM: "iron",
+            "team": "polymer"}
+    return kinds(dict(base, **(extra or {})))
+
+
+def kinds_cosmic(extra=None):
+    """MATERIAL_KINDS for the Cosmic palette (rigs_cosmic), plus the unit's own colours in `extra`."""
+    from ageborn_art import rigs_cosmic as RC
+    base = {RC.VOID: "cloth", RC.VOID_LT: "cloth", RC.VOID_DK: "cloth", RC.VIOLET: "polymer", RC.VIOLET_DK: "polymer",
+            RC.VIOLET_LT: "polymer", RC.STAR: "ceramic", RC.STAR_TRIM: "ceramic", RC.VISOR: "glass",
+            LINE_ON_VIOLET: "polymer", WEAR_ON_VIOLET: "polymer", FOLD_ON_VOID: "cloth", LINE_ON_STAR: "ceramic",
             "team": "polymer"}
     base.update(extra or {})
     return kinds(base)

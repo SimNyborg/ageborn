@@ -40,7 +40,9 @@ NO_RETIME = True
 DETAIL_STANDARD = True
 LOOK_HIGHLIGHT = 0.8
 LOOK_SHADE = FW.SHADE_BIG
-LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5)
+# no white rim overlay on the team top plate and fin: drawn on the colour layer, it raised every frame's top 3 px (the
+# drone's top is team) and the core sheet over its +2% pixel budget
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5, team_white=0.0)
 SKIN_PALETTE = FW.KIT_WHITE
 MATERIAL_KINDS = FW.kinds_future()
 
@@ -125,8 +127,7 @@ def _pt(center, radii, p, phi, z):
 
 def _detail(rig):
     """W4: the detail standard (char space; decals cast at the unit's yaw): the team top plate in plates (team-dark
-    grooves and a ring), the white shell's seams and chipped edges, team-dark rings round the thruster pods, a
-    team-dark rib on the fin."""
+    grooves and a ring), the white shell's seams and chipped edges, team-dark rings round the thruster pods."""
     cx, cy, cz = C
     top_c, top_r = (cx - 1.0, cy, cz + 2.0), (R[0] - 1.0, R[1] + 0.4, R[2] - 1.0)
     tf = FC.Face(rig, "hull", [Geo().blob(top_c, top_r, p=2.3)], yaw_deg=YAW_DEG)
@@ -148,10 +149,6 @@ def _detail(rig):
         for x in (cx - 8.6, cx - 4.4):
             g.lathe([(0, -0.35), (3.35, -0.3), (3.35, 0.3), (0, 0.35)], (x - 0.5, y, cz), (x + 0.5, y, cz), segs=16)
         FW.team_dark(rig, f"pod_{s}", g)
-    ff = FC.Face(rig, "fin", [Geo().blob((cx - 11.0, 0, cz + 9.0), (4.6, 1.4, 5.0), p=2.4, rot=(0, 30, 0))],
-                 yaw_deg=YAW_DEG)
-    FW.folds(rig, "fin", ff, [[FW.sc(ff, cx - 8.4, cz + 5.6, -1.3), FW.sc(ff, cx - 12.6, cz + 12.4, -1.3)]], w=0.7,
-             team=True)
 
 
 def _damage_spots(rig):

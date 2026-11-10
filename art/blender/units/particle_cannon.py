@@ -47,11 +47,12 @@ NO_RETIME = True
 
 # the detail standard (art round W4): the machines' lifts (W3's SHADE_BIG) on the white hull, in the W4 white
 DETAIL_STANDARD = True
-LOOK_HIGHLIGHT = 0.8
+LOOK_HIGHLIGHT = 0.5           # (0.8 with white hubs and grousers: highlight share 0.113; 0.6: 0.106)
 LOOK_SHADE = FW.SHADE_BIG
-LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5)
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.38)        # (0.5: the white hull's lit top edge rang as highlight)
 SKIN_PALETTE = FW.KIT_WHITE
-MATERIAL_KINDS = FW.kinds_future({"#1E2128": "polymer", "#2A2E37": "polymer", "#7E8794": "iron", "#B8BEC8": "iron"})
+MATERIAL_KINDS = FW.kinds_future({"#1E2128": "polymer", "#2A2E37": "polymer", "#7E8794": "iron", "#B8BEC8": "iron",
+                                  "#959DAA": "iron"})
 
 TR_R = 9.5
 TX0, TX1 = -28.0, 28.0
@@ -144,7 +145,7 @@ def build(rig):
     # near track
     rig.joint("track", "body", (0, TY, 0))
     names, _ = R.tread(rig, "tn", "track", TX0, TX1, TR_R, TY, TW, PITCH, WHEELS, 4.4,
-                       color="#2A2E37", tooth="#A9B1BD", hub=F.ARMOR)
+                       color="#2A2E37", tooth="#959DAA", hub=FW.GUN_SEAM)     # (W4: #A9B1BD grousers, white hubs)
     _W["n"] = names
     rig.track("_foot", "odo", (0, 0, 0))
     _detail(rig)
@@ -165,7 +166,7 @@ def _detail(rig):
     FW.wear(rig, "hull", hf, [(*FW.sc(hf, -30.0, 28.6, -10.0), 1.4, 0.7), (*FW.sc(hf, -14.0, 29.8, -11.6), 1.2, 0.6),
                               (*FW.sc(hf, 21.0, 33.8, -9.0), 1.3, 0.6)])
     FW.rivets(rig, "hull", hf, FW.rivet_line(FW.sc(hf, -28.0, 28.8, -12.2), FW.sc(hf, -2.0, 28.8, -13.6), 6), r=0.8,
-              fill=FW.GUN_LT)
+              fill=FW.GUN_SEAM)
     skirt = Geo().blob((0, -15.6, 19.0), (30.0, 2.4, 6.0), p=3.0)
     sk = FC.Face(rig, "hull", [skirt], yaw_deg=YAW_DEG)
     FW.folds(rig, "hull", sk, [[FW.sc(sk, x, 24.0, -17.8), FW.sc(sk, x, 14.0, -17.8)] for x in (-22.0, 1.0, 18.0)],

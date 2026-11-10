@@ -63,9 +63,14 @@ def _fist(rig, s, at):
     # (W4) a team-dark seam across the knuckles and round the cuff; the knuckle plate scuffed
     gf = FC.Face(rig, f"hand_{s}", [Geo().blob((x + 0.6, y, z - 0.4), (5.2, 4.8, 5.0), p=2.3)])
     yy = y - 4.6
-    FW.folds(rig, f"hand_{s}", gf, [[FW.sc(gf, x + 2.4, z + 3.8, yy + 0.6), FW.sc(gf, x + 2.8, z - 0.4, yy),
-                                     FW.sc(gf, x + 2.4, z - 4.4, yy + 0.6)]], w=0.8, team=True)
+    FW.folds(rig, f"hand_{s}", gf, [[FW.sc(gf, x + 2.6, z + 1.6, yy + 1.6), FW.sc(gf, x + 2.8, z - 0.4, yy + 0.9),
+                                     FW.sc(gf, x + 2.6, z - 2.6, yy + 1.6)]], w=0.8, team=True)   # (inside the fist's
+    # silhouette: a point past its top edge missed the surface and the seam ran off to the body's mid-plane)
     FW.band(rig, f"hand_{s}", (x + 0.6, y, z - 0.4), (5.2, 4.8, 5.0), 2.3, z + 2.6, z + 3.3, team=True)
+    # the fingers: two team-dark grooves along the fist's side
+    FW.folds(rig, f"hand_{s}", gf, [[FW.sc(gf, x - 1.6, zz, yy + 1.4), FW.sc(gf, x + 1.2, zz, yy + 0.8),
+                                     FW.sc(gf, x + 3.4, zz, yy + 1.8)] for zz in (z + 0.4, z - 2.0)], w=0.7,
+             team=True)
 
 
 RIG = None
@@ -99,16 +104,24 @@ def build(rig):
         g.lathe([(0, -0.3), (2.45, -0.25), (2.45, 0.25), (0, 0.3)], (-6.8, y, 44.4), (-6.9, y, 45.4), segs=14)
     rig.part("torso", g, FW.GUN_SEAM, outline=0, highlight=False)
     FW.wave_trooper(rig, helmet_kind="android", bulk=1.15, team_greave=True, team_sleeve=True)
+    # (W4) a seam round the head's dome; a team-dark ridge over each big shoulder pad
+    FW.band(rig, "head", (2.0, 0, 50.5), (11.0, 10.4, 12.4), 2.3, 57.6, 58.3, fill=FW.LINE_ON_WHITE)
+    for s in ("r", "l"):
+        y = F.ARM_Y[s] - 0.3 * F.SIDE_Y[s]
+        pf = FC.Face(rig, f"arm_{s}", [Geo().blob((0.5, y, 37.6), (6.8, 5.8, 5.4), p=2.6)])
+        yy = y + 5.0 * F.SIDE_Y[s]
+        FW.folds(rig, f"arm_{s}", pf, [[FW.sc(pf, -4.6, 40.0, yy), FW.sc(pf, 0.5, 41.4, yy - 0.4 * F.SIDE_Y[s]),
+                                        FW.sc(pf, 5.4, 40.0, yy)]], w=0.75, team=True)
     if getattr(rig, "skin", None) is None:
         _damage_spots(rig)
 
 
 def _damage_spots(rig):
     """Damage spots (queue item 40 section 3.3, mech: dents and scratches, sparks and steam; never on the visor): the
-    team crown stripe, the team chest plate, the white faulds, the near team greave (the long arms are rest-scaled, so
-    nothing on them); sparks at the neck, steam from the near chimney."""
+    team crown stripe, the near shoulder pad (in 3D: the long arms are rest-scaled), the white faulds, the near team
+    greave (the guard fists hide the chest plate); sparks at the neck, steam from the near chimney."""
     rig.damage_spot("crown", "head", (0.0, -2.6, 62.6), 5.0, "metal", team=True, normal=(0, -0.4, 0.9))
-    rig.damage_spot_at("chest", "torso", -1.0, 35.0, 5.0, "metal", team=True)
+    rig.damage_spot("pauldron", "arm_r", (0.5, -12.2 - 5.6, 38.6), 5.0, "metal", team=True, normal=(0, -1, 0.2))
     rig.damage_spot_at("faulds", "hips", -5.0, 16.0, 5.0, "metal")
     rig.damage_spot("greave", "shin_r", (1.9, -F.LEG_Y - 4.2, 8.6), 5.0, "metal", team=True, normal=(0, -1, 0))
     rig.damage_spot("neck", "torso", (2.0, -6.4, 40.6), 3.5, "spark", kind="emit", normal=(0.3, -0.9, 0.3))

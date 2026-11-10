@@ -26,6 +26,11 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
           tucked (the held extreme), then a full over-the-top chop down in front into a deep lunge
   hit     armoured: a dip behind the flaring disc, the helmet clanks down, eyes > <
   die     D2 plank topple onto the back; the gladius powers down, the disc collapses, X eyes
+
+Art round W4: the detail standard (below), damage spots, and B1' (item 38's tossed clips): B's impact step showed the
+high finish (the blade up at 62 degrees, its tip over the foe's head), so the slash was never drawn on the target;
+now the impact step shows the blade rising through the foe at 24 degrees and the high finish follows on the next
+step. Steps, durations and impactAt unchanged.
 """
 import math
 
@@ -38,6 +43,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "star_legionnaire"
 GAIT_NAME = "biped"
@@ -47,6 +53,13 @@ CANVAS = (300, 256)
 FEET = (124, 222)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 32)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the soldiers' lifts on the Cosmic violet and star-white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+MATERIAL_KINDS = FW.kinds_cosmic()
 
 BLADE_LEN = 34.0
 HILT = 7.0
@@ -184,6 +197,35 @@ def build(rig):
                    p=2.2, taper=(0.9, 0.45))
     rig.part("blade", g, glow=K.VIOLET_CORE, outline=0)
     rig.track("bladeTip", "blade", TIP)
+    FW.cosmic_body(rig, team_shin=True, pad_r=(8.2, 7.0, 6.6))
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the helmet's seam behind the visor with chipped edges, a seam along the crest fin, the lorica bands'
+    seams (char space; decals cast)."""
+    hf = FC.Face(rig, "head", [Geo().blob((2.0, 0, 51.0), (12.0, 11.4, 12.2), p=2.4)])
+    FW.panel_lines(rig, "head", hf, [[FW.sc(hf, -5.6, 60.6, -7.8), FW.sc(hf, -8.8, 53.0, -9.2),
+                                      FW.sc(hf, -7.0, 46.4, -8.8)]], fill=FW.LINE_ON_VIOLET, w=0.8)
+    FW.wear(rig, "head", hf, [(*FW.sc(hf, -9.8, 47.6, -7.6), 1.3, 0.6), (*FW.sc(hf, -1.6, 62.0, -6.6), 1.1, 0.5)],
+            fill=FW.WEAR_ON_VIOLET)
+    fin = FC.Face(rig, "head", [Geo().slab([(6.0, 60.0), (3.0, 67.0), (-2.0, 74.0), (-6.0, 77.0), (-8.0, 73.0),
+                                            (-12.0, 66.0), (-16.0, 61.0), (-11.0, 56.0), (0.0, 58.0)], 0.0, 3.2)])
+    FW.panel_lines(rig, "head", fin, [[FW.sc(fin, 0.6, 61.4, -1.7), FW.sc(fin, -3.0, 67.0, -1.7),
+                                       FW.sc(fin, -6.6, 71.4, -1.7)]], fill=FW.LINE_ON_VIOLET, w=0.75)
+    for z in (24.4, 27.2):
+        FW.band(rig, "torso", (1.2, 0, z), (9.9, 9.9, 1.2), 3.0, z - 0.25, z + 0.25, fill=FW.LINE_ON_VIOLET)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, armoured: dents, cracks and a chipped plate; never on the face): the
+    near team pad, the violet helmet, the violet hip skirt, the near team greave."""
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("helmet", "head", -6.0, 48.0, 5.0, "metal", fill=K.VIOLET)
+    rig.damage_spot_at("skirt", "hips", -4.0, 15.6, 5.0, "metal", fill=K.VIOLET_DK)
+    rig.damage_spot("greave", "shin_r", (1.9, -K.LEG_Y - 4.2, 8.8), 5.0, "metal", team=True, normal=(0, -1, 0))
 
 
 # -- poses -----------------------------------------------------------------------------------
@@ -313,10 +355,12 @@ B_T = [((2.0, 25.0), -110, -34, 0, -6, 0.5, -1.5, -0.04, 12, -16, -10, -12, "g_a
        ((-5.0, 22.0), -145, -12, 8, -12, 1.5, -4.0, -0.08, 22, -30, -18, -22, "g_angry"),
        ((-9.0, 20.0), -165, 2, 6, -16, 2.5, -6.0, -0.10, 28, -38, -22, -28, "g_angry"),
        ((5.0, 25.0), -40, 8, 4, -10, 6.0, -3.0, 0.04, 26, -26, -22, -18, "g_squint"),
-       ((11.0, 33.0), 18, 4, 2, -4, 8.5, -1.0, 0.06, 26, -20, -22, -12, "g_squint"),
-       ((11.0, 44.0), 62, -42, -12, 6, 10.0, 1.0, -0.10, 30, -18, -26, -10, "g_angry"),
-       ((8.0, 47.0), 78, -48, -16, 8, 9.5, 1.4, -0.04, 28, -16, -24, -8, "g_angry"),
-       ((6.0, 33.0), 42, -56, -8, 2, 6.0, 0.0, 0.02, 16, -10, -14, -6, "eyes")]
+       ((10.0, 29.0), -6, 4, 2, -6, 8.0, -1.5, 0.05, 26, -22, -22, -14, "g_squint"),
+       ((12.0, 35.0), 24, -30, -6, 0, 10.0, 0.0, -0.10, 30, -20, -26, -12, "g_angry"),
+       ((11.0, 44.0), 62, -42, -12, 6, 10.0, 1.0, -0.06, 30, -18, -26, -10, "g_angry"),
+       ((7.0, 38.0), 48, -52, -12, 3, 7.5, 0.6, 0.0, 20, -12, -18, -7, "eyes")]
+# (B1': the lead was (11, 33) at 18 degrees, the impact the high finish (11, 44) at 62, then (8, 47) at 78 and the
+# recoil (6, 33) at 42)
 
 
 def _b_pose(i):
