@@ -61,12 +61,14 @@ HAZARD = "#D9CFA8"
 MATERIAL_KINDS = FW.kinds_future({HAZARD: "polymer"})
 
 # Kaiju Walker (legendary skin, DESIGN A5.8 "Dinosaur-head plating"): scaly green plates, a lower jaw with teeth under
-# the visor, brow horns and dorsal spikes down the back (the silhouette sign), pale yellow eyes and lights, orange vents
+# the visor, brow horns and dorsal spikes down the back (the silhouette sign), radioactive lime eyes and lights, violet
+# vents (yellow lights and orange vents broke the A11 colour rule: their dark outer outlines sit in the orange team's
+# hue band, 12% of the dying frame)
 PLATE, BONE, DORSAL = "#86A57E", "#EDE3C8", "#4E6A48"
 SKINS = {"kaiju_walker": {
     "palette": FW.skin_palette({FW.ARMOR: PLATE, F.ARMOR: "#CFDDB4", F.TRIM: "#A8B89A", F.STEEL: "#8C9A80",
-                                F.GUNMETAL: "#46553F", F.SUIT: "#36432F", F.VISOR_DARK: "#1C2619", F.MINT: "#F2E28A",
-                                F.MINT_CORE: "#FFF7D2", F.MAGENTA: "#F28C38", F.MAGENTA_CORE: "#FFE3C4",
+                                F.GUNMETAL: "#46553F", F.SUIT: "#36432F", F.VISOR_DARK: "#1C2619", F.MINT: "#A6F06A",
+                                F.MINT_CORE: "#EAFFD0", F.MAGENTA: "#B45AF0", F.MAGENTA_CORE: "#EED6FF",
                                 HAZARD: "#D6CB98", FW.LINE_ON_WHITE: "#5E7A57", FW.WEAR_ON_WHITE: "#A4BE98"}),
     # the plates take the hide kind's blotches (scales at game scale), the teeth and horns bone
     "kinds": FW.kinds({PLATE: "hide", "#CFDDB4": "hide", "#5E7A57": "hide", "#A4BE98": "hide", DORSAL: "hide",
@@ -282,25 +284,31 @@ def build(rig):
 
 
 def _kaiju(rig):
-    """Kaiju Walker: dorsal spikes down the back over the engine pack, brow horns over the visor, and a lower jaw
+    """Kaiju Walker: two rows of dorsal spikes standing up from the dome on either side of the team roof stripe (the
+    near row taller; they stand clear of the dome's silhouette), bone brow horns over the visor, and a lower jaw
     with four teeth jutting out under the hull's front (the snout reads in profile at game scale)."""
     g = Geo()
-    for x, z, h, r, tilt in ((-19.5, 89.6, 8.0, 2.8, 40.0), (-23.0, 88.6, 7.0, 2.5, 55.0), (-26.5, 86.5, 5.6, 2.1, 70.0)):
-        a = math.radians(tilt)
-        base = (x, 0.0, z - 1.0)
-        g.lathe([(r, 0.0), (r * 0.55, h * 0.5), (0.0, h)], base, (base[0] - math.sin(a), 0.0, base[2] + math.cos(a)),
-                segs=10)
+    rows = ((-8.0, ((13.0, 6.0, 2.5), (5.0, 8.5, 3.0), (-3.0, 9.5, 3.2), (-11.0, 8.5, 3.0), (-18.0, 6.0, 2.5))),
+            (8.0, ((9.0, 6.5, 2.6), (1.0, 7.5, 2.8), (-7.0, 7.0, 2.7))))       # (clear of the antenna at x -15)
+    lean = math.radians(18.0)
+    for y, spikes in rows:
+        for x, h, r in spikes:
+            k = max(0.0, 1.0 - abs(x / 25.0) ** 3 - abs(y / 20.0) ** 3)
+            base = (x, y, 76.0 + 17.0 * k ** (1.0 / 3.0) - 1.4)          # sunk into the dome's surface
+            g.lathe([(r, 0.0), (r * 0.55, h * 0.5), (0.0, h)], base,
+                    (base[0] - math.sin(lean), y, base[2] + math.cos(lean)), segs=10)
     rig.part("hull", g, DORSAL, finish="gloss", outline_hex=F.SUIT)
     g = Geo()
-    for y in (-6.0, 6.0):
-        base = (19.5, y, 88.5)
-        g.lathe([(1.7, 0.0), (0.9, 2.4), (0.0, 4.5)], base, (base[0] + 0.5, y, base[2] + 0.87), segs=10)
+    a = math.radians(35.0)
+    for y in (-6.5, 5.5):
+        base = (19.0, y, 88.2)
+        g.lathe([(2.3, 0.0), (1.2, 3.2), (0.0, 6.0)], base, (base[0] + math.sin(a), y, base[2] + math.cos(a)), segs=10)
     rig.part("hull", g, BONE, finish="gloss", outline_hex=F.SUIT)
-    g = Geo().blob((23.0, -1.0, 64.0), (7.5, 12.0, 3.0), p=2.6)
+    g = Geo().blob((23.5, -1.0, 64.0), (8.5, 12.5, 3.2), p=2.6)
     rig.part("hull", g, FW.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo()
-    for x, y, z in ((19.5, -7.0, 66.2), (23.0, -7.5, 66.5), (26.5, -7.0, 66.2), (29.0, -6.0, 65.3)):
-        g.lathe([(1.0, 0.0), (0.5, 1.4), (0.0, 2.6)], (x, y, z - 0.6), (x, y, z + 0.4), segs=8)
+    for x, y, z in ((19.0, -7.5, 66.4), (23.0, -8.0, 66.8), (27.0, -7.5, 66.4), (30.0, -6.0, 65.4)):
+        g.lathe([(1.35, 0.0), (0.7, 1.8), (0.0, 3.4)], (x, y, z - 0.8), (x, y, z + 0.2), segs=8)
     rig.part("hull", g, BONE, finish="gloss", outline=0.5, outline_hex=F.SUIT)
 
 

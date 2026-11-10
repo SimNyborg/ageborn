@@ -56,8 +56,8 @@ LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
 MATERIAL_KINDS = FW.kinds_future()
 
 # Synthwave (epic skin, DESIGN A5.8 "Neon grid visor"): lavender-white plates on a dark purple suit, a hot pink
-# blade, cyan emitters, and a bigger boxy visor standing proud of the helm with a neon grid (the silhouette sign: the
-# face's profile)
+# blade, cyan emitters, a bigger boxy visor standing proud of the helm with a neon grid, and the buckler as a synthwave
+# sun with a corona of neon rays (the silhouette signs: the face's profile and the shield's rays)
 SW_PLATE, GRID_PINK, GRID_CYAN = "#D3CBE6", "#F04AB0", "#3AD8F0"
 SKINS = {"synthwave": {
     "palette": FW.skin_palette({FW.ARMOR: SW_PLATE, FW.LINE_ON_WHITE: "#A79DC6", FW.WEAR_ON_WHITE: "#BDB2DA",
@@ -112,6 +112,15 @@ def build(rig):
     rig.part("buckler", g, F.TRIM, finish="metal", outline=0)
     g = Geo().lathe([(0, 0), (3.2, 0.2), (2.8, 1.4), (0, 2.2)], along(3.4), along(5.6), segs=16)
     rig.part("buckler", g, glow=F.MAGENTA, outline=1.0, outline_hex=F.SUIT)
+    if getattr(rig, "skin", None) == "synthwave":    # the buckler as a synthwave sun: a corona of neon rays
+        g = Geo()
+        p0 = along(1.6)
+        for a_ in range(0, 360, 45):
+            ca, sa = math.cos(math.radians(a_ + 22.5)), math.sin(math.radians(a_ + 22.5))
+            d = (-n[1] * ca, n[0] * ca, sa)
+            base = (p0[0] + d[0] * 10.0, p0[1] + d[1] * 10.0, p0[2] + d[2] * 10.0)
+            g.lathe([(1.15, 0.0), (0.0, 3.0)], base, (base[0] + d[0], base[1] + d[1], base[2] + d[2]), segs=8)
+        rig.part("buckler", g, glow=GRID_PINK, outline=0.8, outline_hex=F.SUIT)
     rig.joint("shield_glow", "buckler", along(5.0), hidden=True)
     g = Geo().lathe([(0, 0), (11.2, 0.3), (11.6, 0.9), (0, 1.0)], along(4.6), along(5.4), segs=28)
     rig.part("shield_glow", g, glow=F.MAGENTA_CORE, outline=1.0, outline_hex=F.MAGENTA)

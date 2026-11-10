@@ -2,9 +2,9 @@
  "frames": {
   "photon_knight_attack_b_01": {
    "frame": {
-    "x": 742,
+    "x": 348,
     "y": 2,
-    "w": 132,
+    "w": 131,
     "h": 243
    },
    "rotated": false,
@@ -12,7 +12,7 @@
    "spriteSourceSize": {
     "x": 194,
     "y": 137,
-    "w": 132,
+    "w": 131,
     "h": 243
    },
    "sourceSize": {
@@ -26,8 +26,8 @@
   },
   "photon_knight_attack_b_01_team": {
    "frame": {
-    "x": 460,
-    "y": 303,
+    "x": 752,
+    "y": 187,
     "w": 123,
     "h": 180
    },
@@ -50,8 +50,8 @@
   },
   "photon_knight_attack_b_02": {
    "frame": {
-    "x": 589,
-    "y": 2,
+    "x": 2,
+    "y": 457,
     "w": 149,
     "h": 262
    },
@@ -74,8 +74,8 @@
   },
   "photon_knight_attack_b_02_team": {
    "frame": {
-    "x": 2,
-    "y": 303,
+    "x": 958,
+    "y": 192,
     "w": 122,
     "h": 185
    },
@@ -122,7 +122,7 @@
   },
   "photon_knight_attack_b_03_team": {
    "frame": {
-    "x": 878,
+    "x": 1132,
     "y": 2,
     "w": 128,
     "h": 189
@@ -170,8 +170,8 @@
   },
   "photon_knight_attack_b_04_team": {
    "frame": {
-    "x": 335,
-    "y": 303,
+    "x": 1264,
+    "y": 2,
     "w": 121,
     "h": 182
    },
@@ -194,8 +194,8 @@
   },
   "photon_knight_attack_b_05": {
    "frame": {
-    "x": 348,
-    "y": 2,
+    "x": 287,
+    "y": 283,
     "w": 237,
     "h": 268
    },
@@ -218,8 +218,8 @@
   },
   "photon_knight_attack_b_05_team": {
    "frame": {
-    "x": 215,
-    "y": 674,
+    "x": 928,
+    "y": 550,
     "w": 107,
     "h": 172
    },
@@ -243,17 +243,17 @@
   "photon_knight_attack_b_06": {
    "frame": {
     "x": 2,
-    "y": 1018,
+    "y": 303,
     "w": 281,
-    "h": 148
+    "h": 150
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 216,
-    "y": 234,
+    "y": 232,
     "w": 281,
-    "h": 148
+    "h": 150
    },
    "sourceSize": {
     "w": 514,
@@ -266,8 +266,8 @@
   },
   "photon_knight_attack_b_06_team": {
    "frame": {
-    "x": 401,
-    "y": 1018,
+    "x": 1390,
+    "y": 531,
     "w": 112,
     "h": 137
    },
@@ -290,18 +290,18 @@
   },
   "photon_knight_attack_b_07": {
    "frame": {
-    "x": 587,
-    "y": 303,
+    "x": 708,
+    "y": 2,
     "w": 213,
-    "h": 179
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 203,
+    "y": 201,
     "w": 213,
-    "h": 179
+    "h": 181
    },
    "sourceSize": {
     "w": 514,
@@ -314,8 +314,8 @@
   },
   "photon_knight_attack_b_07_team": {
    "frame": {
-    "x": 742,
-    "y": 674,
+    "x": 1084,
+    "y": 366,
     "w": 97,
     "h": 167
    },
@@ -338,18 +338,18 @@
   },
   "photon_knight_attack_b_08": {
    "frame": {
-    "x": 409,
-    "y": 492,
+    "x": 528,
+    "y": 187,
     "w": 220,
-    "h": 177
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 204,
+    "y": 201,
     "w": 220,
-    "h": 177
+    "h": 180
    },
    "sourceSize": {
     "w": 514,
@@ -362,8 +362,8 @@
   },
   "photon_knight_attack_b_08_team": {
    "frame": {
-    "x": 186,
-    "y": 850,
+    "x": 1140,
+    "y": 537,
     "w": 114,
     "h": 164
    },
@@ -386,18 +386,18 @@
   },
   "photon_knight_attack_c_01": {
    "frame": {
-    "x": 227,
-    "y": 492,
+    "x": 1264,
+    "y": 188,
     "w": 178,
-    "h": 178
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 204,
-    "y": 202,
+    "y": 199,
     "w": 178,
-    "h": 178
+    "h": 181
    },
    "sourceSize": {
     "w": 514,
@@ -410,8 +410,8 @@
   },
   "photon_knight_attack_c_01_team": {
    "frame": {
-    "x": 608,
-    "y": 674,
+    "x": 1084,
+    "y": 195,
     "w": 130,
     "h": 167
    },
@@ -434,18 +434,18 @@
   },
   "photon_knight_attack_c_02": {
    "frame": {
-    "x": 425,
-    "y": 674,
+    "x": 745,
+    "y": 550,
     "w": 179,
-    "h": 170
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 195,
-    "y": 210,
+    "y": 208,
     "w": 179,
-    "h": 170
+    "h": 172
    },
    "sourceSize": {
     "w": 514,
@@ -458,8 +458,8 @@
   },
   "photon_knight_attack_c_02_team": {
    "frame": {
-    "x": 415,
-    "y": 850,
+    "x": 1258,
+    "y": 538,
     "w": 128,
     "h": 160
    },
@@ -482,18 +482,18 @@
   },
   "photon_knight_attack_c_03": {
    "frame": {
-    "x": 2,
-    "y": 850,
+    "x": 413,
+    "y": 555,
     "w": 180,
-    "h": 164
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 191,
-    "y": 216,
+    "y": 214,
     "w": 180,
-    "h": 164
+    "h": 166
    },
    "sourceSize": {
     "w": 514,
@@ -506,8 +506,8 @@
   },
   "photon_knight_attack_c_03_team": {
    "frame": {
-    "x": 547,
-    "y": 850,
+    "x": 1369,
+    "y": 373,
     "w": 126,
     "h": 154
    },
@@ -530,18 +530,18 @@
   },
   "photon_knight_attack_c_04": {
    "frame": {
-    "x": 128,
-    "y": 303,
+    "x": 925,
+    "y": 2,
     "w": 203,
-    "h": 184
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 225,
-    "y": 198,
+    "y": 196,
     "w": 203,
-    "h": 184
+    "h": 186
    },
    "sourceSize": {
     "w": 514,
@@ -554,8 +554,8 @@
   },
   "photon_knight_attack_c_04_team": {
    "frame": {
-    "x": 633,
-    "y": 492,
+    "x": 1389,
+    "y": 2,
     "w": 114,
     "h": 176
    },
@@ -578,18 +578,18 @@
   },
   "photon_knight_attack_c_05": {
    "frame": {
-    "x": 2,
-    "y": 492,
+    "x": 483,
+    "y": 2,
     "w": 221,
-    "h": 178
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 240,
-    "y": 205,
+    "y": 202,
     "w": 221,
-    "h": 178
+    "h": 181
    },
    "sourceSize": {
     "w": 514,
@@ -602,8 +602,8 @@
   },
   "photon_knight_attack_c_05_team": {
    "frame": {
-    "x": 326,
-    "y": 674,
+    "x": 597,
+    "y": 551,
     "w": 95,
     "h": 171
    },
@@ -626,18 +626,18 @@
   },
   "photon_knight_attack_c_06": {
    "frame": {
-    "x": 677,
-    "y": 850,
+    "x": 155,
+    "y": 555,
     "w": 254,
-    "h": 149
+    "h": 151
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 244,
-    "y": 234,
+    "y": 232,
     "w": 254,
-    "h": 149
+    "h": 151
    },
    "sourceSize": {
     "w": 514,
@@ -650,8 +650,8 @@
   },
   "photon_knight_attack_c_06_team": {
    "frame": {
-    "x": 287,
-    "y": 1018,
+    "x": 958,
+    "y": 381,
     "w": 110,
     "h": 138
    },
@@ -674,18 +674,18 @@
   },
   "photon_knight_attack_c_07": {
    "frame": {
-    "x": 2,
-    "y": 674,
+    "x": 745,
+    "y": 371,
     "w": 209,
-    "h": 172
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 247,
-    "y": 211,
+    "y": 208,
     "w": 209,
-    "h": 172
+    "h": 175
    },
    "sourceSize": {
     "w": 514,
@@ -698,8 +698,8 @@
   },
   "photon_knight_attack_c_07_team": {
    "frame": {
-    "x": 843,
-    "y": 674,
+    "x": 1039,
+    "y": 537,
     "w": 97,
     "h": 166
    },
@@ -722,18 +722,18 @@
   },
   "photon_knight_attack_c_08": {
    "frame": {
-    "x": 751,
-    "y": 492,
+    "x": 528,
+    "y": 371,
     "w": 213,
-    "h": 174
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 230,
-    "y": 208,
+    "y": 206,
     "w": 213,
-    "h": 174
+    "h": 176
    },
    "sourceSize": {
     "w": 514,
@@ -746,8 +746,8 @@
   },
   "photon_knight_attack_c_08_team": {
    "frame": {
-    "x": 304,
-    "y": 850,
+    "x": 1258,
+    "y": 373,
     "w": 107,
     "h": 161
    },
@@ -829,8 +829,8 @@
   "image": "photon_knight.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1024,
-   "h": 1168
+   "w": 1536,
+   "h": 724
   },
   "scale": "3",
   "ageborn": {
