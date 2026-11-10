@@ -2,18 +2,18 @@
  "frames": {
   "sapper_idle_00": {
    "frame": {
-    "x": 347,
-    "y": 420,
+    "x": 428,
+    "y": 412,
     "w": 135,
-    "h": 191
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 198,
-    "y": 215,
+    "y": 221,
     "w": 135,
-    "h": 191
+    "h": 185
    },
    "sourceSize": {
     "w": 514,
@@ -26,17 +26,17 @@
   },
   "sapper_idle_00_team": {
    "frame": {
-    "x": 602,
-    "y": 930,
-    "w": 95,
+    "x": 205,
+    "y": 915,
+    "w": 94,
     "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 213,
-    "y": 266,
-    "w": 95,
+    "x": 214,
+    "y": 265,
+    "w": 94,
     "h": 121
    },
    "sourceSize": {
@@ -50,18 +50,18 @@
   },
   "sapper_idle_01": {
    "frame": {
-    "x": 911,
-    "y": 420,
+    "x": 851,
+    "y": 412,
     "w": 134,
-    "h": 185
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 221,
+    "y": 224,
     "w": 134,
-    "h": 185
+    "h": 182
    },
    "sourceSize": {
     "w": 514,
@@ -74,18 +74,18 @@
   },
   "sapper_idle_01_team": {
    "frame": {
-    "x": 990,
-    "y": 793,
+    "x": 1035,
+    "y": 603,
     "w": 92,
-    "h": 125
+    "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 216,
-    "y": 261,
+    "y": 246,
     "w": 92,
-    "h": 125
+    "h": 140
    },
    "sourceSize": {
     "w": 514,
@@ -99,17 +99,17 @@
   "sapper_idle_02": {
    "frame": {
     "x": 2,
-    "y": 216,
+    "y": 213,
     "w": 132,
-    "h": 200
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 202,
-    "y": 207,
+    "y": 212,
     "w": 132,
-    "h": 200
+    "h": 195
    },
    "sourceSize": {
     "w": 514,
@@ -122,18 +122,18 @@
   },
   "sapper_idle_02_team": {
    "frame": {
-    "x": 1270,
-    "y": 793,
+    "x": 1073,
+    "y": 776,
     "w": 88,
-    "h": 124
+    "h": 126
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 260,
+    "y": 258,
     "w": 88,
-    "h": 124
+    "h": 126
    },
    "sourceSize": {
     "w": 514,
@@ -146,18 +146,18 @@
   },
   "sapper_idle_03": {
    "frame": {
-    "x": 501,
+    "x": 664,
     "y": 2,
     "w": 136,
-    "h": 203
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 202,
-    "y": 204,
+    "y": 209,
     "w": 136,
-    "h": 203
+    "h": 198
    },
    "sourceSize": {
     "w": 514,
@@ -170,18 +170,18 @@
   },
   "sapper_idle_03_team": {
    "frame": {
-    "x": 707,
-    "y": 793,
-    "w": 86,
-    "h": 127
+    "x": 798,
+    "y": 776,
+    "w": 85,
+    "h": 128
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 218,
-    "y": 252,
-    "w": 86,
-    "h": 127
+    "x": 219,
+    "y": 251,
+    "w": 85,
+    "h": 128
    },
    "sourceSize": {
     "w": 514,
@@ -194,18 +194,18 @@
   },
   "sapper_idle_04": {
    "frame": {
-    "x": 365,
+    "x": 804,
     "y": 2,
     "w": 132,
-    "h": 205
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 200,
-    "y": 202,
+    "y": 209,
     "w": 132,
-    "h": 205
+    "h": 198
    },
    "sourceSize": {
     "w": 514,
@@ -218,18 +218,18 @@
   },
   "sapper_idle_04_team": {
    "frame": {
-    "x": 1179,
-    "y": 793,
+    "x": 707,
+    "y": 776,
     "w": 87,
-    "h": 125
+    "h": 128
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 261,
+    "y": 258,
     "w": 87,
-    "h": 125
+    "h": 128
    },
    "sourceSize": {
     "w": 514,
@@ -242,18 +242,18 @@
   },
   "sapper_idle_05": {
    "frame": {
-    "x": 632,
-    "y": 420,
+    "x": 287,
+    "y": 412,
     "w": 137,
-    "h": 189
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 198,
-    "y": 217,
+    "y": 221,
     "w": 137,
-    "h": 189
+    "h": 185
    },
    "sourceSize": {
     "w": 514,
@@ -266,18 +266,18 @@
   },
   "sapper_idle_05_team": {
    "frame": {
-    "x": 797,
-    "y": 793,
-    "w": 92,
-    "h": 126
+    "x": 306,
+    "y": 776,
+    "w": 91,
+    "h": 133
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 214,
-    "y": 261,
-    "w": 92,
-    "h": 126
+    "x": 215,
+    "y": 254,
+    "w": 91,
+    "h": 133
    },
    "sourceSize": {
     "w": 514,
@@ -290,18 +290,18 @@
   },
   "sapper_walk_00": {
    "frame": {
-    "x": 1272,
-    "y": 216,
+    "x": 2,
+    "y": 412,
     "w": 139,
-    "h": 193
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 200,
-    "y": 214,
+    "y": 220,
     "w": 139,
-    "h": 193
+    "h": 187
    },
    "sourceSize": {
     "w": 514,
@@ -314,8 +314,8 @@
   },
   "sapper_walk_00_team": {
    "frame": {
-    "x": 1242,
-    "y": 930,
+    "x": 1136,
+    "y": 915,
     "w": 103,
     "h": 116
    },
@@ -338,18 +338,18 @@
   },
   "sapper_walk_01": {
    "frame": {
-    "x": 1218,
-    "y": 420,
+    "x": 1158,
+    "y": 412,
     "w": 143,
-    "h": 180
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 203,
-    "y": 227,
+    "y": 231,
     "w": 143,
-    "h": 180
+    "h": 176
    },
    "sourceSize": {
     "w": 514,
@@ -362,8 +362,8 @@
   },
   "sapper_walk_01_team": {
    "frame": {
-    "x": 535,
-    "y": 1057,
+    "x": 220,
+    "y": 1040,
     "w": 103,
     "h": 113
    },
@@ -386,18 +386,18 @@
   },
   "sapper_walk_02": {
    "frame": {
-    "x": 791,
+    "x": 1218,
     "y": 2,
     "w": 139,
-    "h": 201
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 205,
-    "y": 205,
+    "y": 211,
     "w": 139,
-    "h": 201
+    "h": 195
    },
    "sourceSize": {
     "w": 514,
@@ -410,18 +410,18 @@
   },
   "sapper_walk_02_team": {
    "frame": {
-    "x": 213,
-    "y": 930,
+    "x": 2,
+    "y": 915,
     "w": 98,
-    "h": 122
+    "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 259,
+    "y": 260,
     "w": 98,
-    "h": 122
+    "h": 121
    },
    "sourceSize": {
     "w": 514,
@@ -434,18 +434,18 @@
   },
   "sapper_walk_03": {
    "frame": {
-    "x": 641,
+    "x": 1068,
     "y": 2,
     "w": 146,
-    "h": 202
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 203,
-    "y": 197,
+    "y": 203,
     "w": 146,
-    "h": 202
+    "h": 196
    },
    "sourceSize": {
     "w": 514,
@@ -458,18 +458,18 @@
   },
   "sapper_walk_03_team": {
    "frame": {
-    "x": 315,
-    "y": 930,
-    "w": 91,
-    "h": 122
+    "x": 303,
+    "y": 915,
+    "w": 90,
+    "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 219,
-    "y": 250,
-    "w": 91,
-    "h": 122
+    "x": 220,
+    "y": 251,
+    "w": 90,
+    "h": 121
    },
    "sourceSize": {
     "w": 514,
@@ -482,18 +482,18 @@
   },
   "sapper_walk_04": {
    "frame": {
-    "x": 486,
-    "y": 420,
+    "x": 705,
+    "y": 412,
     "w": 142,
-    "h": 190
+    "h": 183
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 200,
-    "y": 212,
+    "y": 219,
     "w": 142,
-    "h": 190
+    "h": 183
    },
    "sourceSize": {
     "w": 514,
@@ -506,8 +506,8 @@
   },
   "sapper_walk_04_team": {
    "frame": {
-    "x": 2,
-    "y": 1057,
+    "x": 1243,
+    "y": 915,
     "w": 91,
     "h": 116
    },
@@ -530,18 +530,18 @@
   },
   "sapper_walk_05": {
    "frame": {
-    "x": 195,
-    "y": 616,
+    "x": 2,
+    "y": 603,
     "w": 142,
-    "h": 173
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 225,
+    "y": 229,
     "w": 142,
-    "h": 173
+    "h": 169
    },
    "sourceSize": {
     "w": 514,
@@ -554,8 +554,8 @@
   },
   "sapper_walk_05_team": {
    "frame": {
-    "x": 642,
-    "y": 1057,
+    "x": 327,
+    "y": 1040,
     "w": 89,
     "h": 113
    },
@@ -578,18 +578,18 @@
   },
   "sapper_walk_06": {
    "frame": {
-    "x": 934,
-    "y": 2,
+    "x": 138,
+    "y": 213,
     "w": 134,
-    "h": 201
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 200,
-    "y": 197,
+    "y": 204,
     "w": 134,
-    "h": 201
+    "h": 194
    },
    "sourceSize": {
     "w": 514,
@@ -602,18 +602,18 @@
   },
   "sapper_walk_06_team": {
    "frame": {
-    "x": 1362,
-    "y": 793,
-    "w": 86,
-    "h": 124
+    "x": 500,
+    "y": 915,
+    "w": 85,
+    "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 219,
-    "y": 257,
-    "w": 86,
-    "h": 124
+    "x": 220,
+    "y": 260,
+    "w": 85,
+    "h": 120
    },
    "sourceSize": {
     "w": 514,
@@ -626,18 +626,18 @@
   },
   "sapper_walk_07": {
    "frame": {
-    "x": 1378,
+    "x": 1361,
     "y": 2,
     "w": 139,
-    "h": 200
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 196,
+    "y": 201,
     "w": 139,
-    "h": 200
+    "h": 195
    },
    "sourceSize": {
     "w": 514,
@@ -650,18 +650,18 @@
   },
   "sapper_walk_07_team": {
    "frame": {
-    "x": 701,
-    "y": 930,
+    "x": 1036,
+    "y": 915,
     "w": 96,
-    "h": 119
+    "h": 117
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 249,
+    "y": 250,
     "w": 96,
-    "h": 119
+    "h": 117
    },
    "sourceSize": {
     "w": 514,
@@ -674,18 +674,18 @@
   },
   "sapper_attack_00": {
    "frame": {
-    "x": 694,
-    "y": 216,
+    "x": 831,
+    "y": 213,
     "w": 132,
-    "h": 198
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 200,
-    "y": 208,
+    "y": 214,
     "w": 132,
-    "h": 198
+    "h": 192
    },
    "sourceSize": {
     "w": 514,
@@ -698,18 +698,18 @@
   },
   "sapper_attack_00_team": {
    "frame": {
-    "x": 1086,
-    "y": 793,
+    "x": 887,
+    "y": 776,
     "w": 89,
-    "h": 125
+    "h": 127
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 260,
+    "y": 258,
     "w": 89,
-    "h": 125
+    "h": 127
    },
    "sourceSize": {
     "w": 514,
@@ -722,18 +722,18 @@
   },
   "sapper_attack_01": {
    "frame": {
-    "x": 773,
-    "y": 420,
+    "x": 567,
+    "y": 412,
     "w": 134,
-    "h": 189
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 198,
-    "y": 217,
+    "y": 221,
     "w": 134,
-    "h": 189
+    "h": 185
    },
    "sourceSize": {
     "w": 514,
@@ -746,17 +746,17 @@
   },
   "sapper_attack_01_team": {
    "frame": {
-    "x": 500,
-    "y": 930,
-    "w": 98,
+    "x": 104,
+    "y": 915,
+    "w": 97,
     "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 211,
+    "x": 212,
     "y": 261,
-    "w": 98,
+    "w": 97,
     "h": 121
    },
    "sourceSize": {
@@ -770,18 +770,18 @@
   },
   "sapper_attack_02": {
    "frame": {
-    "x": 1128,
-    "y": 216,
+    "x": 1339,
+    "y": 213,
     "w": 140,
-    "h": 193
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 198,
-    "y": 213,
+    "y": 219,
     "w": 140,
-    "h": 193
+    "h": 187
    },
    "sourceSize": {
     "w": 514,
@@ -794,18 +794,18 @@
   },
   "sapper_attack_02_team": {
    "frame": {
-    "x": 1127,
-    "y": 930,
+    "x": 808,
+    "y": 915,
     "w": 111,
-    "h": 117
+    "h": 118
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 212,
-    "y": 265,
+    "y": 264,
     "w": 111,
-    "h": 117
+    "h": 118
    },
    "sourceSize": {
     "w": 514,
@@ -818,7 +818,7 @@
   },
   "sapper_attack_03": {
    "frame": {
-    "x": 1072,
+    "x": 358,
     "y": 2,
     "w": 150,
     "h": 200
@@ -842,8 +842,8 @@
   },
   "sapper_attack_03_team": {
    "frame": {
-    "x": 316,
-    "y": 1057,
+    "x": 110,
+    "y": 1040,
     "w": 106,
     "h": 113
    },
@@ -866,7 +866,7 @@
   },
   "sapper_attack_04": {
    "frame": {
-    "x": 1226,
+    "x": 512,
     "y": 2,
     "w": 148,
     "h": 200
@@ -890,8 +890,8 @@
   },
   "sapper_attack_04_team": {
    "frame": {
-    "x": 735,
-    "y": 1057,
+    "x": 528,
+    "y": 1040,
     "w": 103,
     "h": 111
    },
@@ -914,18 +914,18 @@
   },
   "sapper_attack_05": {
    "frame": {
-    "x": 2,
+    "x": 163,
     "y": 2,
     "w": 191,
-    "h": 210
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 185,
-    "y": 197,
+    "y": 204,
     "w": 191,
-    "h": 210
+    "h": 203
    },
    "sourceSize": {
     "w": 514,
@@ -938,18 +938,18 @@
   },
   "sapper_attack_05_team": {
    "frame": {
-    "x": 893,
-    "y": 793,
-    "w": 93,
-    "h": 125
+    "x": 611,
+    "y": 776,
+    "w": 92,
+    "h": 130
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 225,
-    "y": 257,
-    "w": 93,
-    "h": 125
+    "x": 226,
+    "y": 252,
+    "w": 92,
+    "h": 130
    },
    "sourceSize": {
     "w": 514,
@@ -962,18 +962,18 @@
   },
   "sapper_attack_06": {
    "frame": {
-    "x": 959,
-    "y": 216,
+    "x": 967,
+    "y": 213,
     "w": 165,
-    "h": 195
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 213,
+    "y": 217,
     "w": 165,
-    "h": 195
+    "h": 191
    },
    "sourceSize": {
     "w": 514,
@@ -986,18 +986,18 @@
   },
   "sapper_attack_06_team": {
    "frame": {
-    "x": 518,
-    "y": 793,
+    "x": 1131,
+    "y": 603,
     "w": 92,
-    "h": 128
+    "h": 139
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 236,
-    "y": 255,
+    "y": 244,
     "w": 92,
-    "h": 128
+    "h": 139
    },
    "sourceSize": {
     "w": 514,
@@ -1010,18 +1010,18 @@
   },
   "sapper_attack_07": {
    "frame": {
-    "x": 1049,
-    "y": 420,
+    "x": 989,
+    "y": 412,
     "w": 165,
-    "h": 183
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 225,
+    "y": 231,
     "w": 165,
-    "h": 183
+    "h": 177
    },
    "sourceSize": {
     "w": 514,
@@ -1034,18 +1034,18 @@
   },
   "sapper_attack_07_team": {
    "frame": {
-    "x": 1349,
-    "y": 930,
+    "x": 701,
+    "y": 915,
     "w": 103,
-    "h": 116
+    "h": 119
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 237,
-    "y": 271,
+    "y": 268,
     "w": 103,
-    "h": 116
+    "h": 119
    },
    "sourceSize": {
     "w": 514,
@@ -1059,17 +1059,17 @@
   "sapper_attack_08": {
    "frame": {
     "x": 341,
-    "y": 616,
+    "y": 603,
     "w": 176,
-    "h": 170
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 236,
+    "y": 241,
     "w": 176,
-    "h": 170
+    "h": 165
    },
    "sourceSize": {
     "w": 514,
@@ -1082,8 +1082,8 @@
   },
   "sapper_attack_08_team": {
    "frame": {
-    "x": 97,
-    "y": 1057,
+    "x": 1338,
+    "y": 915,
     "w": 110,
     "h": 115
    },
@@ -1091,7 +1091,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 271,
+    "y": 270,
     "w": 110,
     "h": 115
    },
@@ -1106,18 +1106,18 @@
   },
   "sapper_attack_09": {
    "frame": {
-    "x": 2,
-    "y": 616,
+    "x": 148,
+    "y": 603,
     "w": 189,
-    "h": 173
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 233,
+    "y": 239,
     "w": 189,
-    "h": 173
+    "h": 167
    },
    "sourceSize": {
     "w": 514,
@@ -1130,18 +1130,18 @@
   },
   "sapper_attack_09_team": {
    "frame": {
-    "x": 801,
-    "y": 930,
+    "x": 589,
+    "y": 915,
     "w": 108,
-    "h": 118
+    "h": 119
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 272,
+    "y": 271,
     "w": 108,
-    "h": 118
+    "h": 119
    },
    "sourceSize": {
     "w": 514,
@@ -1154,18 +1154,18 @@
   },
   "sapper_attack_10": {
    "frame": {
-    "x": 2,
-    "y": 420,
+    "x": 1136,
+    "y": 213,
     "w": 199,
-    "h": 192
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 204,
-    "y": 215,
+    "y": 220,
     "w": 199,
-    "h": 192
+    "h": 187
    },
    "sourceSize": {
     "w": 514,
@@ -1178,18 +1178,18 @@
   },
   "sapper_attack_10_team": {
    "frame": {
-    "x": 427,
-    "y": 793,
+    "x": 2,
+    "y": 776,
     "w": 87,
-    "h": 129
+    "h": 135
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 259,
+    "y": 252,
     "w": 87,
-    "h": 129
+    "h": 135
    },
    "sourceSize": {
     "w": 514,
@@ -1202,18 +1202,18 @@
   },
   "sapper_attack_11": {
    "frame": {
-    "x": 404,
-    "y": 216,
+    "x": 696,
+    "y": 213,
     "w": 131,
-    "h": 199
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 200,
-    "y": 207,
+    "y": 213,
     "w": 131,
-    "h": 199
+    "h": 193
    },
    "sourceSize": {
     "w": 514,
@@ -1226,8 +1226,8 @@
   },
   "sapper_attack_11_team": {
    "frame": {
-    "x": 614,
-    "y": 793,
+    "x": 980,
+    "y": 776,
     "w": 89,
     "h": 127
    },
@@ -1250,18 +1250,18 @@
   },
   "sapper_hit_00": {
    "frame": {
-    "x": 1365,
-    "y": 420,
+    "x": 1305,
+    "y": 412,
     "w": 139,
-    "h": 177
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 229,
+    "y": 234,
     "w": 139,
-    "h": 177
+    "h": 172
    },
    "sourceSize": {
     "w": 514,
@@ -1274,18 +1274,18 @@
   },
   "sapper_hit_00_team": {
    "frame": {
-    "x": 948,
-    "y": 1057,
+    "x": 880,
+    "y": 1040,
     "w": 115,
-    "h": 106
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 192,
-    "y": 280,
+    "y": 281,
     "w": 115,
-    "h": 106
+    "h": 104
    },
    "sourceSize": {
     "w": 514,
@@ -1298,17 +1298,17 @@
   },
   "sapper_hit_01": {
    "frame": {
-    "x": 830,
-    "y": 216,
-    "w": 125,
+    "x": 940,
+    "y": 2,
+    "w": 124,
     "h": 197
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 187,
+    "x": 188,
     "y": 209,
-    "w": 125,
+    "w": 124,
     "h": 197
    },
    "sourceSize": {
@@ -1322,18 +1322,18 @@
   },
   "sapper_hit_01_team": {
    "frame": {
-    "x": 426,
-    "y": 1057,
-    "w": 105,
-    "h": 113
+    "x": 420,
+    "y": 1040,
+    "w": 104,
+    "h": 112
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
+    "x": 194,
     "y": 268,
-    "w": 105,
-    "h": 113
+    "w": 104,
+    "h": 112
    },
    "sourceSize": {
     "w": 514,
@@ -1346,18 +1346,18 @@
   },
   "sapper_hit_02": {
    "frame": {
-    "x": 274,
-    "y": 216,
-    "w": 126,
-    "h": 200
+    "x": 276,
+    "y": 213,
+    "w": 125,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
-    "y": 206,
-    "w": 126,
-    "h": 200
+    "x": 194,
+    "y": 212,
+    "w": 125,
+    "h": 194
    },
    "sourceSize": {
     "w": 514,
@@ -1370,18 +1370,18 @@
   },
   "sapper_hit_02_team": {
    "frame": {
-    "x": 1024,
-    "y": 930,
+    "x": 397,
+    "y": 915,
     "w": 99,
-    "h": 118
+    "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 205,
-    "y": 264,
+    "y": 262,
     "w": 99,
-    "h": 118
+    "h": 120
    },
    "sourceSize": {
     "w": 514,
@@ -1394,18 +1394,18 @@
   },
   "sapper_hit_03": {
    "frame": {
-    "x": 205,
-    "y": 420,
+    "x": 145,
+    "y": 412,
     "w": 138,
-    "h": 191
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 215,
+    "y": 221,
     "w": 138,
-    "h": 191
+    "h": 185
    },
    "sourceSize": {
     "w": 514,
@@ -1418,8 +1418,8 @@
   },
   "sapper_hit_03_team": {
    "frame": {
-    "x": 410,
-    "y": 930,
+    "x": 1375,
+    "y": 776,
     "w": 86,
     "h": 122
    },
@@ -1442,18 +1442,18 @@
   },
   "sapper_hit_04": {
    "frame": {
-    "x": 138,
-    "y": 216,
+    "x": 560,
+    "y": 213,
     "w": 132,
-    "h": 200
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 206,
+    "y": 213,
     "w": 132,
-    "h": 200
+    "h": 193
    },
    "sourceSize": {
     "w": 514,
@@ -1466,18 +1466,18 @@
   },
   "sapper_hit_04_team": {
    "frame": {
-    "x": 117,
-    "y": 930,
-    "w": 92,
-    "h": 123
+    "x": 1165,
+    "y": 776,
+    "w": 91,
+    "h": 125
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 214,
-    "y": 263,
-    "w": 92,
-    "h": 123
+    "x": 215,
+    "y": 261,
+    "w": 91,
+    "h": 125
    },
    "sourceSize": {
     "w": 514,
@@ -1491,16 +1491,16 @@
   "sapper_die_00": {
    "frame": {
     "x": 521,
-    "y": 616,
-    "w": 160,
+    "y": 603,
+    "w": 155,
     "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 165,
+    "x": 170,
     "y": 227,
-    "w": 160,
+    "w": 155,
     "h": 162
    },
    "sourceSize": {
@@ -1514,8 +1514,8 @@
   },
   "sapper_die_00_team": {
    "frame": {
-    "x": 1316,
-    "y": 1057,
+    "x": 1122,
+    "y": 1040,
     "w": 127,
     "h": 94
    },
@@ -1538,17 +1538,17 @@
   },
   "sapper_die_01": {
    "frame": {
-    "x": 2,
-    "y": 793,
-    "w": 210,
+    "x": 93,
+    "y": 776,
+    "w": 209,
     "h": 133
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 122,
+    "x": 123,
     "y": 236,
-    "w": 210,
+    "w": 209,
     "h": 133
    },
    "sourceSize": {
@@ -1562,8 +1562,8 @@
   },
   "sapper_die_01_team": {
    "frame": {
-    "x": 1193,
-    "y": 1057,
+    "x": 999,
+    "y": 1040,
     "w": 119,
     "h": 102
    },
@@ -1586,9 +1586,9 @@
   },
   "sapper_die_02": {
    "frame": {
-    "x": 197,
+    "x": 2,
     "y": 2,
-    "w": 164,
+    "w": 157,
     "h": 207
    },
    "rotated": false,
@@ -1596,7 +1596,7 @@
    "spriteSourceSize": {
     "x": 182,
     "y": 205,
-    "w": 164,
+    "w": 157,
     "h": 207
    },
    "sourceSize": {
@@ -1610,18 +1610,18 @@
   },
   "sapper_die_02_team": {
    "frame": {
-    "x": 2,
-    "y": 930,
+    "x": 1260,
+    "y": 776,
     "w": 111,
-    "h": 123
+    "h": 122
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 205,
-    "y": 237,
+    "y": 238,
     "w": 111,
-    "h": 123
+    "h": 122
    },
    "sourceSize": {
     "w": 514,
@@ -1634,18 +1634,18 @@
   },
   "sapper_die_03": {
    "frame": {
-    "x": 539,
-    "y": 216,
+    "x": 405,
+    "y": 213,
     "w": 151,
-    "h": 198
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 173,
-    "y": 174,
+    "y": 179,
     "w": 151,
-    "h": 198
+    "h": 193
    },
    "sourceSize": {
     "w": 514,
@@ -1658,10 +1658,10 @@
   },
   "sapper_die_03_team": {
    "frame": {
-    "x": 1052,
-    "y": 616,
+    "x": 1227,
+    "y": 603,
     "w": 117,
-    "h": 139
+    "h": 138
    },
    "rotated": false,
    "trimmed": true,
@@ -1669,7 +1669,7 @@
     "x": 183,
     "y": 210,
     "w": 117,
-    "h": 139
+    "h": 138
    },
    "sourceSize": {
     "w": 514,
@@ -1682,17 +1682,17 @@
   },
   "sapper_die_04": {
    "frame": {
-    "x": 685,
-    "y": 616,
-    "w": 175,
+    "x": 680,
+    "y": 603,
+    "w": 170,
     "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 120,
+    "x": 125,
     "y": 281,
-    "w": 175,
+    "w": 170,
     "h": 159
    },
    "sourceSize": {
@@ -1706,17 +1706,17 @@
   },
   "sapper_die_04_team": {
    "frame": {
-    "x": 913,
-    "y": 930,
-    "w": 107,
+    "x": 923,
+    "y": 915,
+    "w": 109,
     "h": 118
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 168,
+    "x": 166,
     "y": 297,
-    "w": 107,
+    "w": 109,
     "h": 118
    },
    "sourceSize": {
@@ -1730,17 +1730,17 @@
   },
   "sapper_die_05": {
    "frame": {
-    "x": 216,
-    "y": 793,
-    "w": 207,
+    "x": 401,
+    "y": 776,
+    "w": 206,
     "h": 130
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
+    "x": 104,
     "y": 288,
-    "w": 207,
+    "w": 206,
     "h": 130
    },
    "sourceSize": {
@@ -1754,17 +1754,17 @@
   },
   "sapper_die_05_team": {
    "frame": {
-    "x": 1067,
-    "y": 1057,
-    "w": 122,
+    "x": 742,
+    "y": 1040,
+    "w": 134,
     "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 151,
+    "x": 138,
     "y": 301,
-    "w": 122,
+    "w": 134,
     "h": 104
    },
    "sourceSize": {
@@ -1778,18 +1778,18 @@
   },
   "sapper_die_06": {
    "frame": {
-    "x": 864,
-    "y": 616,
-    "w": 184,
-    "h": 149
+    "x": 854,
+    "y": 603,
+    "w": 177,
+    "h": 145
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 110,
+    "x": 117,
     "y": 290,
-    "w": 184,
-    "h": 149
+    "w": 177,
+    "h": 145
    },
    "sourceSize": {
     "w": 514,
@@ -1802,17 +1802,17 @@
   },
   "sapper_die_06_team": {
    "frame": {
-    "x": 211,
-    "y": 1057,
-    "w": 101,
+    "x": 2,
+    "y": 1040,
+    "w": 104,
     "h": 114
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 166,
+    "x": 163,
     "y": 305,
-    "w": 101,
+    "w": 104,
     "h": 114
    },
    "sourceSize": {
@@ -1826,18 +1826,18 @@
   },
   "sapper_die_07": {
    "frame": {
-    "x": 1173,
-    "y": 616,
-    "w": 174,
-    "h": 137
+    "x": 1348,
+    "y": 603,
+    "w": 171,
+    "h": 136
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 119,
+    "x": 122,
     "y": 295,
-    "w": 174,
-    "h": 137
+    "w": 171,
+    "h": 136
    },
    "sourceSize": {
     "w": 514,
@@ -1850,17 +1850,17 @@
   },
   "sapper_die_07_team": {
    "frame": {
-    "x": 842,
-    "y": 1057,
-    "w": 102,
+    "x": 635,
+    "y": 1040,
+    "w": 103,
     "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 164,
+    "x": 163,
     "y": 310,
-    "w": 102,
+    "w": 103,
     "h": 107
    },
    "sourceSize": {
@@ -1984,7 +1984,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 1536,
-   "h": 1176
+   "h": 1156
   },
   "scale": "3",
   "ageborn": {

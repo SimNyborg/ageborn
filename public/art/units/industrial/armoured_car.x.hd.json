@@ -2,7 +2,7 @@
  "frames": {
   "armoured_car_attack_b_00": {
    "frame": {
-    "x": 2,
+    "x": 1575,
     "y": 2,
     "w": 219,
     "h": 195
@@ -26,8 +26,8 @@
   },
   "armoured_car_attack_b_00_team": {
    "frame": {
-    "x": 158,
-    "y": 201,
+    "x": 1315,
+    "y": 440,
     "w": 149,
     "h": 98
    },
@@ -50,8 +50,8 @@
   },
   "armoured_car_attack_b_01": {
    "frame": {
-    "x": 670,
-    "y": 2,
+    "x": 458,
+    "y": 227,
     "w": 223,
     "h": 189
    },
@@ -74,8 +74,8 @@
   },
   "armoured_car_attack_b_01_team": {
    "frame": {
-    "x": 2,
-    "y": 201,
+    "x": 229,
+    "y": 438,
     "w": 152,
     "h": 99
    },
@@ -98,8 +98,8 @@
   },
   "armoured_car_attack_b_02": {
    "frame": {
-    "x": 448,
-    "y": 2,
+    "x": 2467,
+    "y": 201,
     "w": 218,
     "h": 194
    },
@@ -122,8 +122,8 @@
   },
   "armoured_car_attack_b_02_team": {
    "frame": {
-    "x": 311,
-    "y": 201,
+    "x": 1468,
+    "y": 440,
     "w": 149,
     "h": 98
    },
@@ -146,8 +146,8 @@
   },
   "armoured_car_attack_b_03": {
    "frame": {
-    "x": 225,
-    "y": 2,
+    "x": 1577,
+    "y": 201,
     "w": 219,
     "h": 195
    },
@@ -170,8 +170,968 @@
   },
   "armoured_car_attack_b_03_team": {
    "frame": {
-    "x": 464,
+    "x": 1621,
+    "y": 440,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up45_00": {
+   "frame": {
+    "x": 1129,
+    "y": 2,
+    "w": 219,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 268,
+    "w": 219,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up45_00_team": {
+   "frame": {
+    "x": 1774,
+    "y": 440,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up45_01": {
+   "frame": {
+    "x": 229,
+    "y": 2,
+    "w": 223,
+    "h": 227
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 302,
+    "y": 242,
+    "w": 223,
+    "h": 227
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up45_01_team": {
+   "frame": {
+    "x": 697,
+    "y": 440,
+    "w": 151,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 310,
+    "w": 151,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up45_02": {
+   "frame": {
+    "x": 2245,
+    "y": 2,
+    "w": 218,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 266,
+    "w": 218,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up45_02_team": {
+   "frame": {
+    "x": 2245,
+    "y": 412,
+    "w": 149,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 305,
+    "w": 149,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up45_03": {
+   "frame": {
+    "x": 1131,
+    "y": 207,
+    "w": 219,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 268,
+    "w": 219,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up45_03_team": {
+   "frame": {
+    "x": 1927,
+    "y": 440,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up70_00": {
+   "frame": {
+    "x": 683,
+    "y": 2,
+    "w": 219,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 255,
+    "w": 219,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up70_00_team": {
+   "frame": {
+    "x": 2080,
+    "y": 440,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up70_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 223,
+    "h": 247
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 302,
+    "y": 222,
+    "w": 223,
+    "h": 247
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up70_01_team": {
+   "frame": {
+    "x": 852,
+    "y": 440,
+    "w": 151,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 310,
+    "w": 151,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up70_02": {
+   "frame": {
+    "x": 2023,
+    "y": 2,
+    "w": 218,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 253,
+    "w": 218,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up70_02_team": {
+   "frame": {
+    "x": 2398,
+    "y": 412,
+    "w": 149,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 305,
+    "w": 149,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up70_03": {
+   "frame": {
+    "x": 685,
+    "y": 220,
+    "w": 219,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 255,
+    "w": 219,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_up70_03_team": {
+   "frame": {
+    "x": 2551,
+    "y": 399,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_down_00": {
+   "frame": {
+    "x": 1798,
+    "y": 2,
+    "w": 219,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 274,
+    "w": 219,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_down_00_team": {
+   "frame": {
+    "x": 2704,
+    "y": 2,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_down_01": {
+   "frame": {
+    "x": 229,
+    "y": 233,
+    "w": 225,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 302,
+    "y": 280,
+    "w": 225,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_down_01_team": {
+   "frame": {
+    "x": 1007,
+    "y": 440,
+    "w": 151,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 310,
+    "w": 151,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_down_02": {
+   "frame": {
+    "x": 2467,
+    "y": 2,
+    "w": 218,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 274,
+    "w": 218,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_down_02_team": {
+   "frame": {
+    "x": 1162,
+    "y": 412,
+    "w": 149,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 305,
+    "w": 149,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_down_03": {
+   "frame": {
+    "x": 1800,
     "y": 201,
+    "w": 219,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 274,
+    "w": 219,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_down_03_team": {
+   "frame": {
+    "x": 2857,
+    "y": 2,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up45_00": {
+   "frame": {
+    "x": 1352,
+    "y": 2,
+    "w": 219,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 272,
+    "w": 219,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up45_00_team": {
+   "frame": {
+    "x": 2689,
+    "y": 104,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up45_01": {
+   "frame": {
+    "x": 456,
+    "y": 2,
+    "w": 223,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 302,
+    "y": 248,
+    "w": 223,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up45_01_team": {
+   "frame": {
+    "x": 385,
+    "y": 438,
+    "w": 152,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 310,
+    "w": 152,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up45_02": {
+   "frame": {
+    "x": 2245,
+    "y": 209,
+    "w": 218,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 270,
+    "w": 218,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up45_02_team": {
+   "frame": {
+    "x": 2842,
+    "y": 104,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 306,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up45_03": {
+   "frame": {
+    "x": 1354,
+    "y": 203,
+    "w": 219,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 272,
+    "w": 219,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up45_03_team": {
+   "frame": {
+    "x": 2689,
+    "y": 206,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up70_00": {
+   "frame": {
+    "x": 906,
+    "y": 2,
+    "w": 219,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 258,
+    "w": 219,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up70_00_team": {
+   "frame": {
+    "x": 2842,
+    "y": 206,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up70_01": {
+   "frame": {
+    "x": 2,
+    "y": 253,
+    "w": 223,
+    "h": 244
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 302,
+    "y": 225,
+    "w": 223,
+    "h": 244
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up70_01_team": {
+   "frame": {
+    "x": 541,
+    "y": 438,
+    "w": 152,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 310,
+    "w": 152,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up70_02": {
+   "frame": {
+    "x": 2023,
+    "y": 222,
+    "w": 218,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 255,
+    "w": 218,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up70_02_team": {
+   "frame": {
+    "x": 2704,
+    "y": 308,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 306,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up70_03": {
+   "frame": {
+    "x": 908,
+    "y": 217,
+    "w": 219,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 258,
+    "w": 219,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_up70_03_team": {
+   "frame": {
+    "x": 2704,
+    "y": 410,
     "w": 149,
     "h": 98
    },
@@ -205,6 +1165,66 @@
    "armoured_car_attack_b_01_team",
    "armoured_car_attack_b_02_team",
    "armoured_car_attack_b_03_team"
+  ],
+  "attack_up45": [
+   "armoured_car_attack_up45_00",
+   "armoured_car_attack_up45_01",
+   "armoured_car_attack_up45_02",
+   "armoured_car_attack_up45_03"
+  ],
+  "attack_up45_team": [
+   "armoured_car_attack_up45_00_team",
+   "armoured_car_attack_up45_01_team",
+   "armoured_car_attack_up45_02_team",
+   "armoured_car_attack_up45_03_team"
+  ],
+  "attack_up70": [
+   "armoured_car_attack_up70_00",
+   "armoured_car_attack_up70_01",
+   "armoured_car_attack_up70_02",
+   "armoured_car_attack_up70_03"
+  ],
+  "attack_up70_team": [
+   "armoured_car_attack_up70_00_team",
+   "armoured_car_attack_up70_01_team",
+   "armoured_car_attack_up70_02_team",
+   "armoured_car_attack_up70_03_team"
+  ],
+  "attack_down": [
+   "armoured_car_attack_down_00",
+   "armoured_car_attack_down_01",
+   "armoured_car_attack_down_02",
+   "armoured_car_attack_down_03"
+  ],
+  "attack_down_team": [
+   "armoured_car_attack_down_00_team",
+   "armoured_car_attack_down_01_team",
+   "armoured_car_attack_down_02_team",
+   "armoured_car_attack_down_03_team"
+  ],
+  "attack_b_up45": [
+   "armoured_car_attack_b_up45_00",
+   "armoured_car_attack_b_up45_01",
+   "armoured_car_attack_b_up45_02",
+   "armoured_car_attack_b_up45_03"
+  ],
+  "attack_b_up45_team": [
+   "armoured_car_attack_b_up45_00_team",
+   "armoured_car_attack_b_up45_01_team",
+   "armoured_car_attack_b_up45_02_team",
+   "armoured_car_attack_b_up45_03_team"
+  ],
+  "attack_b_up70": [
+   "armoured_car_attack_b_up70_00",
+   "armoured_car_attack_b_up70_01",
+   "armoured_car_attack_b_up70_02",
+   "armoured_car_attack_b_up70_03"
+  ],
+  "attack_b_up70_team": [
+   "armoured_car_attack_b_up70_00_team",
+   "armoured_car_attack_b_up70_01_team",
+   "armoured_car_attack_b_up70_02_team",
+   "armoured_car_attack_b_up70_03_team"
   ]
  },
  "meta": {
@@ -213,8 +1233,8 @@
   "image": "armoured_car.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 896,
-   "h": 304
+   "w": 3072,
+   "h": 540
   },
   "scale": "3",
   "ageborn": {
@@ -292,6 +1312,276 @@
       "atLu": [
        21.6,
        46.9
+      ]
+     }
+    },
+    "attack_up45": {
+     "frames": 4,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      60,
+      60,
+      70,
+      60
+     ],
+     "durationMs": 250,
+     "impactFrame": 1,
+     "impactStep": 1,
+     "impactAt": 0.24,
+     "holdStep": 0,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        17.6,
+        67.0
+       ],
+       [
+        16.2,
+        65.9
+       ],
+       [
+        16.8,
+        67.8
+       ],
+       [
+        17.6,
+        67.0
+       ]
+      ]
+     },
+     "muzzle": [
+      16.2,
+      65.9
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 1,
+      "atLu": [
+       16.2,
+       65.9
+      ]
+     }
+    },
+    "attack_up70": {
+     "frames": 4,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      60,
+      60,
+      70,
+      60
+     ],
+     "durationMs": 250,
+     "impactFrame": 1,
+     "impactStep": 1,
+     "impactAt": 0.24,
+     "holdStep": 0,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        9.6,
+        72.3
+       ],
+       [
+        7.9,
+        70.8
+       ],
+       [
+        8.8,
+        73.1
+       ],
+       [
+        9.6,
+        72.3
+       ]
+      ]
+     },
+     "muzzle": [
+      7.9,
+      70.8
+     ],
+     "aimDeg": 69.9,
+     "release": {
+      "frame": 1,
+      "atLu": [
+       7.9,
+       70.8
+      ]
+     }
+    },
+    "attack_down": {
+     "frames": 4,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      60,
+      60,
+      70,
+      60
+     ],
+     "durationMs": 250,
+     "impactFrame": 1,
+     "impactStep": 1,
+     "impactAt": 0.24,
+     "holdStep": 0,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        25.0,
+        47.5
+       ],
+       [
+        24.2,
+        46.9
+       ],
+       [
+        24.1,
+        48.0
+       ],
+       [
+        25.0,
+        47.5
+       ]
+      ]
+     },
+     "muzzle": [
+      24.2,
+      46.9
+     ],
+     "aimDeg": -7.0,
+     "release": {
+      "frame": 1,
+      "atLu": [
+       24.2,
+       46.9
+      ]
+     }
+    },
+    "attack_b_up45": {
+     "frames": 4,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      60,
+      60,
+      70,
+      60
+     ],
+     "durationMs": 250,
+     "impactFrame": 1,
+     "impactStep": 1,
+     "impactAt": 0.24,
+     "holdStep": 0,
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        15.0,
+        65.5
+       ],
+       [
+        14.2,
+        64.3
+       ],
+       [
+        13.9,
+        66.4
+       ],
+       [
+        15.0,
+        65.5
+       ]
+      ]
+     },
+     "muzzle": [
+      14.2,
+      64.3
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 1,
+      "atLu": [
+       14.2,
+       64.3
+      ]
+     }
+    },
+    "attack_b_up70": {
+     "frames": 4,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      60,
+      60,
+      70,
+      60
+     ],
+     "durationMs": 250,
+     "impactFrame": 1,
+     "impactStep": 1,
+     "impactAt": 0.24,
+     "holdStep": 0,
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        7.6,
+        71.1
+       ],
+       [
+        6.7,
+        69.7
+       ],
+       [
+        6.6,
+        72.0
+       ],
+       [
+        7.6,
+        71.1
+       ]
+      ]
+     },
+     "muzzle": [
+      6.7,
+      69.7
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 1,
+      "atLu": [
+       6.7,
+       69.7
       ]
      }
     }

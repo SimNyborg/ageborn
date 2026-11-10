@@ -2,8 +2,8 @@
  "frames": {
   "clockwork_tinker_attack_b_01": {
    "frame": {
-    "x": 2,
-    "y": 181,
+    "x": 347,
+    "y": 172,
     "w": 169,
     "h": 165
    },
@@ -26,10 +26,10 @@
   },
   "clockwork_tinker_attack_b_01_team": {
    "frame": {
-    "x": 678,
-    "y": 510,
+    "x": 1313,
+    "y": 101,
     "w": 82,
-    "h": 94
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 206,
     "y": 294,
     "w": 82,
-    "h": 94
+    "h": 93
    },
    "sourceSize": {
     "w": 506,
@@ -51,7 +51,7 @@
   "clockwork_tinker_attack_b_02": {
    "frame": {
     "x": 2,
-    "y": 350,
+    "y": 181,
     "w": 151,
     "h": 156
    },
@@ -74,17 +74,17 @@
   },
   "clockwork_tinker_attack_b_02_team": {
    "frame": {
-    "x": 225,
-    "y": 615,
-    "w": 98,
+    "x": 1414,
+    "y": 189,
+    "w": 94,
     "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
+    "x": 194,
     "y": 301,
-    "w": 98,
+    "w": 94,
     "h": 89
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "clockwork_tinker_attack_b_03_team": {
    "frame": {
-    "x": 2,
-    "y": 510,
+    "x": 1047,
+    "y": 2,
     "w": 84,
     "h": 101
    },
@@ -146,8 +146,8 @@
   },
   "clockwork_tinker_attack_b_04": {
    "frame": {
-    "x": 337,
-    "y": 350,
+    "x": 850,
+    "y": 2,
     "w": 193,
     "h": 148
    },
@@ -170,18 +170,18 @@
   },
   "clockwork_tinker_attack_b_04_team": {
    "frame": {
-    "x": 327,
-    "y": 615,
-    "w": 117,
-    "h": 88
+    "x": 1414,
+    "y": 96,
+    "w": 113,
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 232,
-    "y": 305,
-    "w": 117,
-    "h": 88
+    "x": 236,
+    "y": 304,
+    "w": 113,
+    "h": 89
    },
    "sourceSize": {
     "w": 506,
@@ -218,18 +218,18 @@
   },
   "clockwork_tinker_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 615,
-    "w": 105,
-    "h": 93
+    "x": 1231,
+    "y": 2,
+    "w": 101,
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 237,
-    "y": 294,
-    "w": 105,
-    "h": 93
+    "x": 241,
+    "y": 292,
+    "w": 101,
+    "h": 95
    },
    "sourceSize": {
     "w": 506,
@@ -242,8 +242,8 @@
   },
   "clockwork_tinker_attack_b_06": {
    "frame": {
-    "x": 516,
-    "y": 2,
+    "x": 173,
+    "y": 173,
     "w": 170,
     "h": 165
    },
@@ -266,17 +266,17 @@
   },
   "clockwork_tinker_attack_b_06_team": {
    "frame": {
-    "x": 567,
-    "y": 510,
-    "w": 107,
+    "x": 1306,
+    "y": 204,
+    "w": 104,
     "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 223,
+    "x": 226,
     "y": 295,
-    "w": 107,
+    "w": 104,
     "h": 94
    },
    "sourceSize": {
@@ -290,8 +290,8 @@
   },
   "clockwork_tinker_attack_c_01": {
    "frame": {
-    "x": 175,
-    "y": 181,
+    "x": 516,
+    "y": 2,
     "w": 163,
     "h": 165
    },
@@ -314,9 +314,9 @@
   },
   "clockwork_tinker_attack_c_01_team": {
    "frame": {
-    "x": 186,
-    "y": 510,
-    "w": 81,
+    "x": 1124,
+    "y": 209,
+    "w": 83,
     "h": 98
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 214,
     "y": 296,
-    "w": 81,
+    "w": 83,
     "h": 98
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "clockwork_tinker_attack_c_02": {
    "frame": {
-    "x": 157,
-    "y": 350,
+    "x": 748,
+    "y": 166,
     "w": 176,
     "h": 153
    },
@@ -362,17 +362,17 @@
   },
   "clockwork_tinker_attack_c_02_team": {
    "frame": {
-    "x": 466,
-    "y": 510,
-    "w": 97,
+    "x": 1220,
+    "y": 104,
+    "w": 89,
     "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
+    "x": 204,
     "y": 306,
-    "w": 97,
+    "w": 89,
     "h": 96
    },
    "sourceSize": {
@@ -386,8 +386,8 @@
   },
   "clockwork_tinker_attack_c_03": {
    "frame": {
-    "x": 342,
-    "y": 181,
+    "x": 520,
+    "y": 171,
     "w": 224,
     "h": 161
    },
@@ -410,18 +410,18 @@
   },
   "clockwork_tinker_attack_c_03_team": {
    "frame": {
-    "x": 90,
-    "y": 510,
+    "x": 1124,
+    "y": 107,
     "w": 92,
-    "h": 99
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 300,
+    "y": 301,
     "w": 92,
-    "h": 99
+    "h": 98
    },
    "sourceSize": {
     "w": 506,
@@ -434,8 +434,8 @@
   },
   "clockwork_tinker_attack_c_04": {
    "frame": {
-    "x": 534,
-    "y": 350,
+    "x": 928,
+    "y": 154,
     "w": 192,
     "h": 144
    },
@@ -458,17 +458,17 @@
   },
   "clockwork_tinker_attack_c_04_team": {
    "frame": {
-    "x": 111,
-    "y": 615,
-    "w": 110,
+    "x": 1336,
+    "y": 2,
+    "w": 106,
     "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 220,
+    "x": 224,
     "y": 305,
-    "w": 110,
+    "w": 106,
     "h": 90
    },
    "sourceSize": {
@@ -482,8 +482,8 @@
   },
   "clockwork_tinker_attack_c_05": {
    "frame": {
-    "x": 570,
-    "y": 181,
+    "x": 683,
+    "y": 2,
     "w": 163,
     "h": 160
    },
@@ -506,18 +506,18 @@
   },
   "clockwork_tinker_attack_c_05_team": {
    "frame": {
-    "x": 271,
-    "y": 510,
-    "w": 96,
-    "h": 97
+    "x": 1135,
+    "y": 2,
+    "w": 92,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 224,
-    "y": 300,
-    "w": 96,
-    "h": 97
+    "x": 228,
+    "y": 298,
+    "w": 92,
+    "h": 98
    },
    "sourceSize": {
     "w": 506,
@@ -554,8 +554,8 @@
   },
   "clockwork_tinker_attack_c_06_team": {
    "frame": {
-    "x": 371,
-    "y": 510,
+    "x": 1211,
+    "y": 209,
     "w": 91,
     "h": 97
    },
@@ -637,8 +637,8 @@
   "image": "clockwork_tinker.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 712
+   "w": 1536,
+   "h": 340
   },
   "scale": "3",
   "ageborn": {

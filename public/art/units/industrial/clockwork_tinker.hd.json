@@ -2,8 +2,8 @@
  "frames": {
   "clockwork_tinker_idle_00": {
    "frame": {
-    "x": 1226,
-    "y": 247,
+    "x": 579,
+    "y": 368,
     "w": 115,
     "h": 170
    },
@@ -26,18 +26,18 @@
   },
   "clockwork_tinker_idle_00_team": {
    "frame": {
-    "x": 381,
-    "y": 859,
-    "w": 91,
-    "h": 95
+    "x": 2354,
+    "y": 101,
+    "w": 90,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 206,
+    "x": 207,
     "y": 291,
-    "w": 91,
-    "h": 95
+    "w": 90,
+    "h": 94
    },
    "sourceSize": {
     "w": 506,
@@ -50,8 +50,8 @@
   },
   "clockwork_tinker_idle_01": {
    "frame": {
-    "x": 975,
-    "y": 247,
+    "x": 952,
+    "y": 357,
     "w": 117,
     "h": 171
    },
@@ -74,8 +74,8 @@
   },
   "clockwork_tinker_idle_01_team": {
    "frame": {
-    "x": 188,
-    "y": 859,
+    "x": 2257,
+    "y": 103,
     "w": 93,
     "h": 95
    },
@@ -98,8 +98,8 @@
   },
   "clockwork_tinker_idle_02": {
    "frame": {
-    "x": 2,
-    "y": 247,
+    "x": 698,
+    "y": 184,
     "w": 115,
     "h": 176
    },
@@ -122,9 +122,9 @@
   },
   "clockwork_tinker_idle_02_team": {
    "frame": {
-    "x": 96,
-    "y": 753,
-    "w": 90,
+    "x": 1944,
+    "y": 238,
+    "w": 89,
     "h": 100
    },
    "rotated": false,
@@ -132,7 +132,7 @@
    "spriteSourceSize": {
     "x": 207,
     "y": 282,
-    "w": 90,
+    "w": 89,
     "h": 100
    },
    "sourceSize": {
@@ -146,7 +146,7 @@
   },
   "clockwork_tinker_idle_03": {
    "frame": {
-    "x": 1316,
+    "x": 620,
     "y": 2,
     "w": 113,
     "h": 178
@@ -170,10 +170,10 @@
   },
   "clockwork_tinker_idle_03_team": {
    "frame": {
-    "x": 2,
-    "y": 753,
+    "x": 1925,
+    "y": 2,
     "w": 90,
-    "h": 102
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 207,
     "y": 282,
     "w": 90,
-    "h": 102
+    "h": 101
    },
    "sourceSize": {
     "w": 506,
@@ -194,8 +194,8 @@
   },
   "clockwork_tinker_idle_04": {
    "frame": {
-    "x": 1197,
-    "y": 2,
+    "x": 579,
+    "y": 186,
     "w": 115,
     "h": 178
    },
@@ -218,8 +218,8 @@
   },
   "clockwork_tinker_idle_04_team": {
    "frame": {
-    "x": 190,
-    "y": 753,
+    "x": 1983,
+    "y": 107,
     "w": 90,
     "h": 99
    },
@@ -242,8 +242,8 @@
   },
   "clockwork_tinker_idle_05": {
    "frame": {
-    "x": 731,
-    "y": 247,
+    "x": 936,
+    "y": 180,
     "w": 121,
     "h": 173
    },
@@ -266,10 +266,10 @@
   },
   "clockwork_tinker_idle_05_team": {
    "frame": {
-    "x": 1381,
-    "y": 753,
+    "x": 2286,
+    "y": 2,
     "w": 92,
-    "h": 96
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 204,
     "y": 289,
     "w": 92,
-    "h": 96
+    "h": 95
    },
    "sourceSize": {
     "w": 506,
@@ -290,8 +290,8 @@
   },
   "clockwork_tinker_walk_00": {
    "frame": {
-    "x": 451,
-    "y": 427,
+    "x": 1194,
+    "y": 345,
     "w": 115,
     "h": 165
    },
@@ -314,17 +314,17 @@
   },
   "clockwork_tinker_walk_00_team": {
    "frame": {
-    "x": 565,
-    "y": 859,
-    "w": 84,
+    "x": 2382,
+    "y": 2,
+    "w": 83,
     "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 211,
+    "x": 212,
     "y": 293,
-    "w": 84,
+    "w": 83,
     "h": 94
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "clockwork_tinker_walk_01": {
    "frame": {
-    "x": 818,
-    "y": 427,
+    "x": 1442,
+    "y": 339,
     "w": 114,
     "h": 160
    },
@@ -362,9 +362,9 @@
   },
   "clockwork_tinker_walk_01_team": {
    "frame": {
-    "x": 476,
-    "y": 859,
-    "w": 85,
+    "x": 1994,
+    "y": 444,
+    "w": 87,
     "h": 94
    },
    "rotated": false,
@@ -372,7 +372,7 @@
    "spriteSourceSize": {
     "x": 209,
     "y": 301,
-    "w": 85,
+    "w": 87,
     "h": 94
    },
    "sourceSize": {
@@ -386,8 +386,8 @@
   },
   "clockwork_tinker_walk_02": {
    "frame": {
-    "x": 856,
-    "y": 247,
+    "x": 974,
+    "y": 2,
     "w": 115,
     "h": 173
    },
@@ -410,17 +410,17 @@
   },
   "clockwork_tinker_walk_02_team": {
    "frame": {
-    "x": 1106,
-    "y": 753,
-    "w": 85,
+    "x": 2167,
+    "y": 104,
+    "w": 86,
     "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 210,
+    "x": 209,
     "y": 286,
-    "w": 85,
+    "w": 86,
     "h": 97
    },
    "sourceSize": {
@@ -434,8 +434,8 @@
   },
   "clockwork_tinker_walk_03": {
    "frame": {
-    "x": 121,
-    "y": 247,
+    "x": 737,
+    "y": 2,
     "w": 117,
     "h": 175
    },
@@ -458,17 +458,17 @@
   },
   "clockwork_tinker_walk_03_team": {
    "frame": {
-    "x": 828,
-    "y": 753,
-    "w": 85,
+    "x": 2077,
+    "y": 105,
+    "w": 86,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 209,
+    "x": 208,
     "y": 281,
-    "w": 85,
+    "w": 86,
     "h": 98
    },
    "sourceSize": {
@@ -482,8 +482,8 @@
   },
   "clockwork_tinker_walk_04": {
    "frame": {
-    "x": 699,
-    "y": 427,
+    "x": 1332,
+    "y": 171,
     "w": 115,
     "h": 164
    },
@@ -506,8 +506,8 @@
   },
   "clockwork_tinker_walk_04_team": {
    "frame": {
-    "x": 653,
-    "y": 859,
+    "x": 2469,
+    "y": 2,
     "w": 83,
     "h": 94
    },
@@ -530,8 +530,8 @@
   },
   "clockwork_tinker_walk_05": {
    "frame": {
-    "x": 1335,
-    "y": 427,
+    "x": 1560,
+    "y": 329,
     "w": 118,
     "h": 151
    },
@@ -554,8 +554,8 @@
   },
   "clockwork_tinker_walk_05_team": {
    "frame": {
-    "x": 948,
-    "y": 859,
+    "x": 2284,
+    "y": 403,
     "w": 84,
     "h": 87
    },
@@ -578,8 +578,8 @@
   },
   "clockwork_tinker_walk_06": {
    "frame": {
-    "x": 570,
-    "y": 427,
+    "x": 1313,
+    "y": 345,
     "w": 125,
     "h": 164
    },
@@ -602,8 +602,8 @@
   },
   "clockwork_tinker_walk_06_team": {
    "frame": {
-    "x": 1006,
-    "y": 753,
+    "x": 2129,
+    "y": 207,
     "w": 96,
     "h": 97
    },
@@ -626,8 +626,8 @@
   },
   "clockwork_tinker_walk_07": {
    "frame": {
-    "x": 1096,
-    "y": 247,
+    "x": 1061,
+    "y": 179,
     "w": 126,
     "h": 170
    },
@@ -650,17 +650,17 @@
   },
   "clockwork_tinker_walk_07_team": {
    "frame": {
-    "x": 461,
-    "y": 753,
-    "w": 89,
+    "x": 2086,
+    "y": 312,
+    "w": 81,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 207,
+    "x": 215,
     "y": 282,
-    "w": 89,
+    "w": 81,
     "h": 98
    },
    "sourceSize": {
@@ -674,8 +674,8 @@
   },
   "clockwork_tinker_attack_00": {
    "frame": {
-    "x": 489,
-    "y": 247,
+    "x": 858,
+    "y": 2,
     "w": 112,
     "h": 174
    },
@@ -698,8 +698,8 @@
   },
   "clockwork_tinker_attack_00_team": {
    "frame": {
-    "x": 374,
-    "y": 753,
+    "x": 2019,
+    "y": 2,
     "w": 83,
     "h": 99
    },
@@ -722,8 +722,8 @@
   },
   "clockwork_tinker_attack_01": {
    "frame": {
-    "x": 956,
-    "y": 2,
+    "x": 462,
+    "y": 195,
     "w": 113,
     "h": 187
    },
@@ -746,8 +746,8 @@
   },
   "clockwork_tinker_attack_01_team": {
    "frame": {
-    "x": 554,
-    "y": 753,
+    "x": 1994,
+    "y": 342,
     "w": 88,
     "h": 98
    },
@@ -770,8 +770,8 @@
   },
   "clockwork_tinker_attack_02": {
    "frame": {
-    "x": 1345,
-    "y": 247,
+    "x": 1093,
+    "y": 2,
     "w": 179,
     "h": 169
    },
@@ -794,8 +794,8 @@
   },
   "clockwork_tinker_attack_02_team": {
    "frame": {
-    "x": 285,
-    "y": 859,
+    "x": 2188,
+    "y": 408,
     "w": 92,
     "h": 95
    },
@@ -818,8 +818,8 @@
   },
   "clockwork_tinker_attack_03": {
    "frame": {
-    "x": 488,
-    "y": 2,
+    "x": 190,
+    "y": 216,
     "w": 143,
     "h": 191
    },
@@ -842,8 +842,8 @@
   },
   "clockwork_tinker_attack_03_team": {
    "frame": {
-    "x": 749,
-    "y": 600,
+    "x": 190,
+    "y": 411,
     "w": 84,
     "h": 118
    },
@@ -866,8 +866,8 @@
   },
   "clockwork_tinker_attack_04": {
    "frame": {
-    "x": 129,
-    "y": 2,
+    "x": 2,
+    "y": 247,
     "w": 184,
     "h": 235
    },
@@ -890,9 +890,9 @@
   },
   "clockwork_tinker_attack_04_team": {
    "frame": {
-    "x": 1119,
-    "y": 600,
-    "w": 87,
+    "x": 1763,
+    "y": 293,
+    "w": 86,
     "h": 110
    },
    "rotated": false,
@@ -900,7 +900,7 @@
    "spriteSourceSize": {
     "x": 214,
     "y": 274,
-    "w": 87,
+    "w": 86,
     "h": 110
    },
    "sourceSize": {
@@ -914,8 +914,8 @@
   },
   "clockwork_tinker_attack_05": {
    "frame": {
-    "x": 1132,
-    "y": 427,
+    "x": 1463,
+    "y": 2,
     "w": 199,
     "h": 153
    },
@@ -938,17 +938,17 @@
   },
   "clockwork_tinker_attack_05_team": {
    "frame": {
-    "x": 1159,
-    "y": 859,
-    "w": 109,
+    "x": 2372,
+    "y": 390,
+    "w": 108,
     "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 222,
+    "x": 223,
     "y": 312,
-    "w": 109,
+    "w": 108,
     "h": 85
    },
    "sourceSize": {
@@ -962,8 +962,8 @@
   },
   "clockwork_tinker_attack_06": {
    "frame": {
-    "x": 264,
-    "y": 427,
+    "x": 1276,
+    "y": 2,
     "w": 183,
     "h": 165
    },
@@ -986,8 +986,8 @@
   },
   "clockwork_tinker_attack_06_team": {
    "frame": {
-    "x": 740,
-    "y": 859,
+    "x": 2448,
+    "y": 100,
     "w": 95,
     "h": 93
    },
@@ -1010,8 +1010,8 @@
   },
   "clockwork_tinker_attack_07": {
    "frame": {
-    "x": 242,
-    "y": 247,
+    "x": 698,
+    "y": 364,
     "w": 124,
     "h": 174
    },
@@ -1034,8 +1034,8 @@
   },
   "clockwork_tinker_attack_07_team": {
    "frame": {
-    "x": 646,
-    "y": 753,
+    "x": 2037,
+    "y": 210,
     "w": 88,
     "h": 98
    },
@@ -1058,8 +1058,8 @@
   },
   "clockwork_tinker_attack_08": {
    "frame": {
-    "x": 605,
-    "y": 247,
+    "x": 826,
+    "y": 359,
     "w": 122,
     "h": 173
    },
@@ -1082,10 +1082,10 @@
   },
   "clockwork_tinker_attack_08_team": {
    "frame": {
-    "x": 738,
-    "y": 753,
+    "x": 2196,
+    "y": 2,
     "w": 86,
-    "h": 98
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
@@ -1093,7 +1093,7 @@
     "x": 207,
     "y": 288,
     "w": 86,
-    "h": 98
+    "h": 97
    },
    "sourceSize": {
     "w": 506,
@@ -1106,8 +1106,8 @@
   },
   "clockwork_tinker_hit_00": {
    "frame": {
-    "x": 123,
-    "y": 427,
+    "x": 1191,
+    "y": 175,
     "w": 137,
     "h": 166
    },
@@ -1130,8 +1130,8 @@
   },
   "clockwork_tinker_hit_00_team": {
    "frame": {
-    "x": 90,
-    "y": 859,
+    "x": 2229,
+    "y": 205,
     "w": 94,
     "h": 95
    },
@@ -1154,8 +1154,8 @@
   },
   "clockwork_tinker_hit_01": {
    "frame": {
-    "x": 831,
-    "y": 2,
+    "x": 337,
+    "y": 195,
     "w": 121,
     "h": 189
    },
@@ -1178,8 +1178,8 @@
   },
   "clockwork_tinker_hit_01_team": {
    "frame": {
-    "x": 1412,
-    "y": 600,
+    "x": 1896,
+    "y": 130,
     "w": 83,
     "h": 104
    },
@@ -1202,7 +1202,7 @@
   },
   "clockwork_tinker_hit_02": {
    "frame": {
-    "x": 1073,
+    "x": 496,
     "y": 2,
     "w": 120,
     "h": 180
@@ -1226,10 +1226,10 @@
   },
   "clockwork_tinker_hit_02_team": {
    "frame": {
-    "x": 284,
-    "y": 753,
+    "x": 2106,
+    "y": 2,
     "w": 86,
-    "h": 99
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
@@ -1237,7 +1237,7 @@
     "x": 202,
     "y": 284,
     "w": 86,
-    "h": 99
+    "h": 98
    },
    "sourceSize": {
     "w": 506,
@@ -1250,8 +1250,8 @@
   },
   "clockwork_tinker_hit_03": {
    "frame": {
-    "x": 2,
-    "y": 427,
+    "x": 1073,
+    "y": 353,
     "w": 117,
     "h": 169
    },
@@ -1274,18 +1274,18 @@
   },
   "clockwork_tinker_hit_03_team": {
    "frame": {
-    "x": 2,
-    "y": 859,
-    "w": 84,
-    "h": 96
+    "x": 2327,
+    "y": 202,
+    "w": 81,
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 206,
+    "x": 209,
     "y": 289,
-    "w": 84,
-    "h": 96
+    "w": 81,
+    "h": 95
    },
    "sourceSize": {
     "w": 506,
@@ -1298,8 +1298,8 @@
   },
   "clockwork_tinker_hit_04": {
    "frame": {
-    "x": 370,
-    "y": 247,
+    "x": 817,
+    "y": 181,
     "w": 115,
     "h": 174
    },
@@ -1322,10 +1322,10 @@
   },
   "clockwork_tinker_hit_04_team": {
    "frame": {
-    "x": 1195,
-    "y": 753,
+    "x": 2171,
+    "y": 308,
     "w": 80,
-    "h": 97
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
@@ -1333,7 +1333,7 @@
     "x": 208,
     "y": 287,
     "w": 80,
-    "h": 97
+    "h": 96
    },
    "sourceSize": {
     "w": 506,
@@ -1346,8 +1346,8 @@
   },
   "clockwork_tinker_die_00": {
    "frame": {
-    "x": 2,
-    "y": 600,
+    "x": 337,
+    "y": 388,
     "w": 148,
     "h": 149
    },
@@ -1370,8 +1370,8 @@
   },
   "clockwork_tinker_die_00_team": {
    "frame": {
-    "x": 1279,
-    "y": 753,
+    "x": 2086,
+    "y": 414,
     "w": 98,
     "h": 96
    },
@@ -1394,8 +1394,8 @@
   },
   "clockwork_tinker_die_01": {
    "frame": {
-    "x": 936,
-    "y": 427,
+    "x": 1451,
+    "y": 171,
     "w": 192,
     "h": 154
    },
@@ -1418,10 +1418,10 @@
   },
   "clockwork_tinker_die_01_team": {
    "frame": {
-    "x": 1036,
-    "y": 859,
+    "x": 2344,
+    "y": 301,
     "w": 119,
-    "h": 86
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
@@ -1429,7 +1429,7 @@
     "x": 176,
     "y": 274,
     "w": 119,
-    "h": 86
+    "h": 85
    },
    "sourceSize": {
     "w": 506,
@@ -1466,8 +1466,8 @@
   },
   "clockwork_tinker_die_02_team": {
    "frame": {
-    "x": 662,
-    "y": 600,
+    "x": 489,
+    "y": 386,
     "w": 83,
     "h": 121
    },
@@ -1490,7 +1490,7 @@
   },
   "clockwork_tinker_die_03": {
    "frame": {
-    "x": 635,
+    "x": 300,
     "y": 2,
     "w": 192,
     "h": 189
@@ -1514,8 +1514,8 @@
   },
   "clockwork_tinker_die_03_team": {
    "frame": {
-    "x": 1210,
-    "y": 600,
+    "x": 1883,
+    "y": 403,
     "w": 107,
     "h": 105
    },
@@ -1538,7 +1538,7 @@
   },
   "clockwork_tinker_die_04": {
    "frame": {
-    "x": 317,
+    "x": 129,
     "y": 2,
     "w": 167,
     "h": 210
@@ -1562,8 +1562,8 @@
   },
   "clockwork_tinker_die_04_team": {
    "frame": {
-    "x": 837,
-    "y": 600,
+    "x": 1682,
+    "y": 293,
     "w": 77,
     "h": 117
    },
@@ -1586,8 +1586,8 @@
   },
   "clockwork_tinker_die_05": {
    "frame": {
-    "x": 918,
-    "y": 600,
+    "x": 1682,
+    "y": 414,
     "w": 197,
     "h": 114
    },
@@ -1610,10 +1610,10 @@
   },
   "clockwork_tinker_die_05_team": {
    "frame": {
-    "x": 839,
-    "y": 859,
+    "x": 2448,
+    "y": 197,
     "w": 105,
-    "h": 91
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 166,
     "y": 318,
     "w": 105,
-    "h": 91
+    "h": 89
    },
    "sourceSize": {
     "w": 506,
@@ -1634,8 +1634,8 @@
   },
   "clockwork_tinker_die_06": {
    "frame": {
-    "x": 154,
-    "y": 600,
+    "x": 1647,
+    "y": 159,
     "w": 245,
     "h": 130
    },
@@ -1658,10 +1658,10 @@
   },
   "clockwork_tinker_die_06_team": {
    "frame": {
-    "x": 1321,
-    "y": 600,
+    "x": 1853,
+    "y": 293,
     "w": 87,
-    "h": 105
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
@@ -1669,7 +1669,7 @@
     "x": 179,
     "y": 316,
     "w": 87,
-    "h": 105
+    "h": 106
    },
    "sourceSize": {
     "w": 506,
@@ -1682,8 +1682,8 @@
   },
   "clockwork_tinker_die_07": {
    "frame": {
-    "x": 403,
-    "y": 600,
+    "x": 1666,
+    "y": 2,
     "w": 255,
     "h": 124
    },
@@ -1706,10 +1706,10 @@
   },
   "clockwork_tinker_die_07_team": {
    "frame": {
-    "x": 917,
-    "y": 753,
+    "x": 2255,
+    "y": 304,
     "w": 85,
-    "h": 98
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
@@ -1717,7 +1717,7 @@
     "x": 180,
     "y": 321,
     "w": 85,
-    "h": 98
+    "h": 95
    },
    "sourceSize": {
     "w": 506,
@@ -1835,8 +1835,8 @@
   "image": "clockwork_tinker.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 960
+   "w": 2560,
+   "h": 540
   },
   "scale": "3",
   "ageborn": {
