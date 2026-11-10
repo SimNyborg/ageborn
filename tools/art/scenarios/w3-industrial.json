@@ -1,0 +1,85 @@
+{
+  "ind_a_phone": {
+    "query": "left=industrial&right=industrial&seed=51", "bars": false, "vp": "phone", "tags": ["before", "after"],
+    "range": [60, 156], "every": 4, "spawns": [
+      [0, "riveter", 830, 0],
+      [0, "carbineer", 760, 0],
+      [0, "harpoon_gunner", 770, 0],
+      [0, "steam_golem", 800, 20],
+      [1, "clockwork_soldier", 830, 0],
+      [1, "coal_miners", 815, 0],
+      [1, "iron_mantlet", 820, 0],
+      [1, "bomb_bowler", 770, 0]
+    ]
+  },
+  "ind_b_phone": {
+    "query": "left=industrial&right=industrial&seed=52", "bars": false, "vp": "phone", "tags": ["before", "after"],
+    "range": [60, 156], "every": 4, "spawns": [
+      [0, "sapper", 830, 0],
+      [0, "dispatch_rider", 800, 10],
+      [0, "flare_spotter", 760, 0],
+      [0, "trench_mortar", 700, 0],
+      [1, "steam_tractor", 800, 10],
+      [1, "steam_driller", 815, 0],
+      [1, "bandmaster", 760, 0],
+      [1, "clockwork_tinker", 750, 0]
+    ]
+  },
+  "ind_c_phone": {
+    "query": "left=industrial&right=industrial&seed=53", "bars": false, "vp": "phone", "tags": ["before", "after"],
+    "range": [60, 166], "every": 4, "spawns": [
+      [0, "land_dreadnought", 830, 0],
+      [0, "alpine_climber", 800, 0],
+      [0, "spark_scientist", 760, 0],
+      [1, "armoured_train", 830, 0],
+      [1, "armoured_car", 800, 10],
+      [1, "carbineer", 760, 0]
+    ]
+  },
+  "ind_air_phone": {
+    "query": "left=industrial&right=gunpowder&seed=54", "bars": false, "vp": "phone", "tags": ["before", "after"],
+    "range": [60, 166], "every": 4, "spawns": [
+      [0, "carbineer", 830, 0],
+      [0, "harpoon_gunner", 805, 0],
+      [0, "flare_spotter", 780, 0],
+      [0, "bandmaster", 760, 0],
+      [0, "spark_scientist", 745, 0],
+      [0, "armoured_car", 800, 10],
+      [1, "balloon_admiral", 860, 0]
+    ]
+  },
+  "ind_a_desktop_stills": {
+    "query": "left=industrial&right=industrial&seed=51", "bars": false, "vp": "desktop", "tags": ["before", "after"],
+    "range": [80, 110], "every": 30, "spawns": [
+      [0, "riveter", 830, 0],
+      [0, "carbineer", 760, 0],
+      [0, "harpoon_gunner", 770, 0],
+      [0, "steam_golem", 800, 20],
+      [1, "clockwork_soldier", 830, 0],
+      [1, "coal_miners", 815, 0],
+      [1, "iron_mantlet", 820, 0],
+      [1, "bomb_bowler", 770, 0]
+    ]
+  },
+  "ind_c_desktop_stills": {
+    "query": "left=industrial&right=industrial&seed=53", "bars": false, "vp": "desktop", "tags": ["before", "after"],
+    "range": [80, 110], "every": 30, "spawns": [
+      [0, "land_dreadnought", 830, 0],
+      [0, "alpine_climber", 800, 0],
+      [0, "spark_scientist", 760, 0],
+      [1, "armoured_train", 830, 0],
+      [1, "armoured_car", 800, 10],
+      [1, "carbineer", 760, 0]
+    ]
+  },
+  "dmg_train_phone": {
+    "query": "left=industrial&right=industrial&seed=55", "bars": true, "vp": "phone", "tags": ["after"],
+    "range": [50, 450], "every": 8, "track": 0, "trackWidth": 620, "spawns": [
+      [0, "armoured_train", 830, 0],
+      [1, "riveter", 830, 0],
+      [1, "steam_golem", 815, 0],
+      [1, "harpoon_gunner", 770, 0],
+      [1, "trench_mortar", 700, 0]
+    ]
+  }
+}
