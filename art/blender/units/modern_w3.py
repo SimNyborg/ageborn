@@ -197,11 +197,12 @@ def hat_parts(rig, joint, kind, c, loose=False, team_cover=True, band=1.9):
         KW.beret(rig, joint, c=c)
     elif kind == "peaked":
         KW.peaked_cap(rig, joint, c=c)
-        # W3: a team-dark piping round the crown above the band (the team zone in two tones, and a line through the
-        # big olive top), the crown's side seam, and a lighter top plane (a dark material needs a lit side)
+        # W3: a cream piping round the crown above the band (a line through the big olive top; not team: the head
+        # travels with a boxer's punches, and the lunge curve reads the team layer's box as the torso), the crown's
+        # side seam, and a lighter top plane (a dark material needs a lit side)
         g = Geo().lathe([(12.55, -0.55), (12.95, 0.0), (12.55, 0.55)], (x - 0.4, y, z + 3.4), (x - 0.4, y, z + 4.4),
                         segs=28)
-        look.team_part(rig, joint, g, outline=0)
+        rig.part(joint, g, KM.CREAM, outline=0, highlight=False)
         crown = Geo().blob((x - 0.4, y, z + 2.6), (12.8, 12.2, 4.8), p=2.6)
         KD.surface_line(rig, joint, crown, [(x - 9.5, z + 5.6), (x - 2.0, z + 6.6), (x + 6.5, z + 6.0)], 0.9,
                         "#4E5238")
