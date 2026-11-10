@@ -26,7 +26,7 @@
   },
   "commando_attack_b_01_team": {
    "frame": {
-    "x": 589,
+    "x": 591,
     "y": 85,
     "w": 42,
     "h": 79
@@ -74,7 +74,7 @@
   },
   "commando_attack_b_02_team": {
    "frame": {
-    "x": 474,
+    "x": 476,
     "y": 87,
     "w": 43,
     "h": 81
@@ -122,7 +122,7 @@
   },
   "commando_attack_b_03_team": {
    "frame": {
-    "x": 346,
+    "x": 348,
     "y": 92,
     "w": 44,
     "h": 82
@@ -170,7 +170,7 @@
   },
   "commando_attack_b_04_team": {
    "frame": {
-    "x": 591,
+    "x": 592,
     "y": 2,
     "w": 42,
     "h": 79
@@ -220,15 +220,15 @@
    "frame": {
     "x": 297,
     "y": 92,
-    "w": 45,
+    "w": 47,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 126,
+    "x": 124,
     "y": 114,
-    "w": 45,
+    "w": 47,
     "h": 82
    },
    "sourceSize": {
@@ -242,7 +242,7 @@
   },
   "commando_attack_b_06": {
    "frame": {
-    "x": 635,
+    "x": 637,
     "y": 85,
     "w": 87,
     "h": 78
@@ -266,7 +266,7 @@
   },
   "commando_attack_b_06_team": {
    "frame": {
-    "x": 885,
+    "x": 887,
     "y": 78,
     "w": 56,
     "h": 71
@@ -362,7 +362,7 @@
   },
   "commando_attack_b_08_team": {
    "frame": {
-    "x": 637,
+    "x": 638,
     "y": 2,
     "w": 49,
     "h": 77
@@ -410,7 +410,7 @@
   },
   "commando_attack_c_01_team": {
    "frame": {
-    "x": 874,
+    "x": 875,
     "y": 2,
     "w": 53,
     "h": 72
@@ -458,7 +458,7 @@
   },
   "commando_attack_c_02_team": {
    "frame": {
-    "x": 931,
+    "x": 932,
     "y": 2,
     "w": 61,
     "h": 68
@@ -506,7 +506,7 @@
   },
   "commando_attack_c_03_team": {
    "frame": {
-    "x": 945,
+    "x": 947,
     "y": 74,
     "w": 65,
     "h": 66
@@ -530,7 +530,7 @@
   },
   "commando_attack_c_04": {
    "frame": {
-    "x": 534,
+    "x": 535,
     "y": 2,
     "w": 53,
     "h": 79
@@ -556,15 +556,15 @@
    "frame": {
     "x": 487,
     "y": 2,
-    "w": 43,
+    "w": 44,
     "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 122,
+    "x": 121,
     "y": 143,
-    "w": 43,
+    "w": 44,
     "h": 80
    },
    "sourceSize": {
@@ -578,7 +578,7 @@
   },
   "commando_attack_c_05": {
    "frame": {
-    "x": 800,
+    "x": 801,
     "y": 2,
     "w": 70,
     "h": 72
@@ -602,7 +602,7 @@
   },
   "commando_attack_c_05_team": {
    "frame": {
-    "x": 521,
+    "x": 523,
     "y": 86,
     "w": 64,
     "h": 79
@@ -626,7 +626,7 @@
   },
   "commando_attack_c_06": {
    "frame": {
-    "x": 726,
+    "x": 728,
     "y": 83,
     "w": 92,
     "h": 76
@@ -650,7 +650,7 @@
   },
   "commando_attack_c_06_team": {
    "frame": {
-    "x": 822,
+    "x": 824,
     "y": 78,
     "w": 59,
     "h": 72
@@ -674,7 +674,7 @@
   },
   "commando_attack_c_07": {
    "frame": {
-    "x": 394,
+    "x": 396,
     "y": 90,
     "w": 76,
     "h": 81
@@ -698,7 +698,7 @@
   },
   "commando_attack_c_07_team": {
    "frame": {
-    "x": 741,
+    "x": 742,
     "y": 2,
     "w": 55,
     "h": 76
@@ -746,7 +746,7 @@
   },
   "commando_attack_c_08_team": {
    "frame": {
-    "x": 690,
+    "x": 691,
     "y": 2,
     "w": 47,
     "h": 77

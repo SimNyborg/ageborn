@@ -2,8 +2,8 @@
  "frames": {
   "ghillie_sniper_idle_00": {
    "frame": {
-    "x": 460,
-    "y": 677,
+    "x": 1325,
+    "y": 350,
     "w": 199,
     "h": 165
    },
@@ -26,18 +26,18 @@
   },
   "ghillie_sniper_idle_00_team": {
    "frame": {
-    "x": 511,
-    "y": 1331,
+    "x": 2912,
+    "y": 149,
     "w": 89,
-    "h": 140
+    "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 350,
-    "y": 279,
+    "y": 278,
     "w": 89,
-    "h": 140
+    "h": 141
    },
    "sourceSize": {
     "w": 752,
@@ -50,8 +50,8 @@
   },
   "ghillie_sniper_idle_01": {
    "frame": {
-    "x": 458,
-    "y": 1016,
+    "x": 2149,
+    "y": 329,
     "w": 195,
     "h": 154
    },
@@ -74,18 +74,18 @@
   },
   "ghillie_sniper_idle_01_team": {
    "frame": {
-    "x": 93,
-    "y": 1331,
+    "x": 2874,
+    "y": 444,
     "w": 96,
-    "h": 141
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 276,
+    "y": 275,
     "w": 96,
-    "h": 141
+    "h": 142
    },
    "sourceSize": {
     "w": 752,
@@ -98,8 +98,8 @@
   },
   "ghillie_sniper_idle_02": {
    "frame": {
-    "x": 597,
-    "y": 851,
+    "x": 1916,
+    "y": 167,
     "w": 193,
     "h": 160
    },
@@ -122,18 +122,18 @@
   },
   "ghillie_sniper_idle_02_team": {
    "frame": {
-    "x": 613,
-    "y": 1179,
+    "x": 2696,
+    "y": 2,
     "w": 99,
-    "h": 145
+    "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 348,
-    "y": 270,
+    "y": 269,
     "w": 99,
-    "h": 145
+    "h": 146
    },
    "sourceSize": {
     "w": 752,
@@ -146,8 +146,8 @@
   },
   "ghillie_sniper_idle_03": {
    "frame": {
-    "x": 663,
-    "y": 677,
+    "x": 1524,
+    "y": 176,
     "w": 190,
     "h": 165
    },
@@ -170,8 +170,8 @@
   },
   "ghillie_sniper_idle_03_team": {
    "frame": {
-    "x": 214,
-    "y": 1179,
+    "x": 2518,
+    "y": 157,
     "w": 98,
     "h": 148
    },
@@ -194,8 +194,8 @@
   },
   "ghillie_sniper_idle_04": {
    "frame": {
-    "x": 857,
-    "y": 677,
+    "x": 1542,
+    "y": 2,
     "w": 190,
     "h": 163
    },
@@ -218,18 +218,18 @@
   },
   "ghillie_sniper_idle_04_team": {
    "frame": {
-    "x": 407,
-    "y": 1179,
+    "x": 2598,
+    "y": 2,
     "w": 94,
-    "h": 146
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 268,
+    "y": 267,
     "w": 94,
-    "h": 146
+    "h": 147
    },
    "sourceSize": {
     "w": 752,
@@ -242,8 +242,8 @@
   },
   "ghillie_sniper_idle_05": {
    "frame": {
-    "x": 261,
-    "y": 677,
+    "x": 1325,
+    "y": 176,
     "w": 195,
     "h": 170
    },
@@ -266,18 +266,18 @@
   },
   "ghillie_sniper_idle_05_team": {
    "frame": {
-    "x": 1116,
-    "y": 1179,
+    "x": 2896,
+    "y": 2,
     "w": 87,
-    "h": 142
+    "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 275,
+    "y": 274,
     "w": 87,
-    "h": 142
+    "h": 143
    },
    "sourceSize": {
     "w": 752,
@@ -290,7 +290,7 @@
   },
   "ghillie_sniper_walk_00": {
    "frame": {
-    "x": 604,
+    "x": 223,
     "y": 2,
     "w": 177,
     "h": 199
@@ -314,18 +314,18 @@
   },
   "ghillie_sniper_walk_00_team": {
    "frame": {
-    "x": 847,
-    "y": 1331,
+    "x": 2974,
+    "y": 438,
     "w": 105,
-    "h": 139
+    "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 352,
-    "y": 260,
+    "y": 259,
     "w": 105,
-    "h": 139
+    "h": 140
    },
    "sourceSize": {
     "w": 752,
@@ -338,8 +338,8 @@
   },
   "ghillie_sniper_walk_01": {
    "frame": {
-    "x": 964,
-    "y": 280,
+    "x": 989,
+    "y": 2,
     "w": 185,
     "h": 193
    },
@@ -362,8 +362,8 @@
   },
   "ghillie_sniper_walk_01_team": {
    "frame": {
-    "x": 336,
-    "y": 1477,
+    "x": 3195,
+    "y": 432,
     "w": 105,
     "h": 131
    },
@@ -386,8 +386,8 @@
   },
   "ghillie_sniper_walk_02": {
    "frame": {
-    "x": 2,
-    "y": 481,
+    "x": 1141,
+    "y": 199,
     "w": 180,
     "h": 192
    },
@@ -410,18 +410,18 @@
   },
   "ghillie_sniper_walk_02_team": {
    "frame": {
-    "x": 1056,
-    "y": 1331,
+    "x": 3120,
+    "y": 2,
     "w": 107,
-    "h": 138
+    "h": 139
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 353,
-    "y": 256,
+    "y": 255,
     "w": 107,
-    "h": 138
+    "h": 139
    },
    "sourceSize": {
     "w": 752,
@@ -434,8 +434,8 @@
   },
   "ghillie_sniper_walk_03": {
    "frame": {
-    "x": 2,
-    "y": 280,
+    "x": 563,
+    "y": 204,
     "w": 178,
     "h": 197
    },
@@ -458,18 +458,18 @@
   },
   "ghillie_sniper_walk_03_team": {
    "frame": {
-    "x": 2,
-    "y": 1477,
+    "x": 3179,
+    "y": 290,
     "w": 106,
-    "h": 137
+    "h": 138
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 353,
-    "y": 250,
+    "y": 249,
     "w": 106,
-    "h": 137
+    "h": 138
    },
    "sourceSize": {
     "w": 752,
@@ -482,8 +482,8 @@
   },
   "ghillie_sniper_walk_04": {
    "frame": {
-    "x": 416,
-    "y": 2,
+    "x": 195,
+    "y": 279,
     "w": 184,
     "h": 199
    },
@@ -506,18 +506,18 @@
   },
   "ghillie_sniper_walk_04_team": {
    "frame": {
-    "x": 112,
-    "y": 1477,
+    "x": 3219,
+    "y": 145,
     "w": 105,
-    "h": 136
+    "h": 137
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 352,
-    "y": 260,
+    "y": 259,
     "w": 105,
-    "h": 136
+    "h": 137
    },
    "sourceSize": {
     "w": 752,
@@ -530,8 +530,8 @@
   },
   "ghillie_sniper_walk_05": {
    "frame": {
-    "x": 184,
-    "y": 280,
+    "x": 605,
+    "y": 2,
     "w": 184,
     "h": 196
    },
@@ -554,18 +554,18 @@
   },
   "ghillie_sniper_walk_05_team": {
    "frame": {
-    "x": 445,
-    "y": 1477,
+    "x": 3289,
+    "y": 286,
     "w": 105,
-    "h": 130
+    "h": 131
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 353,
-    "y": 268,
+    "y": 267,
     "w": 105,
-    "h": 130
+    "h": 131
    },
    "sourceSize": {
     "w": 752,
@@ -578,8 +578,8 @@
   },
   "ghillie_sniper_walk_06": {
    "frame": {
-    "x": 372,
-    "y": 280,
+    "x": 745,
+    "y": 202,
     "w": 179,
     "h": 196
    },
@@ -602,8 +602,8 @@
   },
   "ghillie_sniper_walk_06_team": {
    "frame": {
-    "x": 193,
-    "y": 1331,
+    "x": 2965,
+    "y": 294,
     "w": 106,
     "h": 140
    },
@@ -611,7 +611,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 353,
-    "y": 256,
+    "y": 255,
     "w": 106,
     "h": 140
    },
@@ -626,8 +626,8 @@
   },
   "ghillie_sniper_walk_07": {
    "frame": {
-    "x": 785,
-    "y": 2,
+    "x": 383,
+    "y": 205,
     "w": 176,
     "h": 199
    },
@@ -650,18 +650,18 @@
   },
   "ghillie_sniper_walk_07_team": {
    "frame": {
-    "x": 737,
-    "y": 1331,
+    "x": 3005,
+    "y": 146,
     "w": 106,
-    "h": 139
+    "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 353,
-    "y": 251,
+    "y": 249,
     "w": 106,
-    "h": 139
+    "h": 140
    },
    "sourceSize": {
     "w": 752,
@@ -674,8 +674,8 @@
   },
   "ghillie_sniper_attack_00": {
    "frame": {
-    "x": 794,
-    "y": 851,
+    "x": 1933,
+    "y": 2,
     "w": 193,
     "h": 160
    },
@@ -698,8 +698,8 @@
   },
   "ghillie_sniper_attack_00_team": {
    "frame": {
-    "x": 716,
-    "y": 1179,
+    "x": 2711,
+    "y": 152,
     "w": 97,
     "h": 144
    },
@@ -722,17 +722,17 @@
   },
   "ghillie_sniper_attack_01": {
    "frame": {
-    "x": 657,
-    "y": 1016,
-    "w": 202,
+    "x": 2313,
+    "y": 164,
+    "w": 201,
     "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 354,
+    "x": 355,
     "y": 264,
-    "w": 202,
+    "w": 201,
     "h": 152
    },
    "sourceSize": {
@@ -746,18 +746,18 @@
   },
   "ghillie_sniper_attack_01_team": {
    "frame": {
-    "x": 1167,
-    "y": 1331,
+    "x": 3083,
+    "y": 434,
     "w": 108,
-    "h": 137
+    "h": 138
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 348,
-    "y": 279,
+    "y": 278,
     "w": 108,
-    "h": 137
+    "h": 138
    },
    "sourceSize": {
     "w": 752,
@@ -770,8 +770,8 @@
   },
   "ghillie_sniper_attack_02": {
    "frame": {
-    "x": 2,
-    "y": 1179,
+    "x": 2452,
+    "y": 320,
     "w": 208,
     "h": 148
    },
@@ -794,18 +794,18 @@
   },
   "ghillie_sniper_attack_02_team": {
    "frame": {
-    "x": 221,
-    "y": 1477,
+    "x": 3231,
+    "y": 2,
     "w": 111,
-    "h": 134
+    "h": 136
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 349,
-    "y": 281,
+    "y": 279,
     "w": 111,
-    "h": 134
+    "h": 136
    },
    "sourceSize": {
     "w": 752,
@@ -818,8 +818,8 @@
   },
   "ghillie_sniper_attack_03": {
    "frame": {
-    "x": 202,
-    "y": 1016,
+    "x": 2130,
+    "y": 2,
     "w": 252,
     "h": 158
    },
@@ -842,8 +842,8 @@
   },
   "ghillie_sniper_attack_03_team": {
    "frame": {
-    "x": 505,
-    "y": 1179,
+    "x": 2664,
+    "y": 304,
     "w": 104,
     "h": 145
    },
@@ -866,8 +866,8 @@
   },
   "ghillie_sniper_attack_04": {
    "frame": {
-    "x": 863,
-    "y": 1016,
+    "x": 2386,
+    "y": 2,
     "w": 208,
     "h": 151
    },
@@ -890,8 +890,8 @@
   },
   "ghillie_sniper_attack_04_team": {
    "frame": {
-    "x": 554,
-    "y": 1477,
+    "x": 2664,
+    "y": 453,
     "w": 104,
     "h": 130
    },
@@ -914,8 +914,8 @@
   },
   "ghillie_sniper_attack_05": {
    "frame": {
-    "x": 991,
-    "y": 851,
+    "x": 1949,
+    "y": 331,
     "w": 196,
     "h": 159
    },
@@ -938,8 +938,8 @@
   },
   "ghillie_sniper_attack_05_team": {
    "frame": {
-    "x": 303,
-    "y": 1331,
+    "x": 3075,
+    "y": 290,
     "w": 100,
     "h": 140
    },
@@ -962,8 +962,8 @@
   },
   "ghillie_sniper_attack_06": {
    "frame": {
-    "x": 2,
-    "y": 1016,
+    "x": 2113,
+    "y": 166,
     "w": 196,
     "h": 159
    },
@@ -986,8 +986,8 @@
   },
   "ghillie_sniper_attack_06_team": {
    "frame": {
-    "x": 407,
-    "y": 1331,
+    "x": 3115,
+    "y": 146,
     "w": 100,
     "h": 140
    },
@@ -1010,8 +1010,8 @@
   },
   "ghillie_sniper_attack_07": {
    "frame": {
-    "x": 200,
-    "y": 851,
+    "x": 1736,
+    "y": 2,
     "w": 193,
     "h": 161
    },
@@ -1034,8 +1034,8 @@
   },
   "ghillie_sniper_attack_07_team": {
    "frame": {
-    "x": 817,
-    "y": 1179,
+    "x": 2772,
+    "y": 300,
     "w": 98,
     "h": 143
    },
@@ -1058,8 +1058,8 @@
   },
   "ghillie_sniper_attack_08": {
    "frame": {
-    "x": 2,
-    "y": 851,
+    "x": 1718,
+    "y": 169,
     "w": 194,
     "h": 161
    },
@@ -1082,8 +1082,8 @@
   },
   "ghillie_sniper_attack_08_team": {
    "frame": {
-    "x": 919,
-    "y": 1179,
+    "x": 2812,
+    "y": 150,
     "w": 96,
     "h": 143
    },
@@ -1106,8 +1106,8 @@
   },
   "ghillie_sniper_attack_09": {
    "frame": {
-    "x": 397,
-    "y": 851,
+    "x": 1749,
+    "y": 334,
     "w": 196,
     "h": 160
    },
@@ -1130,18 +1130,18 @@
   },
   "ghillie_sniper_attack_09_team": {
    "frame": {
-    "x": 1019,
-    "y": 1179,
+    "x": 2799,
+    "y": 2,
     "w": 93,
-    "h": 143
+    "h": 144
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 347,
-    "y": 273,
+    "y": 272,
     "w": 93,
-    "h": 143
+    "h": 144
    },
    "sourceSize": {
     "w": 752,
@@ -1154,8 +1154,8 @@
   },
   "ghillie_sniper_hit_00": {
    "frame": {
-    "x": 583,
-    "y": 481,
+    "x": 383,
+    "y": 408,
     "w": 219,
     "h": 174
    },
@@ -1178,17 +1178,17 @@
   },
   "ghillie_sniper_hit_00_team": {
    "frame": {
-    "x": 662,
-    "y": 1477,
-    "w": 97,
+    "x": 3328,
+    "y": 142,
+    "w": 98,
     "h": 129
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 334,
+    "x": 333,
     "y": 258,
-    "w": 97,
+    "w": 98,
     "h": 129
    },
    "sourceSize": {
@@ -1202,7 +1202,7 @@
   },
   "ghillie_sniper_hit_01": {
    "frame": {
-    "x": 965,
+    "x": 404,
     "y": 2,
     "w": 197,
     "h": 198
@@ -1226,8 +1226,8 @@
   },
   "ghillie_sniper_hit_01_team": {
    "frame": {
-    "x": 1075,
-    "y": 1016,
+    "x": 2348,
+    "y": 320,
     "w": 100,
     "h": 150
    },
@@ -1250,8 +1250,8 @@
   },
   "ghillie_sniper_hit_02": {
    "frame": {
-    "x": 555,
-    "y": 280,
+    "x": 793,
+    "y": 2,
     "w": 192,
     "h": 194
    },
@@ -1274,8 +1274,8 @@
   },
   "ghillie_sniper_hit_02_team": {
    "frame": {
-    "x": 316,
-    "y": 1179,
+    "x": 2620,
+    "y": 153,
     "w": 87,
     "h": 147
    },
@@ -1298,8 +1298,8 @@
   },
   "ghillie_sniper_hit_03": {
    "frame": {
-    "x": 383,
-    "y": 481,
+    "x": 1125,
+    "y": 397,
     "w": 196,
     "h": 183
    },
@@ -1322,8 +1322,8 @@
   },
   "ghillie_sniper_hit_03_team": {
    "frame": {
-    "x": 956,
-    "y": 1331,
+    "x": 2772,
+    "y": 447,
     "w": 96,
     "h": 139
    },
@@ -1331,7 +1331,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 246,
+    "y": 245,
     "w": 96,
     "h": 139
    },
@@ -1346,8 +1346,8 @@
   },
   "ghillie_sniper_hit_04": {
    "frame": {
-    "x": 186,
-    "y": 481,
+    "x": 928,
+    "y": 397,
     "w": 193,
     "h": 188
    },
@@ -1370,18 +1370,18 @@
   },
   "ghillie_sniper_hit_04_team": {
    "frame": {
-    "x": 2,
-    "y": 1331,
+    "x": 2874,
+    "y": 297,
     "w": 87,
-    "h": 142
+    "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 351,
-    "y": 242,
+    "y": 241,
     "w": 87,
-    "h": 142
+    "h": 143
    },
    "sourceSize": {
     "w": 752,
@@ -1394,8 +1394,8 @@
   },
   "ghillie_sniper_die_00": {
    "frame": {
-    "x": 1051,
-    "y": 677,
+    "x": 1528,
+    "y": 345,
     "w": 217,
     "h": 161
    },
@@ -1418,8 +1418,8 @@
   },
   "ghillie_sniper_die_00_team": {
    "frame": {
-    "x": 763,
-    "y": 1477,
+    "x": 3346,
+    "y": 2,
     "w": 98,
     "h": 126
    },
@@ -1442,8 +1442,8 @@
   },
   "ghillie_sniper_die_01": {
    "frame": {
-    "x": 751,
-    "y": 280,
+    "x": 928,
+    "y": 200,
     "w": 209,
     "h": 193
    },
@@ -1466,8 +1466,8 @@
   },
   "ghillie_sniper_die_01_team": {
    "frame": {
-    "x": 566,
-    "y": 1618,
+    "x": 3398,
+    "y": 275,
     "w": 170,
     "h": 102
    },
@@ -1490,8 +1490,8 @@
   },
   "ghillie_sniper_die_02": {
    "frame": {
-    "x": 223,
-    "y": 2,
+    "x": 2,
+    "y": 279,
     "w": 189,
     "h": 205
    },
@@ -1514,18 +1514,18 @@
   },
   "ghillie_sniper_die_02_team": {
    "frame": {
-    "x": 1048,
-    "y": 481,
+    "x": 1437,
+    "y": 2,
     "w": 101,
-    "h": 171
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 335,
-    "y": 238,
+    "y": 239,
     "w": 101,
-    "h": 171
+    "h": 170
    },
    "sourceSize": {
     "w": 752,
@@ -1538,8 +1538,8 @@
   },
   "ghillie_sniper_die_03": {
    "frame": {
-    "x": 806,
-    "y": 481,
+    "x": 606,
+    "y": 405,
     "w": 238,
     "h": 171
    },
@@ -1562,18 +1562,18 @@
   },
   "ghillie_sniper_die_03_team": {
    "frame": {
-    "x": 604,
-    "y": 1331,
+    "x": 2987,
+    "y": 2,
     "w": 129,
-    "h": 139
+    "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 311,
-    "y": 219,
+    "y": 217,
     "w": 129,
-    "h": 139
+    "h": 140
    },
    "sourceSize": {
     "w": 752,
@@ -1589,7 +1589,7 @@
     "x": 2,
     "y": 2,
     "w": 217,
-    "h": 274
+    "h": 273
    },
    "rotated": false,
    "trimmed": true,
@@ -1597,7 +1597,7 @@
     "x": 275,
     "y": 140,
     "w": 217,
-    "h": 274
+    "h": 273
    },
    "sourceSize": {
     "w": 752,
@@ -1610,9 +1610,9 @@
   },
   "ghillie_sniper_die_04_team": {
    "frame": {
-    "x": 865,
-    "y": 1477,
-    "w": 131,
+    "x": 3448,
+    "y": 2,
+    "w": 130,
     "h": 124
    },
    "rotated": false,
@@ -1620,7 +1620,7 @@
    "spriteSourceSize": {
     "x": 279,
     "y": 300,
-    "w": 131,
+    "w": 130,
     "h": 124
    },
    "sourceSize": {
@@ -1634,8 +1634,8 @@
   },
   "ghillie_sniper_die_05": {
    "frame": {
-    "x": 2,
-    "y": 677,
+    "x": 1178,
+    "y": 2,
     "w": 255,
     "h": 170
    },
@@ -1658,17 +1658,17 @@
   },
   "ghillie_sniper_die_05_team": {
    "frame": {
-    "x": 740,
-    "y": 1618,
-    "w": 167,
+    "x": 1949,
+    "y": 494,
+    "w": 166,
     "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 243,
+    "x": 244,
     "y": 316,
-    "w": 167,
+    "w": 166,
     "h": 91
    },
    "sourceSize": {
@@ -1682,8 +1682,8 @@
   },
   "ghillie_sniper_die_06": {
    "frame": {
-    "x": 1000,
-    "y": 1477,
+    "x": 3304,
+    "y": 421,
     "w": 257,
     "h": 117
    },
@@ -1706,8 +1706,8 @@
   },
   "ghillie_sniper_die_06_team": {
    "frame": {
-    "x": 270,
-    "y": 1618,
+    "x": 3430,
+    "y": 132,
     "w": 145,
     "h": 111
    },
@@ -1730,10 +1730,10 @@
   },
   "ghillie_sniper_die_07": {
    "frame": {
-    "x": 2,
-    "y": 1618,
+    "x": 2348,
+    "y": 474,
     "w": 264,
-    "h": 112
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
@@ -1741,7 +1741,7 @@
     "x": 259,
     "y": 297,
     "w": 264,
-    "h": 112
+    "h": 111
    },
    "sourceSize": {
     "w": 752,
@@ -1754,8 +1754,8 @@
   },
   "ghillie_sniper_die_07_team": {
    "frame": {
-    "x": 419,
-    "y": 1618,
+    "x": 195,
+    "y": 482,
     "w": 143,
     "h": 104
    },
@@ -1883,8 +1883,8 @@
   "image": "ghillie_sniper.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 1732
+   "w": 3584,
+   "h": 588
   },
   "scale": "3",
   "ageborn": {

@@ -21,15 +21,20 @@ Animation (ANIM_SPEC G8 fly, appendix B air):
   hit       flyer: a tilt and a 4 lu drop, the pilot's eyes squeezed, then a wobble back up
   die       D8 spiral down: smoke pours out, the propeller slows, it noses over and spins down with the
             pilot's spiral eyes, a crash bounce
+
+Art round W3 (the detail standard): damage spots and the smoke place (item 40).
 """
 import math
 
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_modern as KM
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "dive_bomber"
 GAIT_NAME = "fly"
@@ -49,6 +54,26 @@ PHASES = 3                   # 3 blades: 120 degrees of symmetry in 3 steps of 4
 BLUR = 3
 BOMB = (2.0, 0.0, 9.0)
 SCARF = "#B0306A"
+BOMB_C = "#3E4236"
+SOOT = "#45473F"             # W3: exhaust stains behind the stubs
+FUS = dict(center=(0.0, 0, FUS_Z), radii=(32.0, 8.6, 8.6), p=2.4, taper=(0.75, 1.0), shift=(-0.15, 0))
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Dive Bomber is the team fuselage with its canopy, the olive cowling and gull wing, the
+# tail fin and the bomb: the fuselage in two tones (a team-dark cheat line above the olive belly, a team panel
+# seam), the fin's team-dark rudder, soot stains behind the exhaust stubs, worn chips on the cowling and the wing.
+# A flyer reads against the sky by its outline and a lit top (SHADE_MACHINE's top light).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_MACHINE
+LOOK_SHADE = MW.SHADE_MACHINE
+MATERIAL_KINDS = MW.kinds({R.OLIVE: "iron", R.OLIVE_LT: "iron", MW.CHIP: "iron", SOOT: "iron", R.GUNMETAL: "iron",
+                           R.STEEL: "iron", R.RUBBER: "polymer", BOMB_C: "iron", R.GLASS: "glass",
+                           R.SIGNAL: "polymer", KM.CREAM: "polymer", SCARF: "cloth", R.LEATHER: "leather",
+                           R.SKIN: "skin", R.HAIR: "fur", "team": "iron"})
+
+
+def _fus():
+    return Geo().blob(FUS["center"], FUS["radii"], p=FUS["p"], taper=FUS["taper"], shift=FUS["shift"])
 
 
 def _prop_blade(g, ang):
@@ -80,10 +105,20 @@ def build(rig):
     g = Geo().blob((0.0, 0, FUS_Z), (32.0, 8.6, 8.6), p=2.4, taper=(0.75, 1.0), shift=(-0.15, 0))
     g.clip((0, 0, FUS_Z - 2.5), (0, 0, 1))
     rig.part("plane", g, R.OLIVE)
+    # W3: a team-dark cheat line above the belly, a team panel seam behind the canopy, soot behind the exhausts
+    keep = [((0, 0, FUS_Z + 0.8), (0, 0, 1)), ((0, 0, FUS_Z - 2.5), (0, 0, -1)), ((27.0, 0, 0), (1, 0, 0)),
+            ((-26.0, 0, 0), (-1, 0, 0))]
+    look.team_part(rig, "plane", KD.shell(**FUS, grow=0.3, keep=keep))
+    MW.team_line(rig, "plane", _fus(), [(-15.6, FUS_Z + 1.4), (-16.0, FUS_Z + 4.6), (-15.6, FUS_Z + 7.6)], 1.0)
+    streak = [(-4.6, -0.7), (3.4, -1.3), (3.6, 1.1), (-4.4, 0.6)]
+    MW.decals(rig, "plane", [_fus()], [((NOSE_X - 15.0, FUS_Z - 2.6), streak)], SOOT)
     # cowling with a team ring and the spinner
     g = Geo().lathe([(0, 0), (9.4, 0.4), (10.0, 3.0), (9.6, 7.0), (8.4, 8.4)], (NOSE_X - 8.0, 0, FUS_Z),
                     (NOSE_X + 1.0, 0, FUS_Z), segs=22)
     rig.part("plane", g, R.OLIVE, finish="gloss")
+    cowl = Geo().lathe([(0, 0), (9.4, 0.4), (10.0, 3.0), (9.6, 7.0), (8.4, 8.4)], (NOSE_X - 8.0, 0, FUS_Z),
+                       (NOSE_X + 1.0, 0, FUS_Z), segs=22)
+    MW.decals(rig, "plane", [cowl], [((NOSE_X - 4.2, FUS_Z + 5.6), MW.CHIP_A)], MW.CHIP)    # W3: a worn chip
     g = Geo().lathe([(10.1, -1.2), (10.4, 0), (10.1, 1.2)], (NOSE_X - 1.5, 0, FUS_Z), (NOSE_X + 0.5, 0, FUS_Z), segs=22)
     rig.part("plane", g, team=True, outline=0.5)
     g = Geo().lathe([(3.2, 0), (2.6, 2.4), (0, 4.2)], (NOSE_X + 1.0, 0, FUS_Z), (NOSE_X + 5.4, 0, FUS_Z), segs=16)
@@ -118,12 +153,19 @@ def build(rig):
     # tail: a team fin, an olive tailplane
     g = Geo().slab([(-24, FUS_Z + 4), (-33, FUS_Z + 5), (-38, FUS_Z + 18), (-31, FUS_Z + 19), (-26, FUS_Z + 9)], 0.0, 2.2)
     rig.part("plane", g, team=True, outline=0.8)
+    # W3: the rudder team-dark (the fin in two tones)
+    g = Geo().slab([(-30.4, FUS_Z + 4.6), (-33.0, FUS_Z + 5.0), (-38.0, FUS_Z + 18.0), (-35.2, FUS_Z + 18.6)],
+                   -1.25, 0.3)
+    look.team_part(rig, "plane", g)
     g = Geo().blob((-31.0, 0, FUS_Z + 2.0), (6.0, 12.0, 1.2), p=2.6)
     rig.part("plane", g, R.OLIVE_LT, outline=0.7)
     # near gull wing (in front of the fuselage), dive brakes, the near wheel spat
     g = Geo().blob((4.0, -14.0, FUS_Z - 7.0), (11.0, 10.0, 1.8), p=3.0, rot=(18, 0, 0))
     g.blob((5.0, -30.0, FUS_Z - 4.0), (10.0, 10.0, 1.6), p=3.0, rot=(-8, 0, 0))
     rig.part("plane", g, R.OLIVE, outline=0.7)
+    wing = Geo().blob((4.0, -14.0, FUS_Z - 7.0), (11.0, 10.0, 1.8), p=3.0, rot=(18, 0, 0))
+    wing.blob((5.0, -30.0, FUS_Z - 4.0), (10.0, 10.0, 1.6), p=3.0, rot=(-8, 0, 0))
+    MW.decals(rig, "plane", [wing], [((0.0, FUS_Z - 10.6), MW.CHIP_B), ((10.0, FUS_Z - 8.4), MW.CHIP_C)], MW.CHIP)
     g = Geo().blob((5.0, -36.0, FUS_Z - 3.0), (4.0, 4.0, 1.7), p=3.0)
     rig.part("plane", g, team=True, outline=0.5)                              # team wing tip
     rig.joint("brake", "plane", (-2.0, -20.0, FUS_Z - 9.0))
@@ -138,7 +180,7 @@ def build(rig):
     rig.joint("bomb", "plane", BOMB)
     bx, by, bz = BOMB
     g = Geo().blob((bx, by, bz), (7.0, 3.6, 3.6), p=2.2)
-    rig.part("bomb", g, "#3E4236", finish="gloss", outline=0.6)
+    rig.part("bomb", g, BOMB_C, finish="gloss", outline=0.6)
     g = Geo()
     for dz in (-3.4, 3.4):
         g.blob((bx - 7.6, by, bz + dz * 0.7), (1.6, 0.4, 1.8), p=2.4)
@@ -174,6 +216,18 @@ def build(rig):
         g.sphere((-6.0 + dx, -6.0, FUS_Z + 8.0 + dz), r, cuts=4)
     rig.part("smoke", g, R.SMOKE_DK, finish="dust", outline=0.8)
     rig.track("_foot", "odo", (0, 0, 0))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: dents and holes on the team
+    fuselage behind the canopy (the largest surface, always in view), the olive cowling and the team fin; a flyer
+    trails smoke from its engine (the cowling's top)."""
+    rig.damage_spot_at("fuselage", "plane", -18.0, FUS_Z + 3.0, 6.0, "metal", team=True)
+    rig.damage_spot_at("cowling", "plane", 28.0, 24.0, 5.0, "metal", fill=R.OLIVE)
+    rig.damage_spot_at("fin", "plane", -32.0, FUS_Z + 12.0, 5.0, "metal", team=True)
+    rig.damage_spot("engine", "plane", (NOSE_X - 6.0, 0.0, FUS_Z + 9.4), 5.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 def _prop(step, slow=1, blur=True):

@@ -2,18 +2,18 @@
  "frames": {
   "dive_bomber_attack_b_01": {
    "frame": {
-    "x": 2,
-    "y": 276,
+    "x": 215,
+    "y": 145,
     "w": 210,
-    "h": 118
+    "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 267,
-    "y": 277,
+    "y": 275,
     "w": 210,
-    "h": 118
+    "h": 120
    },
    "sourceSize": {
     "w": 650,
@@ -26,18 +26,18 @@
   },
   "dive_bomber_attack_b_01_team": {
    "frame": {
-    "x": 197,
-    "y": 398,
-    "w": 199,
-    "h": 108
+    "x": 213,
+    "y": 392,
+    "w": 200,
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
-    "y": 268,
-    "w": 199,
-    "h": 108
+    "x": 269,
+    "y": 267,
+    "w": 200,
+    "h": 109
    },
    "sourceSize": {
     "w": 650,
@@ -53,15 +53,15 @@
     "x": 215,
     "y": 2,
     "w": 212,
-    "h": 128
+    "h": 139
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 267,
-    "y": 287,
+    "y": 276,
     "w": 212,
-    "h": 128
+    "h": 139
    },
    "sourceSize": {
     "w": 650,
@@ -74,18 +74,18 @@
   },
   "dive_bomber_attack_b_02_team": {
    "frame": {
-    "x": 427,
-    "y": 276,
+    "x": 429,
+    "y": 274,
     "w": 196,
-    "h": 115
+    "h": 116
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 274,
-    "y": 270,
+    "x": 273,
+    "y": 269,
     "w": 196,
-    "h": 115
+    "h": 116
    },
    "sourceSize": {
     "w": 650,
@@ -101,15 +101,15 @@
     "x": 2,
     "y": 2,
     "w": 209,
-    "h": 139
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 268,
-    "y": 280,
+    "y": 277,
     "w": 209,
-    "h": 139
+    "h": 142
    },
    "sourceSize": {
     "w": 650,
@@ -123,17 +123,17 @@
   "dive_bomber_attack_b_03_team": {
    "frame": {
     "x": 431,
-    "y": 2,
-    "w": 198,
-    "h": 128
+    "y": 140,
+    "w": 199,
+    "h": 130
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 274,
-    "y": 271,
-    "w": 198,
-    "h": 128
+    "x": 273,
+    "y": 269,
+    "w": 199,
+    "h": 130
    },
    "sourceSize": {
     "w": 650,
@@ -146,18 +146,18 @@
   },
   "dive_bomber_attack_b_04": {
    "frame": {
-    "x": 2,
-    "y": 145,
+    "x": 431,
+    "y": 2,
     "w": 203,
-    "h": 127
+    "h": 134
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 271,
-    "y": 284,
+    "y": 277,
     "w": 203,
-    "h": 127
+    "h": 134
    },
    "sourceSize": {
     "w": 650,
@@ -171,17 +171,17 @@
   "dive_bomber_attack_b_04_team": {
    "frame": {
     "x": 2,
-    "y": 398,
-    "w": 191,
-    "h": 112
+    "y": 395,
+    "w": 190,
+    "h": 114
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 277,
-    "y": 271,
-    "w": 191,
-    "h": 112
+    "y": 269,
+    "w": 190,
+    "h": 114
    },
    "sourceSize": {
     "w": 650,
@@ -194,8 +194,8 @@
   },
   "dive_bomber_attack_b_05": {
    "frame": {
-    "x": 216,
-    "y": 276,
+    "x": 2,
+    "y": 273,
     "w": 207,
     "h": 118
    },
@@ -218,15 +218,15 @@
   },
   "dive_bomber_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 514,
+    "x": 417,
+    "y": 501,
     "w": 197,
     "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 267,
+    "x": 266,
     "y": 272,
     "w": 197,
     "h": 101
@@ -242,18 +242,18 @@
   },
   "dive_bomber_attack_b_06": {
    "frame": {
-    "x": 424,
-    "y": 145,
+    "x": 2,
+    "y": 148,
     "w": 208,
-    "h": 119
+    "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 267,
-    "y": 279,
+    "y": 277,
     "w": 208,
-    "h": 119
+    "h": 121
    },
    "sourceSize": {
     "w": 650,
@@ -266,17 +266,17 @@
   },
   "dive_bomber_attack_b_06_team": {
    "frame": {
-    "x": 400,
-    "y": 398,
-    "w": 197,
+    "x": 417,
+    "y": 394,
+    "w": 198,
     "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 270,
+    "x": 269,
     "y": 270,
-    "w": 197,
+    "w": 198,
     "h": 103
    },
    "sourceSize": {
@@ -290,8 +290,8 @@
   },
   "dive_bomber_attack_b_07": {
    "frame": {
-    "x": 209,
-    "y": 145,
+    "x": 214,
+    "y": 269,
     "w": 211,
     "h": 119
    },
@@ -314,17 +314,17 @@
   },
   "dive_bomber_attack_b_07_team": {
    "frame": {
-    "x": 203,
-    "y": 514,
-    "w": 203,
+    "x": 196,
+    "y": 505,
+    "w": 204,
     "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 266,
+    "x": 265,
     "y": 272,
-    "w": 203,
+    "w": 204,
     "h": 97
    },
    "sourceSize": {
@@ -368,14 +368,14 @@
   "format": "RGBA8888",
   "size": {
    "w": 640,
-   "h": 620
+   "h": 604
   },
   "scale": "3",
   "ageborn": {
    "visualId": "unit.dive_bomber",
    "name": "Dive Bomber",
    "heightLu": 46,
-   "widthLu": 80.5,
+   "widthLu": 80.9,
    "pxPerLu": 2.46,
    "feetPx": [
     366,

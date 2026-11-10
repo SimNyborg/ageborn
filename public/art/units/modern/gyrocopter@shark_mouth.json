@@ -1,0 +1,2028 @@
+{
+ "frames": {
+  "gyrocopter@shark_mouth_idle_00": {
+   "frame": {
+    "x": 1484,
+    "y": 2,
+    "w": 118,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 121,
+    "w": 118,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_idle_00_team": {
+   "frame": {
+    "x": 1837,
+    "y": 277,
+    "w": 96,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 147,
+    "w": 96,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_idle_01": {
+   "frame": {
+    "x": 398,
+    "y": 232,
+    "w": 117,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 115,
+    "w": 117,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_idle_01_team": {
+   "frame": {
+    "x": 1738,
+    "y": 237,
+    "w": 95,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 142,
+    "w": 95,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_idle_02": {
+   "frame": {
+    "x": 1075,
+    "y": 2,
+    "w": 119,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 113,
+    "w": 119,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_idle_02_team": {
+   "frame": {
+    "x": 1914,
+    "y": 114,
+    "w": 94,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 143,
+    "w": 94,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_idle_03": {
+   "frame": {
+    "x": 1317,
+    "y": 107,
+    "w": 112,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 118,
+    "w": 112,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_idle_03_team": {
+   "frame": {
+    "x": 1837,
+    "y": 223,
+    "w": 95,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 147,
+    "w": 95,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_00": {
+   "frame": {
+    "x": 825,
+    "y": 2,
+    "w": 122,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 110,
+    "w": 122,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_00_team": {
+   "frame": {
+    "x": 1895,
+    "y": 2,
+    "w": 93,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 140,
+    "w": 93,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_01": {
+   "frame": {
+    "x": 701,
+    "y": 2,
+    "w": 120,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 108,
+    "w": 120,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_01_team": {
+   "frame": {
+    "x": 1816,
+    "y": 60,
+    "w": 94,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 139,
+    "w": 94,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_02": {
+   "frame": {
+    "x": 1070,
+    "y": 112,
+    "w": 120,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 112,
+    "w": 120,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_02_team": {
+   "frame": {
+    "x": 1641,
+    "y": 242,
+    "w": 93,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 138,
+    "w": 93,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_03": {
+   "frame": {
+    "x": 588,
+    "y": 2,
+    "w": 109,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 106,
+    "w": 109,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_03_team": {
+   "frame": {
+    "x": 1721,
+    "y": 62,
+    "w": 91,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 137,
+    "w": 91,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_04": {
+   "frame": {
+    "x": 398,
+    "y": 118,
+    "w": 122,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 107,
+    "w": 122,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_04_team": {
+   "frame": {
+    "x": 1606,
+    "y": 2,
+    "w": 92,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 137,
+    "w": 92,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_05": {
+   "frame": {
+    "x": 889,
+    "y": 223,
+    "w": 121,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 113,
+    "w": 121,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_05_team": {
+   "frame": {
+    "x": 1625,
+    "y": 122,
+    "w": 91,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 138,
+    "w": 91,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_06": {
+   "frame": {
+    "x": 648,
+    "y": 116,
+    "w": 108,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 110,
+    "w": 108,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_06_team": {
+   "frame": {
+    "x": 1625,
+    "y": 62,
+    "w": 92,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 139,
+    "w": 92,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_07": {
+   "frame": {
+    "x": 524,
+    "y": 116,
+    "w": 120,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 108,
+    "w": 120,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_walk_07_team": {
+   "frame": {
+    "x": 1798,
+    "y": 2,
+    "w": 93,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 140,
+    "w": 93,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_00": {
+   "frame": {
+    "x": 1014,
+    "y": 223,
+    "w": 128,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 115,
+    "w": 128,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_00_team": {
+   "frame": {
+    "x": 185,
+    "y": 248,
+    "w": 92,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 138,
+    "w": 92,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_01": {
+   "frame": {
+    "x": 760,
+    "y": 225,
+    "w": 125,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 114,
+    "w": 125,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_01_team": {
+   "frame": {
+    "x": 1702,
+    "y": 2,
+    "w": 92,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 139,
+    "w": 92,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_02": {
+   "frame": {
+    "x": 462,
+    "y": 2,
+    "w": 122,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 114,
+    "w": 122,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_02_team": {
+   "frame": {
+    "x": 94,
+    "y": 255,
+    "w": 87,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 133,
+    "w": 87,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_03": {
+   "frame": {
+    "x": 1198,
+    "y": 2,
+    "w": 114,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 114,
+    "w": 114,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_03_team": {
+   "frame": {
+    "x": 1734,
+    "y": 181,
+    "w": 96,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 141,
+    "w": 96,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_04": {
+   "frame": {
+    "x": 1194,
+    "y": 109,
+    "w": 119,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 112,
+    "w": 119,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_04_team": {
+   "frame": {
+    "x": 1818,
+    "y": 117,
+    "w": 92,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 139,
+    "w": 92,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_05": {
+   "frame": {
+    "x": 524,
+    "y": 230,
+    "w": 120,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 117,
+    "w": 120,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_attack_05_team": {
+   "frame": {
+    "x": 1720,
+    "y": 122,
+    "w": 94,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 138,
+    "w": 94,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_hit_00": {
+   "frame": {
+    "x": 1511,
+    "y": 198,
+    "w": 126,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 131,
+    "w": 126,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_hit_00_team": {
+   "frame": {
+    "x": 1937,
+    "y": 273,
+    "w": 105,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 161,
+    "w": 105,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_hit_01": {
+   "frame": {
+    "x": 1262,
+    "y": 215,
+    "w": 122,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 121,
+    "w": 122,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_hit_01_team": {
+   "frame": {
+    "x": 1511,
+    "y": 291,
+    "w": 102,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 163,
+    "w": 102,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_hit_02": {
+   "frame": {
+    "x": 1146,
+    "y": 219,
+    "w": 112,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 115,
+    "w": 112,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_hit_02_team": {
+   "frame": {
+    "x": 1936,
+    "y": 223,
+    "w": 96,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 151,
+    "w": 96,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_hit_03": {
+   "frame": {
+    "x": 1316,
+    "y": 2,
+    "w": 112,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 115,
+    "w": 112,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_hit_03_team": {
+   "frame": {
+    "x": 1914,
+    "y": 59,
+    "w": 96,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 143,
+    "w": 96,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_hit_04": {
+   "frame": {
+    "x": 1388,
+    "y": 211,
+    "w": 119,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 118,
+    "w": 119,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_hit_04_team": {
+   "frame": {
+    "x": 1914,
+    "y": 169,
+    "w": 96,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 145,
+    "w": 96,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_00": {
+   "frame": {
+    "x": 951,
+    "y": 2,
+    "w": 120,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 110,
+    "w": 120,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_00_team": {
+   "frame": {
+    "x": 1641,
+    "y": 182,
+    "w": 89,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 135,
+    "w": 89,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_01": {
+   "frame": {
+    "x": 760,
+    "y": 114,
+    "w": 125,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 111,
+    "w": 125,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 255,
+    "w": 88,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 132,
+    "w": 88,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_02": {
+   "frame": {
+    "x": 889,
+    "y": 113,
+    "w": 124,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 120,
+    "w": 124,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_02_team": {
+   "frame": {
+    "x": 1545,
+    "y": 100,
+    "w": 76,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 121,
+    "w": 76,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_03": {
+   "frame": {
+    "x": 211,
+    "y": 2,
+    "w": 111,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 118,
+    "w": 111,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_03_team": {
+   "frame": {
+    "x": 298,
+    "y": 242,
+    "w": 67,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 128,
+    "w": 67,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_04": {
+   "frame": {
+    "x": 298,
+    "y": 122,
+    "w": 96,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 130,
+    "w": 96,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_04_team": {
+   "frame": {
+    "x": 1433,
+    "y": 105,
+    "w": 54,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 126,
+    "w": 54,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 94,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 133,
+    "w": 94,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_05_team": {
+   "frame": {
+    "x": 1017,
+    "y": 112,
+    "w": 49,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 129,
+    "w": 49,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_06": {
+   "frame": {
+    "x": 326,
+    "y": 2,
+    "w": 132,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 136,
+    "w": 132,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_06_team": {
+   "frame": {
+    "x": 1491,
+    "y": 100,
+    "w": 50,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 132,
+    "w": 50,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_07": {
+   "frame": {
+    "x": 100,
+    "y": 2,
+    "w": 107,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 135,
+    "w": 107,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_07_team": {
+   "frame": {
+    "x": 648,
+    "y": 229,
+    "w": 49,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 131,
+    "w": 49,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_08": {
+   "frame": {
+    "x": 157,
+    "y": 126,
+    "w": 137,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 136,
+    "w": 137,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_08_team": {
+   "frame": {
+    "x": 1432,
+    "y": 2,
+    "w": 48,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 132,
+    "w": 48,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_09": {
+   "frame": {
+    "x": 2,
+    "y": 130,
+    "w": 151,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 134,
+    "w": 151,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter@shark_mouth_die_09_team": {
+   "frame": {
+    "x": 701,
+    "y": 229,
+    "w": 49,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 131,
+    "w": 49,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "gyrocopter@shark_mouth_idle_00",
+   "gyrocopter@shark_mouth_idle_01",
+   "gyrocopter@shark_mouth_idle_02",
+   "gyrocopter@shark_mouth_idle_03"
+  ],
+  "idle_team": [
+   "gyrocopter@shark_mouth_idle_00_team",
+   "gyrocopter@shark_mouth_idle_01_team",
+   "gyrocopter@shark_mouth_idle_02_team",
+   "gyrocopter@shark_mouth_idle_03_team"
+  ],
+  "walk": [
+   "gyrocopter@shark_mouth_walk_00",
+   "gyrocopter@shark_mouth_walk_01",
+   "gyrocopter@shark_mouth_walk_02",
+   "gyrocopter@shark_mouth_walk_03",
+   "gyrocopter@shark_mouth_walk_04",
+   "gyrocopter@shark_mouth_walk_05",
+   "gyrocopter@shark_mouth_walk_06",
+   "gyrocopter@shark_mouth_walk_07"
+  ],
+  "walk_team": [
+   "gyrocopter@shark_mouth_walk_00_team",
+   "gyrocopter@shark_mouth_walk_01_team",
+   "gyrocopter@shark_mouth_walk_02_team",
+   "gyrocopter@shark_mouth_walk_03_team",
+   "gyrocopter@shark_mouth_walk_04_team",
+   "gyrocopter@shark_mouth_walk_05_team",
+   "gyrocopter@shark_mouth_walk_06_team",
+   "gyrocopter@shark_mouth_walk_07_team"
+  ],
+  "attack": [
+   "gyrocopter@shark_mouth_attack_00",
+   "gyrocopter@shark_mouth_attack_01",
+   "gyrocopter@shark_mouth_attack_02",
+   "gyrocopter@shark_mouth_attack_03",
+   "gyrocopter@shark_mouth_attack_04",
+   "gyrocopter@shark_mouth_attack_05"
+  ],
+  "attack_team": [
+   "gyrocopter@shark_mouth_attack_00_team",
+   "gyrocopter@shark_mouth_attack_01_team",
+   "gyrocopter@shark_mouth_attack_02_team",
+   "gyrocopter@shark_mouth_attack_03_team",
+   "gyrocopter@shark_mouth_attack_04_team",
+   "gyrocopter@shark_mouth_attack_05_team"
+  ],
+  "hit": [
+   "gyrocopter@shark_mouth_hit_00",
+   "gyrocopter@shark_mouth_hit_01",
+   "gyrocopter@shark_mouth_hit_02",
+   "gyrocopter@shark_mouth_hit_03",
+   "gyrocopter@shark_mouth_hit_04"
+  ],
+  "hit_team": [
+   "gyrocopter@shark_mouth_hit_00_team",
+   "gyrocopter@shark_mouth_hit_01_team",
+   "gyrocopter@shark_mouth_hit_02_team",
+   "gyrocopter@shark_mouth_hit_03_team",
+   "gyrocopter@shark_mouth_hit_04_team"
+  ],
+  "die": [
+   "gyrocopter@shark_mouth_die_00",
+   "gyrocopter@shark_mouth_die_01",
+   "gyrocopter@shark_mouth_die_02",
+   "gyrocopter@shark_mouth_die_03",
+   "gyrocopter@shark_mouth_die_04",
+   "gyrocopter@shark_mouth_die_05",
+   "gyrocopter@shark_mouth_die_06",
+   "gyrocopter@shark_mouth_die_07",
+   "gyrocopter@shark_mouth_die_08",
+   "gyrocopter@shark_mouth_die_09"
+  ],
+  "die_team": [
+   "gyrocopter@shark_mouth_die_00_team",
+   "gyrocopter@shark_mouth_die_01_team",
+   "gyrocopter@shark_mouth_die_02_team",
+   "gyrocopter@shark_mouth_die_03_team",
+   "gyrocopter@shark_mouth_die_04_team",
+   "gyrocopter@shark_mouth_die_05_team",
+   "gyrocopter@shark_mouth_die_06_team",
+   "gyrocopter@shark_mouth_die_07_team",
+   "gyrocopter@shark_mouth_die_08_team",
+   "gyrocopter@shark_mouth_die_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "gyrocopter@shark_mouth.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2048,
+   "h": 332
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.gyrocopter@shark_mouth",
+   "name": "Gyrocopter",
+   "heightLu": 66,
+   "widthLu": 90.7,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    164.0,
+    207.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     62
+    ],
+    "hitCenter": [
+     0,
+     26
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
+   "skinOf": "unit.gyrocopter",
+   "skin": "shark_mouth",
+   "clips": {
+    "idle": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      100,
+      100,
+      100,
+      100
+     ],
+     "durationMs": 400,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        32.4,
+        9.1
+       ],
+       [
+        32.0,
+        10.1
+       ],
+       [
+        31.6,
+        7.3
+       ],
+       [
+        32.0,
+        6.3
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        30.6,
+        5.5
+       ],
+       [
+        30.7,
+        6.4
+       ],
+       [
+        30.5,
+        6.3
+       ],
+       [
+        30.1,
+        5.4
+       ],
+       [
+        29.7,
+        4.0
+       ],
+       [
+        29.7,
+        3.1
+       ],
+       [
+        29.9,
+        3.1
+       ],
+       [
+        30.3,
+        4.1
+       ]
+      ]
+     },
+     "strideLu": 49.2,
+     "naturalSpeedLuPerS": 98.4,
+     "gait": "fly"
+    },
+    "attack": {
+     "frames": 6,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      36,
+      24,
+      50,
+      40,
+      50,
+      50
+     ],
+     "durationMs": 250,
+     "impactFrame": 2,
+     "impactStep": 2,
+     "impactAt": 0.24,
+     "holdStep": 0,
+     "holdLoop": [
+      0,
+      1
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        30.8,
+        1.2
+       ],
+       [
+        31.2,
+        2.3
+       ],
+       [
+        28.0,
+        0.2
+       ],
+       [
+        29.3,
+        5.3
+       ],
+       [
+        29.3,
+        8.4
+       ],
+       [
+        30.7,
+        5.7
+       ]
+      ]
+     },
+     "muzzle": [
+      28.0,
+      0.2
+     ],
+     "aimDeg": -16.0,
+     "release": {
+      "frame": 2,
+      "atLu": [
+       28.0,
+       0.2
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        33.8,
+        8.7
+       ],
+       [
+        32.2,
+        10.1
+       ],
+       [
+        31.1,
+        9.6
+       ],
+       [
+        31.6,
+        6.4
+       ],
+       [
+        32.0,
+        8.3
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        23.8
+       ],
+       "scale": 1.134
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        36.3
+       ],
+       "loops": 2,
+       "scale": 1.065
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        26.7,
+        5.8
+       ],
+       [
+        23.3,
+        1.0
+       ],
+       [
+        14.1,
+        -10.3
+       ],
+       [
+        9.7,
+        -16.9
+       ],
+       [
+        -0.3,
+        -26.8
+       ],
+       [
+        -2.0,
+        -35.4
+       ],
+       [
+        -3.3,
+        -28.5
+       ],
+       [
+        -3.0,
+        -33.9
+       ],
+       [
+        -3.5,
+        -33.4
+       ],
+       [
+        -2.5,
+        -34.3
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

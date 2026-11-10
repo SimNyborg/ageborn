@@ -65,10 +65,16 @@ MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", R.HAIR: "fur", R.KHAKI: "cloth", R.KH
                            KM.CREAM: "cloth", TROUSERS: "cloth", ROPE: "fur", MW.BOOT: "leather",
                            "#2B2A2E": "leather", R.LEATHER: "leather", KM.MUD: "stone", R.WOOD: "wood",
                            R.GUNMETAL: "iron", R.STEEL: "iron", KM.BRASS: "bronze", "team": "cloth"})
-# camouflage blotches on the smock: (joint, side-view centre, outline)
-CAMO_SMOCK = {"torso": [((-6.8, 31.0), MW.BLOT_A), ((-3.6, 24.2), MW.BLOT_B), ((7.0, 25.6), MW.BLOT_C),
-                        ((-8.6, 21.6), MW.BLOT_C), ((5.2, 34.4), MW.BLOT_B)],
-              "hips": [((4.6, 15.6), MW.BLOT_A), ((-6.0, 16.0), MW.BLOT_B)]}
+# camouflage blotches on the smock: (joint, side-view centre, outline). W3 review: fewer and larger (1.7x the wave's
+# blotches, 8-10 lu across) in a deeper tone than the team-dark bands, so the camouflage reads at 1x
+def _big(poly, k=1.7):
+    return [(x * k, z * k) for x, z in poly]
+
+
+CAMO_TONE = 0.5
+CAMO_SMOCK = {"torso": [((-5.6, 30.6), _big(MW.BLOT_A)), ((6.4, 24.4), _big(MW.BLOT_C)),
+                        ((-7.4, 21.4), _big(MW.BLOT_B, 1.4))],
+              "hips": [((3.4, 15.4), _big(MW.BLOT_A, 1.5)), ((-7.6, 14.6), _big(MW.BLOT_C, 1.3))]}
 
 
 def _carbine(rig, joint):
@@ -100,12 +106,16 @@ def build(rig):
     # W3: the camouflage smock (team-dark blotches), its hem, pocket flap and cuffs, a side seam, the front brace
     MW.tunic_w3(rig, pocket=KM.BRASS)
     MW.cuffs(rig)
-    MW.team_decals(rig, "torso", [MW.torso_ref()], CAMO_SMOCK["torso"])
-    MW.team_decals(rig, "hips", [Geo().blob(*MW.SKIRT, p=2.6, taper=(1.1, 1.0))], CAMO_SMOCK["hips"])
-    for s in ("r", "l"):     # a blotch on each shoulder
+    MW.team_decals(rig, "torso", [MW.torso_ref()], CAMO_SMOCK["torso"], tone=CAMO_TONE)
+    MW.team_decals(rig, "hips", [Geo().blob(*MW.SKIRT, p=2.6, taper=(1.1, 1.0))], CAMO_SMOCK["hips"],
+                   tone=CAMO_TONE)
+    for s in ("r", "l"):     # a blotch on each shoulder and down each sleeve (the arms are what the camera sees most)
         y = R.ARM_Y[s]
         sh = Geo().blob((0, y - 0.1 * R.SIDE_Y[s], 37.0), (5.6, 5.0, 4.4), p=2.4)
-        MW.team_decals(rig, f"arm_{s}", [sh], [((1.2, 38.6), MW.BLOT_B)])
+        MW.team_decals(rig, f"arm_{s}", [sh], [((1.2, 38.6), _big(MW.BLOT_B, 1.3))], tone=CAMO_TONE)
+        sleeve = Geo().capsule((0, y, R.SHOULDER_Z), (0, y, R.ELBOW_Z), 4.4, 4.1)
+        MW.team_decals(rig, f"arm_{s}", [sleeve], [((0.6, (R.SHOULDER_Z + R.ELBOW_Z) / 2 - 1.0),
+                                                     _big(MW.BLOT_C, 1.15))], tone=CAMO_TONE)
     # a rope coil on his back
     g = Geo().lathe([(4.6, -1.4), (5.6, 0), (4.6, 1.4), (3.2, 0)], (-10.4, -2.0, 30.0), (-11.0, 3.0, 30.0), segs=20)
     rig.part("torso", g, ROPE, finish="hair", outline=0.6)

@@ -18,6 +18,8 @@ Animation (ANIM_SPEC G1 jog at card 70 x 1.25 = 87.5 lu/s, appendix B: overhand,
             straight down onto the hull top and duck
   hit       light: the head snaps back, the helmet lifts, eyes squeezed
   die       D1 fling and spin: the helmet pops off and the charge flies; X eyes and tongue
+
+Art round W3 (the detail standard): damage spots measured in posed frames (item 40). A melee unit: no aimed clips.
 """
 from ageborn_art import face as F
 from ageborn_art import kit_industrial as KI
@@ -27,6 +29,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "sticky_bomber"
 GAIT_NAME = "biped"
@@ -42,6 +45,22 @@ HANDLE = 9.0
 BOMB = (HR[0], HR[1], HR[2] + HANDLE + 4.2)
 TACKY = "#E6DDC2"
 TACKY_DK = "#C9BE9C"
+TROUSERS = "#767B5A"     # kit_modern.legs_v3's olive trousers
+HAT_C = (0.0, 0.0, 61.0)  # the Brodie pushed back on his head
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Sticky Bomber is the Brodie pushed back, the tunic with the satchel strap across it, the
+# satchel and the cream charge: worn chips on the Brodie, the tunic's team-dark hem, pocket flap and cuffs with a
+# side seam (the satchel strap is his webbing), a buckle on the strap and a strap on the satchel flap, lighter
+# boots.
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_SOLDIER
+LOOK_SHADE = MW.SHADE_SOLDIER
+MATERIAL_KINDS = MW.kinds({R.SKIN: "skin", R.HAIR: "fur", R.KHAKI: "cloth", R.KHAKI_LT: "cloth", KM.NET: "cloth",
+                           KM.CREAM: "cloth", TROUSERS: "cloth", TACKY: "ceramic", TACKY_DK: "ceramic",
+                           R.OLIVE: "iron", MW.CHIP: "iron", MW.BOOT: "leather", "#2B2A2E": "leather",
+                           R.LEATHER: "leather", KM.MUD: "stone", R.WOOD: "wood", R.GUNMETAL: "iron",
+                           R.STEEL: "iron", KM.BRASS: "bronze", "team": "cloth"})
 
 
 def _charge(rig, joint, at=HR):
@@ -64,13 +83,18 @@ RIG = None
 def build(rig):
     global RIG
     RIG = rig
-    W.trooper(rig, hat="brodie", hat_c=(0.0, 0.0, 61.0), brow_angry=False, mouth_w=5.4, mud=True)
+    W.trooper(rig, hat=None, brow_angry=False, mouth_w=5.4, mud=True, boot=MW.BOOT)
+    MW.hat(rig, "brodie", c=HAT_C)                  # W3: worn chips on the Brodie
+    MW.tunic_w3(rig, brace=None, pocket=KM.BRASS)   # W3: the tunic's team-dark hem and pocket flap, a side seam
+    MW.cuffs(rig)
     g = Geo().blob((0.0, 11.6, 16.0), (6.4, 3.0, 5.6), p=3.0)          # satchel on the far hip
     rig.part("torso", g, R.KHAKI, outline=0.6)
     g = Geo().blob((0.6, 11.8, 20.6), (6.6, 3.2, 1.8), p=3.0)
     rig.part("torso", g, R.KHAKI_LT, outline=0.4)
     g = Geo().capsule((5.0, 9.0, 21.0), (4.0, -9.0, 36.0), 1.3)       # satchel strap across the chest
     rig.part("torso", g, R.KHAKI, outline=0.5)
+    g = Geo().blob((4.3, -10.2, 31.6), (1.5, 1.0, 1.8), p=3.0)       # W3: a steel buckle on the strap
+    rig.part("torso", g, R.STEEL, finish="metal", outline=0.4)
     rig.joint("charge", "hand_r", HR)
     _charge(rig, "charge")
     rig.joint("pop", "root", (22.0, -10.0, 30.0), hidden=True)          # the pop flash on the hull
@@ -78,6 +102,16 @@ def build(rig):
     rig.part("pop", g, glow=R.FIRE, outline=0)
     KI.loose(rig, "charge_loose", HR, lambda j: _charge(rig, j))
     rig.track("bladeTip", "charge", BOMB)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md), measured in posed frames: never on the face or skin."""
+    rig.damage_spot_at("back", "torso", 4.0, 22.0, 8.0, "cloth", team=True)       # 94-100% (at (-7, 27): 58%)
+    rig.damage_spot_at("skirt", "hips", 5.0, 12.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("helmet", "hat", -3.0, 68.0, 6.0, "metal", fill=R.OLIVE)
+    rig.damage_spot_at("hem", "hips", -8.0, 12.0, 7.0, "cloth", kind="strip", team=True)
 
 
 def arm_r(a, f, w):

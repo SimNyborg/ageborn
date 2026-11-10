@@ -26,8 +26,8 @@
   },
   "mortar_team_attack_b_02_team": {
    "frame": {
-    "x": 748,
-    "y": 2,
+    "x": 101,
+    "y": 311,
     "w": 82,
     "h": 87
    },
@@ -50,8 +50,8 @@
   },
   "mortar_team_attack_b_03": {
    "frame": {
-    "x": 229,
-    "y": 2,
+    "x": 2,
+    "y": 105,
     "w": 97,
     "h": 99
    },
@@ -74,7 +74,7 @@
   },
   "mortar_team_attack_b_03_team": {
    "frame": {
-    "x": 834,
+    "x": 229,
     "y": 2,
     "w": 82,
     "h": 87
@@ -98,8 +98,8 @@
   },
   "mortar_team_attack_b_04": {
    "frame": {
-    "x": 330,
-    "y": 2,
+    "x": 2,
+    "y": 208,
     "w": 97,
     "h": 99
    },
@@ -122,8 +122,8 @@
   },
   "mortar_team_attack_b_04_team": {
    "frame": {
-    "x": 920,
-    "y": 2,
+    "x": 103,
+    "y": 208,
     "w": 82,
     "h": 87
    },
@@ -146,8 +146,8 @@
   },
   "mortar_team_attack_b_05": {
    "frame": {
-    "x": 431,
-    "y": 2,
+    "x": 103,
+    "y": 105,
     "w": 97,
     "h": 99
    },
@@ -170,8 +170,8 @@
   },
   "mortar_team_attack_b_05_team": {
    "frame": {
-    "x": 1006,
-    "y": 2,
+    "x": 187,
+    "y": 299,
     "w": 82,
     "h": 87
    },
@@ -194,8 +194,8 @@
   },
   "mortar_team_attack_b_06": {
    "frame": {
-    "x": 532,
-    "y": 2,
+    "x": 204,
+    "y": 105,
     "w": 113,
     "h": 97
    },
@@ -218,8 +218,8 @@
   },
   "mortar_team_attack_b_06_team": {
    "frame": {
-    "x": 1092,
-    "y": 2,
+    "x": 189,
+    "y": 208,
     "w": 95,
     "h": 84
    },
@@ -266,8 +266,8 @@
   },
   "mortar_team_attack_b_07_team": {
    "frame": {
-    "x": 649,
-    "y": 2,
+    "x": 2,
+    "y": 311,
     "w": 95,
     "h": 87
    },
@@ -323,8 +323,8 @@
   "image": "mortar_team.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 104
+   "w": 320,
+   "h": 400
   },
   "scale": "1.5",
   "ageborn": {

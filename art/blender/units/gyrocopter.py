@@ -29,15 +29,23 @@ Animation standard (ANIM_SPEC 2026-10-02, G8 fly):
             wind-up is 2.5x the authored one)
   attack_b  BANKED SHOT: it rolls toward the camera (the rotor disc and the belly show, the held
             extreme, holdLoop), fires both guns from the bank, the recoil rocks it and it rolls level
+
+Art round W3 (the detail standard): both strafes aimed down at the ground row (`attack_down`, `attack_b_down`,
+item 44: the code pitches the gyrocopter at most 15 degrees, which left it 15-18 short of a ground target), damage
+spots and the smoke place (item 40), and the Shark Mouth skin (item 46).
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_modern as KM
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import modern_w3 as MW
 
 SLUG = "gyrocopter"
 GAIT_NAME = "fly"
@@ -56,6 +64,29 @@ PHASES = 4                  # 2 blades: 180 degrees of symmetry in 4 steps of 45
 MUZZLE = (33.0, -3.0, 11.0)
 SCARF = "#B0306A"
 BRASS = "#C8B27A"
+FIN = [(-38, POD[2] + 4), (-47, POD[2] + 6), (-51, POD[2] + 21), (-45, POD[2] + 22), (-40, POD[2] + 10)]
+EGG = ((POD[0], 0, POD[2]), (20.0, 13.0, 13.5))       # the team pod (p 2.2, taper (0.9, 1.0))
+
+# the detail standard (art round W3, ageborn_art/look.py): the lifts and the model detail of audit 5.1 / 5.2.
+# What a player sees of a Gyrocopter is the round team pod, the olive nose and tail boom, the pilot with his
+# scarf and the rotor: the pod in two tones (a team-dark band above the olive belly, a team panel seam), bigger
+# rivets, the fin's team-dark rudder, worn chips on the olive nose and boom. A flyer reads against the sky by its
+# outline and a lit top (SHADE_MACHINE's top light).
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = MW.HIGHLIGHT_MACHINE
+LOOK_SHADE = MW.SHADE_MACHINE
+MATERIAL_KINDS = MW.kinds({R.OLIVE: "iron", R.OLIVE_LT: "iron", MW.CHIP: "iron", R.GUNMETAL: "iron",
+                           R.STEEL: "iron", R.KHAKI: "cloth", R.KHAKI_LT: "cloth", R.LEATHER: "leather",
+                           R.GLASS: "glass", R.SIGNAL: "polymer", SCARF: "cloth", KM.CREAM: "polymer",
+                           BRASS: "bronze", R.SKIN: "skin", R.HAIR: "fur", "team": "iron"})
+
+# Shark Mouth (DESIGN A5.8, epic: "painted nose art"): the same gyrocopter with a shark's grin painted round the
+# olive nose and the chin, rows of white teeth, a fierce eye above it on the nose (W3: all of it on the olive nose, which
+# keeps the team pod whole). The pod, the fin and the pilot stay as they are.
+MOUTH = "#4A3234"         # the painted mouth (desaturated, A11 colour rule)
+TEETH = "#EEEAE0"
+EYE_DK = "#222225"
+SKINS = {"shark_mouth": {"palette": {}, "kinds": MW.kinds({MOUTH: "polymer", TEETH: "polymer", EYE_DK: "polymer"})}}
 
 
 def _blade(g, ang, mx, mz, w=3.2, t=0.9, r0=0.0, r1=ROTOR_R):
@@ -86,7 +117,56 @@ def _blur(g, k, mx, mz):
                 g.capsule(a, b, 1.7 + 0.3 * ri, segs=6, rings=2)
 
 
+def _nose_ref():
+    px, py, pz = POD
+    return Geo().lathe([(0, 0), (7.4, 0.5), (8.0, 3.0), (6.0, 6.5), (0, 8.4)], (px + 17.0, 0, pz - 1.0),
+                       (px + 27.0, 0, pz - 1.0), segs=18)
+
+
+def _egg_ref():
+    return Geo().blob(*EGG, p=2.2, taper=(0.9, 1.0))
+
+
+def _shark(rig):
+    """The Shark Mouth's nose art: a grin round the nose and the chin (dark mouth, white teeth on both lips) and a
+    fierce eye on the pod's cheek, laid as small decals so they follow the curve."""
+    px, py, pz = POD
+    fc = F.Face(rig, "pod", [_egg_ref(), _nose_ref()])
+    mouth, teeth = Geo(), Geo()
+    n = 7
+    pts = []
+    for i in range(n + 1):       # W3 review: the grin on the olive nose alone (over the team pod it took the
+        t = i / n                # team fill under 18% in attack B), bigger, its back end curling up
+        x = px + 17.2 + 9.8 * t
+        zc = pz - 3.0 - 2.6 * t + 4.2 * (1.0 - t) ** 3
+        h = 3.3 * (1.0 - 0.55 * t)
+        pts.append((x, zc, h))
+    for (x0, z0, h0), (x1, z1, h1) in zip(pts, pts[1:]):
+        mx, mz = (x0 + x1) / 2, (z0 + z1) / 2
+        poly = [(x0 - mx - 0.15, z0 - h0 - mz), (x1 - mx + 0.15, z1 - h1 - mz), (x1 - mx + 0.15, z1 + h1 - mz),
+                (x0 - mx - 0.15, z0 + h0 - mz)]
+        fc.decal(mouth, fc.hit(mx, mz), poly, 0.6)
+        for sgn in (1, -1):      # a tooth on each lip, pointing into the mouth
+            c = fc.hit(mx, mz + sgn * (h0 + h1) / 2 * 0.8)
+            tip = -sgn * min(h0, h1) * 0.9
+            fc.decal(teeth, c, [(-0.9, 0.0), (0.9, 0.0), (0.0, tip)], 0.9)
+    rig.part("pod", mouth, MOUTH, outline=0.5, highlight=False)
+    rig.part("pod", teeth, TEETH, outline=0, highlight=False)
+    g = Geo()
+    fc.decal(g, fc.hit(px + 20.6, pz + 3.0), F.ellipse(0, 0, 2.6, 1.9, 14), 0.7)    # the eye, on the nose
+    rig.part("pod", g, TEETH, outline=0.5, highlight=False)
+    g = Geo()
+    fc.decal(g, fc.hit(px + 21.4, pz + 2.8), F.ellipse(0, 0, 1.1, 1.2, 10), 1.1)    # its pupil
+    fc.stroke(g, fc.hit(px + 20.4, pz + 5.4), [(-2.6, 0.9), (2.4, -0.6)], 1.0, 1.1)  # a fierce brow
+    rig.part("pod", g, EYE_DK, outline=0, highlight=False)
+
+
+RIG = None
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("odo", "root", (0, 0, 0))
     rig.joint("pod", "body", POD)
@@ -94,8 +174,11 @@ def build(rig):
     # tail boom and fin (behind the pod)
     g = Geo().capsule((-14.0, 0, pz + 2.0), (-44.0, 0, pz + 6.0), 3.0, 1.8)
     rig.part("pod", g, R.OLIVE)
-    g = Geo().slab([(-38, pz + 4), (-47, pz + 6), (-51, pz + 21), (-45, pz + 22), (-40, pz + 10)], 0.0, 2.2)
+    g = Geo().slab(FIN, 0.0, 2.2)
     rig.part("pod", g, team=True, outline=0.8)
+    # W3: the rudder team-dark (the fin in two tones)
+    g = Geo().slab([(-44.4, pz + 5.6), (-47.0, pz + 6.0), (-51.0, pz + 21.0), (-48.2, pz + 21.5)], -1.25, 0.3)
+    look.team_part(rig, "pod", g)
     g = Geo().blob((-45.0, 0, pz + 6.0), (5.0, 9.0, 1.2), p=2.6)   # tailplane
     rig.part("pod", g, R.OLIVE_LT, outline=0.7)
     g = Geo()
@@ -104,6 +187,9 @@ def build(rig):
                 (x, 0, pz + 2.0 + (x + 14.0) / -30.0 * 4.0), (x - 1.0, 0, pz + 2.0 + (x + 13.0) / -30.0 * 4.0),
                 segs=12)
     rig.part("pod", g, R.GUNMETAL, finish="metal", outline=0)
+    # W3: worn chips on the olive boom
+    boom = Geo().capsule((-14.0, 0, pz + 2.0), (-44.0, 0, pz + 6.0), 3.0, 1.8)
+    MW.decals(rig, "pod", [boom], [((-18.5, pz + 3.4), MW.CHIP_B), ((-33.5, pz + 5.0), MW.CHIP_C)], MW.CHIP)
     # skids and struts
     g = Geo()
     for y in (-7.5, 7.5):
@@ -117,13 +203,16 @@ def build(rig):
     egg.clip((0, 0, pz - 6.0), (0, 0, -1))
     eface = F.Face(rig, "pod", [egg])
     rig.part("pod", egg, team=True)
+    # W3: the pod in two tones: a team-dark band above the olive belly and a team panel seam behind the screen
+    look.team_part(rig, "pod", KD.band_z(*EGG, pz - 6.0, pz - 2.8, p=2.2, taper=(0.9, 1.0), grow=0.3))
+    MW.team_line(rig, "pod", _egg_ref(), [(px + 8.6, pz - 2.4), (px + 9.4, pz + 4.0), (px + 8.8, pz + 10.0)], 1.0)
     g = KM.chevron(eface, Geo(), (px - 6.0, pz + 2.0), s=1.0, n=2, w=1.8, gap=2.8)
     rig.part("pod", g, KM.CREAM, highlight=False, outline=0)
-    g = Geo()
+    g = Geo()   # W3: the rivets 2.5 lu (they read at game scale)
     for a in range(-150, -20, 18):
         t = math.radians(a)
-        g.sphere((px + 18.6 * math.cos(t) * 0.98, 12.2 * math.sin(t) * 0.98, pz - 4.0), 0.8, cuts=2)
-    rig.part("pod", g, R.OLIVE_LT, finish="metal", outline=0)
+        g.sphere((px + 18.6 * math.cos(t) * 0.98, 12.2 * math.sin(t) * 0.98, pz - 4.0), 1.25, cuts=2)
+    rig.part("pod", g, R.OLIVE_LT, finish="metal", outline=0.3)
     g = Geo().blob((px, 0, pz), (20.0, 13.0, 13.5), p=2.2, taper=(0.9, 1.0))
     g.clip((0, 0, pz - 6.0), (0, 0, 1))
     g.lathe([(0, 0), (7.4, 0.5), (8.0, 3.0), (6.0, 6.5), (0, 8.4)], (px + 17.0, 0, pz - 1.0),
@@ -131,6 +220,11 @@ def build(rig):
     rig.part("pod", g, R.OLIVE)
     g = Geo().lathe([(8.2, -0.9), (8.4, 0), (8.2, 0.9)], (px + 17.0, 0, pz - 1.0), (px + 18.0, 0, pz - 1.0), segs=18)
     rig.part("pod", g, R.SIGNAL, outline=0.5)
+    if getattr(rig, "skin", None) == "shark_mouth":
+        _shark(rig)
+    else:   # W3: worn chips on the olive nose (the Shark Mouth's grin paints over them)
+        MW.decals(rig, "pod", [_nose_ref()], [((px + 22.6, pz + 3.6), MW.CHIP_A), ((px + 24.0, pz - 5.0), MW.CHIP_C)],
+                  MW.CHIP)
     g = Geo().blob((px + 2.0, 0, pz + 11.8), (10.0, 9.0, 1.6), p=2.6)   # cockpit rim
     rig.part("pod", g, R.LEATHER, outline=0.6)
     g = Geo().blob((px + 11.0, 0, pz + 14.5), (1.4, 8.0, 4.6), p=3.0, rot=(0, 24, 0))   # windscreen
@@ -215,10 +309,16 @@ def build(rig):
         g.sphere((px - 8.0 + dx, -6.0, pz + 8.0 + dz), r, cuts=4)
     rig.part("smoke", g, R.SMOKE_DK, finish="dust", outline=0.8)
     rig.track("_foot", "odo", (0, 0, 0))
-    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
-    # the team pod twice, the olive nose cone, the team fin; smoke trails from the engine
-    rig.damage_spot_at("pod", "pod", 14.0, 24.0, 6.0, "metal", team=True)
-    rig.damage_spot_at("pod_low", "pod", -6.0, 21.0, 5.0, "metal", team=True)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40; art/blender/README.md): never on the face or skin. The team pod twice (W3: the
+    first mark r 8, the pod is the largest team surface), the olive nose cone, the team fin; smoke trails from the
+    engine (a flyer smokes, it never burns)."""
+    rig.damage_spot_at("pod", "pod", 8.0, 26.0, 8.0, "metal", team=True)
+    rig.damage_spot_at("pod_low", "pod", -6.0, 21.0, 6.0, "metal", team=True)
     rig.damage_spot_at("nose", "pod", 22.0, 24.0, 5.0, "metal", fill="#62664A")
     rig.damage_spot_at("fin", "pod", -46.0, 38.0, 5.0, "metal", team=True)
     rig.damage_spot("engine", "pod", (-16.0, 0.0, 27.0), 5.0, "smoke", kind="emit", normal=(-1, 0, 0))
@@ -258,6 +358,12 @@ def _walk(f):
     })
 
 
+# W3 (item 44): both strafes aimed down at the ground row: a turn (negative) pitches the pod's nose further down
+# and drops it a little; the weights hold the dive through the burst and pull out on the settle (the clip repeats
+# for the rapid fire).
+AIM_W = [0.85, 0.9, 1.0, 0.9, 0.6, 0.0]
+AIM_DROP = 0.08
+
 # 6 unique frames in 250 ms; fire on frame 2 at 60 ms (impactAt 0.24, as shipped). The shipped 60 ms
 # dip is split into the hold (36) and a wobble partner (24) for the holdLoop.
 ATTACK_MS = [36, 24, 50, 40, 50, 50]
@@ -265,12 +371,13 @@ ATTACK_IMPACT = 2
 U_OF = [0, 0, 1, 2, 3, 4]
 
 
-def _attack(i):
+def _attack(i, turn=0.0):
     wob = i == 1
     f = U_OF[i]
     pose = merge(_rotor(i), {
-        "pod": {"r": [-11, -13, -6, -3, -5][f] + (1.2 if wob else 0.0), "x": [1.0, 0.5, -2.5, -1.5, 0.0][f]},
-        "body": dict(squash([-0.03, 0.03, -0.05, 0.02, 0.0][f]), z=[-1.5, -2.0, 0.5, 1.5, 0.0][f] + (0.6 if wob else 0.0)),
+        "pod": {"r": [-11, -13, -6, -3, -5][f] + (1.2 if wob else 0.0) + turn, "x": [1.0, 0.5, -2.5, -1.5, 0.0][f]},
+        "body": dict(squash([-0.03, 0.03, -0.05, 0.02, 0.0][f]),
+                     z=[-1.5, -2.0, 0.5, 1.5, 0.0][f] + (0.6 if wob else 0.0) + AIM_DROP * turn),
         "pilot": {"r": [-5, -6, 4, 2, 0][f]},
         "flash": {"show": f == 1},
         "flash2": {"show": f == 1},
@@ -303,14 +410,14 @@ B_X = [0.5, 0.5, -2.0, -1.5, 0.0]
 B_Z = [-1.0, -0.6, 0.0, 1.5, 0.5]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i == 5:
         return _attack(5)
     k = i
     pose = merge(_rotor(i), {
-        "body": dict(M.body_about((0, 0, 24), x=B_X[k], z=B_Z[k], rx=B_RX[k],
+        "body": dict(M.body_about((0, 0, 24), x=B_X[k], z=B_Z[k] + AIM_DROP * turn, rx=B_RX[k],
                                   q=[0, 0, -0.04, 0.02, 0][k])["body"]),
-        "pod": {"r": B_R[k]},
+        "pod": {"r": B_R[k] + turn},
         "pilot": {"r": [-6, -6, 3, 2, 0][k], "rx": [8, 8, 6, 4, 0][k]},
         "flash": {"show": k == 2},
         "flash2": {"show": k == 2},
@@ -380,14 +487,22 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed down at the ground row (both strafes; the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, lambda u, t: _attack(u, turn=t), AIM_W, aims=("down",))
+    aimed_b = AIMED.variants(RIG, attack_b, lambda u, t: _b_pose(u, turn=t), AIM_W, aims=("down",))
     cl = [
         M.clip("idle", [_idle(f) for f in range(4)], [100, 100, 100, 100], loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     by = {c.name: c for c in cl}
     assert by["idle"].total_ms() == 400 and by["hit"].total_ms() == 310 and by["die"].total_ms() == 695
     return M.check_contract([by["attack"]], attack_ms=250, attack_impact_at=0.24) and M.check_variants(cl)
