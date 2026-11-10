@@ -2,6 +2,30 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-11-03 to 10: Art round W2 (every Medieval and Gunpowder troop and their skins), the design for unique troops and formations (items 51 and 52), art round W3 started; W2 **live since 2026-11-10 13:07 UTC** (`main` 8d21bdc; cloud session, branch `main-ipy06f`, draft PR #14)
+
+**What a player sees now.**
+
+- **Every Medieval and Gunpowder troop is redrawn to the detail standard** (41 troops and summons): mail, plate and quilted cloth that read as their materials, coats with belts, cuffs and pleats, crisper outlines, and the team colour in two tones on the large fields.
+- **Ten more skins are real variants of their unit**: Tin Can, Greenwood Archer, Chess Knight, Panda Paladin and Bone Wyrm; Ghost Corsair, Toy Soldier, Parade Cuirassier, Fireworks Grenadier and Pufferfish Balloon.
+- **Hurt Medieval and Gunpowder troops show it (item 40)**, with the marks where arms and muskets do not cover them; the siege machines and guns burn clear of their crews, and troops without a vehicle body only smoke.
+- **Shooters aim at flyers (item 44)**: the Longbowman, Crossbowman, Friar, Herald, Alchemist and the Siege Belfry's riders; the Fusilier, Voltigeurs, Blunderbuss, Field Surgeon and Mesmerist. The Dragoon aims down, and the Fusilier and Wall Gunner fire from the hip at one height.
+- **Lunges and swings land where the art reaches (item 38)**: the Pikeman, Ursa Paladin, Flailman, Squire Pair, Corsair, Cuirassier and Grand Marshal, with the same timing.
+
+**The strict art review of W2 passed on its first pass**: Medieval 3.78, Gunpowder 3.77, the wave 3.77 (2.29 before); the starters 3.83 and 3.82; memory 468 MB of 600. It found no blockers, 3 shoulds and 7 nits. One should (a generated table) was fixed before the release; the other two (six Medieval attack sheets under the detail floors, and the Pufferfish Balloon, which does not yet read as a pufferfish) and the nits are being fixed for the next release.
+
+**Released:** `main` was fast-forwarded to 797cabd (CI green in Chromium, WebKit, the iPhone profile and Firefox). GitHub Pages stalled three times on that commit; 8d21bdc, the same game with a longer deploy timeout, went live at 13:07 UTC.
+
+**Items 51 and 52 (unique troops, counters and formations): the design is done** (`docs/design-history/item51-signatures.md`): one learnable ability for every card with a visible tell and a named counter, counters per age, formations that form by themselves (a shield wall, a phalanx, a firing line with a kneeling front rank, a square), one new troop (the Legion) and three drops by age. Nothing is built yet.
+
+**Art round W3 has started** (Industrial and Modern, 41 troops): 10 are done and merged, not released yet: the Riveter (with the Chimney Sweep), Carbineer, Harpoon Gunner, Steam Golem (with the Teapot Golem) and Clockwork Soldier; the Rifleman (with the Arctic Rifleman), Trench Raider (with the Desert Raider), Bazooka Trooper, Tankette (with the Tin Tankette) and Sky Fortress (with the Origami Fortress).
+
+**A lost week.** The session sat idle from the evening of 2026-11-03 to the morning of 2026-11-10: after a container restart had stopped the agents, the orchestrator ended its turn instead of restarting them. Since then the orchestrator checks the agents after every restart and keeps a timed check-in.
+
+**Next:** the W2 fixes, the rest of W3, W3's strict review and its release; then W4 (Future and Cosmic). Item 51's first drop starts once the owner has answered.
+
+**What the owner must do:** answer the three questions on items 51 and 52 (the direction, the raider safeguard, and whether to start drop 1). All three are recommended yes.
+
 ## 2026-11-02 and 03: Art round W0 and W1 (every Stone and Bronze troop, their skins, visible damage), Amber and Dust that feel precious, a calmer Home; **live since 2026-11-03 19:14 UTC** (`main` c717114; cloud session, branch `main-ipy06f`, draft PR #13)
 
 **What a player will see once it is released.**
