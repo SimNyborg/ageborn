@@ -26,7 +26,7 @@
   },
   "void_whisperer_idle_00_team": {
    "frame": {
-    "x": 390,
+    "x": 339,
     "y": 472,
     "w": 44,
     "h": 77
@@ -74,7 +74,7 @@
   },
   "void_whisperer_idle_01_team": {
    "frame": {
-    "x": 245,
+    "x": 147,
     "y": 472,
     "w": 43,
     "h": 78
@@ -122,7 +122,7 @@
   },
   "void_whisperer_idle_02_team": {
    "frame": {
-    "x": 50,
+    "x": 2,
     "y": 472,
     "w": 43,
     "h": 79
@@ -170,8 +170,8 @@
   },
   "void_whisperer_idle_03_team": {
    "frame": {
-    "x": 2,
-    "y": 387,
+    "x": 565,
+    "y": 297,
     "w": 43,
     "h": 81
    },
@@ -218,17 +218,17 @@
   },
   "void_whisperer_idle_04_team": {
    "frame": {
-    "x": 469,
-    "y": 297,
-    "w": 44,
+    "x": 2,
+    "y": 387,
+    "w": 43,
     "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
+    "x": 109,
     "y": 106,
-    "w": 44,
+    "w": 43,
     "h": 81
    },
    "sourceSize": {
@@ -266,7 +266,7 @@
   },
   "void_whisperer_idle_05_team": {
    "frame": {
-    "x": 420,
+    "x": 419,
     "y": 387,
     "w": 45,
     "h": 79
@@ -314,7 +314,7 @@
   },
   "void_whisperer_walk_00_team": {
    "frame": {
-    "x": 469,
+    "x": 468,
     "y": 387,
     "w": 45,
     "h": 79
@@ -362,7 +362,7 @@
   },
   "void_whisperer_walk_01_team": {
    "frame": {
-    "x": 438,
+    "x": 435,
     "y": 472,
     "w": 42,
     "h": 77
@@ -410,9 +410,9 @@
   },
   "void_whisperer_walk_02_team": {
    "frame": {
-    "x": 97,
+    "x": 49,
     "y": 472,
-    "w": 43,
+    "w": 42,
     "h": 79
    },
    "rotated": false,
@@ -420,7 +420,7 @@
    "spriteSourceSize": {
     "x": 110,
     "y": 109,
-    "w": 43,
+    "w": 42,
     "h": 79
    },
    "sourceSize": {
@@ -461,15 +461,15 @@
     "x": 421,
     "y": 297,
     "w": 44,
-    "h": 82
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
-    "y": 105,
+    "y": 106,
     "w": 44,
-    "h": 82
+    "h": 81
    },
    "sourceSize": {
     "w": 257,
@@ -506,7 +506,7 @@
   },
   "void_whisperer_walk_04_team": {
    "frame": {
-    "x": 517,
+    "x": 469,
     "y": 297,
     "w": 44,
     "h": 81
@@ -554,9 +554,9 @@
   },
   "void_whisperer_walk_05_team": {
    "frame": {
-    "x": 537,
+    "x": 533,
     "y": 472,
-    "w": 43,
+    "w": 42,
     "h": 76
    },
    "rotated": false,
@@ -564,7 +564,7 @@
    "spriteSourceSize": {
     "x": 110,
     "y": 115,
-    "w": 43,
+    "w": 42,
     "h": 76
    },
    "sourceSize": {
@@ -602,7 +602,7 @@
   },
   "void_whisperer_walk_06_team": {
    "frame": {
-    "x": 565,
+    "x": 517,
     "y": 297,
     "w": 44,
     "h": 81
@@ -650,17 +650,17 @@
   },
   "void_whisperer_walk_07_team": {
    "frame": {
-    "x": 292,
+    "x": 387,
     "y": 472,
-    "w": 45,
+    "w": 44,
     "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
+    "x": 109,
     "y": 106,
-    "w": 45,
+    "w": 44,
     "h": 77
    },
    "sourceSize": {
@@ -698,7 +698,7 @@
   },
   "void_whisperer_attack_00_team": {
    "frame": {
-    "x": 235,
+    "x": 184,
     "y": 387,
     "w": 44,
     "h": 80
@@ -746,7 +746,7 @@
   },
   "void_whisperer_attack_01_team": {
    "frame": {
-    "x": 283,
+    "x": 280,
     "y": 387,
     "w": 43,
     "h": 80
@@ -794,7 +794,7 @@
   },
   "void_whisperer_attack_02_team": {
    "frame": {
-    "x": 96,
+    "x": 49,
     "y": 387,
     "w": 42,
     "h": 81
@@ -890,7 +890,7 @@
   },
   "void_whisperer_attack_04_team": {
    "frame": {
-    "x": 144,
+    "x": 95,
     "y": 472,
     "w": 48,
     "h": 78
@@ -938,7 +938,7 @@
   },
   "void_whisperer_attack_05_team": {
    "frame": {
-    "x": 584,
+    "x": 579,
     "y": 472,
     "w": 52,
     "h": 73
@@ -986,17 +986,17 @@
   },
   "void_whisperer_attack_06_team": {
    "frame": {
-    "x": 484,
+    "x": 481,
     "y": 472,
-    "w": 49,
+    "w": 48,
     "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 112,
+    "x": 113,
     "y": 113,
-    "w": 49,
+    "w": 48,
     "h": 76
    },
    "sourceSize": {
@@ -1034,18 +1034,18 @@
   },
   "void_whisperer_attack_07_team": {
    "frame": {
-    "x": 567,
-    "y": 387,
-    "w": 44,
-    "h": 79
+    "x": 194,
+    "y": 472,
+    "w": 43,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 111,
-    "y": 109,
-    "w": 44,
-    "h": 79
+    "y": 110,
+    "w": 43,
+    "h": 78
    },
    "sourceSize": {
     "w": 257,
@@ -1082,8 +1082,8 @@
   },
   "void_whisperer_attack_08_team": {
    "frame": {
-    "x": 2,
-    "y": 472,
+    "x": 566,
+    "y": 387,
     "w": 44,
     "h": 79
    },
@@ -1130,18 +1130,18 @@
   },
   "void_whisperer_attack_09_team": {
    "frame": {
-    "x": 49,
+    "x": 327,
     "y": 387,
     "w": 43,
-    "h": 81
+    "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
-    "y": 107,
+    "y": 108,
     "w": 43,
-    "h": 81
+    "h": 80
    },
    "sourceSize": {
     "w": 257,
@@ -1226,18 +1226,18 @@
   },
   "void_whisperer_hit_01_team": {
    "frame": {
-    "x": 330,
+    "x": 95,
     "y": 387,
     "w": 41,
-    "h": 80
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 105,
-    "y": 108,
+    "y": 107,
     "w": 41,
-    "h": 80
+    "h": 81
    },
    "sourceSize": {
     "w": 257,
@@ -1274,7 +1274,7 @@
   },
   "void_whisperer_hit_02_team": {
    "frame": {
-    "x": 375,
+    "x": 374,
     "y": 387,
     "w": 41,
     "h": 80
@@ -1322,18 +1322,18 @@
   },
   "void_whisperer_hit_03_team": {
    "frame": {
-    "x": 196,
+    "x": 241,
     "y": 472,
     "w": 45,
-    "h": 78
+    "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 108,
-    "y": 110,
+    "y": 111,
     "w": 45,
-    "h": 78
+    "h": 77
    },
    "sourceSize": {
     "w": 257,
@@ -1370,9 +1370,9 @@
   },
   "void_whisperer_hit_04_team": {
    "frame": {
-    "x": 186,
+    "x": 232,
     "y": 387,
-    "w": 45,
+    "w": 44,
     "h": 80
    },
    "rotated": false,
@@ -1380,7 +1380,7 @@
    "spriteSourceSize": {
     "x": 108,
     "y": 108,
-    "w": 45,
+    "w": 44,
     "h": 80
    },
    "sourceSize": {
@@ -1514,7 +1514,7 @@
   },
   "void_whisperer_die_02_team": {
    "frame": {
-    "x": 142,
+    "x": 140,
     "y": 387,
     "w": 40,
     "h": 81
@@ -1562,7 +1562,7 @@
   },
   "void_whisperer_die_03_team": {
    "frame": {
-    "x": 518,
+    "x": 517,
     "y": 387,
     "w": 45,
     "h": 79
@@ -1658,7 +1658,7 @@
   },
   "void_whisperer_die_05_team": {
    "frame": {
-    "x": 341,
+    "x": 290,
     "y": 472,
     "w": 45,
     "h": 77

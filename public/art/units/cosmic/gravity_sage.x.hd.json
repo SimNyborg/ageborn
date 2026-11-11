@@ -2,7 +2,7 @@
  "frames": {
   "gravity_sage_attack_b_01": {
    "frame": {
-    "x": 134,
+    "x": 276,
     "y": 2,
     "w": 108,
     "h": 204
@@ -26,8 +26,8 @@
   },
   "gravity_sage_attack_b_01_team": {
    "frame": {
-    "x": 235,
-    "y": 416,
+    "x": 276,
+    "y": 210,
     "w": 100,
     "h": 106
    },
@@ -50,8 +50,8 @@
   },
   "gravity_sage_attack_b_02": {
    "frame": {
-    "x": 117,
-    "y": 214,
+    "x": 2,
+    "y": 2,
     "w": 138,
     "h": 195
    },
@@ -74,17 +74,17 @@
   },
   "gravity_sage_attack_b_02_team": {
    "frame": {
-    "x": 121,
-    "y": 416,
-    "w": 110,
+    "x": 388,
+    "y": 205,
+    "w": 109,
     "h": 112
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 213,
+    "x": 214,
     "y": 207,
-    "w": 110,
+    "w": 109,
     "h": 112
    },
    "sourceSize": {
@@ -98,7 +98,7 @@
   },
   "gravity_sage_attack_b_03": {
    "frame": {
-    "x": 2,
+    "x": 144,
     "y": 2,
     "w": 128,
     "h": 208
@@ -123,7 +123,7 @@
   "gravity_sage_attack_b_03_team": {
    "frame": {
     "x": 2,
-    "y": 416,
+    "y": 201,
     "w": 115,
     "h": 117
    },
@@ -146,8 +146,8 @@
   },
   "gravity_sage_attack_b_04": {
    "frame": {
-    "x": 2,
-    "y": 214,
+    "x": 388,
+    "y": 2,
     "w": 111,
     "h": 198
    },
@@ -170,8 +170,8 @@
   },
   "gravity_sage_attack_b_04_team": {
    "frame": {
-    "x": 339,
-    "y": 416,
+    "x": 609,
+    "y": 201,
     "w": 100,
     "h": 106
    },
@@ -194,8 +194,8 @@
   },
   "gravity_sage_attack_b_05": {
    "frame": {
-    "x": 259,
-    "y": 214,
+    "x": 609,
+    "y": 2,
     "w": 104,
     "h": 195
    },
@@ -218,8 +218,8 @@
   },
   "gravity_sage_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 537,
+    "x": 501,
+    "y": 205,
     "w": 100,
     "h": 105
    },
@@ -242,8 +242,8 @@
   },
   "gravity_sage_attack_b_06": {
    "frame": {
-    "x": 367,
-    "y": 214,
+    "x": 821,
+    "y": 2,
     "w": 103,
     "h": 191
    },
@@ -266,8 +266,8 @@
   },
   "gravity_sage_attack_b_06_team": {
    "frame": {
-    "x": 106,
-    "y": 537,
+    "x": 713,
+    "y": 205,
     "w": 100,
     "h": 105
    },
@@ -290,7 +290,7 @@
   },
   "gravity_sage_attack_b_07": {
    "frame": {
-    "x": 352,
+    "x": 717,
     "y": 2,
     "w": 100,
     "h": 199
@@ -314,8 +314,8 @@
   },
   "gravity_sage_attack_b_07_team": {
    "frame": {
-    "x": 210,
-    "y": 537,
+    "x": 817,
+    "y": 205,
     "w": 99,
     "h": 105
    },
@@ -338,7 +338,7 @@
   },
   "gravity_sage_attack_b_08": {
    "frame": {
-    "x": 246,
+    "x": 503,
     "y": 2,
     "w": 102,
     "h": 199
@@ -362,8 +362,8 @@
   },
   "gravity_sage_attack_b_08_team": {
    "frame": {
-    "x": 313,
-    "y": 537,
+    "x": 920,
+    "y": 197,
     "w": 99,
     "h": 105
    },
@@ -417,8 +417,8 @@
   "image": "gravity_sage.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 512,
-   "h": 644
+   "w": 1024,
+   "h": 320
   },
   "scale": "3",
   "ageborn": {

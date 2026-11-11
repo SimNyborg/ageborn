@@ -17,6 +17,10 @@ Animation (ANIM_SPEC G8 hover drift, the odometer at 60 x 1.25 = 75 lu/s; the ho
             ring of crushed stars, the orb shoots from between the hands
   hit       a tilt and a drop on his lift glow, the head snaps back, eyes squeezed
   die       D3 dizzy: spins, drops out of the air and sits down hard, spiral eyes, the orbs fall
+
+W4 (the detail standard): the lap robe's and the robe top's team-dark folds, the mantle's folds, the beard's
+locks, the pads' ridges, the sleeves' creases; energy damage spots (a torn robe, motes off the orbs). No
+aimed clips: `aimdata` gives the orb fling and the clap as an omni emitter, as W2's Mesmerist.
 """
 import math
 
@@ -28,6 +32,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "gravity_sage"
 GAIT_NAME = "hover"
@@ -37,6 +42,18 @@ CANVAS = (300, 280)
 FEET = (130, 244)
 ANCHORS = {"head": (2, 78), "hitCenter": (0, 40), "muzzle": (20, 40)}
 NO_RETIME = True
+
+# W4 detail standard (look.py): the sage's lilac head is skin
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+# (r37) a clearer light-to-shadow gradient on the big smooth forms and the team robe as cloth (r28: micro 4.15 / 4.30)
+LOOK_SHADE = dict(FW.SHADE_SOLDIER, gradient=2.7, cavity=0.78)
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+# (r37b) the star white a step greyer, as the Halberdier's (the beard, the brows, the hem band, the sash and the clasp
+# rang the extras' highlight share to 0.1003)
+STAR_W4 = "#D6D1E8"
+SKIN_PALETTE = FW.skin_palette({K.STAR: STAR_W4})
+MATERIAL_KINDS = FW.kinds_cosmic({CW.LILAC: "skin", CW.LILAC_DK: "skin", "team": "cloth", STAR_W4: "ceramic"})
 
 HR = (0.0, K.ARM_Y["r"], K.HAND_Z)
 HL = (0.0, K.ARM_Y["l"], K.HAND_Z)
@@ -82,7 +99,7 @@ def build(rig):
     rig.part("torso", star, KC.STAR_PALE, highlight=False, outline=0)
     rig.part("torso", g, team=True)
     g = Geo().blob((0.4, 0, 21.4), (10.4, 10.2, 2.2), p=3.4)
-    rig.part("torso", g, CW.STAR, finish="gloss", outline_hex=CW.STAR_TRIM)
+    rig.part("torso", g, CW.STAR, outline_hex=CW.STAR_TRIM)     # (r37: satin, not gloss: the highlight share)
     g = Geo().blob((-1.0, 0, 36.0), (11.4, 12.6, 5.6), p=2.4, taper=(1.2, 0.8))
     rig.part("torso", g, CW.VIOLET, finish="matte")
     g = Geo().blob((9.6, -1.5, 35.0), (2.2, 2.8, 2.8), p=2.4)
@@ -122,6 +139,43 @@ def build(rig):
     K.star_burst(rig, "hand_r", (ORB[0] + 2.0, ORB[1], ORB[2]), size=1.0, name="flash", color=CW.GLOW, core=CW.GLOW_CORE)
     rig.joint("odo", "root", (0, 0, 0))
     rig.track("_foot", "odo", (0, 0, 0))
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the lap robe's team-dark folds, the robe top's fold, the mantle's folds, the beard's locks (star-trim
+    lines), the near pad's ridge, the sleeves' creases (char space; decals cast)."""
+    lap = FC.Face(rig, "hips", [Geo().blob((5.0, 0, 15.0), (15.0, 13.0, 6.0), p=2.6, taper=(1.15, 0.9))])
+    FW.folds(rig, "hips", lap, [[FW.sc(lap, x, 19.6, -11.0), FW.sc(lap, x + 1.0, 15.0, -13.4), FW.sc(lap, x + 1.6, 11.6, -13.6)]
+                                for x in (-4.0, 4.0, 12.0)], w=0.8, team=True)
+    top = FC.Face(rig, "torso", [Geo().blob((0, 0, 28), (9.8, 9.6, 11.2), p=2.4, taper=(0.95, 1.05))])
+    FW.folds(rig, "torso", top, [[FW.sc(top, -4.6, 31.0, -8.6), FW.sc(top, -5.4, 27.0, -9.2), FW.sc(top, -4.8, 23.4, -9.0)]],
+             w=0.8, team=True)
+    man = FC.Face(rig, "torso", [Geo().blob((-1.0, 0, 36.0), (11.4, 12.6, 5.6), p=2.4, taper=(1.2, 0.8))])
+    FW.panel_lines(rig, "torso", man, [[FW.sc(man, x, 39.6, -10.4), FW.sc(man, x + 1.0, 33.0, -12.6)] for x in (-6.0, 1.0)],
+                   fill=FW.LINE_ON_VIOLET, w=0.75)
+    bf = FC.Face(rig, "beard", [Geo().blob((12.0, -5.0, 38.5), (4.2, 6.4, 8.0), p=2.2, taper=(0.5, 1.0), rot=(0, 8, 0))])
+    FW.panel_lines(rig, "beard", bf, [[FW.sc(bf, x, 44.0, -10.4), FW.sc(bf, x + 0.6, 38.0, -10.8), FW.sc(bf, x + 1.0, 33.0, -9.6)]
+                                      for x in (10.6, 13.4)], fill=FW.LINE_ON_STAR, w=0.7)
+    y = K.ARM_Y["r"]
+    c = (0.4, y - 0.3 * K.SIDE_Y["r"], 37.4)
+    pf = FC.Face(rig, "arm_r", [Geo().blob(c, (6.4, 5.6, 5.0), p=2.6)])
+    FW.folds(rig, "arm_r", pf, [[FW.sc(pf, -4.0, 39.4, c[1] - 4.8), FW.sc(pf, 0.4, 41.0, c[1] - 5.2),
+                                 FW.sc(pf, 4.6, 39.4, c[1] - 4.8)]], w=0.75, team=True)
+    FW.cosmic_legs(rig, team_shin=False, boots=False)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, energy: a flicker, motes drifting off; the cloth tears): the team lap
+    robe (a strip), the robe top, the near team pad; motes off the orb ring. (r37: no mantle mark: the near pad, the
+    head and the beard hide the mantle, seen 0% in idle and the attacks.)"""
+    rig.damage_spot("lap", "hips", (4.0, -13.4, 14.4), 6.0, "cloth", kind="strip", team=True, normal=(0, -1, 0))
+    rig.damage_spot("robe", "torso", (-3.0, -9.4, 27.0), 5.0, "cloth", team=True, normal=(0, -1, 0))
+    rig.damage_spot("pauldron", "arm_r", (0.4, K.ARM_Y["r"] + 0.3 - 5.4, 37.6), 5.0, "metal", team=True,
+                    normal=(0, -1, 0.2))
+    rig.damage_spot("motes", "halo", (0.0, -9.0, 69.0), 4.0, "motes", kind="emit", normal=(0, 0, 1))
 
 
 SIT = {"hips": {"z": LIFT}, "thigh_r": {"r": 84}, "shin_r": {"r": -160}, "foot_r": {"r": 60},
@@ -185,7 +239,7 @@ def _arc(frm):
 
 
 def _attack_clip():
-    ov = {3: CW.rings_fx("orb", ORB, (5.0, 8.0), CW.GLOW_CORE, -180.0, 180.0), 4: [_arc(3)],
+    ov = {3: CW.rings_fx("orb", ORB, (5.0, 8.0), CW.GLOW_CORE, -180.0, 180.0), 4: FW.smear_soft(_arc(3), band=0.5),
           5: CW.fire_fx("hand_r", (ORB[0] + 2.0, ORB[1], ORB[2]), CW.GLOW_CORE, a0=-40.0)}
     return M.clip("attack", [_a_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
                   extra={"holdStep": 3})
@@ -208,14 +262,15 @@ def _b_pose(f):
 
 
 def _crush():
+    # (r37: the rings in the glow, not its white core: r28's clap frames rang the extras' highlight share to 0.110)
     return [{"kind": "rings", "joint": "hand_r", "point": (ORB[0] + 1.0, ORB[1], ORB[2]), "radii_lu": (6.0, 12.0),
-             "a0": -180.0, "a1": 180.0, "color": CW.GLOW_CORE},
+             "a0": -180.0, "a1": 180.0, "color": CW.GLOW},
             {"kind": "burst", "joint": "hand_r", "point": (ORB[0] + 1.0, ORB[1], ORB[2]), "r0_lu": 13.0, "r1_lu": 8.0,
              "n": 8, "a0": 0.0, "arc": 360.0, "color": CW.GLOW_CORE}]
 
 
 def _attack_b():
-    ov = {3: CW.rings_fx("torso", (2.0, -10.0, 44.0), (10.0, 15.0), CW.GLOW_CORE, -180.0, 180.0), 5: _crush()}
+    ov = {3: CW.rings_fx("torso", (2.0, -10.0, 44.0), (10.0, 15.0), CW.GLOW, -180.0, 180.0), 5: _crush()}
     return M.clip("attack_b", [_b_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
                   reuse={0: ("attack", 0), 9: ("attack", 9)}, extra={"holdStep": 3})
 

@@ -17,6 +17,10 @@ Animation (ANIM_SPEC G2 slow procession at card 60 x 1.25 = 75 lu/s, appendix B 
             down and forward with a ripple
   hit       light: the head snaps back, the ribbons whip, eyes > <
   die       D3 dizzy sit: spins, sits down hard, spiral eyes, the orb fades
+
+W4 (the detail standard): the robe's pleats (team-dark), the void mantle's and the ribbons' folds, the hood's folds,
+the pads' ridges, the legs' creases and seams; energy damage spots (a torn robe and hood, motes off the orb). No
+aimed clips: `aimdata` gives its ripples as an omni emitter, as W2's Mesmerist.
 """
 import math
 
@@ -30,6 +34,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "void_whisperer"
 GAIT_NAME = "biped"
@@ -39,6 +44,16 @@ CANVAS = (300, 270)
 FEET = (130, 232)
 ANCHORS = {"head": (2, 72), "hitCenter": (0, 30), "muzzle": (22, 44)}
 NO_RETIME = True
+
+# W4 detail standard (look.py)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+# (r37) a clearer light-to-shadow gradient and the team robe as cloth (its folds' breakup; polymer's 0.03 left the robe
+# flat): r28 sat at flat 0.219 / 0.208, micro 3.91 / 3.96
+LOOK_SHADE = dict(FW.SHADE_SOLDIER, gradient=2.7, cavity=0.78)
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+MATERIAL_KINDS = FW.kinds_cosmic({"team": "cloth"})
+FACE_LINE = "#3A2E58"       # (r37) the faceplate's seams, a step over the visor black (the Starwarden's)
 
 HR = (0.0, K.ARM_Y["r"], K.HAND_Z)
 HL = (0.0, K.ARM_Y["l"], K.HAND_Z)
@@ -99,6 +114,65 @@ def build(rig):
     rig.joint("pulse", "torso", (14.0, 0, 28.0), hidden=True)
     g = Geo().lathe([(5.0, 0), (7.6, 0.1), (7.6, 1.0), (5.0, 1.1)], (16.0, -10.0, 28.0), (17.0, -10.0, 28.0), segs=24)
     rig.part("pulse", g, glow=CW.GLOW_CORE, outline=0.8, outline_hex=CW.GLOW)
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the robe's team-dark pleats (hem, hips, robe top), the void mantle's folds, a fold down each ribbon, the
+    hood's folds, the near pad's ridge, the legs' creases, team shin rims and boot seams (char space; decals cast)."""
+    hem = FC.Face(rig, "hem", [Geo().blob((0.5, 0, 15.0), (12.4, 11.2, 6.2), p=2.6, taper=(1.25, 0.9))])
+    FW.folds(rig, "hem", hem, [[FW.sc(hem, x, 19.0, -10.0), FW.sc(hem, x - 0.6, 14.6, -11.8), FW.sc(hem, x - 1.2, 11.4, -12.6)]
+                               for x in (-6.0, -3.0, 0.0, 2.6, 5.0)], w=0.8, team=True)     # (r37: five, not three)
+    hips = FC.Face(rig, "hips", [Geo().blob((0, 0, 20.0), (11.0, 10.6, 7.4), p=2.6, taper=(1.12, 0.95))])
+    FW.folds(rig, "hips", hips, [[FW.sc(hips, x, 25.0, -9.0), FW.sc(hips, x - 0.4, 19.0, -10.6)] for x in (-5.0, 2.0)],
+             w=0.8, team=True)
+    top = FC.Face(rig, "torso", [Geo().blob((0, 0, 28), (9.6, 9.4, 11.0), p=2.4, taper=(0.95, 1.05))])
+    FW.folds(rig, "torso", top, [[FW.sc(top, -4.6, 31.0, -8.4), FW.sc(top, -5.4, 27.0, -9.0), FW.sc(top, -4.8, 24.2, -8.8)]],
+             w=0.8, team=True)
+    man = FC.Face(rig, "torso", [Geo().blob((-1.0, 0, 36.0), (11.0, 12.2, 5.4), p=2.4, taper=(1.2, 0.8))])
+    FW.panel_lines(rig, "torso", man, [[FW.sc(man, x, 39.4, -10.0), FW.sc(man, x + 1.0, 33.2, -12.2)] for x in (-6.0, 1.0)],
+                   fill=FW.FOLD_ON_VOID, w=0.75)
+    rib = FC.Face(rig, "tend0", [Geo().slab([(-5.0, 39.0), (-12.0, 34.0), (-17.0, 26.0), (-21.0, 19.0), (-18.0, 18.0),
+                                             (-14.0, 25.0), (-9.0, 32.0), (-4.0, 36.0)], -9.0, 1.4)])
+    FW.panel_lines(rig, "tend0", rib, [[FW.sc(rib, -6.4, 36.6, -9.8), FW.sc(rib, -12.4, 30.6, -9.8),
+                                        FW.sc(rib, -17.6, 22.4, -9.8)]], fill=FW.LINE_ON_VIOLET, w=0.7)
+    FW.cosmic_helmet(rig, "hood")
+    # (r37) the dark faceplate in the hood: a brow seam over the eyes, a cheek seam under them and one down the front
+    # (the face was one flat dark field in every frame), and more of the hood's folds: over its crown, down its back
+    # and across the trailing tip (the Starwarden's r34/r34b)
+    fp = FC.Face(rig, "head", [Geo().blob((3.0, 0, 49.0), (9.6, 9.0, 9.6), p=2.4)])
+    pc, pr = (3.0, 0, 49.0), (9.6, 9.0, 9.6)
+    FW.panel_lines(rig, "head", fp, [[FW.on_blob(fp, pc, pr, x, z, p=2.4) for x, z in pts] for pts in (
+        ((6.0, 54.4), (9.0, 55.0), (11.6, 54.0)), ((6.4, 46.0), (9.0, 44.6), (11.4, 45.4)),
+        ((11.2, 53.0), (11.8, 49.6), (11.0, 46.6)))], fill=FACE_LINE, w=0.8)
+    hc, hr = (0.5, 0, 50.0), (12.4, 11.6, 12.6)
+    hf = FC.Face(rig, "head", [Geo().blob(hc, hr, p=2.4, shift=(-0.15, 0))])
+    FW.folds(rig, "head", hf, [[FW.on_blob(hf, hc, hr, x, z, p=2.4) for x, z in pts] for pts in (
+        ((2.0, 60.6), (-2.4, 59.4), (-6.0, 56.6)), ((-1.6, 56.0), (-3.6, 50.0), (-2.8, 43.6)),
+        ((-8.6, 58.0), (-10.4, 51.6)))], w=0.8, team=False, fill=FW.LINE_ON_VIOLET)
+    tf = FC.Face(rig, "hood_tip", [Geo().blob((-6.0, 0, 58.0), (6.0, 6.0, 7.0), p=2.2, rot=(0, 30, 0))])
+    FW.folds(rig, "hood_tip", tf, [[FW.sc(tf, -3.0, 61.4, -5.2), FW.sc(tf, -7.6, 59.0, -5.4), FW.sc(tf, -10.4, 55.6, -4.8)]],
+             w=0.8, team=False, fill=FW.LINE_ON_VIOLET)
+    y = K.ARM_Y["r"]
+    c = (0.4, y - 0.3 * K.SIDE_Y["r"], 37.4)
+    pf = FC.Face(rig, "arm_r", [Geo().blob(c, (6.6, 5.6, 5.2), p=2.6)])
+    FW.folds(rig, "arm_r", pf, [[FW.sc(pf, -4.0, 39.6, c[1] - 4.8), FW.sc(pf, 0.4, 41.2, c[1] - 5.2),
+                                 FW.sc(pf, 4.8, 39.6, c[1] - 4.8)]], w=0.75, team=True)
+    FW.cosmic_legs(rig, team_shin=True)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, energy: a flicker, motes drifting off; the cloth tears): the hood, the
+    robe's hem (a strip), the near team pad, the near team greave; motes off the orb. (r37: no mantle mark: the near
+    pad, the hood and the near ribbon hide the void mantle, seen 0% in every clip.)"""
+    rig.damage_spot_at("hood", "head", -6.0, 50.0, 5.0, "cloth", fill=CW.VIOLET)
+    rig.damage_spot("robe", "hem", (-2.0, -12.2, 13.6), 5.0, "cloth", kind="strip", team=True, normal=(0, -1, 0))
+    rig.damage_spot("pauldron", "arm_r", (0.4, K.ARM_Y["r"] + 0.3 - 5.4, 37.6), 5.0, "metal", team=True,
+                    normal=(0, -1, 0.2))
+    rig.damage_spot("greave", "shin_r", (1.9, -K.LEG_Y - 4.2, 8.8), 5.0, "metal", team=True, normal=(0, -1, 0))
+    rig.damage_spot("motes", "orb", (13.0, -6.0, 31.0), 4.0, "motes", kind="emit", normal=(0, 0, 1))
 
 
 def arms(r, l):

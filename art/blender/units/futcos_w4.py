@@ -16,22 +16,22 @@ it W2's `medieval_w2.py` and W1's `stone_w1.py`); this module adds what the Futu
 Every number is in lu at rest, character space (x forward, y away from the camera, z up); decal points are screen
 lu as Face.hit takes them.
 """
+import math
+
 from ageborn_art import face as F
+from ageborn_art import look
 from ageborn_art import rigs_future as RF
 from ageborn_art.geometry import Geo
 from units import industrial_w3 as IW
+from units import medieval_w2 as MW
 
-# the W1-W3 helpers the W4 scripts use as they are
+# the W1-W3 helpers the W4 scripts use as they are (the conforming decals below: field, ribbon, folds, panel, rivets
+# are W2's and W3's with the misses dropped)
 kinds = IW.kinds
 skin_palette = IW.skin_palette
-field = IW.field
-ribbon = IW.ribbon
 seam = IW.seam
 plate_band = IW.plate_band
-folds = IW.folds
-panel = IW.panel
 piping = IW.piping
-rivets = IW.rivets
 rivet_line = IW.rivet_line
 soot = IW.soot
 stitches = IW.stitches
@@ -75,12 +75,141 @@ KIT_TROOPER = skin_palette({RF.ARMOR: TROOPER_WHITE})
 GUN_LT, GUN_SEAM = "#B4BBC6", "#8A929F"
 
 
+# -- conforming decals that never leave their face (r31g) -------------------------------------------------------------
+# face.Face.hit returns the point on the y = 0 plane where its camera ray misses the face. W2's ribbon and field cast
+# every vertex, so a line drawn past a part's edge (or a cap or a side of it) put vertices on that plane: a sliver past
+# the silhouette at rest, and a rod when the joint turned or twisted, the longer the further the part sits off the body
+# plane (the Asteroid Golem's fists, 24 lu off it, grew rods 5-10 lu long). These drop what misses: a line keeps its
+# runs that stay on the face (with its width and round caps), a chip or rivet that misses is left out. A decal that
+# lies wholly on its face is built exactly as W2's.
+def _hits(face, x, z):
+    from mathutils import Vector
+    return (face.hit(x, z) - Vector((x, 0.0, z))).length > 1e-9
+
+
+def _ribbon_points(pts, w, step):
+    """W2's ribbon samples of the line pts (centre and both sides) and its two round caps."""
+    path = []
+    for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+        k = max(1, math.ceil(math.dist((x0, z0), (x1, z1)) / step))
+        path += [(x0 + (x1 - x0) * t / k, z0 + (z1 - z0) * t / k) for t in range(k)]
+    path.append(tuple(pts[-1]))
+    out = []
+    for t, (x, z) in enumerate(path):
+        a, b = path[max(t - 1, 0)], path[min(t + 1, len(path) - 1)]
+        L = math.dist(a, b) or 1.0
+        nx, nz = -(b[1] - a[1]) / L * w / 2, (b[0] - a[0]) / L * w / 2
+        out += [(x - nx, z - nz), (x, z), (x + nx, z + nz)]
+    for x, z in (pts[0], pts[-1]):
+        out += F.ellipse(x, z, w / 2, w / 2, 10)
+    return path, out
+
+
+DROPPED = []        # (joint, line) of every decal line cut or chip left out (bin/decalmiss.py reports them)
+
+
+def on_face(face, pts, w, step=0.25):
+    """The parts of the line pts [(x, z)] (screen lu) that stay on `face` with their width w: a list of polylines."""
+    pts = [tuple(p) for p in pts]
+    if len(pts) < 2:
+        return []
+    _, samples = _ribbon_points(pts, w, MW.STEP)
+    if all(_hits(face, x, z) for x, z in samples):
+        return [pts]
+    rec = [face.head, [tuple(round(v, 1) for v in p) for p in pts], 0.0]
+    DROPPED.append(rec)
+    path, _ = _ribbon_points(pts, w, step)
+    ok = []
+    for t, (x, z) in enumerate(path):
+        a, b = path[max(t - 1, 0)], path[min(t + 1, len(path) - 1)]
+        L = math.dist(a, b) or 1.0
+        ux, uz = (b[0] - a[0]) / L * w / 2, (b[1] - a[1]) / L * w / 2
+        ok.append(all(_hits(face, x + dx, z + dz) for dx, dz in ((0.0, 0.0), (-uz, ux), (uz, -ux), (ux, uz), (-ux, -uz))))
+    runs, cur = [], []
+    for p, k in zip(path, ok):
+        if k:
+            cur.append(p)
+            continue
+        runs.append(cur)
+        cur = []
+    runs.append(cur)
+    out = []
+    for run in runs:
+        # trim an end whose round cap still leaves the face
+        while len(run) >= 2 and not all(_hits(face, x, z) for x, z in F.ellipse(*run[0], w / 2, w / 2, 10)):
+            run = run[1:]
+        while len(run) >= 2 and not all(_hits(face, x, z) for x, z in F.ellipse(*run[-1], w / 2, w / 2, 10)):
+            run = run[:-1]
+        if len(run) >= 2 and math.dist(run[0], run[-1]) >= w:
+            out.append(run)
+    total = sum(math.dist(a, b) for a, b in zip(path, path[1:])) or 1.0
+    rec[2] = round(sum(math.dist(a, b) for r in out for a, b in zip(r, r[1:])) / total, 2)
+    return out
+
+
+def ribbon(g, face, pts, w, depth=0.35, step=MW.STEP):
+    """W2's ribbon (a conforming line of width w along pts), cut to the runs that stay on `face`."""
+    for run in on_face(face, pts, w):
+        MW.ribbon(g, face, run, w, depth, step)
+    return g
+
+
+def field(g, face, pts, depth=0.35, step=MW.STEP):
+    """W2's field (a conforming decal over the convex polygon pts), left out when any of its corners misses `face`."""
+    cx, cz = sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
+    if all(_hits(face, x, z) for x, z in list(pts) + [(cx, cz)]):
+        MW.field(g, face, pts, depth, step)
+    else:
+        DROPPED.append((face.head, [(round(cx, 1), round(cz, 1))]))
+    return g
+
+
+def _empty(g):
+    return len(g.bm.verts) == 0
+
+
+def folds(rig, joint, face, lines, w=1.3, team=True, fill=None, depth=0.3):
+    """W2's folds (pleat lines; team-dark on team cloth) with the safe ribbon."""
+    g = Geo()
+    for pts in lines:
+        ribbon(g, face, pts, w, depth)
+    if _empty(g):
+        return None
+    if team:
+        return look.team_part(rig, joint, g, outline=0)
+    return rig.part(joint, g, fill, outline=0, highlight=False)
+
+
+def panel(rig, joint, face, pts, depth=0.35, team=True, fill=None):
+    """W2's panel (a conforming heraldic field; team-dark or `fill`) with the safe field."""
+    g = field(Geo(), face, pts, depth)
+    if _empty(g):
+        return g
+    if team:
+        look.team_part(rig, joint, g, outline=0)
+    else:
+        rig.part(joint, g, fill, outline=0, highlight=False)
+    return g
+
+
+def rivets(rig, joint, face, pts, r=1.1, fill="#9AA0A8", proud=0.5, outline=0.3, finish="metal"):
+    """W3's rivets (domes set onto `face`), the ones whose screen point misses `face` left out."""
+    keep = [(x, z) for x, z in pts if _hits(face, x, z)]
+    if len(keep) < len(pts):
+        DROPPED.append((face.head, [p for p in pts if p not in keep]))
+    if not keep:
+        return None
+    return IW.rivets(rig, joint, face, keep, r=r, fill=fill, proud=proud, outline=outline, finish=finish)
+
+
 def panel_lines(rig, joint, face, lines, fill=LINE_ON_WHITE, w=0.7, depth=0.35):
     """Panel lines: lines = [[(x, z), ...], ...] in screen lu, conforming ribbons in a tone darker than the plate (the
     plates' value structure at game scale; a seam every 6-12 lu reads as plating, not as texture)."""
     g = Geo()
     for pts in lines:
         ribbon(g, face, pts, w, depth)
+    if _empty(g):
+        return None
     return rig.part(joint, g, fill, outline=0, highlight=False)
 
 
@@ -90,12 +219,16 @@ def wear(rig, joint, face, chips, fill=WEAR_ON_WHITE, depth=0.3):
     g = Geo()
     for x, z, rx, rz in chips:
         field(g, face, F.ellipse(x, z, rx, rz, 12), depth)
+    if _empty(g):
+        return None
     return rig.part(joint, g, fill, outline=0, highlight=False)
 
 
 def glow_seam(rig, joint, face, pts, color=RF.MINT, w=0.6, depth=0.4):
     """An emissive seam along pts [(x, z)] (screen lu): a narrow conforming glow ribbon (Future's light lines)."""
     g = ribbon(Geo(), face, pts, w, depth)
+    if _empty(g):
+        return None
     return rig.part(joint, g, glow=color, outline=0)
 
 
@@ -284,7 +417,8 @@ def cosmic_body(rig, bulk=1.0, team_shin=True, plate=True, hips=True, shoulders=
             band(rig, f"foot_{s}", (2.8, y, 2.4), (4.4, 4.7, 2.5), 2.9, 3.0, 3.6, fill=LINE_ON_VIOLET, taper=(1.02, 0.84))
     if boots:
         tf = FC_.Face(rig, "foot_r", [Geo().blob((2.8, -RC.LEG_Y, 2.4), (4.4, 4.7, 2.5), p=2.9, taper=(1.02, 0.84))])
-        wear(rig, "foot_r", tf, [(*sc(tf, 0.0, 3.6, -RC.LEG_Y - 3.6), 1.1, 0.5)], fill=WEAR_ON_VIOLET)
+        # (r37: on the toe; at x 0 its screen point missed the boot, and the chip lay on the y = 0 plane)
+        wear(rig, "foot_r", tf, [(*sc(tf, 5.0, 3.2, -RC.LEG_Y - 3.6), 1.1, 0.5)], fill=WEAR_ON_VIOLET)
 
 
 def cosmic_legs(rig, team_shin=True, boots=True, boot_line=None, sleeves=True):
@@ -311,7 +445,8 @@ def cosmic_legs(rig, team_shin=True, boots=True, boot_line=None, sleeves=True):
                                              sc(sleeve, 2.8, 30.8, ya - 3.8)]], w=0.8, team=False, fill=FOLD_ON_VOID)
     if boots:
         tf = FC_.Face(rig, "foot_r", [Geo().blob((2.8, -RC.LEG_Y, 2.4), (4.4, 4.7, 2.5), p=2.9, taper=(1.02, 0.84))])
-        wear(rig, "foot_r", tf, [(*sc(tf, 0.0, 3.6, -RC.LEG_Y - 3.6), 1.1, 0.5)], fill=WEAR_ON_VIOLET)
+        # (r37: on the toe; at x 0 its screen point missed the boot, and the chip lay on the y = 0 plane)
+        wear(rig, "foot_r", tf, [(*sc(tf, 5.0, 3.2, -RC.LEG_Y - 3.6), 1.1, 0.5)], fill=WEAR_ON_VIOLET)
 
 
 def melee_clip(name, fn, smear, fx, reuse=None, hold_step=3, band=0.55, soft=True):
@@ -353,6 +488,19 @@ def sc(face, x, z, y):
     """The screen position (x, z) of the char-space point (x, y, z), as Face.hit takes it (kit_medieval.scr)."""
     from ageborn_art import kit_medieval as KM
     return KM.scr(face, (x, y, z))
+
+
+def on_blob(face, c, r, x, z, p=1.9, k=0.9):
+    """sc() of the camera-side surface point at char (x, z) of an unrotated, untapered blob (centre c, radii r, power
+    p): the depth solves the superellipse, and (x, z) is first drawn in to `k` of the blob's side profile, so a line
+    laid through these points stays on its face (r31g: fissures drawn past a boulder's edge fell off it)."""
+    dx, dz = (x - c[0]) / r[0], (z - c[2]) / r[2]
+    s = abs(dx) ** p + abs(dz) ** p
+    if s > k ** p:
+        f = (k ** p / s) ** (1 / p)
+        dx, dz, s = dx * f, dz * f, k ** p
+    t = max(1.0 - s, 0.0) ** (1 / p)
+    return sc(face, c[0] + dx * r[0], c[2] + dz * r[2], c[1] - r[1] * t)
 
 
 def band(rig, joint, center, radii, p, z0, z1, fill=None, team=False, grow=1.02, taper=(1.0, 1.0)):
