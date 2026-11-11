@@ -109,8 +109,8 @@ def build(rig):
     for s in ("r", "l"):
         y = F.ARM_Y[s] - 0.3 * F.SIDE_Y[s]
         pf = FC.Face(rig, f"arm_{s}", [Geo().blob((0.5, y, 37.6), (6.8, 5.8, 5.4), p=2.6)])
-        yy = y + 5.0 * F.SIDE_Y[s]
-        FW.folds(rig, f"arm_{s}", pf, [[FW.sc(pf, -4.6, 40.0, yy), FW.sc(pf, 0.5, 41.4, yy - 0.4 * F.SIDE_Y[s]),
+        yy = y - 5.0                      # the camera's side of each pad (the far pad's far side sent a seam astray)
+        FW.folds(rig, f"arm_{s}", pf, [[FW.sc(pf, -4.6, 40.0, yy), FW.sc(pf, 0.5, 41.4, yy + 0.4),
                                         FW.sc(pf, 5.4, 40.0, yy)]], w=0.75, team=True)
     if getattr(rig, "skin", None) is None:
         _damage_spots(rig)

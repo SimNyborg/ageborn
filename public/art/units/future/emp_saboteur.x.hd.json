@@ -2,8 +2,8 @@
  "frames": {
   "emp_saboteur_attack_b_01": {
    "frame": {
-    "x": 2,
-    "y": 251,
+    "x": 219,
+    "y": 249,
     "w": 136,
     "h": 199
    },
@@ -26,8 +26,8 @@
   },
   "emp_saboteur_attack_b_01_team": {
    "frame": {
-    "x": 754,
-    "y": 640,
+    "x": 504,
+    "y": 928,
     "w": 114,
     "h": 157
    },
@@ -50,7 +50,7 @@
   },
   "emp_saboteur_attack_b_02": {
    "frame": {
-    "x": 411,
+    "x": 645,
     "y": 2,
     "w": 138,
     "h": 213
@@ -74,8 +74,8 @@
   },
   "emp_saboteur_attack_b_02_team": {
    "frame": {
-    "x": 220,
-    "y": 640,
+    "x": 510,
+    "y": 763,
     "w": 119,
     "h": 161
    },
@@ -98,8 +98,8 @@
   },
   "emp_saboteur_attack_b_03": {
    "frame": {
-    "x": 553,
-    "y": 2,
+    "x": 411,
+    "y": 200,
     "w": 177,
     "h": 209
    },
@@ -122,8 +122,8 @@
   },
   "emp_saboteur_attack_b_03_team": {
    "frame": {
-    "x": 2,
-    "y": 640,
+    "x": 391,
+    "y": 612,
     "w": 115,
     "h": 165
    },
@@ -170,8 +170,8 @@
   },
   "emp_saboteur_attack_b_04_team": {
    "frame": {
-    "x": 451,
-    "y": 640,
+    "x": 391,
+    "y": 781,
     "w": 109,
     "h": 159
    },
@@ -218,8 +218,8 @@
   },
   "emp_saboteur_attack_b_05_team": {
    "frame": {
-    "x": 343,
-    "y": 640,
+    "x": 785,
+    "y": 395,
     "w": 104,
     "h": 161
    },
@@ -242,8 +242,8 @@
   },
   "emp_saboteur_attack_b_06": {
    "frame": {
-    "x": 312,
-    "y": 251,
+    "x": 411,
+    "y": 2,
     "w": 230,
     "h": 194
    },
@@ -266,17 +266,17 @@
   },
   "emp_saboteur_attack_b_06_team": {
    "frame": {
-    "x": 893,
-    "y": 809,
-    "w": 109,
+    "x": 383,
+    "y": 944,
+    "w": 107,
     "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 247,
+    "x": 248,
     "y": 226,
-    "w": 109,
+    "w": 107,
     "h": 140
    },
    "sourceSize": {
@@ -290,8 +290,8 @@
   },
   "emp_saboteur_attack_b_07": {
    "frame": {
-    "x": 734,
-    "y": 2,
+    "x": 592,
+    "y": 395,
     "w": 189,
     "h": 202
    },
@@ -314,9 +314,9 @@
   },
   "emp_saboteur_attack_b_07_team": {
    "frame": {
-    "x": 196,
-    "y": 809,
-    "w": 90,
+    "x": 175,
+    "y": 944,
+    "w": 89,
     "h": 154
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 248,
     "y": 203,
-    "w": 90,
+    "w": 89,
     "h": 154
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "emp_saboteur_attack_b_08": {
    "frame": {
-    "x": 182,
-    "y": 454,
+    "x": 2,
+    "y": 443,
     "w": 198,
     "h": 179
    },
@@ -362,8 +362,8 @@
   },
   "emp_saboteur_attack_b_08_team": {
    "frame": {
-    "x": 290,
-    "y": 809,
+    "x": 268,
+    "y": 944,
     "w": 111,
     "h": 152
    },
@@ -386,8 +386,8 @@
   },
   "emp_saboteur_attack_c_01": {
    "frame": {
-    "x": 384,
-    "y": 454,
+    "x": 719,
+    "y": 601,
     "w": 161,
     "h": 175
    },
@@ -410,8 +410,8 @@
   },
   "emp_saboteur_attack_c_01_team": {
    "frame": {
-    "x": 405,
-    "y": 809,
+    "x": 731,
+    "y": 780,
     "w": 118,
     "h": 149
    },
@@ -434,8 +434,8 @@
   },
   "emp_saboteur_attack_c_02": {
    "frame": {
-    "x": 758,
-    "y": 454,
+    "x": 2,
+    "y": 812,
     "w": 169,
     "h": 165
    },
@@ -458,8 +458,8 @@
   },
   "emp_saboteur_attack_c_02_team": {
    "frame": {
-    "x": 527,
-    "y": 809,
+    "x": 731,
+    "y": 933,
     "w": 127,
     "h": 144
    },
@@ -482,8 +482,8 @@
   },
   "emp_saboteur_attack_c_03": {
    "frame": {
-    "x": 564,
-    "y": 640,
+    "x": 529,
+    "y": 601,
     "w": 186,
     "h": 158
    },
@@ -506,8 +506,8 @@
   },
   "emp_saboteur_attack_c_03_team": {
    "frame": {
-    "x": 752,
-    "y": 809,
+    "x": 183,
+    "y": 800,
     "w": 137,
     "h": 140
    },
@@ -530,8 +530,8 @@
   },
   "emp_saboteur_attack_c_04": {
    "frame": {
-    "x": 748,
-    "y": 251,
+    "x": 204,
+    "y": 612,
     "w": 183,
     "h": 184
    },
@@ -554,8 +554,8 @@
   },
   "emp_saboteur_attack_c_04_team": {
    "frame": {
-    "x": 89,
-    "y": 809,
+    "x": 204,
+    "y": 452,
     "w": 103,
     "h": 156
    },
@@ -578,7 +578,7 @@
   },
   "emp_saboteur_attack_c_05": {
    "frame": {
-    "x": 546,
+    "x": 2,
     "y": 251,
     "w": 198,
     "h": 188
@@ -602,9 +602,9 @@
   },
   "emp_saboteur_attack_c_05_team": {
    "frame": {
-    "x": 121,
-    "y": 640,
-    "w": 95,
+    "x": 787,
+    "y": 2,
+    "w": 94,
     "h": 165
    },
    "rotated": false,
@@ -612,7 +612,7 @@
    "spriteSourceSize": {
     "x": 238,
     "y": 192,
-    "w": 95,
+    "w": 94,
     "h": 165
    },
    "sourceSize": {
@@ -626,8 +626,8 @@
   },
   "emp_saboteur_attack_c_06": {
    "frame": {
-    "x": 549,
-    "y": 454,
+    "x": 592,
+    "y": 219,
     "w": 205,
     "h": 172
    },
@@ -650,8 +650,8 @@
   },
   "emp_saboteur_attack_c_06_team": {
    "frame": {
-    "x": 658,
-    "y": 809,
+    "x": 633,
+    "y": 780,
     "w": 90,
     "h": 144
    },
@@ -674,8 +674,8 @@
   },
   "emp_saboteur_attack_c_07": {
    "frame": {
-    "x": 142,
-    "y": 251,
+    "x": 359,
+    "y": 413,
     "w": 166,
     "h": 195
    },
@@ -698,18 +698,18 @@
   },
   "emp_saboteur_attack_c_07_team": {
    "frame": {
-    "x": 2,
-    "y": 809,
+    "x": 801,
+    "y": 171,
     "w": 83,
-    "h": 157
+    "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 260,
-    "y": 200,
+    "y": 198,
     "w": 83,
-    "h": 157
+    "h": 159
    },
    "sourceSize": {
     "w": 582,
@@ -723,16 +723,16 @@
   "emp_saboteur_attack_c_08": {
    "frame": {
     "x": 2,
-    "y": 454,
-    "w": 176,
+    "y": 626,
+    "w": 177,
     "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 223,
+    "x": 222,
     "y": 202,
-    "w": 176,
+    "w": 177,
     "h": 182
    },
    "sourceSize": {
@@ -746,8 +746,8 @@
   },
   "emp_saboteur_attack_c_08_team": {
    "frame": {
-    "x": 872,
-    "y": 640,
+    "x": 622,
+    "y": 928,
     "w": 105,
     "h": 157
    },
@@ -829,8 +829,8 @@
   "image": "emp_saboteur.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1024,
-   "h": 968
+   "w": 896,
+   "h": 1100
   },
   "scale": "3",
   "ageborn": {
@@ -931,7 +931,7 @@
         13.7
        ],
        [
-        46.2,
+        45.3,
         28.6
        ],
        [
@@ -1015,7 +1015,7 @@
         26.4
        ],
        [
-        46.2,
+        45.3,
         28.6
        ],
        [

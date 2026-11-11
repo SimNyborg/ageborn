@@ -2,8 +2,8 @@
  "frames": {
   "particle_cannon_idle_00": {
    "frame": {
-    "x": 117,
-    "y": 117,
+    "x": 243,
+    "y": 328,
     "w": 112,
     "h": 104
    },
@@ -26,8 +26,8 @@
   },
   "particle_cannon_idle_00_team": {
    "frame": {
-    "x": 309,
-    "y": 731,
+    "x": 919,
+    "y": 260,
     "w": 97,
     "h": 84
    },
@@ -50,8 +50,8 @@
   },
   "particle_cannon_idle_01": {
    "frame": {
-    "x": 474,
-    "y": 117,
+    "x": 250,
+    "y": 115,
     "w": 113,
     "h": 103
    },
@@ -74,8 +74,8 @@
   },
   "particle_cannon_idle_01_team": {
    "frame": {
-    "x": 510,
-    "y": 641,
+    "x": 698,
+    "y": 412,
     "w": 99,
     "h": 85
    },
@@ -98,8 +98,8 @@
   },
   "particle_cannon_idle_02": {
    "frame": {
-    "x": 383,
-    "y": 333,
+    "x": 489,
+    "y": 2,
     "w": 112,
     "h": 102
    },
@@ -122,8 +122,8 @@
   },
   "particle_cannon_idle_02_team": {
    "frame": {
-    "x": 613,
-    "y": 641,
+    "x": 707,
+    "y": 294,
     "w": 99,
     "h": 85
    },
@@ -146,8 +146,8 @@
   },
   "particle_cannon_idle_03": {
    "frame": {
-    "x": 591,
-    "y": 117,
+    "x": 373,
+    "y": 2,
     "w": 112,
     "h": 103
    },
@@ -170,8 +170,8 @@
   },
   "particle_cannon_idle_03_team": {
    "frame": {
-    "x": 716,
-    "y": 641,
+    "x": 801,
+    "y": 383,
     "w": 97,
     "h": 85
    },
@@ -194,8 +194,8 @@
   },
   "particle_cannon_idle_04": {
    "frame": {
-    "x": 266,
-    "y": 333,
+    "x": 359,
+    "y": 435,
     "w": 113,
     "h": 102
    },
@@ -218,8 +218,8 @@
   },
   "particle_cannon_idle_04_team": {
    "frame": {
-    "x": 2,
-    "y": 819,
+    "x": 919,
+    "y": 86,
     "w": 99,
     "h": 83
    },
@@ -242,8 +242,8 @@
   },
   "particle_cannon_idle_05": {
    "frame": {
-    "x": 233,
-    "y": 117,
+    "x": 243,
+    "y": 436,
     "w": 112,
     "h": 104
    },
@@ -266,8 +266,8 @@
   },
   "particle_cannon_idle_05_team": {
    "frame": {
-    "x": 105,
-    "y": 819,
+    "x": 919,
+    "y": 173,
     "w": 99,
     "h": 83
    },
@@ -290,8 +290,8 @@
   },
   "particle_cannon_walk_00": {
    "frame": {
-    "x": 348,
-    "y": 2,
+    "x": 2,
+    "y": 644,
     "w": 114,
     "h": 105
    },
@@ -314,8 +314,8 @@
   },
   "particle_cannon_walk_00_team": {
    "frame": {
-    "x": 411,
-    "y": 641,
+    "x": 819,
+    "y": 86,
     "w": 95,
     "h": 86
    },
@@ -338,18 +338,18 @@
   },
   "particle_cannon_walk_01": {
    "frame": {
-    "x": 349,
-    "y": 117,
+    "x": 2,
+    "y": 538,
     "w": 121,
-    "h": 103
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 122,
-    "y": 156,
+    "y": 157,
     "w": 121,
-    "h": 103
+    "h": 102
    },
    "sourceSize": {
     "w": 359,
@@ -362,8 +362,8 @@
   },
   "particle_cannon_walk_01_team": {
    "frame": {
-    "x": 105,
-    "y": 731,
+    "x": 810,
+    "y": 281,
     "w": 98,
     "h": 84
    },
@@ -386,8 +386,8 @@
   },
   "particle_cannon_walk_02": {
    "frame": {
-    "x": 615,
-    "y": 333,
+    "x": 2,
+    "y": 214,
     "w": 129,
     "h": 100
    },
@@ -410,8 +410,8 @@
   },
   "particle_cannon_walk_02_team": {
    "frame": {
-    "x": 626,
-    "y": 819,
+    "x": 677,
+    "y": 604,
     "w": 101,
     "h": 82
    },
@@ -435,7 +435,7 @@
   "particle_cannon_walk_03": {
    "frame": {
     "x": 2,
-    "y": 333,
+    "y": 108,
     "w": 135,
     "h": 102
    },
@@ -458,8 +458,8 @@
   },
   "particle_cannon_walk_03_team": {
    "frame": {
-    "x": 719,
-    "y": 731,
+    "x": 592,
+    "y": 412,
     "w": 102,
     "h": 83
    },
@@ -482,8 +482,8 @@
   },
   "particle_cannon_walk_04": {
    "frame": {
-    "x": 466,
-    "y": 2,
+    "x": 120,
+    "y": 644,
     "w": 114,
     "h": 105
    },
@@ -506,8 +506,8 @@
   },
   "particle_cannon_walk_04_team": {
    "frame": {
-    "x": 207,
-    "y": 731,
+    "x": 817,
+    "y": 191,
     "w": 98,
     "h": 84
    },
@@ -530,8 +530,8 @@
   },
   "particle_cannon_walk_05": {
    "frame": {
-    "x": 141,
-    "y": 333,
+    "x": 118,
+    "y": 422,
     "w": 121,
     "h": 102
    },
@@ -554,8 +554,8 @@
   },
   "particle_cannon_walk_05_team": {
    "frame": {
-    "x": 208,
-    "y": 819,
+    "x": 902,
+    "y": 436,
     "w": 98,
     "h": 83
    },
@@ -578,8 +578,8 @@
   },
   "particle_cannon_walk_06": {
    "frame": {
-    "x": 748,
-    "y": 333,
+    "x": 2,
+    "y": 318,
     "w": 129,
     "h": 100
    },
@@ -602,8 +602,8 @@
   },
   "particle_cannon_walk_06_team": {
    "frame": {
-    "x": 310,
-    "y": 819,
+    "x": 683,
+    "y": 690,
     "w": 98,
     "h": 83
    },
@@ -626,8 +626,8 @@
   },
   "particle_cannon_walk_07": {
    "frame": {
-    "x": 694,
-    "y": 226,
+    "x": 2,
+    "y": 2,
     "w": 136,
     "h": 102
    },
@@ -650,8 +650,8 @@
   },
   "particle_cannon_walk_07_team": {
    "frame": {
-    "x": 410,
-    "y": 731,
+    "x": 912,
+    "y": 348,
     "w": 97,
     "h": 84
    },
@@ -674,8 +674,8 @@
   },
   "particle_cannon_attack_00": {
    "frame": {
-    "x": 584,
-    "y": 2,
+    "x": 238,
+    "y": 638,
     "w": 112,
     "h": 105
    },
@@ -698,8 +698,8 @@
   },
   "particle_cannon_attack_00_team": {
    "frame": {
-    "x": 658,
-    "y": 543,
+    "x": 470,
+    "y": 640,
     "w": 99,
     "h": 87
    },
@@ -722,18 +722,18 @@
   },
   "particle_cannon_attack_01": {
    "frame": {
-    "x": 234,
-    "y": 226,
+    "x": 258,
+    "y": 2,
     "w": 111,
-    "h": 103
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 132,
-    "y": 156,
+    "y": 155,
     "w": 111,
-    "h": 103
+    "h": 104
    },
    "sourceSize": {
     "w": 359,
@@ -746,8 +746,8 @@
   },
   "particle_cannon_attack_01_team": {
    "frame": {
-    "x": 2,
-    "y": 641,
+    "x": 476,
+    "y": 731,
     "w": 100,
     "h": 86
    },
@@ -770,18 +770,18 @@
   },
   "particle_cannon_attack_02": {
    "frame": {
-    "x": 349,
-    "y": 226,
+    "x": 367,
+    "y": 110,
     "w": 111,
-    "h": 103
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 133,
-    "y": 157,
+    "y": 156,
     "w": 111,
-    "h": 103
+    "h": 104
    },
    "sourceSize": {
     "w": 359,
@@ -794,8 +794,8 @@
   },
   "particle_cannon_attack_02_team": {
    "frame": {
-    "x": 106,
-    "y": 641,
+    "x": 573,
+    "y": 640,
     "w": 100,
     "h": 86
    },
@@ -818,8 +818,8 @@
   },
   "particle_cannon_attack_03": {
    "frame": {
-    "x": 707,
-    "y": 117,
+    "x": 354,
+    "y": 544,
     "w": 112,
     "h": 103
    },
@@ -842,8 +842,8 @@
   },
   "particle_cannon_attack_03_team": {
    "frame": {
-    "x": 311,
-    "y": 641,
+    "x": 704,
+    "y": 501,
     "w": 96,
     "h": 86
    },
@@ -866,18 +866,18 @@
   },
   "particle_cannon_attack_04": {
    "frame": {
-    "x": 118,
-    "y": 2,
+    "x": 135,
+    "y": 214,
     "w": 111,
-    "h": 109
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 128,
-    "y": 147,
+    "y": 146,
     "w": 111,
-    "h": 109
+    "h": 110
    },
    "sourceSize": {
     "w": 359,
@@ -890,8 +890,8 @@
   },
   "particle_cannon_attack_04_team": {
    "frame": {
-    "x": 118,
-    "y": 543,
+    "x": 721,
+    "y": 2,
     "w": 94,
     "h": 92
    },
@@ -915,17 +915,17 @@
   "particle_cannon_attack_05": {
    "frame": {
     "x": 2,
-    "y": 2,
+    "y": 422,
     "w": 112,
-    "h": 111
+    "h": 112
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 121,
-    "y": 141,
+    "y": 140,
     "w": 112,
-    "h": 111
+    "h": 112
    },
    "sourceSize": {
     "w": 359,
@@ -938,8 +938,8 @@
   },
   "particle_cannon_attack_05_team": {
    "frame": {
-    "x": 704,
-    "y": 439,
+    "x": 141,
+    "y": 115,
     "w": 102,
     "h": 95
    },
@@ -962,17 +962,17 @@
   },
   "particle_cannon_attack_06": {
    "frame": {
-    "x": 118,
-    "y": 439,
-    "w": 118,
+    "x": 2,
+    "y": 753,
+    "w": 119,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 114,
+    "x": 113,
     "y": 159,
-    "w": 118,
+    "w": 119,
     "h": 99
    },
    "sourceSize": {
@@ -986,8 +986,8 @@
   },
   "particle_cannon_attack_06_team": {
    "frame": {
-    "x": 509,
-    "y": 819,
+    "x": 599,
+    "y": 208,
     "w": 113,
     "h": 82
    },
@@ -1010,18 +1010,18 @@
   },
   "particle_cannon_attack_07": {
    "frame": {
-    "x": 700,
-    "y": 2,
-    "w": 111,
-    "h": 105
+    "x": 127,
+    "y": 528,
+    "w": 112,
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 124,
-    "y": 151,
-    "w": 111,
-    "h": 105
+    "x": 123,
+    "y": 150,
+    "w": 112,
+    "h": 106
    },
    "sourceSize": {
     "w": 359,
@@ -1034,8 +1034,8 @@
   },
   "particle_cannon_attack_07_team": {
    "frame": {
-    "x": 552,
-    "y": 543,
+    "x": 135,
+    "y": 328,
     "w": 102,
     "h": 89
    },
@@ -1058,8 +1058,8 @@
   },
   "particle_cannon_attack_08": {
    "frame": {
-    "x": 2,
-    "y": 226,
+    "x": 354,
+    "y": 651,
     "w": 112,
     "h": 103
    },
@@ -1082,8 +1082,8 @@
   },
   "particle_cannon_attack_08_team": {
    "frame": {
-    "x": 210,
-    "y": 641,
+    "x": 716,
+    "y": 191,
     "w": 97,
     "h": 86
    },
@@ -1106,8 +1106,8 @@
   },
   "particle_cannon_attack_09": {
    "frame": {
-    "x": 464,
-    "y": 226,
+    "x": 368,
+    "y": 218,
     "w": 111,
     "h": 103
    },
@@ -1130,8 +1130,8 @@
   },
   "particle_cannon_attack_09_team": {
    "frame": {
-    "x": 412,
-    "y": 819,
+    "x": 804,
+    "y": 472,
     "w": 93,
     "h": 83
    },
@@ -1154,17 +1154,17 @@
   },
   "particle_cannon_hit_00": {
    "frame": {
-    "x": 499,
-    "y": 333,
-    "w": 112,
+    "x": 250,
+    "y": 222,
+    "w": 114,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 128,
+    "x": 126,
     "y": 156,
-    "w": 112,
+    "w": 114,
     "h": 102
    },
    "sourceSize": {
@@ -1178,9 +1178,9 @@
   },
   "particle_cannon_hit_00_team": {
    "frame": {
-    "x": 610,
-    "y": 731,
-    "w": 105,
+    "x": 243,
+    "y": 544,
+    "w": 106,
     "h": 83
    },
    "rotated": false,
@@ -1188,7 +1188,7 @@
    "spriteSourceSize": {
     "x": 122,
     "y": 152,
-    "w": 105,
+    "w": 106,
     "h": 83
    },
    "sourceSize": {
@@ -1202,18 +1202,18 @@
   },
   "particle_cannon_hit_01": {
    "frame": {
-    "x": 233,
+    "x": 142,
     "y": 2,
-    "w": 111,
-    "h": 108
+    "w": 112,
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 128,
-    "y": 150,
-    "w": 111,
-    "h": 108
+    "x": 127,
+    "y": 149,
+    "w": 112,
+    "h": 109
    },
    "sourceSize": {
     "w": 359,
@@ -1226,9 +1226,9 @@
   },
   "particle_cannon_hit_01_team": {
    "frame": {
-    "x": 448,
-    "y": 543,
-    "w": 100,
+    "x": 125,
+    "y": 753,
+    "w": 101,
     "h": 91
    },
    "rotated": false,
@@ -1236,7 +1236,7 @@
    "spriteSourceSize": {
     "x": 123,
     "y": 145,
-    "w": 100,
+    "w": 101,
     "h": 91
    },
    "sourceSize": {
@@ -1250,17 +1250,17 @@
   },
   "particle_cannon_hit_02": {
    "frame": {
-    "x": 2,
-    "y": 117,
-    "w": 111,
+    "x": 238,
+    "y": 747,
+    "w": 112,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 130,
+    "x": 129,
     "y": 154,
-    "w": 111,
+    "w": 112,
     "h": 105
    },
    "sourceSize": {
@@ -1274,8 +1274,8 @@
   },
   "particle_cannon_hit_02_team": {
    "frame": {
-    "x": 761,
-    "y": 543,
+    "x": 713,
+    "y": 101,
     "w": 102,
     "h": 86
    },
@@ -1298,8 +1298,8 @@
   },
   "particle_cannon_hit_03": {
    "frame": {
-    "x": 2,
-    "y": 439,
+    "x": 475,
+    "y": 325,
     "w": 112,
     "h": 100
    },
@@ -1322,8 +1322,8 @@
   },
   "particle_cannon_hit_03_team": {
    "frame": {
-    "x": 731,
-    "y": 819,
+    "x": 785,
+    "y": 679,
     "w": 98,
     "h": 81
    },
@@ -1346,8 +1346,8 @@
   },
   "particle_cannon_hit_04": {
    "frame": {
-    "x": 579,
-    "y": 226,
+    "x": 482,
+    "y": 109,
     "w": 111,
     "h": 103
    },
@@ -1370,8 +1370,8 @@
   },
   "particle_cannon_hit_04_team": {
    "frame": {
-    "x": 511,
-    "y": 731,
+    "x": 782,
+    "y": 591,
     "w": 95,
     "h": 84
    },
@@ -1394,8 +1394,8 @@
   },
   "particle_cannon_die_00": {
    "frame": {
-    "x": 118,
-    "y": 226,
+    "x": 359,
+    "y": 328,
     "w": 112,
     "h": 103
    },
@@ -1418,8 +1418,8 @@
   },
   "particle_cannon_die_00_team": {
    "frame": {
-    "x": 2,
-    "y": 731,
+    "x": 580,
+    "y": 730,
     "w": 99,
     "h": 84
    },
@@ -1442,17 +1442,17 @@
   },
   "particle_cannon_die_01": {
    "frame": {
-    "x": 2,
-    "y": 543,
-    "w": 112,
+    "x": 354,
+    "y": 758,
+    "w": 118,
     "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 131,
+    "x": 125,
     "y": 165,
-    "w": 112,
+    "w": 118,
     "h": 94
    },
    "sourceSize": {
@@ -1466,8 +1466,8 @@
   },
   "particle_cannon_die_01_team": {
    "frame": {
-    "x": 645,
-    "y": 906,
+    "x": 683,
+    "y": 777,
     "w": 109,
     "h": 74
    },
@@ -1490,18 +1490,18 @@
   },
   "particle_cannon_die_02": {
    "frame": {
-    "x": 216,
-    "y": 543,
+    "x": 476,
+    "y": 429,
     "w": 112,
-    "h": 91
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 131,
-    "y": 168,
+    "y": 167,
     "w": 112,
-    "h": 91
+    "h": 92
    },
    "sourceSize": {
     "w": 359,
@@ -1514,8 +1514,8 @@
   },
   "particle_cannon_die_02_team": {
    "frame": {
-    "x": 427,
-    "y": 906,
+    "x": 887,
+    "y": 684,
     "w": 96,
     "h": 76
    },
@@ -1538,8 +1538,8 @@
   },
   "particle_cannon_die_03": {
    "frame": {
-    "x": 472,
-    "y": 439,
+    "x": 605,
+    "y": 2,
     "w": 112,
     "h": 95
    },
@@ -1562,8 +1562,8 @@
   },
   "particle_cannon_die_03_team": {
    "frame": {
-    "x": 527,
-    "y": 906,
+    "x": 586,
+    "y": 525,
     "w": 114,
     "h": 75
    },
@@ -1586,8 +1586,8 @@
   },
   "particle_cannon_die_04": {
    "frame": {
-    "x": 588,
-    "y": 439,
+    "x": 470,
+    "y": 541,
     "w": 112,
     "h": 95
    },
@@ -1610,8 +1610,8 @@
   },
   "particle_cannon_die_04_team": {
    "frame": {
-    "x": 216,
-    "y": 906,
+    "x": 903,
+    "y": 603,
     "w": 99,
     "h": 77
    },
@@ -1634,8 +1634,8 @@
   },
   "particle_cannon_die_05": {
    "frame": {
-    "x": 240,
-    "y": 439,
+    "x": 483,
+    "y": 216,
     "w": 112,
     "h": 96
    },
@@ -1658,8 +1658,8 @@
   },
   "particle_cannon_die_05_team": {
    "frame": {
-    "x": 109,
-    "y": 906,
+    "x": 796,
+    "y": 764,
     "w": 103,
     "h": 77
    },
@@ -1682,18 +1682,18 @@
   },
   "particle_cannon_die_06": {
    "frame": {
-    "x": 332,
-    "y": 543,
+    "x": 591,
+    "y": 316,
     "w": 112,
-    "h": 91
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 131,
-    "y": 168,
+    "y": 167,
     "w": 112,
-    "h": 91
+    "h": 92
    },
    "sourceSize": {
     "w": 359,
@@ -1706,8 +1706,8 @@
   },
   "particle_cannon_die_06_team": {
    "frame": {
-    "x": 2,
-    "y": 906,
+    "x": 902,
+    "y": 2,
     "w": 103,
     "h": 80
    },
@@ -1730,8 +1730,8 @@
   },
   "particle_cannon_die_07": {
    "frame": {
-    "x": 356,
-    "y": 439,
+    "x": 597,
+    "y": 108,
     "w": 112,
     "h": 96
    },
@@ -1754,8 +1754,8 @@
   },
   "particle_cannon_die_07_team": {
    "frame": {
-    "x": 319,
-    "y": 906,
+    "x": 903,
+    "y": 523,
     "w": 104,
     "h": 76
    },
@@ -1883,8 +1883,8 @@
   "image": "particle_cannon.png",
   "format": "RGBA8888",
   "size": {
-   "w": 896,
-   "h": 988
+   "w": 1024,
+   "h": 856
   },
   "scale": "1.5",
   "ageborn": {

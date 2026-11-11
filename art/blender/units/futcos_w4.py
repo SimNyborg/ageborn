@@ -238,7 +238,7 @@ def cosmic_helmet(rig, kind="dome"):
 
 
 def cosmic_body(rig, bulk=1.0, team_shin=True, plate=True, hips=True, shoulders=True, far_shoulder=True,
-                bracers=True, boots=True, pad_r=(7.6, 6.6, 6.2), knee=None):
+                bracers=True, boots=True, pad_r=(7.6, 6.6, 6.2), knee=None, bracer_line=None):
     """The W4 detail on the Cosmic body (kit_cosmic legs_v3, rigs_cosmic torso, arms and pads; call it after them
     with the same arguments): the team chest plate in two plates (team-dark), the collar's and belt's seams, the
     violet hip skirt in plates, the pads' team-dark ridges, the sleeves' elbow creases, the bracers' cuff seams, knee
@@ -264,15 +264,15 @@ def cosmic_body(rig, bulk=1.0, team_shin=True, plate=True, hips=True, shoulders=
         if shoulders and (s == "r" or far_shoulder):
             c = (0.5, y - 0.3 * RC.SIDE_Y[s], 37.6)
             pf = FC_.Face(rig, f"arm_{s}", [Geo().blob(c, pad_r, p=2.6)])
-            yy = c[1] + (pad_r[1] - 0.8) * RC.SIDE_Y[s]
+            yy = c[1] - (pad_r[1] - 0.8)              # the camera's side of each pad
             folds(rig, f"arm_{s}", pf, [[sc(pf, -4.6, 40.2, yy), sc(pf, 0.5, 41.8, yy), sc(pf, 5.4, 40.2, yy)]],
                   w=0.75, team=True)
         sleeve = FC_.Face(rig, f"arm_{s}", [Geo().capsule((0, y, RC.SHOULDER_Z), (0, y, RC.ELBOW_Z), 4.0, 3.7)])
         folds(rig, f"arm_{s}", sleeve, [[sc(sleeve, -2.6, 30.6, y - 3.8), sc(sleeve, 0.2, 29.8, y - 4.0),
                                          sc(sleeve, 2.8, 30.8, y - 3.8)]], w=0.8, team=False, fill=FOLD_ON_VOID)
         if bracers:
-            band(rig, f"fore_{s}", (0.3, y, RC.HAND_Z + 4.2), (4.8, 4.7, 3.6), 2.8, 26.0, 26.7, fill=LINE_ON_VIOLET,
-                 taper=(0.9, 1.1))
+            band(rig, f"fore_{s}", (0.3, y, RC.HAND_Z + 4.2), (4.8, 4.7, 3.6), 2.8, 26.0, 26.7,
+                 fill=bracer_line or LINE_ON_VIOLET, taper=(0.9, 1.1))
     for s in ("r", "l"):
         y = RC.LEG_Y * RC.SIDE_Y[s]
         th = FC_.Face(rig, f"thigh_{s}", [Geo().capsule((0, y, KM.V3_THIGH_Z + 0.5), (0.5, y, KM.V3_KNEE_Z), 4.6, 4.1)])

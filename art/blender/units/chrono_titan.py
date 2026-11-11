@@ -31,14 +31,12 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 """
 import math
 
-from ageborn_art import face as FC
 from ageborn_art import gait as GT
 from ageborn_art import kit_future as KF
 from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
-from units import futcos_w4 as FW
 
 SLUG = "chrono_titan"
 GAIT_NAME = "heavy"
@@ -49,34 +47,6 @@ CANVAS = (600, 580)
 FEET = (238, 552)
 ANCHORS = {"head": (8, 186), "hitCenter": (0, 110)}
 NO_RETIME = True
-
-# the detail standard (art round W4): the big machines' lifts (W3's SHADE_BIG) on the white plates, in the W4 white
-DETAIL_STANDARD = True
-LOOK_HIGHLIGHT = 0.8
-LOOK_SHADE = FW.SHADE_BIG
-# no white rim overlay on team surfaces: drawn on the colour layer, it would raise every frame's top to the team crest
-# and the halo's teeth (the Attack Drone's lesson: the sheet over its +2% pixel budget)
-LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5, team_white=0.0)
-DIAL_HEX, EDGE_HEX, SPINE_HEX = "#E9EDF1", "#E9EDF0", "#2E323D"    # the dial, the blade's edge and spine (keys
-SKIN_PALETTE = dict(FW.KIT_WHITE, **{DIAL_HEX: FW.ARMOR.upper(), EDGE_HEX: FW.ARMOR.upper(),  # the skin recolours)
-                                     SPINE_HEX: F.SUIT.upper()})
-MATERIAL_KINDS = FW.kinds_future()
-
-# Grandfather Clock (legendary skin, DESIGN A5.8; the puppet's recipe: a walnut casing, brass trim and an ivory dial).
-# The silhouette sign: a swan-neck pediment with three brass finials crowns the helm in place of the crest, and a
-# brass pendulum swings in a glazed case on the belly, ticking with the hands. The plates are walnut (wood grain at
-# game scale), the trims and the blade's edge brass, the dial ivory; the lights are a warm lamp glow (saturation 0.3:
-# under the A11 colour rule, outlines included).
-GC = "grandfather_clock"
-WALNUT, WALNUT_DK, WOOD_DK, BRASS, BRASS_DK = "#8A745E", "#5E4E40", "#463C34", "#C8B48A", "#8E7C5A"
-IVORY, IRON, GLASS_DK, LAMP, LAMP_CORE = "#F0E8D6", "#2C2824", "#2A2420", "#ECD9A8", "#FFF4DC"
-SKINS = {GC: {
-    "palette": FW.skin_palette({F.ARMOR: WALNUT, DIAL_HEX: IVORY, EDGE_HEX: BRASS, SPINE_HEX: IRON, F.SUIT: WOOD_DK,
-                                F.GUNMETAL: WALNUT_DK, F.TRIM: BRASS, F.STEEL: BRASS_DK, F.VISOR_DARK: GLASS_DK,
-                                F.MINT: LAMP, F.MINT_CORE: LAMP_CORE, F.MAGENTA: LAMP, F.MAGENTA_CORE: LAMP_CORE,
-                                FW.LINE_ON_WHITE: WALNUT_DK, FW.WEAR_ON_WHITE: "#A8927A", FW.FOLD_ON_SUIT: "#3A322C"}),
-    "kinds": FW.kinds({WALNUT: "wood", WALNUT_DK: "wood", WOOD_DK: "wood", "#A8927A": "wood", "#3A322C": "wood",
-                       BRASS: "bronze", BRASS_DK: "bronze", IVORY: "ceramic", IRON: "iron", GLASS_DK: "glass"})}}
 
 HIP_Z = 60.0
 THIGH, SHIN = 32.0, 36.0
@@ -95,7 +65,6 @@ GUARD = 10.0
 TIP = (HAND["r"][0], HAND["r"][1] - 2.0, HAND["r"][2] + GUARD + BLADE)
 HALO = (-30.0, 12.0, 140.0)
 DIAL = (29.0, -9.0, 112.0)
-PEND = (14.6, -12.2, 90.0)          # the Grandfather Clock's pendulum pivot, at the top of its glazed case
 
 
 RIG = None
@@ -201,7 +170,7 @@ def build(rig):
     g = Geo().lathe([(0, -1.0), (15.0, -0.8), (16.6, 1.0), (15.6, 3.0), (0, 3.0)], at(-3.0), at(0.0), segs=36)
     rig.part("torso", g, team=True)
     g = Geo().lathe([(0, 0), (13.2, 0.1), (13.0, 1.4), (0, 1.8)], at(0.2), at(1.6), segs=36)
-    rig.part("torso", g, DIAL_HEX, finish="gloss", outline_hex=F.TRIM)
+    rig.part("torso", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo()
     tx, ty = n[1], -n[0]      # a unit vector across the dial (horizontal on screen)
     for i in range(12):
@@ -222,20 +191,14 @@ def build(rig):
     rig.part("torso", g, glow=F.MINT, outline=0.8, outline_hex=F.SUIT)
     g = Geo().blob((4.0, 0, 139.0), (13.0, 14.0, 5.0), p=2.6)            # gorget
     rig.part("torso", g, F.SUIT)
-    rig.joint("pendulum", "torso", PEND)                                 # (W4: the skin's pendulum; no parts here)
-    if getattr(rig, "skin", None) == GC:
-        _pendulum_case(rig)
 
     # head: small heroic helm, mint visor, tall team crest
     g = Geo().blob((6.0, 0, 154.0), (14.0, 13.0, 14.0), p=2.6)
     g.blob((10.0, 0, 145.0), (9.0, 10.0, 5.0), p=2.4)
     rig.part("head", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
-    if getattr(rig, "skin", None) == GC:
-        _bonnet(rig)
-    else:
-        g = Geo().blob((3.0, 0, 171.0), (18.0, 4.2, 11.0), p=2.4, rot=(0, -12, 0))
-        g.blob((-9.0, 0, 164.0), (6.0, 3.2, 10.0), p=2.4, rot=(0, 30, 0))
-        rig.part("head", g, team=True)
+    g = Geo().blob((3.0, 0, 171.0), (18.0, 4.2, 11.0), p=2.4, rot=(0, -12, 0))
+    g.blob((-9.0, 0, 164.0), (6.0, 3.2, 10.0), p=2.4, rot=(0, 30, 0))
+    rig.part("head", g, team=True)
     g = Geo().blob((6.0, 0, 154.0), (14.8, 13.8, 14.8), p=2.6)
     g.clip((12.0, 0, 0), (-1, 0, 0)).clip((0, 0, 158.0), (0, 0, 1)).clip((0, 0, 150.0), (0, 0, -1))
     rig.part("head", g, F.VISOR_DARK, finish="gloss", outline_hex=F.SUIT)
@@ -255,7 +218,7 @@ def build(rig):
     x, y, z = HAND["r"]
     g = Geo().capsule((x, y, z - 8.0), (x, y, z + 7.0), 2.8)                   # grip
     g.sphere((x, y, z - 9.5), 3.6, cuts=3)                                       # pommel
-    rig.part("blade", g, SPINE_HEX, finish="gloss")
+    rig.part("blade", g, F.SUIT, finish="gloss")
     b0 = z + GUARD
     g = Geo().lathe([(0, -2.2), (8.0, -2.0), (9.4, 0), (8.0, 2.0), (0, 2.2)], (x, y - 1.0, b0 - 2.0),
                     (x, y - 2.0, b0 - 2.0), segs=12)                             # gear guard
@@ -263,10 +226,10 @@ def build(rig):
     g = Geo().sphere((x, y - 3.0, b0 - 2.0), 3.0, cuts=3)
     rig.part("blade", g, glow=F.MINT, outline=0)
     g = Geo().blob((x - 1.0, y - 1.0, b0 + BLADE / 2), (4.4, 2.6, BLADE / 2), p=2.6, taper=(1.0, 0.5))
-    rig.part("blade", g, SPINE_HEX, finish="gloss")                              # spine
+    rig.part("blade", g, F.SUIT, finish="gloss")                                 # spine
     g = Geo().blob((x + 5.0, y - 1.6, b0 + BLADE / 2 + 2), (6.6, 1.9, BLADE / 2 - 1), p=2.4,
                    taper=(1.0, 0.35), shift=(0.2, 0))
-    rig.part("blade", g, EDGE_HEX, finish="gloss", outline_hex=F.TRIM)          # edge
+    rig.part("blade", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)          # edge
     g = Geo().blob((x + 9.6, y - 2.4, b0 + BLADE / 2 + 1), (1.5, 0.9, BLADE / 2 - 5), p=2.4,
                    taper=(1.0, 0.4), shift=(0.4, 0))
     rig.part("blade", g, glow=F.MAGENTA, outline=0)
@@ -276,150 +239,6 @@ def build(rig):
     F.puff(rig, "torso", (-30.0, -6.0, 132.0), size=2.4, name="vent", spread=1.2)
     F.sparks(rig, "torso", (26.0, -20.0, 118.0), color=F.MINT, size=2.2, name="hit_spark", rays=6, seed=6)
     F.puff(rig, "root", (0.0, -20.0, 40.0), size=3.2, name="smoke", color="#B9BEC6", spread=1.6)
-    _detail(rig)
-    if getattr(rig, "skin", None) is None:
-        _damage_spots(rig)
-
-
-def _detail(rig):
-    """W4: the detail standard (char space; decals cast at the unit's yaw): the halo ring in twelve plates; the chest
-    in plates (a seam down its flank and one under the shoulders) with chipped edges; the team chest band split into
-    plates; the pauldrons' team-dark rims and ridges; seams down the forearm plates and round their cuffs; the hip
-    skirt in faulds; team-dark grooves round the thigh plates; seams down and round the shin armour and the boots,
-    scuffed toes; a seam down the helm (no team-dark decal on the crest: drawn on the colour layer too, it would
-    raise the frames' tops); creases at the waist."""
-    hx, hy, hz = HALO
-    ring = Geo().lathe([(26.0, -2.0), (31.0, -1.8), (31.0, 1.8), (26.0, 2.0)], (hx, hy, hz), (hx, hy + 1, hz), segs=40)
-    rf = FC.Face(rig, "halo", [ring], yaw_deg=YAW_DEG)
-
-    def rp(a, r):
-        return FW.sc(rf, hx + r * math.cos(math.radians(a)), hz + r * math.sin(math.radians(a)), hy - 2.0)
-    # spokes between the magenta ticks (the halo is a disc: its face was one flat white field)
-    FW.panel_lines(rig, "halo", rf, [[rp(a, 9.0), rp(a, 19.0), rp(a, 30.2)] for a in range(0, 360, 30)], w=1.0)
-    FW.wear(rig, "halo", rf, [(*rp(a, 30.2), 1.6, 0.8) for a in (70, 160, 250, 340)])
-    # the chest
-    chest = Geo().blob((0, 0, 114.0), (29.0, 27.0, 24.0), p=2.8, taper=(0.82, 1.05))
-    cf = FC.Face(rig, "torso", [chest], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "torso", cf, [[FW.sc(cf, -13.0, 134.0, -22.0), FW.sc(cf, -14.0, 118.0, -26.6),
-                                       FW.sc(cf, -13.0, 102.0, -25.6)],
-                                      [FW.sc(cf, -25.0, 127.0, -18.0), FW.sc(cf, -8.0, 128.0, -25.0),
-                                       FW.sc(cf, 8.0, 128.0, -24.6)]], w=1.1)
-    FW.wear(rig, "torso", cf, [(*FW.sc(cf, -23.0, 104.0, -20.0), 2.0, 1.0), (*FW.sc(cf, 4.0, 135.0, -21.0), 1.8, 0.9),
-                               (*FW.sc(cf, -26.0, 122.0, -16.0), 1.4, 0.8)])
-    band = Geo().blob((0.5, 0, 114.4), (29.6, 27.6, 24.6), p=2.8, taper=(0.82, 1.05))
-    bf = FC.Face(rig, "torso", [band], yaw_deg=YAW_DEG)
-    FW.folds(rig, "torso", bf, [[FW.sc(bf, x, 99.4, -27.0), FW.sc(bf, x, 91.6, -26.4)] for x in (-12.0, 4.0)], w=1.1,
-             team=True)
-    # the pauldrons: team-dark rims and a ridge
-    for s_ in ("r", "l"):
-        y = ARM_Y[s_]
-        sg = 1 if s_ == "r" else -1
-        FW.band(rig, f"arm_{s_}", (1.0, y - 1.5 * sg, SHOULDER_Z + 3.0), (15.0, 12.0, 12.0), 2.6, SHOULDER_Z - 7.6,
-                SHOULDER_Z - 6.6, team=True)
-    pf = FC.Face(rig, "arm_r", [Geo().blob((1.0, ARM_Y["r"] - 1.5, SHOULDER_Z + 3.0), (15.0, 12.0, 12.0), p=2.6)],
-                 yaw_deg=YAW_DEG)
-    yy = ARM_Y["r"] - 1.5 - 10.4
-    FW.folds(rig, "arm_r", pf, [[FW.sc(pf, -11.0, SHOULDER_Z + 8.0, yy + 1.0), FW.sc(pf, 1.0, SHOULDER_Z + 11.0, yy),
-                                 FW.sc(pf, 12.0, SHOULDER_Z + 8.0, yy + 1.0)]], w=1.1, team=True)
-    # the forearm plates: a seam down them and round their cuffs
-    for s_ in ("r", "l"):
-        y = ARM_Y[s_]
-        z = SHOULDER_Z - UPPER - 13.0
-        FW.band(rig, f"fore_{s_}", (0.5, y, z), (8.8, 8.8, 12.0), 2.8, z - 9.4, z - 8.4, fill=FW.LINE_ON_WHITE,
-                taper=(0.85, 1.1))
-    ff = FC.Face(rig, "fore_r", [Geo().blob((0.5, ARM_Y["r"], SHOULDER_Z - UPPER - 13.0), (8.8, 8.8, 12.0), p=2.8,
-                                            taper=(0.85, 1.1))], yaw_deg=YAW_DEG)
-    z = SHOULDER_Z - UPPER - 13.0
-    FW.panel_lines(rig, "fore_r", ff, [[FW.sc(ff, -1.0, z + 10.0, ARM_Y["r"] - 8.0), FW.sc(ff, -1.6, z - 6.0,
-                                                                                          ARM_Y["r"] - 8.6)]], w=1.0)
-    # the hip skirt in faulds; the tasset's team-dark seam
-    hf = FC.Face(rig, "hips", [Geo().blob((2.0, 0, HIP_Z + 2.0), (21.0, 22.0, 8.0), p=3.0, taper=(1.1, 1.0))],
-                 yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "hips", hf, [[FW.sc(hf, x, HIP_Z + 8.6, -20.4), FW.sc(hf, x, HIP_Z - 2.4, -21.6)]
-                                     for x in (-12.0, 1.0, 13.0)], w=1.0)
-    FW.wear(rig, "hips", hf, [(*FW.sc(hf, -6.0, HIP_Z - 2.6, -21.0), 1.8, 0.8), (*FW.sc(hf, 8.0, HIP_Z - 2.6, -21.0), 1.5, 0.7)])
-    # the legs: team-dark grooves round the thigh plates; the shin armour and the boots
-    for s_ in ("r", "l"):
-        y = LEG_Y[s_]
-        sg = 1 if s_ == "r" else -1
-        kz = HIP_Z - THIGH
-        for z0 in (HIP_Z - 8.0, HIP_Z - 17.0):
-            FW.band(rig, f"thigh_{s_}", (2.0, y - 1.5 * sg, HIP_Z - 12.0), (9.6, 8.8, 13.0), 2.8, z0, z0 + 0.9,
-                    team=True, taper=(0.8, 1.05))
-        FW.band(rig, f"shin_{s_}", (2.4, y, kz - 17.0), (8.4, 9.0, 15.0), 2.8, kz - 15.0, kz - 14.0,
-                fill=FW.LINE_ON_WHITE, taper=(0.85, 1.1))
-        a = ANK_REST
-        FW.band(rig, f"foot_{s_}", (4.0, y, a - 6.0), (13.0, 10.4, 6.4), 3.2, a - 4.4, a - 3.6, fill=FW.LINE_ON_WHITE,
-                taper=(1.0, 0.8))
-    kz = HIP_Z - THIGH
-    sf = FC.Face(rig, "shin_r", [Geo().blob((2.4, LEG_Y["r"], kz - 17.0), (8.4, 9.0, 15.0), p=2.8, taper=(0.85, 1.1))],
-                 yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "shin_r", sf, [[FW.sc(sf, 2.0, kz - 3.0, LEG_Y["r"] - 8.6), FW.sc(sf, 2.6, kz - 13.4,
-                                                                                         LEG_Y["r"] - 9.0)],
-                                       [FW.sc(sf, 2.6, kz - 16.4, LEG_Y["r"] - 9.0), FW.sc(sf, 2.0, kz - 30.0,
-                                                                                         LEG_Y["r"] - 8.4)]], w=1.0)
-    FW.wear(rig, "shin_r", sf, [(*FW.sc(sf, 8.4, kz - 28.0, LEG_Y["r"] - 7.0), 1.6, 0.8),
-                                (*FW.sc(sf, -4.0, kz - 6.0, LEG_Y["r"] - 7.4), 1.4, 0.7)])
-    tf = FC.Face(rig, "foot_r", [Geo().blob((4.0, LEG_Y["r"], ANK_REST - 6.0), (13.0, 10.4, 6.4), p=3.2,
-                                            taper=(1.0, 0.8))], yaw_deg=YAW_DEG)
-    FW.wear(rig, "foot_r", tf, [(*FW.sc(tf, 14.0, ANK_REST - 8.0, LEG_Y["r"] - 7.0), 1.8, 0.8)])
-    # the helm: a seam down its side, wear; a team-dark groove along the crest
-    hm = FC.Face(rig, "head", [Geo().blob((6.0, 0, 154.0), (14.0, 13.0, 14.0), p=2.6)], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "head", hm, [[FW.sc(hm, -2.0, 166.0, -10.6), FW.sc(hm, -3.0, 156.0, -12.6),
-                                      FW.sc(hm, -2.0, 145.0, -11.0)]], w=1.0)
-    FW.wear(rig, "head", hm, [(*FW.sc(hm, -8.0, 160.0, -10.0), 1.4, 0.7)])
-    # creases on the charcoal waist
-    wf = FC.Face(rig, "torso", [Geo().blob((0, 0, 86.0), (18.0, 18.0, 12.0), p=2.6)], yaw_deg=YAW_DEG)
-    FW.folds(rig, "torso", wf, [[FW.sc(wf, -12.0, 84.0, -14.0), FW.sc(wf, -2.0, 82.6, -17.6), FW.sc(wf, 9.0, 84.0, -15.0)]],
-             w=1.0, team=False, fill=FW.FOLD_ON_SUIT)
-
-
-def _damage_spots(rig):
-    """Damage spots (queue item 40 section 3.3, mech: dents and scratches, sparks and steam; never on the visor or
-    the dial): the team chest band, the near pauldron, the white chest, the halo ring, the near shin armour; sparks at
-    the gorget, steam from the power pack."""
-    rig.damage_spot_at("band", "torso", -6.0, 92.0, 7.0, "metal", team=True)
-    rig.damage_spot_at("pauldron", "arm_r", -2.0, 128.0, 7.0, "metal", team=True)
-    rig.damage_spot_at("chest", "torso", -12.0, 112.0, 7.0, "metal", fill=FW.ARMOR)
-    rig.damage_spot_at("halo", "halo", -36.0, 160.0, 6.0, "metal", fill=FW.ARMOR)
-    rig.damage_spot_at("shin", "shin_r", 3.0, 12.0, 6.0, "metal", fill=FW.ARMOR)
-    rig.damage_spot("neck", "torso", (8.0, -12.0, 139.0), 5.0, "spark", kind="emit", normal=(0.3, -0.9, 0.3))
-    rig.damage_spot("pack", "torso", (-24.0, -8.0, 134.0), 6.0, "steam", kind="emit", normal=(-0.4, 0, 0.9))
-
-
-def _bonnet(rig):
-    """The Grandfather Clock's crown: a walnut cornice over the helm, a broken swan-neck pediment (two scrolls rising
-    to brass rosettes) and three brass finials, the tallest in the middle."""
-    g = Geo().blob((5.0, 0, 167.0), (16.5, 10.0, 2.2), p=3.2)                                # cornice
-    g.blob((-4.4, 0, 173.6), (7.4, 4.2, 2.3), p=2.6, rot=(0, -38, 0))                      # scroll, back
-    g.blob((14.4, 0, 173.6), (7.4, 4.2, 2.3), p=2.6, rot=(0, 38, 0))                       # scroll, front
-    g.blob((5.0, 0, 170.0), (4.2, 5.0, 2.6), p=2.6)                                         # the plinth
-    rig.part("head", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
-    g = Geo()
-    for x in (-0.4, 10.4):
-        g.sphere((x, -4.4, 178.4), 2.4, cuts=3)                                            # rosettes
-    for x, z0, h, r in ((5.0, 172.6, 15.0, 2.6), (-11.0, 169.0, 9.0, 1.9), (21.0, 169.0, 9.0, 1.9)):
-        g.lathe([(0, 0), (r, 0.6), (r * 1.1, h * 0.25), (r * 0.6, h * 0.45), (r * 0.9, h * 0.55), (0.5, h * 0.8),
-                 (0, h)], (x, 0, z0), (x, 0, z0 + 1), segs=14)                               # urn and spike finials
-    rig.part("head", g, F.TRIM, finish="metal", outline=0.8)
-
-
-def _pendulum_case(rig):
-    """The Grandfather Clock's glazed pendulum case on the belly (turned toward the camera like the dial), its brass
-    frame, and the pendulum: a brass rod and a big brass bob."""
-    a = math.radians(-38)
-    px, py, pz = PEND
-    g = Geo().blob((px - 1.2, py + 1.0, pz - 9.0), (1.8, 7.2, 10.4), p=3.0, rot=(0, 0, -38))
-    rig.part("torso", g, F.TRIM, finish="metal", outline=0.8)                                # brass frame
-    g = Geo().blob((px - 0.6, py + 0.4, pz - 9.0), (1.6, 6.0, 9.2), p=3.0, rot=(0, 0, -38))
-    rig.part("torso", g, F.VISOR_DARK, finish="gloss", outline=0)                             # dark glass
-    n = (math.cos(a), math.sin(a))
-    rod = Geo().capsule((px + 0.6 * n[0], py + 0.6 * n[1], pz - 0.6), (px + 0.6 * n[0], py + 0.6 * n[1], pz - 12.0), 0.45)
-    bob = Geo().lathe([(0, -0.5), (3.4, -0.4), (3.6, 0), (3.4, 0.4), (0, 0.5)],
-                      (px + 0.4 * n[0], py + 0.4 * n[1], pz - 14.2), (px + 1.4 * n[0], py + 1.4 * n[1], pz - 14.2),
-                      segs=20)
-    rig.part("pendulum", rod, F.TRIM, finish="metal", outline=0.4)
-    rig.part("pendulum", bob, F.TRIM, finish="metal", outline=0.6)
 
 
 def _arm(rig, s):
@@ -464,8 +283,7 @@ def arms(ra, rf, rw, la=-70.0, lf=-40.0):
 
 def clock(step, fast=0.0):
     """Clock hands at a playback-independent step (the minute hand ticks 30 degrees)."""
-    return {"hand_min": {"rx": -30.0 * step - fast}, "hand_hour": {"rx": -60.0 - 2.5 * step - fast / 12},
-            "pendulum": {"r": 12.0 * math.sin(math.pi / 2 * step)}}
+    return {"hand_min": {"rx": -30.0 * step - fast}, "hand_hour": {"rx": -60.0 - 2.5 * step - fast / 12}}
 
 
 REST = arms(-80, -35, 55, -75, -30)
@@ -557,9 +375,9 @@ def _attack_clip():
              "color": F.MAGENTA, "white": 0.55, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
     inner = dict(swing, inner=(x + 2.0, y - 2.0, z + GUARD + 6.0), outer=(x + 4.0, y - 2.0, z + GUARD + BLADE * 0.4),
                  white=0.6, lines=0)
-    ov = {                                            # (W4: the outer crescent two-tone; the inner one stays light)
-        4: FW.smear_soft(dict(swing, **{"from": 3})) + [dict(inner, **{"from": 3})],
-        5: FW.smear_soft(dict(swing, **{"from": 4})) + [dict(inner, **{"from": 4})],
+    ov = {
+        4: [dict(swing, **{"from": 3}), dict(inner, **{"from": 3})],
+        5: [dict(swing, **{"from": 4}), dict(inner, **{"from": 4})],
         # impact: no swing smear here (painted over the frame it hid the level blade behind a
         # magenta wedge at game size); the blade, the tip burst and the dust carry the hit
         6: [{"kind": "burst", "joint": "blade", "point": TIP, "r0_lu": 10.0, "r1_lu": 22.0, "n": 7,
@@ -646,8 +464,7 @@ def _variant(name, pose_fn, smear):
             "color": "#DDE3E8"},
            {"kind": "dust", "ground": (-22.0, 0.0), "size_lu": 8.0, "puffs": 3, "seed": 112, "spread": 1.0,
             "color": "#DDE3E8", "dir": -1.0}]
-    sm = FW.smear_soft if smear.get("kind") == "arc" else (lambda sp: [sp])          # (W4: two-tone arcs)
-    ov = {4: sm(dict(smear, **{"from": 3})), 5: sm(dict(smear, **{"from": 4})), 6: hit,
+    ov = {4: [dict(smear, **{"from": 3})], 5: [dict(smear, **{"from": 4})], 6: hit,
           7: [{"kind": "rings", "joint": "torso", "point": DIAL, "radii_lu": (22.0, 32.0), "a0": -60.0, "a1": 60.0,
                "color": F.MAGENTA_CORE}]}
     return M.clip(name, [pose_fn(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=6, sequence=ATTACK_SEQ,

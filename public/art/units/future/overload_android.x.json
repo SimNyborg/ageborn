@@ -26,7 +26,7 @@
   },
   "overload_android_attack_b_01_team": {
    "frame": {
-    "x": 811,
+    "x": 809,
     "y": 114,
     "w": 54,
     "h": 77
@@ -74,7 +74,7 @@
   },
   "overload_android_attack_b_02_team": {
    "frame": {
-    "x": 610,
+    "x": 608,
     "y": 114,
     "w": 57,
     "h": 78
@@ -122,7 +122,7 @@
   },
   "overload_android_attack_b_03_team": {
    "frame": {
-    "x": 438,
+    "x": 437,
     "y": 114,
     "w": 53,
     "h": 80
@@ -170,9 +170,9 @@
   },
   "overload_android_attack_b_04_team": {
    "frame": {
-    "x": 495,
+    "x": 494,
     "y": 114,
-    "w": 50,
+    "w": 49,
     "h": 80
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 128,
     "y": 128,
-    "w": 50,
+    "w": 49,
     "h": 80
    },
    "sourceSize": {
@@ -218,7 +218,7 @@
   },
   "overload_android_attack_b_05_team": {
    "frame": {
-    "x": 325,
+    "x": 324,
     "y": 114,
     "w": 53,
     "h": 83
@@ -266,7 +266,7 @@
   },
   "overload_android_attack_b_06_team": {
    "frame": {
-    "x": 209,
+    "x": 208,
     "y": 114,
     "w": 53,
     "h": 86
@@ -314,7 +314,7 @@
   },
   "overload_android_attack_b_07_team": {
    "frame": {
-    "x": 266,
+    "x": 265,
     "y": 114,
     "w": 55,
     "h": 84
@@ -362,7 +362,7 @@
   },
   "overload_android_attack_b_08_team": {
    "frame": {
-    "x": 549,
+    "x": 547,
     "y": 114,
     "w": 57,
     "h": 79
@@ -410,7 +410,7 @@
   },
   "overload_android_attack_c_01_team": {
    "frame": {
-    "x": 382,
+    "x": 381,
     "y": 114,
     "w": 52,
     "h": 82
@@ -554,7 +554,7 @@
   },
   "overload_android_attack_c_04_team": {
    "frame": {
-    "x": 152,
+    "x": 151,
     "y": 114,
     "w": 53,
     "h": 87
@@ -602,7 +602,7 @@
   },
   "overload_android_attack_c_05_team": {
    "frame": {
-    "x": 869,
+    "x": 867,
     "y": 114,
     "w": 68,
     "h": 74
@@ -628,7 +628,7 @@
    "frame": {
     "x": 70,
     "y": 114,
-    "w": 78,
+    "w": 77,
     "h": 88
    },
    "rotated": false,
@@ -636,7 +636,7 @@
    "spriteSourceSize": {
     "x": 127,
     "y": 126,
-    "w": 78,
+    "w": 77,
     "h": 88
    },
    "sourceSize": {
@@ -650,7 +650,7 @@
   },
   "overload_android_attack_c_06_team": {
    "frame": {
-    "x": 941,
+    "x": 939,
     "y": 114,
     "w": 74,
     "h": 72
@@ -698,7 +698,7 @@
   },
   "overload_android_attack_c_07_team": {
    "frame": {
-    "x": 671,
+    "x": 669,
     "y": 114,
     "w": 71,
     "h": 77
@@ -746,7 +746,7 @@
   },
   "overload_android_attack_c_08_team": {
    "frame": {
-    "x": 746,
+    "x": 744,
     "y": 114,
     "w": 61,
     "h": 77
