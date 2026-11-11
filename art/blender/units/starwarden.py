@@ -25,9 +25,14 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
           forward and up at the target in a lunge; the bolt leaves the beacon with a star flash
   hit     light: the head snaps back, the beacon jolts, eyes > <
   die     D3 dizzy sit: spins, sits down hard with the legs out, spiral eyes, the staff in his lap
+
+W4 (the detail standard): the robe's team-dark pleats, the mantle's and the cape's folds, the hood's folds, the
+staff's seams, the legs' creases and seams; soldier damage spots; the bolt aimed up about 45 and 70 degrees on both
+casts (item 44: he hits air; `aimdata` measures the staff from the fist to the beacon).
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as FC
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_future as KF
@@ -37,6 +42,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "starwarden"
 GAIT_NAME = "biped"
@@ -46,6 +52,15 @@ CANVAS = (300, 300)
 FEET = (124, 262)
 ANCHORS = {"head": (2, 70), "hitCenter": (0, 30), "muzzle": (40, 48)}
 NO_RETIME = True
+
+# W4 detail standard (look.py)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = dict(FW.SHADE_SOLDIER, gradient=2.7, cavity=0.78)     # (r34: r28 sat at micro 4.20 / 3.92)
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SURGE_1, SURGE_2 = "#A4F2D6", "#C2F8E4"     # (r34) the surge's outer and middle heat (under MINT_CORE)
+FACE_LINE = "#3A2E58"                        # (r34) the faceplate's seams, a step over the visor black
+MATERIAL_KINDS = FW.kinds_cosmic()
 
 HR = (0.0, K.ARM_Y["r"], K.HAND_Z)
 STAFF_UP = 34.0                    # staff top above the fist
@@ -167,10 +182,80 @@ def build(rig):
                   bz + 6.8 * math.sin(math.radians(a)) * 0.45), 1.5, cuts=2)
     rig.part("halo", g, glow=K.MINT, outline=0.6, outline_hex="#1C8A6A")
     rig.joint("surge", "beacon", BEACON, hidden=True)
+    # (r34: the surge in three steps of heat toward a white heart on the camera's side: one pale disc was the
+    # flattest field of the attack frames)
     g = Geo().sphere((bx, by - 1.0, bz), 5.4, cuts=4)
-    rig.part("surge", g, glow=K.MINT_CORE, outline=1.2, outline_hex=K.MINT)
+    rig.part("surge", g, glow=SURGE_1, outline=1.2, outline_hex=K.MINT)
+    g = Geo().blob((bx - 0.6, by - 6.0, bz + 0.6), (3.6, 1.2, 3.6), p=2.2)
+    rig.part("surge", g, glow=SURGE_2, outline=0)
+    g = Geo().blob((bx - 1.0, by - 7.4, bz + 1.0), (1.8, 0.7, 1.8), p=2.2)
+    rig.part("surge", g, glow=K.MINT_CORE, outline=0)
     rig.track("muzzle", "beacon", (bx + 5.0, by, bz))
     K.star_burst(rig, "beacon", (bx + 4.0, by, bz), size=1.2, name="flash")
+    FW.cosmic_helmet(rig, "hood")
+    FW.cosmic_legs(rig, team_shin=True, boot_line=FW.LINE_ON_VIOLET)
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the robe's team-dark pleats (hem and hips), the robe top's fold, the mantle's and the cape's folds, seams
+    round the staff (char space; decals cast)."""
+    hem = FC.Face(rig, "hem", [Geo().blob((0.5, 0, 14.6), (12.4, 11.2, 6.2), p=2.6, taper=(1.25, 0.9))])
+    FW.folds(rig, "hem", hem, [[FW.sc(hem, x, 18.4, -10.2), FW.sc(hem, x - 0.6, 14.0, -12.0), FW.sc(hem, x - 1.2, 10.8, -12.6)]
+                               for x in (-6.0, 0.0, 5.6)], w=0.8, team=True)
+    hips = FC.Face(rig, "hips", [Geo().blob((0, 0, 20.0), (11.0, 10.6, 7.4), p=2.6, taper=(1.12, 0.95))])
+    FW.folds(rig, "hips", hips, [[FW.sc(hips, x, 25.0, -9.0), FW.sc(hips, x - 0.4, 19.0, -10.6)] for x in (-5.0, 2.0)],
+             w=0.8, team=True)
+    top = FC.Face(rig, "torso", [Geo().blob((0, 0, 28), (9.8, 9.6, 11.2), p=2.4, taper=(0.95, 1.05))])
+    FW.folds(rig, "torso", top, [[FW.sc(top, -4.6, 31.0, -8.6), FW.sc(top, -5.4, 27.0, -9.2), FW.sc(top, -4.8, 23.6, -9.0)]],
+             w=0.8, team=True)
+    man = FC.Face(rig, "torso", [Geo().blob((-1.0, 0, 36.0), (11.4, 12.6, 5.6), p=2.4, taper=(1.2, 0.8))])
+    FW.panel_lines(rig, "torso", man, [[FW.sc(man, x, 39.6, -10.4), FW.sc(man, x + 1.0, 33.0, -12.6)] for x in (-6.0, 1.0)],
+                   fill=FW.LINE_ON_VIOLET, w=0.75)
+    cape = FC.Face(rig, "cape", [Geo().blob((-10.6, 0.5, 29.0), (2.8, 11.4, 10.4), p=3.0, taper=(1.2, 0.9))])
+    FW.panel_lines(rig, "cape", cape, [[FW.sc(cape, -11.4, 36.0, -9.6), FW.sc(cape, -12.0, 27.0, -10.6),
+                                        FW.sc(cape, -12.6, 20.0, -10.6)]], fill=FW.LINE_ON_VIOLET, w=0.75)
+    hx, hy, hz = HR
+    g = Geo()
+    for z in (hz - 6.0, hz + 18.0):
+        g.lathe([(0, -0.35), (1.62, -0.3), (1.62, 0.3), (0, 0.35)], (hx, hy, z), (hx, hy, z + 1), segs=12)
+    rig.part("staff", g, FW.LINE_ON_STAR, outline=0, highlight=False)
+    # (r34) the dark faceplate in the hood: a brow seam over the eyes and a cheek seam under them, a step over the
+    # visor's black (the face was one flat dark field in every frame)
+    fp = FC.Face(rig, "head", [Geo().blob((3.0, 0, 49.0), (9.6, 9.0, 9.6), p=2.4)])
+
+    def on_plate(x, z):
+        t_ = 1.0 - abs((x - 3.0) / 9.6) ** 2.4 - abs((z - 49.0) / 9.6) ** 2.4
+        return FW.sc(fp, x, z, -9.0 * max(t_, 0.0) ** (1 / 2.4))
+    FW.panel_lines(rig, "head", fp, [[on_plate(x, z) for x, z in ((6.0, 54.4), (9.0, 55.0), (11.6, 54.0))],
+                                     [on_plate(x, z) for x, z in ((6.4, 46.0), (9.0, 44.6), (11.4, 45.4))],
+                                     [on_plate(x, z) for x, z in ((11.2, 53.0), (11.8, 49.6), (11.0, 46.6))]],
+                   fill=FACE_LINE, w=0.8)
+    # (r34b) more of the hood's folds: over its crown, down its back and across the trailing tip (the deep violet hood
+    # was the largest flat field after the face)
+    hf = FC.Face(rig, "head", [Geo().blob((0.5, 0, 50.0), (12.4, 11.6, 12.6), p=2.4, shift=(-0.15, 0))])
+
+    def on_hood(x, z):
+        t_ = 1.0 - abs((x - 0.5) / 12.4) ** 2.4 - abs((z - 50.0) / 12.6) ** 2.4
+        return FW.sc(hf, x, z, -11.6 * max(t_, 0.0) ** (1 / 2.4))
+    FW.folds(rig, "head", hf, [[on_hood(x, z) for x, z in ((2.0, 60.6), (-2.4, 59.4), (-6.0, 56.6))],
+                               [on_hood(x, z) for x, z in ((-1.6, 56.0), (-3.6, 50.0), (-2.8, 43.6))],
+                               [on_hood(x, z) for x, z in ((-8.6, 58.0), (-10.4, 51.6))]],
+             w=0.8, team=False, fill=FW.LINE_ON_VIOLET)
+    tf = FC.Face(rig, "hood_tip", [Geo().blob((-6.0, 0, 58.0), (6.0, 6.0, 7.0), p=2.2, rot=(0, 30, 0))])
+    FW.folds(rig, "hood_tip", tf, [[FW.sc(tf, -3.0, 61.4, -5.2), FW.sc(tf, -7.6, 59.0, -5.4), FW.sc(tf, -10.4, 55.6, -4.8)]],
+             w=0.8, team=False, fill=FW.LINE_ON_VIOLET)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier: scorches and a torn robe): the hood, the mantle, the team
+    robe (a strip on the hem), the near team greave."""
+    rig.damage_spot_at("hood", "head", -6.0, 50.0, 5.0, "cloth", fill=K.VIOLET)
+    rig.damage_spot_at("mantle", "torso", -6.0, 35.0, 5.0, "cloth", fill=K.VIOLET)
+    rig.damage_spot("robe", "hem", (-2.0, -12.2, 13.6), 5.0, "cloth", kind="strip", team=True, normal=(0, -1, 0))
+    rig.damage_spot("greave", "shin_r", (1.9, -K.LEG_Y - 4.2, 8.8), 5.0, "metal", team=True, normal=(0, -1, 0))
 
 
 # -- poses -----------------------------------------------------------------------------------
@@ -240,14 +325,22 @@ LF = [-20, 10, 60, -10, -25, -20, -30, -38, -40, -40]
 EYES = ["eyes", "g_wide", "g_wide", "g_angry", "g_angry", "g_squint", "g_hurt", "eyes", "g_happy", "eyes"]
 
 
-def _attack_pose(f):
+# aimed shots (queue item 44, ageborn_art/aimed.py; W4): the staff turns `turn` degrees in the fist (the bolt leaves
+# the beacon along it), the body leans back a fifth of the turn and the hand rises a little with it
+AIM_LEAN = 0.2
+AIM_RISE = 0.06
+AIM_W = [0.0, 0.0, 0.3, 0.6, 1.0, 1.0, 0.6, 0.2, 0.0, 0.0]
+
+
+def _attack_pose(f, turn=0.0):
     if HAND[f] is not None:
-        arm = staff_at(HAND[f], WW[f] - TR[f])
+        hx_, hz_ = HAND[f]
+        arm = staff_at((hx_, hz_ + AIM_RISE * max(turn, 0.0)), WW[f] + turn - (TR[f] + AIM_LEAN * turn))
     else:
         arm = STANCE
     rz, hs = HALO[f]
     pose = merge(arm, K.arm("l", LA[f], LF[f]), {
-        "torso": {"r": TR[f]}, "head": {"r": HD[f]},
+        "torso": {"r": TR[f] + AIM_LEAN * turn}, "head": {"r": HD[f] + 0.2 * turn},
         "beacon": {"s": BEACON_S[f], "x": -2.5 if f == 6 else 0.0},
         "halo": {"rz": rz, "s": hs},
         "surge": {"show": f == 4},
@@ -263,8 +356,9 @@ def _attack_clip():
     ov = {
         2: [{"kind": "rings", "joint": "beacon", "point": BEACON, "radii_lu": (8.0, 11.5), "a0": -180.0,
              "a1": 180.0, "color": K.MINT_CORE}],
-        3: [{"kind": "arc", "joint": "staff", "inner": (HR[0], HR[1], HR[2] + STAFF_UP - 6.0), "outer": BEACON,
-             "color": K.MINT, "white": 0.35, "taper": 0.3, "lines": 2, "t0": 0.0, "t1": 1.0}],
+        3: FW.smear_soft({"kind": "arc", "joint": "staff", "inner": (HR[0], HR[1], HR[2] + STAFF_UP - 6.0),
+                          "outer": BEACON, "color": K.MINT, "white": 0.35, "taper": 0.3, "lines": 2, "t0": 0.0,
+                          "t1": 1.0}, band=0.5),
         4: [{"kind": "dust", "joint": "staff", "point": FOOT, "ground_snap": True, "size_lu": 5.5, "puffs": 4,
              "seed": 3, "spread": 1.1, "color": "#DCD6E8"},
             {"kind": "burst", "joint": "staff", "point": FOOT, "r0_lu": 4.0, "r1_lu": 9.0, "n": 5, "a0": 20.0,
@@ -289,10 +383,12 @@ B_T = [((5.0, 32.0), 70.0, 2, -0.5, 0.0, -0.03, 2, -4, -2, -6, 1.05, -60, -20, "
        ((11.0, 34.0), 44.0, -6, 5.0, -1.0, 0.02, 22, -16, -18, -10, 0.9, -74, -34, "g_happy")]
 
 
-def _b_pose(i):
+def _b_pose(i, turn=0.0):
     if i >= 7:
         return _attack_pose(i)
     hand, staff, tr, bx, bz, bq, thr, shr, thl, shl, bs, la, lf, eyes = B_T[i]
+    hand = (hand[0], hand[1] + AIM_RISE * max(turn, 0.0))
+    staff, tr = staff + turn, tr + AIM_LEAN * turn
     rz, hs = [(20, 1.0), (80, 1.1), (160, 1.25), (220, 1.2), (260, 1.3), (300, 1.3), (330, 1.1)][i]
     pose = merge(staff_at(hand, staff - tr), K.arm("l", la, lf), {
         "torso": {"r": tr}, "head": {"r": -0.5 * tr},
@@ -311,10 +407,13 @@ def _attack_b():
              "a1": 180.0, "color": K.MINT_CORE},
             {"kind": "dust", "ground": (-9.0, 0.0), "size_lu": 4.0, "puffs": 3, "seed": 41, "spread": 0.7,
              "color": "#DCD6E8", "dir": -1.0}],
-        3: [{"kind": "arc", "joint": "staff", "inner": (HR[0], HR[1], HR[2] + STAFF_UP - 6.0), "outer": BEACON,
-             "color": K.MINT, "white": 0.35, "taper": 0.3, "lines": 2, "from": 2, "t0": 0.0, "t1": 1.0}],
-        4: [{"kind": "arc", "joint": "staff", "inner": (HR[0], HR[1], HR[2] + STAFF_UP - 6.0), "outer": BEACON,
-             "color": K.MINT, "white": 0.35, "taper": 0.3, "lines": 2, "from": 3, "t0": 0.3, "t1": 1.0}],
+        # (r34: two-tone soft arcs: the full flat mint crescents held B's smear frames at flat 0.29, micro 3.1)
+        3: FW.smear_soft({"kind": "arc", "joint": "staff", "inner": (HR[0], HR[1], HR[2] + STAFF_UP - 6.0),
+                          "outer": BEACON, "color": K.MINT, "white": 0.35, "taper": 0.3, "lines": 2, "from": 2,
+                          "t0": 0.0, "t1": 1.0}, band=0.5),
+        4: FW.smear_soft({"kind": "arc", "joint": "staff", "inner": (HR[0], HR[1], HR[2] + STAFF_UP - 6.0),
+                          "outer": BEACON, "color": K.MINT, "white": 0.35, "taper": 0.3, "lines": 2, "from": 3,
+                          "t0": 0.3, "t1": 1.0}, band=0.5),
         5: [{"kind": "burst", "joint": "beacon", "point": (BEACON[0] + 4.0, BEACON[1], BEACON[2]), "r0_lu": 8.0,
              "r1_lu": 14.0, "n": 6, "a0": -70.0, "arc": 140.0, "color": K.MINT_CORE},
             {"kind": "dust", "ground": (14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 42, "spread": 0.9,
@@ -358,4 +457,10 @@ def clips():
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_variants(M.check_contract(cl, attack_ms=832, attack_impact_at=0.5))
+    attack, attack_b = cl[2], cl[3]
+    # aimed up about 45 and 70 degrees at flyers (he hits air): both casts
+    aimed = (AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("up45", "up70")) +
+             AIMED.variants(RIG, attack_b, _b_pose, AIM_W, aims=("up45", "up70")))
+    for v in aimed:
+        AIMED.check_timing(attack_b if v.name.startswith("attack_b_") else attack, v)
+    return M.check_variants(M.check_contract(cl + aimed, attack_ms=832, attack_impact_at=0.5))

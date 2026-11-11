@@ -21,6 +21,7 @@ the drones are summons the game launches on their own timer, so the idle opens t
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as FC
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_future_wave as W
@@ -30,6 +31,7 @@ from ageborn_art import rigs_future as F
 from ageborn_art import rigs_modern as R
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "drone_carrier"
 GAIT_NAME = "tracked"
@@ -40,6 +42,15 @@ CANVAS = (620, 520)
 FEET = (300, 470)
 ANCHORS = {"head": (30, 120), "hitCenter": (0, 50)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the machines' lifts (W3's SHADE_BIG) on the white hull, in the W4 white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.6           # (as the Particle Cannon: white hubs and grousers read 0.113 at 0.8)
+LOOK_SHADE = FW.SHADE_BIG
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5)
+SKIN_PALETTE = FW.KIT_WHITE
+MATERIAL_KINDS = FW.kinds_future({"#1E2128": "polymer", "#2A2E37": "polymer", "#7E8794": "iron", "#B8BEC8": "iron",
+                                  "#959DAA": "iron"})
 
 TR_R = 15.0
 TX0, TX1 = -58.0, 58.0
@@ -55,9 +66,12 @@ MUZZLE = (TURRET[0] + 26.0, TURRET[1] - 1.0, TURRET[2] + 9.0)
 ISLAND = (-38.0, 6.0, DECK_Z)
 HATCH = (-2.0, 0.0, DECK_Z + 1.0)
 _W = {}
+RIG = None
 
 
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("odo", "root", (0, 0, 0))
     rig.joint("hull", "body", (0, 0, 30.0))
@@ -139,7 +153,7 @@ def build(rig):
     rig.joint("guns", "turret", (tx + 8.0, ty, tz + 9.0))
     g = Geo().capsule((tx + 8.0, ty - 3.0, tz + 9.0), (MUZZLE[0] - 2.0, ty - 3.0, tz + 9.0), 1.6)
     g.capsule((tx + 8.0, ty + 3.0, tz + 9.0), (MUZZLE[0] - 2.0, ty + 3.0, tz + 9.0), 1.6)
-    rig.part("guns", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("guns", g, FW.GUN_LT, finish="gloss", outline_hex=F.TRIM)              # (W4: the light gun grey)
     g = Geo().lathe([(1.0, 0), (3.0, 0.2), (3.0, 1.6), (1.2, 1.8)], (MUZZLE[0] - 2.5, ty - 3.0, tz + 9.0), (MUZZLE[0], ty - 3.0, tz + 9.0), segs=14)
     rig.part("guns", g, F.MAGENTA)
     rig.joint("flash", "guns", MUZZLE, hidden=True)
@@ -154,9 +168,53 @@ def build(rig):
     F.puff(rig, "root", (0.0, -14.0, 40.0), size=4.0, name="smoke", color="#B9BEC6", spread=1.8)
     rig.joint("track", "body", (0, TY, 0))
     names, _ = R.tread(rig, "tn", "track", TX0, TX1, TR_R, TY, TW, PITCH, WHEELS, 6.4,
-                       color="#2A2E37", tooth="#A9B1BD", hub=F.ARMOR)
+                       color="#2A2E37", tooth="#A9B1BD", hub=F.ARMOR)    # (W4 r23 drew them a step darker for the
+    # highlight share, but a war machine has no highlight cap, and the darker grousers took the walk's moving-pixel
+    # share to 0.29 against check_walk's G6 floor 0.30: the shipped grousers and hubs again)
     _W["n"] = names
     rig.track("_foot", "odo", (0, 0, 0))
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the detail standard (char space; decals cast at the unit's yaw): the white hull in plates (seams down its
+    flank) with chipped edges and a rivet row; the team side armour in plates (team-dark seams and a rim between the
+    hexes); the island in decks (team-dark bands); a seam round the bridge and the turret."""
+    hull = Geo().blob((2.0, 0, 46.0), (68.0, 23.0, 7.0), p=3.0, taper=(1.0, 0.9))
+    hf = FC.Face(rig, "hull", [hull], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", hf, [[FW.sc(hf, x, 51.6, -19.0), FW.sc(hf, x, 47.0, -22.4), FW.sc(hf, x, 41.6, -21.6)]
+                                     for x in (-46.0, -24.0, -2.0, 20.0, 42.0)], w=1.0)
+    FW.wear(rig, "hull", hf, [(*FW.sc(hf, x, z, -21.0), 1.8, 0.8) for x, z in ((-58.0, 49.0), (-12.0, 50.4), (31.0, 49.6),
+                                                                              (55.0, 48.4))])
+    FW.rivets(rig, "hull", hf, FW.rivet_line(FW.sc(hf, -56.0, 49.6, -21.6), FW.sc(hf, 52.0, 49.6, -21.6), 13), r=0.9,
+              fill=FW.GUN_SEAM)
+    side = Geo().blob((0, -24.0, 38.0), (58.0, 2.6, 8.0), p=3.2)
+    sk = FC.Face(rig, "hull", [side], yaw_deg=YAW_DEG)
+    FW.folds(rig, "hull", sk, [[FW.sc(sk, x, 45.0, -26.4), FW.sc(sk, x, 31.0, -26.4)] for x in (-38.0, 3.0, 40.0)],
+             w=1.1, team=True)
+    FW.band(rig, "hull", (0, -24.0, 38.0), (58.0, 2.6, 8.0), 3.2, 44.6, 45.5, team=True)
+    ix, iy, iz = ISLAND
+    for z0 in (iz + 12.0, iz + 26.0):
+        FW.band(rig, "hull", (ix, iy, iz + 22.0), (12.0, 10.0, 22.0), 2.6, z0, z0 + 1.0, team=True, taper=(0.85, 1.0))
+    FW.band(rig, "hull", (56.0, 0, DECK_Z + 4.0), (12.0, 18.0, 9.0), 2.6, DECK_Z + 0.4, DECK_Z + 1.2,
+            fill=FW.LINE_ON_WHITE)
+    tx, ty, tz = TURRET
+    FW.band(rig, "turret", (tx, ty, tz + 6.0), (11.0, 10.0, 7.0), 2.4, tz + 3.0, tz + 3.8, fill=FW.LINE_ON_WHITE,
+            taper=(1.0, 0.8))
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, vehicle: dents and scorches; the vehicle burns), measured in the posed
+    frames: the team side armour, the white hull, the island, the bridge; smoke (and fire) from the exhausts and the
+    deck."""
+    rig.damage_spot_at("side", "hull", -30.0, 32.0, 8.0, "metal", team=True)
+    rig.damage_spot_at("hull", "hull", 10.0, 40.0, 7.0, "metal", fill=FW.ARMOR)
+    rig.damage_spot_at("island", "hull", -36.0, 70.0, 7.0, "metal", team=True)
+    rig.damage_spot_at("bridge", "hull", 58.0, 54.0, 6.0, "metal", fill=FW.ARMOR)
+    rig.damage_spot("exhaust", "hull", (-68.0, 8.0, 48.0), 6.0, "smoke", kind="emit", normal=(-0.7, 0, 0.7))
+    rig.damage_spot("deck", "hull", (14.0, 0.0, DECK_Z + 1.0), 8.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 def _tracks(step, moving=True):
@@ -206,9 +264,17 @@ A_GR = [0, 2, 3, 3, 3, 8, 4, 0]
 A_GX = [0, 0, 0, 0, -2.5, -1.0, 0, 0]
 
 
-def _a_pose(f):
+# aimed down at the ground row in front (queue item 44, ageborn_art/aimed.py; W4): the turret's guns tip down by
+# `turn` (negative), the turret itself leaning a quarter of it into the shot
+AIM_TURRET = 0.25
+#        swing aim HOLD aim2 FIRE kick back settle
+AIM_W = [0.3, 0.8, 1.0, 1.0, 1.0, 0.8, 0.5, 0.0]
+
+
+def _a_pose(f, turn=0.0):
     pose = merge(_tracks(0, False), {
-        "turret": {"r": [0, 1, 1, 1, 0, -1, 0, 0][f]}, "guns": {"r": A_GR[f], "x": A_GX[f]},
+        "turret": {"r": [0, 1, 1, 1, 0, -1, 0, 0][f] + AIM_TURRET * turn},
+        "guns": {"r": A_GR[f] + (1 - AIM_TURRET) * turn, "x": A_GX[f]},
         "flash": {"show": f == 4}, "hull": {"x": [0, 0, 0.3, 0.3, -1.0, -1.5, -0.5, 0][f]},
     })
     if f == 3:
@@ -259,15 +325,20 @@ def _die(k):
 
 
 def clips():
+    attack = M.clip("attack", [_a_pose(f) for f in range(8)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
+                    extra={"holdStep": 2})
+    # aimed down at the ground row in front (the extras sheet; B already tilts up at flyers)
+    aimed = AIMED.variants(RIG, attack, _a_pose, AIM_W, aims=("down",))
+    for v in aimed:
+        AIMED.check_timing(attack, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [150, 150, 150, 150, 150, 150], loop=True),
         _walk_clip(),
-        M.clip("attack", [_a_pose(f) for f in range(8)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
-               extra={"holdStep": 2}),
+        attack,
         M.clip("attack_b", [_b_pose(f) for f in range(8)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=_ov(),
                extra={"holdStep": 2}),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in M.HEAVY_DIE_KEEP], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
-    ]
+    ] + aimed
     return M.check_variants(M.check_contract(cl, heavy=True, attack_ms=500, attack_impact_at=0.5))

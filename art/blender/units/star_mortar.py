@@ -19,7 +19,12 @@ Animation (ANIM_SPEC G1 jog at card 60 x 1.25 = 75 lu/s, appendix B artillery; t
             shot kicks him down onto his heel
   hit       light: the head snaps back, eyes > <
   die       D1 fling and spin, the tube flung away, X eyes
+
+W4 (the detail standard): the Cosmic body's plates and seams, the dome's seam; the tube in plates (seams round it
+and its bell, bolts on the breech), the back rack's frame seams; soldier damage spots.
 """
+import math
+
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_cosmic_wave as W
 from ageborn_art import kit_future as KF
@@ -28,6 +33,8 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from ageborn_art import face as FC
+from units import futcos_w4 as FW
 
 SLUG = "star_mortar"
 GAIT_NAME = "biped"
@@ -37,6 +44,13 @@ CANVAS = (300, 280)
 FEET = (120, 246)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 32), "muzzle": (30, 58)}
 NO_RETIME = True
+
+# W4 detail standard (look.py). The crest is team and the frames' top: no white team rim on the colour layer
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42, team_white=0.0)
+MATERIAL_KINDS = FW.kinds_cosmic()
 
 G0 = (4.0, -15.0, 27.0)        # tube grip at rest (character space), the tube along +X above it
 TUBE_Z = 5.5                   # the tube axis sits this far above the grip
@@ -61,6 +75,13 @@ def _tube(rig, j):
     g = Geo().blob((gx + 0.5, gy + 1, gz - 1.0), (2.2, 2.0, 4.0), p=2.8, rot=(0, -12, 0))   # grip
     g.blob((gx + FORE, gy + 2, gz + 0.6), (2.0, 1.8, 3.2), p=2.8, rot=(0, -8, 0))   # fore grip
     rig.part(j, g, F.VOID_LT)
+    # (W4) seams round the tube between the rings and at the bell's neck, bolts round the breech
+    g = Geo()
+    for x, r in ((gx - 1.0, 4.62), (gx + 22.0, 4.46), (gx + 25.4, 6.9)):
+        g.lathe([(0, -0.35), (r, -0.3), (r, 0.3), (0, 0.35)], (x, gy, tz), (x + 1, gy, tz), segs=18)
+    rig.part(j, g, FW.LINE_ON_STAR, outline=0, highlight=False)
+    KF.rivets(rig, j, [(gx - 7.0 + 0.6, gy - 4.4 * math.cos(math.radians(a)), tz + 4.4 * math.sin(math.radians(a)))
+                       for a in (30, 90, 150)], r=0.7, color=F.STAR_TRIM)
 
 
 RIG = None
@@ -73,7 +94,9 @@ def build(rig):
     # back rack: three glowing shells in a frame
     g = Geo().blob((-13.5, 0, 31.0), (2.6, 8.6, 10.0), p=3.4)
     rig.part("torso", g, F.STAR, finish="gloss", outline_hex=F.STAR_TRIM)
-    g = Geo().blob((-14.0, 0, 40.6), (2.9, 8.8, 2.6), p=3.0)
+    # (W4 r36: the team cap a little taller, upward only, its front and back ends where they were: the raised tube
+    # covers the chest after the shot and attack 07 held 17.8% team, the floor 18%)
+    g = Geo().blob((-14.0, 0, 41.4), (2.9, 8.8, 3.2), p=3.0)
     rig.part("torso", g, team=True, outline=0.6)
     for z in (25.0, 31.0, 37.0):
         g = Geo().star((-17.0, -3.0, z), 3.0, 1.3, 1.4, points=5)
@@ -97,6 +120,23 @@ def build(rig):
     rig.part("held_shell", g, glow=W.MINT_CORE, outline=0.8, outline_hex=W.MINT)
     rig.track("muzzle", "tube", MUZZLE)
     KI.loose(rig, "tube_loose", G0, lambda j: _tube(rig, j))
+    FW.cosmic_helmet(rig, "dome")
+    FW.cosmic_body(rig)
+    rf = FC.Face(rig, "torso", [Geo().blob((-13.5, 0, 31.0), (2.6, 8.6, 10.0), p=3.4)])
+    FW.panel_lines(rig, "torso", rf, [[FW.sc(rf, -13.6, z, -8.4), FW.sc(rf, -15.6, z, -7.4)] for z in (28.0, 34.0)],
+                   fill=FW.LINE_ON_STAR, w=0.7)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier): the violet dome, the near team pad, the violet hip skirt, the
+    back rack's frame, the near team greave."""
+    rig.damage_spot_at("helmet", "head", -6.0, 48.0, 5.0, "metal", fill=F.VIOLET)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("skirt", "hips", -4.0, 15.6, 5.0, "metal", fill=F.VIOLET_DK)
+    rig.damage_spot("rack", "torso", (-14.0, -8.0, 30.0), 5.0, "metal", normal=(-0.3, -0.95, 0))
+    rig.damage_spot("greave", "shin_r", (1.9, -F.LEG_Y - 4.2, 8.8), 5.0, "metal", team=True, normal=(0, -1, 0))
 
 
 def hold(gx, gz, deg):
