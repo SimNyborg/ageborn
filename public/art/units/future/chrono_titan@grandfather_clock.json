@@ -1,0 +1,2505 @@
+{
+ "frames": {
+  "chrono_titan@grandfather_clock_idle_00": {
+   "frame": {
+    "x": 188,
+    "y": 2,
+    "w": 142,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 176,
+    "w": 142,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_00_team": {
+   "frame": {
+    "x": 863,
+    "y": 1185,
+    "w": 109,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 179,
+    "w": 109,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_01": {
+   "frame": {
+    "x": 2,
+    "y": 607,
+    "w": 142,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 177,
+    "w": 142,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_01_team": {
+   "frame": {
+    "x": 1068,
+    "y": 761,
+    "w": 109,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 180,
+    "w": 109,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_02": {
+   "frame": {
+    "x": 293,
+    "y": 1035,
+    "w": 142,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 179,
+    "w": 142,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_02_team": {
+   "frame": {
+    "x": 866,
+    "y": 1354,
+    "w": 108,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 181,
+    "w": 108,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_03": {
+   "frame": {
+    "x": 336,
+    "y": 1248,
+    "w": 139,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 179,
+    "w": 139,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_03_team": {
+   "frame": {
+    "x": 1306,
+    "y": 170,
+    "w": 107,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 182,
+    "w": 107,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_04": {
+   "frame": {
+    "x": 292,
+    "y": 821,
+    "w": 138,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 178,
+    "w": 138,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_04_team": {
+   "frame": {
+    "x": 1421,
+    "y": 169,
+    "w": 108,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 182,
+    "w": 108,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_05": {
+   "frame": {
+    "x": 2,
+    "y": 822,
+    "w": 139,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 177,
+    "w": 139,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_idle_05_team": {
+   "frame": {
+    "x": 1130,
+    "y": 552,
+    "w": 109,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 180,
+    "w": 109,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_00": {
+   "frame": {
+    "x": 479,
+    "y": 1062,
+    "w": 146,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 185,
+    "w": 146,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_00_team": {
+   "frame": {
+    "x": 1417,
+    "y": 336,
+    "w": 106,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 184,
+    "w": 106,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_01": {
+   "frame": {
+    "x": 807,
+    "y": 420,
+    "w": 152,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 188,
+    "w": 152,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_01_team": {
+   "frame": {
+    "x": 1178,
+    "y": 375,
+    "w": 109,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 188,
+    "w": 109,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_02": {
+   "frame": {
+    "x": 439,
+    "y": 854,
+    "w": 154,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 142,
+    "y": 184,
+    "w": 154,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_02_team": {
+   "frame": {
+    "x": 1193,
+    "y": 172,
+    "w": 109,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 184,
+    "w": 109,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_03": {
+   "frame": {
+    "x": 434,
+    "y": 643,
+    "w": 154,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 180,
+    "w": 154,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_03_team": {
+   "frame": {
+    "x": 750,
+    "y": 1423,
+    "w": 112,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 179,
+    "w": 112,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_04": {
+   "frame": {
+    "x": 2,
+    "y": 1252,
+    "w": 150,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 177,
+    "w": 150,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_04_team": {
+   "frame": {
+    "x": 750,
+    "y": 1248,
+    "w": 109,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 178,
+    "w": 109,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_05": {
+   "frame": {
+    "x": 144,
+    "y": 1037,
+    "w": 145,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 142,
+    "y": 176,
+    "w": 145,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_05_team": {
+   "frame": {
+    "x": 293,
+    "y": 643,
+    "w": 108,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 177,
+    "w": 108,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_06": {
+   "frame": {
+    "x": 690,
+    "y": 213,
+    "w": 140,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 182,
+    "w": 140,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_06_team": {
+   "frame": {
+    "x": 963,
+    "y": 412,
+    "w": 106,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 182,
+    "w": 106,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_07": {
+   "frame": {
+    "x": 597,
+    "y": 845,
+    "w": 134,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 185,
+    "w": 134,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_07_team": {
+   "frame": {
+    "x": 911,
+    "y": 624,
+    "w": 104,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 185,
+    "w": 104,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_08": {
+   "frame": {
+    "x": 479,
+    "y": 1268,
+    "w": 132,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 183,
+    "w": 132,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_08_team": {
+   "frame": {
+    "x": 972,
+    "y": 205,
+    "w": 102,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 183,
+    "w": 102,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_09": {
+   "frame": {
+    "x": 615,
+    "y": 1268,
+    "w": 131,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 181,
+    "w": 131,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_09_team": {
+   "frame": {
+    "x": 1073,
+    "y": 381,
+    "w": 101,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 179,
+    "w": 101,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_10": {
+   "frame": {
+    "x": 834,
+    "y": 208,
+    "w": 134,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 179,
+    "w": 134,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_10_team": {
+   "frame": {
+    "x": 1315,
+    "y": 2,
+    "w": 102,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 177,
+    "w": 102,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_11": {
+   "frame": {
+    "x": 546,
+    "y": 213,
+    "w": 140,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 178,
+    "w": 140,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_walk_11_team": {
+   "frame": {
+    "x": 1072,
+    "y": 929,
+    "w": 105,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 178,
+    "w": 105,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_00": {
+   "frame": {
+    "x": 2,
+    "y": 1037,
+    "w": 138,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 177,
+    "w": 138,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_00_team": {
+   "frame": {
+    "x": 1421,
+    "y": 2,
+    "w": 110,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 181,
+    "w": 110,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_01": {
+   "frame": {
+    "x": 543,
+    "y": 2,
+    "w": 166,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 181,
+    "w": 166,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_01_team": {
+   "frame": {
+    "x": 1243,
+    "y": 666,
+    "w": 115,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 188,
+    "w": 115,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_02": {
+   "frame": {
+    "x": 293,
+    "y": 431,
+    "w": 202,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 180,
+    "w": 202,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_02_team": {
+   "frame": {
+    "x": 1362,
+    "y": 666,
+    "w": 119,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 190,
+    "w": 119,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_03": {
+   "frame": {
+    "x": 334,
+    "y": 2,
+    "w": 205,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 38,
+    "y": 180,
+    "w": 205,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_03_team": {
+   "frame": {
+    "x": 1340,
+    "y": 982,
+    "w": 122,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 191,
+    "w": 122,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_04": {
+   "frame": {
+    "x": 2,
+    "y": 305,
+    "w": 228,
+    "h": 298
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 31,
+    "y": 90,
+    "w": 228,
+    "h": 298
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_04_team": {
+   "frame": {
+    "x": 954,
+    "y": 975,
+    "w": 114,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 178,
+    "w": 114,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 182,
+    "h": 299
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 89,
+    "w": 182,
+    "h": 299
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_05_team": {
+   "frame": {
+    "x": 1078,
+    "y": 205,
+    "w": 111,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 179,
+    "w": 111,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_06": {
+   "frame": {
+    "x": 881,
+    "y": 2,
+    "w": 206,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 190,
+    "w": 206,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_06_team": {
+   "frame": {
+    "x": 835,
+    "y": 1013,
+    "w": 115,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 186,
+    "w": 115,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_07": {
+   "frame": {
+    "x": 725,
+    "y": 629,
+    "w": 182,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 189,
+    "w": 182,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_07_team": {
+   "frame": {
+    "x": 951,
+    "y": 803,
+    "w": 113,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 185,
+    "w": 113,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_08": {
+   "frame": {
+    "x": 713,
+    "y": 2,
+    "w": 164,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 186,
+    "w": 164,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_08_team": {
+   "frame": {
+    "x": 1019,
+    "y": 589,
+    "w": 107,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 182,
+    "w": 107,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_09": {
+   "frame": {
+    "x": 372,
+    "y": 214,
+    "w": 170,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 180,
+    "w": 170,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_attack_09_team": {
+   "frame": {
+    "x": 976,
+    "y": 1143,
+    "w": 108,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 181,
+    "w": 108,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_hit_00": {
+   "frame": {
+    "x": 499,
+    "y": 426,
+    "w": 127,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 179,
+    "w": 127,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_hit_00_team": {
+   "frame": {
+    "x": 1362,
+    "y": 824,
+    "w": 118,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 188,
+    "w": 118,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_hit_01": {
+   "frame": {
+    "x": 592,
+    "y": 637,
+    "w": 129,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 181,
+    "w": 129,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_hit_01_team": {
+   "frame": {
+    "x": 1210,
+    "y": 983,
+    "w": 123,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 192,
+    "w": 123,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_hit_02": {
+   "frame": {
+    "x": 234,
+    "y": 218,
+    "w": 134,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 178,
+    "w": 134,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_hit_02_team": {
+   "frame": {
+    "x": 1291,
+    "y": 340,
+    "w": 112,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 184,
+    "w": 112,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_hit_03": {
+   "frame": {
+    "x": 145,
+    "y": 822,
+    "w": 143,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 142,
+    "y": 179,
+    "w": 143,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_hit_03_team": {
+   "frame": {
+    "x": 1091,
+    "y": 2,
+    "w": 107,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 179,
+    "w": 107,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_hit_04": {
+   "frame": {
+    "x": 148,
+    "y": 607,
+    "w": 141,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 178,
+    "w": 141,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_hit_04_team": {
+   "frame": {
+    "x": 1202,
+    "y": 2,
+    "w": 109,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 181,
+    "w": 109,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_00": {
+   "frame": {
+    "x": 156,
+    "y": 1251,
+    "w": 176,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 179,
+    "w": 176,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_00_team": {
+   "frame": {
+    "x": 1088,
+    "y": 1097,
+    "w": 118,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 187,
+    "w": 118,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_01": {
+   "frame": {
+    "x": 630,
+    "y": 422,
+    "w": 173,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 185,
+    "w": 173,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_01_team": {
+   "frame": {
+    "x": 978,
+    "y": 1311,
+    "w": 120,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 190,
+    "w": 120,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_02": {
+   "frame": {
+    "x": 629,
+    "y": 1051,
+    "w": 202,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 196,
+    "w": 202,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_02_team": {
+   "frame": {
+    "x": 1210,
+    "y": 827,
+    "w": 126,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 205,
+    "w": 126,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_03": {
+   "frame": {
+    "x": 735,
+    "y": 833,
+    "w": 212,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 213,
+    "w": 212,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 1466,
+    "w": 140,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 238,
+    "w": 140,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_04": {
+   "frame": {
+    "x": 1291,
+    "y": 504,
+    "w": 239,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 231,
+    "w": 239,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_04_team": {
+   "frame": {
+    "x": 1361,
+    "y": 1411,
+    "w": 168,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 257,
+    "w": 168,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_05": {
+   "frame": {
+    "x": 146,
+    "y": 1466,
+    "w": 253,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 259,
+    "w": 253,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_05_team": {
+   "frame": {
+    "x": 403,
+    "y": 1470,
+    "w": 183,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 265,
+    "w": 183,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_06": {
+   "frame": {
+    "x": 1210,
+    "y": 1138,
+    "w": 250,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 252,
+    "w": 250,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_06_team": {
+   "frame": {
+    "x": 1290,
+    "y": 1280,
+    "w": 182,
+    "h": 127
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 264,
+    "w": 182,
+    "h": 127
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_07": {
+   "frame": {
+    "x": 1102,
+    "y": 1415,
+    "w": 255,
+    "h": 130
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 262,
+    "w": 255,
+    "h": 130
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan@grandfather_clock_die_07_team": {
+   "frame": {
+    "x": 1102,
+    "y": 1280,
+    "w": 184,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 263,
+    "w": 184,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "chrono_titan@grandfather_clock_idle_00",
+   "chrono_titan@grandfather_clock_idle_01",
+   "chrono_titan@grandfather_clock_idle_02",
+   "chrono_titan@grandfather_clock_idle_03",
+   "chrono_titan@grandfather_clock_idle_04",
+   "chrono_titan@grandfather_clock_idle_05"
+  ],
+  "idle_team": [
+   "chrono_titan@grandfather_clock_idle_00_team",
+   "chrono_titan@grandfather_clock_idle_01_team",
+   "chrono_titan@grandfather_clock_idle_02_team",
+   "chrono_titan@grandfather_clock_idle_03_team",
+   "chrono_titan@grandfather_clock_idle_04_team",
+   "chrono_titan@grandfather_clock_idle_05_team"
+  ],
+  "walk": [
+   "chrono_titan@grandfather_clock_walk_00",
+   "chrono_titan@grandfather_clock_walk_01",
+   "chrono_titan@grandfather_clock_walk_02",
+   "chrono_titan@grandfather_clock_walk_03",
+   "chrono_titan@grandfather_clock_walk_04",
+   "chrono_titan@grandfather_clock_walk_05",
+   "chrono_titan@grandfather_clock_walk_06",
+   "chrono_titan@grandfather_clock_walk_07",
+   "chrono_titan@grandfather_clock_walk_08",
+   "chrono_titan@grandfather_clock_walk_09",
+   "chrono_titan@grandfather_clock_walk_10",
+   "chrono_titan@grandfather_clock_walk_11"
+  ],
+  "walk_team": [
+   "chrono_titan@grandfather_clock_walk_00_team",
+   "chrono_titan@grandfather_clock_walk_01_team",
+   "chrono_titan@grandfather_clock_walk_02_team",
+   "chrono_titan@grandfather_clock_walk_03_team",
+   "chrono_titan@grandfather_clock_walk_04_team",
+   "chrono_titan@grandfather_clock_walk_05_team",
+   "chrono_titan@grandfather_clock_walk_06_team",
+   "chrono_titan@grandfather_clock_walk_07_team",
+   "chrono_titan@grandfather_clock_walk_08_team",
+   "chrono_titan@grandfather_clock_walk_09_team",
+   "chrono_titan@grandfather_clock_walk_10_team",
+   "chrono_titan@grandfather_clock_walk_11_team"
+  ],
+  "attack": [
+   "chrono_titan@grandfather_clock_attack_00",
+   "chrono_titan@grandfather_clock_attack_01",
+   "chrono_titan@grandfather_clock_attack_02",
+   "chrono_titan@grandfather_clock_attack_03",
+   "chrono_titan@grandfather_clock_attack_04",
+   "chrono_titan@grandfather_clock_attack_05",
+   "chrono_titan@grandfather_clock_attack_06",
+   "chrono_titan@grandfather_clock_attack_07",
+   "chrono_titan@grandfather_clock_attack_08",
+   "chrono_titan@grandfather_clock_attack_09",
+   "chrono_titan@grandfather_clock_attack_09",
+   "chrono_titan@grandfather_clock_attack_00"
+  ],
+  "attack_team": [
+   "chrono_titan@grandfather_clock_attack_00_team",
+   "chrono_titan@grandfather_clock_attack_01_team",
+   "chrono_titan@grandfather_clock_attack_02_team",
+   "chrono_titan@grandfather_clock_attack_03_team",
+   "chrono_titan@grandfather_clock_attack_04_team",
+   "chrono_titan@grandfather_clock_attack_05_team",
+   "chrono_titan@grandfather_clock_attack_06_team",
+   "chrono_titan@grandfather_clock_attack_07_team",
+   "chrono_titan@grandfather_clock_attack_08_team",
+   "chrono_titan@grandfather_clock_attack_09_team",
+   "chrono_titan@grandfather_clock_attack_09_team",
+   "chrono_titan@grandfather_clock_attack_00_team"
+  ],
+  "hit": [
+   "chrono_titan@grandfather_clock_hit_00",
+   "chrono_titan@grandfather_clock_hit_01",
+   "chrono_titan@grandfather_clock_hit_02",
+   "chrono_titan@grandfather_clock_hit_03",
+   "chrono_titan@grandfather_clock_hit_04"
+  ],
+  "hit_team": [
+   "chrono_titan@grandfather_clock_hit_00_team",
+   "chrono_titan@grandfather_clock_hit_01_team",
+   "chrono_titan@grandfather_clock_hit_02_team",
+   "chrono_titan@grandfather_clock_hit_03_team",
+   "chrono_titan@grandfather_clock_hit_04_team"
+  ],
+  "die": [
+   "chrono_titan@grandfather_clock_die_00",
+   "chrono_titan@grandfather_clock_die_01",
+   "chrono_titan@grandfather_clock_die_01",
+   "chrono_titan@grandfather_clock_die_02",
+   "chrono_titan@grandfather_clock_die_03",
+   "chrono_titan@grandfather_clock_die_04",
+   "chrono_titan@grandfather_clock_die_04",
+   "chrono_titan@grandfather_clock_die_05",
+   "chrono_titan@grandfather_clock_die_05",
+   "chrono_titan@grandfather_clock_die_06",
+   "chrono_titan@grandfather_clock_die_06",
+   "chrono_titan@grandfather_clock_die_07"
+  ],
+  "die_team": [
+   "chrono_titan@grandfather_clock_die_00_team",
+   "chrono_titan@grandfather_clock_die_01_team",
+   "chrono_titan@grandfather_clock_die_01_team",
+   "chrono_titan@grandfather_clock_die_02_team",
+   "chrono_titan@grandfather_clock_die_03_team",
+   "chrono_titan@grandfather_clock_die_04_team",
+   "chrono_titan@grandfather_clock_die_04_team",
+   "chrono_titan@grandfather_clock_die_05_team",
+   "chrono_titan@grandfather_clock_die_05_team",
+   "chrono_titan@grandfather_clock_die_06_team",
+   "chrono_titan@grandfather_clock_die_06_team",
+   "chrono_titan@grandfather_clock_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "chrono_titan@grandfather_clock.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1536,
+   "h": 1600
+  },
+  "scale": "1.25",
+  "ageborn": {
+   "visualId": "unit.chrono_titan@grandfather_clock",
+   "name": "Chrono Titan",
+   "heightLu": 192,
+   "widthLu": 134.6,
+   "pxPerLu": 1.025,
+   "feetPx": [
+    202.0,
+    374.0
+   ],
+   "anchorsLu": {
+    "head": [
+     8,
+     186
+    ],
+    "hitCenter": [
+     0,
+     110
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "heavy",
+   "skinOf": "unit.chrono_titan",
+   "skin": "grandfather_clock",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        63.6,
+        157.8
+       ],
+       [
+        65.3,
+        156.5
+       ],
+       [
+        66.0,
+        153.4
+       ],
+       [
+        64.9,
+        151.7
+       ],
+       [
+        63.2,
+        153.1
+       ],
+       [
+        62.5,
+        156.1
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 12,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "durationsMs": [
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130
+     ],
+     "durationMs": 1560,
+     "gait": "heavy",
+     "gaitSpeedLuPerS": 43.8,
+     "cycleMs": 1560,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        76.2,
+        120.7
+       ],
+       [
+        79.6,
+        115.4
+       ],
+       [
+        83.1,
+        122.8
+       ],
+       [
+        83.7,
+        135.1
+       ],
+       [
+        78.8,
+        150.0
+       ],
+       [
+        73.1,
+        159.8
+       ],
+       [
+        70.6,
+        158.2
+       ],
+       [
+        67.0,
+        156.6
+       ],
+       [
+        65.4,
+        153.4
+       ],
+       [
+        66.1,
+        148.7
+       ],
+       [
+        66.8,
+        144.2
+       ],
+       [
+        70.4,
+        135.6
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 43.8,
+     "strideLu": 68.4,
+     "plantedDriftLu": 0.0,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        18.2,
+        -5.3
+       ]
+      },
+      {
+       "step": 6,
+       "foot": "l",
+       "atLu": [
+        24.5,
+        2.8
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      9,
+      0
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        58.5,
+        156.6
+       ],
+       [
+        -104.5,
+        21.8
+       ],
+       [
+        -141.2,
+        59.1
+       ],
+       [
+        -153.6,
+        86.8
+       ],
+       [
+        -29.1,
+        271.1
+       ],
+       [
+        116.3,
+        193.0
+       ],
+       [
+        139.6,
+        83.8
+       ],
+       [
+        136.3,
+        66.9
+       ],
+       [
+        111.1,
+        25.7
+       ],
+       [
+        102.6,
+        103.9
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        35.0,
+        176.7
+       ],
+       [
+        22.0,
+        183.2
+       ],
+       [
+        49.9,
+        167.3
+       ],
+       [
+        71.0,
+        147.2
+       ],
+       [
+        63.5,
+        155.6
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      7
+     ],
+     "durationsMs": [
+      60,
+      70,
+      80,
+      80,
+      60,
+      70,
+      80,
+      90,
+      90,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 990,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 740,
+       "offsetLu": [
+        0,
+        69.1
+       ],
+       "scale": 1.682
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 820,
+       "offsetLu": [
+        0,
+        105.6
+       ],
+       "loops": 2,
+       "scale": 1.297
+      }
+     ],
+     "hideUnitAtMs": 990,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        75.4,
+        163.4
+       ],
+       [
+        88.4,
+        153.7
+       ],
+       [
+        114.1,
+        123.0
+       ],
+       [
+        132.9,
+        93.7
+       ],
+       [
+        146.5,
+        78.2
+       ],
+       [
+        159.8,
+        58.0
+       ],
+       [
+        156.7,
+        67.2
+       ],
+       [
+        161.3,
+        51.2
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -2,8 +2,8 @@
  "frames": {
   "chrono_titan_attack_b_01": {
    "frame": {
-    "x": 861,
-    "y": 2,
+    "x": 2,
+    "y": 598,
     "w": 244,
     "h": 525
    },
@@ -26,8 +26,8 @@
   },
   "chrono_titan_attack_b_01_team": {
    "frame": {
-    "x": 675,
-    "y": 1749,
+    "x": 3035,
+    "y": 333,
     "w": 221,
     "h": 322
    },
@@ -50,7 +50,7 @@
   },
   "chrono_titan_attack_b_02": {
    "frame": {
-    "x": 592,
+    "x": 593,
     "y": 2,
     "w": 265,
     "h": 570
@@ -74,8 +74,8 @@
   },
   "chrono_titan_attack_b_02_team": {
    "frame": {
-    "x": 449,
-    "y": 1749,
+    "x": 2943,
+    "y": 666,
     "w": 222,
     "h": 326
    },
@@ -100,15 +100,15 @@
    "frame": {
     "x": 324,
     "y": 2,
-    "w": 264,
+    "w": 265,
     "h": 575
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 248,
+    "x": 247,
     "y": 201,
-    "w": 264,
+    "w": 265,
     "h": 575
    },
    "sourceSize": {
@@ -122,9 +122,9 @@
   },
   "chrono_titan_attack_b_03_team": {
    "frame": {
-    "x": 1787,
-    "y": 1407,
-    "w": 224,
+    "x": 2698,
+    "y": 2,
+    "w": 225,
     "h": 328
    },
    "rotated": false,
@@ -132,7 +132,7 @@
    "spriteSourceSize": {
     "x": 240,
     "y": 354,
-    "w": 224,
+    "w": 225,
     "h": 328
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "chrono_titan_attack_b_04_team": {
    "frame": {
-    "x": 2,
-    "y": 1749,
+    "x": 2811,
+    "y": 334,
     "w": 220,
     "h": 328
    },
@@ -194,8 +194,8 @@
   },
   "chrono_titan_attack_b_05": {
    "frame": {
-    "x": 1109,
-    "y": 2,
+    "x": 250,
+    "y": 598,
     "w": 411,
     "h": 509
    },
@@ -218,8 +218,8 @@
   },
   "chrono_titan_attack_b_05_team": {
    "frame": {
-    "x": 1095,
-    "y": 1407,
+    "x": 2477,
+    "y": 792,
     "w": 248,
     "h": 334
    },
@@ -242,8 +242,8 @@
   },
   "chrono_titan_attack_b_06": {
    "frame": {
-    "x": 1409,
-    "y": 598,
+    "x": 1559,
+    "y": 2,
     "w": 372,
     "h": 397
    },
@@ -266,8 +266,8 @@
   },
   "chrono_titan_attack_b_06_team": {
    "frame": {
-    "x": 868,
-    "y": 1407,
+    "x": 2250,
+    "y": 800,
     "w": 223,
     "h": 335
    },
@@ -290,17 +290,17 @@
   },
   "chrono_titan_attack_b_07": {
    "frame": {
-    "x": 1060,
-    "y": 598,
-    "w": 345,
+    "x": 1386,
+    "y": 406,
+    "w": 346,
     "h": 399
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 327,
+    "x": 326,
     "y": 378,
-    "w": 345,
+    "w": 346,
     "h": 399
    },
    "sourceSize": {
@@ -314,9 +314,9 @@
   },
   "chrono_titan_attack_b_07_team": {
    "frame": {
-    "x": 214,
-    "y": 1407,
-    "w": 228,
+    "x": 1598,
+    "y": 809,
+    "w": 227,
     "h": 336
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 318,
     "y": 370,
-    "w": 228,
+    "w": 227,
     "h": 336
    },
    "sourceSize": {
@@ -338,8 +338,8 @@
   },
   "chrono_titan_attack_b_08": {
    "frame": {
-    "x": 2,
-    "y": 598,
+    "x": 862,
+    "y": 2,
     "w": 363,
     "h": 404
    },
@@ -362,8 +362,8 @@
   },
   "chrono_titan_attack_b_08_team": {
    "frame": {
-    "x": 1347,
-    "y": 1407,
+    "x": 1025,
+    "y": 817,
     "w": 222,
     "h": 333
    },
@@ -386,8 +386,8 @@
   },
   "chrono_titan_attack_c_01": {
    "frame": {
-    "x": 730,
-    "y": 598,
+    "x": 1229,
+    "y": 2,
     "w": 326,
     "h": 400
    },
@@ -410,8 +410,8 @@
   },
   "chrono_titan_attack_c_01_team": {
    "frame": {
-    "x": 900,
-    "y": 1749,
+    "x": 3150,
+    "y": 2,
     "w": 224,
     "h": 321
    },
@@ -434,8 +434,8 @@
   },
   "chrono_titan_attack_c_02": {
    "frame": {
-    "x": 1128,
-    "y": 1006,
+    "x": 2345,
+    "y": 2,
     "w": 349,
     "h": 393
    },
@@ -458,8 +458,8 @@
   },
   "chrono_titan_attack_c_02_team": {
    "frame": {
-    "x": 1128,
-    "y": 1749,
+    "x": 3260,
+    "y": 327,
     "w": 232,
     "h": 320
    },
@@ -482,8 +482,8 @@
   },
   "chrono_titan_attack_c_03": {
    "frame": {
-    "x": 1481,
-    "y": 1006,
+    "x": 2452,
+    "y": 399,
     "w": 355,
     "h": 389
    },
@@ -506,8 +506,8 @@
   },
   "chrono_titan_attack_c_03_team": {
    "frame": {
-    "x": 1364,
-    "y": 1749,
+    "x": 3260,
+    "y": 651,
     "w": 239,
     "h": 317
    },
@@ -530,8 +530,8 @@
   },
   "chrono_titan_attack_c_04": {
    "frame": {
-    "x": 772,
-    "y": 1006,
+    "x": 2096,
+    "y": 401,
     "w": 352,
     "h": 395
    },
@@ -554,8 +554,8 @@
   },
   "chrono_titan_attack_c_04_team": {
    "frame": {
-    "x": 226,
-    "y": 1749,
+    "x": 2927,
+    "y": 2,
     "w": 219,
     "h": 327
    },
@@ -578,8 +578,8 @@
   },
   "chrono_titan_attack_c_05": {
    "frame": {
-    "x": 369,
-    "y": 598,
+    "x": 1025,
+    "y": 410,
     "w": 357,
     "h": 403
    },
@@ -602,9 +602,9 @@
   },
   "chrono_titan_attack_c_05_team": {
    "frame": {
-    "x": 661,
-    "y": 1407,
-    "w": 203,
+    "x": 2044,
+    "y": 804,
+    "w": 202,
     "h": 336
    },
    "rotated": false,
@@ -612,7 +612,7 @@
    "spriteSourceSize": {
     "x": 313,
     "y": 366,
-    "w": 203,
+    "w": 202,
     "h": 336
    },
    "sourceSize": {
@@ -626,8 +626,8 @@
   },
   "chrono_titan_attack_c_06": {
    "frame": {
-    "x": 362,
-    "y": 1006,
+    "x": 1935,
+    "y": 2,
     "w": 406,
     "h": 395
    },
@@ -650,8 +650,8 @@
   },
   "chrono_titan_attack_c_06_team": {
    "frame": {
-    "x": 2,
-    "y": 1407,
+    "x": 1386,
+    "y": 809,
     "w": 208,
     "h": 338
    },
@@ -674,8 +674,8 @@
   },
   "chrono_titan_attack_c_07": {
    "frame": {
-    "x": 2,
-    "y": 1006,
+    "x": 1736,
+    "y": 403,
     "w": 356,
     "h": 397
    },
@@ -698,8 +698,8 @@
   },
   "chrono_titan_attack_c_07_team": {
    "frame": {
-    "x": 446,
-    "y": 1407,
+    "x": 1829,
+    "y": 804,
     "w": 211,
     "h": 336
    },
@@ -722,8 +722,8 @@
   },
   "chrono_titan_attack_c_08": {
    "frame": {
-    "x": 1524,
-    "y": 2,
+    "x": 665,
+    "y": 576,
     "w": 356,
     "h": 405
    },
@@ -746,8 +746,8 @@
   },
   "chrono_titan_attack_c_08_team": {
    "frame": {
-    "x": 1573,
-    "y": 1407,
+    "x": 2729,
+    "y": 792,
     "w": 210,
     "h": 333
    },
@@ -833,8 +833,8 @@
   "image": "chrono_titan.x.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2048,
-   "h": 2080
+   "w": 3584,
+   "h": 1152
   },
   "scale": "2.5",
   "ageborn": {
