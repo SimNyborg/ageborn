@@ -209,3 +209,5 @@ what we believe, how sure we are, and what we post next because of it.
   judge the new voice; compare DV16 and the next Steve posts with DV13-DV15 over the week.
 - 2026-11-10: owner note: no subtitles, more developer dilemmas. Default devlog is now a dilemma: show option A and
   option B on the sim, the voice weighs them, viewers vote. Caption overlays removed from the template from DV18 on.
+- 2026-11-11: no post. DV18 (dilemma: hold the line or charge; 6 Bonkers vs the Elk, charge leaves 2, hold leaves 4)
+  is recorded; its narration call waited for an approval that the worker restart closed. Finish and post it next run.
