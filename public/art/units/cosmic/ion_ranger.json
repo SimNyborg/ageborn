@@ -2,18 +2,18 @@
  "frames": {
   "ion_ranger_idle_00": {
    "frame": {
-    "x": 893,
-    "y": 133,
+    "x": 671,
+    "y": 2,
     "w": 115,
-    "h": 96
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 87,
+    "y": 86,
     "w": 115,
-    "h": 96
+    "h": 97
    },
    "sourceSize": {
     "w": 283,
@@ -26,8 +26,8 @@
   },
   "ion_ranger_idle_00_team": {
    "frame": {
-    "x": 209,
-    "y": 334,
+    "x": 1225,
+    "y": 96,
     "w": 50,
     "h": 89
    },
@@ -50,18 +50,18 @@
   },
   "ion_ranger_idle_01": {
    "frame": {
-    "x": 1009,
-    "y": 2,
+    "x": 232,
+    "y": 215,
     "w": 114,
-    "h": 98
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 85,
+    "y": 84,
     "w": 114,
-    "h": 98
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -74,8 +74,8 @@
   },
   "ion_ranger_idle_01_team": {
    "frame": {
-    "x": 56,
-    "y": 334,
+    "x": 1198,
+    "y": 2,
     "w": 49,
     "h": 90
    },
@@ -98,18 +98,18 @@
   },
   "ion_ranger_idle_02": {
    "frame": {
-    "x": 341,
-    "y": 2,
+    "x": 2,
+    "y": 241,
     "w": 112,
-    "h": 101
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 88,
-    "y": 81,
+    "y": 80,
     "w": 112,
-    "h": 101
+    "h": 102
    },
    "sourceSize": {
     "w": 283,
@@ -122,8 +122,8 @@
   },
   "ion_ranger_idle_02_team": {
    "frame": {
-    "x": 631,
-    "y": 235,
+    "x": 1026,
+    "y": 100,
     "w": 48,
     "h": 93
    },
@@ -146,18 +146,18 @@
   },
   "ion_ranger_idle_03": {
    "frame": {
-    "x": 96,
-    "y": 2,
+    "x": 2,
+    "y": 133,
     "w": 111,
-    "h": 103
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 88,
-    "y": 79,
+    "y": 78,
     "w": 111,
-    "h": 103
+    "h": 104
    },
    "sourceSize": {
     "w": 283,
@@ -170,17 +170,17 @@
   },
   "ion_ranger_idle_03_team": {
    "frame": {
-    "x": 1103,
-    "y": 133,
-    "w": 50,
+    "x": 881,
+    "y": 202,
+    "w": 49,
     "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 89,
     "y": 74,
-    "w": 50,
+    "w": 49,
     "h": 96
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "ion_ranger_idle_04": {
    "frame": {
-    "x": 457,
-    "y": 2,
+    "x": 117,
+    "y": 109,
     "w": 112,
-    "h": 101
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 81,
+    "y": 80,
     "w": 112,
-    "h": 101
+    "h": 102
    },
    "sourceSize": {
     "w": 283,
@@ -218,8 +218,8 @@
   },
   "ion_ranger_idle_04_team": {
    "frame": {
-    "x": 683,
-    "y": 235,
+    "x": 1028,
+    "y": 197,
     "w": 48,
     "h": 93
    },
@@ -242,18 +242,18 @@
   },
   "ion_ranger_idle_05": {
    "frame": {
-    "x": 308,
-    "y": 133,
+    "x": 461,
+    "y": 105,
     "w": 114,
-    "h": 97
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 86,
+    "y": 85,
     "w": 114,
-    "h": 97
+    "h": 98
    },
    "sourceSize": {
     "w": 283,
@@ -266,8 +266,8 @@
   },
   "ion_ranger_idle_05_team": {
    "frame": {
-    "x": 1124,
-    "y": 235,
+    "x": 1081,
+    "y": 290,
     "w": 51,
     "h": 90
    },
@@ -290,18 +290,18 @@
   },
   "ion_ranger_walk_00": {
    "frame": {
-    "x": 228,
-    "y": 235,
+    "x": 818,
+    "y": 102,
     "w": 95,
-    "h": 95
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 89,
-    "y": 88,
+    "y": 87,
     "w": 95,
-    "h": 95
+    "h": 96
    },
    "sourceSize": {
     "w": 283,
@@ -314,8 +314,8 @@
   },
   "ion_ranger_walk_00_team": {
    "frame": {
-    "x": 640,
-    "y": 334,
+    "x": 1279,
+    "y": 95,
     "w": 43,
     "h": 87
    },
@@ -338,18 +338,18 @@
   },
   "ion_ranger_walk_01": {
    "frame": {
-    "x": 1028,
-    "y": 235,
+    "x": 985,
+    "y": 298,
     "w": 92,
-    "h": 90
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 93,
+    "y": 92,
     "w": 92,
-    "h": 90
+    "h": 91
    },
    "sourceSize": {
     "w": 283,
@@ -362,8 +362,8 @@
   },
   "ion_ranger_walk_01_team": {
    "frame": {
-    "x": 1033,
-    "y": 334,
+    "x": 1326,
+    "y": 93,
     "w": 40,
     "h": 84
    },
@@ -386,8 +386,8 @@
   },
   "ion_ranger_walk_02": {
    "frame": {
-    "x": 913,
-    "y": 2,
+    "x": 350,
+    "y": 208,
     "w": 92,
     "h": 99
    },
@@ -410,18 +410,18 @@
   },
   "ion_ranger_walk_02_team": {
    "frame": {
-    "x": 489,
-    "y": 334,
+    "x": 1305,
+    "y": 2,
     "w": 40,
-    "h": 88
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 84,
+    "y": 85,
     "w": 40,
-    "h": 88
+    "h": 87
    },
    "sourceSize": {
     "w": 283,
@@ -434,18 +434,18 @@
   },
   "ion_ranger_walk_03": {
    "frame": {
-    "x": 116,
-    "y": 133,
+    "x": 455,
+    "y": 2,
     "w": 94,
-    "h": 98
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 81,
+    "y": 80,
     "w": 94,
-    "h": 98
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -458,8 +458,8 @@
   },
   "ion_ranger_walk_03_team": {
    "frame": {
-    "x": 486,
-    "y": 235,
+    "x": 984,
+    "y": 200,
     "w": 40,
     "h": 94
    },
@@ -482,18 +482,18 @@
   },
   "ion_ranger_walk_04": {
    "frame": {
-    "x": 530,
-    "y": 235,
+    "x": 996,
+    "y": 2,
     "w": 97,
-    "h": 93
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 88,
+    "y": 87,
     "w": 97,
-    "h": 93
+    "h": 94
    },
    "sourceSize": {
     "w": 283,
@@ -506,8 +506,8 @@
   },
   "ion_ranger_walk_04_team": {
    "frame": {
-    "x": 981,
-    "y": 235,
+    "x": 1080,
+    "y": 195,
     "w": 43,
     "h": 91
    },
@@ -530,8 +530,8 @@
   },
   "ion_ranger_walk_05": {
    "frame": {
-    "x": 786,
-    "y": 235,
+    "x": 1078,
+    "y": 100,
     "w": 89,
     "h": 91
    },
@@ -554,17 +554,17 @@
   },
   "ion_ranger_walk_05_team": {
    "frame": {
-    "x": 985,
-    "y": 334,
-    "w": 44,
+    "x": 692,
+    "y": 305,
+    "w": 43,
     "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
+    "x": 91,
     "y": 88,
-    "w": 44,
+    "w": 43,
     "h": 84
    },
    "sourceSize": {
@@ -578,8 +578,8 @@
   },
   "ion_ranger_walk_06": {
    "frame": {
-    "x": 1012,
-    "y": 133,
+    "x": 905,
+    "y": 2,
     "w": 87,
     "h": 96
    },
@@ -602,8 +602,8 @@
   },
   "ion_ranger_walk_06_team": {
    "frame": {
-    "x": 386,
-    "y": 334,
+    "x": 881,
+    "y": 302,
     "w": 48,
     "h": 88
    },
@@ -626,18 +626,18 @@
   },
   "ion_ranger_walk_07": {
    "frame": {
-    "x": 214,
-    "y": 133,
+    "x": 446,
+    "y": 208,
     "w": 90,
-    "h": 98
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 80,
+    "y": 79,
     "w": 90,
-    "h": 98
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -650,8 +650,8 @@
   },
   "ion_ranger_walk_07_team": {
    "frame": {
-    "x": 160,
-    "y": 334,
+    "x": 1182,
+    "y": 191,
     "w": 45,
     "h": 90
    },
@@ -674,18 +674,18 @@
   },
   "ion_ranger_attack_00": {
    "frame": {
-    "x": 573,
+    "x": 226,
     "y": 2,
     "w": 111,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 84,
+    "y": 83,
     "w": 111,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 283,
@@ -698,8 +698,8 @@
   },
   "ion_ranger_attack_00_team": {
    "frame": {
-    "x": 879,
-    "y": 235,
+    "x": 1097,
+    "y": 2,
     "w": 48,
     "h": 91
    },
@@ -722,18 +722,18 @@
   },
   "ion_ranger_attack_01": {
    "frame": {
-    "x": 426,
-    "y": 133,
+    "x": 553,
+    "y": 2,
     "w": 114,
-    "h": 97
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 88,
-    "y": 86,
+    "y": 85,
     "w": 114,
-    "h": 97
+    "h": 98
    },
    "sourceSize": {
     "w": 283,
@@ -746,8 +746,8 @@
   },
   "ion_ranger_attack_01_team": {
    "frame": {
-    "x": 2,
-    "y": 334,
+    "x": 1171,
+    "y": 97,
     "w": 50,
     "h": 90
    },
@@ -770,18 +770,18 @@
   },
   "ion_ranger_attack_02": {
    "frame": {
-    "x": 773,
-    "y": 133,
+    "x": 579,
+    "y": 104,
     "w": 116,
-    "h": 96
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 88,
-    "y": 87,
+    "y": 86,
     "w": 116,
-    "h": 96
+    "h": 97
    },
    "sourceSize": {
     "w": 283,
@@ -794,8 +794,8 @@
   },
   "ion_ranger_attack_02_team": {
    "frame": {
-    "x": 263,
-    "y": 334,
+    "x": 1251,
+    "y": 2,
     "w": 50,
     "h": 89
    },
@@ -818,8 +818,8 @@
   },
   "ion_ranger_attack_03": {
    "frame": {
-    "x": 642,
-    "y": 133,
+    "x": 639,
+    "y": 205,
     "w": 127,
     "h": 96
    },
@@ -842,17 +842,17 @@
   },
   "ion_ranger_attack_03_team": {
    "frame": {
-    "x": 931,
-    "y": 334,
-    "w": 50,
+    "x": 639,
+    "y": 305,
+    "w": 49,
     "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 93,
     "y": 87,
-    "w": 50,
+    "w": 49,
     "h": 85
    },
    "sourceSize": {
@@ -866,18 +866,18 @@
   },
   "ion_ranger_attack_04": {
    "frame": {
-    "x": 211,
+    "x": 96,
     "y": 2,
     "w": 126,
-    "h": 102
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 88,
-    "y": 81,
+    "y": 80,
     "w": 126,
-    "h": 102
+    "h": 103
    },
    "sourceSize": {
     "w": 283,
@@ -890,8 +890,8 @@
   },
   "ion_ranger_attack_04_team": {
    "frame": {
-    "x": 436,
-    "y": 235,
+    "x": 934,
+    "y": 200,
     "w": 46,
     "h": 94
    },
@@ -914,18 +914,18 @@
   },
   "ion_ranger_attack_05": {
    "frame": {
-    "x": 544,
-    "y": 133,
-    "w": 94,
-    "h": 97
+    "x": 540,
+    "y": 207,
+    "w": 95,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 78,
-    "y": 79,
-    "w": 94,
-    "h": 97
+    "x": 77,
+    "y": 78,
+    "w": 95,
+    "h": 98
    },
    "sourceSize": {
     "w": 283,
@@ -938,8 +938,8 @@
   },
   "ion_ranger_attack_05_team": {
    "frame": {
-    "x": 1179,
-    "y": 235,
+    "x": 1127,
+    "y": 195,
     "w": 51,
     "h": 90
    },
@@ -962,18 +962,18 @@
   },
   "ion_ranger_attack_06": {
    "frame": {
-    "x": 810,
-    "y": 334,
+    "x": 1282,
+    "y": 186,
     "w": 117,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 73,
-    "y": 97,
+    "y": 96,
     "w": 117,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 283,
@@ -986,8 +986,8 @@
   },
   "ion_ranger_attack_06_team": {
    "frame": {
-    "x": 128,
-    "y": 428,
+    "x": 350,
+    "y": 311,
     "w": 53,
     "h": 79
    },
@@ -1010,18 +1010,18 @@
   },
   "ion_ranger_attack_07": {
    "frame": {
-    "x": 2,
-    "y": 235,
+    "x": 790,
+    "y": 2,
     "w": 111,
-    "h": 95
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 81,
-    "y": 87,
+    "y": 86,
     "w": 111,
-    "h": 95
+    "h": 96
    },
    "sourceSize": {
     "w": 283,
@@ -1034,8 +1034,8 @@
   },
   "ion_ranger_attack_07_team": {
    "frame": {
-    "x": 438,
-    "y": 334,
+    "x": 1231,
+    "y": 189,
     "w": 47,
     "h": 88
    },
@@ -1058,18 +1058,18 @@
   },
   "ion_ranger_attack_08": {
    "frame": {
-    "x": 2,
-    "y": 133,
+    "x": 341,
+    "y": 2,
     "w": 110,
-    "h": 98
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 84,
+    "y": 83,
     "w": 110,
-    "h": 98
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -1082,17 +1082,17 @@
   },
   "ion_ranger_attack_08_team": {
    "frame": {
-    "x": 931,
-    "y": 235,
-    "w": 46,
+    "x": 1149,
+    "y": 2,
+    "w": 45,
     "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
+    "x": 88,
     "y": 80,
-    "w": 46,
+    "w": 45,
     "h": 91
    },
    "sourceSize": {
@@ -1106,18 +1106,18 @@
   },
   "ion_ranger_hit_00": {
    "frame": {
-    "x": 687,
-    "y": 334,
-    "w": 119,
-    "h": 85
+    "x": 1256,
+    "y": 281,
+    "w": 120,
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 74,
-    "y": 97,
-    "w": 119,
-    "h": 85
+    "x": 73,
+    "y": 96,
+    "w": 120,
+    "h": 86
    },
    "sourceSize": {
     "w": 283,
@@ -1130,8 +1130,8 @@
   },
   "ion_ranger_hit_00_team": {
    "frame": {
-    "x": 185,
-    "y": 428,
+    "x": 407,
+    "y": 311,
     "w": 58,
     "h": 78
    },
@@ -1154,8 +1154,8 @@
   },
   "ion_ranger_hit_01": {
    "frame": {
-    "x": 327,
-    "y": 235,
+    "x": 917,
+    "y": 102,
     "w": 105,
     "h": 94
    },
@@ -1178,8 +1178,8 @@
   },
   "ion_ranger_hit_01_team": {
    "frame": {
-    "x": 1193,
-    "y": 334,
+    "x": 1475,
+    "y": 2,
     "w": 53,
     "h": 82
    },
@@ -1202,18 +1202,18 @@
   },
   "ion_ranger_hit_02": {
    "frame": {
-    "x": 117,
-    "y": 235,
+    "x": 770,
+    "y": 203,
     "w": 107,
-    "h": 95
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 83,
-    "y": 87,
+    "y": 86,
     "w": 107,
-    "h": 95
+    "h": 96
    },
    "sourceSize": {
     "w": 283,
@@ -1226,8 +1226,8 @@
   },
   "ion_ranger_hit_02_team": {
    "frame": {
-    "x": 533,
-    "y": 334,
+    "x": 770,
+    "y": 303,
     "w": 50,
     "h": 87
    },
@@ -1250,18 +1250,18 @@
   },
   "ion_ranger_hit_03": {
    "frame": {
-    "x": 1127,
-    "y": 2,
+    "x": 233,
+    "y": 106,
     "w": 112,
-    "h": 98
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 85,
+    "y": 84,
     "w": 112,
-    "h": 98
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -1274,8 +1274,8 @@
   },
   "ion_ranger_hit_03_team": {
    "frame": {
-    "x": 109,
-    "y": 334,
+    "x": 1136,
+    "y": 289,
     "w": 47,
     "h": 90
    },
@@ -1298,18 +1298,18 @@
   },
   "ion_ranger_hit_04": {
    "frame": {
-    "x": 688,
-    "y": 2,
+    "x": 118,
+    "y": 215,
     "w": 110,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 83,
+    "y": 82,
     "w": 110,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 283,
@@ -1322,8 +1322,8 @@
   },
   "ion_ranger_hit_04_team": {
    "frame": {
-    "x": 735,
-    "y": 235,
+    "x": 934,
+    "y": 298,
     "w": 47,
     "h": 92
    },
@@ -1346,18 +1346,18 @@
   },
   "ion_ranger_die_00": {
    "frame": {
-    "x": 2,
-    "y": 428,
+    "x": 1349,
+    "y": 2,
     "w": 122,
-    "h": 81
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 79,
-    "y": 93,
+    "y": 92,
     "w": 122,
-    "h": 81
+    "h": 82
    },
    "sourceSize": {
     "w": 283,
@@ -1370,8 +1370,8 @@
   },
   "ion_ranger_die_00_team": {
    "frame": {
-    "x": 247,
-    "y": 428,
+    "x": 469,
+    "y": 311,
     "w": 55,
     "h": 76
    },
@@ -1394,17 +1394,17 @@
   },
   "ion_ranger_die_01": {
    "frame": {
-    "x": 802,
-    "y": 2,
-    "w": 107,
+    "x": 349,
+    "y": 105,
+    "w": 108,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 44,
+    "x": 43,
     "y": 57,
-    "w": 107,
+    "w": 108,
     "h": 99
    },
    "sourceSize": {
@@ -1418,8 +1418,8 @@
   },
   "ion_ranger_die_01_team": {
    "frame": {
-    "x": 1038,
-    "y": 428,
+    "x": 1380,
+    "y": 351,
     "w": 101,
     "h": 38
    },
@@ -1466,8 +1466,8 @@
   },
   "ion_ranger_die_02_team": {
    "frame": {
-    "x": 317,
-    "y": 334,
+    "x": 1187,
+    "y": 285,
     "w": 65,
     "h": 88
    },
@@ -1490,18 +1490,18 @@
   },
   "ion_ranger_die_03": {
    "frame": {
-    "x": 1157,
-    "y": 133,
+    "x": 699,
+    "y": 103,
     "w": 115,
-    "h": 95
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 69,
-    "y": 70,
+    "y": 69,
     "w": 115,
-    "h": 95
+    "h": 96
    },
    "sourceSize": {
     "w": 283,
@@ -1514,8 +1514,8 @@
   },
   "ion_ranger_die_03_team": {
    "frame": {
-    "x": 587,
-    "y": 334,
+    "x": 824,
+    "y": 303,
     "w": 49,
     "h": 87
    },
@@ -1538,8 +1538,8 @@
   },
   "ion_ranger_die_04": {
    "frame": {
-    "x": 1077,
-    "y": 334,
+    "x": 1370,
+    "y": 88,
     "w": 112,
     "h": 82
    },
@@ -1562,8 +1562,8 @@
   },
   "ion_ranger_die_04_team": {
    "frame": {
-    "x": 689,
-    "y": 428,
+    "x": 254,
+    "y": 318,
     "w": 76,
     "h": 51
    },
@@ -1586,17 +1586,17 @@
   },
   "ion_ranger_die_05": {
    "frame": {
-    "x": 306,
-    "y": 428,
-    "w": 131,
+    "x": 118,
+    "y": 319,
+    "w": 132,
     "h": 70
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 39,
+    "x": 38,
     "y": 112,
-    "w": 131,
+    "w": 132,
     "h": 70
    },
    "sourceSize": {
@@ -1610,10 +1610,10 @@
   },
   "ion_ranger_die_05_team": {
    "frame": {
-    "x": 940,
-    "y": 428,
+    "x": 2,
+    "y": 347,
     "w": 94,
-    "h": 42
+    "h": 41
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 33,
     "y": 138,
     "w": 94,
-    "h": 42
+    "h": 41
    },
    "sourceSize": {
     "w": 283,
@@ -1634,8 +1634,8 @@
   },
   "ion_ranger_die_06": {
    "frame": {
-    "x": 441,
-    "y": 428,
+    "x": 1403,
+    "y": 174,
     "w": 119,
     "h": 64
    },
@@ -1658,8 +1658,8 @@
   },
   "ion_ranger_die_06_team": {
    "frame": {
-    "x": 769,
-    "y": 428,
+    "x": 540,
+    "y": 309,
     "w": 81,
     "h": 48
    },
@@ -1682,8 +1682,8 @@
   },
   "ion_ranger_die_07": {
    "frame": {
-    "x": 564,
-    "y": 428,
+    "x": 1403,
+    "y": 242,
     "w": 121,
     "h": 55
    },
@@ -1706,8 +1706,8 @@
   },
   "ion_ranger_die_07_team": {
    "frame": {
-    "x": 854,
-    "y": 428,
+    "x": 1380,
+    "y": 301,
     "w": 82,
     "h": 46
    },
@@ -1833,8 +1833,8 @@
   "image": "ion_ranger.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 512
+   "w": 1536,
+   "h": 392
   },
   "scale": "1.5",
   "ageborn": {

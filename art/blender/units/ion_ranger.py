@@ -28,6 +28,7 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as FC
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_future as KF
@@ -37,6 +38,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "ion_ranger"
 GAIT_NAME = "biped"
@@ -46,6 +48,13 @@ CANVAS = (330, 254)
 FEET = (104, 212)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 32), "muzzle": (60, 28)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the soldiers' lifts on the Cosmic violet and star-white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+MATERIAL_KINDS = FW.kinds_cosmic()
 
 G0 = (4.0, -15.0, 27.0)      # rifle grip at rest (character space); the rifle is a torso child
 L = 56.0                     # grip to the emitter tip
@@ -175,6 +184,30 @@ def build(rig):
     g = Geo().sphere((mx + 2.0, my - 4.5, mz), 3.6, cuts=3)
     rig.part("flash", g, glow=K.MINT_CORE, outline=0)
     K.puff(rig, "gun", (gx + 28, y1, gz + 9.0), size=0.9, name="vent")
+    # (W4) seams round the barrel between the coils and along the receiver
+    g = Geo()
+    for cx in (21.5, 35.5, 46.0):
+        g.lathe([(0, -0.3), (2.45, -0.25), (2.45, 0.25), (0, 0.3)], (gx + cx, y1, gz + 3.5), (gx + cx + 1, y1, gz + 3.5),
+                segs=12)
+    g.blob((gx + 8, y1 - 3.0, gz + 5.0), (9.0, 0.3, 0.35), p=3.0)
+    rig.part("gun", g, FW.LINE_ON_STAR, outline=0, highlight=False)
+    FW.cosmic_body(rig, team_shin=True, pad_r=(7.0, 6.0, 5.6))
+    hf = FC.Face(rig, "head", [Geo().blob((-1.0, 0, 53.0), (12.6, 12.4, 13.0), p=2.3, taper=(1.0, 0.7),
+                                          shift=(-0.25, 0))])
+    FW.folds(rig, "head", hf, [[FW.sc(hf, -4.0, 61.0, -9.6), FW.sc(hf, -7.0, 53.0, -11.6), FW.sc(hf, -6.4, 45.0, -11.4)],
+                               [FW.sc(hf, -10.6, 57.0, -8.0), FW.sc(hf, -12.0, 49.0, -8.2)]], w=0.8, team=True)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face): the team hood, the near team pad, the
+    pack's team band, the violet hip skirt, the near team greave."""
+    rig.damage_spot_at("hood", "head", -7.0, 50.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("pack", "torso", -11.4, 36.6, 5.0, "metal", team=True)
+    rig.damage_spot_at("skirt", "hips", -4.0, 15.0, 5.0, "metal", fill=K.VIOLET_DK)
+    rig.damage_spot("greave", "shin_r", (1.9, -K.LEG_Y - 4.2, 8.8), 5.0, "metal", team=True, normal=(0, -1, 0))
 
 
 # -- poses -----------------------------------------------------------------------------------
@@ -249,10 +282,28 @@ SHL = [0, -2, -6, -8, -6, -34, -4, 0, 0]
 EYES = ["eyes", "g_angry", "g_angry", "g_angry", "g_squint", "g_wide", "g_hurt", "eyes", "g_happy"]
 
 
-def _attack_pose(f):
-    pose = merge(hold(GX[f], GZ[f], DEG[f]), _lit(LIT[f]), {
-        "torso": {"r": TR[f]},
-        "head": {"r": HD[f], "x": 1.0 if f in (1, 2, 3, 4) else 0.0},
+# aimed shots (queue item 44, ageborn_art/aimed.py; W4): the Pulse Trooper's rule, a turn of `turn` degrees up raises
+# the rifle toward the cheek and leans the torso back (the torso carries the rifle, so its lean is part of the turn)
+AIM_LEAN = 0.22           # torso r per degree of turn (positive leans back)
+AIM_RISE = 0.10           # grip z per degree up (torso space, lu)
+AIM_DRAW = 0.05           # grip x per degree up (drawn back toward the shoulder)
+AIM_HEAD = 0.30           # head r per degree, on top of the torso's lean
+#        raise aim charge HOLD FIRE hop land vent settle
+AIM_W = [0.0, 0.6, 1.0, 1.0, 1.0, 0.8, 0.5, 0.2, 0.0]
+
+
+def _aim(gx, gz, deg, turn):
+    """The grip and the rifle's angle (torso space) turned `turn` degrees up, with the torso's lean taken out."""
+    if not turn:
+        return gx, gz, deg
+    up = max(0.0, turn)
+    return gx - AIM_DRAW * up, gz + AIM_RISE * up, deg + turn - AIM_LEAN * turn
+
+
+def _attack_pose(f, turn=0.0):
+    pose = merge(hold(*_aim(GX[f], GZ[f], DEG[f], turn)), _lit(LIT[f]), {
+        "torso": {"r": TR[f] + AIM_LEAN * turn},
+        "head": {"r": HD[f] + AIM_HEAD * turn, "x": 1.0 if f in (1, 2, 3, 4) else 0.0},
         "thigh_r": {"r": THR[f]}, "shin_r": {"r": SHR[f]},
         "thigh_l": {"r": THL[f]}, "shin_l": {"r": SHL[f]},
         "charge": {"show": CHG[f] > 0, "s": max(CHG[f], 0.01)},
@@ -351,12 +402,13 @@ C_LIT = [1, 3, 4, 0, 0, 0, 0]
 C_EYES = ["g_angry", "g_squint", "g_squint", "g_squint", "g_hurt", "g_angry", "eyes"]
 
 
-def _c_pose(i):
+def _c_pose(i, turn=0.0):
     if i in (0, 8):
-        return _attack_pose(i)
+        return _attack_pose(i, turn)
     k = i - 1
-    pose = merge(hold(C_GX[k], C_GZ[k], C_DEG[k]), _lit(C_LIT[k]), {
-        "torso": {"r": C_TR[k]}, "head": {"r": C_HR[k], "x": 1.0 if k in (1, 2, 3) else 0.0},
+    pose = merge(hold(*_aim(C_GX[k], C_GZ[k], C_DEG[k], turn)), _lit(C_LIT[k]), {
+        "torso": {"r": C_TR[k] + AIM_LEAN * turn},
+        "head": {"r": C_HR[k] + AIM_HEAD * turn, "x": 1.0 if k in (1, 2, 3) else 0.0},
         "charge": {"show": k in (1, 2), "s": 0.6 if k == 1 else 1.2},
         "flash": {"show": k == 3},
         "vent": {"show": k in (4, 5), "s": 1.0 if k == 4 else 1.2, "z": 0.0 if k == 4 else 3.0},
@@ -406,14 +458,21 @@ def _die(k):
 
 
 def clips():
+    attack, attack_c = _attack_clip(), _attack_c()
+    # aimed up about 45 and 70 degrees at flyers (the Ion Ranger hits air; the shoulder and kneeling shots, as the
+    # Pulse Trooper's; they go to the extras sheet)
+    aimed = (AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("up45", "up70")) +
+             AIMED.variants(RIG, attack_c, _c_pose, AIM_W, aims=("up45", "up70")))
+    for v in aimed:
+        AIMED.check_timing(attack_c if v.name.startswith("attack_c_") else attack, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
+        attack,
         _attack_b(),
-        _attack_c(),
+        attack_c,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed
     return M.check_variants(M.check_contract(cl, attack_ms=748, attack_impact_at=0.5))

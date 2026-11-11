@@ -27,6 +27,11 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
           orb bursts in a ring pulse at the tip
   hit     armoured: a dip behind the shaft, the helm clanks down, eyes > <
   die     D2 plank topple onto the back, the halberd falls away, the orb fizzles, X eyes
+  spear_set  (items 51/52, Brace's pose; the extras sheet) SET AGAINST THE CHARGE: down on the far knee with the
+          near foot planted forward, the halberd's butt grounded behind, the crescent and the orb levelled up at a
+          horse's chest (about 28 degrees); a held loop that breathes, the orb pulsing
+
+Art round W4: the detail standard (below), damage spots (item 40) and the `spear_set` pose clip.
 """
 import math
 
@@ -39,6 +44,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "graviton_halberdier"
 GAIT_NAME = "biped"
@@ -49,6 +55,17 @@ FEET = (150, 256)
 ANCHORS = {"head": (2, 70), "hitCenter": (0, 33)}
 NO_RETIME = True
 
+# the detail standard (art round W4): the soldiers' lifts on the star-white armour, a step under the shipped white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+# (r26b: the white soldiers' soft shade left micro at 3.77 / 3.55: the star-white is only the helm's shell, the
+# hands and trims here; the soldiers' cel structure with more in-band gradient and cavity, as the Legionnaire's)
+LOOK_SHADE = dict(FW.SHADE_SOLDIER, gradient=2.7, cavity=0.78)
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42, team_white=0.0)   # (r30: the team wings are the topmost part)
+STAR_W4 = "#D6D1E8"
+SKIN_PALETTE = FW.skin_palette({K.STAR: STAR_W4})
+MATERIAL_KINDS = FW.kinds_cosmic({STAR_W4: "ceramic"})
+
 G0 = (6.0, -13.0, 24.0)       # grip (pole joint), character space; the halberd points +X
 BACK = 16.0                   # shaft behind the grip
 FORE = 18.0                   # far hand this far along
@@ -58,6 +75,8 @@ ORB = (HEAD_X + 11.0, G0[1] - 1.0, G0[2] + 1.0)
 TIP = (HEAD_X + 20.0, G0[1], G0[2])
 EDGE = (HEAD_X + 13.0, G0[1], G0[2] - 15.0)    # the crescent's belly (it bites first)
 EDGE_IN = (HEAD_X + 3.0, G0[1], G0[2] - 6.0)
+HOT_1, HOT_2 = "#D9C2FF", "#E6D6FF"            # the hot shell's outer and middle heat (under VIOLET_CORE)
+SWIRL, SHAFT_BAND = "#A470EE", "#4E4170"       # (r30b) the orb's gravity swirls, the shaft's bands
 
 
 RIG = None
@@ -133,6 +152,12 @@ def build(rig):
     for x in (gx - 4.0, gx - 1.5, gx + 1.0):          # grip wrap
         g.lathe([(0, -0.6), (2.1, -0.5), (2.1, 0.5), (0, 0.6)], (x, gy, gz), (x + 1, gy, gz), segs=10)
     rig.part("pole", g, K.VIOLET, outline=0)
+    # (r30b) thin bands down the bare shaft, a step over its dark violet (the long shaft was one flat stroke)
+    g = Geo()
+    for x in (gx - 12.0, gx - 8.0, gx + 5.0, gx + 9.0, gx + 13.0, gx + 29.0, gx + 35.0, gx + 41.0, gx + 47.0,
+              gx + 53.0, gx + 58.0):
+        g.lathe([(0, -0.35), (1.75, -0.3), (1.75, 0.3), (0, 0.35)], (x, gy, gz), (x + 1, gy, gz), segs=12)
+    rig.part("pole", g, SHAFT_BAND, outline=0)
     # crescent blade under the head (points down-forward), and a back spike on top
     blade = [(HEAD_X - 4, gz - 1.5), (HEAD_X + 8, gz - 1.5), (HEAD_X + 15, gz - 6), (HEAD_X + 16.5, gz - 14),
              (HEAD_X + 12, gz - 21), (HEAD_X + 7.5, gz - 14), (HEAD_X + 2, gz - 9.5), (HEAD_X - 4, gz - 6)]
@@ -158,10 +183,24 @@ def build(rig):
         g.capsule((ox + 8.6 * math.cos(a0), oy - 0.6 + 3.0 * math.sin(a0), oz + 2.2 * math.sin(a0)),
                   (ox + 8.6 * math.cos(a1), oy - 0.6 + 3.0 * math.sin(a1), oz + 2.2 * math.sin(a1)), 0.8, segs=6, rings=2)
     rig.part("orb", g, glow=K.MINT, outline=0)
-    # the flare: a bright shell around the orb (charge) and a burst (impact)
+    # (r30b) two gravity swirls on the orb's face, a step under its glow (one flat violet disc at game scale)
+    g = Geo()
+    yf = oy - math.sqrt(5.6 ** 2 - 3.6 ** 2) - 0.15
+    for a0, a1 in ((20, 140), (200, 320)):
+        pts = [(ox + 3.6 * math.cos(math.radians(a)), yf, oz + 3.6 * math.sin(math.radians(a)))
+               for a in range(a0, a1 + 1, 20)]
+        for p, q in zip(pts, pts[1:]):
+            g.capsule(p, q, 0.45, segs=6, rings=1)
+    rig.part("orb", g, glow=SWIRL, outline=0)
+    # the flare: a bright shell around the orb (charge) and a burst (impact). (W4: in three steps of heat toward a
+    # white heart on the camera's side, each a step brighter: one pale disc was the flattest field of the sheet)
     rig.joint("orb_hot", "orb", ORB, hidden=True)
     g = Geo().sphere((ox, oy - 0.6, oz), 7.6, cuts=4)
-    rig.part("orb_hot", g, glow=K.VIOLET_CORE, outline=1.2, outline_hex=K.VIOLET_GLOW)
+    rig.part("orb_hot", g, glow=HOT_1, outline=1.2, outline_hex=K.VIOLET_GLOW)
+    g = Geo().blob((ox - 0.8, oy - 7.4, oz + 0.8), (5.0, 1.6, 5.0), p=2.2)      # a lens standing out of the shell
+    rig.part("orb_hot", g, glow=HOT_2, outline=0)
+    g = Geo().blob((ox - 1.4, oy - 9.2, oz + 1.4), (2.6, 0.9, 2.6), p=2.2)
+    rig.part("orb_hot", g, glow=K.VIOLET_CORE, outline=0)
     # hands on the shaft
     g = Geo().blob((gx + 0.4, gy - 1.0, gz), (3.6, 3.2, 3.6), p=2.4)
     g.blob((gx + FORE, gy + 3.0, gz), (3.4, 3.0, 3.4), p=2.4)
@@ -175,6 +214,73 @@ def build(rig):
     rig.part("streamer", g, team=True, outline=0.8)
     rig.track("bladeTip", "pole", TIP)
     K.sparks(rig, "pole", (ox, oy - 1, oz), color=K.VIOLET_GLOW, size=1.6, name="sparks")
+    FW.cosmic_body(rig, bulk=1.08, team_shin=False, pad_r=(7.6, 6.4, 6.0), bracer_line=FW.LINE_ON_STAR)
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: a seam over the helm's star-white shell with chipped edges, the tabard's team-dark pleats, seams round the
+    shaft's fittings (char space; decals cast)."""
+    hf = FC.Face(rig, "head", [Geo().blob((2.0, 0, 51.4), (12.2, 11.6, 13.6), p=2.6, taper=(1.05, 0.9))])
+    FW.panel_lines(rig, "head", hf, [[FW.sc(hf, -5.0, 62.0, -8.4), FW.sc(hf, -8.4, 57.4, -9.6),
+                                      FW.sc(hf, -9.6, 53.6, -9.4)]], fill=FW.LINE_ON_STAR, w=0.8)
+    FW.wear(rig, "head", hf, [(*FW.sc(hf, -10.0, 54.4, -7.6), 1.2, 0.6), (*FW.sc(hf, 4.0, 62.4, -7.8), 1.1, 0.5)],
+            fill=FW.LINE_ON_STAR)
+    tb = FC.Face(rig, "tabard", [Geo().blob((8.4, -0.5, 15.4), (2.6, 8.0, 6.0), p=3.2, taper=(1.16, 0.9))])
+    FW.folds(rig, "tabard", tb, [[FW.sc(tb, 9.0, 20.4, y), FW.sc(tb, 9.8, 11.6, y)] for y in (-5.4, -1.0)], w=0.8,
+             team=True)
+    # (r30) a second seam down the shell's front over the visor and rivets along its lower rim
+    FW.panel_lines(rig, "head", hf, [[FW.sc(hf, 7.6, 62.4, -7.6), FW.sc(hf, 9.6, 58.0, -7.8),
+                                      FW.sc(hf, 10.8, 54.6, -7.4)]], fill=FW.LINE_ON_STAR, w=0.7)
+    FW.wear(rig, "head", hf, [(*FW.sc(hf, x, z, -9.0), 0.55, 0.55) for x, z in ((-0.6, 54.4), (3.4, 54.2), (7.0, 54.6))],
+            fill=FW.LINE_ON_STAR)
+    # (r30) the near wing's feathers: team-dark notch lines between the three feathers and a quill down each (the
+    # wing was one flat team field beside the helm)
+    wx, wz, span, h = -1.0, 55.0, 17.0, 13.0
+    wing = [(wx + 2.0, wz - 2.0), (wx - 2.0, wz + h * 0.35), (wx - span * 0.55, wz + h), (wx - span, wz + h * 1.15),
+            (wx - span * 0.8, wz + h * 0.72), (wx - span * 1.05, wz + h * 0.62), (wx - span * 0.8, wz + h * 0.32),
+            (wx - span * 0.95, wz + h * 0.12), (wx - span * 0.5, wz - 0.8)]
+    wf = FC.Face(rig, "head", [Geo().slab(wing, -11.4, 1.8)])
+    yw = -12.3
+    FW.folds(rig, "head", wf, [[FW.sc(wf, x0, z0, yw), FW.sc(wf, x1, z1, yw)] for x0, z0, x1, z1 in (
+        (-4.0, 58.6, -14.0, 64.0), (-4.4, 56.2, -14.0, 59.4),                      # the notches
+        (-6.4, 62.6, -16.2, 68.4), (-7.0, 60.2, -16.8, 62.8), (-7.6, 56.4, -15.6, 57.0))],   # the quills
+             w=0.7, team=True)
+    # (r30) the crescent blade: an engraved fuller following its curve and a bevel line inside the glowing edge
+    _, gy, gz = G0
+    bf = FC.Face(rig, "pole", [Geo().slab([(HEAD_X - 4, gz - 1.5), (HEAD_X + 8, gz - 1.5), (HEAD_X + 15, gz - 6),
+                                           (HEAD_X + 16.5, gz - 14), (HEAD_X + 12, gz - 21), (HEAD_X + 7.5, gz - 14),
+                                           (HEAD_X + 2, gz - 9.5), (HEAD_X - 4, gz - 6)], gy, 2.6)])
+    yb = gy - 1.35
+    FW.panel_lines(rig, "pole", bf, [[FW.sc(bf, HEAD_X + x, gz + z, yb) for x, z in
+                                      ((-1.5, -3.8), (5.0, -4.6), (10.0, -7.6), (12.4, -12.6), (11.8, -17.0))],
+                                     [FW.sc(bf, HEAD_X + x, gz + z, yb) for x, z in
+                                      ((12.0, -6.6), (13.0, -10.6), (12.9, -14.6))]],
+                   fill=K.VIOLET_DK, w=0.7)
+    # (r30) the cape's pleats (team-dark), as the Legionnaire's
+    cc, cr, ct, cs = (-11.0, 0.5, 27.0), (3.2, 11.6, 12.4), (1.28, 0.9), 0.0
+    capef = FC.Face(rig, "cape", [Geo().blob(cc, cr, p=3.0, taper=ct)])
+
+    def on_cape(x, z):
+        zu = (z - cc[2]) / cr[2]
+        t = (zu + 1) / 2
+        k = ct[0] + (ct[1] - ct[0]) * t
+        xu = (x - cc[0]) / (cr[0] * k)
+        return FW.sc(capef, x, z, cc[1] - cr[1] * k * max(1 - abs(xu) ** 3 - abs(zu) ** 3, 0.0) ** (1 / 3))
+    FW.folds(rig, "cape", capef, [[on_cape(x0 + 0.4, 36.0), on_cape(x0, 27.0), on_cape(x0 - 0.6, 18.4)]
+                                  for x0 in (-13.2, -10.6)], w=0.8, team=True)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, armoured: dents, cracks and a chipped plate; never on the face): the
+    near team pad, the helm's star-white shell (its front, above the visor: the team wing covers its side), the team
+    tabard, the violet hip skirt."""
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("helm", "head", 4.0, 58.2, 5.0, "metal", fill=STAR_W4)     # (the shell in front of the wing)
+    rig.damage_spot_at("tabard", "tabard", 9.0, 14.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("skirt", "hips", -4.0, 15.0, 5.0, "metal", fill=K.VIOLET)
 
 
 # -- poses -----------------------------------------------------------------------------------
@@ -248,13 +354,14 @@ def _attack_pose(f, deg=None):
 def _attack_clip():
     chop = {"kind": "arc", "joint": "pole", "inner": EDGE_IN, "outer": EDGE, "color": K.VIOLET_GLOW,
             "white": 0.35, "taper": 0.3, "lines": 3}
+    # (W4: two-tone soft arcs, as the Legionnaire's: the full flat crescents held A's smear frames at micro 2.9-3.2)
     ov = {
-        2: [dict(chop, **{"from": 1, "t0": 0.35, "t1": 1.0, "inner": (HEAD_X - 6.0, G0[1], G0[2]), "outer": ORB,
-                          "lines": 2})],
+        2: FW.smear_soft(dict(chop, **{"from": 1, "t0": 0.35, "t1": 1.0, "inner": (HEAD_X - 6.0, G0[1], G0[2]),
+                                       "outer": ORB, "lines": 2}), band=0.5),
         3: [{"kind": "rings", "joint": "pole", "point": ORB, "radii_lu": (8.5, 12.0), "a0": -180.0, "a1": 180.0,
              "color": K.VIOLET_CORE}],
-        4: [dict(chop, **{"from": 3, "t0": 0.0, "t1": 1.0})],
-        5: [dict(chop, **{"from": 3, "t0": 0.4, "t1": 1.0})],
+        4: FW.smear_soft(dict(chop, **{"from": 3, "t0": 0.0, "t1": 1.0}), band=0.5),
+        5: FW.smear_soft(dict(chop, **{"from": 3, "t0": 0.4, "t1": 1.0}), band=0.55),
         6: [{"kind": "burst", "joint": "pole", "point": EDGE, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
              "a0": 200.0, "arc": 140.0, "color": K.VIOLET_CORE},
             {"kind": "dust", "ground": (14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 4, "spread": 0.9,
@@ -309,9 +416,9 @@ def _attack_b():
     ov = {
         2: [{"kind": "dust", "ground": (-10.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 31, "spread": 0.7,
              "color": "#DCD6E8", "dir": -1.0}],
-        3: [dict(sweep, **{"from": 2, "t0": 0.0, "t1": 1.0})],
-        4: [dict(sweep, **{"from": 2, "t0": 0.4, "t1": 1.0})],
-        5: [dict(sweep, **{"from": 3, "t0": 0.3, "t1": 1.0, "lines": 2}),
+        3: FW.smear_soft(dict(sweep, **{"from": 2, "t0": 0.0, "t1": 1.0}), band=0.5),
+        4: FW.smear_soft(dict(sweep, **{"from": 2, "t0": 0.4, "t1": 1.0}), band=0.5),
+        5: FW.smear_soft(dict(sweep, **{"from": 3, "t0": 0.3, "t1": 1.0, "lines": 2}), band=0.55) + [
             {"kind": "burst", "joint": "pole", "point": TIP, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
              "a0": -70.0, "arc": 140.0, "color": K.VIOLET_CORE},
             {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 32, "spread": 0.9,
@@ -389,6 +496,22 @@ def _die(k):
     return merge(pose, KF.glyph(g))
 
 
+# -- items 51/52 pose: spear_set (Brace: the halberd set against a charge) -------------------------------------------
+# Down on the far knee with the near foot planted forward, the grip low by the near hip and the butt grounded behind,
+# the crescent and the orb levelled up at a horse's chest (about 28 degrees on screen). A held loop that breathes (the
+# torso, the arms and the orb only: the feet stay planted). It goes to the extras sheet (pipeline POSE_CLIPS).
+SET_DEG = 30.0
+
+
+def _set_pose(f):
+    br = [0.0, 0.5, 1.0, 0.5][f]
+    pose = merge(hold(3.0, 21.0 + 0.6 * br, SET_DEG + 0.8 * br), {
+        "torso": {"r": -8.0 + 0.6 * br}, "head": {"r": 6.0 - 0.4 * br},
+        "orb": {"s": 1.0 + 0.06 * br}, "orb_hot": {"show": f == 2, "s": 0.8},
+    })
+    return KI.kneel(RIG, merge(pose, KF.glyph("g_angry" if f != 3 else "g_squint")), LEGS, drop=14.0, front=14.0)
+
+
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
@@ -399,5 +522,6 @@ def clips():
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
+        M.clip("spear_set", [_set_pose(f) for f in range(4)], [200, 180, 200, 180], loop=True),
     ]
     return M.check_variants(M.check_contract(cl))

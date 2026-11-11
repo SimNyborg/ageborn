@@ -26,9 +26,16 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   hit     vehicle: the hull bounces on its pads, the pilot ducks into the hatch, sparks
   die     D7 wreck and bail: the pads cut out, the hull drops and tilts nose-up, the pilot ejects
           on a mint jet (X eyes), smoke
+  charge  (items 51/52, Momentum's tell; the extras sheet) HOVER RUSH: the hull dips 11 degrees nose-down at the
+          charge speed (+50%: 103.1 lu/s), every thrust cone long and swept back, the pilot ducked, the pennant
+          streaming, a dust trail under the pads
+
+Art round W4: the detail standard (below), damage spots and the fire and smoke places (item 40), the down-aimed
+plasma shot (item 44) and the `charge` pose clip.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as FC
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_future as KF
@@ -37,6 +44,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "hover_tank"
 GAIT_NAME = "hover"
@@ -49,7 +57,15 @@ ANCHORS = {"head": (0, 100), "hitCenter": (0, 36), "muzzle": (59, 66)}
 SCALE = 1.25              # the whole vehicle: the Heavy reads big next to 68 lu infantry
 NO_RETIME = True
 
+# the detail standard (art round W4): the machines' lifts (W3's SHADE_BIG) on the star-white deck and violet nose
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.6
+LOOK_SHADE = FW.SHADE_BIG
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+MATERIAL_KINDS = FW.kinds_cosmic({K.SMOKE: "stone", "#8C869A": "stone"})
+
 HOVER = 16.0                  # hull bottom above the ground
+CONE_BAND, FLASH_IN = "#5ED6B2", "#C2FFEA"   # (W4 r26) the cones' band, the flash's inner star
 TURRET = (-6.0, 0.0, 40.0)
 BARREL_Z = 44.0
 MUZZLE = (62.0, -1.0, BARREL_Z)
@@ -58,7 +74,12 @@ COILS = (20.0, 27.0, 34.0)
 SPEED = 55.0                  # sim speed, lu/s
 
 
+RIG = None
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0), scale=SCALE)
     rig.joint("odo", "root", (0, 0, 0))
     rig.joint("hull", "body", (0, 0, HOVER + 10.0))
@@ -79,6 +100,9 @@ def build(rig):
         g = Geo().lathe([(8.6, 0), (7.0, 3.0), (4.0, 6.4), (0, 8.0)], (x, y, HOVER - 2.0), (x, y, HOVER - 3.0),
                         segs=16, squash=(1.0, 0.7))
         rig.part(f"cone{i}", g, glow="#9CF3D8", outline=0)
+        g = Geo().lathe([(8.0, 1.5), (7.3, 2.8), (6.95, 3.3)], (x, y - 0.3, HOVER - 2.0), (x, y - 0.3, HOVER - 3.0),
+                        segs=16, squash=(1.0, 0.72))
+        rig.part(f"cone{i}", g, glow=CONE_BAND, outline=0)      # (W4 r26: a band round the cone's mouth)
         g = Geo().lathe([(3.6, 0), (2.4, 4.0), (0, 7.0)], (x, y - 1.0, HOVER - 2.2), (x, y - 1.0, HOVER - 3.2),
                         segs=12, squash=(1.0, 0.7))
         rig.part(f"cone{i}", g, glow=K.MINT_CORE, outline=0)
@@ -184,6 +208,8 @@ def build(rig):
     rig.joint("flash", "barrel", MUZZLE, hidden=True)
     g = Geo().star((mx + 6.0, my - 4, mz), 13.0, 4.6, 1.4, points=6)
     rig.part("flash", g, glow=K.MINT, outline=0)
+    g = Geo().star((mx + 6.0, my - 4.9, mz), 8.2, 3.2, 1.0, points=6, rot=(0, 30, 0))
+    rig.part("flash", g, glow=FLASH_IN, outline=0)              # (W4 r26: the flash in two tones)
     g = Geo().blob((mx + 12.0, my - 3, mz), (12.0, 1.6, 3.6), p=2.0)
     rig.part("flash", g, glow=K.MINT, outline=0)
     g = Geo().sphere((mx + 4.0, my - 6, mz), 5.0, cuts=3)
@@ -206,6 +232,71 @@ def build(rig):
     g = Geo().lathe([(3.4, 0), (2.4, -5.0), (0, -9.0)], (tx - 2.0, -1.0, tz + 2.0), (tx - 2.0, -1.0, tz + 3.0),
                     segs=12)
     rig.part("jet", g, glow=K.MINT, outline=0.6, outline_hex="#1C8A6A")
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the detail standard (char space; decals cast at the unit's yaw): the star-white deck in plates (seams down
+    its flank) with chipped edges; the team side panels in plates (team-dark seams between the stars) with a team-dark
+    rim; a seam over the violet nose; a seam round the turret's dome; seams round the barrel between the coils."""
+    hz = HOVER + 10.0
+    deck = Geo().blob((-4.0, 0, hz + 5.0), (40.0, 19.0, 7.0), p=4.2, taper=(1.0, 0.86))
+    df = FC.Face(rig, "hull", [deck], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", df, [[FW.sc(df, x, hz + 10.6, -14.6), FW.sc(df, x, hz + 6.0, -18.4),
+                                      FW.sc(df, x, hz + 1.0, -18.6)] for x in (-30.0, -9.0, 14.0)], fill=FW.LINE_ON_STAR,
+                   w=0.9)
+    FW.wear(rig, "hull", df, [(*FW.sc(df, x, z, -17.6), 1.6, 0.7) for x, z in ((-40.0, hz + 8.4), (-20.0, hz + 10.2),
+                                                                              (26.0, hz + 9.0))], fill=FW.LINE_ON_STAR)
+    side = Geo().blob((-8.0, -20.2, hz + 1.8), (30.0, 2.2, 6.4), p=4.0, taper=(1.0, 0.9))
+    sf = FC.Face(rig, "hull", [side], yaw_deg=YAW_DEG)
+    FW.folds(rig, "hull", sf, [[FW.sc(sf, x, hz + 7.4, -22.4), FW.sc(sf, x, hz - 3.6, -22.4)] for x in (-32.0, -9.0, 15.0)],
+             w=0.9, team=True)
+    FW.band(rig, "hull", (-8.0, -20.2, hz + 1.8), (30.0, 2.2, 6.4), 4.0, hz + 7.0, hz + 7.8, team=True, taper=(1.0, 0.9))
+    nf = FC.Face(rig, "hull", [Geo().blob((33.0, 0, hz + 1.8), (16.0, 18.0, 6.8), p=3.2, rot=(0, 18, 0),
+                                          taper=(1.0, 0.7))], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", nf, [[FW.sc(nf, 30.0, hz + 7.0, -14.0), FW.sc(nf, 33.0, hz + 2.0, -16.6),
+                                      FW.sc(nf, 36.0, hz - 3.0, -15.4)]], fill=FW.LINE_ON_VIOLET, w=0.9)
+    tx, ty, tz = TURRET
+    FW.band(rig, "turret", (tx, ty, tz + 1.0), (19.0, 15.0, 8.0), 2.6, tz + 4.4, tz + 5.2, fill=FW.LINE_ON_VIOLET,
+            taper=(1.05, 0.8))
+    g = Geo()
+    for x in (16.0, 23.5, 30.5, 41.0, 49.0):
+        g.lathe([(0, -0.35), (3.65, -0.3), (3.65, 0.3), (0, 0.35)], (x, -1.0, BARREL_Z), (x + 1, -1.0, BARREL_Z), segs=16)
+    rig.part("barrel", g, FW.LINE_ON_STAR, outline=0, highlight=False)
+    # r26 (r25 measured micro 3.34 core and 3.20 extras against the war machines' 3.4): the deck's flank split along
+    # its lower edge with proud rivets where the seams meet, a vent grille on the nose's flank, a seam down the
+    # turret's cheek, two team-dark stripes on the pennant
+    FW.panel_lines(rig, "hull", df, [[FW.sc(df, x, hz + 3.0, -18.6) for x in (-42.0, -30.0, -9.0, 14.0, 26.0)]],
+                   fill=FW.LINE_ON_STAR, w=0.9)
+    FW.rivets(rig, "hull", df, [FW.sc(df, x, hz + 4.6, -18.6) for x in (-31.6, -28.4, -10.6, -7.4, 12.4, 15.6)],
+              r=0.9, fill=K.STAR_TRIM, finish="gloss")
+    FW.panel_lines(rig, "hull", nf, [[FW.sc(nf, x0, z, -16.2), FW.sc(nf, x0 + 5.0, z - 1.0, -15.4)]
+                                     for x0, z in ((38.0, hz + 4.0), (38.6, hz + 1.6), (39.2, hz - 0.8))],
+                   fill=FW.LINE_ON_VIOLET, w=0.8)
+    tf = FC.Face(rig, "turret", [Geo().blob((tx, ty, tz + 1.0), (19.0, 15.0, 8.0), p=2.6, taper=(1.05, 0.8))],
+                 yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "turret", tf, [[FW.sc(tf, tx + 9.0, tz + 7.6, -11.0), FW.sc(tf, tx + 10.0, tz + 1.0, -13.4)]],
+                   fill=FW.LINE_ON_VIOLET, w=0.8)
+    top = (tx - 14.0 - 2.4, 6.0, tz + 5.0 + 40.0 - 1.5)
+    pen = Geo().slab([(top[0] + a, top[2] + b) for a, b in ((0.0, 0.0), (-18.0, -1.0), (-12.96, -4.75), (-18.0, -8.55),
+                                                             (0.0, -9.5))], 6.0, 1.2)
+    pf = FC.Face(rig, "pennant", [pen], yaw_deg=YAW_DEG)
+    FW.folds(rig, "pennant", pf, [[FW.sc(pf, top[0] - 1.6, top[2] - dz, 5.4), FW.sc(pf, top[0] - 12.0, top[2] - dz, 5.4)]
+                                  for dz in (3.0, 6.4)], w=1.1, team=True)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, vehicle: dents and scorches; the vehicle burns), measured in the posed
+    frames: the team side panel, the star-white deck, the violet nose, the turret; smoke (and fire) from the rear
+    engine block and the deck."""
+    rig.damage_spot("side", "hull", (-20.0, -22.3, HOVER + 12.0), 7.0, "metal", team=True, normal=(0, -1, 0))
+    rig.damage_spot("deck", "hull", (-20.0, -15.0, HOVER + 19.0), 6.0, "metal", normal=(0, -0.6, 0.8))
+    rig.damage_spot("nose", "hull", (34.0, -14.0, HOVER + 15.0), 5.0, "metal", normal=(0.3, -0.8, 0.5))
+    rig.damage_spot("turret", "turret", (TURRET[0] - 4.0, -13.5, TURRET[2] + 3.0), 5.0, "metal", normal=(0, -1, 0.3))
+    rig.damage_spot("engine", "hull", (-42.0, 0.0, HOVER + 16.0), 6.0, "smoke", kind="emit", normal=(-0.7, 0, 0.7))
+    rig.damage_spot("deck_fire", "hull", (-14.0, 0.0, HOVER + 22.0), 7.0, "smoke", kind="emit", normal=(0, 0, 1))
 
 
 # -- poses -----------------------------------------------------------------------------------
@@ -281,12 +372,21 @@ PILOT = [0.0, -1.0, -1.5, -2.0, -1.0, 0.5, 1.5, 0.5]
 EYES = ["g_angry", "g_squint", "g_squint", "g_wide", "g_hurt", "eyes", "g_happy", "eyes"]
 
 
-def _attack_pose(f):
-    pose = merge(_cones(CONE[f], front=FRONT[f]), _lit(LIT[f]), {
+# aimed down at the ground row in front (queue item 44, ageborn_art/aimed.py; W4): a turn of `turn` degrees (negative:
+# down) dips the hull's nose by AIM_HULL of it and tips the barrel by the rest
+AIM_HULL = 0.35
+#        aim  dip  HOLD FIRE slide drift return settle
+AIM_W = [0.4, 0.8, 1.0, 1.0, 0.8, 0.5, 0.2, 0.0]
+
+
+def _attack_pose(f, turn=0.0):
+    # (r26: the down aim no longer flares the front cones: lengthened on a nose-down hull, their tips left the canvas
+    # on attack_down_02; they shorten a little instead)
+    pose = merge(_cones(CONE[f], front=FRONT[f] * (1.0 + 0.004 * turn)), _lit(LIT[f]), {
         "body": {"x": BX[f], "z": BZ[f]},
-        "hull": dict(squash(HQ[f]), r=HR[f]),
+        "hull": dict(squash(HQ[f]), r=HR[f] + AIM_HULL * turn),
         "turret": {"r": [0.5, 1.0, 1.0, 2.0, 1.5, 1.0, 0.3, 0.0][f]},
-        "barrel": {"x": BAR_X[f], "r": BAR_R[f], "sz": [1, 1, 1, 1.12, 1.04, 1, 1, 1][f]},
+        "barrel": {"x": BAR_X[f], "r": BAR_R[f] + (1 - AIM_HULL) * turn, "sz": [1, 1, 1, 1.12, 1.04, 1, 1, 1][f]},
         "charge": {"show": CHG[f] > 0, "s": max(CHG[f], 0.01)},
         "flash": {"show": f == 3},
         "smoke": {"show": f in (4, 5, 6), "s": [1, 1, 1, 1, 0.8, 1.1, 1.3, 1][f],
@@ -358,6 +458,35 @@ def _attack_b():
                   extra={"holdStep": 2, "holdLoop": [1, 2]})
 
 
+# -- charge (items 51/52, Momentum's tell): the hover rush at the charge speed, the walk's 68.75 lu/s + 50% --------------
+CHARGE_SPEED = GROUND_SPEED * 1.5
+CHARGE_MS = list(M.WALK_MS)
+
+
+def _charge(f):
+    p = 2 * math.pi * f / 8
+    a = CHARGE_SPEED * 0.5 / 4.0          # the odometer's stride per 0.5 s cycle at the charge speed
+    k, k2 = PULSE[f], PULSE[(f + 1) % 8]
+    pose = {"odo": {"x": a * math.cos(p)},
+            "hull": dict(z=-1.0 + 0.6 * math.sin(2 * p), r=-11.0 + 0.8 * math.sin(p)),
+            "turret": {"r": 2.0 + 0.8 * math.sin(p - 0.8)},
+            "barrel": {"r": 3.0 + 1.0 * math.sin(p - 1.2)},
+            "pilot": {"z": -1.8, "r": 6.0}, "hatch": {"r": -4.0}}
+    for i in range(4):
+        x = sorted(PADS, key=lambda q: -q[1])[i][0]
+        v = 1.65 * (k if i % 2 == 0 else k2) if x < 0 else 1.3 * (k2 if i % 2 == 0 else k)
+        pose[f"cone{i}"] = {"sz": v, "s": 0.95 + 0.1 * min(1.2, v), "r": 24.0 if x < 0 else 16.0}
+    return merge(pose, KF.glyph("g_angry"))
+
+
+def _charge_clip():
+    # a dust trail under the rear pads, a fresh cloud every frame
+    ov = {f: [{"kind": "dust", "ground": (-40.0 - 5.0 * (f % 4), 0.0), "size_lu": 6.0 + 1.3 * (f % 4), "puffs": 4,
+               "seed": 90 + f, "spread": 1.2, "dir": -1.0, "color": "#DCD6E8"}] for f in range(8)}
+    return M.clip("charge", [_charge(f) for f in range(8)], CHARGE_MS, loop=True, overlays=ov,
+                  extra={"gait": "hover", "gaitSpeedLuPerS": CHARGE_SPEED, "cycleMs": sum(CHARGE_MS)})
+
+
 def _hit(k):
     a = M.HIT_AMT[k]
     up = max(a, 0)
@@ -400,13 +529,19 @@ def _die(k):
 
 
 def clips():
+    attack = _attack_clip()
+    # aimed down at the ground row in front (the extras sheet)
+    aimed = AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("down",))
+    for v in aimed:
+        AIMED.check_timing(attack, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [M.IDLE_MS_HEAVY] * 6, loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
-        _attack_clip(),
+        attack,
         _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
-    ]
+        _charge_clip(),
+    ] + aimed
     return M.check_variants(M.check_contract(cl, heavy=True, attack_ms=790, attack_impact_at=0.3684))

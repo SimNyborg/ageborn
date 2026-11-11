@@ -287,6 +287,33 @@ def cosmic_body(rig, bulk=1.0, team_shin=True, plate=True, hips=True, shoulders=
         wear(rig, "foot_r", tf, [(*sc(tf, 0.0, 3.6, -RC.LEG_Y - 3.6), 1.1, 0.5)], fill=WEAR_ON_VIOLET)
 
 
+def cosmic_legs(rig, team_shin=True, boots=True, boot_line=None, sleeves=True):
+    """cosmic_body's legs and sleeves alone (for Cosmic units built on legs_v3 and arm_parts without the trooper's
+    torso, collar and belt): knee creases on the void legs, the team shins' rims, the boots' seams and a scuffed
+    toe, the sleeves' elbow creases."""
+    from ageborn_art import face as FC_
+    from ageborn_art import kit_medieval as KM
+    from ageborn_art import rigs_cosmic as RC
+    for s in ("r", "l"):
+        y = RC.LEG_Y * RC.SIDE_Y[s]
+        th = FC_.Face(rig, f"thigh_{s}", [Geo().capsule((0, y, KM.V3_THIGH_Z + 0.5), (0.5, y, KM.V3_KNEE_Z), 4.6, 4.1)])
+        folds(rig, f"thigh_{s}", th, [[sc(th, -2.4, 14.4, y - 4.4), sc(th, 0.4, 13.6, y - 4.6),
+                                       sc(th, 3.0, 14.6, y - 4.2)]], w=0.8, team=False, fill=FOLD_ON_VOID)
+        if team_shin:
+            band(rig, f"shin_{s}", (1.9, y, 8.8), (3.4, 4.2, 2.8), 2.6, 6.6, 7.3, team=True)
+        if boots:
+            band(rig, f"foot_{s}", (2.8, y, 2.4), (4.4, 4.7, 2.5), 2.9, 3.0, 3.6, fill=boot_line or LINE_ON_VIOLET,
+                 taper=(1.02, 0.84))
+        if sleeves:
+            ya = RC.ARM_Y[s]
+            sleeve = FC_.Face(rig, f"arm_{s}", [Geo().capsule((0, ya, RC.SHOULDER_Z), (0, ya, RC.ELBOW_Z), 4.0, 3.7)])
+            folds(rig, f"arm_{s}", sleeve, [[sc(sleeve, -2.6, 30.6, ya - 3.8), sc(sleeve, 0.2, 29.8, ya - 4.0),
+                                             sc(sleeve, 2.8, 30.8, ya - 3.8)]], w=0.8, team=False, fill=FOLD_ON_VOID)
+    if boots:
+        tf = FC_.Face(rig, "foot_r", [Geo().blob((2.8, -RC.LEG_Y, 2.4), (4.4, 4.7, 2.5), p=2.9, taper=(1.02, 0.84))])
+        wear(rig, "foot_r", tf, [(*sc(tf, 0.0, 3.6, -RC.LEG_Y - 3.6), 1.1, 0.5)], fill=WEAR_ON_VIOLET)
+
+
 def melee_clip(name, fn, smear, fx, reuse=None, hold_step=3, band=0.55, soft=True):
     """kit_future_wave.melee_clip with two-tone arc smears (`smear_soft`; a streak stays one tone): a SMALL_MELEE_MS
     attack (impact on step 6) from 10 unique poses played 0-9 then 0, the smear on frames 4-6, `fx` on the impact."""

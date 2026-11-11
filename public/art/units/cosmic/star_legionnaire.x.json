@@ -2,8 +2,8 @@
  "frames": {
   "star_legionnaire_attack_b_00": {
    "frame": {
-    "x": 194,
-    "y": 143,
+    "x": 233,
+    "y": 127,
     "w": 68,
     "h": 120
    },
@@ -26,8 +26,8 @@
   },
   "star_legionnaire_attack_b_00_team": {
    "frame": {
-    "x": 324,
-    "y": 493,
+    "x": 855,
+    "y": 2,
     "w": 55,
     "h": 80
    },
@@ -50,8 +50,8 @@
   },
   "star_legionnaire_attack_b_01": {
    "frame": {
-    "x": 116,
-    "y": 391,
+    "x": 634,
+    "y": 2,
     "w": 106,
     "h": 98
    },
@@ -74,8 +74,8 @@
   },
   "star_legionnaire_attack_b_01_team": {
    "frame": {
-    "x": 68,
-    "y": 580,
+    "x": 657,
+    "y": 202,
     "w": 60,
     "h": 76
    },
@@ -98,8 +98,8 @@
   },
   "star_legionnaire_attack_b_02": {
    "frame": {
-    "x": 226,
-    "y": 391,
+    "x": 657,
+    "y": 104,
     "w": 120,
     "h": 94
    },
@@ -122,8 +122,8 @@
   },
   "star_legionnaire_attack_b_02_team": {
    "frame": {
-    "x": 309,
-    "y": 580,
+    "x": 546,
+    "y": 206,
     "w": 57,
     "h": 71
    },
@@ -146,8 +146,8 @@
   },
   "star_legionnaire_attack_b_03": {
    "frame": {
-    "x": 202,
-    "y": 2,
+    "x": 103,
+    "y": 143,
     "w": 126,
     "h": 131
    },
@@ -170,8 +170,8 @@
   },
   "star_legionnaire_attack_b_03_team": {
    "frame": {
-    "x": 383,
-    "y": 493,
+    "x": 886,
+    "y": 173,
     "w": 48,
     "h": 80
    },
@@ -194,18 +194,18 @@
   },
   "star_legionnaire_attack_b_04": {
    "frame": {
-    "x": 106,
-    "y": 2,
-    "w": 92,
-    "h": 135
+    "x": 2,
+    "y": 143,
+    "w": 97,
+    "h": 134
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 111,
-    "y": 80,
-    "w": 92,
-    "h": 135
+    "x": 107,
+    "y": 81,
+    "w": 97,
+    "h": 134
    },
    "sourceSize": {
     "w": 257,
@@ -218,18 +218,18 @@
   },
   "star_legionnaire_attack_b_04_team": {
    "frame": {
-    "x": 56,
-    "y": 493,
-    "w": 45,
-    "h": 83
+    "x": 781,
+    "y": 176,
+    "w": 47,
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 111,
-    "y": 97,
-    "w": 45,
-    "h": 83
+    "x": 110,
+    "y": 98,
+    "w": 47,
+    "h": 82
    },
    "sourceSize": {
     "w": 257,
@@ -242,18 +242,18 @@
   },
   "star_legionnaire_attack_b_05": {
    "frame": {
-    "x": 305,
-    "y": 275,
-    "w": 106,
-    "h": 107
+    "x": 546,
+    "y": 104,
+    "w": 107,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 105,
-    "y": 79,
-    "w": 106,
-    "h": 107
+    "x": 110,
+    "y": 89,
+    "w": 107,
+    "h": 98
    },
    "sourceSize": {
     "w": 257,
@@ -266,18 +266,18 @@
   },
   "star_legionnaire_attack_b_05_team": {
    "frame": {
-    "x": 252,
-    "y": 580,
-    "w": 53,
-    "h": 72
+    "x": 721,
+    "y": 202,
+    "w": 56,
+    "h": 73
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
+    "x": 105,
     "y": 103,
-    "w": 53,
-    "h": 72
+    "w": 56,
+    "h": 73
    },
    "sourceSize": {
     "w": 257,
@@ -290,18 +290,18 @@
   },
   "star_legionnaire_attack_b_06": {
    "frame": {
-    "x": 145,
-    "y": 275,
-    "w": 69,
-    "h": 110
+    "x": 472,
+    "y": 114,
+    "w": 70,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 77,
-    "w": 69,
-    "h": 110
+    "x": 106,
+    "y": 85,
+    "w": 70,
+    "h": 101
    },
    "sourceSize": {
     "w": 257,
@@ -314,18 +314,18 @@
   },
   "star_legionnaire_attack_b_06_team": {
    "frame": {
-    "x": 132,
-    "y": 580,
-    "w": 55,
-    "h": 76
+    "x": 970,
+    "y": 2,
+    "w": 52,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 99,
-    "y": 99,
-    "w": 55,
-    "h": 76
+    "x": 101,
+    "y": 101,
+    "w": 52,
+    "h": 74
    },
    "sourceSize": {
     "w": 257,
@@ -338,18 +338,18 @@
   },
   "star_legionnaire_attack_b_07": {
    "frame": {
-    "x": 69,
-    "y": 275,
-    "w": 72,
-    "h": 110
+    "x": 445,
+    "y": 2,
+    "w": 71,
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
-    "y": 81,
-    "w": 72,
-    "h": 110
+    "x": 107,
+    "y": 83,
+    "w": 71,
+    "h": 108
    },
    "sourceSize": {
     "w": 257,
@@ -362,18 +362,18 @@
   },
   "star_legionnaire_attack_b_07_team": {
    "frame": {
-    "x": 105,
-    "y": 493,
+    "x": 914,
+    "y": 2,
     "w": 52,
-    "h": 82
+    "h": 79
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
-    "y": 97,
+    "x": 102,
+    "y": 100,
     "w": 52,
-    "h": 82
+    "h": 79
    },
    "sourceSize": {
     "w": 257,
@@ -386,8 +386,8 @@
   },
   "star_legionnaire_attack_c_00": {
    "frame": {
-    "x": 2,
-    "y": 275,
+    "x": 378,
+    "y": 2,
     "w": 63,
     "h": 112
    },
@@ -410,8 +410,8 @@
   },
   "star_legionnaire_attack_c_00_team": {
    "frame": {
-    "x": 161,
-    "y": 493,
+    "x": 800,
+    "y": 2,
     "w": 51,
     "h": 82
    },
@@ -434,8 +434,8 @@
   },
   "star_legionnaire_attack_c_01": {
    "frame": {
-    "x": 121,
-    "y": 143,
+    "x": 225,
+    "y": 2,
     "w": 69,
     "h": 121
    },
@@ -458,8 +458,8 @@
   },
   "star_legionnaire_attack_c_01_team": {
    "frame": {
-    "x": 216,
-    "y": 493,
+    "x": 832,
+    "y": 176,
     "w": 50,
     "h": 81
    },
@@ -482,8 +482,8 @@
   },
   "star_legionnaire_attack_c_02": {
    "frame": {
-    "x": 266,
-    "y": 143,
+    "x": 298,
+    "y": 2,
     "w": 76,
     "h": 119
    },
@@ -506,8 +506,8 @@
   },
   "star_legionnaire_attack_c_02_team": {
    "frame": {
-    "x": 350,
-    "y": 391,
+    "x": 744,
+    "y": 2,
     "w": 52,
     "h": 83
    },
@@ -554,8 +554,8 @@
   },
   "star_legionnaire_attack_c_03_team": {
    "frame": {
-    "x": 2,
-    "y": 493,
+    "x": 781,
+    "y": 89,
     "w": 50,
     "h": 83
    },
@@ -578,8 +578,8 @@
   },
   "star_legionnaire_attack_c_04": {
    "frame": {
-    "x": 2,
-    "y": 143,
+    "x": 106,
+    "y": 2,
     "w": 115,
     "h": 128
    },
@@ -602,9 +602,9 @@
   },
   "star_legionnaire_attack_c_04_team": {
    "frame": {
-    "x": 2,
-    "y": 580,
-    "w": 62,
+    "x": 888,
+    "y": 86,
+    "w": 61,
     "h": 79
    },
    "rotated": false,
@@ -612,7 +612,7 @@
    "spriteSourceSize": {
     "x": 104,
     "y": 101,
-    "w": 62,
+    "w": 61,
     "h": 79
    },
    "sourceSize": {
@@ -626,8 +626,8 @@
   },
   "star_legionnaire_attack_c_05": {
    "frame": {
-    "x": 2,
-    "y": 391,
+    "x": 520,
+    "y": 2,
     "w": 110,
     "h": 98
    },
@@ -650,8 +650,8 @@
   },
   "star_legionnaire_attack_c_05_team": {
    "frame": {
-    "x": 370,
-    "y": 580,
+    "x": 953,
+    "y": 162,
     "w": 65,
     "h": 66
    },
@@ -674,8 +674,8 @@
   },
   "star_legionnaire_attack_c_06": {
    "frame": {
-    "x": 346,
-    "y": 143,
+    "x": 305,
+    "y": 125,
     "w": 76,
     "h": 112
    },
@@ -698,8 +698,8 @@
   },
   "star_legionnaire_attack_c_06_team": {
    "frame": {
-    "x": 191,
-    "y": 580,
+    "x": 953,
+    "y": 85,
     "w": 57,
     "h": 73
    },
@@ -722,8 +722,8 @@
   },
   "star_legionnaire_attack_c_07": {
    "frame": {
-    "x": 218,
-    "y": 275,
+    "x": 385,
+    "y": 118,
     "w": 83,
     "h": 108
    },
@@ -746,9 +746,9 @@
   },
   "star_legionnaire_attack_c_07_team": {
    "frame": {
-    "x": 270,
-    "y": 493,
-    "w": 50,
+    "x": 835,
+    "y": 88,
+    "w": 49,
     "h": 81
    },
    "rotated": false,
@@ -756,7 +756,7 @@
    "spriteSourceSize": {
     "x": 112,
     "y": 99,
-    "w": 50,
+    "w": 49,
     "h": 81
    },
    "sourceSize": {
@@ -825,8 +825,8 @@
   "image": "star_legionnaire.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 448,
-   "h": 664
+   "w": 1024,
+   "h": 280
   },
   "scale": "1.5",
   "ageborn": {
@@ -906,20 +906,20 @@
         -13.9
        ],
        [
-        59.2,
-        40.7
+        60.3,
+        16.0
        ],
        [
-        37.1,
-        70.3
+        61.4,
+        42.2
        ],
        [
-        19.5,
-        81.4
+        36.2,
+        72.7
        ],
        [
-        39.0,
-        56.0
+        38.5,
+        62.2
        ],
        [
         46.3,
