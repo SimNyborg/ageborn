@@ -20,6 +20,12 @@ Animation (ANIM_SPEC G1 stomp jog at card 70 x 1.25 = 87.5 lu/s, appendix B shie
             extreme), then an uppercut that lifts him onto his toes (a rising hit)
   hit       armoured: a dip behind the slab, the head clanks, eyes > <
   die       D2 plank topple onto the back, the crystals dim, X eyes
+  shield_lock (items 51/52, extras): braced low behind the slab, the shoulder into it, the fist held back low; the
+            slab's glint pulses
+
+W4 (the detail standard): the crystals cut in facets (flat-shaded planes with a hot spec, not a smooth gradient:
+the Origami lesson), the Cosmic body's plates and seams, energy damage spots (cracked crystal, motes), two-tone
+smears.
 """
 import math
 
@@ -32,6 +38,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "crystal_guard"
 GAIT_NAME = "biped"
@@ -42,6 +49,13 @@ FEET = (130, 222)
 ANCHORS = {"head": (2, 70), "hitCenter": (0, 32)}
 NO_RETIME = True
 
+# W4 detail standard (look.py): the lifts; the crystal as a metal kind for its hot spec on the facets
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+MATERIAL_KINDS = FW.kinds_cosmic({CW.LILAC: "iron", CW.LILAC_DK: "iron"})
+
 HR = (0.0, K.ARM_Y["r"], K.HAND_Z)
 HL = (0.0, K.ARM_Y["l"], K.HAND_Z)
 FIST = (HR[0] + 1.0, HR[1] - 1.0, HR[2] - 1.0)
@@ -49,7 +63,7 @@ PANE = (HL[0] + 6.0, HL[1] - 8.0, HL[2] + 4.0)
 
 
 def _crystal(rig, joint, c, r, rot=(0, 0, 0), core=True):
-    g = Geo().blob(c, r, p=1.55, rot=rot)
+    g = Geo().blob(c, r, p=1.55, rot=rot, cuts=2, smooth=False)     # (W4: facets)
     rig.part(joint, g, CW.LILAC, finish="gloss", outline_hex=CW.LILAC_DK)
     if core:
         g = Geo().blob((c[0] + 0.3 * r[0], c[1] - 0.6 * r[1], c[2] + 0.3 * r[2]), (r[0] * 0.35, r[1] * 0.3, r[2] * 0.45),
@@ -99,7 +113,7 @@ def build(rig):
     rot = (0, 0, yaw)
     g = Geo().blob((HL[0] + 1.0, HL[1] - 2.5, HL[2] + 3.0), (3.2, 2.2, 5.0), p=2.6)
     rig.part("shield", g, CW.STAR, finish="gloss", outline_hex=CW.STAR_TRIM)
-    g = Geo().blob(at(0, 0, 0), (2.2, 8.4, 13.0), p=1.7, rot=rot)
+    g = Geo().blob(at(0, 0, 0), (2.2, 8.4, 13.0), p=1.7, rot=rot, cuts=2, smooth=False)     # (W4: facets)
     rig.part("shield", g, CW.LILAC, finish="gloss", outline_hex=CW.LILAC_DK)
     g = Geo().blob(at(1.0, -2.0, 3.6), (1.0, 3.6, 6.4), p=1.8, rot=rot)
     rig.part("shield", g, glow=CW.LILAC_CORE, outline=0)
@@ -117,6 +131,21 @@ def build(rig):
         g.blob((FIST[0] + ax * (r0 + r1) / 2, FIST[1] - 2.0, FIST[2] + az * (r0 + r1) / 2), (1.6, 1.0, 1.6), p=1.6,
                rot=(0, -a, 0))
     rig.part("shards", g, CW.LILAC, finish="gloss", outline=0.6, outline_hex=CW.LILAC_DK)
+    FW.cosmic_body(rig, bulk=1.08, team_shin=True, hips=False, pad_r=(7.6 * 1.08, 6.6, 6.2))
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, energy: cracked crystal and a flicker, motes drifting off): the
+    crystal head behind the visor, the slab, the near team pad, the near team greave; motes off the head's crystals.
+    (r31: the team sash went: the slab and the near leg hide it on the walk and the lunges, seen 60%, and no place on
+    it is seen in most frames without sitting on the pad's mark.)"""
+    rig.damage_spot_at("head", "head", -5.0, 50.0, 5.0, "stone", fill=CW.LILAC)
+    rig.damage_spot_at("slab", "shield", PANE[0] + 1.0, PANE[2] - 4.0, 5.5, "stone", fill=CW.LILAC)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot("greave", "shin_r", (1.9, -K.LEG_Y - 4.2, 8.8), 5.0, "metal", team=True, normal=(0, -1, 0))
+    rig.damage_spot("motes", "head", (-3.0, -2.0, 62.0), 4.0, "motes", kind="emit", normal=(0, 0, 1))
 
 
 def arms(hand, w, shield_hand, sw=90.0):
@@ -217,6 +246,16 @@ def _fx(seed, a0, gx):
     return CW.impact_fx("fist", FIST, seed, a0=a0, ground_x=gx, color=CW.LILAC_CORE)
 
 
+# -- shield_lock (items 51/52, extras sheet): braced low behind the slab, the shoulder into it, the fist back low ----
+LOCK_Z = [-5.0, -5.4, -5.0, -4.6]
+
+
+def _lock_pose(f):
+    pose = _pose((1.0, 19.0), -70.0, (13.0, 26.0), -12.0, 8.0, 1.5, LOCK_Z[f], -0.06, 3)
+    pose["glint"] = {"show": f in (1, 3)}
+    return pose
+
+
 def _hit(k):
     def recoil(a):
         up = max(a, 0)
@@ -237,11 +276,12 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        CW.melee_clip("attack", _a_pose, SMASH, _fx(371, -120.0, 20.0)),
-        CW.melee_clip("attack_b", _b_pose, PUNCH, _fx(372, -20.0, 22.0), rr),
-        CW.melee_clip("attack_c", _c_pose, SMASH, _fx(373, 40.0, 18.0), rr),
+        FW.melee_clip("attack", _a_pose, SMASH, _fx(371, -120.0, 20.0)),          # (W4: two-tone arcs)
+        FW.melee_clip("attack_b", _b_pose, PUNCH, _fx(372, -20.0, 22.0), rr),
+        FW.melee_clip("attack_c", _c_pose, SMASH, _fx(373, 40.0, 18.0), rr),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
+        M.clip("shield_lock", [_lock_pose(f) for f in range(4)], [220, 180, 220, 180], loop=True),
     ]
     return M.check_variants(M.check_contract(cl))

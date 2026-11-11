@@ -2,18 +2,18 @@
  "frames": {
   "crystal_guard_idle_00": {
    "frame": {
-    "x": 229,
-    "y": 395,
-    "w": 110,
-    "h": 181
+    "x": 1090,
+    "y": 187,
+    "w": 108,
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 199,
-    "w": 110,
-    "h": 181
+    "y": 200,
+    "w": 108,
+    "h": 180
    },
    "sourceSize": {
     "w": 514,
@@ -26,18 +26,18 @@
   },
   "crystal_guard_idle_00_team": {
    "frame": {
-    "x": 186,
-    "y": 1151,
+    "x": 3026,
+    "y": 2,
     "w": 109,
-    "h": 117
+    "h": 118
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 242,
+    "y": 241,
     "w": 109,
-    "h": 117
+    "h": 118
    },
    "sourceSize": {
     "w": 514,
@@ -50,9 +50,9 @@
   },
   "crystal_guard_idle_01": {
    "frame": {
-    "x": 2,
-    "y": 395,
-    "w": 106,
+    "x": 981,
+    "y": 189,
+    "w": 105,
     "h": 183
    },
    "rotated": false,
@@ -60,7 +60,7 @@
    "spriteSourceSize": {
     "x": 223,
     "y": 197,
-    "w": 106,
+    "w": 105,
     "h": 183
    },
    "sourceSize": {
@@ -74,18 +74,18 @@
   },
   "crystal_guard_idle_01_team": {
    "frame": {
-    "x": 776,
-    "y": 1026,
+    "x": 2548,
+    "y": 128,
     "w": 108,
-    "h": 119
+    "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 240,
+    "y": 238,
     "w": 108,
-    "h": 119
+    "h": 121
    },
    "sourceSize": {
     "w": 514,
@@ -98,18 +98,18 @@
   },
   "crystal_guard_idle_02": {
    "frame": {
-    "x": 860,
+    "x": 552,
     "y": 2,
-    "w": 108,
-    "h": 189
+    "w": 106,
+    "h": 188
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 192,
-    "w": 108,
-    "h": 189
+    "y": 193,
+    "w": 106,
+    "h": 188
    },
    "sourceSize": {
     "w": 514,
@@ -122,18 +122,18 @@
   },
   "crystal_guard_idle_02_team": {
    "frame": {
-    "x": 875,
-    "y": 899,
-    "w": 106,
-    "h": 121
+    "x": 2299,
+    "y": 262,
+    "w": 107,
+    "h": 123
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 237,
-    "w": 106,
-    "h": 121
+    "y": 235,
+    "w": 107,
+    "h": 123
    },
    "sourceSize": {
     "w": 514,
@@ -146,18 +146,18 @@
   },
   "crystal_guard_idle_03": {
    "frame": {
-    "x": 120,
+    "x": 118,
     "y": 2,
-    "w": 107,
-    "h": 193
+    "w": 105,
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 188,
-    "w": 107,
-    "h": 193
+    "y": 189,
+    "w": 105,
+    "h": 192
    },
    "sourceSize": {
     "w": 514,
@@ -170,18 +170,18 @@
   },
   "crystal_guard_idle_03_team": {
    "frame": {
-    "x": 2,
-    "y": 899,
+    "x": 2217,
+    "y": 132,
     "w": 105,
-    "h": 123
+    "h": 126
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 235,
+    "y": 232,
     "w": 105,
-    "h": 123
+    "h": 126
    },
    "sourceSize": {
     "w": 514,
@@ -194,9 +194,9 @@
   },
   "crystal_guard_idle_04": {
    "frame": {
-    "x": 433,
+    "x": 227,
     "y": 2,
-    "w": 107,
+    "w": 106,
     "h": 191
    },
    "rotated": false,
@@ -204,7 +204,7 @@
    "spriteSourceSize": {
     "x": 220,
     "y": 190,
-    "w": 107,
+    "w": 106,
     "h": 191
    },
    "sourceSize": {
@@ -218,18 +218,18 @@
   },
   "crystal_guard_idle_04_team": {
    "frame": {
-    "x": 428,
-    "y": 899,
+    "x": 2326,
+    "y": 129,
     "w": 106,
-    "h": 122
+    "h": 123
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 236,
+    "y": 235,
     "w": 106,
-    "h": 122
+    "h": 123
    },
    "sourceSize": {
     "w": 514,
@@ -242,9 +242,9 @@
   },
   "crystal_guard_idle_05": {
    "frame": {
-    "x": 797,
-    "y": 202,
-    "w": 109,
+    "x": 869,
+    "y": 191,
+    "w": 108,
     "h": 185
    },
    "rotated": false,
@@ -252,7 +252,7 @@
    "spriteSourceSize": {
     "x": 219,
     "y": 195,
-    "w": 109,
+    "w": 108,
     "h": 185
    },
    "sourceSize": {
@@ -266,18 +266,18 @@
   },
   "crystal_guard_idle_05_team": {
    "frame": {
-    "x": 223,
-    "y": 1026,
+    "x": 2436,
+    "y": 129,
     "w": 108,
-    "h": 120
+    "h": 122
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 239,
+    "y": 237,
     "w": 108,
-    "h": 120
+    "h": 122
    },
    "sourceSize": {
     "w": 514,
@@ -290,9 +290,9 @@
   },
   "crystal_guard_walk_00": {
    "frame": {
-    "x": 821,
-    "y": 395,
-    "w": 114,
+    "x": 1361,
+    "y": 2,
+    "w": 113,
     "h": 174
    },
    "rotated": false,
@@ -300,7 +300,7 @@
    "spriteSourceSize": {
     "x": 217,
     "y": 203,
-    "w": 114,
+    "w": 113,
     "h": 174
    },
    "sourceSize": {
@@ -314,18 +314,18 @@
   },
   "crystal_guard_walk_00_team": {
    "frame": {
-    "x": 2,
-    "y": 1273,
+    "x": 3301,
+    "y": 121,
     "w": 107,
-    "h": 111
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 245,
+    "y": 246,
     "w": 107,
-    "h": 111
+    "h": 110
    },
    "sourceSize": {
     "w": 514,
@@ -338,18 +338,18 @@
   },
   "crystal_guard_walk_01": {
    "frame": {
-    "x": 2,
-    "y": 582,
+    "x": 1436,
+    "y": 180,
     "w": 121,
-    "h": 172
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 209,
-    "y": 209,
+    "y": 210,
     "w": 121,
-    "h": 172
+    "h": 171
    },
    "sourceSize": {
     "w": 514,
@@ -362,18 +362,18 @@
   },
   "crystal_guard_walk_01_team": {
    "frame": {
-    "x": 690,
-    "y": 1273,
+    "x": 3309,
+    "y": 235,
     "w": 107,
-    "h": 104
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 254,
+    "y": 252,
     "w": 107,
-    "h": 104
+    "h": 106
    },
    "sourceSize": {
     "w": 514,
@@ -386,18 +386,18 @@
   },
   "crystal_guard_walk_02": {
    "frame": {
-    "x": 682,
-    "y": 202,
-    "w": 111,
-    "h": 186
+    "x": 776,
+    "y": 2,
+    "w": 110,
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 195,
-    "w": 111,
-    "h": 186
+    "y": 196,
+    "w": 110,
+    "h": 185
    },
    "sourceSize": {
     "w": 514,
@@ -410,18 +410,18 @@
   },
   "crystal_guard_walk_02_team": {
    "frame": {
-    "x": 888,
-    "y": 1026,
+    "x": 2740,
+    "y": 252,
     "w": 108,
-    "h": 119
+    "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 240,
+    "y": 239,
     "w": 108,
-    "h": 119
+    "h": 120
    },
    "sourceSize": {
     "w": 514,
@@ -434,18 +434,18 @@
   },
   "crystal_guard_walk_03": {
    "frame": {
-    "x": 114,
-    "y": 202,
-    "w": 111,
-    "h": 188
+    "x": 662,
+    "y": 2,
+    "w": 110,
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 185,
-    "w": 111,
-    "h": 188
+    "y": 186,
+    "w": 110,
+    "h": 187
    },
    "sourceSize": {
     "w": 514,
@@ -458,18 +458,18 @@
   },
   "crystal_guard_walk_03_team": {
    "frame": {
-    "x": 783,
-    "y": 758,
-    "w": 109,
-    "h": 124
+    "x": 2251,
+    "y": 2,
+    "w": 108,
+    "h": 123
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 228,
-    "w": 109,
-    "h": 124
+    "y": 229,
+    "w": 108,
+    "h": 123
    },
    "sourceSize": {
     "w": 514,
@@ -482,9 +482,9 @@
   },
   "crystal_guard_walk_04": {
    "frame": {
-    "x": 579,
-    "y": 395,
-    "w": 119,
+    "x": 1239,
+    "y": 2,
+    "w": 118,
     "h": 175
    },
    "rotated": false,
@@ -492,7 +492,7 @@
    "spriteSourceSize": {
     "x": 212,
     "y": 203,
-    "w": 119,
+    "w": 118,
     "h": 175
    },
    "sourceSize": {
@@ -506,18 +506,18 @@
   },
   "crystal_guard_walk_04_team": {
    "frame": {
-    "x": 652,
-    "y": 899,
-    "w": 108,
-    "h": 121
+    "x": 2799,
+    "y": 2,
+    "w": 107,
+    "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 220,
-    "y": 245,
-    "w": 108,
-    "h": 121
+    "x": 221,
+    "y": 246,
+    "w": 107,
+    "h": 120
    },
    "sourceSize": {
     "w": 514,
@@ -530,18 +530,18 @@
   },
   "crystal_guard_walk_05": {
    "frame": {
-    "x": 493,
-    "y": 582,
-    "w": 127,
-    "h": 167
+    "x": 1672,
+    "y": 173,
+    "w": 126,
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 204,
-    "y": 209,
-    "w": 127,
-    "h": 167
+    "y": 210,
+    "w": 126,
+    "h": 166
    },
    "sourceSize": {
     "w": 514,
@@ -554,18 +554,18 @@
   },
   "crystal_guard_walk_05_team": {
    "frame": {
-    "x": 471,
-    "y": 1273,
+    "x": 3343,
+    "y": 2,
     "w": 102,
-    "h": 108
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 226,
-    "y": 254,
+    "y": 253,
     "w": 102,
-    "h": 108
+    "h": 109
    },
    "sourceSize": {
     "w": 514,
@@ -578,18 +578,18 @@
   },
   "crystal_guard_walk_06": {
    "frame": {
-    "x": 463,
-    "y": 395,
-    "w": 112,
-    "h": 177
+    "x": 1202,
+    "y": 183,
+    "w": 111,
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 195,
-    "w": 112,
-    "h": 177
+    "y": 196,
+    "w": 111,
+    "h": 176
    },
    "sourceSize": {
     "w": 514,
@@ -602,18 +602,18 @@
   },
   "crystal_guard_walk_06_team": {
    "frame": {
-    "x": 557,
-    "y": 1026,
-    "w": 101,
-    "h": 120
+    "x": 2516,
+    "y": 255,
+    "w": 109,
+    "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 229,
-    "y": 239,
-    "w": 101,
-    "h": 120
+    "x": 220,
+    "y": 238,
+    "w": 109,
+    "h": 121
    },
    "sourceSize": {
     "w": 514,
@@ -626,18 +626,18 @@
   },
   "crystal_guard_walk_07": {
    "frame": {
-    "x": 910,
-    "y": 202,
-    "w": 111,
-    "h": 184
+    "x": 890,
+    "y": 2,
+    "w": 110,
+    "h": 183
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 185,
-    "w": 111,
-    "h": 184
+    "y": 186,
+    "w": 110,
+    "h": 183
    },
    "sourceSize": {
     "w": 514,
@@ -650,9 +650,9 @@
   },
   "crystal_guard_walk_07_team": {
    "frame": {
-    "x": 299,
-    "y": 1151,
-    "w": 108,
+    "x": 2967,
+    "y": 248,
+    "w": 109,
     "h": 117
    },
    "rotated": false,
@@ -660,7 +660,7 @@
    "spriteSourceSize": {
     "x": 220,
     "y": 230,
-    "w": 108,
+    "w": 109,
     "h": 117
    },
    "sourceSize": {
@@ -674,9 +674,9 @@
   },
   "crystal_guard_attack_00": {
    "frame": {
-    "x": 229,
-    "y": 202,
-    "w": 109,
+    "x": 441,
+    "y": 2,
+    "w": 107,
     "h": 188
    },
    "rotated": false,
@@ -684,7 +684,7 @@
    "spriteSourceSize": {
     "x": 220,
     "y": 193,
-    "w": 109,
+    "w": 107,
     "h": 188
    },
    "sourceSize": {
@@ -698,8 +698,8 @@
   },
   "crystal_guard_attack_00_team": {
    "frame": {
-    "x": 764,
-    "y": 899,
+    "x": 2574,
+    "y": 2,
     "w": 107,
     "h": 121
    },
@@ -722,18 +722,18 @@
   },
   "crystal_guard_attack_01": {
    "frame": {
-    "x": 544,
-    "y": 2,
-    "w": 102,
-    "h": 191
+    "x": 2,
+    "y": 200,
+    "w": 100,
+    "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 190,
-    "w": 102,
-    "h": 191
+    "y": 191,
+    "w": 100,
+    "h": 190
    },
    "sourceSize": {
     "w": 514,
@@ -746,8 +746,8 @@
   },
   "crystal_guard_attack_01_team": {
    "frame": {
-    "x": 896,
-    "y": 758,
+    "x": 2196,
+    "y": 265,
     "w": 99,
     "h": 124
    },
@@ -770,18 +770,18 @@
   },
   "crystal_guard_attack_02": {
    "frame": {
-    "x": 333,
-    "y": 2,
+    "x": 221,
+    "y": 198,
     "w": 96,
-    "h": 193
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 212,
-    "y": 188,
+    "x": 211,
+    "y": 189,
     "w": 96,
-    "h": 193
+    "h": 192
    },
    "sourceSize": {
     "w": 514,
@@ -794,8 +794,8 @@
   },
   "crystal_guard_attack_02_team": {
    "frame": {
-    "x": 578,
-    "y": 758,
+    "x": 2140,
+    "y": 2,
     "w": 107,
     "h": 126
    },
@@ -818,18 +818,18 @@
   },
   "crystal_guard_attack_03": {
    "frame": {
-    "x": 231,
-    "y": 2,
-    "w": 98,
-    "h": 193
+    "x": 118,
+    "y": 198,
+    "w": 99,
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 205,
-    "y": 188,
-    "w": 98,
-    "h": 193
+    "x": 204,
+    "y": 189,
+    "w": 99,
+    "h": 192
    },
    "sourceSize": {
     "w": 514,
@@ -842,8 +842,8 @@
   },
   "crystal_guard_attack_03_team": {
    "frame": {
-    "x": 464,
-    "y": 758,
+    "x": 2103,
+    "y": 134,
     "w": 110,
     "h": 127
    },
@@ -866,18 +866,18 @@
   },
   "crystal_guard_attack_04": {
    "frame": {
-    "x": 650,
+    "x": 337,
     "y": 2,
-    "w": 101,
-    "h": 190
+    "w": 100,
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 191,
-    "w": 101,
-    "h": 190
+    "y": 192,
+    "w": 100,
+    "h": 189
    },
    "sourceSize": {
     "w": 514,
@@ -890,8 +890,8 @@
   },
   "crystal_guard_attack_04_team": {
    "frame": {
-    "x": 111,
-    "y": 899,
+    "x": 2363,
+    "y": 2,
     "w": 102,
     "h": 123
    },
@@ -914,18 +914,18 @@
   },
   "crystal_guard_attack_05": {
    "frame": {
-    "x": 343,
-    "y": 395,
-    "w": 116,
-    "h": 178
+    "x": 1120,
+    "y": 2,
+    "w": 115,
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 229,
-    "y": 203,
-    "w": 116,
-    "h": 178
+    "y": 204,
+    "w": 115,
+    "h": 177
    },
    "sourceSize": {
     "w": 514,
@@ -938,18 +938,18 @@
   },
   "crystal_guard_attack_05_team": {
    "frame": {
-    "x": 616,
-    "y": 1151,
-    "w": 114,
-    "h": 115
+    "x": 3062,
+    "y": 124,
+    "w": 112,
+    "h": 116
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 229,
-    "y": 246,
-    "w": 114,
-    "h": 115
+    "y": 245,
+    "w": 112,
+    "h": 116
    },
    "sourceSize": {
     "w": 514,
@@ -962,9 +962,9 @@
   },
   "crystal_guard_attack_06": {
    "frame": {
-    "x": 746,
-    "y": 582,
-    "w": 130,
+    "x": 1802,
+    "y": 170,
+    "w": 129,
     "h": 156
    },
    "rotated": false,
@@ -972,7 +972,7 @@
    "spriteSourceSize": {
     "x": 231,
     "y": 225,
-    "w": 130,
+    "w": 129,
     "h": 156
    },
    "sourceSize": {
@@ -986,18 +986,18 @@
   },
   "crystal_guard_attack_06_team": {
    "frame": {
-    "x": 801,
-    "y": 1273,
-    "w": 122,
-    "h": 102
+    "x": 3420,
+    "y": 225,
+    "w": 123,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 231,
-    "y": 261,
-    "w": 122,
-    "h": 102
+    "y": 260,
+    "w": 123,
+    "h": 103
    },
    "sourceSize": {
     "w": 514,
@@ -1010,18 +1010,18 @@
   },
   "crystal_guard_attack_07": {
    "frame": {
-    "x": 367,
-    "y": 582,
-    "w": 122,
-    "h": 168
+    "x": 1604,
+    "y": 2,
+    "w": 121,
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 233,
-    "y": 213,
-    "w": 122,
-    "h": 168
+    "y": 214,
+    "w": 121,
+    "h": 167
    },
    "sourceSize": {
     "w": 514,
@@ -1034,8 +1034,8 @@
   },
   "crystal_guard_attack_07_team": {
    "frame": {
-    "x": 350,
-    "y": 1273,
+    "x": 3188,
+    "y": 235,
     "w": 117,
     "h": 110
    },
@@ -1058,18 +1058,18 @@
   },
   "crystal_guard_attack_08": {
    "frame": {
-    "x": 112,
-    "y": 395,
-    "w": 113,
-    "h": 182
+    "x": 1004,
+    "y": 2,
+    "w": 112,
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 227,
-    "y": 199,
-    "w": 113,
-    "h": 182
+    "y": 200,
+    "w": 112,
+    "h": 181
    },
    "sourceSize": {
     "w": 514,
@@ -1082,9 +1082,9 @@
   },
   "crystal_guard_attack_08_team": {
    "frame": {
-    "x": 662,
-    "y": 1026,
-    "w": 110,
+    "x": 2852,
+    "y": 250,
+    "w": 111,
     "h": 119
    },
    "rotated": false,
@@ -1092,7 +1092,7 @@
    "spriteSourceSize": {
     "x": 227,
     "y": 241,
-    "w": 110,
+    "w": 111,
     "h": 119
    },
    "sourceSize": {
@@ -1106,9 +1106,9 @@
   },
   "crystal_guard_attack_09": {
    "frame": {
-    "x": 342,
-    "y": 202,
-    "w": 109,
+    "x": 534,
+    "y": 194,
+    "w": 107,
     "h": 188
    },
    "rotated": false,
@@ -1116,7 +1116,7 @@
    "spriteSourceSize": {
     "x": 221,
     "y": 193,
-    "w": 109,
+    "w": 107,
     "h": 188
    },
    "sourceSize": {
@@ -1130,8 +1130,8 @@
   },
   "crystal_guard_attack_09_team": {
    "frame": {
-    "x": 335,
-    "y": 1026,
+    "x": 2766,
+    "y": 126,
     "w": 108,
     "h": 120
    },
@@ -1154,18 +1154,18 @@
   },
   "crystal_guard_hit_00": {
    "frame": {
-    "x": 624,
-    "y": 582,
-    "w": 118,
-    "h": 165
+    "x": 1729,
+    "y": 2,
+    "w": 115,
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 201,
-    "y": 219,
-    "w": 118,
-    "h": 165
+    "y": 220,
+    "w": 115,
+    "h": 164
    },
    "sourceSize": {
     "w": 514,
@@ -1178,15 +1178,15 @@
   },
   "crystal_guard_hit_00_team": {
    "frame": {
-    "x": 577,
-    "y": 1273,
+    "x": 3449,
+    "y": 114,
     "w": 109,
     "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 210,
+    "x": 209,
     "y": 255,
     "w": 109,
     "h": 107
@@ -1202,17 +1202,17 @@
   },
   "crystal_guard_hit_01": {
    "frame": {
-    "x": 254,
-    "y": 582,
-    "w": 109,
+    "x": 1561,
+    "y": 176,
+    "w": 107,
     "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 200,
+    "x": 201,
     "y": 215,
-    "w": 109,
+    "w": 107,
     "h": 170
    },
    "sourceSize": {
@@ -1226,17 +1226,17 @@
   },
   "crystal_guard_hit_01_team": {
    "frame": {
-    "x": 113,
-    "y": 1273,
-    "w": 103,
+    "x": 3080,
+    "y": 244,
+    "w": 104,
     "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 207,
+    "x": 206,
     "y": 252,
-    "w": 103,
+    "w": 104,
     "h": 111
    },
    "sourceSize": {
@@ -1250,18 +1250,18 @@
   },
   "crystal_guard_hit_02": {
    "frame": {
-    "x": 755,
-    "y": 2,
-    "w": 101,
-    "h": 190
+    "x": 431,
+    "y": 195,
+    "w": 99,
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 193,
-    "w": 101,
-    "h": 190
+    "y": 194,
+    "w": 99,
+    "h": 189
    },
    "sourceSize": {
     "w": 514,
@@ -1274,18 +1274,18 @@
   },
   "crystal_guard_hit_02_team": {
    "frame": {
-    "x": 323,
-    "y": 899,
+    "x": 2469,
+    "y": 2,
     "w": 101,
-    "h": 123
+    "h": 122
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 236,
+    "y": 237,
     "w": 101,
-    "h": 123
+    "h": 122
    },
    "sourceSize": {
     "w": 514,
@@ -1298,18 +1298,18 @@
   },
   "crystal_guard_hit_03": {
    "frame": {
-    "x": 567,
-    "y": 202,
-    "w": 111,
-    "h": 187
+    "x": 755,
+    "y": 193,
+    "w": 110,
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 194,
-    "w": 111,
-    "h": 187
+    "y": 195,
+    "w": 110,
+    "h": 186
    },
    "sourceSize": {
     "w": 514,
@@ -1322,18 +1322,18 @@
   },
   "crystal_guard_hit_03_team": {
    "frame": {
-    "x": 538,
-    "y": 899,
+    "x": 2685,
+    "y": 2,
     "w": 110,
-    "h": 121
+    "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 236,
+    "y": 237,
     "w": 110,
-    "h": 121
+    "h": 120
    },
    "sourceSize": {
     "w": 514,
@@ -1346,9 +1346,9 @@
   },
   "crystal_guard_hit_04": {
    "frame": {
-    "x": 455,
-    "y": 202,
-    "w": 108,
+    "x": 645,
+    "y": 194,
+    "w": 106,
     "h": 188
    },
    "rotated": false,
@@ -1356,7 +1356,7 @@
    "spriteSourceSize": {
     "x": 220,
     "y": 193,
-    "w": 108,
+    "w": 106,
     "h": 188
    },
    "sourceSize": {
@@ -1370,18 +1370,18 @@
   },
   "crystal_guard_hit_04_team": {
    "frame": {
-    "x": 447,
-    "y": 1026,
-    "w": 106,
-    "h": 120
+    "x": 2629,
+    "y": 253,
+    "w": 107,
+    "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 220,
-    "y": 237,
-    "w": 106,
-    "h": 120
+    "y": 236,
+    "w": 107,
+    "h": 121
    },
    "sourceSize": {
     "w": 514,
@@ -1394,18 +1394,18 @@
   },
   "crystal_guard_die_00": {
    "frame": {
-    "x": 127,
-    "y": 582,
-    "w": 123,
-    "h": 171
+    "x": 1478,
+    "y": 2,
+    "w": 122,
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 227,
-    "y": 210,
-    "w": 123,
-    "h": 171
+    "y": 211,
+    "w": 122,
+    "h": 170
    },
    "sourceSize": {
     "w": 514,
@@ -1418,8 +1418,8 @@
   },
   "crystal_guard_die_00_team": {
    "frame": {
-    "x": 858,
-    "y": 1151,
+    "x": 1935,
+    "y": 276,
     "w": 123,
     "h": 111
    },
@@ -1444,16 +1444,16 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 114,
-    "h": 196
+    "w": 112,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 242,
-    "y": 180,
-    "w": 114,
-    "h": 196
+    "y": 182,
+    "w": 112,
+    "h": 194
    },
    "sourceSize": {
     "w": 514,
@@ -1466,18 +1466,18 @@
   },
   "crystal_guard_die_01_team": {
    "frame": {
-    "x": 346,
-    "y": 758,
+    "x": 2022,
+    "y": 2,
     "w": 114,
-    "h": 127
+    "h": 128
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 242,
-    "y": 224,
+    "y": 223,
     "w": 114,
-    "h": 127
+    "h": 128
    },
    "sourceSize": {
     "w": 514,
@@ -1490,17 +1490,17 @@
   },
   "crystal_guard_die_02": {
    "frame": {
-    "x": 2,
-    "y": 202,
-    "w": 108,
+    "x": 321,
+    "y": 197,
+    "w": 106,
     "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 231,
+    "x": 232,
     "y": 189,
-    "w": 108,
+    "w": 106,
     "h": 189
    },
    "sourceSize": {
@@ -1514,9 +1514,9 @@
   },
   "crystal_guard_die_02_team": {
    "frame": {
-    "x": 2,
-    "y": 1026,
-    "w": 101,
+    "x": 2660,
+    "y": 127,
+    "w": 102,
     "h": 121
    },
    "rotated": false,
@@ -1524,7 +1524,7 @@
    "spriteSourceSize": {
     "x": 229,
     "y": 233,
-    "w": 101,
+    "w": 102,
     "h": 121
    },
    "sourceSize": {
@@ -1538,8 +1538,8 @@
   },
   "crystal_guard_die_03": {
    "frame": {
-    "x": 702,
-    "y": 395,
+    "x": 1317,
+    "y": 181,
     "w": 115,
     "h": 175
    },
@@ -1562,9 +1562,9 @@
   },
   "crystal_guard_die_03_team": {
    "frame": {
-    "x": 689,
-    "y": 758,
-    "w": 90,
+    "x": 2103,
+    "y": 265,
+    "w": 89,
     "h": 125
    },
    "rotated": false,
@@ -1572,7 +1572,7 @@
    "spriteSourceSize": {
     "x": 193,
     "y": 216,
-    "w": 90,
+    "w": 89,
     "h": 125
    },
    "sourceSize": {
@@ -1586,17 +1586,17 @@
   },
   "crystal_guard_die_04": {
    "frame": {
-    "x": 2,
-    "y": 758,
-    "w": 171,
+    "x": 1848,
+    "y": 2,
+    "w": 170,
     "h": 137
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 99,
+    "x": 100,
     "y": 217,
-    "w": 171,
+    "w": 170,
     "h": 137
    },
    "sourceSize": {
@@ -1610,18 +1610,18 @@
   },
   "crystal_guard_die_04_team": {
    "frame": {
-    "x": 107,
-    "y": 1026,
+    "x": 2910,
+    "y": 2,
     "w": 112,
-    "h": 120
+    "h": 118
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 138,
-    "y": 229,
+    "x": 137,
+    "y": 231,
     "w": 112,
-    "h": 120
+    "h": 118
    },
    "sourceSize": {
     "w": 514,
@@ -1634,18 +1634,18 @@
   },
   "crystal_guard_die_05": {
    "frame": {
-    "x": 177,
-    "y": 758,
-    "w": 165,
-    "h": 130
+    "x": 1935,
+    "y": 143,
+    "w": 164,
+    "h": 129
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 93,
-    "y": 242,
-    "w": 165,
-    "h": 130
+    "x": 94,
+    "y": 243,
+    "w": 164,
+    "h": 129
    },
    "sourceSize": {
     "w": 514,
@@ -1658,8 +1658,8 @@
   },
   "crystal_guard_die_05_team": {
    "frame": {
-    "x": 217,
-    "y": 899,
+    "x": 2410,
+    "y": 256,
     "w": 102,
     "h": 123
    },
@@ -1667,7 +1667,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 134,
-    "y": 246,
+    "y": 245,
     "w": 102,
     "h": 123
    },
@@ -1682,18 +1682,18 @@
   },
   "crystal_guard_die_06": {
    "frame": {
-    "x": 411,
-    "y": 1151,
-    "w": 201,
-    "h": 116
+    "x": 3139,
+    "y": 2,
+    "w": 200,
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 241,
-    "w": 201,
-    "h": 116
+    "x": 60,
+    "y": 242,
+    "w": 200,
+    "h": 115
    },
    "sourceSize": {
     "w": 514,
@@ -1706,18 +1706,18 @@
   },
   "crystal_guard_die_06_team": {
    "frame": {
-    "x": 220,
-    "y": 1273,
-    "w": 126,
-    "h": 110
+    "x": 3449,
+    "y": 2,
+    "w": 131,
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 109,
-    "y": 244,
-    "w": 126,
-    "h": 110
+    "x": 104,
+    "y": 245,
+    "w": 131,
+    "h": 108
    },
    "sourceSize": {
     "w": 514,
@@ -1730,8 +1730,8 @@
   },
   "crystal_guard_die_07": {
    "frame": {
-    "x": 2,
-    "y": 1151,
+    "x": 2878,
+    "y": 126,
     "w": 180,
     "h": 118
    },
@@ -1754,18 +1754,18 @@
   },
   "crystal_guard_die_07_team": {
    "frame": {
-    "x": 734,
-    "y": 1151,
-    "w": 120,
-    "h": 112
+    "x": 3178,
+    "y": 121,
+    "w": 119,
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
-    "y": 254,
-    "w": 120,
-    "h": 112
+    "x": 116,
+    "y": 256,
+    "w": 119,
+    "h": 110
    },
    "sourceSize": {
     "w": 514,
@@ -1885,15 +1885,15 @@
   "image": "crystal_guard.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1024,
-   "h": 1388
+   "w": 3584,
+   "h": 392
   },
   "scale": "3",
   "ageborn": {
    "visualId": "unit.crystal_guard",
    "name": "Crystal Guard",
    "heightLu": 70,
-   "widthLu": 38.6,
+   "widthLu": 38.2,
    "pxPerLu": 2.46,
    "feetPx": [
     260,
@@ -2206,7 +2206,7 @@
         0,
         25.2
        ],
-       "scale": 0.483
+       "scale": 0.478
       },
       {
        "id": "fx.ko_stars",
@@ -2216,7 +2216,7 @@
         38.5
        ],
        "loops": 2,
-       "scale": 0.695
+       "scale": 0.691
       }
      ],
      "hideUnitAtMs": 695,
