@@ -2,8 +2,8 @@
  "frames": {
   "asteroid_golem_attack_b_01": {
    "frame": {
-    "x": 467,
-    "y": 2,
+    "x": 346,
+    "y": 518,
     "w": 152,
     "h": 249
    },
@@ -26,8 +26,8 @@
   },
   "asteroid_golem_attack_b_01_team": {
    "frame": {
-    "x": 146,
-    "y": 955,
+    "x": 474,
+    "y": 1049,
     "w": 140,
     "h": 173
    },
@@ -50,8 +50,8 @@
   },
   "asteroid_golem_attack_b_02": {
    "frame": {
-    "x": 165,
-    "y": 2,
+    "x": 363,
+    "y": 232,
     "w": 151,
     "h": 282
    },
@@ -74,8 +74,8 @@
   },
   "asteroid_golem_attack_b_02_team": {
    "frame": {
-    "x": 2,
-    "y": 753,
+    "x": 701,
+    "y": 650,
     "w": 135,
     "h": 198
    },
@@ -98,7 +98,7 @@
   },
   "asteroid_golem_attack_b_03": {
    "frame": {
-    "x": 2,
+    "x": 200,
     "y": 2,
     "w": 159,
     "h": 289
@@ -122,8 +122,8 @@
   },
   "asteroid_golem_attack_b_03_team": {
    "frame": {
-    "x": 770,
-    "y": 526,
+    "x": 871,
+    "y": 469,
     "w": 137,
     "h": 203
    },
@@ -146,17 +146,17 @@
   },
   "asteroid_golem_attack_b_04": {
    "frame": {
-    "x": 320,
-    "y": 2,
-    "w": 143,
+    "x": 198,
+    "y": 295,
+    "w": 144,
     "h": 281
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 321,
+    "x": 320,
     "y": 300,
-    "w": 143,
+    "w": 144,
     "h": 281
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "asteroid_golem_attack_b_04_team": {
    "frame": {
-    "x": 427,
-    "y": 955,
+    "x": 502,
+    "y": 699,
     "w": 149,
     "h": 171
    },
@@ -194,7 +194,7 @@
   },
   "asteroid_golem_attack_b_05": {
    "frame": {
-    "x": 821,
+    "x": 759,
     "y": 2,
     "w": 184,
     "h": 230
@@ -218,8 +218,8 @@
   },
   "asteroid_golem_attack_b_05_team": {
    "frame": {
-    "x": 2,
-    "y": 955,
+    "x": 330,
+    "y": 1035,
     "w": 140,
     "h": 176
    },
@@ -242,18 +242,18 @@
   },
   "asteroid_golem_attack_b_06": {
    "frame": {
-    "x": 623,
+    "x": 2,
     "y": 2,
     "w": 194,
-    "h": 234
+    "h": 239
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 345,
-    "y": 372,
+    "y": 367,
     "w": 194,
-    "h": 234
+    "h": 239
    },
    "sourceSize": {
     "w": 718,
@@ -266,18 +266,18 @@
   },
   "asteroid_golem_attack_b_06_team": {
    "frame": {
-    "x": 2,
-    "y": 1135,
+    "x": 618,
+    "y": 1049,
     "w": 140,
-    "h": 169
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 354,
-    "y": 381,
+    "y": 380,
     "w": 140,
-    "h": 169
+    "h": 170
    },
    "sourceSize": {
     "w": 718,
@@ -291,17 +291,17 @@
   "asteroid_golem_attack_b_07": {
    "frame": {
     "x": 2,
-    "y": 295,
+    "y": 245,
     "w": 192,
-    "h": 227
+    "h": 233
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 345,
-    "y": 370,
+    "y": 364,
     "w": 192,
-    "h": 227
+    "h": 233
    },
    "sourceSize": {
     "w": 718,
@@ -314,18 +314,18 @@
   },
   "asteroid_golem_attack_b_07_team": {
    "frame": {
-    "x": 848,
-    "y": 955,
+    "x": 480,
+    "y": 874,
     "w": 144,
-    "h": 170
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 352,
-    "y": 379,
+    "y": 378,
     "w": 144,
-    "h": 170
+    "h": 171
    },
    "sourceSize": {
     "w": 718,
@@ -338,18 +338,18 @@
   },
   "asteroid_golem_attack_b_08": {
    "frame": {
-    "x": 2,
-    "y": 526,
+    "x": 705,
+    "y": 236,
     "w": 181,
-    "h": 223
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 333,
-    "y": 359,
+    "y": 353,
     "w": 181,
-    "h": 223
+    "h": 229
    },
    "sourceSize": {
     "w": 718,
@@ -362,8 +362,8 @@
   },
   "asteroid_golem_attack_b_08_team": {
    "frame": {
-    "x": 729,
-    "y": 955,
+    "x": 899,
+    "y": 1041,
     "w": 115,
     "h": 171
    },
@@ -386,18 +386,18 @@
   },
   "asteroid_golem_attack_c_01": {
    "frame": {
-    "x": 510,
-    "y": 295,
+    "x": 169,
+    "y": 580,
     "w": 158,
-    "h": 226
+    "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 314,
-    "y": 355,
+    "y": 350,
     "w": 158,
-    "h": 226
+    "h": 231
    },
    "sourceSize": {
     "w": 718,
@@ -410,18 +410,18 @@
   },
   "asteroid_golem_attack_c_01_team": {
    "frame": {
-    "x": 433,
-    "y": 753,
+    "x": 899,
+    "y": 860,
     "w": 115,
-    "h": 180
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 317,
-    "y": 364,
+    "y": 367,
     "w": 115,
-    "h": 180
+    "h": 177
    },
    "sourceSize": {
     "w": 718,
@@ -434,18 +434,18 @@
   },
   "asteroid_golem_attack_c_02": {
    "frame": {
-    "x": 356,
-    "y": 295,
+    "x": 2,
+    "y": 952,
     "w": 150,
-    "h": 227
+    "h": 232
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 305,
-    "y": 354,
+    "y": 349,
     "w": 150,
-    "h": 227
+    "h": 232
    },
    "sourceSize": {
     "w": 718,
@@ -458,18 +458,18 @@
   },
   "asteroid_golem_attack_c_02_team": {
    "frame": {
-    "x": 141,
-    "y": 753,
-    "w": 139,
-    "h": 181
+    "x": 655,
+    "y": 852,
+    "w": 138,
+    "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 314,
-    "y": 363,
-    "w": 139,
-    "h": 181
+    "y": 365,
+    "w": 138,
+    "h": 179
    },
    "sourceSize": {
     "w": 718,
@@ -482,18 +482,18 @@
   },
   "asteroid_golem_attack_c_03": {
    "frame": {
-    "x": 198,
-    "y": 295,
-    "w": 154,
-    "h": 227
+    "x": 2,
+    "y": 717,
+    "w": 153,
+    "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 295,
-    "y": 354,
-    "w": 154,
-    "h": 227
+    "y": 350,
+    "w": 153,
+    "h": 231
    },
    "sourceSize": {
     "w": 718,
@@ -506,8 +506,8 @@
   },
   "asteroid_golem_attack_c_03_team": {
    "frame": {
-    "x": 284,
-    "y": 753,
+    "x": 840,
+    "y": 676,
     "w": 145,
     "h": 180
    },
@@ -530,18 +530,18 @@
   },
   "asteroid_golem_attack_c_04": {
    "frame": {
-    "x": 672,
-    "y": 295,
+    "x": 2,
+    "y": 482,
     "w": 163,
-    "h": 225
+    "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 317,
-    "y": 356,
+    "y": 350,
     "w": 163,
-    "h": 225
+    "h": 231
    },
    "sourceSize": {
     "w": 718,
@@ -554,18 +554,18 @@
   },
   "asteroid_golem_attack_c_04_team": {
    "frame": {
-    "x": 552,
-    "y": 753,
-    "w": 113,
-    "h": 179
+    "x": 890,
+    "y": 236,
+    "w": 112,
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 323,
-    "y": 365,
-    "w": 113,
-    "h": 179
+    "x": 324,
+    "y": 370,
+    "w": 112,
+    "h": 174
    },
    "sourceSize": {
     "w": 718,
@@ -578,18 +578,18 @@
   },
   "asteroid_golem_attack_c_05": {
    "frame": {
-    "x": 187,
-    "y": 526,
+    "x": 518,
+    "y": 233,
     "w": 183,
-    "h": 222
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 324,
-    "y": 360,
+    "y": 354,
     "w": 183,
-    "h": 222
+    "h": 228
    },
    "sourceSize": {
     "w": 718,
@@ -602,8 +602,8 @@
   },
   "asteroid_golem_attack_c_05_team": {
    "frame": {
-    "x": 580,
-    "y": 955,
+    "x": 331,
+    "y": 771,
     "w": 145,
     "h": 171
    },
@@ -626,18 +626,18 @@
   },
   "asteroid_golem_attack_c_06": {
    "frame": {
-    "x": 571,
-    "y": 526,
+    "x": 363,
+    "y": 2,
     "w": 195,
-    "h": 220
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 322,
-    "y": 362,
+    "y": 356,
     "w": 195,
-    "h": 220
+    "h": 226
    },
    "sourceSize": {
     "w": 718,
@@ -650,8 +650,8 @@
   },
   "asteroid_golem_attack_c_06_team": {
    "frame": {
-    "x": 839,
-    "y": 753,
+    "x": 156,
+    "y": 952,
     "w": 170,
     "h": 176
    },
@@ -674,18 +674,18 @@
   },
   "asteroid_golem_attack_c_07": {
    "frame": {
-    "x": 374,
-    "y": 526,
+    "x": 562,
+    "y": 2,
     "w": 193,
-    "h": 221
+    "h": 227
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 322,
-    "y": 361,
+    "y": 355,
     "w": 193,
-    "h": 221
+    "h": 227
    },
    "sourceSize": {
     "w": 718,
@@ -698,8 +698,8 @@
   },
   "asteroid_golem_attack_c_07_team": {
    "frame": {
-    "x": 669,
-    "y": 753,
+    "x": 701,
+    "y": 469,
     "w": 166,
     "h": 177
    },
@@ -722,18 +722,18 @@
   },
   "asteroid_golem_attack_c_08": {
    "frame": {
-    "x": 839,
-    "y": 295,
+    "x": 518,
+    "y": 465,
     "w": 179,
-    "h": 224
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 323,
-    "y": 358,
+    "y": 352,
     "w": 179,
-    "h": 224
+    "h": 230
    },
    "sourceSize": {
     "w": 718,
@@ -746,8 +746,8 @@
   },
   "asteroid_golem_attack_c_08_team": {
    "frame": {
-    "x": 290,
-    "y": 955,
+    "x": 762,
+    "y": 1035,
     "w": 133,
     "h": 172
    },
@@ -830,7 +830,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 1024,
-   "h": 1308
+   "h": 1236
   },
   "scale": "3",
   "ageborn": {
