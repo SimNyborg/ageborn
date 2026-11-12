@@ -85,6 +85,12 @@ watched), share_rate, eng_rate, reach. Followers per post are not available from
 
 ## Content direction (from the first week)
 
+Owner note 2026-11-12: too many battle videos. Most Reels must show DEVELOPMENT across the ages: graphics
+(backdrops, unit art, bases, effects), animation (idle, walk, attack, hit, death, anticipation and follow-through),
+and design choices that make the game more fun (why a rule exists, what was tried and dropped). Battle footage is
+only the vehicle when the topic is balance. Rotate the ages: no two Reels in a row from the same age. At most one
+battle-led video (balance test or battle dilemma) every second day.
+
 Owner note 2026-11-10: (1) no subtitles: do not add the narration caption overlay (T.overlay('caption', ...)) to
 Reels; short title cards and badges stay. (2) More developer-dilemma videos: each devlog is built around a real design
 dilemma with two concrete options shown on screen (for example "riders survive the mammoth, or go down with it"),

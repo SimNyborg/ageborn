@@ -67,6 +67,8 @@ what we believe, how sure we are, and what we post next because of it.
 
 ## Owner notes (direction that overrides the numbers)
 
+- 2026-11-12: fewer battle videos; more development of graphics, animation and fun-making design choices, rotating the ages.
+
 - 2026-11-10: no subtitles in Reels; more developer-dilemma videos (two concrete options, viewers pick A or B).
 
 - 2026-11-01: most videos must be developer videos; duels are the exception (at most 3 a week).
@@ -211,3 +213,11 @@ what we believe, how sure we are, and what we post next because of it.
   option B on the sim, the voice weighs them, viewers vote. Caption overlays removed from the template from DV18 on.
 - 2026-11-11: no post. DV18 (dilemma: hold the line or charge; 6 Bonkers vs the Elk, charge leaves 2, hold leaves 4)
   is recorded; its narration call waited for an approval that the worker restart closed. Finish and post it next run.
+- 2026-11-12: owner note: development across the ages, not battles. Idea backlog (material that exists, true stories):
+  1. How an evolution between ages looks (the base and units changing age), filmed per age.
+  2. One unit's animation set per age: idle, walk, attack, hit, death, step by step (DV8 method, other ages).
+  3. Backdrops: a plain painted step 0 vs the living scene, one age per video (round-2 scenes, never the two banned).
+  4. Turrets and powers: what each age's base can fire, and why a power was given a telegraph (warning) before it hits.
+  5. Effects: impact, hit flash and screen shake on vs off (feel), same moment side by side.
+  6. Design choices: why the War Plan has one loadout per age; why capsules reveal rarity before the card.
+  Each as a dilemma or a before/after where possible, Steve v4, no subtitles.
