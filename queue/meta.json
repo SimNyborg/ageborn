@@ -5,14 +5,5 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
-  },
-  "dv18-hold-or-charge": {
-    "length_s": 33.1,
-    "format": "devlog",
-    "hook_type": "dilemma",
-    "experiment": "dilemma",
-    "arm": "devlog",
-    "voice": "elevenlabs-steve-v4",
-    "subtitles": false
   }
 }

@@ -739,6 +739,23 @@
    "experiment": "indie-angle",
    "arm": "devlog",
    "voice": "elevenlabs-steve-v4"
+  },
+  {
+   "id": "18096387197178469",
+   "permalink": "https://www.instagram.com/reel/DfqCxYglVCL/",
+   "timestamp": "2026-11-12T21:40:39+0000",
+   "name": "dv18-hold-or-charge",
+   "kind": "reel",
+   "pillar": "devlog",
+   "hook": "Devlog #18: hold the line or charge? (first dilemma, no subtitles, Steve v4)",
+   "trial": false,
+   "length_s": 33.1,
+   "format": "devlog",
+   "hook_type": "dilemma",
+   "experiment": "dilemma",
+   "arm": "devlog",
+   "voice": "elevenlabs-steve-v4",
+   "subtitles": false
   }
  ]
 }
