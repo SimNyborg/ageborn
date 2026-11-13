@@ -221,3 +221,7 @@ what we believe, how sure we are, and what we post next because of it.
   5. Effects: impact, hit flash and screen shake on vs off (feel), same moment side by side.
   6. Design choices: why the War Plan has one loadout per age; why capsules reveal rarity before the card.
   Each as a dilemma or a before/after where possible, Steve v4, no subtitles.
+- 2026-11-13: no post. DV19 (one soldier, eight ages: the basic infantry's art and animation per age) was started,
+  but the ElevenLabs narration call waited for an approval nobody answered, and the container was then reclaimed
+  (studio setup gone; /tmp/soc restored from the branch, render setup must be rebuilt). Proposed to the owner: an
+  ElevenLabs API key saved as a network secret, so narration runs from the container without per-call approval.
