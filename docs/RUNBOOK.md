@@ -205,3 +205,10 @@ and why. Do not use "nothing is for sale", "every card earned" or similar moneti
 videos, end cards or captions; they are not a selling point for this audience.
 - 2026-10-22 18:43 UTC: API returned OAuthException 190 'You cannot access the app till you log in to www.instagram.com and follow the instructions given' (an Instagram checkpoint). R14 not posted; owner asked to log in and clear it.
 - 2026-10-27: the daily run (07:47 UTC) reached the session only at 21:23 UTC with the evening status; no posts or story went out on 2026-10-27. Cause unknown (scheduler delivery). Queue was empty apart from DV6 (held).
+
+## Rebuild after a reclaimed container (2026-11-14)
+
+/tmp is wiped when the container is reclaimed. From /home/user/ageborn: `git fetch origin social-media main`,
+`git worktree add -f /tmp/soc origin/social-media` then `git checkout -B social-media origin/social-media` in it,
+`git worktree add -f --detach /tmp/game-capture origin/main` and `npm ci` there (the old pin 1b48e80 is no longer
+fetchable), `npm ci` in /tmp/soc/studio, `python3 -m venv /tmp/soc/.venv` with pillow and numpy. About 10 minutes.
