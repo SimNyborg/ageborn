@@ -227,3 +227,6 @@ what we believe, how sure we are, and what we post next because of it.
   ElevenLabs API key saved as a network secret, so narration runs from the container without per-call approval.
 - 2026-11-16: weekly review (docs/weekly-2026-11-16.md). No new posts since DV18, so beliefs unchanged; the dilemma
   stays the default devlog format (DV18: 44 % skip, best of 47 posts, n=1). Followers 157. Still blocked on narration.
+- 2026-11-16 evening: no post. DV19 shot written (studio/shots/dv19.mjs, the eight basic infantry, one per age) and
+  a Bronze test take works; the full recording waited for an approval that a worker restart closed. Chromium path in
+  studio/lib/config.mjs now follows /opt/pw-browsers/chromium. Followers 157.

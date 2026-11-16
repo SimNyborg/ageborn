@@ -7,7 +7,7 @@ export const GAME_REPO = process.env.AGEBORN_REPO ?? '/home/user/ageborn';
 /** The game's dev server (started by `scripts/server.mjs` or by hand: `npx vite --port 7951`). */
 export const GAME_PORT = Number(process.env.AGEBORN_PORT ?? 7951);
 export const GAME_URL = `http://127.0.0.1:${GAME_PORT}`;
-export const CHROMIUM = process.env.CHROMIUM ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+export const CHROMIUM = process.env.CHROMIUM ?? '/opt/pw-browsers/chromium';
 export const HEADLESS_SHELL = process.env.HEADLESS_SHELL ?? '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell';
 export const WORK = path.join(STUDIO, 'work');
 export const OUT = path.join(STUDIO, 'out');
