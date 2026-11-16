@@ -225,3 +225,5 @@ what we believe, how sure we are, and what we post next because of it.
   but the ElevenLabs narration call waited for an approval nobody answered, and the container was then reclaimed
   (studio setup gone; /tmp/soc restored from the branch, render setup must be rebuilt). Proposed to the owner: an
   ElevenLabs API key saved as a network secret, so narration runs from the container without per-call approval.
+- 2026-11-16: weekly review (docs/weekly-2026-11-16.md). No new posts since DV18, so beliefs unchanged; the dilemma
+  stays the default devlog format (DV18: 44 % skip, best of 47 posts, n=1). Followers 157. Still blocked on narration.
