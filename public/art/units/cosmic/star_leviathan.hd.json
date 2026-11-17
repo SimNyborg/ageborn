@@ -2,17 +2,17 @@
  "frames": {
   "star_leviathan_idle_00": {
    "frame": {
-    "x": 552,
-    "y": 1082,
-    "w": 556,
+    "x": 554,
+    "y": 1080,
+    "w": 557,
     "h": 326
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 423,
+    "x": 422,
     "y": 442,
-    "w": 556,
+    "w": 557,
     "h": 326
    },
    "sourceSize": {
@@ -27,7 +27,7 @@
   "star_leviathan_idle_00_team": {
    "frame": {
     "x": 2036,
-    "y": 2326,
+    "y": 2324,
     "w": 413,
     "h": 255
    },
@@ -50,7 +50,7 @@
   },
   "star_leviathan_idle_01": {
    "frame": {
-    "x": 1066,
+    "x": 1107,
     "y": 395,
     "w": 556,
     "h": 341
@@ -75,7 +75,7 @@
   "star_leviathan_idle_01_team": {
    "frame": {
     "x": 1630,
-    "y": 2045,
+    "y": 2043,
     "w": 410,
     "h": 271
    },
@@ -98,18 +98,18 @@
   },
   "star_leviathan_idle_02": {
    "frame": {
-    "x": 1755,
+    "x": 1759,
     "y": 2,
-    "w": 545,
-    "h": 347
+    "w": 548,
+    "h": 346
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 435,
+    "x": 432,
     "y": 449,
-    "w": 545,
-    "h": 347
+    "w": 548,
+    "h": 346
    },
    "sourceSize": {
     "w": 1340,
@@ -122,8 +122,8 @@
   },
   "star_leviathan_idle_02_team": {
    "frame": {
-    "x": 3159,
-    "y": 1733,
+    "x": 3161,
+    "y": 1731,
     "w": 402,
     "h": 277
    },
@@ -146,17 +146,17 @@
   },
   "star_leviathan_idle_03": {
    "frame": {
-    "x": 2741,
+    "x": 2783,
     "y": 395,
-    "w": 533,
+    "w": 549,
     "h": 339
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 446,
+    "x": 430,
     "y": 454,
-    "w": 533,
+    "w": 549,
     "h": 339
    },
    "sourceSize": {
@@ -171,7 +171,7 @@
   "star_leviathan_idle_03_team": {
    "frame": {
     "x": 406,
-    "y": 2045,
+    "y": 2043,
     "w": 404,
     "h": 274
    },
@@ -194,17 +194,17 @@
   },
   "star_leviathan_idle_04": {
    "frame": {
-    "x": 1667,
-    "y": 1082,
-    "w": 537,
+    "x": 1671,
+    "y": 1080,
+    "w": 551,
     "h": 323
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 443,
+    "x": 429,
     "y": 454,
-    "w": 537,
+    "w": 551,
     "h": 323
    },
    "sourceSize": {
@@ -219,7 +219,7 @@
   "star_leviathan_idle_04_team": {
    "frame": {
     "x": 1220,
-    "y": 2326,
+    "y": 2324,
     "w": 405,
     "h": 258
    },
@@ -242,17 +242,17 @@
   },
   "star_leviathan_idle_05": {
    "frame": {
-    "x": 571,
-    "y": 1413,
-    "w": 549,
+    "x": 566,
+    "y": 1411,
+    "w": 550,
     "h": 316
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 431,
+    "x": 430,
     "y": 448,
-    "w": 549,
+    "w": 550,
     "h": 316
    },
    "sourceSize": {
@@ -267,7 +267,7 @@
   "star_leviathan_idle_05_team": {
    "frame": {
     "x": 1245,
-    "y": 2592,
+    "y": 2590,
     "w": 404,
     "h": 245
    },
@@ -290,18 +290,18 @@
   },
   "star_leviathan_walk_00": {
    "frame": {
-    "x": 2748,
-    "y": 1082,
-    "w": 559,
-    "h": 317
+    "x": 2,
+    "y": 1411,
+    "w": 560,
+    "h": 316
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 433,
+    "x": 432,
     "y": 447,
-    "w": 559,
-    "h": 317
+    "w": 560,
+    "h": 316
    },
    "sourceSize": {
     "w": 1340,
@@ -315,7 +315,7 @@
   "star_leviathan_walk_00_team": {
    "frame": {
     "x": 830,
-    "y": 2592,
+    "y": 2590,
     "w": 411,
     "h": 246
    },
@@ -338,7 +338,7 @@
   },
   "star_leviathan_walk_01": {
    "frame": {
-    "x": 2179,
+    "x": 1667,
     "y": 395,
     "w": 558,
     "h": 340
@@ -363,7 +363,7 @@
   "star_leviathan_walk_01_team": {
    "frame": {
     "x": 2044,
-    "y": 2045,
+    "y": 2043,
     "w": 411,
     "h": 269
    },
@@ -386,18 +386,18 @@
   },
   "star_leviathan_walk_02": {
    "frame": {
-    "x": 544,
+    "x": 1206,
     "y": 2,
-    "w": 548,
-    "h": 350
+    "w": 549,
+    "h": 349
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 443,
+    "x": 442,
     "y": 447,
-    "w": 548,
-    "h": 350
+    "w": 549,
+    "h": 349
    },
    "sourceSize": {
     "w": 1340,
@@ -411,7 +411,7 @@
   "star_leviathan_walk_02_team": {
    "frame": {
     "x": 2,
-    "y": 2045,
+    "y": 2043,
     "w": 400,
     "h": 277
    },
@@ -434,18 +434,18 @@
   },
   "star_leviathan_walk_03": {
    "frame": {
-    "x": 2833,
+    "x": 2863,
     "y": 2,
-    "w": 529,
-    "h": 346
+    "w": 549,
+    "h": 345
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 461,
+    "x": 441,
     "y": 457,
-    "w": 529,
-    "h": 346
+    "w": 549,
+    "h": 345
    },
    "sourceSize": {
     "w": 1340,
@@ -458,8 +458,8 @@
   },
   "star_leviathan_walk_03_team": {
    "frame": {
-    "x": 1525,
-    "y": 1733,
+    "x": 1527,
+    "y": 1731,
     "w": 402,
     "h": 300
    },
@@ -482,18 +482,18 @@
   },
   "star_leviathan_walk_04": {
    "frame": {
-    "x": 1626,
+    "x": 2229,
     "y": 395,
-    "w": 549,
-    "h": 341
+    "w": 550,
+    "h": 340
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 442,
+    "x": 441,
     "y": 450,
-    "w": 549,
-    "h": 341
+    "w": 550,
+    "h": 340
    },
    "sourceSize": {
     "w": 1340,
@@ -507,7 +507,7 @@
   "star_leviathan_walk_04_team": {
    "frame": {
     "x": 2,
-    "y": 1733,
+    "y": 1731,
     "w": 402,
     "h": 308
    },
@@ -530,17 +530,17 @@
   },
   "star_leviathan_walk_05": {
    "frame": {
-    "x": 2778,
-    "y": 744,
-    "w": 551,
+    "x": 2782,
+    "y": 743,
+    "w": 552,
     "h": 328
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 441,
+    "x": 440,
     "y": 441,
-    "w": 551,
+    "w": 552,
     "h": 328
    },
    "sourceSize": {
@@ -554,8 +554,8 @@
   },
   "star_leviathan_walk_05_team": {
    "frame": {
-    "x": 1931,
-    "y": 1733,
+    "x": 1933,
+    "y": 1731,
     "w": 404,
     "h": 289
    },
@@ -578,17 +578,17 @@
   },
   "star_leviathan_walk_06": {
    "frame": {
-    "x": 1673,
-    "y": 1413,
-    "w": 533,
+    "x": 1670,
+    "y": 1411,
+    "w": 552,
     "h": 314
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 459,
+    "x": 440,
     "y": 443,
-    "w": 533,
+    "w": 552,
     "h": 314
    },
    "sourceSize": {
@@ -603,7 +603,7 @@
   "star_leviathan_walk_06_team": {
    "frame": {
     "x": 2453,
-    "y": 2326,
+    "y": 2324,
     "w": 404,
     "h": 255
    },
@@ -627,16 +627,16 @@
   "star_leviathan_walk_07": {
    "frame": {
     "x": 408,
-    "y": 1733,
-    "w": 550,
+    "y": 1731,
+    "w": 551,
     "h": 305
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 442,
+    "x": 441,
     "y": 452,
-    "w": 550,
+    "w": 551,
     "h": 305
    },
    "sourceSize": {
@@ -650,8 +650,8 @@
   },
   "star_leviathan_walk_07_team": {
    "frame": {
-    "x": 2986,
-    "y": 2592,
+    "x": 3054,
+    "y": 2590,
     "w": 403,
     "h": 234
    },
@@ -674,17 +674,17 @@
   },
   "star_leviathan_attack_00": {
    "frame": {
-    "x": 557,
-    "y": 744,
-    "w": 546,
+    "x": 558,
+    "y": 743,
+    "w": 547,
     "h": 333
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 433,
+    "x": 432,
     "y": 447,
-    "w": 546,
+    "w": 547,
     "h": 333
    },
    "sourceSize": {
@@ -699,7 +699,7 @@
   "star_leviathan_attack_00_team": {
    "frame": {
     "x": 2,
-    "y": 2326,
+    "y": 2324,
     "w": 402,
     "h": 262
    },
@@ -724,16 +724,16 @@
    "frame": {
     "x": 2,
     "y": 395,
-    "w": 539,
-    "h": 345
+    "w": 550,
+    "h": 344
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 438,
+    "x": 427,
     "y": 444,
-    "w": 539,
-    "h": 345
+    "w": 550,
+    "h": 344
    },
    "sourceSize": {
     "w": 1340,
@@ -747,7 +747,7 @@
   "star_leviathan_attack_01_team": {
    "frame": {
     "x": 1221,
-    "y": 2045,
+    "y": 2043,
     "w": 405,
     "h": 272
    },
@@ -770,18 +770,18 @@
   },
   "star_leviathan_attack_02": {
    "frame": {
-    "x": 2304,
+    "x": 2311,
     "y": 2,
-    "w": 525,
-    "h": 347
+    "w": 548,
+    "h": 346
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 445,
+    "x": 422,
     "y": 447,
-    "w": 525,
-    "h": 347
+    "w": 548,
+    "h": 346
    },
    "sourceSize": {
     "w": 1340,
@@ -794,8 +794,8 @@
   },
   "star_leviathan_attack_02_team": {
    "frame": {
-    "x": 2749,
-    "y": 1733,
+    "x": 2751,
+    "y": 1731,
     "w": 406,
     "h": 277
    },
@@ -818,17 +818,17 @@
   },
   "star_leviathan_attack_03": {
    "frame": {
-    "x": 545,
+    "x": 556,
     "y": 395,
-    "w": 517,
+    "w": 547,
     "h": 344
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 448,
+    "x": 418,
     "y": 450,
-    "w": 517,
+    "w": 547,
     "h": 344
    },
    "sourceSize": {
@@ -842,8 +842,8 @@
   },
   "star_leviathan_attack_03_team": {
    "frame": {
-    "x": 2339,
-    "y": 1733,
+    "x": 2341,
+    "y": 1731,
     "w": 406,
     "h": 281
    },
@@ -866,8 +866,8 @@
   },
   "star_leviathan_attack_04": {
    "frame": {
-    "x": 1656,
-    "y": 744,
+    "x": 1659,
+    "y": 743,
     "w": 568,
     "h": 329
    },
@@ -891,7 +891,7 @@
   "star_leviathan_attack_04_team": {
    "frame": {
     "x": 2871,
-    "y": 2045,
+    "y": 2043,
     "w": 405,
     "h": 263
    },
@@ -914,17 +914,17 @@
   },
   "star_leviathan_attack_05": {
    "frame": {
-    "x": 2210,
-    "y": 1413,
-    "w": 591,
+    "x": 2226,
+    "y": 1411,
+    "w": 592,
     "h": 313
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 432,
+    "x": 431,
     "y": 451,
-    "w": 591,
+    "w": 592,
     "h": 313
    },
    "sourceSize": {
@@ -939,7 +939,7 @@
   "star_leviathan_attack_05_team": {
    "frame": {
     "x": 1653,
-    "y": 2592,
+    "y": 2590,
     "w": 414,
     "h": 244
    },
@@ -962,17 +962,17 @@
   },
   "star_leviathan_attack_06": {
    "frame": {
-    "x": 1096,
+    "x": 546,
     "y": 2,
-    "w": 655,
+    "w": 656,
     "h": 349
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 437,
+    "x": 436,
     "y": 465,
-    "w": 655,
+    "w": 656,
     "h": 349
    },
    "sourceSize": {
@@ -986,8 +986,8 @@
   },
   "star_leviathan_attack_06_team": {
    "frame": {
-    "x": 2869,
-    "y": 2850,
+    "x": 2872,
+    "y": 2848,
     "w": 415,
     "h": 224
    },
@@ -1010,17 +1010,17 @@
   },
   "star_leviathan_attack_07": {
    "frame": {
-    "x": 962,
-    "y": 1733,
-    "w": 559,
+    "x": 963,
+    "y": 1731,
+    "w": 560,
     "h": 303
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 440,
+    "x": 439,
     "y": 463,
-    "w": 559,
+    "w": 560,
     "h": 303
    },
    "sourceSize": {
@@ -1035,7 +1035,7 @@
   "star_leviathan_attack_07_team": {
    "frame": {
     "x": 430,
-    "y": 2850,
+    "y": 2848,
     "w": 412,
     "h": 232
    },
@@ -1058,18 +1058,18 @@
   },
   "star_leviathan_attack_08": {
    "frame": {
-    "x": 1112,
-    "y": 1082,
-    "w": 551,
-    "h": 326
+    "x": 1115,
+    "y": 1080,
+    "w": 552,
+    "h": 325
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 437,
+    "x": 436,
     "y": 449,
-    "w": 551,
-    "h": 326
+    "w": 552,
+    "h": 325
    },
    "sourceSize": {
     "w": 1340,
@@ -1083,7 +1083,7 @@
   "star_leviathan_attack_08_team": {
    "frame": {
     "x": 2861,
-    "y": 2326,
+    "y": 2324,
     "w": 404,
     "h": 255
    },
@@ -1106,17 +1106,17 @@
   },
   "star_leviathan_attack_09": {
    "frame": {
-    "x": 2228,
-    "y": 744,
-    "w": 546,
+    "x": 2231,
+    "y": 743,
+    "w": 547,
     "h": 329
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 433,
+    "x": 432,
     "y": 451,
-    "w": 546,
+    "w": 547,
     "h": 329
    },
    "sourceSize": {
@@ -1131,7 +1131,7 @@
   "star_leviathan_attack_09_team": {
    "frame": {
     "x": 408,
-    "y": 2326,
+    "y": 2324,
     "w": 402,
     "h": 262
    },
@@ -1155,16 +1155,16 @@
   "star_leviathan_hit_00": {
    "frame": {
     "x": 2,
-    "y": 1082,
-    "w": 546,
+    "y": 1080,
+    "w": 548,
     "h": 327
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 425,
+    "x": 423,
     "y": 466,
-    "w": 546,
+    "w": 548,
     "h": 327
    },
    "sourceSize": {
@@ -1179,7 +1179,7 @@
   "star_leviathan_hit_00_team": {
    "frame": {
     "x": 1629,
-    "y": 2326,
+    "y": 2324,
     "w": 403,
     "h": 256
    },
@@ -1202,17 +1202,17 @@
   },
   "star_leviathan_hit_01": {
    "frame": {
-    "x": 1124,
-    "y": 1413,
-    "w": 545,
+    "x": 1120,
+    "y": 1411,
+    "w": 546,
     "h": 316
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 416,
+    "x": 415,
     "y": 489,
-    "w": 545,
+    "w": 546,
     "h": 316
    },
    "sourceSize": {
@@ -1227,7 +1227,7 @@
   "star_leviathan_hit_01_team": {
    "frame": {
     "x": 422,
-    "y": 2592,
+    "y": 2590,
     "w": 404,
     "h": 254
    },
@@ -1250,17 +1250,17 @@
   },
   "star_leviathan_hit_02": {
    "frame": {
-    "x": 2208,
-    "y": 1082,
-    "w": 536,
+    "x": 2226,
+    "y": 1080,
+    "w": 549,
     "h": 322
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 434,
+    "x": 421,
     "y": 465,
-    "w": 536,
+    "w": 549,
     "h": 322
    },
    "sourceSize": {
@@ -1275,7 +1275,7 @@
   "star_leviathan_hit_02_team": {
    "frame": {
     "x": 814,
-    "y": 2045,
+    "y": 2043,
     "w": 403,
     "h": 274
    },
@@ -1299,17 +1299,17 @@
   "star_leviathan_hit_03": {
    "frame": {
     "x": 2,
-    "y": 744,
-    "w": 551,
-    "h": 334
+    "y": 743,
+    "w": 552,
+    "h": 333
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 425,
+    "x": 424,
     "y": 445,
-    "w": 551,
-    "h": 334
+    "w": 552,
+    "h": 333
    },
    "sourceSize": {
     "w": 1340,
@@ -1323,7 +1323,7 @@
   "star_leviathan_hit_03_team": {
    "frame": {
     "x": 2459,
-    "y": 2045,
+    "y": 2043,
     "w": 408,
     "h": 263
    },
@@ -1346,17 +1346,17 @@
   },
   "star_leviathan_hit_04": {
    "frame": {
-    "x": 1107,
-    "y": 744,
-    "w": 545,
+    "x": 1109,
+    "y": 743,
+    "w": 546,
     "h": 333
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 434,
+    "x": 433,
     "y": 447,
-    "w": 545,
+    "w": 546,
     "h": 333
    },
    "sourceSize": {
@@ -1371,7 +1371,7 @@
   "star_leviathan_hit_04_team": {
    "frame": {
     "x": 814,
-    "y": 2326,
+    "y": 2324,
     "w": 402,
     "h": 262
    },
@@ -1394,17 +1394,17 @@
   },
   "star_leviathan_die_00": {
    "frame": {
-    "x": 2,
-    "y": 1413,
-    "w": 565,
+    "x": 2779,
+    "y": 1080,
+    "w": 566,
     "h": 316
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 422,
+    "x": 421,
     "y": 461,
-    "w": 565,
+    "w": 566,
     "h": 316
    },
    "sourceSize": {
@@ -1419,7 +1419,7 @@
   "star_leviathan_die_00_team": {
    "frame": {
     "x": 2,
-    "y": 2592,
+    "y": 2590,
     "w": 416,
     "h": 254
    },
@@ -1444,15 +1444,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 538,
+    "w": 540,
     "h": 389
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 434,
+    "x": 432,
     "y": 390,
-    "w": 538,
+    "w": 540,
     "h": 389
    },
    "sourceSize": {
@@ -1466,8 +1466,8 @@
   },
   "star_leviathan_die_01_team": {
    "frame": {
-    "x": 2805,
-    "y": 1413,
+    "x": 2822,
+    "y": 1411,
     "w": 395,
     "h": 313
    },
@@ -1491,17 +1491,17 @@
   "star_leviathan_die_02": {
    "frame": {
     "x": 2071,
-    "y": 2592,
-    "w": 495,
-    "h": 237
+    "y": 2590,
+    "w": 563,
+    "h": 236
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 478,
+    "x": 410,
     "y": 581,
-    "w": 495,
-    "h": 237
+    "w": 563,
+    "h": 236
    },
    "sourceSize": {
     "w": 1340,
@@ -1514,8 +1514,8 @@
   },
   "star_leviathan_die_02_team": {
    "frame": {
-    "x": 1615,
-    "y": 3086,
+    "x": 1619,
+    "y": 3084,
     "w": 412,
     "h": 219
    },
@@ -1538,17 +1538,17 @@
   },
   "star_leviathan_die_03": {
    "frame": {
-    "x": 581,
-    "y": 3086,
-    "w": 609,
+    "x": 583,
+    "y": 3084,
+    "w": 611,
     "h": 221
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 381,
+    "x": 379,
     "y": 631,
-    "w": 609,
+    "w": 611,
     "h": 221
    },
    "sourceSize": {
@@ -1562,8 +1562,8 @@
   },
   "star_leviathan_die_03_team": {
    "frame": {
-    "x": 1992,
-    "y": 2850,
+    "x": 1995,
+    "y": 2848,
     "w": 447,
     "h": 228
    },
@@ -1587,16 +1587,16 @@
   "star_leviathan_die_04": {
    "frame": {
     "x": 846,
-    "y": 2850,
-    "w": 561,
+    "y": 2848,
+    "w": 563,
     "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 408,
+    "x": 406,
     "y": 641,
-    "w": 561,
+    "w": 563,
     "h": 230
    },
    "sourceSize": {
@@ -1610,8 +1610,8 @@
   },
   "star_leviathan_die_04_team": {
    "frame": {
-    "x": 2570,
-    "y": 2592,
+    "x": 2638,
+    "y": 2590,
     "w": 412,
     "h": 235
    },
@@ -1634,18 +1634,18 @@
   },
   "star_leviathan_die_05": {
    "frame": {
-    "x": 1411,
-    "y": 2850,
-    "w": 577,
-    "h": 229
+    "x": 1413,
+    "y": 2848,
+    "w": 578,
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 398,
+    "x": 397,
     "y": 641,
-    "w": 577,
-    "h": 229
+    "w": 578,
+    "h": 228
    },
    "sourceSize": {
     "w": 1340,
@@ -1659,7 +1659,7 @@
   "star_leviathan_die_05_team": {
    "frame": {
     "x": 2,
-    "y": 2850,
+    "y": 2848,
     "w": 424,
     "h": 232
    },
@@ -1683,17 +1683,17 @@
   "star_leviathan_die_06": {
    "frame": {
     "x": 2,
-    "y": 3086,
-    "w": 575,
-    "h": 223
+    "y": 3084,
+    "w": 577,
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 399,
+    "x": 397,
     "y": 644,
-    "w": 575,
-    "h": 223
+    "w": 577,
+    "h": 222
    },
    "sourceSize": {
     "w": 1340,
@@ -1706,8 +1706,8 @@
   },
   "star_leviathan_die_06_team": {
    "frame": {
-    "x": 2443,
-    "y": 2850,
+    "x": 2446,
+    "y": 2848,
     "w": 422,
     "h": 228
    },
@@ -1730,18 +1730,18 @@
   },
   "star_leviathan_die_07": {
    "frame": {
-    "x": 2031,
-    "y": 3086,
-    "w": 567,
-    "h": 216
+    "x": 2035,
+    "y": 3084,
+    "w": 569,
+    "h": 215
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 404,
+    "x": 402,
     "y": 647,
-    "w": 567,
-    "h": 216
+    "w": 569,
+    "h": 215
    },
    "sourceSize": {
     "w": 1340,
@@ -1754,8 +1754,8 @@
   },
   "star_leviathan_die_07_team": {
    "frame": {
-    "x": 1194,
-    "y": 3086,
+    "x": 1198,
+    "y": 3084,
     "w": 417,
     "h": 221
    },
@@ -1890,7 +1890,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 3584,
-   "h": 3312
+   "h": 3308
   },
   "scale": "2.5",
   "ageborn": {

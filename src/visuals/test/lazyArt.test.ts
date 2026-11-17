@@ -16,42 +16,48 @@ import { AtlasAdapter } from '../adapters/atlas';
 import { LruLoads, PORTRAIT_STILLS_KEPT } from '../adapters/atlasPortrait';
 import { WorldAtlas, type WorldSheet } from '../adapters/worldAtlas';
 import { PartBaker } from '../bake';
-import { MANIFEST } from '../manifest';
+import { MANIFEST, PROCEDURAL_MANIFEST, type VisualManifest } from '../manifest';
 import { getPart } from '../parts/registry';
 import { createArtProvider } from '../provider';
 import { SKIN_PUPPETS } from '../skins';
 import { memoryKind } from '../textureMemory';
 
 /** A troop skin still drawn by its puppet (skins rendered as sheets, queue item 46, draw from those instead); every
- *  Stone skin has its sheet since art round W1, so it comes from the first age that still has one. */
-const skinPuppet = SKIN_PUPPETS.find((p) => p.id.startsWith('unit.') && MANIFEST[p.id]?.kind === 'procedural');
-const skinId = skinPuppet?.id ?? '';
-const skinAge = skinPuppet?.age ?? 'stone';
+ *  Stone skin has its sheet since art round W1, so it comes from the first age that still has one. Since art round W4
+ *  every troop skin has its sheet: then the first one, forced back to its puppet in a manifest of the tests' own (the
+ *  provider's `manifest` option). */
+const skinPuppet = SKIN_PUPPETS.find((p) => p.id.startsWith('unit.') && MANIFEST[p.id]?.kind === 'procedural')
+  ?? SKIN_PUPPETS.find((p) => p.id.startsWith('unit.'))!;
+const skinId = skinPuppet.id;
+const skinAge = skinPuppet.age ?? 'stone';
 const [skinUnit = '', skinName = ''] = skinId.split('@');
+const PUPPET_MANIFEST: VisualManifest = MANIFEST[skinId]?.kind === 'procedural'
+  ? MANIFEST
+  : { ...MANIFEST, [skinId]: PROCEDURAL_MANIFEST[skinId]! };
 
 describe('skins bake when held (the game)', () => {
   it("an age's preload bakes no skin in the game; the gallery's provider still does", () => {
     expect(SKIN_PUPPETS.some((p) => p.id === skinId)).toBe(true);
-    const game = createArtProvider({ warn: () => {}, unitSheets: 'match' });
+    const game = createArtProvider({ warn: () => {}, unitSheets: 'match', manifest: PUPPET_MANIFEST });
     const listed = (art: ReturnType<typeof createArtProvider>): string[] => [...new Set(art.procedural.bakeListFor([skinAge]).map((e) => e.puppet.id))];
     expect(listed(game)).not.toContain(skinId);
-    const gallery = createArtProvider({ warn: () => {} });
+    const gallery = createArtProvider({ warn: () => {}, manifest: PUPPET_MANIFEST });
     expect(listed(gallery)).toContain(skinId);
   });
 
   it('a hold and a stage bake the procedural skins they draw, once', async () => {
-    const art = createArtProvider({ warn: () => {}, unitSheets: 'match' });
+    const art = createArtProvider({ warn: () => {}, unitSheets: 'match', manifest: PUPPET_MANIFEST });
     const baked = vi.spyOn(art.procedural, 'prebake');
-    expect(MANIFEST[skinId]?.kind).toBe('procedural');
+    expect(PUPPET_MANIFEST[skinId]?.kind).toBe('procedural');
     await art.holdArt().set([{ visualId: skinUnit, skin: skinName }, { visualId: 'unit.pebbler' }]);
-    expect(baked).toHaveBeenCalledWith([MANIFEST[skinId]!.source]);
+    expect(baked).toHaveBeenCalledWith([PUPPET_MANIFEST[skinId]!.source]);
     const lease = art.showcaseLease({ visuals: [{ visualId: skinUnit, skin: skinName }] });
     await lease.ready;
     lease.release();
     expect(baked).toHaveBeenCalledTimes(2);
     // the parts are baked once: a second prebake of the same puppet adds nothing
     const before = art.procedural.baker.stats.parts;
-    await art.procedural.prebake([MANIFEST[skinId]!.source]);
+    await art.procedural.prebake([PUPPET_MANIFEST[skinId]!.source]);
     expect(art.procedural.baker.stats.parts).toBe(before);
   });
 });

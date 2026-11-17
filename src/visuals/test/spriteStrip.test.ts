@@ -8,7 +8,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { VisualDef } from '@/contracts/art';
 import { parseStripInfo } from '@/ui/screens/home/Diorama';
-import { MANIFEST, PROCEDURAL_MANIFEST } from '../manifest';
+import { MANIFEST, PROCEDURAL_MANIFEST, type VisualManifest } from '../manifest';
 import { createArtProvider } from '../provider';
 import { SKIN_PUPPETS } from '../skins';
 import { RECENT_KEY, mainSlots, puppetStripLayout, setStripDeps, spriteStripArt, stripInfoUrl, stripRequest, stripWorker, warmRecentStrips, type StripArt, type StripDeps, type StripSource } from '../adapters/spriteStrip';
@@ -409,9 +409,12 @@ const puppetSkin = (): StripSource => {
   const def = PROCEDURAL_MANIFEST[PUPPET_ID] as VisualDef;
   return { kind: 'puppet', key: PUPPET_ID, puppet: PUPPET_SKIN, def, headLu: -def.anchors.head.y, aura: true };
 };
-// The provider's own pick: a unit skin it still draws as a puppet. When the art waves have given the last one its
-// sheet, the provider test below needs a skin forced to its puppet instead.
-const DRAWN_PUPPET = SKIN_PUPPETS.find((p) => p.id.startsWith('unit.') && MANIFEST[p.id]?.kind === 'procedural');
+// The provider's own pick: a unit skin it still draws as a puppet; once the art waves have given every unit skin its
+// sheet (W4 drew the last two), the example skin above, forced back to its puppet in a manifest of the test's own.
+const DRAWN_PUPPET = SKIN_PUPPETS.find((p) => p.id.startsWith('unit.') && MANIFEST[p.id]?.kind === 'procedural') ?? PUPPET_SKIN;
+const PUPPET_MANIFEST: VisualManifest = MANIFEST[DRAWN_PUPPET.id]?.kind === 'procedural'
+  ? MANIFEST
+  : { ...MANIFEST, [DRAWN_PUPPET.id]: PROCEDURAL_MANIFEST[DRAWN_PUPPET.id] as VisualDef };
 
 describe('the strip of a request', () => {
   afterEach(() => setStripDeps(null));
@@ -488,8 +491,7 @@ describe("the provider's strips", () => {
   it("draws a troop's skin (its puppet; the card's own strip when the puppet cannot be drawn), and nothing for a forced tier", async () => {
     const d = deps();
     setStripDeps(d);
-    const art = createArtProvider({ warn: () => {} });
-    if (!DRAWN_PUPPET) throw new Error('no unit skin is drawn as a puppet any more: force one to its puppet for this test');
+    const art = createArtProvider({ warn: () => {}, manifest: PUPPET_MANIFEST });
     const [card, skin] = DRAWN_PUPPET.id.slice('unit.'.length).split('@') as [string, string];
     expect(await art.portrait({ card: `strip:idle:${card}`, skin, size: 160 })).toBe(ART.url);
     // the skinned strip is its own job (the puppet first, here without a canvas, then the card's sheet)

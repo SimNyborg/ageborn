@@ -26,8 +26,8 @@
   },
   "mothership_idle_00_team": {
    "frame": {
-    "x": 909,
-    "y": 2383,
+    "x": 613,
+    "y": 2382,
     "w": 289,
     "h": 285
    },
@@ -75,16 +75,16 @@
   "mothership_idle_01_team": {
    "frame": {
     "x": 2,
-    "y": 2383,
-    "w": 286,
+    "y": 2382,
+    "w": 285,
     "h": 286
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 204,
     "y": 176,
-    "w": 286,
+    "w": 285,
     "h": 286
    },
    "sourceSize": {
@@ -122,17 +122,17 @@
   },
   "mothership_idle_02_team": {
    "frame": {
-    "x": 1493,
-    "y": 2383,
-    "w": 288,
+    "x": 1200,
+    "y": 2382,
+    "w": 287,
     "h": 284
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 203,
     "y": 177,
-    "w": 288,
+    "w": 287,
     "h": 284
    },
    "sourceSize": {
@@ -170,17 +170,17 @@
   },
   "mothership_idle_03_team": {
    "frame": {
-    "x": 1785,
-    "y": 2383,
-    "w": 287,
+    "x": 1491,
+    "y": 2382,
+    "w": 286,
     "h": 284
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 203,
     "y": 183,
-    "w": 287,
+    "w": 286,
     "h": 284
    },
    "sourceSize": {
@@ -218,9 +218,9 @@
   },
   "mothership_idle_04_team": {
    "frame": {
-    "x": 2056,
-    "y": 2085,
-    "w": 290,
+    "x": 2052,
+    "y": 2084,
+    "w": 289,
     "h": 286
    },
    "rotated": false,
@@ -228,7 +228,7 @@
    "spriteSourceSize": {
     "x": 200,
     "y": 188,
-    "w": 290,
+    "w": 289,
     "h": 286
    },
    "sourceSize": {
@@ -266,18 +266,18 @@
   },
   "mothership_idle_05_team": {
    "frame": {
-    "x": 1202,
-    "y": 2383,
-    "w": 287,
-    "h": 285
+    "x": 1781,
+    "y": 2382,
+    "w": 286,
+    "h": 284
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 203,
-    "y": 189,
-    "w": 287,
-    "h": 285
+    "y": 190,
+    "w": 286,
+    "h": 284
    },
    "sourceSize": {
     "w": 628,
@@ -314,17 +314,17 @@
   },
   "mothership_walk_00_team": {
    "frame": {
-    "x": 936,
-    "y": 1779,
-    "w": 287,
+    "x": 617,
+    "y": 1778,
+    "w": 286,
     "h": 296
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 203,
     "y": 177,
-    "w": 287,
+    "w": 286,
     "h": 296
    },
    "sourceSize": {
@@ -362,8 +362,8 @@
   },
   "mothership_walk_01_team": {
    "frame": {
-    "x": 1517,
-    "y": 1779,
+    "x": 1225,
+    "y": 1778,
     "w": 288,
     "h": 295
    },
@@ -410,8 +410,8 @@
   },
   "mothership_walk_02_team": {
    "frame": {
-    "x": 2101,
-    "y": 1779,
+    "x": 1806,
+    "y": 1778,
     "w": 289,
     "h": 294
    },
@@ -459,7 +459,7 @@
   "mothership_walk_03_team": {
    "frame": {
     "x": 294,
-    "y": 2085,
+    "y": 2084,
     "w": 286,
     "h": 294
    },
@@ -507,16 +507,16 @@
   "mothership_walk_04_team": {
    "frame": {
     "x": 878,
-    "y": 2085,
-    "w": 288,
+    "y": 2084,
+    "w": 286,
     "h": 293
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
+    "x": 203,
     "y": 178,
-    "w": 288,
+    "w": 286,
     "h": 293
    },
    "sourceSize": {
@@ -554,8 +554,8 @@
   },
   "mothership_walk_05_team": {
    "frame": {
-    "x": 2,
-    "y": 2085,
+    "x": 2099,
+    "y": 1778,
     "w": 288,
     "h": 294
    },
@@ -602,10 +602,10 @@
   },
   "mothership_walk_06_team": {
    "frame": {
-    "x": 1809,
-    "y": 1779,
+    "x": 2,
+    "y": 2084,
     "w": 288,
-    "h": 295
+    "h": 294
    },
    "rotated": false,
    "trimmed": true,
@@ -613,7 +613,7 @@
     "x": 204,
     "y": 180,
     "w": 288,
-    "h": 295
+    "h": 294
    },
    "sourceSize": {
     "w": 628,
@@ -650,18 +650,18 @@
   },
   "mothership_walk_07_team": {
    "frame": {
-    "x": 1227,
-    "y": 1779,
-    "w": 286,
-    "h": 296
+    "x": 1517,
+    "y": 1778,
+    "w": 285,
+    "h": 295
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 204,
     "y": 179,
-    "w": 286,
-    "h": 296
+    "w": 285,
+    "h": 295
    },
    "sourceSize": {
     "w": 628,
@@ -698,17 +698,17 @@
   },
   "mothership_attack_00_team": {
    "frame": {
-    "x": 1468,
-    "y": 2085,
-    "w": 291,
+    "x": 1466,
+    "y": 2084,
+    "w": 290,
     "h": 288
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
+    "x": 202,
     "y": 183,
-    "w": 291,
+    "w": 290,
     "h": 288
    },
    "sourceSize": {
@@ -746,17 +746,17 @@
   },
   "mothership_attack_01_team": {
    "frame": {
-    "x": 1763,
-    "y": 2085,
-    "w": 289,
+    "x": 1760,
+    "y": 2084,
+    "w": 288,
     "h": 287
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 204,
     "y": 185,
-    "w": 289,
+    "w": 288,
     "h": 287
    },
    "sourceSize": {
@@ -794,10 +794,10 @@
   },
   "mothership_attack_02_team": {
    "frame": {
-    "x": 1170,
-    "y": 2085,
+    "x": 1168,
+    "y": 2084,
     "w": 294,
-    "h": 291
+    "h": 290
    },
    "rotated": false,
    "trimmed": true,
@@ -805,7 +805,7 @@
     "x": 202,
     "y": 189,
     "w": 294,
-    "h": 291
+    "h": 290
    },
    "sourceSize": {
     "w": 628,
@@ -818,7 +818,7 @@
   },
   "mothership_attack_03": {
    "frame": {
-    "x": 895,
+    "x": 906,
     "y": 1096,
     "w": 301,
     "h": 342
@@ -842,8 +842,8 @@
   },
   "mothership_attack_03_team": {
    "frame": {
-    "x": 2076,
-    "y": 2383,
+    "x": 2071,
+    "y": 2382,
     "w": 301,
     "h": 277
    },
@@ -890,7 +890,7 @@
   },
   "mothership_attack_04_team": {
    "frame": {
-    "x": 583,
+    "x": 291,
     "y": 1448,
     "w": 274,
     "h": 324
@@ -940,15 +940,15 @@
    "frame": {
     "x": 861,
     "y": 1448,
-    "w": 291,
+    "w": 289,
     "h": 317
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 191,
+    "x": 192,
     "y": 180,
-    "w": 291,
+    "w": 289,
     "h": 317
    },
    "sourceSize": {
@@ -989,15 +989,15 @@
     "x": 2,
     "y": 1448,
     "w": 285,
-    "h": 327
+    "h": 326
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 198,
-    "y": 178,
+    "y": 179,
     "w": 285,
-    "h": 327
+    "h": 326
    },
    "sourceSize": {
     "w": 628,
@@ -1034,18 +1034,18 @@
   },
   "mothership_attack_07_team": {
    "frame": {
-    "x": 291,
+    "x": 569,
     "y": 1448,
     "w": 288,
-    "h": 324
+    "h": 323
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 200,
-    "y": 182,
+    "y": 183,
     "w": 288,
-    "h": 324
+    "h": 323
    },
    "sourceSize": {
     "w": 628,
@@ -1082,18 +1082,18 @@
   },
   "mothership_attack_08_team": {
    "frame": {
-    "x": 614,
-    "y": 2383,
-    "w": 291,
-    "h": 285
+    "x": 906,
+    "y": 2382,
+    "w": 290,
+    "h": 284
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 183,
-    "w": 291,
-    "h": 285
+    "y": 184,
+    "w": 290,
+    "h": 284
    },
    "sourceSize": {
     "w": 628,
@@ -1106,7 +1106,7 @@
   },
   "mothership_hit_00": {
    "frame": {
-    "x": 1200,
+    "x": 1211,
     "y": 1096,
     "w": 301,
     "h": 337
@@ -1131,7 +1131,7 @@
   "mothership_hit_00_team": {
    "frame": {
     "x": 634,
-    "y": 2673,
+    "y": 2672,
     "w": 296,
     "h": 272
    },
@@ -1154,7 +1154,7 @@
   },
   "mothership_hit_01": {
    "frame": {
-    "x": 2073,
+    "x": 2084,
     "y": 1096,
     "w": 290,
     "h": 334
@@ -1179,17 +1179,17 @@
   "mothership_hit_01_team": {
    "frame": {
     "x": 2,
-    "y": 2673,
+    "y": 2672,
     "w": 289,
-    "h": 276
+    "h": 275
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 189,
-    "y": 209,
+    "y": 210,
     "w": 289,
-    "h": 276
+    "h": 275
    },
    "sourceSize": {
     "w": 628,
@@ -1226,17 +1226,17 @@
   },
   "mothership_hit_02_team": {
    "frame": {
-    "x": 1737,
+    "x": 1735,
     "y": 1448,
-    "w": 283,
+    "w": 282,
     "h": 306
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
+    "x": 202,
     "y": 168,
-    "w": 283,
+    "w": 282,
     "h": 306
    },
    "sourceSize": {
@@ -1275,7 +1275,7 @@
   "mothership_hit_03_team": {
    "frame": {
     "x": 584,
-    "y": 2085,
+    "y": 2084,
     "w": 290,
     "h": 293
    },
@@ -1323,8 +1323,8 @@
   "mothership_hit_04_team": {
    "frame": {
     "x": 325,
-    "y": 1779,
-    "w": 289,
+    "y": 1778,
+    "w": 288,
     "h": 297
    },
    "rotated": false,
@@ -1332,7 +1332,7 @@
    "spriteSourceSize": {
     "x": 201,
     "y": 171,
-    "w": 289,
+    "w": 288,
     "h": 297
    },
    "sourceSize": {
@@ -1370,17 +1370,17 @@
   },
   "mothership_die_00_team": {
    "frame": {
-    "x": 2024,
+    "x": 2021,
     "y": 1448,
-    "w": 288,
+    "w": 287,
     "h": 304
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 196,
+    "x": 197,
     "y": 175,
-    "w": 288,
+    "w": 287,
     "h": 304
    },
    "sourceSize": {
@@ -1394,7 +1394,7 @@
   },
   "mothership_die_01": {
    "frame": {
-    "x": 1505,
+    "x": 1516,
     "y": 1096,
     "w": 281,
     "h": 337
@@ -1418,10 +1418,10 @@
   },
   "mothership_die_01_team": {
    "frame": {
-    "x": 1445,
+    "x": 1443,
     "y": 1448,
     "w": 288,
-    "h": 310
+    "h": 309
    },
    "rotated": false,
    "trimmed": true,
@@ -1429,7 +1429,7 @@
     "x": 189,
     "y": 188,
     "w": 288,
-    "h": 310
+    "h": 309
    },
    "sourceSize": {
     "w": 628,
@@ -1442,7 +1442,7 @@
   },
   "mothership_die_02": {
    "frame": {
-    "x": 1790,
+    "x": 1801,
     "y": 1096,
     "w": 279,
     "h": 335
@@ -1466,10 +1466,10 @@
   },
   "mothership_die_02_team": {
    "frame": {
-    "x": 1156,
+    "x": 1154,
     "y": 1448,
     "w": 285,
-    "h": 312
+    "h": 311
    },
    "rotated": false,
    "trimmed": true,
@@ -1477,7 +1477,7 @@
     "x": 188,
     "y": 207,
     "w": 285,
-    "h": 312
+    "h": 311
    },
    "sourceSize": {
     "w": 628,
@@ -1492,15 +1492,15 @@
    "frame": {
     "x": 604,
     "y": 1096,
-    "w": 287,
+    "w": 298,
     "h": 344
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 174,
+    "x": 163,
     "y": 224,
-    "w": 287,
+    "w": 298,
     "h": 344
    },
    "sourceSize": {
@@ -1514,18 +1514,18 @@
   },
   "mothership_die_03_team": {
    "frame": {
-    "x": 618,
-    "y": 1779,
+    "x": 907,
+    "y": 1778,
     "w": 314,
-    "h": 296
+    "h": 295
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 155,
-    "y": 243,
+    "y": 244,
     "w": 314,
-    "h": 296
+    "h": 295
    },
    "sourceSize": {
     "w": 628,
@@ -1539,7 +1539,7 @@
   "mothership_die_04": {
    "frame": {
     "x": 2,
-    "y": 1779,
+    "y": 1778,
     "w": 319,
     "h": 302
    },
@@ -1563,9 +1563,9 @@
   "mothership_die_04_team": {
    "frame": {
     "x": 295,
-    "y": 2673,
+    "y": 2672,
     "w": 335,
-    "h": 274
+    "h": 273
    },
    "rotated": false,
    "trimmed": true,
@@ -1573,7 +1573,7 @@
     "x": 130,
     "y": 285,
     "w": 335,
-    "h": 274
+    "h": 273
    },
    "sourceSize": {
     "w": 628,
@@ -1586,8 +1586,8 @@
   },
   "mothership_die_05": {
    "frame": {
-    "x": 292,
-    "y": 2383,
+    "x": 291,
+    "y": 2382,
     "w": 318,
     "h": 285
    },
@@ -1611,7 +1611,7 @@
   "mothership_die_05_team": {
    "frame": {
     "x": 1254,
-    "y": 2673,
+    "y": 2672,
     "w": 333,
     "h": 259
    },
@@ -1635,7 +1635,7 @@
   "mothership_die_06": {
    "frame": {
     "x": 934,
-    "y": 2673,
+    "y": 2672,
     "w": 316,
     "h": 269
    },
@@ -1658,8 +1658,8 @@
   },
   "mothership_die_06_team": {
    "frame": {
-    "x": 1888,
-    "y": 2673,
+    "x": 1889,
+    "y": 2672,
     "w": 332,
     "h": 242
    },
@@ -1683,16 +1683,16 @@
   "mothership_die_07": {
    "frame": {
     "x": 1591,
-    "y": 2673,
-    "w": 293,
+    "y": 2672,
+    "w": 294,
     "h": 250
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 147,
+    "x": 146,
     "y": 377,
-    "w": 293,
+    "w": 294,
     "h": 250
    },
    "sourceSize": {
@@ -1706,8 +1706,8 @@
   },
   "mothership_die_07_team": {
    "frame": {
-    "x": 2224,
-    "y": 2673,
+    "x": 2225,
+    "y": 2672,
     "w": 308,
     "h": 225
    },

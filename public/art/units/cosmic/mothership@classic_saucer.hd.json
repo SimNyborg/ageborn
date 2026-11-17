@@ -1,0 +1,2212 @@
+{
+ "frames": {
+  "mothership@classic_saucer_idle_00": {
+   "frame": {
+    "x": 294,
+    "y": 378,
+    "w": 295,
+    "h": 357
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 166,
+    "w": 295,
+    "h": 357
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_00_team": {
+   "frame": {
+    "x": 613,
+    "y": 2382,
+    "w": 287,
+    "h": 285
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 183,
+    "w": 287,
+    "h": 285
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_01": {
+   "frame": {
+    "x": 2089,
+    "y": 2,
+    "w": 298,
+    "h": 358
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 160,
+    "w": 298,
+    "h": 358
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 2382,
+    "w": 285,
+    "h": 286
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 176,
+    "w": 285,
+    "h": 286
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_02": {
+   "frame": {
+    "x": 593,
+    "y": 378,
+    "w": 291,
+    "h": 357
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 160,
+    "w": 291,
+    "h": 357
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_02_team": {
+   "frame": {
+    "x": 1198,
+    "y": 2382,
+    "w": 287,
+    "h": 284
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 177,
+    "w": 287,
+    "h": 284
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_03": {
+   "frame": {
+    "x": 1782,
+    "y": 378,
+    "w": 294,
+    "h": 354
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 166,
+    "w": 294,
+    "h": 354
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_03_team": {
+   "frame": {
+    "x": 1489,
+    "y": 2382,
+    "w": 286,
+    "h": 284
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 183,
+    "w": 286,
+    "h": 284
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_04": {
+   "frame": {
+    "x": 303,
+    "y": 740,
+    "w": 291,
+    "h": 352
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 172,
+    "w": 291,
+    "h": 352
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_04_team": {
+   "frame": {
+    "x": 2048,
+    "y": 2084,
+    "w": 289,
+    "h": 286
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 188,
+    "w": 289,
+    "h": 286
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_05": {
+   "frame": {
+    "x": 2080,
+    "y": 378,
+    "w": 294,
+    "h": 354
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 172,
+    "w": 294,
+    "h": 354
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_idle_05_team": {
+   "frame": {
+    "x": 1779,
+    "y": 2382,
+    "w": 284,
+    "h": 284
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 190,
+    "w": 284,
+    "h": 284
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_00": {
+   "frame": {
+    "x": 616,
+    "y": 2,
+    "w": 293,
+    "h": 364
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 167,
+    "w": 293,
+    "h": 364
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_00_team": {
+   "frame": {
+    "x": 615,
+    "y": 1778,
+    "w": 286,
+    "h": 296
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 177,
+    "w": 286,
+    "h": 296
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_01": {
+   "frame": {
+    "x": 2102,
+    "y": 740,
+    "w": 288,
+    "h": 348
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 165,
+    "w": 288,
+    "h": 348
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_01_team": {
+   "frame": {
+    "x": 1223,
+    "y": 1778,
+    "w": 286,
+    "h": 295
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 175,
+    "w": 286,
+    "h": 295
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_02": {
+   "frame": {
+    "x": 913,
+    "y": 2,
+    "w": 293,
+    "h": 362
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 164,
+    "w": 293,
+    "h": 362
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_02_team": {
+   "frame": {
+    "x": 1802,
+    "y": 1778,
+    "w": 287,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 175,
+    "w": 287,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_03": {
+   "frame": {
+    "x": 902,
+    "y": 740,
+    "w": 294,
+    "h": 350
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 165,
+    "w": 294,
+    "h": 350
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_03_team": {
+   "frame": {
+    "x": 2093,
+    "y": 1778,
+    "w": 286,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 176,
+    "w": 286,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_04": {
+   "frame": {
+    "x": 318,
+    "y": 2,
+    "w": 294,
+    "h": 365
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 166,
+    "w": 294,
+    "h": 365
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_04_team": {
+   "frame": {
+    "x": 876,
+    "y": 2084,
+    "w": 286,
+    "h": 293
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 178,
+    "w": 286,
+    "h": 293
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_05": {
+   "frame": {
+    "x": 2,
+    "y": 1096,
+    "w": 288,
+    "h": 348
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 168,
+    "w": 288,
+    "h": 348
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 2084,
+    "w": 286,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 179,
+    "w": 286,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_06": {
+   "frame": {
+    "x": 1504,
+    "y": 2,
+    "w": 289,
+    "h": 361
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 169,
+    "w": 289,
+    "h": 361
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_06_team": {
+   "frame": {
+    "x": 292,
+    "y": 2084,
+    "w": 286,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 180,
+    "w": 286,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_07": {
+   "frame": {
+    "x": 1200,
+    "y": 740,
+    "w": 293,
+    "h": 350
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 168,
+    "w": 293,
+    "h": 350
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_walk_07_team": {
+   "frame": {
+    "x": 1513,
+    "y": 1778,
+    "w": 285,
+    "h": 295
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 179,
+    "w": 285,
+    "h": 295
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_00": {
+   "frame": {
+    "x": 2,
+    "y": 740,
+    "w": 297,
+    "h": 352
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 170,
+    "w": 297,
+    "h": 352
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_00_team": {
+   "frame": {
+    "x": 1462,
+    "y": 2084,
+    "w": 290,
+    "h": 288
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 183,
+    "w": 290,
+    "h": 288
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_01": {
+   "frame": {
+    "x": 1497,
+    "y": 740,
+    "w": 304,
+    "h": 349
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 173,
+    "w": 304,
+    "h": 349
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_01_team": {
+   "frame": {
+    "x": 1756,
+    "y": 2084,
+    "w": 288,
+    "h": 287
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 185,
+    "w": 288,
+    "h": 287
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_02": {
+   "frame": {
+    "x": 294,
+    "y": 1096,
+    "w": 306,
+    "h": 345
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 177,
+    "w": 306,
+    "h": 345
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_02_team": {
+   "frame": {
+    "x": 1166,
+    "y": 2084,
+    "w": 292,
+    "h": 290
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 189,
+    "w": 292,
+    "h": 290
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_03": {
+   "frame": {
+    "x": 906,
+    "y": 1096,
+    "w": 301,
+    "h": 342
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 183,
+    "w": 301,
+    "h": 342
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_03_team": {
+   "frame": {
+    "x": 2067,
+    "y": 2382,
+    "w": 301,
+    "h": 277
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 200,
+    "w": 301,
+    "h": 277
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 312,
+    "h": 372
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 151,
+    "w": 312,
+    "h": 372
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_04_team": {
+   "frame": {
+    "x": 290,
+    "y": 1448,
+    "w": 274,
+    "h": 324
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 163,
+    "w": 274,
+    "h": 324
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_05": {
+   "frame": {
+    "x": 598,
+    "y": 740,
+    "w": 300,
+    "h": 350
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 165,
+    "w": 300,
+    "h": 350
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_05_team": {
+   "frame": {
+    "x": 860,
+    "y": 1448,
+    "w": 288,
+    "h": 317
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 180,
+    "w": 288,
+    "h": 317
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_06": {
+   "frame": {
+    "x": 1210,
+    "y": 2,
+    "w": 290,
+    "h": 362
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 161,
+    "w": 290,
+    "h": 362
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 1448,
+    "w": 284,
+    "h": 326
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 179,
+    "w": 284,
+    "h": 326
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_07": {
+   "frame": {
+    "x": 2,
+    "y": 378,
+    "w": 288,
+    "h": 358
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 165,
+    "w": 288,
+    "h": 358
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_07_team": {
+   "frame": {
+    "x": 568,
+    "y": 1448,
+    "w": 288,
+    "h": 323
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 183,
+    "w": 288,
+    "h": 323
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_08": {
+   "frame": {
+    "x": 888,
+    "y": 378,
+    "w": 294,
+    "h": 355
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 166,
+    "w": 294,
+    "h": 355
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_attack_08_team": {
+   "frame": {
+    "x": 904,
+    "y": 2382,
+    "w": 290,
+    "h": 284
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 184,
+    "w": 290,
+    "h": 284
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_hit_00": {
+   "frame": {
+    "x": 1211,
+    "y": 1096,
+    "w": 301,
+    "h": 337
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 183,
+    "w": 301,
+    "h": 337
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_hit_00_team": {
+   "frame": {
+    "x": 634,
+    "y": 2672,
+    "w": 296,
+    "h": 272
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 202,
+    "w": 296,
+    "h": 272
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_hit_01": {
+   "frame": {
+    "x": 2084,
+    "y": 1096,
+    "w": 294,
+    "h": 334
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 189,
+    "w": 294,
+    "h": 334
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_hit_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 2672,
+    "w": 289,
+    "h": 275
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 210,
+    "w": 289,
+    "h": 275
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_hit_02": {
+   "frame": {
+    "x": 1797,
+    "y": 2,
+    "w": 288,
+    "h": 361
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 165,
+    "w": 288,
+    "h": 361
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_hit_02_team": {
+   "frame": {
+    "x": 1733,
+    "y": 1448,
+    "w": 282,
+    "h": 306
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 168,
+    "w": 282,
+    "h": 306
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_hit_03": {
+   "frame": {
+    "x": 1186,
+    "y": 378,
+    "w": 294,
+    "h": 355
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 165,
+    "w": 294,
+    "h": 355
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_hit_03_team": {
+   "frame": {
+    "x": 582,
+    "y": 2084,
+    "w": 290,
+    "h": 293
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 173,
+    "w": 290,
+    "h": 293
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_hit_04": {
+   "frame": {
+    "x": 1484,
+    "y": 378,
+    "w": 294,
+    "h": 355
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 166,
+    "w": 294,
+    "h": 355
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_hit_04_team": {
+   "frame": {
+    "x": 325,
+    "y": 1778,
+    "w": 286,
+    "h": 297
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 171,
+    "w": 286,
+    "h": 297
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_00": {
+   "frame": {
+    "x": 1805,
+    "y": 740,
+    "w": 293,
+    "h": 349
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 168,
+    "w": 293,
+    "h": 349
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_00_team": {
+   "frame": {
+    "x": 2019,
+    "y": 1448,
+    "w": 287,
+    "h": 304
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 175,
+    "w": 287,
+    "h": 304
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_01": {
+   "frame": {
+    "x": 1516,
+    "y": 1096,
+    "w": 281,
+    "h": 337
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 181,
+    "w": 281,
+    "h": 337
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_01_team": {
+   "frame": {
+    "x": 1441,
+    "y": 1448,
+    "w": 288,
+    "h": 309
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 188,
+    "w": 288,
+    "h": 309
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_02": {
+   "frame": {
+    "x": 1801,
+    "y": 1096,
+    "w": 279,
+    "h": 335
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 190,
+    "w": 279,
+    "h": 335
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_02_team": {
+   "frame": {
+    "x": 1152,
+    "y": 1448,
+    "w": 285,
+    "h": 311
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 207,
+    "w": 285,
+    "h": 311
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_03": {
+   "frame": {
+    "x": 604,
+    "y": 1096,
+    "w": 298,
+    "h": 344
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 163,
+    "y": 224,
+    "w": 298,
+    "h": 344
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_03_team": {
+   "frame": {
+    "x": 905,
+    "y": 1778,
+    "w": 314,
+    "h": 295
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 155,
+    "y": 244,
+    "w": 314,
+    "h": 295
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_04": {
+   "frame": {
+    "x": 2,
+    "y": 1778,
+    "w": 319,
+    "h": 302
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 265,
+    "w": 319,
+    "h": 302
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_04_team": {
+   "frame": {
+    "x": 295,
+    "y": 2672,
+    "w": 335,
+    "h": 273
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 285,
+    "w": 335,
+    "h": 273
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_05": {
+   "frame": {
+    "x": 291,
+    "y": 2382,
+    "w": 318,
+    "h": 285
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 310,
+    "w": 318,
+    "h": 285
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_05_team": {
+   "frame": {
+    "x": 1254,
+    "y": 2672,
+    "w": 333,
+    "h": 259
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 127,
+    "y": 328,
+    "w": 333,
+    "h": 259
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_06": {
+   "frame": {
+    "x": 934,
+    "y": 2672,
+    "w": 316,
+    "h": 269
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 351,
+    "w": 316,
+    "h": 269
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_06_team": {
+   "frame": {
+    "x": 1889,
+    "y": 2672,
+    "w": 332,
+    "h": 242
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 370,
+    "w": 332,
+    "h": 242
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_07": {
+   "frame": {
+    "x": 1591,
+    "y": 2672,
+    "w": 294,
+    "h": 250
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 377,
+    "w": 294,
+    "h": 250
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership@classic_saucer_die_07_team": {
+   "frame": {
+    "x": 2225,
+    "y": 2672,
+    "w": 308,
+    "h": 225
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 394,
+    "w": 308,
+    "h": 225
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "mothership@classic_saucer_idle_00",
+   "mothership@classic_saucer_idle_01",
+   "mothership@classic_saucer_idle_02",
+   "mothership@classic_saucer_idle_03",
+   "mothership@classic_saucer_idle_04",
+   "mothership@classic_saucer_idle_05"
+  ],
+  "idle_team": [
+   "mothership@classic_saucer_idle_00_team",
+   "mothership@classic_saucer_idle_01_team",
+   "mothership@classic_saucer_idle_02_team",
+   "mothership@classic_saucer_idle_03_team",
+   "mothership@classic_saucer_idle_04_team",
+   "mothership@classic_saucer_idle_05_team"
+  ],
+  "walk": [
+   "mothership@classic_saucer_walk_00",
+   "mothership@classic_saucer_walk_01",
+   "mothership@classic_saucer_walk_02",
+   "mothership@classic_saucer_walk_03",
+   "mothership@classic_saucer_walk_04",
+   "mothership@classic_saucer_walk_05",
+   "mothership@classic_saucer_walk_06",
+   "mothership@classic_saucer_walk_07"
+  ],
+  "walk_team": [
+   "mothership@classic_saucer_walk_00_team",
+   "mothership@classic_saucer_walk_01_team",
+   "mothership@classic_saucer_walk_02_team",
+   "mothership@classic_saucer_walk_03_team",
+   "mothership@classic_saucer_walk_04_team",
+   "mothership@classic_saucer_walk_05_team",
+   "mothership@classic_saucer_walk_06_team",
+   "mothership@classic_saucer_walk_07_team"
+  ],
+  "attack": [
+   "mothership@classic_saucer_attack_00",
+   "mothership@classic_saucer_attack_01",
+   "mothership@classic_saucer_attack_02",
+   "mothership@classic_saucer_attack_03",
+   "mothership@classic_saucer_attack_04",
+   "mothership@classic_saucer_attack_05",
+   "mothership@classic_saucer_attack_06",
+   "mothership@classic_saucer_attack_07",
+   "mothership@classic_saucer_attack_08"
+  ],
+  "attack_team": [
+   "mothership@classic_saucer_attack_00_team",
+   "mothership@classic_saucer_attack_01_team",
+   "mothership@classic_saucer_attack_02_team",
+   "mothership@classic_saucer_attack_03_team",
+   "mothership@classic_saucer_attack_04_team",
+   "mothership@classic_saucer_attack_05_team",
+   "mothership@classic_saucer_attack_06_team",
+   "mothership@classic_saucer_attack_07_team",
+   "mothership@classic_saucer_attack_08_team"
+  ],
+  "hit": [
+   "mothership@classic_saucer_hit_00",
+   "mothership@classic_saucer_hit_01",
+   "mothership@classic_saucer_hit_02",
+   "mothership@classic_saucer_hit_03",
+   "mothership@classic_saucer_hit_04"
+  ],
+  "hit_team": [
+   "mothership@classic_saucer_hit_00_team",
+   "mothership@classic_saucer_hit_01_team",
+   "mothership@classic_saucer_hit_02_team",
+   "mothership@classic_saucer_hit_03_team",
+   "mothership@classic_saucer_hit_04_team"
+  ],
+  "die": [
+   "mothership@classic_saucer_die_00",
+   "mothership@classic_saucer_die_01",
+   "mothership@classic_saucer_die_02",
+   "mothership@classic_saucer_die_03",
+   "mothership@classic_saucer_die_03",
+   "mothership@classic_saucer_die_04",
+   "mothership@classic_saucer_die_05",
+   "mothership@classic_saucer_die_05",
+   "mothership@classic_saucer_die_06",
+   "mothership@classic_saucer_die_06",
+   "mothership@classic_saucer_die_07",
+   "mothership@classic_saucer_die_07"
+  ],
+  "die_team": [
+   "mothership@classic_saucer_die_00_team",
+   "mothership@classic_saucer_die_01_team",
+   "mothership@classic_saucer_die_02_team",
+   "mothership@classic_saucer_die_03_team",
+   "mothership@classic_saucer_die_03_team",
+   "mothership@classic_saucer_die_04_team",
+   "mothership@classic_saucer_die_05_team",
+   "mothership@classic_saucer_die_05_team",
+   "mothership@classic_saucer_die_06_team",
+   "mothership@classic_saucer_die_06_team",
+   "mothership@classic_saucer_die_07_team",
+   "mothership@classic_saucer_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "mothership@classic_saucer.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2560,
+   "h": 2952
+  },
+  "scale": "2.5",
+  "ageborn": {
+   "visualId": "unit.mothership@classic_saucer",
+   "name": "Mothership",
+   "heightLu": 172,
+   "widthLu": 137.6,
+   "pxPerLu": 2.05,
+   "feetPx": [
+    346,
+    510
+   ],
+   "anchorsLu": {
+    "head": [
+     -8,
+     170
+    ],
+    "hitCenter": [
+     0,
+     70
+    ],
+    "muzzle": [
+     44,
+     22
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
+   "skinOf": "unit.mothership",
+   "skin": "classic_saucer",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        43.0,
+        24.3
+       ],
+       [
+        43.4,
+        28.0
+       ],
+       [
+        43.6,
+        28.6
+       ],
+       [
+        43.6,
+        25.5
+       ],
+       [
+        43.3,
+        21.8
+       ],
+       [
+        43.0,
+        21.2
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "durationMs": 800,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        40.9,
+        20.3
+       ],
+       [
+        41.1,
+        21.3
+       ],
+       [
+        41.3,
+        22.0
+       ],
+       [
+        41.4,
+        21.9
+       ],
+       [
+        41.3,
+        21.1
+       ],
+       [
+        41.1,
+        20.0
+       ],
+       [
+        40.9,
+        19.3
+       ],
+       [
+        40.8,
+        19.4
+       ]
+      ]
+     },
+     "strideLu": 39.2,
+     "naturalSpeedLuPerS": 49.0,
+     "gait": "fly"
+    },
+    "attack": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      168,
+      100,
+      90,
+      80,
+      80,
+      83
+     ],
+     "durationMs": 841,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.4851,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        43.2,
+        21.9
+       ],
+       [
+        43.9,
+        21.2
+       ],
+       [
+        44.1,
+        20.5
+       ],
+       [
+        45.2,
+        19.9
+       ],
+       [
+        39.9,
+        26.7
+       ],
+       [
+        40.7,
+        31.0
+       ],
+       [
+        40.9,
+        27.4
+       ],
+       [
+        42.3,
+        25.4
+       ],
+       [
+        43.1,
+        24.5
+       ]
+      ]
+     },
+     "holdStep": 3,
+     "muzzle": [
+      39.9,
+      26.7
+     ],
+     "omni": true,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       39.9,
+       26.7
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        44.5,
+        30.7
+       ],
+       [
+        43.0,
+        32.7
+       ],
+       [
+        39.1,
+        19.2
+       ],
+       [
+        43.4,
+        27.7
+       ],
+       [
+        43.3,
+        24.9
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      60,
+      70,
+      70,
+      60,
+      60,
+      80,
+      90,
+      90,
+      100,
+      100,
+      110,
+      120
+     ],
+     "durationMs": 1010,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 740,
+       "offsetLu": [
+        0,
+        61.9
+       ],
+       "scale": 1.72
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 820,
+       "offsetLu": [
+        0,
+        94.6
+       ],
+       "loops": 2,
+       "scale": 1.311
+      }
+     ],
+     "hideUnitAtMs": 1010,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        38.4,
+        22.0
+       ],
+       [
+        34.0,
+        17.1
+       ],
+       [
+        31.0,
+        12.2
+       ],
+       [
+        28.4,
+        6.0
+       ],
+       [
+        26.2,
+        -1.7
+       ],
+       [
+        23.4,
+        -13.7
+       ],
+       [
+        21.2,
+        -25.9
+       ],
+       [
+        19.0,
+        -30.7
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}
