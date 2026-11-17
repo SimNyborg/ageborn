@@ -45,9 +45,9 @@ def moss(rig, joint, tufts, color, seed=0):
     rig.part(joint, g, color, outline=0.5)
 
 
-def wraps(rig, joint, p0, p1, r, n, color, w=0.75, outline=0.4):
-    """`n` rope or hide wraps round a pole from p0 to p1 of radius r: rings of width 2w (a lashing reads at 2.5 lu)."""
-    g = Geo()
+def wrap_geo(p0, p1, r, n, w=0.75, g=None):
+    """The geometry of `wraps` (a fort adds it to a family with `FortBuilder.add`)."""
+    g = Geo() if g is None else g
     for i in range(n):
         t = (i + 0.5) / n
         c = tuple(a + (b - a) * t for a, b in zip(p0, p1))
@@ -56,7 +56,12 @@ def wraps(rig, joint, p0, p1, r, n, color, w=0.75, outline=0.4):
         u = tuple(v / L * w for v in d)
         g.lathe([(r + 0.45, -1.0), (r + 0.75, 0.0), (r + 0.45, 1.0)], tuple(cc - uu for cc, uu in zip(c, u)),
                 tuple(cc + uu for cc, uu in zip(c, u)), segs=12)
-    rig.part(joint, g, color, outline=outline)
+    return g
+
+
+def wraps(rig, joint, p0, p1, r, n, color, w=0.75, outline=0.4):
+    """`n` rope or hide wraps round a pole from p0 to p1 of radius r: rings of width 2w (a lashing reads at 2.5 lu)."""
+    rig.part(joint, wrap_geo(p0, p1, r, n, w), color, outline=outline)
 
 
 def team_band(rig, joint, p0, p1, r, tone=1.0, outline=0.4):
@@ -67,9 +72,12 @@ def team_band(rig, joint, p0, p1, r, tone=1.0, outline=0.4):
     return look.team_part(rig, joint, g, tone=tone, outline=outline)
 
 
-def pennant(rig, joint, x, y, z0, h=30.0, length=16.0, width=9.0, pole="#6A5A4A", finial="#C8B488", emblem=True):
+def pennant(rig, joint, x, y, z0, h=30.0, length=16.0, width=9.0, pole="#6A5A4A", finial="#C8B488", emblem=True,
+            tie="hoist"):
     """world.common.pennant with a two-tone team zone (audit rule 5): the cloth in team, a team-dark border along its
-    fly edge and a team-dark disc emblem of 4 lu, a hide tie at the hoist; the pole with a lashed finial."""
+    fly edge and a team-dark disc emblem of 4 lu, a hide tie (`tie`: "hoist", over the cloth's hoist edge, or "pole",
+    on the pole just under the cloth, which hides none of the cloth: the mount frame's team share holds); the pole with
+    a lashed finial."""
     g = Geo().capsule((x, y, z0), (x, y, z0 + h), 1.1)
     rig.part(joint, g, pole, outline=0.6)
     g = Geo().sphere((x, y, z0 + h + 1.5), 1.8, cuts=2)
@@ -87,4 +95,20 @@ def pennant(rig, joint, x, y, z0, h=30.0, length=16.0, width=9.0, pole="#6A5A4A"
         pts = [(cx + 2.0 * math.cos(a), cz + 2.0 * math.sin(a)) for a in (2 * math.pi * k / 12 for k in range(12))]
         g = Geo().slab(pts, y - 0.75, 0.3)
         look.team_part(rig, joint, g)
-    wraps(rig, joint, (x, y, zt - width - 0.4), (x, y, zt + 0.4), 1.1, 3, "#8A6A50", w=0.55, outline=0.3)
+    if tie == "pole":
+        wraps(rig, joint, (x, y, zt - width - 3.6), (x, y, zt - width - 0.6), 1.1, 2, "#8A6A50", w=0.55, outline=0.3)
+    else:
+        wraps(rig, joint, (x, y, zt - width - 0.4), (x, y, zt + 0.4), 1.1, 3, "#8A6A50", w=0.55, outline=0.3)
+
+
+def smear_two_tone(spec, band=0.6, shade=0.8, edge=0.3):
+    """A smear2 "arc" spec as two narrow crescents (the troop waves' W2 fix, units/medieval_w2.smear_two_tone): the
+    sweep cut to `band` in the colour x `shade` with less white (with the outline and speed lines), and on top a
+    lighter strip `edge` of the sweep along the leading edge (no outline, no lines)."""
+    from ageborn_art import colors as C
+    b0 = spec.get("band", 1.0)
+    white = spec.get("white", 0.3)
+    base = dict(spec, band=band * b0, color=C.scale(spec["color"], shade), white=white * 0.5)
+    lead = dict(spec, band=edge * b0, white=min(0.75, white + 0.25), outline_lu=0.0, lines=0)
+    return [base, lead]
+
