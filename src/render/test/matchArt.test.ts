@@ -44,6 +44,12 @@ function config(o: { side0?: Partial<Record<AgeId, Loadout>>; skins?: Record<str
   return { seed: 7, format: 'short', content, sides: [side('a', o.side0), side('b')] };
 }
 
+/** A battle view's base entries (private; the base swap tests). */
+type BaseRoot = { destroyed: boolean; alpha: number; children: unknown[]; parent: unknown };
+function baseEntries(view: BattleView): { view: { root: BaseRoot; mountPoints(): { x: number; y: number }[] }; pending?: true }[] {
+  return (view as unknown as { bases: { view: { root: BaseRoot; mountPoints(): { x: number; y: number }[] }; pending?: true }[] }).bases;
+}
+
 describe('sideAgeCards (G7)', () => {
   it('follows summons, dismounting riders, a camp levy and paradrops; the Vanguard only for an age evolved into', () => {
     expect(summoner && rider && paradrop && camp).toBeTruthy();
@@ -433,39 +439,119 @@ describe('review fixes (2026-10-18)', () => {
     view.destroy();
   });
 
-  it('S2: a base drawn by its stand-in is made again from its sheet once that is in; the battle\'s clock waits for it', async () => {
+  it('W4 review: a base whose opening sheet is still loading waits for it unseen, no stand-in made, then fades in from its sheet; the battle\'s clock waits for it', async () => {
     const cfg = config();
     const sim = createSim(cfg);
     let land: () => void = () => undefined;
+    let landed = false;
     const loading = new Promise<void>((r) => (land = r));
     const asked: AgeId[] = [];
     const replaced: unknown[] = [];
-    const art = Object.assign(new FakeArtProvider(), { baseSheetReady: (age: AgeId) => (asked.push(age), loading), replacedStandIn: (v: unknown) => replaced.push(v) });
+    const art = Object.assign(new FakeArtProvider(), {
+      baseSheetReady: (age: AgeId): Promise<void> | null => (asked.push(age), landed ? null : loading),
+      replacedStandIn: (v: unknown) => replaced.push(v),
+    });
+    const made = (): number => art.calls.filter((c) => c.method === 'createBase').length;
     const view = new BattleView({ sim, art, audio: new FakeAudio() });
+    // each side's sheet is asked for before its base is made, and no base is made while it loads (the provider would
+    // draw it by its code stand-in): an empty placeholder holds each base's place in the layer
     expect(asked).toEqual(['stone', 'stone']);
-    const bases = (): { view: { root: { destroyed: boolean; alpha: number } } }[] => (view as unknown as { bases: { view: { root: { destroyed: boolean; alpha: number } } }[] }).bases;
-    const first = bases().map((b) => b.view);
-    expect(replaced).toEqual([]);
+    expect(made()).toBe(0);
+    const bases = baseEntries(view);
+    const first = bases.map((b) => b.view);
+    expect(bases.every((b) => b.pending === true)).toBe(true);
+    expect(first.every((v) => v.root.children.length === 0 && v.root.parent !== null)).toBe(true);
+    const layer = first[0]!.root.parent as { children: unknown[] };
+    const slot = layer.children.indexOf(first[0]!.root);
+    // frames before the battle runs keep waiting
+    view.render(1, 16);
+    expect(made()).toBe(0);
     const ready = view.artReady();
     expect(ready).not.toBeNull();
     let done = false;
     void ready!.then(() => (done = true));
     await Promise.resolve();
     expect(done).toBe(false);
+    landed = true;
     land();
     await ready;
     expect(done).toBe(true);
-    expect(art.calls.filter((c) => c.method === 'createBase')).toHaveLength(4);
-    const second = bases().map((b) => b.view);
-    expect(second[0]).not.toBe(first[0]);
-    // the stand-ins fade out over the new bases, then go; the provider hears they no longer stand in (review 2 S-c)
-    expect(replaced).toEqual(first);
-    expect(first[0]!.root.destroyed).toBe(false);
-    view.render(1, 200);
-    expect(first[0]!.root.alpha).toBeCloseTo(1 - 200 / BASE_SWAP_FADE_MS, 1);
-    view.render(1, 250);
+    // each base made once, from its sheet: no stand-in was made or replaced
+    expect(made()).toBe(2);
+    expect(replaced).toEqual([]);
+    const second = baseEntries(view);
+    expect(second.some((b) => b.pending)).toBe(false);
     expect(first.every((v) => v.root.destroyed)).toBe(true);
+    // in the placeholder's slot, fading in
+    expect(layer.children.indexOf(second[0]!.view.root)).toBe(slot);
+    expect(second.map((b) => b.view.root.alpha)).toEqual([0, 0]);
+    view.render(1, 200);
+    expect(second[0]!.view.root.alpha).toBeCloseTo(200 / BASE_SWAP_FADE_MS, 1);
+    view.render(1, 250);
+    expect(second.map((b) => b.view.root.alpha)).toEqual([1, 1]);
     expect(view.artReady()).toBeNull();
+    view.destroy();
+  });
+
+  it('W4 review: a base still waiting for its sheet when the battle runs is drawn by its stand-in, and made again from the sheet once it lands', async () => {
+    const cfg = config();
+    const sim = createSim(cfg);
+    let land: () => void = () => undefined;
+    let landed = false;
+    const loading = new Promise<void>((r) => (land = r));
+    const replaced: unknown[] = [];
+    const art = Object.assign(new FakeArtProvider(), {
+      baseSheetReady: (_age: AgeId): Promise<void> | null => (landed ? null : loading),
+      replacedStandIn: (v: unknown) => replaced.push(v),
+    });
+    const made = (): number => art.calls.filter((c) => c.method === 'createBase').length;
+    const view = new BattleView({ sim, art, audio: new FakeAudio() });
+    expect(made()).toBe(0);
+    // the app's art wait gave up: the battle runs, and its bases show (by their stand-ins, the sheet still loading)
+    view.setPaused(false);
+    view.render(1, 16);
+    expect(made()).toBe(2);
+    const standIns = baseEntries(view).map((b) => b.view);
+    expect(baseEntries(view).some((b) => b.pending)).toBe(false);
+    // (a frame counts at most 250 ms)
+    view.render(1, 250);
+    view.render(1, 250);
+    expect(standIns.map((v) => v.root.alpha)).toEqual([1, 1]);
+    landed = true;
+    land();
+    await loading;
+    await Promise.resolve();
+    expect(made()).toBe(4);
+    // the stand-ins fade out over the new bases, then go; the provider hears they no longer stand in (review 2 S-c)
+    expect(replaced).toEqual(standIns);
+    view.render(1, 200);
+    expect(standIns[0]!.root.alpha).toBeCloseTo(1 - 200 / BASE_SWAP_FADE_MS, 1);
+    view.render(1, 250);
+    expect(standIns.every((v) => v.root.destroyed)).toBe(true);
+    view.destroy();
+  });
+
+  it('W4 review: a view made mid-match (a turret built) draws its bases by their stand-ins at once, its turrets on their mounts', async () => {
+    const cfg = config();
+    const sim = createSim(cfg);
+    const card = Object.keys(content.turrets).find((id) => content.turrets[id]!.age === 'stone')!;
+    (sim.state as unknown as { sides: { turrets: unknown[] }[] }).sides[1]!.turrets[0] = { card, age: 'stone', level: 1, state: 'active', readyTick: 0, attack: { targetId: 0, impactTick: 0, nextAttackTick: 0, lastAttackTick: 0 } };
+    let land: () => void = () => undefined;
+    let landed = false;
+    const loading = new Promise<void>((r) => (land = r));
+    const art = Object.assign(new FakeArtProvider(), { baseSheetReady: (_age: AgeId): Promise<void> | null => (landed ? null : loading), turretSheetReady: (): Promise<void> | null => null });
+    const view = new BattleView({ sim, art, audio: new FakeAudio() });
+    expect(art.calls.filter((c) => c.method === 'createBase')).toHaveLength(2);
+    const bases = baseEntries(view);
+    expect(bases.some((b) => b.pending)).toBe(false);
+    const turret = (view as unknown as { turrets: Map<string, { view: { root: { x: number; y: number } } }> }).turrets.get('1:0')!;
+    const mount = bases[1]!.view.mountPoints()[0]!;
+    expect([turret.view.root.x, turret.view.root.y]).toEqual([mount.x, mount.y]);
+    landed = true;
+    land();
+    await loading;
+    await Promise.resolve();
+    expect(art.calls.filter((c) => c.method === 'createBase')).toHaveLength(4);
     view.destroy();
   });
 
@@ -478,7 +564,11 @@ describe('review fixes (2026-10-18)', () => {
     // Stone's sheet is slow; Bronze's is in
     const art = Object.assign(new FakeArtProvider(), { baseSheetReady: (age: AgeId): Promise<void> | null => (asked.push(age), age === 'stone' ? stone : null) });
     const view = new BattleView({ sim, art, audio: new FakeAudio() });
-    const first = (view as unknown as { bases: { view: unknown; age: AgeId }[] }).bases[0]!;
+    // the battle runs before Stone's sheet is in: the bases are drawn by their stand-ins
+    view.setPaused(false);
+    view.render(1, 16);
+    const first = (view as unknown as { bases: { view: unknown; age: AgeId; pending?: true }[] }).bases[0]!;
+    expect(first.pending).toBeUndefined();
     (sim.state as unknown as { sides: { ageIndex: number }[] }).sides[0]!.ageIndex = 1;
     view.onEvents([{ e: 'ageUp', side: 0, age: 'bronze', tick: 1 } as never]);
     expect(first.age).toBe('bronze');
@@ -564,18 +654,38 @@ describe('review fixes (2026-10-18)', () => {
     v2.destroy();
   });
 
-  it('S2: with Reduce motion the stand-in base goes at once; a base already in asks for nothing', async () => {
+  it('S2: with Reduce motion a base made from a pending one shows at once and a replaced stand-in goes at once; a base already in asks for nothing', async () => {
     const cfg = config();
-    const sim = createSim(cfg);
+    // the sheet failed: it settles, but is still not in (asked again, it loads again)
     const art = Object.assign(new FakeArtProvider(), { baseSheetReady: (_age: AgeId): Promise<void> | null => Promise.resolve() });
-    const view = new BattleView({ sim, art, audio: new FakeAudio(), settings: { reduceMotion: true } });
-    const first = (view as unknown as { bases: { view: { root: { destroyed: boolean } } }[] }).bases.map((b) => b.view);
+    const view = new BattleView({ sim: createSim(cfg), art, audio: new FakeAudio(), settings: { reduceMotion: true } });
+    const first = baseEntries(view).map((b) => b.view);
     await view.artReady();
     expect(first.every((v) => v.root.destroyed)).toBe(true);
+    expect(baseEntries(view).map((b) => [b.pending ?? false, b.view.root.alpha])).toEqual([
+      [false, 1],
+      [false, 1],
+    ]);
     view.destroy();
+    let land: () => void = () => undefined;
+    let landed = false;
+    const loading = new Promise<void>((r) => (land = r));
+    const late = Object.assign(new FakeArtProvider(), { baseSheetReady: (_age: AgeId): Promise<void> | null => (landed ? null : loading) });
+    const v3 = new BattleView({ sim: createSim(cfg), art: late, audio: new FakeAudio(), settings: { reduceMotion: true } });
+    v3.setPaused(false);
+    v3.render(1, 16);
+    const standIns = baseEntries(v3).map((b) => b.view);
+    expect(standIns.map((v) => v.root.alpha)).toEqual([1, 1]);
+    landed = true;
+    land();
+    await loading;
+    await Promise.resolve();
+    expect(standIns.every((v) => v.root.destroyed)).toBe(true);
+    v3.destroy();
     const plain = Object.assign(new FakeArtProvider(), { baseSheetReady: (): Promise<void> | null => null });
     const v2 = new BattleView({ sim: createSim(cfg), art: plain, audio: new FakeAudio() });
     expect(plain.calls.filter((c) => c.method === 'createBase')).toHaveLength(2);
+    expect(baseEntries(v2).some((b) => b.pending)).toBe(false);
     v2.destroy();
   });
 });
