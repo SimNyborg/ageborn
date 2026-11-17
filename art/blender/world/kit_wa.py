@@ -112,3 +112,29 @@ def smear_two_tone(spec, band=0.6, shade=0.8, edge=0.3):
     lead = dict(spec, band=edge * b0, white=min(0.75, white + 0.25), outline_lu=0.0, lines=0)
     return [base, lead]
 
+
+def banner_hems(mod, base, h, length, width):
+    """A team-dark hem along the bottom edge of the fort's banner (its three waving segments), so the
+    flag is a two-tone team zone; added after the shared banner (fort_toon.banner) is built."""
+    build = mod.build
+
+    def _build(rig):
+        build(rig)
+        bx, by, bz = base
+        top = bz + h - 2.0
+        seg = length / 3
+        for i in range(3):
+            x0 = bx - 1.0 - seg * i
+            x1 = x0 - seg - 0.6 * (i < 2)
+            w0, w1 = width * (1.0 - 0.1 * i), width * (1.0 - 0.1 * (i + 1))
+            if i == 2:
+                x1 = x0 - seg * 0.55
+                w1 = width * 0.82
+            pts = [(x0, top - w0 + 2.2), (x1, top - w1 + 2.2 - 0.3 * i), (x1, top - w1 - 0.3 * i + 0.2),
+                   (x0, top - w0 + 0.2)]
+            look.team_part(rig, f"flag{i}", Geo().slab(pts, by - 0.85, 0.3), outline=0)
+        # the hoist bound to the pole with a team-dark cord (it waves with the first segment)
+        g = Geo().blob((bx - 2.2, by, top - width * 0.45), (1.6, 1.6, width * 0.55), p=2.4)
+        look.team_part(rig, "flag0", g, outline=0.4)
+    mod.build = _build
+    return mod

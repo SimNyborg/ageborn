@@ -19,10 +19,14 @@ polished bronze only as small accents (bosses, finials). Everything has the cart
 shapes, a thick outline, two-tone cel shading.
 """
 import math
+import random
 
+from ageborn_art import look
 from ageborn_art import rigs_bronze as P
 from ageborn_art.geometry import Geo
 
+from world import kit_wa as KW
+from world import look_world as LW
 from world.common import rock
 from world.fort_toon import make, scaffold
 
@@ -85,6 +89,7 @@ def _cyclopean(f):
     f.add(Geo().blob((0, 0, 0.6), (17, 40, 2.4), p=3.0), EARTH, "body")            # earth bank
     courses = [(9.0, 4, 16.0, 18.0), (25.0, 5, 15.0, 16.0), (40.0, 4, 14.0, 14.5), (54.0, 5, 13.0, 13.0)]
     span = 66.0
+    blocks = []                         # (world wave A: where each block stands and when it falls)
     for ci, (z, n, hgt, thick) in enumerate(courses):
         ys = [-span / 2 + span * i / n for i in range(n + 1)]
         for i in range(n):
@@ -107,6 +112,7 @@ def _cyclopean(f):
                     rock(g, (xoff, y, z), (rx, ry, rz), seed=11 + 7 * ci + i, jag=0.06, p=3.8, rot=rot)
                 return g, col
             f.breakable(make_block, stage)
+            blocks.append(dict(ci=ci, i=i, n=n, x=xoff, y=y, z=z, rx=rx, ry=ry, rz=rz, stage=stage))
     # capstones along the top (fall first)
     for i in range(4):
         y = -24.0 + 16.0 * i
@@ -124,18 +130,108 @@ def _cyclopean(f):
     f.add(Geo().capsule((9.5, -20, 58), (9.5, 20, 58), 1.6), CEDAR, "body", 0, 1)
     for y0 in (-17.0, 5.0):
         g = Geo().blob((10.8, y0 + 6.0, 45.0), (0.9, 6.0, 12.0), p=3.0)          # linen banners on the lane face
+        g.clip((10.8, y0 + 6.0, 41.6), (0, 0, -1))
         f.add(g, None, "body", 0, 1, team=True, outline=0.8)
+        g = Geo().blob((10.8, y0 + 6.0, 45.0), (0.9, 6.0, 12.0), p=3.0)          # (world wave A: a team-dark foot)
+        g.clip((10.8, y0 + 6.0, 41.6), (0, 0, 1))
+        look.team_part(f.rig, f.group("body", 0, 1), g, outline=0.8)
         g = Geo().blob((11.2, y0 + 6.0, 33.6), (0.8, 6.2, 1.0), p=3.0)
         f.add(g, P.SAND_LT, "body", 0, 1, outline=0.4)
     _aspis(f, (8.0, -27.0, 22.0), 7.0, lo=0, hi=2, face="x")
     _aspis(f, (8.0, 26.0, 20.0), 7.0, lo=0, hi=1, face="x")
     _rubble(f, (8.0, 0.0), (18.0, 26.0), 14, 70, (LIME, LIME_DK, LIME_LT))
     scaffold(f, -8.0, 8.0, -30.0, 30.0, 66.0, wood=CEDAR, rope=ROPE)
+    _cyclopean_wa(f, blocks, span)
+
+
+# world wave A (the detail standard): the wall's material in shapes that read at the forts' density
+CHINK = "#A2967D"
+CHINK_DK = "#8D826B"
+LICHEN = "#A6A86E"
+GRASS = "#7C8A5A"
+GRASS_DK = "#66734B"
+
+
+def _cyclopean_wa(f, blocks, span):
+    """Chinking stones (an angular wedge and a smaller stone) sunk into the corners of the joints on the lane face and
+    the near end, lichen on the weather side of some blocks, grass along the bank's foot. Each piece goes with the first block it rests on (its own
+    random stream: the blocks' crumble stages stay as they were)."""
+    rnd = random.Random(83)
+    rows = {}
+    for b in blocks:
+        rows.setdefault(b["ci"], []).append(b)
+    for ci, row in sorted(rows.items()):
+        row.sort(key=lambda b: b["y"])
+        for a, b in zip(row, row[1:]):
+            yj = (a["y"] + a["ry"] + b["y"] - b["ry"]) / 2
+            xf = min(a["x"] + a["rx"], b["x"] + b["rx"]) - 0.9
+            stage = min(a["stage"], b["stage"])
+            for k, dz in enumerate((-0.8, 0.8)):
+                zc = (a["z"] + b["z"]) / 2 + dz * min(a["rz"], b["rz"])
+                s = rnd.uniform(1.7, 2.4)
+                tilt = rnd.uniform(-35.0, 35.0)
+                seed = 401 + 13 * ci + 3 * a["i"] + k
+
+                def chink(fallen, xf=xf, yj=yj, zc=zc, s=s, tilt=tilt, dz=dz, seed=seed):
+                    g = Geo()           # an angular wedge and a smaller stone beside it, sunk into the joint's V
+                    rock(g, (xf - 0.2, yj, zc), (1.1, s * 0.62, s * 0.5), seed=seed, jag=0.24, p=3.0, cuts=3,
+                         rot=(tilt, 0, 0))
+                    return g, CHINK_DK
+
+                def chip(fallen, xf=xf, yj=yj, zc=zc, s=s, dz=dz, seed=seed):
+                    g = Geo()
+                    rock(g, (xf - 0.1, yj + s * 0.55, zc - dz * s * 0.45), (0.9, s * 0.36, s * 0.32), seed=seed + 50,
+                         jag=0.24, p=3.0, cuts=3)
+                    return g, CHINK
+                f.breakable(chink, stage, fall=False, outline=0.5)
+                f.breakable(chip, stage, fall=False, outline=0.4)
+        # the near end (-y): one wedge where this course meets the next one up
+        if ci + 1 in rows:
+            a, b = row[0], min(rows[ci + 1], key=lambda q: q["y"])
+            s = rnd.uniform(1.8, 2.4)
+            yz = (min(a["y"] - a["ry"], b["y"] - b["ry"]) + 1.2, a["z"] + a["rz"] * 0.95)
+
+            def chink(fallen, x=a["x"] + a["rx"] * rnd.uniform(-0.3, 0.3), yz=yz, s=s, seed=471 + 5 * ci,
+                      tilt=rnd.uniform(-25.0, 25.0)):
+                g = Geo()
+                rock(g, (x, yz[0], yz[1]), (s * 0.7, 1.1, s * 0.48), seed=seed, jag=0.24, p=3.0, cuts=3,
+                     rot=(0, tilt, 0))
+                return g, CHINK_DK
+            f.breakable(chink, min(a["stage"], b["stage"]), fall=False, outline=0.5)
+    # lichen on the weather side (the top of the lane face) of every third block
+    for b in blocks:
+        if (b["i"] + 2 * b["ci"]) % 3:
+            continue
+        dy = rnd.uniform(-0.35, 0.35) * b["ry"]
+
+        def lichen(fallen, b=b, dy=dy, ry=rnd.uniform(3.2, 4.4), rz=rnd.uniform(1.8, 2.6)):
+            g = Geo().blob((b["x"] + b["rx"] - 0.25, b["y"] + dy, b["z"] + b["rz"] * 0.45), (1.0, ry, rz), p=2.0)
+            return g, LICHEN
+        f.breakable(lichen, b["stage"], fall=False, outline=0.3)
+    # grass along the foot of the bank (stays through every stage)
+    g = Geo()
+    for k in range(9):
+        y = -span / 2 - 2.0 + (span + 4.0) * k / 8 + rnd.uniform(-2.0, 2.0)
+        x = rnd.uniform(11.5, 14.0)
+        for d in (-1, 0, 1):
+            g.capsule((x, y + d * 0.9, 1.2), (x + rnd.uniform(0.4, 1.6), y + d * 1.8, rnd.uniform(4.2, 6.2)), 0.55, 0.2)
+    f.add(g, GRASS, "body", outline=0.4)
+    g = Geo()
+    for k in range(4):
+        x = -10.0 + 7.0 * k + rnd.uniform(-1.5, 1.5)
+        g.capsule((x, -span / 2 - 4.5, 1.2), (x + rnd.uniform(-1.0, 1.0), -span / 2 - 5.4, rnd.uniform(3.8, 5.4)), 0.55,
+                  0.2)
+    f.add(g, GRASS_DK, "body", outline=0.4)
 
 
 CYCLOPEAN = make("cyclopean_wall", "Cyclopean Wall", AGE, "wall", _cyclopean, canvas=(300, 300), feet=(140, 264),
                  height=84, hit=(4, 34), material="stone", flag=(-8.0, 2.0, 66.0, 22.0), foot=28.0,
                  pole_fill=CEDAR_DK, tip_fill=P.BRONZE_HI)
+CW_KINDS = {LIME: "stone", LIME_DK: "stone", LIME_LT: "stone", CHINK: "stone", CHINK_DK: "stone", LICHEN: "fur",
+            GRASS: "fur", GRASS_DK: "fur", EARTH: "leather", CEDAR: "wood", CEDAR_DK: "wood", ROPE: "leather",
+            P.SAND_LT: "stone", P.AGED: "bronze", P.BRONZE_HI: "bronze", "team": "cloth"}
+KW.banner_hems(CYCLOPEAN, (-8.0, 2.0, 66.0), 22.0, 22.0, 10.0)
+LW.opt_in(CYCLOPEAN, CW_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 
 # ====================================================================================== Pyrgos Tower

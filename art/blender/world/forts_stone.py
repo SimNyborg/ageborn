@@ -196,34 +196,7 @@ PALISADE = make("palisade", "Palisade", AGE, "wall", _palisade, canvas=(300, 270
                 hit=(3, 38), material="wood", flag=(-7.0, 1.0, 0.0, 92.0), flag_len=22.0, foot=26.0, yaw=-38.0)
 
 
-def _banner_hems(mod, base, h, length, width):
-    """World wave A: a team-dark hem along the bottom edge of the fort's banner (its three waving segments), so the
-    flag is a two-tone team zone; added after the shared banner (fort_toon.banner) is built."""
-    build = mod.build
-
-    def _build(rig):
-        build(rig)
-        bx, by, bz = base
-        top = bz + h - 2.0
-        seg = length / 3
-        for i in range(3):
-            x0 = bx - 1.0 - seg * i
-            x1 = x0 - seg - 0.6 * (i < 2)
-            w0, w1 = width * (1.0 - 0.1 * i), width * (1.0 - 0.1 * (i + 1))
-            if i == 2:
-                x1 = x0 - seg * 0.55
-                w1 = width * 0.82
-            pts = [(x0, top - w0 + 2.2), (x1, top - w1 + 2.2 - 0.3 * i), (x1, top - w1 - 0.3 * i + 0.2),
-                   (x0, top - w0 + 0.2)]
-            look.team_part(rig, f"flag{i}", Geo().slab(pts, by - 0.85, 0.3), outline=0)
-        # the hoist bound to the pole with a team-dark cord (it waves with the first segment)
-        g = Geo().blob((bx - 2.2, by, top - width * 0.45), (1.6, 1.6, width * 0.55), p=2.4)
-        look.team_part(rig, "flag0", g, outline=0.4)
-    mod.build = _build
-    return mod
-
-
-_banner_hems(PALISADE, (-7.0, 1.0, 0.0), 92.0, 22.0, 10.0)
+KW.banner_hems(PALISADE, (-7.0, 1.0, 0.0), 92.0, 22.0, 10.0)
 LW.opt_in(PALISADE, PALISADE_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 
@@ -312,7 +285,7 @@ THORN_HEDGE = make("thorn_hedge", "Thorn Hedge", AGE, "wall", _thorn_hedge, canv
 TH_KINDS = {EARTH: "leather", BRAMBLE: "fur", BRAMBLE_DK: "fur", THORN: "wood", WOOD: "wood", WOOD_DK: "wood",
             TIP: "wood", STONE: "stone", GRASS: "fur", BONE_DK: "bone", LEAF: "fur", ROPE: "leather", "#6E5A45": "wood",
             "team": "hide"}
-_banner_hems(THORN_HEDGE, (-8.0, 2.0, 0.0), 66.0, 18.0, 10.0)
+KW.banner_hems(THORN_HEDGE, (-8.0, 2.0, 0.0), 66.0, 18.0, 10.0)
 LW.opt_in(THORN_HEDGE, TH_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 
@@ -395,7 +368,7 @@ def _sling_perch(f):
 SLING_PERCH = make("sling_perch", "Sling Perch", AGE, "tower", _sling_perch, canvas=(240, 270), feet=(118, 236), height=96,
                    hit=(0, 30), material="wood", flag=(-11.0, 9.0, 44.0, 38.0), flag_len=16.0, foot=16.0, yaw=-14.0,
                    crew=dict(visualId="unit.pebbler", at=(0.5, 0.0, 47.8), scale=0.6))
-_banner_hems(SLING_PERCH, (-11.0, 9.0, 44.0), 38.0, 16.0, 10.0)
+KW.banner_hems(SLING_PERCH, (-11.0, 9.0, 44.0), 38.0, 16.0, 10.0)
 LW.opt_in(SLING_PERCH, SP_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 
@@ -494,7 +467,7 @@ BONE_WATCHTOWER = make("bone_watchtower", "Bone Watchtower", AGE, "tower", _bone
                        crew=dict(visualId="unit.pebbler", at=(0.5, 0.0, 57.8), scale=0.6))
 BW_KINDS = {BONE: "bone", BONE_DK: "bone", "#9E9076": "bone", WOOD: "wood", WOOD_DK: "wood", BARK: "wood",
             "#8A6A50": "leather", STONE: "stone", GRASS: "fur", "#6E5A45": "wood", "team": "hide"}
-_banner_hems(BONE_WATCHTOWER, (-12.0, -8.0, 54.0), 40.0, 16.0, 10.0)
+KW.banner_hems(BONE_WATCHTOWER, (-12.0, -8.0, 54.0), 40.0, 16.0, 10.0)
 LW.opt_in(BONE_WATCHTOWER, BW_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 
@@ -609,7 +582,7 @@ WAR_CAMP = make("war_camp", "War Camp", AGE, "camp", _war_camp, canvas=(290, 250
                 material="wood", flag=(-22.0, -12.0, 0.0, 76.0), flag_len=22.0, foot=30.0, yaw=-24.0,
                 lights=[((30.0, -12.0, 7.0), 14, 1)], smoke=[((30.0, -12.0, 12.0), 0), ((0.0, 0.0, 58.0), 2)],
                 extra_meta={"flag": {"crumbleMax": 2, "z": "front"}})
-_banner_hems(WAR_CAMP, (-22.0, -12.0, 0.0), 76.0, 22.0, 10.0)
+KW.banner_hems(WAR_CAMP, (-22.0, -12.0, 0.0), 76.0, 22.0, 10.0)
 LW.opt_in(WAR_CAMP, WC_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 

@@ -15,8 +15,12 @@ Treasury: grain sacks and amphorae (1), a domed granary (2), a trade barge with 
 import math
 import random
 
+from ageborn_art import look
 from ageborn_art import rigs_bronze as P
 from ageborn_art.geometry import Geo
+
+from world import kit_wa as KW
+from world import look_world as LW
 
 from world.common import BASE_YAW, base_module, box, chipped_cracks, cyl, flag, platform, rubble
 
@@ -175,12 +179,64 @@ def banner(rig, joint, x, y, z_top, h, w=16.0):
     g = Geo().slab([(x - w / 2, z_top), (x + w / 2, z_top), (x + w / 2, z_top - h + 8), (x, z_top - h),
                     (x - w / 2, z_top - h + 8)], y, 1.6)
     rig.part(joint, g, team=True)
+    # world wave A: two tones in shapes that read at the base's density (5 lu and more): a team-dark head under the
+    # rod and a team-dark point, the lit cloth between them with the emblem
+    g = Geo().slab([(x - w / 2, z_top), (x + w / 2, z_top), (x + w / 2, z_top - 5.2), (x - w / 2, z_top - 5.2)],
+                   y - 0.95, 0.3)
+    g.slab([(x - w / 2, z_top - h + 11.0), (x + w / 2, z_top - h + 11.0), (x + w / 2, z_top - h + 8), (x, z_top - h),
+            (x - w / 2, z_top - h + 8)], y - 0.95, 0.3)
+    look.team_part(rig, joint, g, outline=0.3)
     g = Geo().capsule((x - w / 2 - 2, y - 0.6, z_top + 1), (x + w / 2 + 2, y - 0.6, z_top + 1), 1.3)
     rig.part(joint, g, AGED_DK, finish="metal", outline=0.4)
     g = Geo()
     g.capsule((x - 4.6, y - 1.4, z_top - h * 0.62), (x, y - 1.5, z_top - h * 0.32), 1.5)
     g.capsule((x, y - 1.5, z_top - h * 0.32), (x + 4.6, y - 1.4, z_top - h * 0.62), 1.5)
     rig.part(joint, g, SAND_LT, outline=0.4)
+
+
+MORTAR_JOINT = "#7C6E56"   # world wave A: the ashlar joints
+CHIP_LT = "#E2D5B8"
+
+
+def _ashlar(rig, M):
+    """World wave A (the detail standard with the pilot review's S1 in hand): the tier panels laid in ashlar, courses
+    of 8-10 lu with staggered joints 0.9 lu wide (blocks of 10-16 lu: shapes that read at the base's density, where a
+    fine breakup turns to grain), and big chips knocked off panel corners; nothing in the four turret boxes (45 lu
+    either side of a mount, 75 lu up), so the turrets stand clear of the base."""
+    boxes = [(m[0] - 45.0, m[0] + 45.0, m[2] - 6.0, m[2] + 75.0) for m in M]
+
+    def free(x, z):
+        return not any(a <= x <= b and c <= z <= d for a, b, c, d in boxes)
+    rnd = random.Random(23)
+    g, c = Geo(), Geo()
+    for k, (hw, z0, z1, yf) in enumerate(TIERS):
+        n = 7 - k
+        ph = (z1 - z0) / 2 - 7.0
+        zc = (z0 + z1) / 2 - 2.0
+        yj = yf - 2.45
+        rows = max(2, round(2 * ph / 9.0))
+        for i in range(n):
+            x = CX - hw + (i + 0.5) * 2 * hw / n
+            pw = hw / n - 3.4
+            if pw < 4.0:
+                continue
+            for j in range(1, rows):
+                z = zc - ph + j * 2 * ph / rows
+                if free(x, z):
+                    box(g, (x, yj, z), (pw - 0.6, 0.35, 0.45), p=4, cuts=2)
+            for j in range(rows):
+                za, zb = zc - ph + j * 2 * ph / rows, zc - ph + (j + 1) * 2 * ph / rows
+                off = (0.25 if (j + i) % 2 else -0.15) * pw
+                for xv in (x + off,) if pw < 9.0 else (x + off - pw * 0.5, x + off + pw * 0.45):
+                    if abs(xv - x) < pw - 2.0 and free(xv, (za + zb) / 2):
+                        box(g, (xv, yj, (za + zb) / 2), (0.45, 0.35, (zb - za) / 2 - 0.5), p=4, cuts=2)
+            if rnd.random() < 0.45 and free(x - pw, zc + ph):   # a corner knocked off (4-5 lu)
+                sx = -1 if rnd.random() < 0.5 else 1
+                cz = zc + ph - 2.4 if rnd.random() < 0.6 else zc - ph + 2.4
+                c.slab([(x + sx * (pw - 4.6), cz + 2.2), (x + sx * pw, cz + 2.2), (x + sx * pw, cz - 2.0),
+                        (x + sx * (pw - 2.2), cz - 2.4)], yj - 0.1, 0.5)
+    rig.part("body", g, MORTAR_JOINT, outline=0, highlight=False)
+    rig.part("body", c, CHIP_LT, outline=0, highlight=False)
 
 
 def build(rig, M):
@@ -194,6 +250,7 @@ def build(rig, M):
     for k, (hw, z0, z1, yf) in enumerate(TIERS):
         tier(rig, "body", hw, z0, z1, yf, k)
     stairs(rig, "body")
+    _ashlar(rig, M)
 
     # long team banners on the tier faces (one tears at crumble 2)
     banner(rig, "body", CX - 46, TIERS[1][3] - 3.0, 112, 44)
@@ -219,6 +276,8 @@ def build(rig, M):
     g = Geo().slab([(sx - 33, 298), (sx + 33, 298), (sx, 318)], sy - 20, 3.0)
     g.blob((sx, sy, 306), (32, 20, 9), p=3.0, taper=(1.0, 0.1))
     rig.part("shrine", g, team=True)
+    g = Geo().slab([(sx - 22, 302.4), (sx + 22, 302.4), (sx, 314.2)], sy - 21.8, 0.4)
+    look.team_part(rig, "shrine", g, outline=0.3)   # (world wave A: the tympanum in team-dark, framed by the lit rakes)
     g = Geo()   # verdigris eaves along the gable
     g.capsule((sx - 34, sy - 21.6, 297.4), (sx, sy - 21.6, 318.6), 1.3)
     g.capsule((sx, sy - 21.6, 318.6), (sx + 34, sy - 21.6, 297.4), 1.3)
@@ -391,3 +450,13 @@ MODULE = base_module(
     smoke=[((CX, 10, 300), 2), ((CX - 40, -20, 130), 3), ((-40, -40, 60), 3)],
     horn=(-100, 360), yaw=BASE_YAW,
 )
+
+# world wave A (the detail standard; look_world.opt_in, with the pilot review's S1 in hand): the sandstone takes no
+# material kind (at 1.025 px/lu drawn 1.79x a fine breakup turns to grain; its material is the ashlar, the chips and the
+# cracks), the metal and cloth keep theirs; a lit top and a dark underside on every tier
+BRONZE_BASE_KINDS = {AGED: "bronze", AGED_DK: "bronze", BRONZE: "bronze", P.BRONZE_HI: "bronze", PLUM: "cloth",
+                     PLUM_DK: "cloth", LINEN: "cloth", WOOD: "wood", WOOD_DK: "wood", OLIVE: "fur", SACK: "cloth",
+                     CLAY: "ceramic", "team": "cloth"}
+LW.opt_in(MODULE, BRONZE_BASE_KINDS, highlight=2.0,                  # (the sandstone is light: a gentler top light,
+          shade=dict(KW.SHADE_WORLD, top=0.14, core=0.40, core_width=0.34, shadow=0.76))   # or the lit tops blow out)
+
