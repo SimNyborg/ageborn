@@ -15,7 +15,7 @@ from ageborn_art.geometry import Geo
 
 from world import kit_wa as KW
 from world import look_world as LW
-from world.common import box, cyl, pennant, rope, smoke_puff, turret_module
+from world.common import box, cyl, rope, smoke_puff, turret_module
 
 SAND = P.SAND
 SAND_LT = P.SAND_LT
@@ -331,7 +331,7 @@ MIRROR_OVERLAYS = {"fire": {
 
 # -- Onager: a torsion catapult with a throwing arm and sling ------------------------------------------
 def onager_build(rig):
-    sand_plinth(rig, r=17, h=5)
+    porphyry_footing(rig, r=17, h=5, seed=13)                         # (world wave A, S3)
     g = Geo()
     for y in (-8, 8):
         box(g, (0, y, 8.5), (17, 1.8, 2.2), p=5)
@@ -341,6 +341,10 @@ def onager_build(rig):
     g = Geo().slab([(-17, 5.5), (17, 5.5), (17, 12), (-17, 12)], -10.4, 1.2)
     g.slab([(-7, 12), (7, 12), (5, 20), (-5, 20)], -10.4, 1.2)
     rig.part("mount", g, team=True, outline=0.5)
+    # (world wave A: the screen in two tones: a team-dark foot and a team-dark lambda on its crest)
+    g = Geo().slab([(-17, 5.5), (17, 5.5), (17, 7.7), (-17, 7.7)], -10.95, 0.3)
+    g.capsule((-3.0, -11.0, 13.3), (0, -11.0, 18.4), 0.8).capsule((0, -11.0, 18.4), (3.0, -11.0, 13.3), 0.8)
+    look.team_part(rig, "mount", g, outline=0.3)
     g = Geo()
     for y in (-8, 8):
         g.capsule((6, y, 9), (4, y, 26), 2.0)                             # the upright frame
@@ -357,7 +361,11 @@ def onager_build(rig):
     g = Geo()
     box(g, (4, 0, 26.0), (2.6, 9.5, 2.6), p=4)                            # the padded buffer beam
     rig.part("mount", g, team=True)
-    pennant(rig, "mount", -15, 8, 5, h=22, length=12, width=7)
+    g = Geo()                                                               # (world wave A: its straps, team-dark)
+    for y in (-4.8, 4.8):
+        box(g, (4, y, 26.0), (2.95, 1.0, 2.95), p=4)
+    look.team_part(rig, "mount", g, outline=0.3)
+    KW.pennant(rig, "mount", -15, 8, 5, h=22, length=12, width=7, tie="pole")
     # head: the throwing arm pivots in a rope skein (a thick twisted coil round its foot, part of
     # the head so it reads in every frame) and lies cocked back; a team sleeve on the arm; at the
     # end a plum leather sling cup on ropes carries a boulder
@@ -373,11 +381,11 @@ def onager_build(rig):
     rig.part("head", g, AGED, finish="metal", outline=0.4)
     g = Geo().capsule((8, 0, 11), (-18, 0, 13), 2.8, 2.0)
     rig.part("arm", g, WOOD)
-    g = Geo().capsule((1.0, 0, 11.6), (-9.0, 0, 12.4), 3.5, 3.1)          # team sleeve
+    g = Geo().capsule((1.0, 0, 11.6), (-9.0, 0, 12.4), 3.8, 3.4)          # team sleeve (world wave A: fuller)
     rig.part("arm", g, team=True, outline=0.5)
     g = Geo()
     for x in (2.4, -9.8):
-        g.lathe([(3.3, -0.5), (3.7, 0), (3.3, 0.5)], (x, 0, 12.0), (x - 1, 0, 12.1), segs=14)
+        g.lathe([(3.6, -0.5), (4.0, 0), (3.6, 0.5)], (x, 0, 12.0), (x - 1, 0, 12.1), segs=14)
     rig.part("arm", g, BRONZE, finish=P.POLISH, outline=0.4)
     g = Geo()                                                               # sling ropes
     g.capsule((-18, -1.6, 13.4), (-22.5, -3.2, 17.4), 0.55).capsule((-18, 1.6, 13.4), (-22.5, 3.2, 17.4), 0.55)
@@ -409,8 +417,8 @@ def onager_fire(f):
 
 
 ONAGER_OVERLAYS = {"fire": {
-    1: [{"kind": "arc", "joint": "arm", "inner": (-6.0, 0, 12.6), "outer": (-21.0, 0, 16.0), "from": 0,
-         "color": ROPE, "white": 0.3, "taper": 0.2, "lines": 3}],
+    1: KW.smear_two_tone({"kind": "arc", "joint": "arm", "inner": (-6.0, 0, 12.6), "outer": (-21.0, 0, 16.0),
+                          "from": 0, "color": ROPE, "white": 0.3, "taper": 0.2, "lines": 3}),
     2: [{"kind": "burst", "joint": "mount", "point": (4.0, -10.0, 28.0), "r0_lu": 5.0, "r1_lu": 10.0, "n": 5,
          "a0": 20.0, "arc": 140.0},
         {"kind": "dust", "ground": (0.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 3, "spread": 1.2}],
@@ -427,7 +435,7 @@ def _gp(x, y, z, cx=1.0, deg=GFACE):
 
 
 def gorgon_build(rig):
-    sand_plinth(rig, r=13, h=6)
+    porphyry_footing(rig, r=13, h=6, seed=19)                         # (world wave A, S3)
     g = Geo()
     cyl(g, (0, 1, 6), (0, 1, 22), 8.0, 7.0, bevel=0.8, segs=20)
     rig.part("mount", g, SAND)
@@ -442,6 +450,10 @@ def gorgon_build(rig):
     rig.part("mount", g, SAND_LT)
     g = Geo().slab([(-8.5, 21.5), (8.5, 21.5), (8.5, 10), (0, 5), (-8.5, 10)], -8.6, 1.2)   # team drape
     rig.part("mount", g, team=True, outline=0.5)
+    # (world wave A: the drape in two tones: a team-dark hem along its point and a team-dark lambda)
+    g = Geo().slab([(8.5, 10), (0, 5), (-8.5, 10), (-8.5, 12.2), (0, 7.2), (8.5, 12.2)], -9.1, 0.6)
+    g.capsule((-2.8, -9.5, 12.6), (0, -9.5, 18.2), 0.75).capsule((0, -9.5, 18.2), (2.8, -9.5, 12.6), 0.75)
+    look.team_part(rig, "mount", g, outline=0.3)
     # head: a pale stone face turned three-quarters to the camera (so the face reads at game
     # size), verdigris snakes, a team diadem; big blank eyes and a hiss flare on the shot
     g = Geo().blob((1.0, 0, 33.0), (9.2, 8.8, 9.6), p=2.3)
@@ -660,23 +672,28 @@ NETCASTER_OVERLAYS = {"fire": {
 
 # -- Polybolos (W2 Bronze wave): the chain-fed repeating bolt-thrower ---------------------------------------
 def polybolos_build(rig):
-    sand_plinth(rig, r=16, h=6)
+    porphyry_footing(rig, r=16, h=6, seed=17)                         # (world wave A, S3)
     g = Geo()
     for y in (-7, 7):
         g.capsule((-10, y, 6), (2, y, 20), 2.0)                       # the A-frame trestle
         g.capsule((12, y, 6), (2, y, 20), 2.0)
     g.capsule((2, -8, 20), (2, 8, 20), 1.8)
     rig.part("mount", g, WOOD_DK)
+    feet = [(-10, y) for y in (-7, 7)] + [(12, y) for y in (-7, 7)]   # (world wave A: shod feet)
+    leg_shoes(rig, [(x + (2 - x) * 1.4 / 14, y, 7.4) for x, y in feet], [(2, y, 20) for x, y in feet], r=2.0,
+              length=3.0)
     g = Geo().slab([(-12, 7.0), (14, 7.0), (14, 13.0), (-12, 13.0)], -9.6, 1.2)
     rig.part("mount", g, team=True, outline=0.5)
-    pennant(rig, "mount", -14, 8, 6, h=22, length=12, width=7)
+    g = Geo().slab([(-12, 7.0), (14, 7.0), (14, 9.1), (-12, 9.1)], -10.35, 0.3)   # (world wave A: a team-dark hem)
+    look.team_part(rig, "mount", g, outline=0.3)
+    KW.pennant(rig, "mount", -14, 8, 6, h=22, length=12, width=7, tie="pole")
     # head: the long stock (rotates at the trestle top), the bow arms, the magazine and the chain drive
     g = Geo()
     box(g, (3, 0, 22.0), (19.0, 2.6, 2.0), p=5)                      # the stock
     rig.part("head", g, WOOD)
     g = Geo()
-    box(g, (3, 0, 25.0), (16.0, 2.2, 1.2), p=5)                      # the bolt slider
-    rig.part("head", g, team=True, outline=0.5)
+    box(g, (3, 0, 25.2), (16.0, 2.9, 1.5), p=5)                      # the bolt slider
+    rig.part("head", g, team=True, outline=0.5)     # (world wave A: 3 lu tall and proud of the stock, was 2.4: v4)
     g = Geo()
     for sgn in (-1, 1):                                              # the torsion bow arms in their frame
         g.capsule((16, sgn * 2.8, 22.5), (9, sgn * 12.0, 24.5), 1.4, 1.0)
@@ -694,6 +711,7 @@ def polybolos_build(rig):
     g = Geo()
     box(g, (8, 0, 30.5), (3.2, 2.6, 4.4), p=4)                       # the magazine hopper
     rig.part("head", g, WOOD_DK)
+
     g = Geo()
     for k in range(3):
         g.capsule((5.4, -1.6 + 1.6 * k, 33.2), (12.0, -1.6 + 1.6 * k, 33.6), 0.5)
@@ -706,9 +724,9 @@ def polybolos_build(rig):
     g = Geo()
     for k in range(4):
         a = math.radians(90 * k)
-        g.capsule((-14, -4.4, 22.0), (-14 + 4.8 * math.cos(a), -4.4, 22.0 + 4.8 * math.sin(a)), 0.9)
-    g.capsule((-14 + 4.8, -4.6, 22.0), (-14 + 4.8, -7.6, 22.0), 0.9)
-    rig.part("crank", g, team=True, outline=0.4)
+        g.capsule((-14, -4.4, 22.0), (-14 + 4.8 * math.cos(a), -4.4, 22.0 + 4.8 * math.sin(a)), 1.1)
+    g.capsule((-14 + 4.8, -4.6, 22.0), (-14 + 4.8, -7.6, 22.0), 1.1)
+    rig.part("crank", g, team=True, outline=0.4)    # (world wave A: spokes 2.2 lu, were 1.8: thin team lost to v4)
     g = Geo()
     for k in range(9):                                               # the chain loop along the stock
         x = -14 + 3.2 * k
@@ -777,3 +795,14 @@ NC_KINDS = {WOOD: "wood", WOOD_DK: "wood", SAND_LT: "wood", SAND: "wood", PORPH:
             P.LEATHER_DK: "leather", "#8A6A50": "leather", ROPE: "cloth", LINEN: "cloth", "#6A5A4A": "wood",
             P.SKIN: "skin", P.SKIN_DK: "skin", P.HAIR: "fur", "team": "cloth"}
 LW.opt_in(TURRETS[4], NC_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
+ON_KINDS = {WOOD: "wood", WOOD_DK: "wood", SAND_DK: "cloth", ROPE: "cloth", PORPH: "stone", PORPH_LT: "stone",
+            PORPH_DK: "stone", AGED: "bronze", BRONZE: "bronze", "#C8B488": "bronze", P.PLUM: "leather",
+            "#8A6A50": "leather", "#6A5A4A": "wood", "team": "cloth"}
+GB_KINDS = {SAND: "stone", SAND_DK: "stone", SAND_LT: "stone", PORPH: "stone", PORPH_LT: "stone", PORPH_DK: "stone",
+            BRONZE: "bronze", VERD: "hide", "team": "cloth"}
+PB_KINDS = {WOOD: "wood", WOOD_DK: "wood", SAND_LT: "wood", ROPE: "cloth", LINEN: "cloth", PORPH: "stone",
+            PORPH_LT: "stone", PORPH_DK: "stone", AGED: "bronze", AGED_DK: "bronze", BRONZE: "bronze",
+            "#C8B488": "bronze", "#8A6A50": "leather", "#6A5A4A": "wood", "team": "cloth"}
+LW.opt_in(TURRETS[2], ON_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
+LW.opt_in(TURRETS[3], GB_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
+LW.opt_in(TURRETS[5], PB_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)

@@ -527,9 +527,16 @@ def _hoplon(f):
                 g.capsule((10 + 2 * (k % 3), y, 1.2), (30 + 2 * (k % 3), y + 4, 1.2), 0.7)
                 return g, "#7A6A56"
             g.capsule((-7, y, 0), (-7 + 1.6, y, 50), 0.7)
-            g.lathe([(0, 0), (1.3, 0.4), (0, 4.4)], (-5.4, y, 50), (-5.2, y, 54.4), segs=8)
             return g, "#7A6A56"
         f.breakable(make_spear, 3 if k % 2 else 2)
+
+        def make_head(fallen, y=y, k=k):                  # (world wave A: the heads in aged bronze; a fallen
+            if fallen:                                    # spear is its shaft, as before: heads on the fallen
+                return None, None                         # shields hid their team)
+            g = Geo()
+            g.lathe([(0, 0), (1.3, 0.4), (0, 4.4)], (-5.4, y, 50), (-5.2, y, 54.4), segs=8)
+            return g, P.AGED
+        f.breakable(make_head, 3 if k % 2 else 2, finish="metal", outline=0.4)
     # the locked hoplons: overlapping team shields in a row, rims touching
     for k in range(6):
         y = -27.5 + 11 * k
@@ -542,7 +549,14 @@ def _hoplon(f):
                 return g, None
             g.blob((1.0, y, 16.0), (1.8, 9.6, 9.6), p=2.0, rot=(0, 8, 0))
             return g, None
-        f.breakable(make_shield, stage, outline=0.8)
+        if k % 2:       # (world wave A: every other shield painted team-dark, so the wall reads in two tones)
+            g, _ = make_shield(False)
+            look.team_part(f.rig, f.group("body", 0, min(3, stage - 1)), g, outline=0.8)
+            if stage <= 3:
+                g, _ = make_shield(True)
+                look.team_part(f.rig, f.group("body", stage, 3), g, outline=0.8)
+        else:
+            f.breakable(make_shield, stage, outline=0.8)
 
         def make_rim(fallen, y=y):
             g = Geo()
@@ -559,11 +573,25 @@ def _hoplon(f):
         f.add(g, P.SAND_LT, "body", 0, 1, outline=0.3)
     _rubble(f, (6.0, 0.0), (16.0, 26.0), 10, 210, (CEDAR, CEDAR_DK, "#7A6A56"))
     scaffold(f, -8.0, 4.0, -34.0, 34.0, 36.0, wood=CEDAR, rope=ROPE, levels=1)
+    # (world wave A: the rail lashed to the posts, within the posts' width: the wall's ends set its width; no grass:
+    # on the bank it hid the fallen shields)
+    for y in (-34.0, 34.0):
+        KW.wraps(f.rig, f.group("body", 0, 1), (-4.6, y, 28.4), (-4.6, y, 31.6), 1.5, 2, ROPE, w=0.6, outline=0.3)
+    # (world wave A: the rail painted in team bands of two tones, over the shields; from the camera the shields show
+    # their rims, so the rail carries the wall's team)
+    for k, y in enumerate((-22.0, -8.0, 6.0, 20.0)):
+        KW.team_band(f.rig, f.group("body", 0, 1), (-5.0, y, 30.0), (-5.0, y + 6.0, 30.0), 1.6,
+                     tone=1.0 if k % 2 else look.TEAM_DARK, outline=0.4)
 
 
 HOPLON = make("hoplon_line", "Hoplon Line", AGE, "wall", _hoplon, canvas=(300, 260), feet=(146, 230),
               height=58, hit=(2, 20), material="wood", flag=(-6.0, 34.0, 34.0, 18.0), foot=28.0,
               pole_fill=CEDAR_DK, tip_fill=P.BRONZE_HI)
+HL_KINDS = {CEDAR: "wood", CEDAR_DK: "wood", "#7A6A56": "wood", EARTH: "leather", ROPE: "leather", P.AGED: "bronze",
+            P.SAND_LT: "stone", P.BRONZE_HI: "bronze", "team": "cloth"}
+KW.banner_hems(HOPLON, (-6.0, 34.0, 34.0), 18.0, 22.0, 10.0)
+LW.opt_in(HOPLON, HL_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)   # (1.6: at 1.8 the team highlight's white passes
+#   half cover, and the fallen shields' lit faces stop counting as team)
 
 
 # ====================================================================================== Slinger Camp (W2)
@@ -594,6 +622,10 @@ def _slinger(f):
     f.add(Geo().capsule((-12, -6, 0), (-12, -6, 30), 1.0).capsule((-12, 10, 0), (-12, 10, 30), 1.0), CEDAR_DK, "body", 0, 2)
     f.add(Geo().blob((-6, 2, 29.0), (9.0, 11.0, 1.4), p=3.0, rot=(0, -14, 0)), None, "body", 0, 1, team=True,
           outline=0.8)
+    g = Geo()                                       # (world wave A: a team-dark fringe of tabs along its near edge)
+    for x in (-13.0, -9.0, -5.0, -1.0, 3.0):
+        g.blob((x, -8.6, 29.0 + 0.242 * (x + 6.0) - 2.0), (1.5, 0.7, 1.7), p=2.4, taper=(0.7, 1.0))
+    look.team_part(f.rig, f.group("body", 0, 1), g, outline=0.4)
     # a heap of sling stones and a sling hung on the post; a straw target post at the side
     g = Geo()
     for k in range(9):
@@ -606,19 +638,38 @@ def _slinger(f):
     f.add(Geo().capsule((22, 10, 0), (22, 10, 22), 1.0), CEDAR_DK, "body", 0, 2)
     f.add(Geo().blob((22.4, 10, 20.0), (2.8, 5.6, 5.6), p=2.0), REED, "body", 0, 2)
     f.add(Geo().blob((24.8, 10, 20.0), (0.6, 2.4, 2.4), p=2.0), None, "body", 0, 2, team=True, outline=0.4)
+    g = Geo().lathe([(2.6, -0.3), (3.8, -0.2), (3.8, 0.2), (2.6, 0.3)], (24.7, 10, 20.0), (25.7, 10, 20.0), segs=20)
+    look.team_part(f.rig, f.group("body", 0, 2), g, outline=0.3)      # (world wave A: the target's team-dark ring)
     # the door: a hurdle gate of woven withies in the gap (closed, half, open)
     for k, ang in enumerate((0.0, 40.0, 80.0)):
         g = Geo().blob((4.0 - 2.0 * k, -13.6 - 1.6 * k, 7.0), (5.6, 1.0, 7.0), p=3.0, rot=(0, 0, -ang))
         f.add(g, REED_DK, "door", k, k, outline=0.6)
-        g = Geo().blob((4.0 - 2.0 * k, -14.4 - 1.6 * k, 10.0), (5.0, 0.6, 1.4), p=3.0, rot=(0, 0, -ang))
-        f.add(g, None, "door", k, k, team=True, outline=0.5)
+        g = Geo().blob((4.0 - 2.0 * k, -14.4 - 1.6 * k, 10.0), (5.0, 0.6, 2.0), p=3.0, rot=(0, 0, -ang))
+        f.add(g, None, "door", k, k, team=True, outline=0.5)    # (world wave A: 4 lu, was 2.8: v4 ate the thin band)
     _rubble(f, (4.0, 0.0), (20.0, 16.0), 12, 340, (LIME, LIME_DK, EARTH))
     scaffold(f, -16.0, 16.0, -14.0, 14.0, 26.0, wood=CEDAR, rope=ROPE, levels=1)
+    # (world wave A: grass round the fold's foot and in the doorway, outside the falling stones)
+    rg = random.Random(61)
+    g = Geo()
+    for k in range(10):
+        a = math.radians(-160 + 32 * k + rg.uniform(-8, 8))
+        if -0.25 < math.cos(a) and math.sin(a) < -0.85:
+            continue
+        x, y = 19.0 * math.cos(a), 16.5 * math.sin(a)
+        for d in (-1, 0, 1):
+            g.capsule((x + d * 0.8, y, 1.2), (x + d * 1.6 + rg.uniform(-0.5, 0.5), y - 0.5, rg.uniform(3.8, 5.6)), 0.55,
+                      0.2)
+    f.add(g, GRASS, "body", outline=0.4)
 
 
 SLINGER = make("slinger_camp", "Slinger Camp", AGE, "camp", _slinger, canvas=(320, 240), feet=(156, 210),
                height=60, hit=(0, 18), material="stone", flag=(-12.0, 10.0, 30.0, 16.0), foot=32.0,
                pole_fill=CEDAR_DK, tip_fill=P.BRONZE_HI, extra_meta={"flag": {"crumbleMax": 2, "z": "front"}})
+SC_KINDS = {LIME: "stone", LIME_DK: "stone", EARTH: "stone", CEDAR: "wood", CEDAR_DK: "wood", REED: "wood",
+            REED_DK: "wood", ROPE: "leather", GRASS: "fur", P.LEATHER: "leather", "#B7AFA0": "stone",
+            P.BRONZE_HI: "bronze", "team": "cloth"}
+KW.banner_hems(SLINGER, (-12.0, 10.0, 30.0), 16.0, 22.0, 10.0)
+LW.opt_in(SLINGER, SC_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 
 FORTS = [CYCLOPEAN, PYRGOS, MUSTER, STAKES, HOPLON, SLINGER]
