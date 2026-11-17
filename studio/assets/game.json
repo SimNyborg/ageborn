@@ -5594,7 +5594,7 @@
   "rock_tosser": {
    "id": "rock_tosser",
    "age": "stone",
-   "name": "Rock Tosser",
+   "name": "Rock Thrower",
    "rarity": "common"
   },
   "angry_beehive": {
@@ -6277,7 +6277,8 @@
    "master": 0.7,
    "music": 0.55,
    "sfx": 1,
-   "ui": 0.8
+   "ui": 0.8,
+   "voice": 0.5
   },
   "fileGainDb": {
    "battle": -12,
@@ -6293,10 +6294,10 @@
     "sync": 0.02031
    },
    "battle": {
-    "src": "audio/sfx/battle.e60e5e80.ogg",
-    "bytes": 210181,
-    "seconds": 41.708,
-    "alt": "audio/sfx/battle.130edf05.m4a",
+    "src": "audio/sfx/battle.9505595e.ogg",
+    "bytes": 330360,
+    "seconds": 65.214,
+    "alt": "audio/sfx/battle.e915bc99.m4a",
     "sync": 0.02031
    },
    "stone": {
@@ -6321,10 +6322,10 @@
     "sync": 0.02031
    },
    "match": {
-    "src": "audio/sfx/match.16fce348.ogg",
-    "bytes": 800030,
-    "seconds": 157.738,
-    "alt": "audio/sfx/match.3a2e3d25.m4a",
+    "src": "audio/sfx/match.c625e9a3.ogg",
+    "bytes": 836425,
+    "seconds": 165.018,
+    "alt": "audio/sfx/match.344f3240.m4a",
     "sync": 0.02031
    },
    "gunpowder": {
@@ -6367,6 +6368,13 @@
     "bytes": 324190,
     "seconds": 64.005,
     "alt": "audio/sfx/capsule.071bd619.m4a",
+    "sync": 0.02031
+   },
+   "currency": {
+    "src": "audio/sfx/currency.7f73279d.ogg",
+    "bytes": 69516,
+    "seconds": 13.744,
+    "alt": "audio/sfx/currency.4dc840ff.m4a",
     "sync": 0.02031
    }
   },
@@ -6850,15 +6858,15 @@
     "variants": [
      [
       5.00619,
-      0.14
+      0.144
      ],
      [
-      5.19619,
-      0.14
+      5.20019,
+      0.144
      ],
      [
-      5.38619,
-      0.14
+      5.39419,
+      0.144
      ]
     ]
    },
@@ -6866,16 +6874,16 @@
     "sheet": "battle",
     "variants": [
      [
-      5.57619,
-      0.1
+      5.58819,
+      0.124
      ],
      [
-      5.72619,
-      0.1
+      5.76219,
+      0.124
      ],
      [
-      5.87619,
-      0.1
+      5.93619,
+      0.124
      ]
     ]
    },
@@ -6883,15 +6891,15 @@
     "sheet": "battle",
     "variants": [
      [
-      6.02619,
+      6.11019,
       0.125
      ],
      [
-      6.20119,
-      0.1016
+      6.28519,
+      0.125
      ],
      [
-      6.35279,
+      6.46019,
       0.18
      ]
     ]
@@ -6900,15 +6908,15 @@
     "sheet": "battle",
     "variants": [
      [
-      6.58279,
+      6.69019,
       0.12
      ],
      [
-      6.75279,
+      6.86019,
       0.12
      ],
      [
-      6.92279,
+      7.03019,
       0.12
      ]
     ]
@@ -6917,16 +6925,16 @@
     "sheet": "battle",
     "variants": [
      [
-      7.09279,
-      0.422
+      7.20019,
+      0.4161
      ],
      [
-      7.56479,
-      0.45215
+      7.66629,
+      0.42523
      ],
      [
-      8.06694,
-      0.45319
+      8.14152,
+      0.43198
      ]
     ]
    },
@@ -6934,15 +6942,15 @@
     "sheet": "battle",
     "variants": [
      [
-      8.57013,
+      8.6235,
       0.304
      ],
      [
-      8.92413,
+      8.9775,
       0.304
      ],
      [
-      9.27812,
+      9.3315,
       0.304
      ]
     ]
@@ -6951,15 +6959,15 @@
     "sheet": "battle",
     "variants": [
      [
-      9.63213,
+      9.6855,
       0.79785
      ],
      [
-      10.47998,
+      10.53335,
       0.77148
      ],
      [
-      11.30146,
+      11.35483,
       0.72208
      ]
     ]
@@ -6968,15 +6976,15 @@
     "sheet": "battle",
     "variants": [
      [
-      12.07354,
+      12.12692,
       1.174
      ],
      [
-      13.29754,
+      13.35092,
       1.20533
      ],
      [
-      14.55288,
+      14.60625,
       1.15977
      ]
     ]
@@ -6985,15 +6993,15 @@
     "sheet": "battle",
     "variants": [
      [
-      15.76265,
+      15.81602,
       0.31
      ],
      [
-      16.12265,
+      16.17602,
       0.31
      ],
      [
-      16.48265,
+      16.53602,
       0.31
      ]
     ]
@@ -7002,16 +7010,16 @@
     "sheet": "battle",
     "variants": [
      [
-      16.84265,
-      0.74194
+      16.89602,
+      0.74196
      ],
      [
-      17.63458,
-      0.76148
+      17.68798,
+      0.76144
      ],
      [
-      18.44606,
-      0.73217
+      18.49942,
+      0.72304
      ]
     ]
    },
@@ -7019,15 +7027,15 @@
     "sheet": "battle",
     "variants": [
      [
-      19.22823,
+      19.27246,
       0.233
      ],
      [
-      19.51123,
+      19.55546,
       0.233
      ],
      [
-      19.79423,
+      19.83846,
       0.233
      ]
     ]
@@ -7036,15 +7044,15 @@
     "sheet": "battle",
     "variants": [
      [
-      20.07723,
+      20.12146,
       0.35
      ],
      [
-      20.47723,
+      20.52146,
       0.35
      ],
      [
-      20.87723,
+      20.92146,
       0.35
      ]
     ]
@@ -7053,15 +7061,15 @@
     "sheet": "battle",
     "variants": [
      [
-      21.27723,
+      21.32146,
       0.6
      ],
      [
-      21.92723,
+      21.97146,
       0.6
      ],
      [
-      22.57723,
+      22.62146,
       0.6
      ]
     ]
@@ -7070,15 +7078,15 @@
     "sheet": "battle",
     "variants": [
      [
-      23.22723,
+      23.27146,
       0.8
      ],
      [
-      24.07723,
+      24.12146,
       0.8
      ],
      [
-      24.92723,
+      24.97146,
       0.8
      ]
     ]
@@ -7087,15 +7095,15 @@
     "sheet": "battle",
     "variants": [
      [
-      25.77723,
+      25.82146,
       0.58
      ],
      [
-      26.40723,
+      26.45146,
       0.58
      ],
      [
-      27.03723,
+      27.08146,
       0.58
      ]
     ]
@@ -7104,11 +7112,11 @@
     "sheet": "battle",
     "variants": [
      [
-      27.66723,
+      27.71146,
       0.68542
      ],
      [
-      28.40265,
+      28.44687,
       0.68708
      ]
     ]
@@ -7117,11 +7125,11 @@
     "sheet": "battle",
     "variants": [
      [
-      29.13973,
+      29.18396,
       0.45
      ],
      [
-      29.63973,
+      29.68396,
       0.45
      ]
     ]
@@ -7130,15 +7138,15 @@
     "sheet": "battle",
     "variants": [
      [
-      30.13973,
+      30.18396,
       0.52569
      ],
      [
-      30.71542,
+      30.75965,
       0.53038
      ],
      [
-      31.29579,
+      31.34002,
       0.52054
      ]
     ]
@@ -7147,11 +7155,11 @@
     "sheet": "battle",
     "variants": [
      [
-      31.86633,
+      31.91056,
       1.31
      ],
      [
-      33.22633,
+      33.27056,
       1.31
      ]
     ]
@@ -7160,15 +7168,15 @@
     "sheet": "battle",
     "variants": [
      [
-      34.58633,
+      34.63056,
       0.68004
      ],
      [
-      35.31638,
+      35.3606,
       0.67437
      ],
      [
-      36.04075,
+      36.08498,
       0.65885
      ]
     ]
@@ -7177,15 +7185,15 @@
     "sheet": "battle",
     "variants": [
      [
-      36.7496,
+      36.79383,
       0.07
      ],
      [
-      36.8696,
+      36.91383,
       0.07
      ],
      [
-      36.9896,
+      37.03383,
       0.07
      ]
     ]
@@ -7194,7 +7202,7 @@
     "sheet": "battle",
     "variants": [
      [
-      37.1096,
+      37.15383,
       1.22865
      ]
     ]
@@ -7203,7 +7211,7 @@
     "sheet": "battle",
     "variants": [
      [
-      38.38825,
+      38.43248,
       0.77958
      ]
     ]
@@ -7212,11 +7220,11 @@
     "sheet": "battle",
     "variants": [
      [
-      39.21783,
+      39.26206,
       1
      ],
      [
-      40.26783,
+      40.31206,
       1
      ]
     ]
@@ -7225,16 +7233,246 @@
     "sheet": "battle",
     "variants": [
      [
-      41.31783,
+      41.36206,
       0.08
      ],
      [
-      41.44783,
+      41.49206,
       0.08
      ],
      [
-      41.57783,
+      41.62206,
       0.08
+     ]
+    ]
+   },
+   "kill_accent": {
+    "sheet": "battle",
+    "variants": [
+     [
+      41.75206,
+      0.36054
+     ],
+     [
+      42.1626,
+      0.35475
+     ],
+     [
+      42.56735,
+      0.39265
+     ]
+    ]
+   },
+   "mat_armour": {
+    "sheet": "battle",
+    "variants": [
+     [
+      43.01,
+      0.304
+     ],
+     [
+      43.364,
+      0.304
+     ],
+     [
+      43.718,
+      0.304
+     ]
+    ]
+   },
+   "mat_wood": {
+    "sheet": "battle",
+    "variants": [
+     [
+      44.072,
+      0.168
+     ],
+     [
+      44.29,
+      0.168
+     ],
+     [
+      44.508,
+      0.168
+     ]
+    ]
+   },
+   "body_fall_s": {
+    "sheet": "battle",
+    "variants": [
+     [
+      44.726,
+      0.27052
+     ],
+     [
+      45.04652,
+      0.2701
+     ],
+     [
+      45.36662,
+      0.28271
+     ]
+    ]
+   },
+   "body_fall_m": {
+    "sheet": "battle",
+    "variants": [
+     [
+      45.69933,
+      0.47381
+     ],
+     [
+      46.22315,
+      0.4735
+     ],
+     [
+      46.74665,
+      0.47577
+     ]
+    ]
+   },
+   "clash_crash": {
+    "sheet": "battle",
+    "variants": [
+     [
+      47.27242,
+      0.82848
+     ],
+     [
+      48.1509,
+      0.82971
+     ]
+    ]
+   },
+   "leap_land": {
+    "sheet": "battle",
+    "variants": [
+     [
+      49.0306,
+      0.25
+     ],
+     [
+      49.3306,
+      0.25
+     ],
+     [
+      49.6306,
+      0.25
+     ]
+    ]
+   },
+   "ambience_battle": {
+    "sheet": "battle",
+    "variants": [
+     [
+      49.9306,
+      11
+     ]
+    ],
+    "loop": [
+     0.25,
+     10.5
+    ]
+   },
+   "dmg_rip": {
+    "sheet": "battle",
+    "variants": [
+     [
+      60.9806,
+      0.13
+     ],
+     [
+      61.1606,
+      0.13
+     ],
+     [
+      61.3406,
+      0.13
+     ]
+    ]
+   },
+   "dmg_clank": {
+    "sheet": "battle",
+    "variants": [
+     [
+      61.5206,
+      0.222
+     ],
+     [
+      61.7926,
+      0.222
+     ],
+     [
+      62.0646,
+      0.222
+     ]
+    ]
+   },
+   "dmg_splinter": {
+    "sheet": "battle",
+    "variants": [
+     [
+      62.3366,
+      0.10565
+     ],
+     [
+      62.49225,
+      0.1146
+     ],
+     [
+      62.65685,
+      0.13
+     ]
+    ]
+   },
+   "dmg_crunch": {
+    "sheet": "battle",
+    "variants": [
+     [
+      62.83685,
+      0.13758
+     ],
+     [
+      63.02444,
+      0.138
+     ],
+     [
+      63.21244,
+      0.138
+     ]
+    ]
+   },
+   "dmg_zap": {
+    "sheet": "battle",
+    "variants": [
+     [
+      63.40044,
+      0.1
+     ],
+     [
+      63.55044,
+      0.1
+     ],
+     [
+      63.70044,
+      0.1
+     ]
+    ]
+   },
+   "dmg_ignite": {
+    "sheet": "battle",
+    "variants": [
+     [
+      63.85044,
+      0.39275
+     ],
+     [
+      64.29319,
+      0.41177
+     ],
+     [
+      64.75496,
+      0.40858
      ]
     ]
    },
@@ -9365,6 +9603,45 @@
      [
       157.08981,
       0.59833
+     ]
+    ]
+   },
+   "body_fall_l": {
+    "sheet": "match",
+    "variants": [
+     [
+      157.73815,
+      1.09096
+     ],
+     [
+      158.8791,
+      1.12715
+     ]
+    ]
+   },
+   "die_bio_l": {
+    "sheet": "match",
+    "variants": [
+     [
+      160.05625,
+      0.81317
+     ],
+     [
+      160.91942,
+      0.80946
+     ]
+    ]
+   },
+   "die_mech_l": {
+    "sheet": "match",
+    "variants": [
+     [
+      161.77887,
+      1.5484
+     ],
+     [
+      163.37727,
+      1.59104
      ]
     ]
    },
@@ -12112,6 +12389,126 @@
       0.02
      ]
     ]
+   },
+   "amber_pickup": {
+    "sheet": "currency",
+    "variants": [
+     [
+      0.15,
+      0.67
+     ],
+     [
+      0.87,
+      0.67
+     ],
+     [
+      1.59,
+      0.67
+     ]
+    ]
+   },
+   "amber_tick": {
+    "sheet": "currency",
+    "variants": [
+     [
+      2.31,
+      0.11
+     ],
+     [
+      2.47,
+      0.11
+     ],
+     [
+      2.63,
+      0.11
+     ]
+    ]
+   },
+   "amber_chime": {
+    "sheet": "currency",
+    "variants": [
+     [
+      2.79,
+      1.05958
+     ],
+     [
+      3.89958,
+      1.08173
+     ]
+    ]
+   },
+   "amber_spend": {
+    "sheet": "currency",
+    "variants": [
+     [
+      5.03131,
+      0.39
+     ],
+     [
+      5.47131,
+      0.39
+     ]
+    ]
+   },
+   "dust_pickup": {
+    "sheet": "currency",
+    "variants": [
+     [
+      5.91131,
+      0.82
+     ],
+     [
+      6.78131,
+      0.82
+     ],
+     [
+      7.65131,
+      0.82
+     ]
+    ]
+   },
+   "dust_tick": {
+    "sheet": "currency",
+    "variants": [
+     [
+      8.52131,
+      0.17
+     ],
+     [
+      8.74131,
+      0.17
+     ],
+     [
+      8.96131,
+      0.17
+     ]
+    ]
+   },
+   "dust_chime": {
+    "sheet": "currency",
+    "variants": [
+     [
+      9.18131,
+      1.58183
+     ],
+     [
+      10.81315,
+      1.58358
+     ]
+    ]
+   },
+   "dust_spend": {
+    "sheet": "currency",
+    "variants": [
+     [
+      12.44673,
+      0.59794
+     ],
+     [
+      13.09467,
+      0.59904
+     ]
+    ]
    }
   },
   "soundMix": {
@@ -12226,7 +12623,7 @@
    "swing_whoosh": {
     "bus": "sfx",
     "group": "battle",
-    "gainDb": 0,
+    "gainDb": -5,
     "maxVoices": 4,
     "gapMs": 40,
     "pitchVarBp": 800,
@@ -13810,7 +14207,7 @@
    "hit_blunt": {
     "bus": "sfx",
     "group": "battle",
-    "gainDb": 0,
+    "gainDb": 3,
     "maxVoices": 4,
     "gapMs": 40,
     "pitchVarBp": 800,
@@ -13819,7 +14216,7 @@
    "hit_slash": {
     "bus": "sfx",
     "group": "battle",
-    "gainDb": 0,
+    "gainDb": 3,
     "maxVoices": 4,
     "gapMs": 40,
     "pitchVarBp": 800,
@@ -13828,7 +14225,7 @@
    "hit_pierce": {
     "bus": "sfx",
     "group": "battle",
-    "gainDb": 0,
+    "gainDb": 3,
     "maxVoices": 4,
     "gapMs": 40,
     "pitchVarBp": 800,
@@ -13837,7 +14234,7 @@
    "hit_bullet": {
     "bus": "sfx",
     "group": "battle",
-    "gainDb": 0,
+    "gainDb": 3,
     "maxVoices": 4,
     "gapMs": 40,
     "pitchVarBp": 800,
@@ -13846,7 +14243,7 @@
    "hit_laser": {
     "bus": "sfx",
     "group": "battle",
-    "gainDb": 0,
+    "gainDb": 3,
     "maxVoices": 4,
     "gapMs": 40,
     "pitchVarBp": 800,
@@ -13855,7 +14252,7 @@
    "hit_heavy": {
     "bus": "sfx",
     "group": "battle",
-    "gainDb": 0,
+    "gainDb": 3,
     "maxVoices": 4,
     "gapMs": 40,
     "pitchVarBp": 800,
@@ -13864,7 +14261,7 @@
    "hit_effective": {
     "bus": "sfx",
     "group": "battle",
-    "gainDb": 0,
+    "gainDb": 3,
     "maxVoices": 4,
     "gapMs": 40,
     "pitchVarBp": 800,
@@ -15659,6 +16056,231 @@
     "maxVoices": 1,
     "gapMs": 300,
     "pitchVarBp": 0,
+    "volVarDb": 3
+   },
+   "kill_accent": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 3,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "mat_armour": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 4,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "mat_wood": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 4,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "body_fall_s": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 4,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "body_fall_m": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 4,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "body_fall_l": {
+    "bus": "sfx",
+    "group": "match",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "die_bio_l": {
+    "bus": "sfx",
+    "group": "match",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "die_mech_l": {
+    "bus": "sfx",
+    "group": "match",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "clash_crash": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 1,
+    "gapMs": 1500,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "leap_land": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 4,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "ambience_battle": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 1,
+    "gapMs": 40,
+    "pitchVarBp": 0,
+    "volVarDb": 3
+   },
+   "dmg_rip": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "dmg_clank": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "dmg_splinter": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "dmg_crunch": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "dmg_zap": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "dmg_ignite": {
+    "bus": "sfx",
+    "group": "battle",
+    "gainDb": 0,
+    "maxVoices": 1,
+    "gapMs": 250,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "amber_pickup": {
+    "bus": "ui",
+    "group": "currency",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "amber_tick": {
+    "bus": "ui",
+    "group": "currency",
+    "gainDb": 0,
+    "maxVoices": 4,
+    "gapMs": 40,
+    "pitchVarBp": 0,
+    "volVarDb": 3
+   },
+   "amber_chime": {
+    "bus": "ui",
+    "group": "currency",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 0,
+    "volVarDb": 3
+   },
+   "amber_spend": {
+    "bus": "ui",
+    "group": "currency",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "dust_pickup": {
+    "bus": "ui",
+    "group": "currency",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
+    "volVarDb": 3
+   },
+   "dust_tick": {
+    "bus": "ui",
+    "group": "currency",
+    "gainDb": 0,
+    "maxVoices": 4,
+    "gapMs": 40,
+    "pitchVarBp": 0,
+    "volVarDb": 3
+   },
+   "dust_chime": {
+    "bus": "ui",
+    "group": "currency",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 0,
+    "volVarDb": 3
+   },
+   "dust_spend": {
+    "bus": "ui",
+    "group": "currency",
+    "gainDb": 0,
+    "maxVoices": 2,
+    "gapMs": 40,
+    "pitchVarBp": 800,
     "volVarDb": 3
    }
   },

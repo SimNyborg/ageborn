@@ -1,0 +1,4 @@
+Devlog #19: one soldier, eight ages ⚔️
+Every age in my game has a basic soldier with the same job: walk forward and hit something. The hard part was making each one look like it truly belongs to its age, from the club-swinging Bonker to the Star Legionnaire. Same moves, eight looks. Which one is your favourite? 👇
+
+#gamedev #indiedev #indiegame #devlog #gameart

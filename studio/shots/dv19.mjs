@@ -26,7 +26,7 @@ export async function record({ open, out, only }) {
     await s.issue({ t: 'stance', side: 1, mode: 'hold', holdP: 820 });
     await s.skip(900);
     s.watch({ ids: [hero] });
-    await s.camera({ kind: 'track', id: hero, w: 420, lead: 0.18, ground: 0.72, how: { move: 'cut' } });
+    await s.camera({ kind: 'track', id: hero, w: 280, lead: 0.2, ground: 0.66, how: { move: 'cut' } });
     await s.startClip(`${out}/${a.age}.mp4`, { part: a.age });
     s.mark('idle');
     await s.frames(36);
