@@ -550,11 +550,16 @@ def _net_bundle(rig, joint, at, spread=1.0):
 
 
 def netcaster_build(rig):
-    sand_plinth(rig, r=14, h=5)
+    porphyry_footing(rig, r=14, h=5, seed=11)                         # (world wave A, S3)
+    posts = ((-9, -8), (9, -8), (-9, 9), (9, 9))
     g = Geo()
-    for x, y in ((-9, -8), (9, -8), (-9, 9), (9, 9)):              # wharf posts
+    for x, y in posts:                                              # wharf posts
         g.capsule((x, y, 5), (x, y, 18), 2.0)
     rig.part("mount", g, WOOD_DK)
+    # world wave A: aged-bronze shoes on the posts, rope lashings under the deck on the front pair
+    leg_shoes(rig, [(x, y, 6.3) for x, y in posts], [(x, y, 18) for x, y in posts], r=2.0, length=3.0)
+    for x in (-9, 9):
+        KW.wraps(rig, "mount", (x, -8, 13.4), (x, -8, 16.4), 2.0, 2, ROPE, w=0.6, outline=0.3)
     g = Geo()
     box(g, (0, 0.5, 18.6), (12.5, 11.0, 1.4), p=5)                 # the plank deck
     rig.part("mount", g, WOOD)
@@ -564,6 +569,8 @@ def netcaster_build(rig):
     rig.part("mount", g, WOOD_DK, outline=0)
     g = Geo().slab([(-11, 17.4), (11, 17.4), (11, 10.5), (0, 8.0), (-11, 10.5)], -10.4, 1.2)
     rig.part("mount", g, team=True, outline=0.6)                    # a team banner hung off the deck
+    g = Geo().slab([(11, 10.5), (0, 8.0), (-11, 10.5), (-11, 12.6), (0, 10.1), (11, 12.6)], -10.9, 0.6)
+    look.team_part(rig, "mount", g, outline=0.3)                    # (world wave A: its hem in team-dark)
     g = Geo()
     for x, z in ((-7.0, 13.0), (-2.0, 12.0), (3.0, 12.4), (8.0, 13.2)):  # floats tied along it
         g.sphere((x, -11.6, z), 1.4, cuts=2)
@@ -572,7 +579,7 @@ def netcaster_build(rig):
     g = Geo()                                                       # a coiled spare net on the deck
     g.lathe([(0, 0), (4.4, 0.2), (4.8, 1.6), (4.0, 2.6), (0, 2.8)], (-8.0, 5.0, 19.6), (-8.0, 5.0, 22.4), segs=16)
     rig.part("mount", g, LINEN, outline=0.4)
-    pennant(rig, "mount", 11, 9, 19, h=16, length=12, width=7)
+    KW.pennant(rig, "mount", 11, 9, 19, h=16, length=12, width=7, tie="pole")
     # head: the net man (drawn 1.3x so his face and the net read), turning at the deck
     rig.joint("man", "head", (0, 0, 20), scale=NETMAN_S)
     g = Geo().blob((0, 0, 26.0), (5.4, 5.0, 6.4), p=2.4)
@@ -613,6 +620,8 @@ def netcaster_build(rig):
     rig.joint("narm", "man", (0.0, -5.0, 29.0))
     g = Geo().capsule((0.0, -5.0, 29.0), (6.0, -5.4, 24.0), 1.5).blob((6.6, -5.4, 23.4), (1.8, 1.6, 1.8), p=2.2)
     rig.part("narm", g, P.SKIN, outline=0.5)
+    g = Geo().capsule((0.0, -5.2, 29.0), (2.8, -5.3, 26.7), 2.05)   # (world wave A: the tunic's sleeve)
+    rig.part("narm", g, team=True, outline=0.5)
     rig.joint("net", "narm", (7.0, -6.6, 23.0))
     _net_bundle(rig, "net", (7.0, -6.6, 23.0), spread=0.55)
     rig.joint("farm", "man", (0.0, 5.0, 29.0))
@@ -642,8 +651,8 @@ def netcaster_fire(f):
 
 
 NETCASTER_OVERLAYS = {"fire": {
-    0: [{"kind": "arc", "joint": "net", "inner": (7.0, -6.6, 23.0), "outer": (12.0, -6.6, 20.0),
-         "color": LINEN, "white": 0.3, "taper": 0.2, "lines": 2, "band": 0.4}],
+    0: KW.smear_two_tone({"kind": "arc", "joint": "net", "inner": (7.0, -6.6, 23.0), "outer": (12.0, -6.6, 20.0),
+                          "color": LINEN, "white": 0.3, "taper": 0.2, "lines": 2, "band": 0.4}),
     1: [{"kind": "streak", "joint": "narm", "point": (6.6, -5.4, 23.4), "from": 0, "color": SAND_LT,
          "width_lu": 3.4, "white": 0.3}],
 }}
@@ -763,3 +772,8 @@ SM_KINDS = {WOOD_DK: "wood", PORPH: "stone", PORPH_LT: "stone", PORPH_DK: "stone
             MIRROR_RING: "glass", "#8A6A50": "leather", "#6A5A4A": "wood", "team": "cloth"}
 LW.opt_in(TURRETS[0], AT_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
 LW.opt_in(TURRETS[1], SM_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
+NC_KINDS = {WOOD: "wood", WOOD_DK: "wood", SAND_LT: "wood", SAND: "wood", PORPH: "stone", PORPH_LT: "stone",
+            PORPH_DK: "stone", AGED: "bronze", BRONZE: "bronze", "#C8B488": "bronze", "#7C7A78": "iron",
+            P.LEATHER_DK: "leather", "#8A6A50": "leather", ROPE: "cloth", LINEN: "cloth", "#6A5A4A": "wood",
+            P.SKIN: "skin", P.SKIN_DK: "skin", P.HAIR: "fur", "team": "cloth"}
+LW.opt_in(TURRETS[4], NC_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)

@@ -27,7 +27,7 @@ from ageborn_art.geometry import Geo
 
 from world import kit_wa as KW
 from world import look_world as LW
-from world.common import rock
+from world.common import box, rock
 from world.fort_toon import make, scaffold
 
 AGE = "bronze"
@@ -45,6 +45,9 @@ LINEN = P.LINEN
 ROPE = "#C2AE86"
 FIRE = "#FFE3B0"
 STAKE = "#D8C7A2"
+STAKE_DK = "#9A8566"      # world wave A: fire-hardened points
+LEAF = "#7C8A5A"
+LEAF_DRY = "#A99A70"
 
 
 def _aspis(f, c, r, fam="body", lo=0, hi=9, face="y", rim=P.AGED):
@@ -242,6 +245,7 @@ def _pyrgos(f):
     # coursed whitewash blocks: rounded, slightly uneven, the top courses fall first
     ch = 9.6
     nc = int(H // ch)
+    blocks = []                         # (world wave A: where each block stands and when it falls)
     for ci in range(nc):
         z = 3.0 + ci * ch + ch / 2
         for face in ("-y", "+x"):
@@ -265,6 +269,7 @@ def _pyrgos(f):
                         g.blob(c, r, p=4.2)
                     return g, col
                 f.breakable(make_b, stage)
+                blocks.append(dict(c=c, r=r, face=face, stage=stage, ci=ci, i=i))
     f.add(Geo().blob((0, 0, 3.0 + H / 2), (W / 2 - 1.5, D / 2 - 1.5, H / 2), p=5.0), WHITE_DK, "body")   # core
     f.add(Geo().blob((-3.0, -D / 2 - 0.8, 12.0), (4.2, 1.0, 8.0), p=3.0, taper=(0.9, 1.0)), "#3E3430", "body", 0, 2)
     f.add(Geo().blob((-3.0, -D / 2 - 1.2, 20.6), (6.0, 1.6, 1.4), p=4.0), CEDAR_DK, "body", 0, 2)        # lintel
@@ -272,8 +277,8 @@ def _pyrgos(f):
     # a team band of painted shields round the deck
     _aspis(f, (W / 2 + 2.6, -4.0, H - 2.0), 4.6, lo=0, hi=1, face="x")
     _aspis(f, (2.0, -D / 2 - 2.0, H - 2.0), 4.6, lo=0, hi=1, face="y")
-    f.add(Geo().blob((0, 0, H - 6.0), (W / 2 + 0.6, D / 2 + 0.6, 1.6), p=5.0), None, "body", 0, 3, team=True,
-          outline=0.6)
+    f.add(Geo().blob((0, 0, H - 6.0), (W / 2 + 0.6, D / 2 + 0.6, 2.3), p=5.0), None, "body", 0, 3, team=True,
+          outline=0.6)                  # (world wave A: 4.6 lu tall, was 3.2: a thin band lost its team to outline v4)
     # the front parapet (drawn over the crew), crenellated, per crumble stage
     for st in range(4):
         g = Geo()
@@ -287,17 +292,75 @@ def _pyrgos(f):
         f.add(g, WHITE if st < 2 else WHITE_DK, "front", st, st)
     _rubble(f, (6.0, -4.0), (16.0, 14.0), 12, 120, (WHITE, WHITE_DK, LIME))
     scaffold(f, -W / 2 - 2, W / 2 + 2, -D / 2 - 2, D / 2 + 2, H + 6, wood=CEDAR, rope=ROPE, levels=3)
+    _pyrgos_wa(f, blocks, W, D, H)
+
+
+def _pyrgos_wa(f, blocks, W, D, H):
+    """World wave A (the detail standard): whitewash flaked off some blocks (limestone showing, 3-5 lu), the cedar
+    beam ends under the deck, a studded cedar door in cedar jambs, an arrow slit (its own random stream)."""
+    rnd = random.Random(97)
+    for b in blocks:
+        if (b["ci"] * 2 + b["i"]) % 4:
+            continue
+        du = rnd.uniform(-0.3, 0.3)
+        dz = rnd.uniform(-0.25, 0.25) * b["r"][2]
+
+        def flake(fallen, b=b, du=du, dz=dz, a=rnd.uniform(1.8, 2.8), c=rnd.uniform(1.3, 2.0)):
+            (cx, cy, cz), (rx, ry, rz) = b["c"], b["r"]
+            g = Geo()
+            if b["face"] == "-y":
+                g.blob((cx + du * rx, cy - ry + 0.35, cz + dz), (a, 0.6, c), p=2.2)
+            else:
+                g.blob((cx + rx - 0.35, cy + du * ry, cz + dz), (0.6, a, c), p=2.2)
+            return g, LIME_DK
+        f.breakable(flake, b["stage"], fall=False, outline=0.3)
+    # cedar beam ends under the deck (they go with it), clear of the two shields
+    g = Geo()
+    for x in (-10.0, -5.5, 9.5):
+        g.blob((x, -D / 2 - 2.3, H + 0.9), (1.4, 1.2, 1.3), p=4.0)
+    for y in (4.0, 8.5):
+        g.blob((W / 2 + 2.3, y, H + 0.9), (1.2, 1.4, 1.3), p=4.0)
+    f.add(g, CEDAR_DK, "body", 0, 2, outline=0.5)
+    # a cedar door with bronze studs, set in cedar jambs in front of the course (the blocks hid the old doorway)
+    g = Geo()
+    box(g, (-3.0, -D / 2 - 2.5, 11.3), (3.7, 0.45, 7.7), p=5)
+    f.add(g, CEDAR_DK, "body", 0, 2, outline=0.5)
+    g = Geo()
+    for x in (-4.3, -1.7):
+        g.capsule((x, -D / 2 - 3.0, 4.2), (x, -D / 2 - 3.0, 18.8), 0.25)
+    f.add(g, "#4E3C2C", "body", 0, 2, outline=0)
+    g = Geo()
+    for x in (-5.4, -0.6):
+        for z in (7.0, 16.0):
+            g.sphere((x, -D / 2 - 3.0, z), 0.75, cuts=2)
+    f.add(g, P.BRONZE_HI, "body", 0, 2, finish=P.POLISH, outline=0.3)
+    f.add(Geo().capsule((-7.6, -D / 2 - 2.6, 3.2), (-7.6, -D / 2 - 2.6, 20.0), 1.0)
+          .capsule((1.6, -D / 2 - 2.6, 3.2), (1.6, -D / 2 - 2.6, 20.0), 1.0), CEDAR, "body", 0, 2, outline=0.5)
+    # an arrow slit high on the near face (with the block it is cut in)
+    host = min((b for b in blocks if b["face"] == "-y"), key=lambda b: abs(b["c"][0] - 6.0) + abs(b["c"][2] - 37.0))
+
+    def slit(fallen, host=host):
+        (cx, cy, cz), (rx, ry, rz) = host["c"], host["r"]
+        g = Geo()
+        g.blob((cx, cy - ry - 0.05, cz), (0.75, 0.5, min(3.4, rz - 1.0)), p=3.0)
+        return g, "#3E3430"
+    f.breakable(slit, host["stage"], fall=False, outline=0.4)
 
 
 PYRGOS = make("pyrgos_tower", "Pyrgos Tower", AGE, "tower", _pyrgos, canvas=(260, 340), feet=(120, 306),
               height=104, hit=(0, 34), material="stone", flag=(-9.0, 6.0, 72.0, 20.0), foot=18.0,
               crew=dict(visualId="unit.javelineer", at=(0.0, -2.0, 62.0), scale=0.6), pole_fill=CEDAR_DK,
               tip_fill=P.BRONZE_HI)
+PY_KINDS = {WHITE: "stone", WHITE_DK: "stone", LIME: "stone", LIME_DK: "stone", CEDAR: "wood", CEDAR_DK: "wood",
+            ROPE: "leather", P.SAND_LT: "stone", P.AGED: "bronze", P.BRONZE_HI: "bronze", "team": "cloth"}
+KW.banner_hems(PYRGOS, (-9.0, 6.0, 72.0), 20.0, 22.0, 10.0)
+LW.opt_in(PYRGOS, PY_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 
 # ====================================================================================== Muster Tents
-def _tent(f, cx, cy, w, d, h, panel_team=True, stage=4):
-    """A ridge tent of linen with a team side panel; `stage` = the crumble stage it collapses at."""
+def _tent(f, cx, cy, w, d, h, panel_team=True, stage=4, guy=()):
+    """A ridge tent of linen with a team side panel; `stage` = the crumble stage it collapses at; `guy` = the sides
+    (-1 left, 1 right) that take a guy rope (world wave A; only the outer sides: a rope across a panel hides team)."""
     def make_t(fallen):
         g = Geo()
         if fallen:
@@ -314,14 +377,28 @@ def _tent(f, cx, cy, w, d, h, panel_team=True, stage=4):
             g.slab([(cx - w / 2 * 0.86, 1.0), (cx, h * 0.62), (cx + w / 2 * 0.86, 1.0)], cy - d / 2 - 0.9, 1.0)
             return g, None
         f.breakable(make_p, stage, fall=False, outline=0.7)
+        # (world wave A: the panel's hem in team-dark, 4.4 lu up its foot)
+        x0, ztop = w / 2 * 0.86, h * 0.62
+        xi = x0 * (1.0 - 4.4 / (ztop - 1.0))
+        g = Geo().slab([(cx - x0, 1.0), (cx + x0, 1.0), (cx + xi, 5.4), (cx - xi, 5.4)], cy - d / 2 - 1.55, 0.3)
+        look.team_part(f.rig, f.group("body", 0, min(3, stage - 1)), g, outline=0.3)
+    # (world wave A: a guy rope from the roof to a cedar peg)
+    for sx in guy:
+        a = (cx + sx * w * 0.25, cy - d / 2 + 2.0, h * 0.5)
+        b = (cx + sx * (w / 2 + 4.5), cy - d / 2 + 1.0, 0.8)
+
+        def make_r(fallen, a=a, b=b):
+            return Geo().capsule(a, b, 0.35), ROPE
+        f.breakable(make_r, stage, fall=False, outline=0.3)
+        f.add(Geo().capsule((b[0], b[1], 0.0), (b[0] + sx * 0.5, b[1], 2.6), 0.6), CEDAR_DK, "body", outline=0.4)
     f.add(Geo().capsule((cx, cy - d / 2 - 1.0, 0), (cx, cy - d / 2 - 1.0, h + 3.0), 0.9), CEDAR_DK, "body", 0,
           min(3, stage - 1))
 
 
 def _muster(f):
     f.add(Geo().blob((0, 0, 0.6), (30, 26, 1.8), p=3.0), EARTH, "body")
-    _tent(f, -8.0, 6.0, 30.0, 22.0, 34.0, stage=3)
-    _tent(f, 10.0, -6.0, 26.0, 20.0, 28.0, stage=2)
+    _tent(f, -8.0, 6.0, 30.0, 22.0, 34.0, stage=3, guy=(-1,))
+    _tent(f, 10.0, -6.0, 26.0, 20.0, 28.0, stage=2, guy=(1,))
     # the door flap of the front tent (closed, half, open): the levy comes out of it
     for k, (w, ang) in enumerate(((7.0, 0.0), (6.0, 35.0), (5.0, 70.0))):
         g = Geo().blob((10.0 + 0.2 * k, -16.6 - 0.8 * k, 9.0), (w * 0.6, 1.2, 9.0), p=2.0, taper=(1.0, 0.4),
@@ -353,6 +430,10 @@ MUSTER = make("muster_tents", "Muster Tents", AGE, "camp", _muster, canvas=(340,
               height=76, hit=(0, 22), material="wood", flag=(-8.0, 6.0, 34.0, 18.0), foot=32.0,
               lights=[((24.0, -4.0, 6.0), 12, 1)], smoke=[((24.0, -4.0, 8.0), 0)], pole_fill=CEDAR_DK,
               tip_fill=P.BRONZE_HI, extra_meta={"flag": {"crumbleMax": 2, "z": "front"}})
+MT_KINDS = {LINEN: "cloth", CEDAR: "wood", CEDAR_DK: "wood", EARTH: "leather", LIME_DK: "stone", "#7A6A56": "wood",
+            ROPE: "leather", P.SAND_LT: "stone", P.AGED: "bronze", P.BRONZE_HI: "bronze", "team": "cloth"}
+KW.banner_hems(MUSTER, (-8.0, 6.0, 34.0), 18.0, 22.0, 10.0)
+LW.opt_in(MUSTER, MT_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 
 # ====================================================================================== Hidden Stakes
@@ -364,25 +445,47 @@ def _stakes(f):
     for k in range(5):                                                    # stacked stakes and a rolled mat
         g.capsule((-10 + 0.5 * k, -14 + 6 * k, 1.6 + (k % 2) * 1.6), (8 + 0.5 * k, -12 + 6 * k, 1.6 + (k % 2) * 1.6), 1.1)
     f.add(g, STAKE, "trap", 0, 0)
+    g = Geo()                                                             # (world wave A: fire-hardened points)
+    for k in range(5):
+        a, b = (-10 + 0.5 * k, -14 + 6 * k, 1.6 + (k % 2) * 1.6), (8 + 0.5 * k, -12 + 6 * k, 1.6 + (k % 2) * 1.6)
+        g.lathe([(1.15, 0.0), (0.7, 1.8), (0.0, 3.2)], b, (2 * b[0] - a[0], 2 * b[1] - a[1], b[2]), segs=8)
+    f.add(g, STAKE_DK, "trap", 0, 0, outline=0.4)
     f.add(Geo().capsule((-6, 14, 2.6), (8, 14, 2.6), 2.6), REED, "trap", 0, 0)
+    KW.wraps(f.rig, f.group("trap", 0, 0), (-3.0, 14, 2.6), (5.0, 14, 2.6), 2.6, 2, ROPE, w=0.6, outline=0.3)
     mat = Geo().blob((0, 0, 1.6), (14, 22, 1.0), p=3.0)
     f.add(mat, REED, "trap", 1, 1)
     g = Geo()
     for k in range(6):                                                    # reed weave lines
         g.capsule((-12 + 4.8 * k, -21, 2.5), (-12 + 4.8 * k, 21, 2.5), 0.35)
     f.add(g, REED_DK, "trap", 1, 1, outline=0)
+    g = Geo()                                                             # (world wave A: the cross weave,
+    for k in range(4):                                                    # a bound rim, leaves over the mat)
+        g.capsule((-13, -15 + 10 * k, 2.5), (13, -15 + 10 * k, 2.5), 0.35)
+    f.add(g, REED_DK, "trap", 1, 1, outline=0)
+    g = Geo()
+    for (x0, y0), (x1, y1) in (((-12.6, -20.6), (12.6, -20.6)), ((12.6, -20.6), (12.6, 20.6)),
+                               ((12.6, 20.6), (-12.6, 20.6)), ((-12.6, 20.6), (-12.6, -20.6))):
+        g.capsule((x0, y0, 2.4), (x1, y1, 2.4), 0.6)
+    f.add(g, ROPE, "trap", 1, 1, outline=0.3)
+    rl = random.Random(29)
+    for k in range(8):
+        x, y = rl.uniform(-10, 10), rl.uniform(-18, 18)
+        g = Geo().blob((x, y, 2.7), (2.3, 1.2, 0.35), p=2.0, rot=(0, 0, rl.uniform(0, 180)))
+        f.add(g, (LEAF, LEAF_DRY)[k % 2], "trap", 1, 1, outline=0.3)
     g = Geo()
     for x, y in ((-6, -10), (2, 4), (8, -2)):                              # a few tips peek
         g.lathe([(0, 0), (0.9, 0.2), (0, 3.4)], (x, y, 1.8), (x, y, 5.2), segs=8)
     f.add(g, STAKE, "trap", 1, 1, outline=0.4)
     g = Geo()
+    tips = Geo()
     for k in range(9):                                                    # sprung: stakes up through the mat
         x = -10 + (k % 3) * 9 + (1.5 if k // 3 == 1 else 0)
         y = -16 + (k // 3) * 14
         lean = (k % 3 - 1) * 6
         g.capsule((x, y, 0), (x + lean * 0.3, y, 13.0), 1.2, 0.9)
-        g.lathe([(0, 0), (1.0, 0.3), (0, 4.2)], (x + lean * 0.3, y, 13.0), (x + lean * 0.35, y, 17.0), segs=8)
+        tips.lathe([(0, 0), (1.0, 0.3), (0, 4.2)], (x + lean * 0.3, y, 13.0), (x + lean * 0.35, y, 17.0), segs=8)
     f.add(g, STAKE, "trap", 2, 2, outline=0.6)
+    f.add(tips, STAKE_DK, "trap", 2, 2, outline=0.6)                      # (world wave A: fire-hardened points)
     f.add(Geo().blob((-12, 0, 1.2), (3, 20, 0.8), p=2.4).blob((12, 0, 1.2), (3, 20, 0.8), p=2.4), REED, "trap", 2, 2)
     g = Geo()
     for k in range(7):                                                    # spent: snapped stakes, splinters
@@ -392,14 +495,20 @@ def _stakes(f):
         g.capsule((x + 4, y - 2, 0.8), (x + 10, y + 1, 1.2), 0.8)
     f.add(g, "#B9A882", "trap", 3, 3, outline=0.5)
     # a small team pennant on a stick marks the trap for its owner (always visible, A16.14.3)
-    g = Geo().capsule((-14, -20, 0), (-14, -20, 14), 0.6)
+    g = Geo().capsule((-14, -20, 0), (-14, -20, 15), 0.6)
     f.add(g, CEDAR_DK, "trap", 0, 3)
-    g = Geo().slab([(-14.0, 14.0), (-7.0, 12.0), (-14.0, 9.6)], -20.0, 0.9)
+    # (world wave A: a little larger, so it holds its team share in the sprung frame, and in two tones)
+    g = Geo().slab([(-14.0, 14.8), (-5.8, 12.2), (-14.0, 9.2)], -20.0, 0.9)
     f.add(g, None, "trap", 0, 3, team=True, outline=0.6)
+    g = Geo().slab([(-13.2, 11.95), (-6.5, 12.15), (-13.2, 9.65)], -20.55, 0.3)
+    look.team_part(f.rig, f.group("trap", 0, 3), g, outline=0)
 
 
 STAKES = make("hidden_stakes", "Hidden Stakes", AGE, "trap", _stakes, canvas=(300, 140), feet=(150, 104),
               height=22, hit=(0, 6), material="wood", foot=28.0)
+HS_KINDS = {REED: "wood", REED_DK: "wood", STAKE: "wood", STAKE_DK: "wood", "#B9A882": "wood", EARTH: "leather",
+            CEDAR_DK: "wood", ROPE: "leather", LEAF: "fur", LEAF_DRY: "fur", "team": "cloth"}
+LW.opt_in(STAKES, HS_KINDS, highlight=1.8, shade=KW.SHADE_WORLD)
 
 
 # ====================================================================================== Hoplon Line (W2)
