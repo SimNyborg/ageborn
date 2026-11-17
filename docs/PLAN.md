@@ -230,3 +230,7 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-11-16 evening: no post. DV19 shot written (studio/shots/dv19.mjs, the eight basic infantry, one per age) and
   a Bronze test take works; the full recording waited for an approval that a worker restart closed. Chromium path in
   studio/lib/config.mjs now follows /opt/pw-browsers/chromium. Followers 157.
+- 2026-11-17: owner asked for a video. DV19 (one soldier, eight ages: each age's basic infantry, idle flicker then
+  one hit per name; Steve v4, no subtitles) posted 18:47 UTC. ElevenLabs credits are nearly used up (31 left after
+  DV19's 362), so narration stops until the owner's quota renews or is raised. Browser paths and studio/assets/
+  game.json refreshed for the updated container and game.
