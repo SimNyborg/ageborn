@@ -203,6 +203,13 @@ def build_fire_bowl(rig):
     g.blob((-6.5, -5.5, 4.4), (4.6, 2.6, 1.6), p=2.2, cuts=3)
     g.blob((7.0, -4.8, 4.2), (3.2, 2.2, 1.3), p=2.2, cuts=3)
     rig.part("body", g, MOSS, finish="hair", outline=0.4)
+    # world wave A (the pilot review's S2): a heavy foot ring round the stem's foot (lit top, dark side)
+    g = Geo()
+    g.lathe([(0.0, 0.0), (8.2, 0.0), (8.6, 1.2), (8.0, 2.6), (6.8, 3.2), (0.0, 3.2)], (0.0, 1.0, 3.2), segs=16)
+    rig.part("body", g, STONE_DK, outline=0.6)
+    g = Geo()
+    g.lathe([(6.6, -0.3), (7.9, -0.2), (8.2, 0.3), (7.6, 0.6), (6.6, 0.6)], (0.0, 1.0, 5.9), segs=16)
+    rig.part("body", g, STONE_LT, outline=0.3)
     # the stem: a rough tapered column, a lashing of sinew round its waist
     g = Geo()
     n0 = nverts(g)
@@ -226,21 +233,23 @@ def build_fire_bowl(rig):
     g = Geo()
     g.lathe([(12.0, -0.6), (14.2, -0.4), (14.9, 0.4), (14.2, 1.1), (12.2, 1.0)], (0.0, 1.0, z0 + 9.2), segs=22)
     rig.part("body", g, STONE_LT, outline=0.4)
-    # a raised band round the belly with carved notches (the camera-facing half): a hand-made pot
+    # a raised band round the bowl just under its rim, 3 lu tall and 1 lu proud, with deep V notches cut into it
+    # (the camera-facing half; world wave A, the pilot review's S2: a shape that reads at 50 px)
     g = Geo()
-    g.lathe([(12.4, -1.3), (13.6, -1.1), (13.9, 0.0), (13.6, 1.1), (12.4, 1.3)], (0.0, 1.0, z0 + 4.4), segs=22)
-    rig.part("body", g, STONE_LT, outline=0.4)
+    g.lathe([(13.2, -1.6), (14.9, -1.4), (15.3, 0.0), (14.9, 1.4), (13.2, 1.6)], (0.0, 1.0, z0 + 6.6), segs=22)
+    rig.part("body", g, STONE_LT, outline=0.5)
     g = Geo()
-    for a in front_arc(13.9, 212, 328, 6):
-        g.blob((math.cos(a) * 13.9, 1.0 + math.sin(a) * 13.9, z0 + 4.4), (1.3, 0.9, 1.0), p=2.0, cuts=2,
+    for a in front_arc(15.3, 208, 332, 7):
+        c, s_ = math.cos(a), math.sin(a)
+        g.blob((c * 15.3, 1.0 + s_ * 15.3, z0 + 6.4), (1.6, 1.0, 1.5), p=2.0, cuts=2,
                rot=(0, 45, math.degrees(a) + 90))
-    rig.part("body", g, STONE_DK, outline=0, highlight=False)
+    rig.part("body", g, INK, outline=0, highlight=False)
     # soot: dark streaks licking up the bowl's wall to the rim (none above it), and the scorched inside
     g = Geo()
-    for a_deg, w, h in ((236, 2.6, 2.2), (268, 3.4, 2.6), (304, 2.4, 2.0)):
+    for a_deg, w, h in ((236, 2.6, 1.6), (268, 3.4, 1.9), (304, 2.4, 1.5)):
         a = math.radians(a_deg)
-        r = 14.45
-        g.blob((math.cos(a) * r, 1.0 + math.sin(a) * r, z0 + 7.2), (w, 0.8, h), p=2.0, cuts=3,
+        r = 13.4
+        g.blob((math.cos(a) * r, 1.0 + math.sin(a) * r, z0 + 3.4), (w, 0.8, h), p=2.0, cuts=3,
                taper=(1.0, 0.4), rot=(0, 0, a_deg + 90))
     rig.part("body", g, "#54493F", outline=0, highlight=False)
     g = Geo().lathe([(0, 0), (8.6, 0.1), (11.6, 3.2), (12.2, 3.9), (0, 3.6)], (0.0, 1.0, z0 + 5.7), segs=22)
@@ -258,6 +267,17 @@ def build_fire_bowl(rig):
     for x, y in ((-6.5, -1.0), (6.0, -0.8), (2.0, -4.6)):
         g.blob((x, y, z0 + 9.2), (2.2, 1.6, 0.8), p=2.0, cuts=2)
     rig.part("body", g, glow="#C9653A", outline=0)
+    # coals heaped over the lip: dark lumps of 3-4 lu standing above the rim, with glowing seams between them
+    g = Geo()
+    for k, (x, y, r) in enumerate(((-7.6, -3.4, 2.8), (-2.6, -6.4, 3.2), (3.4, -5.8, 2.9), (8.0, -2.6, 2.5),
+                                   (0.6, -1.6, 3.4), (-4.8, 1.4, 2.6), (5.0, 2.0, 2.4))):
+        rock(g, (x, y + 1.0, z0 + 10.6 + (0.6 if k == 4 else 0.0)), (r, r * 0.85, r * 0.62), seed=90 + k, jag=0.2,
+             p=2.2, cuts=3)
+    rig.part("body", g, CHAR, outline=0.5)
+    g = Geo()
+    for x, y in ((-5.0, -5.4), (0.6, -6.6), (5.6, -4.8), (-1.8, -3.0)):
+        g.blob((x, y + 1.0, z0 + 10.9), (1.5, 0.9, 0.7), p=2.0, cuts=2)
+    rig.part("body", g, glow=EMBER, outline=0)
 
 
 FIRE_BOWL_FLAME = (0.0, -0.5, 27.5)
@@ -431,9 +451,9 @@ def build_stone_idol(rig):
     rock(g, (0.6, 1.0, z0 + 33.6), (4.6, 3.8, 1.9), seed=55, jag=0.1, p=2.6)
     rig.part("body", g, GREY_LT, outline=0.5)
     # the brow ridge, the eye sockets with stone pupils, the nose, the mouth and teeth, the ear lugs
-    g = Geo()
-    box(g, (0.0, -6.2, z0 + 21.4), (8.0, 1.9, 1.7), p=3.0)
-    rig.part("body", g, GREY_LT, outline=0.5)
+    g = Geo()            # (world wave A, the pilot review's S2: the brow heavier and further out, 5 lu tall)
+    box(g, (0.0, -7.0, z0 + 21.6), (8.8, 2.8, 2.5), p=3.0)
+    rig.part("body", g, GREY_LT, outline=0.6)
     g = Geo()
     for sx in (-3.9, 3.9):
         g.blob((sx, -6.1, z0 + 17.8), (2.6, 1.0, 2.3), p=2.0, cuts=3)
@@ -442,9 +462,9 @@ def build_stone_idol(rig):
     for sx in (-3.9, 3.9):
         g.sphere((sx + 0.5, -6.9, z0 + 17.5), 1.05, cuts=2)
     rig.part("body", g, GREY_LT, outline=0.3)
-    g = Geo()
-    box(g, (0.0, -7.0, z0 + 13.4), (1.9, 1.7, 4.6), p=3.0, taper=(1.3, 0.7))
-    rig.part("body", g, GREY, outline=0.5)
+    g = Geo()            # the nose heavier: wider, longer and further out
+    box(g, (0.0, -8.0, z0 + 13.2), (2.7, 2.6, 5.4), p=3.0, taper=(1.35, 0.7))
+    rig.part("body", g, GREY_LT, outline=0.6)
     g = Geo()
     box(g, (0.0, -6.2, z0 + 7.2), (5.4, 0.8, 1.8), p=4)
     rig.part("body", g, INK, outline=0, highlight=False)
@@ -459,10 +479,22 @@ def build_stone_idol(rig):
     chipped_cracks(rig, "body", [[(-6.0, -6.6, z0 + 26.0), (-4.4, -6.7, z0 + 23.4)],
                                  [(6.4, -6.4, z0 + 6.0), (5.0, -6.5, z0 + 2.6), (5.8, -6.5, z0 + 0.6)]],
                    "#5A534A", GREY_LT, y_push=-0.6, w=0.8)
-    # moss: a cap on the crown, a pad on the brow, drips in the right crack, tufts on the block
+    # a crack right across the face, from the brow's left over the cheek to the jaw (1.4 lu, chipped edges)
+    chipped_cracks(rig, "body", [[(-8.2, -6.9, z0 + 24.6), (-6.0, -7.0, z0 + 19.4), (-7.0, -7.0, z0 + 14.6),
+                                  (-4.6, -7.0, z0 + 10.6), (-5.6, -6.9, z0 + 6.2)]],
+                   "#4A443C", GREY_LT, y_push=-0.7, w=1.4)
+    # a carved band of V cuts across the plinth's front
     g = Geo()
-    g.blob((-2.4, -1.6, z0 + 31.8), (5.4, 4.4, 1.5), p=2.2, cuts=3)
-    g.blob((-4.6, -7.2, z0 + 23.0), (3.0, 1.3, 1.1), p=2.2, cuts=3)
+    for k in range(5):
+        x = -7.2 + k * 3.6
+        g.capsule((x - 1.3, -6.9, 8.8), (x, -6.9, 6.6), 0.55, 0.45).capsule((x, -6.9, 6.6), (x + 1.3, -6.9, 8.8), 0.55,
+                                                                             0.45)
+    rig.part("body", g, INK, outline=0, highlight=False)
+    # moss: a cap on the crown, a pad on the brow, drips in the right crack, tufts on the block
+    g = Geo()            # (a moss crown: a cushion over the crown stones, a lobe hanging over the brow)
+    g.blob((-0.8, -0.6, z0 + 32.0), (7.4, 6.0, 2.4), p=2.2, cuts=3)
+    g.blob((-4.6, -7.8, z0 + 23.6), (3.4, 1.6, 1.6), p=2.2, cuts=3)
+    g.blob((-6.2, -5.6, z0 + 28.4), (2.0, 1.8, 3.6), p=2.2, cuts=3)
     for dz, L in ((3.8, 3.4), (1.4, 2.6)):
         g.blob((6.2, -6.9, z0 + dz), (1.0, 0.9, L), p=2.0, cuts=2, taper=(0.5, 1.0))
     g.blob((-7.6, -6.4, 10.4), (3.6, 1.6, 1.2), p=2.2, cuts=3)
@@ -1838,9 +1870,12 @@ WA_KINDS = {
 def _opt_in_wa():
     from world import kit_wa as KW
     from world import look_world as LW
+    # (a clear step between the lit top and the shaded side at 50 px: the top light and the core shadow stronger
+    # than the turrets')
+    shade = dict(KW.SHADE_WORLD, top=0.24, core=0.36, core_width=0.34)
     for mod in DECORATIONS:
         if mod.DECO in WA_KINDS:
-            LW.opt_in(mod, WA_KINDS[mod.DECO], highlight=KW.HIGHLIGHT_WORLD, shade=KW.SHADE_WORLD)
+            LW.opt_in(mod, WA_KINDS[mod.DECO], highlight=KW.HIGHLIGHT_WORLD, shade=shade)
 
 
 _opt_in_wa()

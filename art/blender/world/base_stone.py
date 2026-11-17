@@ -12,6 +12,8 @@ Treasury: a berry basket and meat (1), a pile of furs (2), tusks and ochre stone
 import math
 import random
 
+from mathutils import Matrix, Vector
+
 from ageborn_art import face as F
 from ageborn_art import look
 from ageborn_art.geometry import Geo
@@ -44,8 +46,72 @@ CHIP = "#B2A08A"
 STRATA_LT = "#A89682"     # world wave A: the lit ledges and the dark seams of the crag's strata
 STRATA_DK = "#5E554B"
 
+LIP = "#D6C7A9"           # world wave A: the big light chips on the calm faces
+
 DEPTHS = [-40, -24, -40, -24]
 CAVE = (-104.0, -44.0)
+
+
+def _strip(face, g, pts, w, depth=1.4):
+    """A dark line of width w through the screen points `pts` [(x, z)] that follows the surface under `face`: each
+    segment is a quad between the two surface hits (a flat decal would sink into a curved rock), with round joints.
+    Points the face's rays miss (past the silhouette) end the line there."""
+    U, V, N = face.right, face.up, face.view
+    hits = []
+    for x, z in pts:
+        h = face.hit(x, z)
+        hits.append(None if (h - Vector((x, 0.0, z))).length < 1e-6 else h)
+    for (p0, p1), (h0, h1) in zip(zip(pts, pts[1:]), zip(hits, hits[1:])):
+        if h0 is None or h1 is None:
+            continue
+        dx, dz = p1[0] - p0[0], p1[1] - p0[1]
+        L = math.hypot(dx, dz) or 1.0
+        n = U * (-dz / L * w / 2) + V * (dx / L * w / 2)
+        quad = [h0 + n, h1 + n, h1 - n, h0 - n]
+        verts = [tuple(q - N * (depth / 2)) for q in quad] + [tuple(q + N * (depth / 2)) for q in quad]
+        g._add(verts, [[3, 2, 1, 0], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]],
+               Matrix.Identity(4), smooth=False)
+    for h in hits:
+        if h is not None:
+            face.decal(g, h, F.ellipse(0, 0, w / 2, w / 2, 8), depth)
+
+
+def _bed_z(x, z0, xc, rx, sag):
+    """A bed's height at x: lower at its boulder's middle, rising toward the limbs (a horizontal band on a round rock
+    seen from a little above)."""
+    u = max(-1.0, min(1.0, (x - xc) / rx))
+    return z0 - sag * (1.0 - u * u)
+
+
+def _ledges(face, rig, rnd, beds, boxes, joint="body"):
+    """Strata ledges along `beds` [(x0, x1, z0, xc, rx, sag)]: flat stones 4-12 lu long and 4-6 lu tall at gaps of
+    1.5-6 lu, standing 3-4 lu proud, laid along the rock's surface and tilted with the bed, in three tones; none whose
+    centre falls in a mount box (x0, x1, z0, z1), none that would float past a limb."""
+    tones = (STONE_LT, STRATA_LT, STONE_LT, STONE)
+    gs = {}
+    for k, (x0, x1, z0, xc, rx, sag) in enumerate(beds):
+        x = x0 + rnd.uniform(0.0, 4.0)
+        while True:
+            L = rnd.uniform(4.0, 12.0)
+            if x + L > x1:
+                break
+            cx = x + L / 2
+            cz = _bed_z(cx, z0, xc, rx, sag) + rnd.uniform(-0.8, 0.8)
+            slope = (_bed_z(cx + 1.0, z0, xc, rx, sag) - _bed_z(cx - 1.0, z0, xc, rx, sag)) / 2.0
+            ends = [face.hit(cx - L / 2, cz), face.hit(cx + L / 2, cz)]
+            missed = any((h - Vector((xx, 0.0, cz))).length < 1e-6 for h, xx in zip(ends, (cx - L / 2, cx + L / 2)))
+            # a ledge past a limb would float in the air: skip one whose ends miss the rock or turn too far round it
+            grazing = missed or abs((ends[0] - ends[1]).dot(face.view)) > L * 1.6
+            if not grazing and not any(a <= cx <= b and c <= cz <= d for a, b, c, d in boxes):
+                p = (ends[0] + ends[1]) * 0.5
+                t = tones[rnd.randrange(len(tones))]
+                d = ends[1] - ends[0]          # laid along the rock's surface (turned about z) and tilted with the bed
+                rock(gs.setdefault(t, Geo()), (p.x, p.y + 0.4, p.z), (L / 2, rnd.uniform(3.0, 4.2), rnd.uniform(2.0, 3.0)),
+                     seed=200 + 13 * k + int(cx) % 11, jag=0.12, p=3.0, cuts=3,
+                     rot=(0, -math.degrees(math.atan(slope)), math.degrees(math.atan2(d.y, d.x))))
+            x += L + rnd.uniform(1.5, 6.0)
+    for t, g in gs.items():
+        rig.part(joint, g, t, outline=0.6)
 
 
 def build(rig, M):
@@ -123,52 +189,62 @@ def build(rig, M):
         rock(g, (x, -34 + rnd.uniform(-4, 2), z), (rnd.uniform(9, 14), 5, rnd.uniform(4, 6)), seed=int(x * z) % 97,
              jag=0.2, p=2.6)
     rig.part("body", g, STONE_DK)
-    # World wave A: the crag in strata. Ledges of flat stones 5-6 lu tall laid along the boulders' faces every 20-26 lu
-    # (lit ledges and dark seams in turn, standing 3.5 lu proud), so the rock reads as layered stone instead of smooth
-    # piles; light chips on their edges; dark grass tufts along the caps' rims.
+    # World wave A (the pilot review's S1): strata that read as rock at the base's density. Ledges 3-12 lu long and
+    # 3-6 lu tall at uneven gaps along beds that bend with each boulder's curve (the busy faces), calm faces with one
+    # big crack or two big chips between them, and nothing on the rock in the four turret boxes (45 lu either side of
+    # each mount, 75 lu up), so the turrets stand clear of the base. The base's material is all in shapes of 4 lu and
+    # more: the boulders carry no fine breakup (at 1.025 px/lu drawn 1.79x it turns to grain).
     crag = Geo()
     rock(crag, (-96, 18, 54), (84, 46, 58), seed=1, jag=0.12)
     rock(crag, (-78, 14, 138), (62, 40, 50), seed=4, jag=0.14, rot=(0, -10, 0))
     rock(crag, (-68, 8, 236), (46, 36, 32), seed=5, jag=0.14)
+    rock(crag, (-140, 24, 70), (30, 34, 70), seed=2)
     face = F.Face(rig, "body", [crag])
-    rows = [(12.0, -170, -110, STRATA_LT), (30.0, -100, -40, STRATA_DK), (50.0, -166, -96, STRATA_DK),
-            (66.0, -88, -36, STRATA_LT), (88.0, -150, -98, STRATA_LT), (104.0, -76, -30, STRATA_DK),
-            (130.0, -132, -80, STRATA_DK), (150.0, -76, -34, STRATA_LT), (212.0, -104, -50, STRATA_DK),
-            (226.0, -96, -60, STRATA_LT), (22.0, -60, -20, STRATA_DK), (76.0, -168, -150, STRATA_DK),
-            (116.0, -150, -110, STRATA_LT), (180.0, -110, -84, STRATA_LT)]
-    for k, (z, xa, xb, col) in enumerate(rows):
-        g = Geo()
-        n = max(2, int((xb - xa) / 13))
-        for i in range(n):
-            x = xa + (xb - xa) * (i + 0.5) / n + rnd.uniform(-1.5, 1.5)
-            p = face.hit(x, z + rnd.uniform(-1.0, 1.0))
-            rock(g, (p.x, p.y + 0.8, p.z), ((xb - xa) / n * 0.48, 3.5, rnd.uniform(2.6, 3.0)),
-                 seed=100 + 7 * k + i, jag=0.1, p=3.4, cuts=3)
-        rig.part("body", g, col, outline=0.7)
-    g = Geo()
-    for x, z in ((-150, 40), (-112, 22), (-58, 82), (-30, 118), (-96, 158), (-52, 196), (-122, 112), (-84, 60),
-                 (-136, 70), (-64, 140), (-44, 50), (-160, 100)):
-        face.decal(g, face.hit(x, z), [(-2.8, -1.6), (2.4, -2.0), (3.0, 1.2), (-1.6, 2.0)], 0.6)
-    rig.part("body", g, CHIP, outline=0, highlight=False)
+    boxes = [(m[0] - 45.0, m[0] + 45.0, m[2] - 6.0, m[2] + 75.0) for m in M]
+
+    def free(x, z):
+        return not any(a <= x <= b and c <= z <= d for a, b, c, d in boxes)
+    rb = random.Random(47)
+    # (x from, x to, z, the boulder's centre x and half width, sag): the foot's left flank and the lobe beside the
+    # hide, the face over the cave's left, the body's top under the summit
+    _ledges(face, rig, rb, [
+        (-170, -134, 72, -96, 84, 5.0), (-168, -136, 88, -96, 84, 4.0), (-166, -134, 103, -140, 30, 3.0),
+        (-168, -138, 114, -140, 30, 2.5),                                           # the foot's and the lobe's left
+        (-118, -97, 104, -96, 84, 6.0), (-116, -97, 122, -78, 62, 4.0), (-116, -97, 138, -78, 62, 3.0),
+        (-114, -97, 154, -78, 62, 3.0), (-112, -97, 170, -78, 62, 2.5),             # between the hide and mount 1
+        (-74, -53, 64, -96, 84, 5.0), (-74, -53, 80, -96, 84, 4.0), (-74, -53, 96, -96, 84, 3.0),  # right of the cave
+        (-104, -56, 212, -68, 46, 4.0), (-108, -56, 227, -68, 46, 3.5)],          # the summit's foot
+        boxes)
+    g = Geo()    # big chips on the calm faces (light, 5-7 lu)
+    for x, z, s_ in ((-150, 40, 1.2), (-112, 22, 1.0), (-96, 158, 1.0), (-136, 70, 1.1), (-160, 100, 0.9),
+                     (-84, 60, 1.0), (-110, 250, 1.1), (-122, 186, 1.0)):
+        if free(x, z):
+            face.decal(g, face.hit(x, z), [(-2.8 * s_, -1.6 * s_), (2.4 * s_, -2.0 * s_), (3.0 * s_, 1.2 * s_),
+                                           (-1.6 * s_, 2.0 * s_)], 0.8)
+    rig.part("body", g, LIP, outline=0, highlight=False)
     g = Geo()
     for x, z in ((-150, 124), (-128, 126), (-104, 124), (-62, 172), (-40, 174), (-20, 170), (-90, 254), (-62, 256),
                  (-44, 252), (-28, 204), (-12, 206)):
+        if not free(x, z):
+            continue
         p = face.hit(x, z)
         for j in range(3):
             a = math.radians(-35 + 35 * j)
             g.capsule((p.x + j * 1.8 - 1.8, p.y - 0.6, p.z - 1.0),
                       (p.x + j * 1.8 - 1.8 + 3.0 * math.sin(a), p.y - 1.2, p.z + 4.6 - abs(j - 1)), 1.3, 0.6)
     rig.part("body", g, MOSS_DK, outline=0.4)
-    g = Geo()    # weathering cracks (hairlines that are there from the start; the crumble adds its own)
-    for pts in ([(-140, 44), (-136, 36), (-140, 28)], [(-70, 120), (-66, 112), (-70, 104)],
-                [(-108, 92), (-102, 86), (-104, 78)], [(-52, 210), (-48, 202)], [(-28, 64), (-24, 56), (-28, 48)]):
-        x0, z0 = pts[0]
-        face.stroke(g, face.hit(x0, z0), [(x - x0, z - z0) for x, z in pts], 1.1, 0.6)
+    g = Geo()    # one big crack on each calm face (the crumble adds its own breaks)
+    for pts in ([(-142, 50), (-138, 41), (-142, 32), (-139, 24)], [(-108, 96), (-102, 88), (-105, 79)],
+                [(-84, 70), (-80, 61), (-83, 52)], [(-118, 262), (-112, 254), (-115, 246)],
+                [(-132, 212), (-127, 204), (-130, 196)]):
+        if all(free(x, z) for x, z in pts):
+            _strip(face, g, pts, 1.6)
     rig.part("body", g, CRACK, outline=0, highlight=False)
     g = Geo()    # stones showing through the grass caps
     for k, (x, y, z, r) in enumerate(((-128, 0, 124, 4.2), (-96, -12, 172, 3.6), (-56, -8, 254, 3.8),
                                      (-36, -20, 206, 3.2), (-150, 10, 122, 3.0))):
-        rock(g, (x, y, z), (r * 1.4, r, r * 0.7), seed=70 + k, jag=0.15, p=2.6, cuts=3)
+        if free(x, z):
+            rock(g, (x, y, z), (r * 1.4, r, r * 0.7), seed=70 + k, jag=0.15, p=2.6, cuts=3)
     rig.part("body", g, STRATA_LT, outline=0.6)
     crag.bm.free()
     # chunks that break off
@@ -377,10 +453,11 @@ MODULE = base_module(
 )
 
 # world wave A (the detail standard; look_world.opt_in)
-# (the big boulders take soft weathering blotches of 3-5 lu, which read at the base's density where the stone chips
-# turn to grain; the strata ledges keep the chipped stone)
-STONE_BASE_KINDS = {STONE: "hide", STONE_LT: "hide", STONE_DK: "hide", STONE_DKR: "hide", CHIP: "stone",
-                    STRATA_LT: "stone", STRATA_DK: "stone",
-                    MOSS: "fur", MOSS_LT: "fur", MOSS_DK: "fur", BONE: "bone", WOOD: "wood", WOOD_DK: "wood",
-                    HIDE: "leather", FUR: "fur", "#B8A47E": "leather", "team": "hide"}
-LW.opt_in(MODULE, STONE_BASE_KINDS, highlight=2.0, shade=dict(KW.SHADE_WORLD, top=0.18))
+# The base's rock takes no material kind (no fine breakup: at 1.025 px/lu drawn 1.79x it turns to grain; the pilot
+# review's S1): its material is the ledges, chips, cracks and moss, all 4 lu and more. The small dressing keeps its kinds.
+STONE_BASE_KINDS = {MOSS: "fur", MOSS_LT: "fur", MOSS_DK: "fur", BONE: "bone", WOOD: "wood", WOOD_DK: "wood",
+                    HIDE: "leather", FUR: "fur", "#B8A47E": "leather"}
+# a lit top and a dark underside on every boulder (the core shadow and the top light stronger than the other world
+# items'), and a strong finish highlight: the base is drawn 1.79x, where small highlights average out
+LW.opt_in(MODULE, STONE_BASE_KINDS, highlight=2.6,
+          shade=dict(KW.SHADE_WORLD, top=0.30, core=0.42, core_width=0.34, shadow=0.74))

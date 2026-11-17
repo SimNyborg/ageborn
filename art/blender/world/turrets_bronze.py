@@ -9,10 +9,13 @@ Gorgon's gaze are white-hot and desaturated (A17.12).
 import math
 
 from ageborn_art import face as F
+from ageborn_art import look
 from ageborn_art import rigs_bronze as P
 from ageborn_art.geometry import Geo
 
-from world.common import box, cyl, pennant, rope, smoke_puff, turret_module
+from world import kit_wa as KW
+from world import look_world as LW
+from world.common import box, cyl, rope, smoke_puff, turret_module
 
 SAND = P.SAND
 SAND_LT = P.SAND_LT
@@ -29,6 +32,7 @@ PLUM = P.PLUM
 LINEN = P.LINEN
 MIRROR = "#EFE6C8"
 MIRROR_HI = "#FFF8E6"
+MIRROR_RING = "#D8CCA6"     # world wave A: the duller polishing ring on the mirror face
 BEAM = "#FFF1C8"
 BEAM_CORE = "#FFFFFF"
 GAZE = "#F4FFF8"
@@ -52,6 +56,40 @@ def sand_plinth(rig, r=15.0, h=7.0, steps=True):
         rig.part("mount", g, SAND_LT)
 
 
+# world wave A (the pilot review's S3): the footing in porphyry, a dark plum stone, so the turret stands clear of the
+# sandstone base behind it (a footing of the base's own stone merges with it at game scale)
+PORPH = "#6F5A63"
+PORPH_LT = "#86707A"
+PORPH_DK = "#5A4751"
+
+
+def porphyry_footing(rig, r=15.0, h=7.0, seed=3):
+    """sand_plinth's footprint (no wider: the mount frame sets the width) as a porphyry plinth: a course of dressed
+    blocks, a set-back upper course, and a dark capstone with polished bronze studs along its front (a metal or
+    light cap reads as a pale slab under the lit top)."""
+    lo = h * 0.52
+    KW.drystone(rig, "mount", [(0.0, lo, [-(r + 2.0), -r * 0.42, r * 0.36, r + 2.0])], (PORPH, PORPH_DK, PORPH_LT),
+                seed=seed, depth=(2.0 - r * 0.8 - 1.6, 2.0 + r * 0.8 + 1.6), gap=0.6)
+    KW.drystone(rig, "mount", [(lo - 0.3, h - 0.2, [-r, -r * 0.12, r])], (PORPH_LT, PORPH),
+                seed=seed + 4, depth=(2.0 - r * 0.8, 2.0 + r * 0.8), gap=0.6)
+    g = Geo()
+    box(g, (0, 2, h + 0.4), (r + 0.8, r * 0.8 + 0.8, 0.9), p=6)
+    rig.part("mount", g, PORPH_DK)
+    g = Geo()
+    n = max(3, int(round(2 * r / 6.5)))
+    for i in range(n):
+        g.blob((-r + 2.0 + i * (2 * r - 4.0) / (n - 1), 2.0 - r * 0.8 - 1.0, h + 0.4), (1.0, 0.6, 1.0), p=2.2)
+    rig.part("mount", g, BRONZE, finish=P.POLISH, outline=0.3)
+
+
+def leg_shoes(rig, legs, top, r=1.9, length=3.2):
+    """Aged-bronze shoes on timber legs [(x, y, z0)], each along its leg toward `top` [(x, y, z1)]."""
+    g = Geo()
+    for p0, p1 in zip(legs, top):
+        g.lathe([(r + 0.25, 0.0), (r + 0.6, 0.5), (r + 0.6, length - 0.6), (r + 0.25, length)], p0, p1, segs=12)
+    rig.part("mount", g, AGED, outline=0.4)          # (matte: with the metal finish they read as white bands)
+
+
 def flare(rig, joint, at, size=1.0, name="flash", color=BEAM, core=BEAM_CORE):
     """A hidden star-flare (the shot frame of the beam and gaze turrets)."""
     x, y, z = at
@@ -70,22 +108,33 @@ def flare(rig, joint, at, size=1.0, name="flash", color=BEAM, core=BEAM_CORE):
 
 # -- Archer Tower: a timber tower with an archer behind a team parapet ---------------------------------
 def archer_build(rig):
-    sand_plinth(rig, r=14, h=6)
+    porphyry_footing(rig, r=14, h=6, seed=3)                          # (world wave A, S3)
+    legs = ((-9, -8), (9, -8), (-9, 10), (9, 10))
     g = Geo()
-    for x, y in ((-9, -8), (9, -8), (-9, 10), (9, 10)):
+    for x, y in legs:
         g.capsule((x, y, 6), (x * 0.85, y * 0.85, 27), 1.9)
     g.capsule((-9, -8, 13), (9, -8, 21), 1.2).capsule((9, -8, 13), (-9, -8, 21), 1.2)
     rig.part("mount", g, WOOD_DK)
+    # world wave A: aged-bronze shoes on the legs, rope lashings where the braces meet them
+    leg_shoes(rig, [(x * 0.993, y * 0.993, 7.0) for x, y in legs], [(x * 0.85, y * 0.85, 27) for x, y in legs])
+    for x in (-9, 9):
+        KW.wraps(rig, "mount", (x * 0.968, -7.74, 10.6), (x * 0.946, -7.57, 13.6), 1.9, 2, ROPE, w=0.6, outline=0.3)
     g = Geo()
     box(g, (0, 1, 27.5), (12.5, 11.5, 1.6), p=5)
     rig.part("mount", g, WOOD)
     g = Geo().slab([(-11, 26), (11, 26), (11, 17), (6, 13.5), (0, 16.5), (-6, 13.5), (-11, 17)], -10.2, 1.2)
     rig.part("mount", g, team=True, outline=0.6)
+    # world wave A: the screen in two tones, a team-dark hem along its points and a team-dark lambda (the base's
+    # banners carry the same sign), polished bronze studs along its top
+    g = Geo().slab([(11, 17), (6, 13.5), (0, 16.5), (-6, 13.5), (-11, 17), (-11, 19.4), (-6, 15.9), (0, 18.9),
+                    (6, 15.9), (11, 19.4)], -10.7, 0.6)
+    g.capsule((-3.8, -10.95, 19.8), (0, -10.95, 24.0), 0.85).capsule((0, -10.95, 24.0), (3.8, -10.95, 19.8), 0.85)
+    look.team_part(rig, "mount", g, outline=0.3)
     g = Geo()
     for i in range(6):
         g.blob((-9.5 + i * 3.8, -11.0, 25.6), (1.2, 0.6, 1.1), p=2.2)
-    rig.part("mount", g, SAND_LT, outline=0.4)
-    pennant(rig, "mount", -12, 9, 27, h=18, length=13, width=8)
+    rig.part("mount", g, BRONZE, finish=P.POLISH, outline=0.4)
+    KW.pennant(rig, "mount", -12, 9, 27, h=18, length=13, width=8, tie="pole")
     # head: the archer (drawn 1.3x so his face and bow read at game size), turning at the deck
     rig.joint("archer", "head", (0, 0, 28), scale=ARCHER_S)
     g = Geo().blob((0, 0, 33.0), (5.6, 5.2, 6.2), p=2.4)
@@ -127,11 +176,13 @@ def archer_build(rig):
     g = Geo().blob((0.4, 0, 43.8), (5.6, 5.4, 0.8), p=3.0)
     rig.part("archer", g, VERD, outline=0.3)
     rig.secondary("acrest", "archer", (1.0, 0, 48.0), (-6.0, 0, 48.6), max_deg=16, gain=1.2)
-    g = Geo().blob((-2.6, 0, 48.6), (4.2, 1.4, 2.4), p=2.2)
+    g = Geo().blob((-2.8, 0, 48.8), (4.8, 1.5, 2.8), p=2.2)          # (world wave A: a fuller crest)
     rig.part("acrest", g, team=True, outline=0.4)
     g = Geo().capsule((1.0, -5.0, 36.0), (12.0, -5.0, 36.5), 1.5)     # bow arm
     g.blob((12.1, -5.0, 36.4), (1.8, 1.6, 1.8), p=2.2)
     rig.part("archer", g, P.SKIN, outline=0.5)
+    g = Geo().capsule((1.0, -5.2, 36.0), (5.0, -5.2, 36.2), 2.05)      # (world wave A: the tunic's sleeve)
+    rig.part("archer", g, team=True, outline=0.5)
     rig.joint("draw", "archer", (0.0, -4.0, 36.5))
     g = Geo().capsule((1.0, -4.0, 35.5), (-2.5, -4.0, 36.5), 1.5)
     g.blob((-2.8, -4.0, 36.5), (1.8, 1.6, 1.8), p=2.2)
@@ -201,18 +252,26 @@ def _turn(g, cx, cz, deg=DISH_TURN):
 
 
 def mirror_build(rig):
-    sand_plinth(rig, r=13, h=5)
+    porphyry_footing(rig, r=13, h=5, seed=7)                          # (world wave A, S3)
     g = Geo()
+    feet = []
     for a in (90, 210, 330):
         x, y = 9.0 * math.cos(math.radians(a)), 9.0 * math.sin(math.radians(a)) + 2
         g.capsule((x, y, 5), (0, 1, 24), 1.4)
+        feet.append((x, y))
     rig.part("mount", g, WOOD_DK)
+    leg_shoes(rig, [(x - x * 0.068, y + (1 - y) * 0.068, 6.3) for x, y in feet], [(0, 1, 24)] * 3, r=1.4, length=3.0)
     g = Geo()
     cyl(g, (0, 1, 22), (0, 1, 26), 3.4, bevel=0.5)
     rig.part("mount", g, AGED_DK, finish="metal")
+    # world wave A: the hub's cloth in two tones (a team-dark skirt under the lit wrap)
     g = Geo().blob((0, 1, 20.0), (7.4, 7.0, 4.6), p=2.4, taper=(1.35, 0.7))
+    g.clip((0, 1, 18.2), (0, 0, -1))
     rig.part("mount", g, team=True, outline=0.5)
-    pennant(rig, "mount", -13, 7, 5, h=20, length=12, width=7)
+    g = Geo().blob((0, 1, 20.0), (7.4, 7.0, 4.6), p=2.4, taper=(1.35, 0.7))
+    g.clip((0, 1, 18.2), (0, 0, 1))
+    look.team_part(rig, "mount", g, outline=0.5)
+    KW.pennant(rig, "mount", -13, 7, 5, h=20, length=12, width=7, tie="pole")
     # head: the dish (aged-bronze back, a pale polished face, a thin polished rim, a team band)
     cx, cz = 3.0, 34.0
     n = (1.0, 0.0, 0.0)
@@ -224,9 +283,18 @@ def mirror_build(rig):
     g = Geo().lathe([(0, -0.4), (6.0, 0.2), (11.8, 1.6), (11.6, 2.0), (0, 0.4)], (cx - 0.9, 0, cz), (cx + 0.1, 0, cz),
                     segs=36)
     rig.part("head", _turn(g, cx, cz), MIRROR, finish="gloss", outline=0.4)
+    # world wave A: a duller polishing ring on the face (it reads as a dished mirror), polished studs round the rim
+    g = Geo().lathe([(6.6, 1.36), (8.9, 1.68), (8.9, 1.84), (6.6, 1.52)], (cx - 0.9, 0, cz), (cx + 0.1, 0, cz), segs=36)
+    rig.part("head", _turn(g, cx, cz), MIRROR_RING, finish="gloss", outline=0)
+    g = Geo()
+    for k in range(8):
+        a = 2 * math.pi * (k + 0.5) / 8
+        g.blob((cx + 0.5, 12.9 * math.cos(a), cz + 12.9 * math.sin(a)), (1.1, 1.1, 1.1), p=2.2)
+    rig.part("head", _turn(g, cx, cz), BRONZE, finish=P.POLISH, outline=0.3)
     g = Geo().lathe([(0, 0), (3.2, 0.2), (0, 0.6)], (cx + 0.2, -0.8, cz + 3.0), (cx + 1.2, -0.8, cz + 3.0), segs=16)
     rig.part("head", _turn(g, cx, cz), glow=MIRROR_HI, outline=0)
-    g = Geo().lathe([(5.0, -2.6), (12.2, -2.2), (12.2, 1.4), (5.0, 1.4)], (cx - 3.6, 0, cz), (cx - 2.6, 0, cz), segs=32)
+    # (world wave A: the team ring behind the dish 0.8 lu wider, so its crescent still reads under the v4 outline)
+    g = Geo().lathe([(5.0, -2.6), (13.0, -2.2), (13.0, 1.4), (5.0, 1.4)], (cx - 3.6, 0, cz), (cx - 2.6, 0, cz), segs=32)
     rig.part("head", _turn(g, cx, cz), team=True, outline=0.5)
     g = Geo().capsule((cx - 3.0, 0, cz), (cx - 7.0, 0, cz - 4.0), 2.2)
     g.capsule((cx + 1.0, 0, cz + 12.0), (cx + 12.0, 0, cz), 0.6).capsule((cx + 1.0, 0, cz - 12.0), (cx + 12.0, 0, cz), 0.6)
@@ -263,7 +331,7 @@ MIRROR_OVERLAYS = {"fire": {
 
 # -- Onager: a torsion catapult with a throwing arm and sling ------------------------------------------
 def onager_build(rig):
-    sand_plinth(rig, r=17, h=5)
+    porphyry_footing(rig, r=17, h=5, seed=13)                         # (world wave A, S3)
     g = Geo()
     for y in (-8, 8):
         box(g, (0, y, 8.5), (17, 1.8, 2.2), p=5)
@@ -273,6 +341,10 @@ def onager_build(rig):
     g = Geo().slab([(-17, 5.5), (17, 5.5), (17, 12), (-17, 12)], -10.4, 1.2)
     g.slab([(-7, 12), (7, 12), (5, 20), (-5, 20)], -10.4, 1.2)
     rig.part("mount", g, team=True, outline=0.5)
+    # (world wave A: the screen in two tones: a team-dark foot and a team-dark lambda on its crest)
+    g = Geo().slab([(-17, 5.5), (17, 5.5), (17, 7.7), (-17, 7.7)], -10.95, 0.3)
+    g.capsule((-3.0, -11.0, 13.3), (0, -11.0, 18.4), 0.8).capsule((0, -11.0, 18.4), (3.0, -11.0, 13.3), 0.8)
+    look.team_part(rig, "mount", g, outline=0.3)
     g = Geo()
     for y in (-8, 8):
         g.capsule((6, y, 9), (4, y, 26), 2.0)                             # the upright frame
@@ -289,7 +361,11 @@ def onager_build(rig):
     g = Geo()
     box(g, (4, 0, 26.0), (2.6, 9.5, 2.6), p=4)                            # the padded buffer beam
     rig.part("mount", g, team=True)
-    pennant(rig, "mount", -15, 8, 5, h=22, length=12, width=7)
+    g = Geo()                                                               # (world wave A: its straps, team-dark)
+    for y in (-4.8, 4.8):
+        box(g, (4, y, 26.0), (2.95, 1.0, 2.95), p=4)
+    look.team_part(rig, "mount", g, outline=0.3)
+    KW.pennant(rig, "mount", -15, 8, 5, h=22, length=12, width=7, tie="pole")
     # head: the throwing arm pivots in a rope skein (a thick twisted coil round its foot, part of
     # the head so it reads in every frame) and lies cocked back; a team sleeve on the arm; at the
     # end a plum leather sling cup on ropes carries a boulder
@@ -305,11 +381,11 @@ def onager_build(rig):
     rig.part("head", g, AGED, finish="metal", outline=0.4)
     g = Geo().capsule((8, 0, 11), (-18, 0, 13), 2.8, 2.0)
     rig.part("arm", g, WOOD)
-    g = Geo().capsule((1.0, 0, 11.6), (-9.0, 0, 12.4), 3.5, 3.1)          # team sleeve
+    g = Geo().capsule((1.0, 0, 11.6), (-9.0, 0, 12.4), 3.8, 3.4)          # team sleeve (world wave A: fuller)
     rig.part("arm", g, team=True, outline=0.5)
     g = Geo()
     for x in (2.4, -9.8):
-        g.lathe([(3.3, -0.5), (3.7, 0), (3.3, 0.5)], (x, 0, 12.0), (x - 1, 0, 12.1), segs=14)
+        g.lathe([(3.6, -0.5), (4.0, 0), (3.6, 0.5)], (x, 0, 12.0), (x - 1, 0, 12.1), segs=14)
     rig.part("arm", g, BRONZE, finish=P.POLISH, outline=0.4)
     g = Geo()                                                               # sling ropes
     g.capsule((-18, -1.6, 13.4), (-22.5, -3.2, 17.4), 0.55).capsule((-18, 1.6, 13.4), (-22.5, 3.2, 17.4), 0.55)
@@ -341,8 +417,8 @@ def onager_fire(f):
 
 
 ONAGER_OVERLAYS = {"fire": {
-    1: [{"kind": "arc", "joint": "arm", "inner": (-6.0, 0, 12.6), "outer": (-21.0, 0, 16.0), "from": 0,
-         "color": ROPE, "white": 0.3, "taper": 0.2, "lines": 3}],
+    1: KW.smear_two_tone({"kind": "arc", "joint": "arm", "inner": (-6.0, 0, 12.6), "outer": (-21.0, 0, 16.0),
+                          "from": 0, "color": ROPE, "white": 0.3, "taper": 0.2, "lines": 3}),
     2: [{"kind": "burst", "joint": "mount", "point": (4.0, -10.0, 28.0), "r0_lu": 5.0, "r1_lu": 10.0, "n": 5,
          "a0": 20.0, "arc": 140.0},
         {"kind": "dust", "ground": (0.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 3, "spread": 1.2}],
@@ -359,7 +435,7 @@ def _gp(x, y, z, cx=1.0, deg=GFACE):
 
 
 def gorgon_build(rig):
-    sand_plinth(rig, r=13, h=6)
+    porphyry_footing(rig, r=13, h=6, seed=19)                         # (world wave A, S3)
     g = Geo()
     cyl(g, (0, 1, 6), (0, 1, 22), 8.0, 7.0, bevel=0.8, segs=20)
     rig.part("mount", g, SAND)
@@ -374,6 +450,10 @@ def gorgon_build(rig):
     rig.part("mount", g, SAND_LT)
     g = Geo().slab([(-8.5, 21.5), (8.5, 21.5), (8.5, 10), (0, 5), (-8.5, 10)], -8.6, 1.2)   # team drape
     rig.part("mount", g, team=True, outline=0.5)
+    # (world wave A: the drape in two tones: a team-dark hem along its point and a team-dark lambda)
+    g = Geo().slab([(8.5, 10), (0, 5), (-8.5, 10), (-8.5, 12.2), (0, 7.2), (8.5, 12.2)], -9.1, 0.6)
+    g.capsule((-2.8, -9.5, 12.6), (0, -9.5, 18.2), 0.75).capsule((0, -9.5, 18.2), (2.8, -9.5, 12.6), 0.75)
+    look.team_part(rig, "mount", g, outline=0.3)
     # head: a pale stone face turned three-quarters to the camera (so the face reads at game
     # size), verdigris snakes, a team diadem; big blank eyes and a hiss flare on the shot
     g = Geo().blob((1.0, 0, 33.0), (9.2, 8.8, 9.6), p=2.3)
@@ -482,11 +562,16 @@ def _net_bundle(rig, joint, at, spread=1.0):
 
 
 def netcaster_build(rig):
-    sand_plinth(rig, r=14, h=5)
+    porphyry_footing(rig, r=14, h=5, seed=11)                         # (world wave A, S3)
+    posts = ((-9, -8), (9, -8), (-9, 9), (9, 9))
     g = Geo()
-    for x, y in ((-9, -8), (9, -8), (-9, 9), (9, 9)):              # wharf posts
+    for x, y in posts:                                              # wharf posts
         g.capsule((x, y, 5), (x, y, 18), 2.0)
     rig.part("mount", g, WOOD_DK)
+    # world wave A: aged-bronze shoes on the posts, rope lashings under the deck on the front pair
+    leg_shoes(rig, [(x, y, 6.3) for x, y in posts], [(x, y, 18) for x, y in posts], r=2.0, length=3.0)
+    for x in (-9, 9):
+        KW.wraps(rig, "mount", (x, -8, 13.4), (x, -8, 16.4), 2.0, 2, ROPE, w=0.6, outline=0.3)
     g = Geo()
     box(g, (0, 0.5, 18.6), (12.5, 11.0, 1.4), p=5)                 # the plank deck
     rig.part("mount", g, WOOD)
@@ -496,6 +581,8 @@ def netcaster_build(rig):
     rig.part("mount", g, WOOD_DK, outline=0)
     g = Geo().slab([(-11, 17.4), (11, 17.4), (11, 10.5), (0, 8.0), (-11, 10.5)], -10.4, 1.2)
     rig.part("mount", g, team=True, outline=0.6)                    # a team banner hung off the deck
+    g = Geo().slab([(11, 10.5), (0, 8.0), (-11, 10.5), (-11, 12.6), (0, 10.1), (11, 12.6)], -10.9, 0.6)
+    look.team_part(rig, "mount", g, outline=0.3)                    # (world wave A: its hem in team-dark)
     g = Geo()
     for x, z in ((-7.0, 13.0), (-2.0, 12.0), (3.0, 12.4), (8.0, 13.2)):  # floats tied along it
         g.sphere((x, -11.6, z), 1.4, cuts=2)
@@ -504,7 +591,7 @@ def netcaster_build(rig):
     g = Geo()                                                       # a coiled spare net on the deck
     g.lathe([(0, 0), (4.4, 0.2), (4.8, 1.6), (4.0, 2.6), (0, 2.8)], (-8.0, 5.0, 19.6), (-8.0, 5.0, 22.4), segs=16)
     rig.part("mount", g, LINEN, outline=0.4)
-    pennant(rig, "mount", 11, 9, 19, h=16, length=12, width=7)
+    KW.pennant(rig, "mount", 11, 9, 19, h=16, length=12, width=7, tie="pole")
     # head: the net man (drawn 1.3x so his face and the net read), turning at the deck
     rig.joint("man", "head", (0, 0, 20), scale=NETMAN_S)
     g = Geo().blob((0, 0, 26.0), (5.4, 5.0, 6.4), p=2.4)
@@ -545,6 +632,8 @@ def netcaster_build(rig):
     rig.joint("narm", "man", (0.0, -5.0, 29.0))
     g = Geo().capsule((0.0, -5.0, 29.0), (6.0, -5.4, 24.0), 1.5).blob((6.6, -5.4, 23.4), (1.8, 1.6, 1.8), p=2.2)
     rig.part("narm", g, P.SKIN, outline=0.5)
+    g = Geo().capsule((0.0, -5.2, 29.0), (2.8, -5.3, 26.7), 2.05)   # (world wave A: the tunic's sleeve)
+    rig.part("narm", g, team=True, outline=0.5)
     rig.joint("net", "narm", (7.0, -6.6, 23.0))
     _net_bundle(rig, "net", (7.0, -6.6, 23.0), spread=0.55)
     rig.joint("farm", "man", (0.0, 5.0, 29.0))
@@ -574,8 +663,8 @@ def netcaster_fire(f):
 
 
 NETCASTER_OVERLAYS = {"fire": {
-    0: [{"kind": "arc", "joint": "net", "inner": (7.0, -6.6, 23.0), "outer": (12.0, -6.6, 20.0),
-         "color": LINEN, "white": 0.3, "taper": 0.2, "lines": 2, "band": 0.4}],
+    0: KW.smear_two_tone({"kind": "arc", "joint": "net", "inner": (7.0, -6.6, 23.0), "outer": (12.0, -6.6, 20.0),
+                          "color": LINEN, "white": 0.3, "taper": 0.2, "lines": 2, "band": 0.4}),
     1: [{"kind": "streak", "joint": "narm", "point": (6.6, -5.4, 23.4), "from": 0, "color": SAND_LT,
          "width_lu": 3.4, "white": 0.3}],
 }}
@@ -583,23 +672,28 @@ NETCASTER_OVERLAYS = {"fire": {
 
 # -- Polybolos (W2 Bronze wave): the chain-fed repeating bolt-thrower ---------------------------------------
 def polybolos_build(rig):
-    sand_plinth(rig, r=16, h=6)
+    porphyry_footing(rig, r=16, h=6, seed=17)                         # (world wave A, S3)
     g = Geo()
     for y in (-7, 7):
         g.capsule((-10, y, 6), (2, y, 20), 2.0)                       # the A-frame trestle
         g.capsule((12, y, 6), (2, y, 20), 2.0)
     g.capsule((2, -8, 20), (2, 8, 20), 1.8)
     rig.part("mount", g, WOOD_DK)
+    feet = [(-10, y) for y in (-7, 7)] + [(12, y) for y in (-7, 7)]   # (world wave A: shod feet)
+    leg_shoes(rig, [(x + (2 - x) * 1.4 / 14, y, 7.4) for x, y in feet], [(2, y, 20) for x, y in feet], r=2.0,
+              length=3.0)
     g = Geo().slab([(-12, 7.0), (14, 7.0), (14, 13.0), (-12, 13.0)], -9.6, 1.2)
     rig.part("mount", g, team=True, outline=0.5)
-    pennant(rig, "mount", -14, 8, 6, h=22, length=12, width=7)
+    g = Geo().slab([(-12, 7.0), (14, 7.0), (14, 9.1), (-12, 9.1)], -10.35, 0.3)   # (world wave A: a team-dark hem)
+    look.team_part(rig, "mount", g, outline=0.3)
+    KW.pennant(rig, "mount", -14, 8, 6, h=22, length=12, width=7, tie="pole")
     # head: the long stock (rotates at the trestle top), the bow arms, the magazine and the chain drive
     g = Geo()
     box(g, (3, 0, 22.0), (19.0, 2.6, 2.0), p=5)                      # the stock
     rig.part("head", g, WOOD)
     g = Geo()
-    box(g, (3, 0, 25.0), (16.0, 2.2, 1.2), p=5)                      # the bolt slider
-    rig.part("head", g, team=True, outline=0.5)
+    box(g, (3, 0, 25.2), (16.0, 2.9, 1.5), p=5)                      # the bolt slider
+    rig.part("head", g, team=True, outline=0.5)     # (world wave A: 3 lu tall and proud of the stock, was 2.4: v4)
     g = Geo()
     for sgn in (-1, 1):                                              # the torsion bow arms in their frame
         g.capsule((16, sgn * 2.8, 22.5), (9, sgn * 12.0, 24.5), 1.4, 1.0)
@@ -617,6 +711,7 @@ def polybolos_build(rig):
     g = Geo()
     box(g, (8, 0, 30.5), (3.2, 2.6, 4.4), p=4)                       # the magazine hopper
     rig.part("head", g, WOOD_DK)
+
     g = Geo()
     for k in range(3):
         g.capsule((5.4, -1.6 + 1.6 * k, 33.2), (12.0, -1.6 + 1.6 * k, 33.6), 0.5)
@@ -629,9 +724,9 @@ def polybolos_build(rig):
     g = Geo()
     for k in range(4):
         a = math.radians(90 * k)
-        g.capsule((-14, -4.4, 22.0), (-14 + 4.8 * math.cos(a), -4.4, 22.0 + 4.8 * math.sin(a)), 0.9)
-    g.capsule((-14 + 4.8, -4.6, 22.0), (-14 + 4.8, -7.6, 22.0), 0.9)
-    rig.part("crank", g, team=True, outline=0.4)
+        g.capsule((-14, -4.4, 22.0), (-14 + 4.8 * math.cos(a), -4.4, 22.0 + 4.8 * math.sin(a)), 1.1)
+    g.capsule((-14 + 4.8, -4.6, 22.0), (-14 + 4.8, -7.6, 22.0), 1.1)
+    rig.part("crank", g, team=True, outline=0.4)    # (world wave A: spokes 2.2 lu, were 1.8: thin team lost to v4)
     g = Geo()
     for k in range(9):                                               # the chain loop along the stock
         x = -14 + 3.2 * k
@@ -684,3 +779,30 @@ TURRETS = [
                   polybolos_build, polybolos_idle, polybolos_fire, aim=(-30, 30), fire_kind="recoil",
                   idle_frames=6, overlays=POLYBOLOS_OVERLAYS),
 ]
+
+# world wave A: the items brought to the detail standard (look_world.opt_in; the others render as before)
+AT_KINDS = {WOOD: "wood", WOOD_DK: "wood", SAND_LT: "wood", PORPH: "stone", PORPH_LT: "stone", PORPH_DK: "stone",
+            AGED: "bronze", AGED_DK: "bronze", BRONZE: "bronze", VERD: "bronze", "#C8B488": "bronze",
+            P.LEATHER: "leather", P.LEATHER_DK: "leather", "#8A6A50": "leather", ROPE: "cloth", LINEN: "cloth",
+            "#6A5A4A": "wood", P.SKIN: "skin", "team": "cloth"}
+SM_KINDS = {WOOD_DK: "wood", PORPH: "stone", PORPH_LT: "stone", PORPH_DK: "stone", AGED: "bronze",
+            AGED_DK: "bronze", BRONZE: "bronze", "#C9B68A": "bronze", "#C8B488": "bronze", MIRROR: "glass",
+            MIRROR_RING: "glass", "#8A6A50": "leather", "#6A5A4A": "wood", "team": "cloth"}
+LW.opt_in(TURRETS[0], AT_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
+LW.opt_in(TURRETS[1], SM_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
+NC_KINDS = {WOOD: "wood", WOOD_DK: "wood", SAND_LT: "wood", SAND: "wood", PORPH: "stone", PORPH_LT: "stone",
+            PORPH_DK: "stone", AGED: "bronze", BRONZE: "bronze", "#C8B488": "bronze", "#7C7A78": "iron",
+            P.LEATHER_DK: "leather", "#8A6A50": "leather", ROPE: "cloth", LINEN: "cloth", "#6A5A4A": "wood",
+            P.SKIN: "skin", P.SKIN_DK: "skin", P.HAIR: "fur", "team": "cloth"}
+LW.opt_in(TURRETS[4], NC_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
+ON_KINDS = {WOOD: "wood", WOOD_DK: "wood", SAND_DK: "cloth", ROPE: "cloth", PORPH: "stone", PORPH_LT: "stone",
+            PORPH_DK: "stone", AGED: "bronze", BRONZE: "bronze", "#C8B488": "bronze", P.PLUM: "leather",
+            "#8A6A50": "leather", "#6A5A4A": "wood", "team": "cloth"}
+GB_KINDS = {SAND: "stone", SAND_DK: "stone", SAND_LT: "stone", PORPH: "stone", PORPH_LT: "stone", PORPH_DK: "stone",
+            BRONZE: "bronze", VERD: "hide", "team": "cloth"}
+PB_KINDS = {WOOD: "wood", WOOD_DK: "wood", SAND_LT: "wood", ROPE: "cloth", LINEN: "cloth", PORPH: "stone",
+            PORPH_LT: "stone", PORPH_DK: "stone", AGED: "bronze", AGED_DK: "bronze", BRONZE: "bronze",
+            "#C8B488": "bronze", "#8A6A50": "leather", "#6A5A4A": "wood", "team": "cloth"}
+LW.opt_in(TURRETS[2], ON_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
+LW.opt_in(TURRETS[3], GB_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
+LW.opt_in(TURRETS[5], PB_KINDS, highlight=1.6, shade=KW.SHADE_WORLD)
