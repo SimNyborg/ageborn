@@ -19,10 +19,18 @@ every 1.0 s):
             then snaps forward from the hips and spits low
   hit       light: the head snaps back, eyes squeezed, the antennae whip
   die       D1 fling and spin, X eyes and the tongue out
+
+W4 (the detail standard): the moon head as stone with more craters and their lit rims, the team suit's seams
+(team-dark), a buckle on the belt, the air pack's bands, the pads' ridges, the legs' creases, team shin bands and boot
+seams; beast damage spots (scuffs on the suit and the head, a breath puff). Aimed at flyers (queue item 44): both
+spits up about 45 and 70 degrees, hand-posed like W2's Friar (kit_bronze_detail.aimed_hand: a spit has no measured
+weapon, so the turn is solved on the head's facing at the release); aimdata.SPEC gives the variants their aimDeg.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as FC
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_cosmic_wave as CW
 from ageborn_art import kit_industrial as KI
@@ -31,6 +39,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "moonlings"
 GAIT_NAME = "biped"
@@ -40,6 +49,14 @@ CANVAS = (280, 240)
 FEET = (120, 210)
 ANCHORS = {"head": (2, 62), "hitCenter": (0, 30), "muzzle": (16, 44)}
 NO_RETIME = True
+
+# W4 detail standard (look.py): the lifts; the moon head as stone (its craters)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+MOON_LT = "#E6E2EE"                 # a crater's lit rim
+MATERIAL_KINDS = FW.kinds_cosmic({CW.MOON: "stone", CW.MOON_DK: "stone", MOON_LT: "stone"})
 
 HEAD_C = (2.0, 0.0, 49.0)
 MOUTH = (14.6, -3.0, 44.0)
@@ -99,7 +116,63 @@ def build(rig):
         y = K.ARM_Y[s]
         g = Geo().blob((0.4, y, 35.2), (5.9, 5.4, 4.9), p=2.6)
         rig.part(f"arm_{s}", g, team=True, outline=0.6)
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
     return face
+
+
+def _detail(rig):
+    """W4: more craters on the moon head with lit rims; the suit's team-dark seams; a buckle on the belt; the air pack's
+    bands; the near pad's ridge; the legs' creases, team shin bands and boot seams (char space; decals cast)."""
+    from ageborn_art import rigs_cosmic as RC
+    hr = (12.6, 12.0, 12.4)
+    hf = FC.Face(rig, "head", [Geo().blob(HEAD_C, hr, p=2.2)])
+    # (r41) the new craters seated on the head's camera side (r31c's two at its back edge floated off it) and every
+    # crater's lit rim laid on the head's surface over its upper edge (r31c cast them at the craters' depth: past the
+    # head's edge they fell to the y = 0 plane, 38 missed samples)
+    craters = ((-4.2, 50.6, 1.5), (-9.4, 52.0, 1.0), (1.0, 54.6, 0.9), (-3.2, 59.4, 0.9))
+    g = Geo()
+    for x, z, r in craters:
+        g.blob((x, KD.blob_y(HEAD_C, hr, x, z, p=2.2) + 0.3, z), (r, 1.0, r), p=2.4)
+    rig.part("head", g, CW.MOON_DK, outline=0)
+    rims = []
+    for x, z, r in craters + ((-6.0, 56.0, 2.2), (3.0, 60.0, 1.6), (-8.0, 45.0, 1.4), (-1.0, 44.0, 1.6)):
+        rims.append([FW.on_blob(hf, HEAD_C, hr, x + (r + 0.5) * math.cos(math.radians(a)),
+                                z + (r + 0.5) * math.sin(math.radians(a)), p=2.2) for a in (150, 110, 70, 30)])
+    FW.panel_lines(rig, "head", hf, rims, fill=MOON_LT, w=0.6)
+    sf = FC.Face(rig, "torso", [Geo().blob((0, 0, 28.0), (10.6, 10.0, 11.6), p=2.3, taper=(1.05, 0.95))])
+    FW.folds(rig, "torso", sf, [[FW.sc(sf, -4.4, 36.0, -8.8), FW.sc(sf, -5.0, 29.0, -9.6), FW.sc(sf, -4.4, 22.6, -9.2)],
+                                [FW.sc(sf, -8.6, 31.4, -5.6), FW.sc(sf, -1.0, 32.6, -9.8), FW.sc(sf, 2.6, 32.4, -9.6)]],
+             w=0.8, team=True)
+    g = Geo().blob((10.4, -4.0, 20.2), (1.4, 2.2, 1.9), p=3.0)
+    rig.part("torso", g, CW.STAR_TRIM, finish="metal", outline=0.5)
+    for z in (25.6, 32.4):
+        FW.band(rig, "torso", (-11.2, 0, 29.0), (3.8, 6.4, 6.4), 3.4, z, z + 0.7, fill=FW.LINE_ON_VIOLET)
+    y = K.ARM_Y["r"]
+    padf = FC.Face(rig, "arm_r", [Geo().blob((0.4, y, 35.2), (5.9, 5.4, 4.9), p=2.6)])
+    FW.folds(rig, "arm_r", padf, [[FW.sc(padf, -3.6, 36.6, y - 4.6), FW.sc(padf, 0.4, 38.0, y - 5.0),
+                                   FW.sc(padf, 4.4, 36.6, y - 4.6)]], w=0.75, team=True)
+    for s in ("r", "l"):
+        y = RC.LEG_Y * RC.SIDE_Y[s]
+        th = FC.Face(rig, f"thigh_{s}", [Geo().capsule((0, y, KM.V3_THIGH_Z + 0.5), (0.5, y, KM.V3_KNEE_Z), 4.6, 4.1)])
+        FW.folds(rig, f"thigh_{s}", th, [[FW.sc(th, -2.4, 14.4, y - 4.4), FW.sc(th, 0.4, 13.6, y - 4.6),
+                                          FW.sc(th, 3.0, 14.6, y - 4.2)]], w=0.8, team=False, fill=FW.FOLD_ON_VOID)
+        FW.band(rig, f"shin_{s}", (1.9, y, 8.8), (3.4, 4.2, 2.8), 2.6, 6.6, 7.3, team=True)
+        FW.band(rig, f"foot_{s}", (2.8, y, 2.4), (4.4, 4.7, 2.5), 2.9, 3.0, 3.6, fill=FW.LINE_ON_VIOLET, taper=(1.02, 0.84))
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, beast: scuffs, a torn suit, no blood; a breath puff when tired): the
+    near team pad, the team hips, the moon head behind the eyes, the air pack; breath at the mouth. (r31b: the team
+    suit's mark went to the near pad: at z 27 the near arm covered it on the walk and the throws, 60%, and at z 33
+    the pad itself, 0%.)"""
+    y = K.ARM_Y["r"]
+    rig.damage_spot("pad", "arm_r", (0.4, y - 5.2, 34.4), 5.0, "cloth", team=True, normal=(0, -1, 0))
+    rig.damage_spot("hips", "hips", (-2.0, -9.2, 16.0), 5.0, "cloth", kind="strip", team=True, normal=(0, -1, 0))
+    rig.damage_spot("head", "head", (-7.0, -9.0, 50.0), 5.0, "hide", normal=(-0.4, -0.9, 0.2))
+    rig.damage_spot("pack", "torso", (-12.4, -5.4, 29.0), 5.0, "metal", normal=(-0.5, -0.9, 0))
+    rig.damage_spot("breath", "head", MOUTH, 3.5, "breath", kind="emit", normal=(0.8, -0.4, 0.2))
 
 
 def arms(r=(-70, -40), l=(-90, -60)):
@@ -145,9 +218,16 @@ A_ARM = [((-75, -50), (-100, -70)), ((-110, -80), (-120, -90)), ((-130, -100), (
 A_EXPR = [None, ("squeeze",), ("squeeze",), ("squeeze",), ("yell",), ("o",), None, None]
 
 
-def _a_pose(f):
+# aimed spits (queue item 44): a turn of `turn` degrees up leans the body back by AIM_LEAN of it and tips the head by
+# the rest (the head's facing is the spit's line); the wind-up rises into the aim, the landing falls out of it
+AIM_LEAN = 0.3
+AIM_W = [0.0, 0.3, 0.6, 0.9, 1.0, 0.7, 0.3, 0.0]
+
+
+def _a_pose(f, turn=0.0):
     pose = merge(arms(*A_ARM[f]), {
-        "torso": {"r": A_T[f]}, "head": {"r": A_HD[f]}, "cheeks": {"show": f in (2, 3)},
+        "torso": {"r": A_T[f] + AIM_LEAN * turn}, "head": {"r": A_HD[f] + (1.0 - AIM_LEAN) * turn},
+        "cheeks": {"show": f in (2, 3)},
         "flash": {"show": f == 4},
         "thigh_r": {"r": A_TH[f]}, "shin_r": {"r": A_SH[f]}, "thigh_l": {"r": A_TH[f] - 4}, "shin_l": {"r": A_SH[f]},
     }, M.body_about((0, 0, 24), x=[0, 0, -1, -1, 3, 2, 0.5, 0][f], z=A_Z[f], q=A_Q[f]))
@@ -173,11 +253,12 @@ B_ARM = [((-75, -50), (-100, -70)), ((-40, 0), (-50, -10)), ((-10, 30), (-20, 20
          ((-100, -70), (-110, -80)), ((-90, -60), (-100, -70)), ((-75, -50), (-100, -70)), ((-75, -50), (-100, -70))]
 
 
-def _b_pose(f):
+def _b_pose(f, turn=0.0):
     if f in (0, 7):
         return _a_pose(f)
     pose = merge(arms(*B_ARM[f]), {
-        "torso": {"r": B_T[f]}, "head": {"r": B_HD[f]}, "cheeks": {"show": f in (2, 3)}, "flash": {"show": f == 4},
+        "torso": {"r": B_T[f] + AIM_LEAN * turn}, "head": {"r": B_HD[f] + (1.0 - AIM_LEAN) * turn},
+        "cheeks": {"show": f in (2, 3)}, "flash": {"show": f == 4},
         "thigh_r": {"r": [0, -6, -10, -12, 20, 14, 4, 0][f]}, "shin_r": {"r": [0, -6, -10, -10, -24, -16, -6, 0][f]},
         "thigh_l": {"r": [0, 10, 18, 20, -10, -6, -2, 0][f]}, "shin_l": {"r": [0, -10, -18, -20, -10, -6, -2, 0][f]},
     }, M.body_about((0, 0, 24), x=B_BX[f], z=[0, 0, -1, -1.5, -2.5, -1.5, 0, 0][f], q=[0, 0.03, 0.05, 0.06, -0.10, -0.04, 0, 0][f]))
@@ -213,13 +294,20 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (the extras sheet); a spit has no measured weapon, so the turn is
+    # solved on the head's facing (+X) at the release (the impact frame)
+    aimed = (KD.aimed_hand(RIG, attack, _a_pose, AIM_W, "head", (1.0, 0.0, 0.0)) +
+             KD.aimed_hand(RIG, attack_b, _b_pose, AIM_W, "head", (1.0, 0.0, 0.0)))
+    for v in aimed:
+        AIMED.check_timing(attack_b if v.name.startswith("attack_b_") else attack, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed
     return M.check_variants(M.check_contract(cl, attack_ms=700, attack_impact_at=0.5))

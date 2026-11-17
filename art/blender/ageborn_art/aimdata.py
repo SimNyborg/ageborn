@@ -110,12 +110,18 @@ SPEC = {
     "grenadier": _thrown(50, 55),
     "herbalist": _thrown(15, 10),
     "mangonel_cart": _thrown(50, 50),
-    "moonlings": _thrown(0, 0, release="impact"),
+    # W4: the Moonlings' and the Swarm Matron's spits aimed up at flyers (hand-posed variants, kit_bronze_detail.aimed_hand,
+    # solved on the head's facing): the Moonlings' pellet leaves on the impact frame, the Matron's glob is last drawn on
+    # the frame before it
+    "moonlings": dict(_thrown(0, 0, release="impact"), **{c + s: {"deg": d, "release": "impact"}
+                                                          for c in ("attack", "attack_b")
+                                                          for s, d in (("_up45", 45), ("_up70", 70))}),
     "nova_thrower": _thrown(45, 50, release="impact"),
     "pebbler": _thrown(20, 5),
     "rhodian_slingers": dict(_thrown(10, 0), **{c + s: {"deg": d, "release": "impact"} for c in ("attack", "attack_b")
                                                 for s, d in (("_up45", 45), ("_up70", 70))}),
-    "swarm_matron": _thrown(0, 0),
+    "swarm_matron": dict(_thrown(0, 0), **{c + s: {"deg": d, "release": "before"} for c in ("attack", "attack_b")
+                                           for s, d in (("_up45", 45), ("_up70", 70))}),
     "mammoth_matriarch": {"attack_alt": {"deg": -20, "release": "before"}},
     # the dive bomber's bomb leaves along the diving plane, from where it hung
     "dive_bomber": {"*": {"release": "before"}},
