@@ -36,7 +36,9 @@ jobs:
   # (docs/requests/wp12-ci.md; the balance jobs follow in Phase 3).
   e2e:
     needs: check
-    runs-on: ubuntu-latest
+    # 2026-11-17: ubuntu-latest became Ubuntu 26.04, where Playwright 1.56.1 cannot install its browsers ("does not
+    # support chromium on ubuntu26.04-x64"); pinned to 24.04 until a Playwright upgrade supports the newer image
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
