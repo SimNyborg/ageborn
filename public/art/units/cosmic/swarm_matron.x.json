@@ -2,17 +2,17 @@
  "frames": {
   "swarm_matron_attack_b_01": {
    "frame": {
-    "x": 2,
-    "y": 101,
-    "w": 107,
+    "x": 119,
+    "y": 418,
+    "w": 106,
     "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 132,
+    "x": 133,
     "y": 161,
-    "w": 107,
+    "w": 106,
     "h": 84
    },
    "sourceSize": {
@@ -26,8 +26,8 @@
   },
   "swarm_matron_attack_b_01_team": {
    "frame": {
-    "x": 2,
-    "y": 189,
+    "x": 209,
+    "y": 564,
     "w": 74,
     "h": 48
    },
@@ -50,8 +50,8 @@
   },
   "swarm_matron_attack_b_02": {
    "frame": {
-    "x": 234,
-    "y": 101,
+    "x": 350,
+    "y": 418,
     "w": 116,
     "h": 83
    },
@@ -74,8 +74,8 @@
   },
   "swarm_matron_attack_b_02_team": {
    "frame": {
-    "x": 354,
-    "y": 101,
+    "x": 75,
+    "y": 508,
     "w": 76,
     "h": 51
    },
@@ -98,8 +98,8 @@
   },
   "swarm_matron_attack_b_03": {
    "frame": {
-    "x": 113,
-    "y": 101,
+    "x": 229,
+    "y": 418,
     "w": 117,
     "h": 83
    },
@@ -122,8 +122,8 @@
   },
   "swarm_matron_attack_b_03_team": {
    "frame": {
-    "x": 434,
-    "y": 101,
+    "x": 380,
+    "y": 508,
     "w": 76,
     "h": 50
    },
@@ -146,8 +146,8 @@
   },
   "swarm_matron_attack_b_04": {
    "frame": {
-    "x": 110,
-    "y": 2,
+    "x": 449,
+    "y": 223,
     "w": 110,
     "h": 94
    },
@@ -170,8 +170,8 @@
   },
   "swarm_matron_attack_b_04_team": {
    "frame": {
-    "x": 80,
-    "y": 189,
+    "x": 287,
+    "y": 564,
     "w": 72,
     "h": 48
    },
@@ -194,8 +194,8 @@
   },
   "swarm_matron_attack_b_05": {
    "frame": {
-    "x": 2,
-    "y": 2,
+    "x": 233,
+    "y": 223,
     "w": 104,
     "h": 95
    },
@@ -218,8 +218,8 @@
   },
   "swarm_matron_attack_b_05_team": {
    "frame": {
-    "x": 156,
-    "y": 189,
+    "x": 363,
+    "y": 564,
     "w": 72,
     "h": 48
    },
@@ -242,17 +242,17 @@
   },
   "swarm_matron_attack_b_06": {
    "frame": {
-    "x": 224,
-    "y": 2,
-    "w": 105,
+    "x": 2,
+    "y": 322,
+    "w": 104,
     "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 135,
+    "x": 136,
     "y": 153,
-    "w": 105,
+    "w": 104,
     "h": 92
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "swarm_matron_attack_b_06_team": {
    "frame": {
-    "x": 232,
-    "y": 189,
+    "x": 439,
+    "y": 564,
     "w": 72,
     "h": 48
    },
@@ -290,8 +290,8 @@
   },
   "swarm_matron_attack_b_07": {
    "frame": {
-    "x": 333,
-    "y": 2,
+    "x": 434,
+    "y": 322,
     "w": 106,
     "h": 90
    },
@@ -314,8 +314,8 @@
   },
   "swarm_matron_attack_b_07_team": {
    "frame": {
-    "x": 308,
-    "y": 189,
+    "x": 515,
+    "y": 564,
     "w": 72,
     "h": 48
    },
@@ -325,6 +325,1158 @@
     "x": 131,
     "y": 158,
     "w": 72,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_01": {
+   "frame": {
+    "x": 652,
+    "y": 118,
+    "w": 102,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 145,
+    "w": 102,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_01_team": {
+   "frame": {
+    "x": 454,
+    "y": 617,
+    "w": 71,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 161,
+    "w": 71,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_02": {
+   "frame": {
+    "x": 219,
+    "y": 2,
+    "w": 104,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 132,
+    "w": 104,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_02_team": {
+   "frame": {
+    "x": 155,
+    "y": 508,
+    "w": 71,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 161,
+    "w": 71,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 105,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 131,
+    "w": 105,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_03_team": {
+   "frame": {
+    "x": 673,
+    "y": 418,
+    "w": 69,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 161,
+    "w": 69,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_04": {
+   "frame": {
+    "x": 2,
+    "y": 418,
+    "w": 113,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 159,
+    "w": 113,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_04_team": {
+   "frame": {
+    "x": 537,
+    "y": 508,
+    "w": 73,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 158,
+    "w": 73,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_05": {
+   "frame": {
+    "x": 651,
+    "y": 322,
+    "w": 111,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 158,
+    "w": 111,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_05_team": {
+   "frame": {
+    "x": 614,
+    "y": 508,
+    "w": 73,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 157,
+    "w": 73,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_06": {
+   "frame": {
+    "x": 218,
+    "y": 322,
+    "w": 105,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 154,
+    "w": 105,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up45_06_team": {
+   "frame": {
+    "x": 591,
+    "y": 564,
+    "w": 72,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 159,
+    "w": 72,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_01": {
+   "frame": {
+    "x": 108,
+    "y": 118,
+    "w": 100,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 142,
+    "w": 100,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_01_team": {
+   "frame": {
+    "x": 380,
+    "y": 617,
+    "w": 70,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 162,
+    "w": 70,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_02": {
+   "frame": {
+    "x": 111,
+    "y": 2,
+    "w": 104,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 131,
+    "w": 104,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 508,
+    "w": 69,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 164,
+    "w": 69,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_03": {
+   "frame": {
+    "x": 327,
+    "y": 2,
+    "w": 104,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 135,
+    "w": 104,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_03_team": {
+   "frame": {
+    "x": 532,
+    "y": 418,
+    "w": 66,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 164,
+    "w": 66,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_04": {
+   "frame": {
+    "x": 563,
+    "y": 223,
+    "w": 109,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 152,
+    "w": 109,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_04_team": {
+   "frame": {
+    "x": 667,
+    "y": 564,
+    "w": 72,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 163,
+    "w": 72,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_05": {
+   "frame": {
+    "x": 110,
+    "y": 322,
+    "w": 104,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 153,
+    "w": 104,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 617,
+    "w": 72,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 161,
+    "w": 72,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_06": {
+   "frame": {
+    "x": 341,
+    "y": 223,
+    "w": 104,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 150,
+    "w": 104,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_up70_06_team": {
+   "frame": {
+    "x": 78,
+    "y": 617,
+    "w": 72,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 160,
+    "w": 72,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_01": {
+   "frame": {
+    "x": 544,
+    "y": 322,
+    "w": 103,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 157,
+    "w": 103,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_01_team": {
+   "frame": {
+    "x": 154,
+    "y": 617,
+    "w": 72,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 127,
+    "y": 165,
+    "w": 72,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_02": {
+   "frame": {
+    "x": 118,
+    "y": 223,
+    "w": 111,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 127,
+    "y": 150,
+    "w": 111,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_02_team": {
+   "frame": {
+    "x": 460,
+    "y": 508,
+    "w": 73,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 171,
+    "w": 73,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_03": {
+   "frame": {
+    "x": 427,
+    "y": 118,
+    "w": 113,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 146,
+    "w": 113,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_03_team": {
+   "frame": {
+    "x": 230,
+    "y": 508,
+    "w": 71,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 175,
+    "w": 71,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_04": {
+   "frame": {
+    "x": 544,
+    "y": 118,
+    "w": 104,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 146,
+    "w": 104,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_04_team": {
+   "frame": {
+    "x": 142,
+    "y": 564,
+    "w": 63,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 177,
+    "w": 63,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_05": {
+   "frame": {
+    "x": 435,
+    "y": 2,
+    "w": 97,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 141,
+    "w": 97,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 564,
+    "w": 67,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 171,
+    "w": 67,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_06": {
+   "frame": {
+    "x": 2,
+    "y": 118,
+    "w": 102,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 144,
+    "w": 102,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up45_06_team": {
+   "frame": {
+    "x": 230,
+    "y": 617,
+    "w": 71,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 163,
+    "w": 71,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_01": {
+   "frame": {
+    "x": 327,
+    "y": 322,
+    "w": 103,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 154,
+    "w": 103,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_01_team": {
+   "frame": {
+    "x": 691,
+    "y": 508,
+    "w": 72,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 127,
+    "y": 166,
+    "w": 72,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_02": {
+   "frame": {
+    "x": 212,
+    "y": 118,
+    "w": 111,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 127,
+    "y": 145,
+    "w": 111,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_02_team": {
+   "frame": {
+    "x": 305,
+    "y": 508,
+    "w": 71,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 174,
+    "w": 71,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_03": {
+   "frame": {
+    "x": 2,
+    "y": 223,
+    "w": 112,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 150,
+    "w": 112,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_03_team": {
+   "frame": {
+    "x": 602,
+    "y": 418,
+    "w": 67,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 179,
+    "w": 67,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_04": {
+   "frame": {
+    "x": 640,
+    "y": 2,
+    "w": 104,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 144,
+    "w": 104,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_04_team": {
+   "frame": {
+    "x": 470,
+    "y": 418,
+    "w": 58,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 169,
+    "w": 58,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_05": {
+   "frame": {
+    "x": 327,
+    "y": 118,
+    "w": 96,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 145,
+    "w": 96,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_05_team": {
+   "frame": {
+    "x": 73,
+    "y": 564,
+    "w": 65,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 173,
+    "w": 65,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_06": {
+   "frame": {
+    "x": 536,
+    "y": 2,
+    "w": 100,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 142,
+    "w": 100,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 359,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.86989
+   }
+  },
+  "swarm_matron_attack_b_up70_06_team": {
+   "frame": {
+    "x": 305,
+    "y": 617,
+    "w": 71,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 164,
+    "w": 71,
     "h": 48
    },
    "sourceSize": {
@@ -359,6 +1511,94 @@
    "swarm_matron_attack_b_06_team",
    "swarm_matron_attack_b_07_team",
    "swarm_matron_attack_08_team"
+  ],
+  "attack_up45": [
+   "swarm_matron_attack_00",
+   "swarm_matron_attack_up45_01",
+   "swarm_matron_attack_up45_02",
+   "swarm_matron_attack_up45_03",
+   "swarm_matron_attack_up45_04",
+   "swarm_matron_attack_up45_05",
+   "swarm_matron_attack_up45_06",
+   "swarm_matron_attack_07",
+   "swarm_matron_attack_08"
+  ],
+  "attack_up45_team": [
+   "swarm_matron_attack_00_team",
+   "swarm_matron_attack_up45_01_team",
+   "swarm_matron_attack_up45_02_team",
+   "swarm_matron_attack_up45_03_team",
+   "swarm_matron_attack_up45_04_team",
+   "swarm_matron_attack_up45_05_team",
+   "swarm_matron_attack_up45_06_team",
+   "swarm_matron_attack_07_team",
+   "swarm_matron_attack_08_team"
+  ],
+  "attack_up70": [
+   "swarm_matron_attack_00",
+   "swarm_matron_attack_up70_01",
+   "swarm_matron_attack_up70_02",
+   "swarm_matron_attack_up70_03",
+   "swarm_matron_attack_up70_04",
+   "swarm_matron_attack_up70_05",
+   "swarm_matron_attack_up70_06",
+   "swarm_matron_attack_07",
+   "swarm_matron_attack_08"
+  ],
+  "attack_up70_team": [
+   "swarm_matron_attack_00_team",
+   "swarm_matron_attack_up70_01_team",
+   "swarm_matron_attack_up70_02_team",
+   "swarm_matron_attack_up70_03_team",
+   "swarm_matron_attack_up70_04_team",
+   "swarm_matron_attack_up70_05_team",
+   "swarm_matron_attack_up70_06_team",
+   "swarm_matron_attack_07_team",
+   "swarm_matron_attack_08_team"
+  ],
+  "attack_b_up45": [
+   "swarm_matron_attack_00",
+   "swarm_matron_attack_b_up45_01",
+   "swarm_matron_attack_b_up45_02",
+   "swarm_matron_attack_b_up45_03",
+   "swarm_matron_attack_b_up45_04",
+   "swarm_matron_attack_b_up45_05",
+   "swarm_matron_attack_b_up45_06",
+   "swarm_matron_attack_b_07",
+   "swarm_matron_attack_08"
+  ],
+  "attack_b_up45_team": [
+   "swarm_matron_attack_00_team",
+   "swarm_matron_attack_b_up45_01_team",
+   "swarm_matron_attack_b_up45_02_team",
+   "swarm_matron_attack_b_up45_03_team",
+   "swarm_matron_attack_b_up45_04_team",
+   "swarm_matron_attack_b_up45_05_team",
+   "swarm_matron_attack_b_up45_06_team",
+   "swarm_matron_attack_b_07_team",
+   "swarm_matron_attack_08_team"
+  ],
+  "attack_b_up70": [
+   "swarm_matron_attack_00",
+   "swarm_matron_attack_b_up70_01",
+   "swarm_matron_attack_b_up70_02",
+   "swarm_matron_attack_b_up70_03",
+   "swarm_matron_attack_b_up70_04",
+   "swarm_matron_attack_b_up70_05",
+   "swarm_matron_attack_b_up70_06",
+   "swarm_matron_attack_b_07",
+   "swarm_matron_attack_08"
+  ],
+  "attack_b_up70_team": [
+   "swarm_matron_attack_00_team",
+   "swarm_matron_attack_b_up70_01_team",
+   "swarm_matron_attack_b_up70_02_team",
+   "swarm_matron_attack_b_up70_03_team",
+   "swarm_matron_attack_b_up70_04_team",
+   "swarm_matron_attack_b_up70_05_team",
+   "swarm_matron_attack_b_up70_06_team",
+   "swarm_matron_attack_b_07_team",
+   "swarm_matron_attack_08_team"
   ]
  },
  "meta": {
@@ -367,8 +1607,8 @@
   "image": "swarm_matron.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 512,
-   "h": 240
+   "w": 768,
+   "h": 668
   },
   "scale": "1.5",
   "ageborn": {
@@ -518,6 +1758,494 @@
       "atLu": [
        26.5,
        18.3
+      ]
+     }
+    },
+    "attack_up45": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      160,
+      100,
+      100,
+      80,
+      60,
+      60
+     ],
+     "durationMs": 800,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        32.3,
+        35.4
+       ],
+       [
+        29.0,
+        46.0
+       ],
+       [
+        23.5,
+        55.6
+       ],
+       [
+        21.0,
+        58.9
+       ],
+       [
+        35.1,
+        30.3
+       ],
+       [
+        34.3,
+        33.2
+       ],
+       [
+        33.1,
+        35.8
+       ],
+       [
+        32.3,
+        35.4
+       ],
+       [
+        32.3,
+        35.4
+       ]
+      ],
+      "clubHead": [
+       [
+        32.3,
+        35.4
+       ],
+       [
+        29.0,
+        46.0
+       ],
+       [
+        23.5,
+        55.6
+       ],
+       [
+        21.0,
+        58.9
+       ],
+       [
+        35.1,
+        30.3
+       ],
+       [
+        34.3,
+        33.2
+       ],
+       [
+        33.1,
+        35.8
+       ],
+       [
+        32.3,
+        35.4
+       ],
+       [
+        32.3,
+        35.4
+       ]
+      ]
+     },
+     "muzzle": [
+      35.1,
+      30.3
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       21.0,
+       58.9
+      ]
+     }
+    },
+    "attack_up70": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      160,
+      100,
+      100,
+      80,
+      60,
+      60
+     ],
+     "durationMs": 800,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "aimOf": "attack",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        32.3,
+        35.4
+       ],
+       [
+        27.7,
+        48.7
+       ],
+       [
+        18.5,
+        60.7
+       ],
+       [
+        12.9,
+        64.9
+       ],
+       [
+        33.9,
+        39.9
+       ],
+       [
+        33.3,
+        39.9
+       ],
+       [
+        32.6,
+        38.7
+       ],
+       [
+        32.3,
+        35.4
+       ],
+       [
+        32.3,
+        35.4
+       ]
+      ],
+      "clubHead": [
+       [
+        32.3,
+        35.4
+       ],
+       [
+        27.7,
+        48.7
+       ],
+       [
+        18.5,
+        60.7
+       ],
+       [
+        12.9,
+        64.9
+       ],
+       [
+        33.9,
+        39.9
+       ],
+       [
+        33.3,
+        39.9
+       ],
+       [
+        32.6,
+        38.7
+       ],
+       [
+        32.3,
+        35.4
+       ],
+       [
+        32.3,
+        35.4
+       ]
+      ]
+     },
+     "muzzle": [
+      33.9,
+      39.9
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       12.9,
+       64.9
+      ]
+     }
+    },
+    "attack_b_up45": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      160,
+      100,
+      100,
+      80,
+      60,
+      60
+     ],
+     "durationMs": 800,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        32.3,
+        35.4
+       ],
+       [
+        29.6,
+        35.8
+       ],
+       [
+        24.7,
+        40.5
+       ],
+       [
+        18.9,
+        46.2
+       ],
+       [
+        16.8,
+        57.2
+       ],
+       [
+        25.0,
+        53.8
+       ],
+       [
+        31.0,
+        44.1
+       ],
+       [
+        32.3,
+        35.4
+       ],
+       [
+        32.3,
+        35.4
+       ]
+      ],
+      "clubHead": [
+       [
+        32.3,
+        35.4
+       ],
+       [
+        29.6,
+        35.8
+       ],
+       [
+        24.7,
+        40.5
+       ],
+       [
+        18.9,
+        46.2
+       ],
+       [
+        16.8,
+        57.2
+       ],
+       [
+        25.0,
+        53.8
+       ],
+       [
+        31.0,
+        44.1
+       ],
+       [
+        32.3,
+        35.4
+       ],
+       [
+        32.3,
+        35.4
+       ]
+      ]
+     },
+     "muzzle": [
+      16.8,
+      57.2
+     ],
+     "aimDeg": 45.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       18.9,
+       46.2
+      ]
+     }
+    },
+    "attack_b_up70": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      160,
+      100,
+      100,
+      80,
+      60,
+      60
+     ],
+     "durationMs": 800,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "aimOf": "attack_b",
+     "anchorsLu": {
+      "muzzle": [
+       [
+        32.3,
+        35.4
+       ],
+       [
+        28.7,
+        38.7
+       ],
+       [
+        20.6,
+        46.3
+       ],
+       [
+        10.9,
+        52.2
+       ],
+       [
+        7.4,
+        58.6
+       ],
+       [
+        19.1,
+        57.6
+       ],
+       [
+        29.6,
+        46.8
+       ],
+       [
+        32.3,
+        35.4
+       ],
+       [
+        32.3,
+        35.4
+       ]
+      ],
+      "clubHead": [
+       [
+        32.3,
+        35.4
+       ],
+       [
+        28.7,
+        38.7
+       ],
+       [
+        20.6,
+        46.3
+       ],
+       [
+        10.9,
+        52.2
+       ],
+       [
+        7.4,
+        58.6
+       ],
+       [
+        19.1,
+        57.6
+       ],
+       [
+        29.6,
+        46.8
+       ],
+       [
+        32.3,
+        35.4
+       ],
+       [
+        32.3,
+        35.4
+       ]
+      ]
+     },
+     "muzzle": [
+      7.4,
+      58.6
+     ],
+     "aimDeg": 70.0,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       10.9,
+       52.2
       ]
      }
     }

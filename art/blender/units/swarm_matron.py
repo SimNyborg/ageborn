@@ -18,10 +18,18 @@ legs by IK with planted feet):
             ground and spits low
   hit       a hard jolt with the legs splaying, eyes > <
   die       D4-style flop: rolls onto its back, legs curled up, X eyes
+
+W4 (the detail standard): the team egg sac in segments (team-dark rings), the violet thorax's segment seams, a
+seam down the star-white back plate and round the head behind the mask; beast damage spots (scuffs on the chitin and
+the sac, a breath puff). Aimed at flyers (queue item 44): both spits up about 45 and 70 degrees, hand-posed like W2's
+Friar (kit_bronze_detail.aimed_hand, solved on the head's facing on the frame before the spit, where the glob is last
+drawn); aimdata.SPEC gives the variants their aimDeg.
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import gait as GK
+from ageborn_art import kit_bronze_detail as KD
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_cosmic_wave as CW
 from ageborn_art import kit_future as KF
@@ -30,6 +38,8 @@ from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.colors import scale as darker
 from ageborn_art.geometry import Geo
+from ageborn_art import face as FC
+from units import futcos_w4 as FW
 
 SLUG = "swarm_matron"
 GAIT_NAME = "walker"
@@ -40,6 +50,14 @@ CANVAS = (420, 320)
 FEET = (190, 286)
 ANCHORS = {"head": (24, 62), "hitCenter": (0, 34), "muzzle": (40, 44)}
 NO_RETIME = True
+
+# W4 detail standard (look.py)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.6
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.45)
+MATERIAL_KINDS = FW.kinds_cosmic({darker(CW.VIOLET, 0.78): "polymer", darker(CW.VIOLET_DK, 0.78): "polymer",
+                                  darker(CW.STAR, 0.78): "ceramic"})
 
 HULL_Z = 34.0
 HIP_Z = 32.0
@@ -129,6 +147,48 @@ def build(rig):
     for n in ("br", "mr", "fr"):
         _leg(rig, n)
     rig.track("clubHead", "head", MOUTH)
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the egg sac in segments (four team-dark rings) with three more eggs, the thorax's segment seams, a seam down
+    the back plate, a seam round the head behind the mask (char space; every point laid on its blob's camera side, the
+    tapered ones by kit_bronze_detail.blob_y: r28 cast them at fixed depths, and the safe decals cut a third of them)."""
+    sc_, sr, st = (-24.0, 0, HULL_Z + 8.0), (18.0, 15.0, 15.0), (0.9, 1.1)
+    sac = FC.Face(rig, "sac", [Geo().blob(sc_, sr, p=2.2, taper=st)], yaw_deg=YAW_DEG)
+    FW.folds(rig, "sac", sac, [[FW.sc(sac, x, z, KD.blob_y(sc_, sr, x, z, p=2.2, taper=st))
+                                for z in (HULL_Z + 18.0, HULL_Z + 13.0, HULL_Z + 8.0, HULL_Z + 3.0, HULL_Z - 2.0)]
+                               for x in (-18.6, -24.4, -30.2, -36.0)], w=1.0, team=True)
+    g = Geo()
+    for x, z, r in ((-27.4, HULL_Z + 9.0, 1.5), (-33.0, HULL_Z + 14.6, 1.4), (-21.6, HULL_Z + 8.4, 1.3)):
+        g.sphere((x, KD.blob_y(sc_, sr, x, z, p=2.2, taper=st) + 0.5 * r, z), r, cuts=3)
+    rig.part("sac", g, glow=CW.MINT, outline=0.8, outline_hex="#1C8A6A")
+    tc, tr, tt = (4.0, 0, HULL_Z + 4.0), (16.0, 10.0, 9.0), (0.9, 1.1)
+    th = FC.Face(rig, "hull", [Geo().blob(tc, tr, p=2.4, taper=tt)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", th, [[FW.sc(th, xx, z, KD.blob_y(tc, tr, xx, z, p=2.4, taper=tt))
+                                      for xx, z in ((x, HULL_Z + 6.6), (x + 0.6, HULL_Z + 1.0), (x, HULL_Z - 3.4))]
+                                     for x in (-3.0, 10.0)], fill=FW.LINE_ON_VIOLET, w=1.0)
+    pc, pr = (4.0, 0, HULL_Z + 8.0), (13.0, 10.6, 5.0)
+    bp = FC.Face(rig, "hull", [Geo().blob(pc, pr, p=2.6)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", bp, [[FW.on_blob(bp, pc, pr, 4.0, HULL_Z + 11.0, p=2.6),
+                                      FW.on_blob(bp, pc, pr, 4.6, HULL_Z + 7.4, p=2.6)]], fill=FW.LINE_ON_STAR, w=1.0)
+    hx, hy, hz = HEAD
+    hr = (10.0, 9.0, 8.0)
+    hf = FC.Face(rig, "head", [Geo().blob(HEAD, hr, p=2.3)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "head", hf, [[FW.on_blob(hf, HEAD, hr, x, z, p=2.3) for x, z in
+                                      ((hx - 2.0, hz + 6.6), (hx - 3.4, hz), (hx - 2.0, hz - 6.0))]],
+                   fill=FW.LINE_ON_VIOLET, w=0.9)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, beast: scuffs on the chitin and the sac, no blood; a breath puff when
+    tired): the team egg sac (its largest team field, r 8), the violet thorax, the violet head; breath at the mouth."""
+    rig.damage_spot("sac", "sac", (-27.0, -14.6, HULL_Z + 8.0), 8.0, "hide", team=True, normal=(-0.1, -1, 0))
+    rig.damage_spot("thorax", "hull", (2.0, -9.8, HULL_Z + 3.0), 5.0, "hide", normal=(0, -1, 0))
+    rig.damage_spot("head", "head", (HEAD[0] - 6.0, -7.6, HEAD[2] + 2.0), 5.0, "hide", normal=(-0.3, -0.9, 0.3))
+    rig.damage_spot("breath", "head", MOUTH, 4.0, "breath", kind="emit", normal=(0.8, -0.4, 0.2))
 
 
 LEGS = {n: GK.Leg(f"thigh_{n}", f"shin_{n}", (LEG_X[n], LEG_Y[n], HIP_Z - THIGH - SHIN), bend=(-1.0 if n[0] == "f" else 1.0)) for n in LEG_X}
@@ -185,8 +245,14 @@ def _attack_pose(f, hr, hz, hd, hx, eyes, glob=True):
     return merge(pose, KF.glyph(eyes))
 
 
-def _a_pose(f):
-    pose = _attack_pose(f, A_HR[f], A_HZ[f], A_HD[f], A_X[f], A_EYES[f])
+# aimed spits (queue item 44): a turn of `turn` degrees up rears the thorax by AIM_REAR of it and tips the head by the
+# rest; the legs stay planted (GK.solve)
+AIM_REAR = 0.4
+AIM_W = [0.0, 0.3, 0.7, 1.0, 1.0, 0.7, 0.3, 0.0, 0.0]
+
+
+def _a_pose(f, turn=0.0):
+    pose = _attack_pose(f, A_HR[f] + AIM_REAR * turn, A_HZ[f], A_HD[f] + (1.0 - AIM_REAR) * turn, A_X[f], A_EYES[f])
     # the front pair lifts off the ground while it rears
     t = stand(A_X[f] * 0.0)
     if f in (1, 2, 3):
@@ -210,10 +276,10 @@ B_HD = [0, -8, -14, -16, 8, 4, 0, 0, 0]
 B_X = [0, -2, -4, -5, 6, 4, 1, 0, 0]
 
 
-def _b_pose(f):
+def _b_pose(f, turn=0.0):
     if f in (0, 8):
         return _a_pose(f)
-    pose = _attack_pose(f, B_HR[f], B_HZ[f], B_HD[f], B_X[f], A_EYES[f])
+    pose = _attack_pose(f, B_HR[f] + AIM_REAR * turn, B_HZ[f], B_HD[f] + (1.0 - AIM_REAR) * turn, B_X[f], A_EYES[f])
     return _pose(pose, spread=2.0 if f in (2, 3) else 0.0)
 
 
@@ -247,13 +313,21 @@ def _die(k):
 
 def clips():
     rr = {0: ("attack", 0), 8: ("attack", 8)}  # noqa: F841 (B reuses A's read and settle frames)
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (the extras sheet), solved on the head's facing on the frame before
+    # the spit (aimdata's release "before": the glob is last drawn there)
+    rel = ATTACK_IMPACT - 1
+    aimed = (KD.aimed_hand(RIG, attack, _a_pose, AIM_W, "head", (1.0, 0.0, 0.0), release=rel) +
+             KD.aimed_hand(RIG, attack_b, _b_pose, AIM_W, "head", (1.0, 0.0, 0.0), release=rel))
+    for v in aimed:
+        AIMED.check_timing(attack_b if v.name.startswith("attack_b_") else attack, v)
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [150, 150, 150, 150, 150, 170], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "walker"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed
     return M.check_variants(M.check_contract(cl, attack_ms=800, attack_impact_at=0.5))
