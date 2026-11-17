@@ -15,6 +15,10 @@ Animation (a tripod scuttle at 95 x 1.25 = 118.75 lu/s, 8 frames in 480 ms, the 
   attack_c  SIDE SNAP: twists the head back and aside (the held extreme), then snaps it across
   hit       a hard jolt, eyes > <
   die       flips onto its back, legs curled, X eyes
+
+W4 (the detail standard; the model is built at 1/0.52 and scaled, so its lines are drawn 1.8 wide): the team
+abdomen in segments (team-dark rings), the thorax's team-dark segment lines, a seam down the star-white back plate
+and round the head behind the mask; beast damage spots (scuffs on the chitin, a breath puff).
 """
 import math
 
@@ -27,6 +31,8 @@ from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.colors import scale as darker
 from ageborn_art.geometry import Geo
+from ageborn_art import face as FC
+from units import futcos_w4 as FW
 
 SLUG = "swarmling"
 GAIT_NAME = "walker"
@@ -37,6 +43,14 @@ CANVAS = (260, 200)
 FEET = (120, 176)
 ANCHORS = {"head": (12, 34), "hitCenter": (0, 18)}
 NO_RETIME = True
+
+# W4 detail standard (look.py)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.6
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.45)
+MATERIAL_KINDS = FW.kinds_cosmic({darker(CW.VIOLET, 0.78): "polymer", darker(CW.VIOLET_DK, 0.78): "polymer",
+                                  darker(CW.STAR, 0.78): "ceramic"})
 
 HULL_Z = 34.0
 HIP_Z = 32.0
@@ -122,6 +136,39 @@ def build(rig):
     for n in ("br", "mr", "fr"):
         _leg(rig, n)
     rig.track("clubHead", "head", MOUTH)
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the abdomen's segments, the thorax's segment lines (team-dark), a seam down the back plate, a seam round the
+    head behind the mask (char space before the 0.52 scale)."""
+    sac = FC.Face(rig, "sac", [Geo().blob((-18.0, 0, HULL_Z + 6.0), (15.0, 12.0, 12.0), p=2.2, taper=(0.9, 1.1))],
+                  yaw_deg=YAW_DEG)
+    FW.folds(rig, "sac", sac, [[FW.sc(sac, x, HULL_Z + 13.0, y0 + 1.0), FW.sc(sac, x - 0.8, HULL_Z + 6.0, y0),
+                                FW.sc(sac, x, HULL_Z - 1.0, y0 + 1.6)] for x, y0 in ((-23.0, -11.4), (-29.0, -8.8))],
+             w=1.8, team=True)
+    th = FC.Face(rig, "hull", [Geo().blob((4.0, 0, HULL_Z + 4.0), (16.0, 10.0, 9.0), p=2.4, taper=(0.9, 1.1))],
+                 yaw_deg=YAW_DEG)
+    FW.folds(rig, "hull", th, [[FW.sc(th, x, HULL_Z + 6.6, -9.6), FW.sc(th, x + 0.6, HULL_Z + 1.0, -9.8),
+                                FW.sc(th, x, HULL_Z - 3.4, -8.6)] for x in (-3.0, 10.0)], w=1.8, team=True)
+    bp = FC.Face(rig, "hull", [Geo().blob((4.0, 0, HULL_Z + 8.0), (13.0, 10.6, 5.0), p=2.6)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", bp, [[FW.sc(bp, 4.0, HULL_Z + 12.0, -7.0), FW.sc(bp, 4.6, HULL_Z + 7.4, -10.2)]],
+                   fill=FW.LINE_ON_STAR, w=1.6)
+    hx, hy, hz = HEAD
+    hf = FC.Face(rig, "head", [Geo().blob(HEAD, (10.0, 9.0, 8.0), p=2.3)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "head", hf, [[FW.sc(hf, hx - 2.0, hz + 6.6, -5.6), FW.sc(hf, hx - 3.4, hz, -8.6),
+                                      FW.sc(hf, hx - 2.0, hz - 6.0, -6.0)]], fill=FW.LINE_ON_VIOLET, w=1.6)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, beast: scuffs on the chitin, no blood; a breath puff when tired), in
+    char space before the 0.52 scale: the team abdomen, the team thorax, the violet head; breath at the mouth."""
+    rig.damage_spot("sac", "sac", (-20.0, -11.6, HULL_Z + 6.0), 6.0, "hide", team=True, normal=(-0.1, -1, 0))
+    rig.damage_spot("thorax", "hull", (2.0, -9.8, HULL_Z + 3.0), 5.0, "hide", team=True, normal=(0, -1, 0))
+    rig.damage_spot("head", "head", (HEAD[0] - 6.0, -7.6, HEAD[2] + 2.0), 5.0, "hide", normal=(-0.3, -0.9, 0.3))
+    rig.damage_spot("breath", "head", MOUTH, 4.0, "breath", kind="emit", normal=(0.8, -0.4, 0.2))
 
 
 LEGS = {n: GK.Leg(f"thigh_{n}", f"shin_{n}", (LEG_X[n], LEG_Y[n], HIP_Z - THIGH - SHIN), bend=(-1.0 if n[0] == "f" else 1.0)) for n in LEG_X}
@@ -157,7 +204,9 @@ def _walk(f, report=None):
         return merge({"sac": {"r": 3.0 * math.sin(p - 1.2), "s": 1.0 + 0.03 * math.sin(2 * p - 1.0)},
                       "head": {"r": 3.0 * math.sin(2 * p - 0.6)}, "hull": {"rz": 1.0 * math.sin(p)}},
                      KF.glyph("eyes"))
-    return GK.quad_walk(RIG, f, GAIT, {}, trunk="hull", base_z=-1.5, bob=6.2, beats=2, pitch=1.0, roll=2.0,
+    # (W4 r33b: bob 6.2 to 6.6: the re-rendered sheet measured check_walk's bob at 3.1 px against G7's 3.5, the
+    # shipped 3.6; at 7.0 the bob read 4.5 but the planted feet slid 1.04 lu a frame, over the 1 lu limit)
+    return GK.quad_walk(RIG, f, GAIT, {}, trunk="hull", base_z=-1.5, bob=6.6, beats=2, pitch=1.0, roll=2.0,
                         extra=extra, report=report)
 
 

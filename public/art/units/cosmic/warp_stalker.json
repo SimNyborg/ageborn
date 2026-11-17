@@ -2,17 +2,17 @@
  "frames": {
   "warp_stalker_idle_00": {
    "frame": {
-    "x": 427,
-    "y": 228,
-    "w": 96,
+    "x": 916,
+    "y": 92,
+    "w": 98,
     "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 95,
     "y": 115,
-    "w": 96,
+    "w": 98,
     "h": 86
    },
    "sourceSize": {
@@ -26,18 +26,18 @@
   },
   "warp_stalker_idle_00_team": {
    "frame": {
-    "x": 690,
-    "y": 491,
+    "x": 1762,
+    "y": 75,
     "w": 73,
-    "h": 69
+    "h": 68
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 91,
-    "y": 118,
+    "y": 119,
     "w": 73,
-    "h": 69
+    "h": 68
    },
    "sourceSize": {
     "w": 274,
@@ -50,17 +50,17 @@
   },
   "warp_stalker_idle_01": {
    "frame": {
-    "x": 643,
-    "y": 133,
-    "w": 95,
+    "x": 628,
+    "y": 94,
+    "w": 98,
     "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 98,
+    "x": 95,
     "y": 113,
-    "w": 95,
+    "w": 98,
     "h": 88
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "warp_stalker_idle_01_team": {
    "frame": {
-    "x": 2,
-    "y": 567,
+    "x": 1717,
+    "y": 151,
     "w": 69,
     "h": 69
    },
@@ -98,17 +98,17 @@
   },
   "warp_stalker_idle_02": {
    "frame": {
-    "x": 204,
-    "y": 133,
-    "w": 93,
+    "x": 438,
+    "y": 2,
+    "w": 94,
     "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 98,
+    "x": 97,
     "y": 110,
-    "w": 93,
+    "w": 94,
     "h": 91
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "warp_stalker_idle_02_team": {
    "frame": {
-    "x": 456,
-    "y": 491,
+    "x": 1018,
+    "y": 180,
     "w": 72,
     "h": 70
    },
@@ -146,8 +146,8 @@
   },
   "warp_stalker_idle_03": {
    "frame": {
-    "x": 373,
-    "y": 2,
+    "x": 159,
+    "y": 108,
     "w": 87,
     "h": 100
    },
@@ -170,8 +170,8 @@
   },
   "warp_stalker_idle_03_team": {
    "frame": {
-    "x": 513,
-    "y": 409,
+    "x": 1506,
+    "y": 162,
     "w": 65,
     "h": 74
    },
@@ -194,17 +194,17 @@
   },
   "warp_stalker_idle_04": {
    "frame": {
-    "x": 106,
-    "y": 133,
-    "w": 94,
+    "x": 350,
+    "y": 97,
+    "w": 95,
     "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 96,
     "y": 110,
-    "w": 94,
+    "w": 95,
     "h": 91
    },
    "sourceSize": {
@@ -218,18 +218,18 @@
   },
   "warp_stalker_idle_04_team": {
    "frame": {
-    "x": 582,
-    "y": 409,
+    "x": 1578,
+    "y": 2,
     "w": 71,
-    "h": 73
+    "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 112,
+    "y": 113,
     "w": 71,
-    "h": 73
+    "h": 72
    },
    "sourceSize": {
     "w": 274,
@@ -242,17 +242,17 @@
   },
   "warp_stalker_idle_05": {
    "frame": {
-    "x": 52,
-    "y": 228,
-    "w": 95,
+    "x": 730,
+    "y": 94,
+    "w": 97,
     "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 95,
     "y": 114,
-    "w": 95,
+    "w": 97,
     "h": 87
    },
    "sourceSize": {
@@ -266,10 +266,10 @@
   },
   "warp_stalker_idle_05_team": {
    "frame": {
-    "x": 314,
-    "y": 491,
+    "x": 1688,
+    "y": 77,
     "w": 70,
-    "h": 71
+    "h": 70
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 91,
     "y": 116,
     "w": 70,
-    "h": 71
+    "h": 70
    },
    "sourceSize": {
     "w": 274,
@@ -290,10 +290,10 @@
   },
   "warp_stalker_walk_00": {
    "frame": {
-    "x": 486,
-    "y": 320,
+    "x": 1189,
+    "y": 90,
     "w": 81,
-    "h": 81
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
@@ -301,7 +301,7 @@
     "x": 86,
     "y": 118,
     "w": 81,
-    "h": 81
+    "h": 82
    },
    "sourceSize": {
     "w": 274,
@@ -314,18 +314,18 @@
   },
   "warp_stalker_walk_00_team": {
    "frame": {
-    "x": 75,
-    "y": 567,
-    "w": 79,
-    "h": 68
+    "x": 1805,
+    "y": 2,
+    "w": 77,
+    "h": 67
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 86,
-    "y": 122,
-    "w": 79,
-    "h": 68
+    "x": 88,
+    "y": 123,
+    "w": 77,
+    "h": 67
    },
    "sourceSize": {
     "w": 274,
@@ -338,10 +338,10 @@
   },
   "warp_stalker_walk_01": {
    "frame": {
-    "x": 302,
-    "y": 409,
+    "x": 1437,
+    "y": 2,
     "w": 81,
-    "h": 75
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
@@ -349,7 +349,7 @@
     "x": 86,
     "y": 124,
     "w": 81,
-    "h": 75
+    "h": 76
    },
    "sourceSize": {
     "w": 274,
@@ -362,8 +362,8 @@
   },
   "warp_stalker_walk_01_team": {
    "frame": {
-    "x": 239,
-    "y": 491,
+    "x": 1653,
+    "y": 2,
     "w": 71,
     "h": 71
    },
@@ -386,10 +386,10 @@
   },
   "warp_stalker_walk_02": {
    "frame": {
-    "x": 194,
-    "y": 320,
+    "x": 1104,
+    "y": 91,
     "w": 81,
-    "h": 83
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
@@ -397,7 +397,7 @@
     "x": 87,
     "y": 115,
     "w": 81,
-    "h": 83
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -410,8 +410,8 @@
   },
   "warp_stalker_walk_02_team": {
    "frame": {
-    "x": 2,
-    "y": 491,
+    "x": 1575,
+    "y": 158,
     "w": 70,
     "h": 72
    },
@@ -434,8 +434,8 @@
   },
   "warp_stalker_walk_03": {
    "frame": {
-    "x": 238,
-    "y": 228,
+    "x": 831,
+    "y": 93,
     "w": 81,
     "h": 87
    },
@@ -458,8 +458,8 @@
   },
   "warp_stalker_walk_03_team": {
    "frame": {
-    "x": 158,
-    "y": 567,
+    "x": 1790,
+    "y": 147,
     "w": 75,
     "h": 67
    },
@@ -482,10 +482,10 @@
   },
   "warp_stalker_walk_04": {
    "frame": {
-    "x": 658,
-    "y": 320,
+    "x": 1372,
+    "y": 85,
     "w": 82,
-    "h": 78
+    "h": 79
    },
    "rotated": false,
    "trimmed": true,
@@ -493,7 +493,7 @@
     "x": 85,
     "y": 118,
     "w": 82,
-    "h": 78
+    "h": 79
    },
    "sourceSize": {
     "w": 274,
@@ -506,18 +506,18 @@
   },
   "warp_stalker_walk_04_team": {
    "frame": {
-    "x": 2,
-    "y": 640,
+    "x": 1954,
+    "y": 72,
     "w": 77,
-    "h": 64
+    "h": 63
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 88,
-    "y": 122,
+    "y": 123,
     "w": 77,
-    "h": 64
+    "h": 63
    },
    "sourceSize": {
     "w": 274,
@@ -530,8 +530,8 @@
   },
   "warp_stalker_walk_05": {
    "frame": {
-    "x": 76,
-    "y": 491,
+    "x": 1601,
+    "y": 78,
     "w": 83,
     "h": 71
    },
@@ -554,8 +554,8 @@
   },
   "warp_stalker_walk_05_team": {
    "frame": {
-    "x": 237,
-    "y": 567,
+    "x": 1839,
+    "y": 73,
     "w": 74,
     "h": 67
    },
@@ -578,10 +578,10 @@
   },
   "warp_stalker_walk_06": {
    "frame": {
-    "x": 571,
-    "y": 320,
+    "x": 1350,
+    "y": 2,
     "w": 83,
-    "h": 78
+    "h": 79
    },
    "rotated": false,
    "trimmed": true,
@@ -589,7 +589,7 @@
     "x": 84,
     "y": 116,
     "w": 83,
-    "h": 78
+    "h": 79
    },
    "sourceSize": {
     "w": 274,
@@ -602,9 +602,9 @@
   },
   "warp_stalker_walk_06_team": {
    "frame": {
-    "x": 612,
-    "y": 491,
-    "w": 74,
+    "x": 1728,
+    "y": 2,
+    "w": 73,
     "h": 69
    },
    "rotated": false,
@@ -612,7 +612,7 @@
    "spriteSourceSize": {
     "x": 93,
     "y": 118,
-    "w": 74,
+    "w": 73,
     "h": 69
    },
    "sourceSize": {
@@ -626,8 +626,8 @@
   },
   "warp_stalker_walk_07": {
    "frame": {
-    "x": 629,
-    "y": 228,
+    "x": 1018,
+    "y": 91,
     "w": 82,
     "h": 85
    },
@@ -650,8 +650,8 @@
   },
   "warp_stalker_walk_07_team": {
    "frame": {
-    "x": 628,
-    "y": 567,
+    "x": 730,
+    "y": 185,
     "w": 77,
     "h": 65
    },
@@ -674,17 +674,17 @@
   },
   "warp_stalker_attack_00": {
    "frame": {
-    "x": 151,
-    "y": 228,
-    "w": 83,
+    "x": 750,
+    "y": 2,
+    "w": 84,
     "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 94,
+    "x": 93,
     "y": 112,
-    "w": 83,
+    "w": 84,
     "h": 87
    },
    "sourceSize": {
@@ -698,8 +698,8 @@
   },
   "warp_stalker_attack_00_team": {
    "frame": {
-    "x": 315,
-    "y": 567,
+    "x": 831,
+    "y": 184,
     "w": 75,
     "h": 66
    },
@@ -722,17 +722,17 @@
   },
   "warp_stalker_attack_01": {
    "frame": {
-    "x": 69,
-    "y": 409,
-    "w": 77,
+    "x": 1274,
+    "y": 172,
+    "w": 80,
     "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
+    "x": 97,
     "y": 121,
-    "w": 77,
+    "w": 80,
     "h": 77
    },
    "sourceSize": {
@@ -746,8 +746,8 @@
   },
   "warp_stalker_attack_01_team": {
    "frame": {
-    "x": 83,
-    "y": 640,
+    "x": 628,
+    "y": 186,
     "w": 75,
     "h": 64
    },
@@ -794,18 +794,18 @@
   },
   "warp_stalker_attack_02_team": {
    "frame": {
-    "x": 546,
+    "x": 216,
     "y": 2,
-    "w": 29,
-    "h": 96
+    "w": 30,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 117,
-    "y": 99,
-    "w": 29,
-    "h": 96
+    "x": 116,
+    "y": 98,
+    "w": 30,
+    "h": 97
    },
    "sourceSize": {
     "w": 274,
@@ -818,8 +818,8 @@
   },
   "warp_stalker_attack_03": {
    "frame": {
-    "x": 242,
-    "y": 2,
+    "x": 94,
+    "y": 120,
     "w": 61,
     "h": 108
    },
@@ -842,8 +842,8 @@
   },
   "warp_stalker_attack_03_team": {
    "frame": {
-    "x": 480,
-    "y": 133,
+    "x": 536,
+    "y": 2,
     "w": 55,
     "h": 89
    },
@@ -866,8 +866,8 @@
   },
   "warp_stalker_attack_04": {
    "frame": {
-    "x": 44,
-    "y": 2,
+    "x": 2,
+    "y": 133,
     "w": 88,
     "h": 116
    },
@@ -890,18 +890,18 @@
   },
   "warp_stalker_attack_04_team": {
    "frame": {
-    "x": 2,
-    "y": 409,
+    "x": 1358,
+    "y": 172,
     "w": 63,
-    "h": 78
+    "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 112,
-    "y": 110,
+    "y": 111,
     "w": 63,
-    "h": 78
+    "h": 77
    },
    "sourceSize": {
     "w": 274,
@@ -914,7 +914,7 @@
   },
   "warp_stalker_attack_05": {
    "frame": {
-    "x": 136,
+    "x": 44,
     "y": 2,
     "w": 102,
     "h": 114
@@ -938,10 +938,10 @@
   },
   "warp_stalker_attack_05_team": {
    "frame": {
-    "x": 394,
-    "y": 567,
+    "x": 1869,
+    "y": 144,
     "w": 75,
-    "h": 66
+    "h": 65
    },
    "rotated": false,
    "trimmed": true,
@@ -949,7 +949,7 @@
     "x": 105,
     "y": 117,
     "w": 75,
-    "h": 66
+    "h": 65
    },
    "sourceSize": {
     "w": 274,
@@ -962,17 +962,17 @@
   },
   "warp_stalker_attack_06": {
    "frame": {
-    "x": 279,
-    "y": 320,
-    "w": 108,
+    "x": 1237,
+    "y": 2,
+    "w": 109,
     "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 110,
+    "x": 109,
     "y": 124,
-    "w": 108,
+    "w": 109,
     "h": 81
    },
    "sourceSize": {
@@ -986,8 +986,8 @@
   },
   "warp_stalker_attack_06_team": {
    "frame": {
-    "x": 340,
-    "y": 640,
+    "x": 492,
+    "y": 192,
     "w": 84,
     "h": 56
    },
@@ -1010,17 +1010,17 @@
   },
   "warp_stalker_attack_07": {
    "frame": {
-    "x": 527,
-    "y": 228,
-    "w": 98,
+    "x": 942,
+    "y": 2,
+    "w": 100,
     "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 116,
+    "x": 114,
     "y": 121,
-    "w": 98,
+    "w": 100,
     "h": 85
    },
    "sourceSize": {
@@ -1034,18 +1034,18 @@
   },
   "warp_stalker_attack_07_team": {
    "frame": {
-    "x": 198,
-    "y": 640,
+    "x": 350,
+    "y": 192,
     "w": 77,
-    "h": 58
+    "h": 57
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 110,
-    "y": 128,
+    "y": 129,
     "w": 77,
-    "h": 58
+    "h": 57
    },
    "sourceSize": {
     "w": 274,
@@ -1058,17 +1058,17 @@
   },
   "warp_stalker_attack_08": {
    "frame": {
-    "x": 464,
+    "x": 250,
     "y": 2,
-    "w": 78,
+    "w": 80,
     "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 114,
+    "x": 112,
     "y": 103,
-    "w": 78,
+    "w": 80,
     "h": 96
    },
    "sourceSize": {
@@ -1082,8 +1082,8 @@
   },
   "warp_stalker_attack_08_team": {
    "frame": {
-    "x": 443,
-    "y": 409,
+    "x": 1189,
+    "y": 176,
     "w": 66,
     "h": 74
    },
@@ -1106,17 +1106,17 @@
   },
   "warp_stalker_attack_09": {
    "frame": {
-    "x": 539,
-    "y": 133,
-    "w": 100,
+    "x": 595,
+    "y": 2,
+    "w": 101,
     "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 99,
+    "x": 98,
     "y": 111,
-    "w": 100,
+    "w": 101,
     "h": 88
    },
    "sourceSize": {
@@ -1130,8 +1130,8 @@
   },
   "warp_stalker_attack_09_team": {
    "frame": {
-    "x": 551,
-    "y": 567,
+    "x": 1964,
+    "y": 2,
     "w": 73,
     "h": 66
    },
@@ -1154,8 +1154,8 @@
   },
   "warp_stalker_attack_10": {
    "frame": {
-    "x": 323,
-    "y": 228,
+    "x": 838,
+    "y": 2,
     "w": 100,
     "h": 86
    },
@@ -1178,10 +1178,10 @@
   },
   "warp_stalker_attack_10_team": {
    "frame": {
-    "x": 532,
-    "y": 491,
+    "x": 916,
+    "y": 182,
     "w": 76,
-    "h": 69
+    "h": 68
    },
    "rotated": false,
    "trimmed": true,
@@ -1189,7 +1189,7 @@
     "x": 89,
     "y": 115,
     "w": 76,
-    "h": 69
+    "h": 68
    },
    "sourceSize": {
     "w": 274,
@@ -1202,17 +1202,17 @@
   },
   "warp_stalker_hit_00": {
    "frame": {
-    "x": 391,
-    "y": 320,
-    "w": 91,
+    "x": 1274,
+    "y": 87,
+    "w": 94,
     "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 94,
+    "x": 91,
     "y": 119,
-    "w": 91,
+    "w": 94,
     "h": 81
    },
    "sourceSize": {
@@ -1226,8 +1226,8 @@
   },
   "warp_stalker_hit_00_team": {
    "frame": {
-    "x": 657,
-    "y": 409,
+    "x": 1529,
+    "y": 81,
     "w": 68,
     "h": 73
    },
@@ -1250,17 +1250,17 @@
   },
   "warp_stalker_hit_01": {
    "frame": {
-    "x": 301,
-    "y": 133,
-    "w": 81,
+    "x": 449,
+    "y": 97,
+    "w": 79,
     "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 93,
+    "x": 95,
     "y": 109,
-    "w": 81,
+    "w": 79,
     "h": 91
    },
    "sourceSize": {
@@ -1274,8 +1274,8 @@
   },
   "warp_stalker_hit_01_team": {
    "frame": {
-    "x": 2,
-    "y": 320,
+    "x": 1046,
+    "y": 2,
     "w": 57,
     "h": 85
    },
@@ -1298,17 +1298,17 @@
   },
   "warp_stalker_hit_02": {
    "frame": {
-    "x": 386,
-    "y": 133,
-    "w": 90,
+    "x": 532,
+    "y": 97,
+    "w": 92,
     "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 93,
     "y": 111,
-    "w": 90,
+    "w": 92,
     "h": 90
    },
    "sourceSize": {
@@ -1322,8 +1322,8 @@
   },
   "warp_stalker_hit_02_team": {
    "frame": {
-    "x": 231,
-    "y": 409,
+    "x": 1458,
+    "y": 82,
     "w": 67,
     "h": 76
    },
@@ -1346,8 +1346,8 @@
   },
   "warp_stalker_hit_03": {
    "frame": {
-    "x": 2,
-    "y": 133,
+    "x": 334,
+    "y": 2,
     "w": 100,
     "h": 91
    },
@@ -1370,8 +1370,8 @@
   },
   "warp_stalker_hit_03_team": {
    "frame": {
-    "x": 473,
-    "y": 567,
+    "x": 1886,
+    "y": 2,
     "w": 74,
     "h": 66
    },
@@ -1394,17 +1394,17 @@
   },
   "warp_stalker_hit_04": {
    "frame": {
-    "x": 579,
-    "y": 2,
-    "w": 94,
+    "x": 250,
+    "y": 102,
+    "w": 96,
     "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 95,
     "y": 109,
-    "w": 94,
+    "w": 96,
     "h": 92
    },
    "sourceSize": {
@@ -1418,8 +1418,8 @@
   },
   "warp_stalker_hit_04_team": {
    "frame": {
-    "x": 163,
-    "y": 491,
+    "x": 1104,
+    "y": 179,
     "w": 72,
     "h": 71
    },
@@ -1442,7 +1442,7 @@
   },
   "warp_stalker_die_00": {
    "frame": {
-    "x": 307,
+    "x": 150,
     "y": 2,
     "w": 62,
     "h": 102
@@ -1466,8 +1466,8 @@
   },
   "warp_stalker_die_00_team": {
    "frame": {
-    "x": 141,
-    "y": 320,
+    "x": 1184,
+    "y": 2,
     "w": 49,
     "h": 84
    },
@@ -1490,17 +1490,17 @@
   },
   "warp_stalker_die_01": {
    "frame": {
-    "x": 63,
-    "y": 320,
-    "w": 74,
+    "x": 1107,
+    "y": 2,
+    "w": 73,
     "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 96,
+    "x": 97,
     "y": 115,
-    "w": 74,
+    "w": 73,
     "h": 84
    },
    "sourceSize": {
@@ -1514,8 +1514,8 @@
   },
   "warp_stalker_die_01_team": {
    "frame": {
-    "x": 387,
-    "y": 409,
+    "x": 1522,
+    "y": 2,
     "w": 52,
     "h": 75
    },
@@ -1538,8 +1538,8 @@
   },
   "warp_stalker_die_02": {
    "frame": {
-    "x": 2,
-    "y": 228,
+    "x": 700,
+    "y": 2,
     "w": 46,
     "h": 88
    },
@@ -1562,18 +1562,18 @@
   },
   "warp_stalker_die_02_team": {
    "frame": {
-    "x": 162,
-    "y": 640,
-    "w": 32,
-    "h": 63
+    "x": 1917,
+    "y": 72,
+    "w": 33,
+    "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 116,
-    "y": 114,
-    "w": 32,
-    "h": 63
+    "x": 115,
+    "y": 113,
+    "w": 33,
+    "h": 65
    },
    "sourceSize": {
     "w": 274,
@@ -1586,8 +1586,8 @@
   },
   "warp_stalker_die_03": {
    "frame": {
-    "x": 388,
-    "y": 491,
+    "x": 1649,
+    "y": 153,
     "w": 64,
     "h": 71
    },
@@ -1610,18 +1610,18 @@
   },
   "warp_stalker_die_03_team": {
    "frame": {
-    "x": 428,
-    "y": 640,
-    "w": 48,
-    "h": 54
+    "x": 1954,
+    "y": 139,
+    "w": 47,
+    "h": 55
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 127,
-    "w": 48,
-    "h": 54
+    "y": 126,
+    "w": 47,
+    "h": 55
    },
    "sourceSize": {
     "w": 274,
@@ -1634,8 +1634,8 @@
   },
   "warp_stalker_die_04": {
    "frame": {
-    "x": 150,
-    "y": 409,
+    "x": 1425,
+    "y": 168,
     "w": 77,
     "h": 76
    },
@@ -1658,8 +1658,8 @@
   },
   "warp_stalker_die_04_team": {
    "frame": {
-    "x": 279,
-    "y": 640,
+    "x": 431,
+    "y": 192,
     "w": 57,
     "h": 57
    },
@@ -1682,8 +1682,8 @@
   },
   "warp_stalker_die_05": {
    "frame": {
-    "x": 480,
-    "y": 640,
+    "x": 250,
+    "y": 198,
     "w": 45,
     "h": 45
    },
@@ -1706,8 +1706,8 @@
   },
   "warp_stalker_die_05_team": {
    "frame": {
-    "x": 529,
-    "y": 640,
+    "x": 1790,
+    "y": 218,
     "w": 33,
     "h": 32
    },
@@ -1831,8 +1831,8 @@
   "image": "warp_stalker.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 708
+   "w": 2048,
+   "h": 252
   },
   "scale": "1.5",
   "ageborn": {
@@ -1980,7 +1980,7 @@
        "foot": "r",
        "atLu": [
         12.3,
-        -2.0
+        -2.8
        ]
       },
       {
@@ -1988,7 +1988,7 @@
        "foot": "l",
        "atLu": [
         14.4,
-        1.2
+        0.5
        ]
       }
      ]

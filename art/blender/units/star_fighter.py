@@ -15,6 +15,11 @@ Animation (ANIM_SPEC G8 fly, the odometer at 85 x 1.25 = 106.25 lu/s; the hover 
   attack_b  BARREL ROLL SHOT: rolls over (a full roll in the wind-up), comes level and fires, sliding back
   hit       flyer: a tilt and a 4 lu drop, a wobble back up
   die       D8 spiral down, sparks, the engine sputters out, a bounce, X eyes
+
+W4 (the detail standard): the fuselage in plates (seams round it, a seam along the belly) with chipped edges, the
+team wings' flap lines and the side stripe's joints (team-dark), the fin's stripe, a seam round the violet nose and
+the engine's bands; flyer damage spots (dents, a smoke trail from the engine); both attacks aimed down 35 degrees at
+the ground troops (item 44: the fast-firing flyers): the hull pitches by 0.6 of the turn and the guns by the rest.
 """
 import math
 
@@ -22,11 +27,13 @@ from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_cosmic_wave as CW
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_medieval as KM
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as FC
 from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as F
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "star_fighter"
 GAIT_NAME = "fly"
@@ -38,6 +45,14 @@ FEET = (140, 176)
 ANCHORS = {"head": (0, 44), "hitCenter": (0, 22), "muzzle": (30, 18)}
 NO_RETIME = True
 
+# W4 detail standard (look.py)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.6
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.45)
+MATERIAL_KINDS = FW.kinds_cosmic({"#CFC6EA": "glass"})
+RIG = None
+
 C = (0.0, 0.0, 22.0)
 R = (22.0, 7.0, 6.0)
 WING_Y = 16.0
@@ -46,6 +61,8 @@ MUZZLE = (GUN[0] + 16.0, GUN[1] - 1.0, GUN[2])
 
 
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("hull", "body", C)
     cx, cy, cz = C
@@ -109,6 +126,51 @@ def build(rig):
     F.sparks(rig, "hull", (cx + 2.0, -8.0, cz + 4.0), color=F.MINT, size=1.0, name="sparks", seed=4)
     rig.joint("odo", "root", (0, 0, 0))
     rig.track("_foot", "odo", (0.0, 0.0, 0.0))
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the fuselage's seams round it and along the belly with chipped edges, the near wing's flap line and the
+    side stripe's joints (team-dark), the fin's stripe, a seam round the nose, bands round the engine (char space;
+    decals cast at the unit's yaw)."""
+    cx, cy, cz = C
+    ff = FC.Face(rig, "hull", [Geo().blob(C, R, p=2.3, taper=(1.25, 0.7))], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", ff, [[FW.sc(ff, x, cz + 4.6, -4.4), FW.sc(ff, x - 0.4, cz - 1.0, -6.8),
+                                      FW.sc(ff, x - 0.6, cz - 3.6, -5.6)] for x in (cx + 9.0, cx - 6.0, cx - 13.0)]
+                   + [[FW.sc(ff, cx + 10.0, cz - 2.8, -6.0), FW.sc(ff, cx - 14.0, cz - 3.0, -5.0)]],
+                   fill=FW.LINE_ON_STAR, w=0.8)
+    FW.wear(rig, "hull", ff, [(*FW.sc(ff, cx - 16.0, cz + 2.4, -4.6), 1.2, 0.6), (*FW.sc(ff, cx + 4.0, cz + 4.4, -4.8), 1.1, 0.5)],
+            fill=FW.LINE_ON_STAR)
+    st = FC.Face(rig, "hull", [Geo().blob((cx - 2.0, cy - 2.0, cz + 0.6), (15.0, 5.6, 2.0), p=2.6)], yaw_deg=YAW_DEG)
+    FW.folds(rig, "hull", st, [[FW.sc(st, x, cz + 2.2, -7.4), FW.sc(st, x, cz - 1.0, -7.4)] for x in (cx - 9.0, cx + 5.0)],
+             w=0.8, team=True)
+    wf = FC.Face(rig, "hull", [Geo().blob((cx - 4.0, -WING_Y * 0.75, cz - 0.6), (10.0, 9.0, 1.4), p=2.4,
+                                          rot=(0, 0, 22))], yaw_deg=YAW_DEG)
+    FW.folds(rig, "hull", wf, [[FW.sc(wf, cx - 10.0, cz + 0.4, -18.0), FW.sc(wf, cx + 2.0, cz + 0.6, -14.0)]], w=0.8,
+             team=True)
+    fin = FC.Face(rig, "fin", [Geo().slab([(cx - 9.0, cz + 4.0), (cx - 17.0, cz + 15.0), (cx - 22.0, cz + 16.0),
+                                           (cx - 20.0, cz + 4.0)], 0.0, 2.2)], yaw_deg=YAW_DEG)
+    FW.folds(rig, "fin", fin, [[FW.sc(fin, cx - 12.0, cz + 5.0, -1.2), FW.sc(fin, cx - 19.0, cz + 14.0, -1.2)]], w=0.8,
+             team=True)
+    FW.band(rig, "hull", (cx + 15.0, cy, cz - 0.6), (8.0, 5.0, 4.2), 2.4, cz - 0.6 - 0.35, cz - 0.6 + 0.35,
+            fill=FW.LINE_ON_VIOLET, taper=(0.7, 1.0))
+    g = Geo()
+    for x in (cx - 20.6, cx - 22.2):
+        g.lathe([(0, -0.3), (4.3, -0.25), (4.3, 0.25), (0, 0.3)], (x, cy, cz), (x - 1, cy, cz), segs=16)
+    rig.part("hull", g, FW.LINE_ON_VIOLET, outline=0, highlight=False)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, flyer: dents and scorches, a smoke trail): the near team wing, the
+    star-white fuselage, the violet nose, the team fin; smoke from the engine."""
+    cx, cy, cz = C
+    rig.damage_spot("wing", "hull", (cx - 4.0, -WING_Y * 0.75 - 2.0, cz + 0.4), 5.0, "metal", team=True, normal=(0, -0.3, 1))
+    rig.damage_spot("fuselage", "hull", (cx - 4.0, -6.8, cz + 1.0), 5.0, "metal", normal=(0, -1, 0.2))
+    rig.damage_spot("nose", "hull", (cx + 15.0, -4.8, cz), 5.0, "metal", normal=(0.2, -1, 0))
+    rig.damage_spot("fin", "fin", (cx - 16.0, -1.2, cz + 9.0), 5.0, "metal", team=True, normal=(0, -1, 0))
+    rig.damage_spot("engine", "hull", (cx - 22.0, 0.0, cz + 2.0), 4.0, "smoke", kind="emit", normal=(-1, 0, 0.3))
 
 
 TILT = {"hull": {"rx": -18.0}}
@@ -150,9 +212,16 @@ A_Z = [0.0, -0.8, -1.4, -1.4, -1.0, 1.2, 0.2]
 A_Q = [0.0, -0.03, -0.05, -0.05, 0.05, -0.04, 0.0]
 
 
-def _a_pose(f):
+# aimed down (queue item 44, ageborn_art/aimed.py; W4): the hull pitches by AIM_PITCH of the turn, the guns by the rest
+AIM_PITCH = 0.6
+AIM_W_A = [0.0, 0.4, 0.8, 1.0, 1.0, 0.6, 0.2]
+AIM_W_B = [0.0, 0.0, 0.3, 0.7, 1.0, 0.6, 0.2]
+
+
+def _a_pose(f, turn=0.0):
     pose = merge(jets(f, [1, 1.1, 1.2, 1.2, 1.3, 1.15, 1.0][f]), {
-        "body": dict(squash(A_Q[f]), x=A_X[f], z=A_Z[f]), "hull": {"r": A_R[f]}, "flash": {"show": f == 4}})
+        "body": dict(squash(A_Q[f]), x=A_X[f], z=A_Z[f]), "hull": {"r": A_R[f] + AIM_PITCH * turn},
+        "gun": {"r": (1.0 - AIM_PITCH) * turn}, "flash": {"show": f == 4}})
     return merge(TILT, pose, KF.glyph(["g_angry", "g_angry", "g_squint", "g_squint", "g_wide", "g_angry", "g_angry"][f]))
 
 
@@ -160,10 +229,11 @@ B_RX = [-60, -150, -250, -330, -360, -360, -360]
 B_X = [0.0, -0.5, -1.0, -1.0, -3.0, -4.0, -1.0]
 
 
-def _b_pose(f):
+def _b_pose(f, turn=0.0):
     pose = merge(jets(f, [1, 1.1, 1.2, 1.2, 1.3, 1.15, 1.0][f], sweep=-10.0), {
         "body": dict(squash(A_Q[f]), x=B_X[f], z=0.6 * f if f < 4 else 2.0 - 0.4 * (f - 4)),
-        "hull": {"r": -4.0, "rx": B_RX[f] % 360}, "flash": {"show": f == 4}})
+        "hull": {"r": -4.0 + AIM_PITCH * turn, "rx": B_RX[f] % 360}, "gun": {"r": (1.0 - AIM_PITCH) * turn},
+        "flash": {"show": f == 4}})
     return merge(TILT, pose, KF.glyph(["g_angry", "g_squint", "g_squint", "g_squint", "g_wide", "g_angry", "g_angry"][f]))
 
 
@@ -209,4 +279,9 @@ def clips():
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_variants(M.check_contract(cl, attack_ms=500, attack_impact_at=0.5))
+    attack, attack_b = cl[2], cl[3]
+    aimed = (AIMED.variants(RIG, attack, _a_pose, AIM_W_A, aims=("down",)) +
+             AIMED.variants(RIG, attack_b, _b_pose, AIM_W_B, aims=("down",)))
+    for v in aimed:
+        AIMED.check_timing(attack_b if v.name.startswith("attack_b_") else attack, v)
+    return M.check_variants(M.check_contract(cl + aimed, attack_ms=500, attack_impact_at=0.5))

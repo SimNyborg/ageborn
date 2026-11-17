@@ -26,8 +26,8 @@
   },
   "nova_thrower_attack_b_01_team": {
    "frame": {
-    "x": 452,
-    "y": 2,
+    "x": 55,
+    "y": 95,
     "w": 46,
     "h": 83
    },
@@ -74,8 +74,8 @@
   },
   "nova_thrower_attack_b_02_team": {
    "frame": {
-    "x": 600,
-    "y": 2,
+    "x": 201,
+    "y": 95,
     "w": 42,
     "h": 83
    },
@@ -122,8 +122,8 @@
   },
   "nova_thrower_attack_b_03_team": {
    "frame": {
-    "x": 552,
-    "y": 2,
+    "x": 105,
+    "y": 95,
     "w": 44,
     "h": 83
    },
@@ -170,17 +170,17 @@
   },
   "nova_thrower_attack_b_04_team": {
    "frame": {
-    "x": 502,
-    "y": 2,
-    "w": 46,
+    "x": 153,
+    "y": 95,
+    "w": 44,
     "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
+    "x": 105,
     "y": 96,
-    "w": 46,
+    "w": 44,
     "h": 83
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "nova_thrower_attack_b_05_team": {
    "frame": {
-    "x": 646,
-    "y": 2,
+    "x": 2,
+    "y": 96,
     "w": 49,
     "h": 81
    },
@@ -242,7 +242,7 @@
   },
   "nova_thrower_attack_b_06": {
    "frame": {
-    "x": 394,
+    "x": 336,
     "y": 2,
     "w": 54,
     "h": 84
@@ -266,8 +266,8 @@
   },
   "nova_thrower_attack_b_06_team": {
    "frame": {
-    "x": 805,
-    "y": 2,
+    "x": 338,
+    "y": 90,
     "w": 49,
     "h": 78
    },
@@ -290,8 +290,8 @@
   },
   "nova_thrower_attack_b_07": {
    "frame": {
-    "x": 336,
-    "y": 2,
+    "x": 280,
+    "y": 93,
     "w": 54,
     "h": 85
    },
@@ -314,8 +314,8 @@
   },
   "nova_thrower_attack_b_07_team": {
    "frame": {
-    "x": 751,
-    "y": 2,
+    "x": 394,
+    "y": 87,
     "w": 50,
     "h": 79
    },
@@ -362,7 +362,7 @@
   },
   "nova_thrower_attack_b_08_team": {
    "frame": {
-    "x": 699,
+    "x": 394,
     "y": 2,
     "w": 48,
     "h": 81
@@ -417,8 +417,8 @@
   "image": "nova_thrower.x.png",
   "format": "RGBA8888",
   "size": {
-   "w": 896,
-   "h": 96
+   "w": 448,
+   "h": 180
   },
   "scale": "1.5",
   "ageborn": {

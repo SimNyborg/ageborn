@@ -21,6 +21,10 @@ Animation (ANIM_SPEC G8 hover, the odometer at 110 x 1.25 = 137.5 lu/s; the hove
             with an overhead knife chop
   hit       the board bounces on its pads, he ducks, eyes > <
   die       the pads cut out, the board noses in and he is flung off spinning, X eyes
+
+W4 (the detail standard): the Cosmic body's plates and seams, the dome's seam; the board's deck in plates (seams down
+its side, team-dark joints across the stripe, bolts on the caps), the scarf's folds; rider damage spots (the scout as a
+soldier, the board as a small machine that smokes); two-tone slashes.
 """
 import math
 
@@ -30,6 +34,8 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
+from ageborn_art import face as FC
+from units import futcos_w4 as FW
 
 SLUG = "void_skimmer"
 GAIT_NAME = "hover"
@@ -40,6 +46,13 @@ CANVAS = (340, 270)
 FEET = (150, 232)
 ANCHORS = {"head": (2, 70), "hitCenter": (0, 34)}
 NO_RETIME = True
+
+# W4 detail standard (look.py)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+MATERIAL_KINDS = FW.kinds_cosmic()
 
 HR = (0.0, K.ARM_Y["r"], K.HAND_Z)
 KNIFE = 14.0
@@ -71,6 +84,11 @@ def build(rig):
     rig.part("board", g, CW.VIOLET, finish="gloss", outline_hex=CW.VIOLET_DK)
     g = Geo().blob((0.0, 0, BOARD_Z + 0.9), (19.0, 7.0, 1.4), p=3.0)
     rig.part("board", g, team=True, outline=0.4)
+    # (W4 r31) a team stripe under the deck too: the board-flip kick turns the underside to the camera, and A's flip
+    # frame held 16.8% team (the floor 18%; the shipped sheet about 17%). Shorter than the top stripe, so the team box
+    # of the flip frames (the scarf's tail to the helmet) keeps its ends: the lunge proxy does not move.
+    g = Geo().blob((0.0, 0, BOARD_Z - 0.8), (15.0, 5.8, 1.2), p=3.0)
+    rig.part("board", g, team=True, outline=0.4)
     g = Geo().blob((0.0, -1.0, BOARD_Z + 2.0), (9.0, 1.6, 0.6), p=3.0)
     rig.part("board", g, CW.STAR, outline=0.3, outline_hex=CW.STAR_TRIM)
     g = Geo().blob((21.0, 0, BOARD_Z + 0.4), (4.0, 7.8, 2.0), p=2.6)
@@ -100,6 +118,39 @@ def build(rig):
     rig.track("bladeTip", "knife", TIP)
     rig.joint("odo", "root", (0, 0, 0))
     rig.track("_foot", "odo", (0, 0, 0))
+    FW.cosmic_helmet(rig, "dome")
+    FW.cosmic_body(rig, bulk=0.96, pad_r=(7.6 * 0.96, 6.6, 6.2))
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the board's deck seams down its side, team-dark joints across its stripe, bolts on the nose and tail caps;
+    the scarf's team-dark folds."""
+    deck = FC.Face(rig, "board", [Geo().blob((0.0, 0, BOARD_Z), (24.0, 8.0, 1.8), p=2.8)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "board", deck, [[FW.sc(deck, x, BOARD_Z + 0.9, -7.6), FW.sc(deck, x, BOARD_Z - 1.1, -7.6)]
+                                        for x in (-14.0, -4.0, 6.0, 16.0)], fill=FW.LINE_ON_VIOLET, w=0.8)
+    stripe = FC.Face(rig, "board", [Geo().blob((0.0, 0, BOARD_Z + 0.9), (19.0, 7.0, 1.4), p=3.0)], yaw_deg=YAW_DEG)
+    FW.folds(rig, "board", stripe, [[FW.sc(stripe, x, BOARD_Z + 2.2, -4.0), FW.sc(stripe, x, BOARD_Z + 1.2, -6.8)]
+                                    for x in (-11.0, 11.0)], w=0.8, team=True)
+    KF.rivets(rig, "board", [(x, -7.4, BOARD_Z + 0.8) for x in (-22.4, -19.6, 19.6, 22.4)], r=0.7, color=CW.STAR_TRIM)
+    scarf = FC.Face(rig, "scarf", [Geo().slab([(-6.0, 41.5), (-24.0, 38.0), (-21.0, 35.5), (-27.0, 33.0), (-6.0, 37.5)],
+                                              1.0, 3.0)], yaw_deg=YAW_DEG)
+    FW.folds(rig, "scarf", scarf, [[FW.sc(scarf, -8.0, 39.4, -0.6), FW.sc(scarf, -15.0, 38.2, -0.6),
+                                    FW.sc(scarf, -21.0, 36.4, -0.6)]], w=0.9, team=True)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, rider: the scout as a soldier and the board as a small machine): the
+    violet dome, the near team pad, the near team greave, the board's deck, the scarf (a strip); smoke from the board's
+    rear pad."""
+    rig.damage_spot_at("helmet", "head", -6.0, 48.0, 5.0, "metal", fill=CW.VIOLET)
+    rig.damage_spot("pauldron", "arm_r", (0.5, -12.2 - 6.0, 38.4), 5.0, "metal", team=True, normal=(0, -1, 0))
+    rig.damage_spot("greave", "shin_r", (1.9, -K.LEG_Y - 4.2, 8.8), 5.0, "metal", team=True, normal=(0, -1, 0))
+    rig.damage_spot("deck", "board", (-8.0, -7.8, BOARD_Z), 5.0, "metal", normal=(0, -1, 0.2))
+    rig.damage_spot("scarf", "scarf", (-15.0, -0.6, 37.6), 5.0, "cloth", kind="strip", team=True, normal=(0, -1, 0))
+    rig.damage_spot("exhaust", "board", (-12.0, 0.0, BOARD_Z - 3.0), 4.0, "smoke", kind="emit", normal=(-0.4, 0, -0.9))
 
 
 # the rider stands on the deck: knees soft, feet on the board (the body sits BOARD_Z + 2 lu higher)
@@ -261,8 +312,8 @@ def clips():
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
         _a_clip(),
-        CW.melee_clip("attack_b", _b_pose, SLASH, _fx("knife", TIP, 382, -20.0), rr),
-        CW.melee_clip("attack_c", _c_pose, SLASH, _fx("knife", TIP, 383, -120.0), rr),
+        FW.melee_clip("attack_b", _b_pose, SLASH, _fx("knife", TIP, 382, -20.0), rr),      # (W4: two-tone arcs)
+        FW.melee_clip("attack_c", _c_pose, SLASH, _fx("knife", TIP, 383, -120.0), rr),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),

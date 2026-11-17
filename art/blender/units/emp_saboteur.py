@@ -18,6 +18,11 @@ Animation standard (ANIM_SPEC 2026-10-02):
             back (the held extreme), then slams it down in front onto the target (sparks, dust)
   attack_c  SPINNING BACKHAND: crouches deep and twists away with the baton cocked back low behind
             his hip (the held extreme), then whips round in a flat backhand, arm and baton level at the target
+
+Art round W4: the detail standard (below), damage spots, and B1' (item 38 Phase B): A lunged 25.0 lu at the impact
+(the runtime's atlasCombat.lungeCurve, the team layer's centre against the idle), at the 25 lu the stand-off can
+carry, so the body now travels 5 lu less on the strike frames and leans 4 degrees less on the jab (the baton still
+meets the target on the impact frame; timing and impactAt unchanged).
 """
 import math
 
@@ -29,6 +34,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "emp_saboteur"
 GAIT_NAME = "biped"
@@ -38,6 +44,16 @@ CANVAS = (340, 262)
 FEET = (130, 222)
 ANCHORS = {"head": (6, 64), "hitCenter": (2, 30)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the white soldiers' lifts; the mask, the ring and the baton's head in the W4 white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SKIN_PALETTE = FW.KIT_WHITE
+SCARF_FOLD = "#9E2470"                                  # the scarf's folds, a deep magenta
+TUFT = "#E8E2D0"
+MATERIAL_KINDS = FW.kinds_future({F.MAGENTA: "cloth", SCARF_FOLD: "cloth", TUFT: "fur"})
 
 HR = (0.0, F.ARM_Y["r"], F.HAND_Z)
 BATON = 30.0
@@ -123,7 +139,7 @@ def build(rig):
     for dx, a_ in ((-2.0, 20), (1.5, 0), (5.0, -22), (-5.5, 40)):
         ca, sa = math.cos(math.radians(90 + a_)), math.sin(math.radians(90 + a_))
         g.lathe([(1.8, 0), (1.1, 3.5), (0, 7.0)], (6.0 + dx, -3.0, 56.0), (6.0 + dx + 7 * ca, -3.0, 56.0 + 7 * sa), segs=8)
-    rig.part("tuft", g, "#E8E2D0", finish="hair", outline=0.8)
+    rig.part("tuft", g, TUFT, finish="hair", outline=0.8)
     chest = Geo().blob((1.5, 0, 31.5), (8.8, 9.6, 6.4), p=3.0, taper=(0.9, 1.0))
     cf = FC.Face(rig, "torso", [chest])
     g = KF.hexmark(cf, Geo(), K.scr(cf, (5.0, -8.6, 30.5)), s=0.8, w=1.3)
@@ -160,6 +176,84 @@ def build(rig):
             g.capsule(p, q, 0.55, segs=6, rings=2)
     rig.part("crackle", g, glow=F.MINT_CORE, outline=1.0, outline_hex=F.MINT)
     F.sparks(rig, "baton", (tx, ty - 1.0, tz + 2.0), size=1.4, name="sparks", rays=8, seed=2)
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _detail(rig):
+    """W4: the detail standard (char space; decals cast): the EMP ring in six plates (radial seams) with chipped
+    edges; the hood's team-dark folds; a seam round the mask's jaw and down the cheek; the team harness in two plates;
+    the suit's creases at the waist, the elbows and the knees; the near pad's team-dark rim; the bracers' and boots'
+    seams and a scuffed toe; the scarf's folds."""
+    from ageborn_art import kit_medieval as KM
+    rx, ry, rz = RING
+    ring = Geo().lathe([(9.5, -1.6), (12.5, -1.4), (13.2, 0), (12.5, 1.4), (9.5, 1.6), (8.8, 0)],
+                       (rx, ry, rz), (rx, ry + 1, rz), segs=28)
+    rf = FC.Face(rig, "ring", [ring])
+    yy = ry - 1.6
+
+    def rp(a, r):
+        return FW.sc(rf, rx + r * math.cos(math.radians(a)), rz + r * math.sin(math.radians(a)), yy)
+    FW.panel_lines(rig, "ring", rf, [[rp(a, 9.9), rp(a, 11.2), rp(a, 12.4)] for a in (0, 60, 120, 180, 240, 300)],
+                   w=0.8)
+    FW.wear(rig, "ring", rf, [(*rp(a, 12.5), 1.3, 0.7) for a in (95, 205, 335)])
+    # the hood: team-dark folds down its near side behind the face opening
+    hf = FC.Face(rig, "head", [Geo().blob((1.5, 0, 50.0), (11.4, 11.0, 12.0), p=2.3)])
+    FW.folds(rig, "head", hf, [[FW.sc(hf, -2.0, 58.0, -9.2), FW.sc(hf, -5.0, 52.0, -10.6), FW.sc(hf, -6.0, 45.0, -10.4)],
+                               [FW.sc(hf, -8.6, 55.0, -8.0), FW.sc(hf, -10.2, 49.0, -8.2)]], w=0.8, team=True)
+    # the mask: a seam round the jaw, a seam down the cheek under the goggle
+    FW.band(rig, "head", (8.0, 0, 42.0), (6.6, 7.4, 4.4), 2.4, 39.6, 40.3, fill=FW.LINE_ON_WHITE)
+    mf = FC.Face(rig, "head", [Geo().blob((3.0, 0, 48.0), (10.2, 9.8, 10.6), p=2.4).blob((8.0, 0, 42.0), (6.6, 7.4, 4.4),
+                                                                                          p=2.4)])
+    FW.panel_lines(rig, "head", mf, [[FW.sc(mf, 8.6, 45.6, -7.4), FW.sc(mf, 9.4, 42.8, -6.8)]], w=0.7)
+    # the team harness in two plates; the suit's crease over the belt
+    cf = FC.Face(rig, "torso", [Geo().blob((1.5, 0, 31.5), (8.8, 9.6, 6.4), p=3.0, taper=(0.9, 1.0))])
+    FW.folds(rig, "torso", cf, [[FW.sc(cf, -6.0, 27.8, -9.4), FW.sc(cf, 1.0, 27.4, -9.4), FW.sc(cf, 8.6, 28.2, -8.0)],
+                                [FW.sc(cf, -3.0, 36.4, -9.4), FW.sc(cf, -3.4, 28.0, -9.4)]], w=0.8, team=True)
+    sf = FC.Face(rig, "torso", [Geo().blob((0, 0, 28), (8.8, 8.8, 10.6), p=2.4, taper=(0.92, 1.05))])
+    FW.folds(rig, "torso", sf, [[FW.sc(sf, -5.0, 23.8, -8.4), FW.sc(sf, 1.5, 23.2, -8.8), FW.sc(sf, 7.0, 24.0, -7.6)]],
+             w=0.8, team=False, fill=FW.FOLD_ON_SUIT)
+    # the near pad's team-dark rim; elbow creases; the bracers' cuff seams
+    FW.band(rig, "arm_r", (0.4, -12.9, 37.4), (6.4, 5.4, 5.0), 2.6, 33.0, 33.8, team=True)
+    for s, r0, team in (("r", 3.9, False), ("l", 3.8, True)):
+        y = F.ARM_Y[s]
+        sleeve = FC.Face(rig, f"arm_{s}", [Geo().capsule((0, y, F.SHOULDER_Z), (0, y, F.ELBOW_Z), r0, r0 - 0.2)])
+        FW.folds(rig, f"arm_{s}", sleeve, [[FW.sc(sleeve, -2.4, 30.6, y - r0), FW.sc(sleeve, 0.2, 29.8, y - r0 - 0.2),
+                                            FW.sc(sleeve, 2.6, 30.8, y - r0)]], w=0.8, team=team,
+                 fill=None if team else FW.FOLD_ON_SUIT)
+        FW.band(rig, f"fore_{s}", (0.3, y, F.HAND_Z + 4.2), (r0 + 0.7, r0 + 0.6, 3.6), 2.8, 26.0, 26.7,
+                fill=FW.LINE_ON_WHITE, taper=(0.9, 1.1))
+    # the legs: knee creases (team-dark on the team thigh), the boots' cuff and sole seams, a scuffed toe
+    for s in ("r", "l"):
+        y = F.LEG_Y * F.SIDE_Y[s]
+        th = FC.Face(rig, f"thigh_{s}", [Geo().capsule((0, y, KM.V3_THIGH_Z + 0.5), (0.5, y, KM.V3_KNEE_Z), 4.3, 3.8)])
+        tt = s == "r"
+        FW.folds(rig, f"thigh_{s}", th, [[FW.sc(th, -2.4, 14.4, y - 4.1), FW.sc(th, 0.4, 13.6, y - 4.3),
+                                          FW.sc(th, 3.0, 14.6, y - 3.9)]], w=0.8, team=tt,
+                 fill=None if tt else FW.FOLD_ON_SUIT)
+        FW.band(rig, f"shin_{s}", (1.1, y, 6.0), (4.0, 4.3, 2.6), 2.7, 7.0, 7.7, fill=FW.LINE_ON_WHITE,
+                taper=(0.92, 1.05))
+        FW.band(rig, f"foot_{s}", (2.8, y, 2.4), (4.4, 4.7, 2.5), 2.9, 3.0, 3.6, fill=FW.LINE_ON_WHITE, taper=(1.02, 0.84))
+    tf = FC.Face(rig, "foot_r", [Geo().blob((2.8, -F.LEG_Y, 2.4), (4.4, 4.7, 2.5), p=2.9, taper=(1.02, 0.84))])
+    FW.wear(rig, "foot_r", tf, [(*FW.sc(tf, 6.2, 2.0, -F.LEG_Y - 3.0), 1.2, 0.6)])
+    # the scarf's folds along its length
+    scf = FC.Face(rig, "scarf", [Geo().blob((-11.0, -2.0, 37.0), (8.0, 1.8, 2.4), p=2.4, rot=(0, 6, 0)),
+                                 Geo().blob((-19.5, -2.0, 35.8), (4.2, 1.5, 2.0), p=2.4, rot=(0, 14, 0))])
+    FW.folds(rig, "scarf", scf, [[FW.sc(scf, -5.0, 37.4, -3.7), FW.sc(scf, -11.0, 36.8, -3.8),
+                                  FW.sc(scf, -17.0, 35.6, -3.4), FW.sc(scf, -21.5, 35.2, -3.3)]], w=0.75, team=False,
+             fill=SCARF_FOLD)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier; never on the face), measured in the posed frames: the team
+    hood, the white EMP ring, the near team pad, the near (team) thigh, the scarf (the baton arm hides the harness,
+    the boots are small)."""
+    rig.damage_spot_at("hood", "head", -5.0, 52.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("ring", "ring", -19.0, 59.0, 5.0, "metal", fill=FW.ARMOR)
+    rig.damage_spot_at("pad", "arm_r", 0.4, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("thigh", "thigh_r", 1.0, 14.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("scarf", "scarf", -12.0, 37.0, 5.0, "cloth", fill=F.MAGENTA)
 
 
 # -- poses -----------------------------------------------------------------------------------
@@ -217,10 +311,10 @@ SF = [-15, -35, -40, -45, -5, 2, 4, 6, -8, -12, -15]
 W_WORLD = [26, 8, 0, -2, 2, 2, 4, 6, 10, 18, 24]   # baton direction in world degrees
 FA = [-40, -20, 10, 30, -40, -60, -70, -50, -45, -42, -40]
 FF = [10, 30, 45, 60, 0, -20, -25, -10, 0, 6, 10]
-BX = [0, -1.5, -3.5, -5.0, 2.0, 6.0, 10.0, 8.0, 6.0, 3.0, 1.0]
+BX = [0, -1.5, -3.5, -5.0, 1.0, 3.5, 5.0, 4.5, 3.5, 2.0, 1.0]        # (B1': 2, 6, 10, 8, 6, 3 on 4-9)
 BZ = [0, -2.0, -2.6, -3.2, -2.0, -2.2, -3.0, 0.8, -1.0, -1.4, -1.6]
 BQ = [0, -0.08, -0.04, -0.10, 0.10, 0.08, -0.12, 0.10, -0.04, 0.0, 0.0]
-TR = [-12, -14, -8, -6, -20, -26, -32, -10, -18, -14, -12]
+TR = [-12, -14, -8, -6, -20, -25, -28, -10, -18, -14, -12]          # (B1': -26, -32 on 5-6)
 HD = [8, 10, 6, 4, 12, 14, 16, 0, 10, 8, 8]
 THR = [18, 20, 8, 2, 30, 38, 46, 34, 30, 22, 18]
 SHR = [-26, -34, -36, -38, -30, -30, -30, -20, -26, -26, -26]
@@ -303,12 +397,13 @@ def _b_pose(i):
 
 
 def _attack_b():
-    slam = {"kind": "arc", "joint": "baton", "inner": (HR[0], HR[1] - 1.0, HR[2] + 12.0), "outer": TIP,
+    # (W4: the crescent's inner edge 20 lu up the baton, not 12: the slam's long sweep was a flat field)
+    slam = {"kind": "arc", "joint": "baton", "inner": (HR[0], HR[1] - 1.0, HR[2] + 20.0), "outer": TIP,
             "color": F.MINT, "white": 0.35, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
-    ov = {
-        4: [dict(slam, **{"from": 3})],
-        5: [dict(slam, **{"from": 3, "t0": 0.35, "t1": 1.0})],
-        6: [dict(slam, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2}),
+    ov = {                                            # (W4: two-tone arcs; one flat crescent was flat 0.41)
+        4: FW.smear_soft(dict(slam, **{"from": 3})),
+        5: FW.smear_soft(dict(slam, **{"from": 3, "t0": 0.35, "t1": 1.0})),
+        6: FW.smear_soft(dict(slam, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2})) + [
             {"kind": "burst", "joint": "baton", "point": TIP, "r0_lu": 6.0, "r1_lu": 13.0, "n": 7,
              "a0": 10.0, "arc": 160.0, "color": F.MINT_CORE},
             {"kind": "dust", "joint": "baton", "point": TIP, "ground_snap": True, "size_lu": 7.0, "puffs": 4,
@@ -366,12 +461,12 @@ def _c_pose(i):
 
 
 def _attack_c():
-    whip = {"kind": "arc", "joint": "baton", "inner": (HR[0], HR[1] - 1.0, HR[2] + 12.0), "outer": TIP,
+    whip = {"kind": "arc", "joint": "baton", "inner": (HR[0], HR[1] - 1.0, HR[2] + 20.0), "outer": TIP,      # (W4: 12)
             "color": F.MINT, "white": 0.35, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
-    ov = {
-        4: [dict(whip, **{"from": 3})],
-        5: [dict(whip, **{"from": 3, "t0": 0.35, "t1": 1.0})],
-        6: [dict(whip, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2}),
+    ov = {                                            # (W4: two-tone arcs)
+        4: FW.smear_soft(dict(whip, **{"from": 3})),
+        5: FW.smear_soft(dict(whip, **{"from": 3, "t0": 0.35, "t1": 1.0})),
+        6: FW.smear_soft(dict(whip, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2})) + [
             {"kind": "burst", "joint": "baton", "point": TIP, "r0_lu": 6.0, "r1_lu": 13.0, "n": 7,
              "a0": -80.0, "arc": 160.0, "color": F.MINT_CORE},
             {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 92, "spread": 0.9,

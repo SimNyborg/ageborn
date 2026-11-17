@@ -2,18 +2,18 @@
  "frames": {
   "asteroid_golem_idle_00": {
    "frame": {
-    "x": 823,
-    "y": 265,
+    "x": 1555,
+    "y": 235,
     "w": 200,
-    "h": 221
+    "h": 227
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 276,
-    "y": 360,
+    "y": 354,
     "w": 200,
-    "h": 221
+    "h": 227
    },
    "sourceSize": {
     "w": 718,
@@ -26,8 +26,8 @@
   },
   "asteroid_golem_idle_00_team": {
    "frame": {
-    "x": 2097,
-    "y": 715,
+    "x": 3364,
+    "y": 2,
     "w": 144,
     "h": 172
    },
@@ -50,18 +50,18 @@
   },
   "asteroid_golem_idle_01": {
    "frame": {
-    "x": 1027,
-    "y": 265,
+    "x": 1759,
+    "y": 233,
     "w": 181,
-    "h": 221
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 276,
-    "y": 360,
+    "y": 355,
     "w": 181,
-    "h": 221
+    "h": 226
    },
    "sourceSize": {
     "w": 718,
@@ -74,17 +74,17 @@
   },
   "asteroid_golem_idle_01_team": {
    "frame": {
-    "x": 764,
-    "y": 715,
-    "w": 141,
+    "x": 1496,
+    "y": 470,
+    "w": 140,
     "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 308,
+    "x": 309,
     "y": 369,
-    "w": 141,
+    "w": 140,
     "h": 175
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "asteroid_golem_idle_02": {
    "frame": {
-    "x": 2102,
-    "y": 265,
+    "x": 2108,
+    "y": 230,
     "w": 180,
-    "h": 218
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 279,
-    "y": 363,
+    "y": 357,
     "w": 180,
-    "h": 218
+    "h": 224
    },
    "sourceSize": {
     "w": 718,
@@ -122,8 +122,8 @@
   },
   "asteroid_golem_idle_02_team": {
    "frame": {
-    "x": 2245,
-    "y": 715,
+    "x": 3342,
+    "y": 355,
     "w": 144,
     "h": 172
    },
@@ -146,18 +146,18 @@
   },
   "asteroid_golem_idle_03": {
    "frame": {
-    "x": 363,
-    "y": 494,
+    "x": 2445,
+    "y": 2,
     "w": 181,
-    "h": 216
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 284,
-    "y": 365,
+    "y": 359,
     "w": 181,
-    "h": 216
+    "h": 222
    },
    "sourceSize": {
     "w": 718,
@@ -170,9 +170,9 @@
   },
   "asteroid_golem_idle_03_team": {
    "frame": {
-    "x": 488,
-    "y": 896,
-    "w": 143,
+    "x": 3615,
+    "y": 354,
+    "w": 144,
     "h": 171
    },
    "rotated": false,
@@ -180,7 +180,7 @@
    "spriteSourceSize": {
     "x": 309,
     "y": 376,
-    "w": 143,
+    "w": 144,
     "h": 171
    },
    "sourceSize": {
@@ -194,18 +194,18 @@
   },
   "asteroid_golem_idle_04": {
    "frame": {
-    "x": 1914,
-    "y": 265,
+    "x": 2093,
+    "y": 2,
     "w": 184,
-    "h": 218
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 285,
-    "y": 363,
+    "y": 357,
     "w": 184,
-    "h": 218
+    "h": 224
    },
    "sourceSize": {
     "w": 718,
@@ -218,8 +218,8 @@
   },
   "asteroid_golem_idle_04_team": {
    "frame": {
-    "x": 2393,
-    "y": 715,
+    "x": 3413,
+    "y": 178,
     "w": 142,
     "h": 172
    },
@@ -242,18 +242,18 @@
   },
   "asteroid_golem_idle_05": {
    "frame": {
-    "x": 1212,
-    "y": 265,
+    "x": 1719,
+    "y": 2,
     "w": 175,
-    "h": 221
+    "h": 227
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 281,
-    "y": 360,
+    "y": 354,
     "w": 175,
-    "h": 221
+    "h": 227
    },
    "sourceSize": {
     "w": 718,
@@ -266,17 +266,17 @@
   },
   "asteroid_golem_idle_05_team": {
    "frame": {
-    "x": 1943,
-    "y": 715,
-    "w": 150,
+    "x": 3260,
+    "y": 179,
+    "w": 149,
     "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 306,
+    "x": 307,
     "y": 372,
-    "w": 150,
+    "w": 149,
     "h": 172
    },
    "sourceSize": {
@@ -290,18 +290,18 @@
   },
   "asteroid_golem_walk_00": {
    "frame": {
-    "x": 710,
-    "y": 494,
+    "x": 2656,
+    "y": 228,
     "w": 149,
-    "h": 214
+    "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 328,
-    "y": 361,
+    "y": 355,
     "w": 149,
-    "h": 214
+    "h": 220
    },
    "sourceSize": {
     "w": 718,
@@ -314,10 +314,10 @@
   },
   "asteroid_golem_walk_00_team": {
    "frame": {
-    "x": 1155,
-    "y": 896,
+    "x": 3763,
+    "y": 353,
     "w": 124,
-    "h": 166
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
@@ -325,7 +325,7 @@
     "x": 326,
     "y": 373,
     "w": 124,
-    "h": 166
+    "h": 165
    },
    "sourceSize": {
     "w": 718,
@@ -338,18 +338,18 @@
   },
   "asteroid_golem_walk_01": {
    "frame": {
-    "x": 2,
-    "y": 494,
+    "x": 2494,
+    "y": 228,
     "w": 158,
-    "h": 217
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 327,
-    "y": 365,
+    "y": 360,
     "w": 158,
-    "h": 217
+    "h": 222
    },
    "sourceSize": {
     "w": 718,
@@ -362,10 +362,10 @@
   },
   "asteroid_golem_walk_01_team": {
    "frame": {
-    "x": 883,
-    "y": 896,
+    "x": 3873,
+    "y": 2,
     "w": 128,
-    "h": 168
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
@@ -373,7 +373,7 @@
     "x": 326,
     "y": 378,
     "w": 128,
-    "h": 168
+    "h": 167
    },
    "sourceSize": {
     "w": 718,
@@ -386,18 +386,18 @@
   },
   "asteroid_golem_walk_02": {
    "frame": {
-    "x": 656,
-    "y": 265,
-    "w": 163,
-    "h": 223
+    "x": 1553,
+    "y": 2,
+    "w": 162,
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 321,
-    "y": 356,
-    "w": 163,
-    "h": 223
+    "x": 322,
+    "y": 350,
+    "w": 162,
+    "h": 229
    },
    "sourceSize": {
     "w": 718,
@@ -410,9 +410,9 @@
   },
   "asteroid_golem_walk_02_team": {
    "frame": {
-    "x": 635,
-    "y": 896,
-    "w": 126,
+    "x": 3677,
+    "y": 178,
+    "w": 125,
     "h": 171
    },
    "rotated": false,
@@ -420,7 +420,7 @@
    "spriteSourceSize": {
     "x": 327,
     "y": 368,
-    "w": 126,
+    "w": 125,
     "h": 171
    },
    "sourceSize": {
@@ -434,18 +434,18 @@
   },
   "asteroid_golem_walk_03": {
    "frame": {
-    "x": 2,
-    "y": 265,
+    "x": 1402,
+    "y": 236,
     "w": 149,
-    "h": 225
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 328,
-    "y": 355,
+    "y": 350,
     "w": 149,
-    "h": 225
+    "h": 230
    },
    "sourceSize": {
     "w": 718,
@@ -458,8 +458,8 @@
   },
   "asteroid_golem_walk_03_team": {
    "frame": {
-    "x": 1453,
-    "y": 715,
+    "x": 3013,
+    "y": 181,
     "w": 119,
     "h": 174
    },
@@ -482,18 +482,18 @@
   },
   "asteroid_golem_walk_04": {
    "frame": {
-    "x": 155,
-    "y": 265,
+    "x": 1218,
+    "y": 2,
     "w": 166,
-    "h": 224
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 324,
-    "y": 350,
+    "y": 344,
     "w": 166,
-    "h": 224
+    "h": 230
    },
    "sourceSize": {
     "w": 718,
@@ -506,18 +506,18 @@
   },
   "asteroid_golem_walk_04_team": {
    "frame": {
-    "x": 526,
-    "y": 715,
+    "x": 826,
+    "y": 474,
     "w": 117,
-    "h": 176
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 326,
-    "y": 363,
+    "y": 362,
     "w": 117,
-    "h": 176
+    "h": 177
    },
    "sourceSize": {
     "w": 718,
@@ -530,18 +530,18 @@
   },
   "asteroid_golem_walk_05": {
    "frame": {
-    "x": 1555,
-    "y": 265,
+    "x": 1898,
+    "y": 2,
     "w": 191,
-    "h": 219
+    "h": 225
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 313,
-    "y": 361,
+    "y": 355,
     "w": 191,
-    "h": 219
+    "h": 225
    },
    "sourceSize": {
     "w": 718,
@@ -554,18 +554,18 @@
   },
   "asteroid_golem_walk_05_team": {
    "frame": {
-    "x": 2226,
-    "y": 494,
-    "w": 127,
-    "h": 180
+    "x": 2678,
+    "y": 452,
+    "w": 126,
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 319,
-    "y": 375,
-    "w": 127,
-    "h": 180
+    "x": 320,
+    "y": 373,
+    "w": 126,
+    "h": 182
    },
    "sourceSize": {
     "w": 718,
@@ -578,18 +578,18 @@
   },
   "asteroid_golem_walk_06": {
    "frame": {
-    "x": 863,
-    "y": 494,
+    "x": 2792,
+    "y": 2,
     "w": 202,
-    "h": 212
+    "h": 218
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 310,
-    "y": 367,
+    "y": 361,
     "w": 202,
-    "h": 212
+    "h": 218
    },
    "sourceSize": {
     "w": 718,
@@ -602,17 +602,17 @@
   },
   "asteroid_golem_walk_06_team": {
    "frame": {
-    "x": 2082,
-    "y": 494,
-    "w": 140,
+    "x": 683,
+    "y": 474,
+    "w": 139,
     "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 314,
+    "x": 315,
     "y": 381,
-    "w": 140,
+    "w": 139,
     "h": 182
    },
    "sourceSize": {
@@ -626,18 +626,18 @@
   },
   "asteroid_golem_walk_07": {
    "frame": {
-    "x": 2286,
-    "y": 265,
+    "x": 2292,
+    "y": 230,
     "w": 198,
-    "h": 217
+    "h": 223
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 312,
-    "y": 360,
+    "y": 354,
     "w": 198,
-    "h": 217
+    "h": 223
    },
    "sourceSize": {
     "w": 718,
@@ -650,8 +650,8 @@
   },
   "asteroid_golem_walk_07_team": {
    "frame": {
-    "x": 909,
-    "y": 715,
+    "x": 1351,
+    "y": 470,
     "w": 141,
     "h": 175
    },
@@ -674,18 +674,18 @@
   },
   "asteroid_golem_walk_08": {
    "frame": {
-    "x": 1069,
-    "y": 494,
+    "x": 2809,
+    "y": 444,
     "w": 181,
-    "h": 208
+    "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 319,
-    "y": 360,
+    "y": 354,
     "w": 181,
-    "h": 208
+    "h": 214
    },
    "sourceSize": {
     "w": 718,
@@ -698,8 +698,8 @@
   },
   "asteroid_golem_walk_08_team": {
    "frame": {
-    "x": 122,
-    "y": 715,
+    "x": 947,
+    "y": 473,
     "w": 140,
     "h": 176
    },
@@ -722,18 +722,18 @@
   },
   "asteroid_golem_walk_09": {
    "frame": {
-    "x": 548,
-    "y": 494,
+    "x": 2630,
+    "y": 2,
     "w": 158,
-    "h": 216
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 328,
-    "y": 352,
+    "y": 346,
     "w": 158,
-    "h": 216
+    "h": 222
    },
    "sourceSize": {
     "w": 718,
@@ -746,8 +746,8 @@
   },
   "asteroid_golem_walk_09_team": {
    "frame": {
-    "x": 1015,
-    "y": 896,
+    "x": 3873,
+    "y": 173,
     "w": 136,
     "h": 166
    },
@@ -770,18 +770,18 @@
   },
   "asteroid_golem_attack_00": {
    "frame": {
-    "x": 491,
-    "y": 265,
+    "x": 1237,
+    "y": 236,
     "w": 161,
-    "h": 224
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 326,
-    "y": 357,
+    "y": 351,
     "w": 161,
-    "h": 224
+    "h": 230
    },
    "sourceSize": {
     "w": 718,
@@ -794,8 +794,8 @@
   },
   "asteroid_golem_attack_00_team": {
    "frame": {
-    "x": 1576,
-    "y": 715,
+    "x": 3136,
+    "y": 180,
     "w": 120,
     "h": 173
    },
@@ -818,18 +818,18 @@
   },
   "asteroid_golem_attack_01": {
    "frame": {
-    "x": 1391,
-    "y": 265,
+    "x": 1944,
+    "y": 231,
     "w": 160,
-    "h": 220
+    "h": 225
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 328,
-    "y": 361,
+    "y": 356,
     "w": 160,
-    "h": 220
+    "h": 225
    },
    "sourceSize": {
     "w": 718,
@@ -842,18 +842,18 @@
   },
   "asteroid_golem_attack_01_team": {
    "frame": {
-    "x": 647,
-    "y": 715,
+    "x": 1640,
+    "y": 466,
     "w": 113,
-    "h": 176
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 330,
-    "y": 370,
+    "y": 372,
     "w": 113,
-    "h": 176
+    "h": 174
    },
    "sourceSize": {
     "w": 718,
@@ -866,18 +866,18 @@
   },
   "asteroid_golem_attack_02": {
    "frame": {
-    "x": 521,
+    "x": 184,
     "y": 2,
     "w": 161,
-    "h": 237
+    "h": 243
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 326,
-    "y": 369,
+    "y": 363,
     "w": 161,
-    "h": 237
+    "h": 243
    },
    "sourceSize": {
     "w": 718,
@@ -890,18 +890,18 @@
   },
   "asteroid_golem_attack_02_team": {
    "frame": {
-    "x": 2,
-    "y": 715,
+    "x": 2998,
+    "y": 2,
     "w": 116,
-    "h": 177
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 333,
-    "y": 373,
+    "y": 375,
     "w": 116,
-    "h": 177
+    "h": 175
    },
    "sourceSize": {
     "w": 718,
@@ -914,18 +914,18 @@
   },
   "asteroid_golem_attack_03": {
    "frame": {
-    "x": 686,
-    "y": 2,
+    "x": 339,
+    "y": 249,
     "w": 161,
-    "h": 236
+    "h": 242
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 325,
-    "y": 372,
+    "y": 366,
     "w": 161,
-    "h": 236
+    "h": 242
    },
    "sourceSize": {
     "w": 718,
@@ -938,18 +938,18 @@
   },
   "asteroid_golem_attack_03_team": {
    "frame": {
-    "x": 1331,
-    "y": 715,
+    "x": 3118,
+    "y": 2,
     "w": 118,
-    "h": 175
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 334,
-    "y": 376,
+    "y": 377,
     "w": 118,
-    "h": 175
+    "h": 174
    },
    "sourceSize": {
     "w": 718,
@@ -962,18 +962,18 @@
   },
   "asteroid_golem_attack_04": {
    "frame": {
-    "x": 1750,
-    "y": 265,
+    "x": 2281,
+    "y": 2,
     "w": 160,
-    "h": 219
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 333,
-    "y": 363,
+    "y": 358,
     "w": 160,
-    "h": 219
+    "h": 224
    },
    "sourceSize": {
     "w": 718,
@@ -986,8 +986,8 @@
   },
   "asteroid_golem_attack_04_team": {
    "frame": {
-    "x": 371,
-    "y": 896,
+    "x": 3638,
+    "y": 2,
     "w": 113,
     "h": 172
    },
@@ -1010,18 +1010,18 @@
   },
   "asteroid_golem_attack_05": {
    "frame": {
-    "x": 1411,
-    "y": 2,
+    "x": 504,
+    "y": 242,
     "w": 175,
-    "h": 227
+    "h": 232
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 312,
-    "y": 355,
+    "y": 350,
     "w": 175,
-    "h": 227
+    "h": 232
    },
    "sourceSize": {
     "w": 718,
@@ -1034,8 +1034,8 @@
   },
   "asteroid_golem_attack_05_team": {
    "frame": {
-    "x": 266,
-    "y": 715,
+    "x": 1091,
+    "y": 472,
     "w": 127,
     "h": 176
    },
@@ -1058,8 +1058,8 @@
   },
   "asteroid_golem_attack_06": {
    "frame": {
-    "x": 184,
-    "y": 2,
+    "x": 2,
+    "y": 265,
     "w": 191,
     "h": 257
    },
@@ -1082,8 +1082,8 @@
   },
   "asteroid_golem_attack_06_team": {
    "frame": {
-    "x": 1193,
-    "y": 715,
+    "x": 2334,
+    "y": 457,
     "w": 134,
     "h": 175
    },
@@ -1130,8 +1130,8 @@
   },
   "asteroid_golem_attack_07_team": {
    "frame": {
-    "x": 1054,
-    "y": 715,
+    "x": 2195,
+    "y": 458,
     "w": 135,
     "h": 175
    },
@@ -1154,18 +1154,18 @@
   },
   "asteroid_golem_attack_08": {
    "frame": {
-    "x": 1946,
+    "x": 703,
     "y": 2,
-    "w": 160,
-    "h": 227
+    "w": 161,
+    "h": 232
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 326,
-    "y": 355,
-    "w": 160,
-    "h": 227
+    "x": 325,
+    "y": 350,
+    "w": 161,
+    "h": 232
    },
    "sourceSize": {
     "w": 718,
@@ -1178,8 +1178,8 @@
   },
   "asteroid_golem_attack_08_team": {
    "frame": {
-    "x": 397,
-    "y": 715,
+    "x": 1222,
+    "y": 472,
     "w": 125,
     "h": 176
    },
@@ -1202,18 +1202,18 @@
   },
   "asteroid_golem_attack_09": {
    "frame": {
-    "x": 325,
-    "y": 265,
-    "w": 162,
-    "h": 224
+    "x": 1388,
+    "y": 2,
+    "w": 161,
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 326,
-    "y": 357,
-    "w": 162,
-    "h": 224
+    "x": 327,
+    "y": 351,
+    "w": 161,
+    "h": 230
    },
    "sourceSize": {
     "w": 718,
@@ -1226,8 +1226,8 @@
   },
   "asteroid_golem_attack_09_team": {
    "frame": {
-    "x": 1700,
-    "y": 715,
+    "x": 3240,
+    "y": 2,
     "w": 120,
     "h": 173
    },
@@ -1250,18 +1250,18 @@
   },
   "asteroid_golem_hit_00": {
    "frame": {
-    "x": 1590,
+    "x": 524,
     "y": 2,
     "w": 175,
-    "h": 227
+    "h": 232
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 304,
-    "y": 349,
+    "y": 344,
     "w": 175,
-    "h": 227
+    "h": 232
    },
    "sourceSize": {
     "w": 718,
@@ -1274,8 +1274,8 @@
   },
   "asteroid_golem_hit_00_team": {
    "frame": {
-    "x": 253,
-    "y": 896,
+    "x": 3559,
+    "y": 178,
     "w": 114,
     "h": 172
    },
@@ -1298,18 +1298,18 @@
   },
   "asteroid_golem_hit_01": {
    "frame": {
-    "x": 1229,
+    "x": 868,
     "y": 2,
     "w": 178,
-    "h": 227
+    "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 297,
-    "y": 348,
+    "y": 344,
     "w": 178,
-    "h": 227
+    "h": 231
    },
    "sourceSize": {
     "w": 718,
@@ -1322,8 +1322,8 @@
   },
   "asteroid_golem_hit_01_team": {
    "frame": {
-    "x": 765,
-    "y": 896,
+    "x": 3755,
+    "y": 2,
     "w": 114,
     "h": 171
    },
@@ -1346,18 +1346,18 @@
   },
   "asteroid_golem_hit_02": {
    "frame": {
-    "x": 1769,
-    "y": 2,
+    "x": 683,
+    "y": 238,
     "w": 173,
-    "h": 227
+    "h": 232
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 312,
-    "y": 350,
+    "y": 345,
     "w": 173,
-    "h": 227
+    "h": 232
    },
    "sourceSize": {
     "w": 718,
@@ -1370,8 +1370,8 @@
   },
   "asteroid_golem_hit_02_team": {
    "frame": {
-    "x": 1824,
-    "y": 715,
+    "x": 3223,
+    "y": 357,
     "w": 115,
     "h": 173
    },
@@ -1394,18 +1394,18 @@
   },
   "asteroid_golem_hit_03": {
    "frame": {
-    "x": 2110,
+    "x": 1050,
     "y": 2,
     "w": 164,
-    "h": 225
+    "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 327,
-    "y": 352,
+    "y": 346,
     "w": 164,
-    "h": 225
+    "h": 231
    },
    "sourceSize": {
     "w": 718,
@@ -1418,8 +1418,8 @@
   },
   "asteroid_golem_hit_03_team": {
    "frame": {
-    "x": 128,
-    "y": 896,
+    "x": 3490,
+    "y": 354,
     "w": 121,
     "h": 172
    },
@@ -1442,18 +1442,18 @@
   },
   "asteroid_golem_hit_04": {
    "frame": {
-    "x": 2278,
-    "y": 2,
+    "x": 1070,
+    "y": 237,
     "w": 163,
-    "h": 225
+    "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 326,
-    "y": 352,
+    "y": 346,
     "w": 163,
-    "h": 225
+    "h": 231
    },
    "sourceSize": {
     "w": 718,
@@ -1466,8 +1466,8 @@
   },
   "asteroid_golem_hit_04_team": {
    "frame": {
-    "x": 2,
-    "y": 896,
+    "x": 3512,
+    "y": 2,
     "w": 122,
     "h": 172
    },
@@ -1490,18 +1490,18 @@
   },
   "asteroid_golem_die_00": {
    "frame": {
-    "x": 1476,
-    "y": 494,
+    "x": 2494,
+    "y": 454,
     "w": 180,
-    "h": 201
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 337,
-    "y": 376,
+    "y": 373,
     "w": 180,
-    "h": 201
+    "h": 204
    },
    "sourceSize": {
     "w": 718,
@@ -1514,8 +1514,8 @@
   },
   "asteroid_golem_die_00_team": {
    "frame": {
-    "x": 1283,
-    "y": 896,
+    "x": 3891,
+    "y": 343,
     "w": 126,
     "h": 164
    },
@@ -1538,18 +1538,18 @@
   },
   "asteroid_golem_die_01": {
    "frame": {
-    "x": 1054,
+    "x": 349,
     "y": 2,
     "w": 171,
-    "h": 230
+    "h": 236
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 355,
-    "y": 343,
+    "y": 337,
     "w": 171,
-    "h": 230
+    "h": 236
    },
    "sourceSize": {
     "w": 718,
@@ -1562,8 +1562,8 @@
   },
   "asteroid_golem_die_01_team": {
    "frame": {
-    "x": 2357,
-    "y": 494,
+    "x": 504,
+    "y": 478,
     "w": 112,
     "h": 180
    },
@@ -1586,8 +1586,8 @@
   },
   "asteroid_golem_die_02": {
    "frame": {
-    "x": 379,
-    "y": 2,
+    "x": 197,
+    "y": 249,
     "w": 138,
     "h": 243
    },
@@ -1610,9 +1610,9 @@
   },
   "asteroid_golem_die_02_team": {
    "frame": {
-    "x": 1573,
-    "y": 896,
-    "w": 145,
+    "x": 355,
+    "y": 495,
+    "w": 144,
     "h": 160
    },
    "rotated": false,
@@ -1620,7 +1620,7 @@
    "spriteSourceSize": {
     "x": 273,
     "y": 357,
-    "w": 145,
+    "w": 144,
     "h": 160
    },
    "sourceSize": {
@@ -1634,17 +1634,17 @@
   },
   "asteroid_golem_die_03": {
    "frame": {
-    "x": 164,
-    "y": 494,
-    "w": 195,
+    "x": 2809,
+    "y": 224,
+    "w": 200,
     "h": 216
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 192,
+    "x": 187,
     "y": 332,
-    "w": 195,
+    "w": 200,
     "h": 216
    },
    "sourceSize": {
@@ -1658,8 +1658,8 @@
   },
   "asteroid_golem_die_03_team": {
    "frame": {
-    "x": 1722,
-    "y": 896,
+    "x": 3891,
+    "y": 511,
     "w": 158,
     "h": 141
    },
@@ -1682,17 +1682,17 @@
   },
   "asteroid_golem_die_04": {
    "frame": {
-    "x": 851,
-    "y": 2,
-    "w": 199,
+    "x": 860,
+    "y": 238,
+    "w": 206,
     "h": 231
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 174,
+    "x": 167,
     "y": 366,
-    "w": 199,
+    "w": 206,
     "h": 231
    },
    "sourceSize": {
@@ -1706,17 +1706,17 @@
   },
   "asteroid_golem_die_04_team": {
    "frame": {
-    "x": 1413,
-    "y": 896,
-    "w": 156,
+    "x": 197,
+    "y": 496,
+    "w": 154,
     "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 182,
+    "x": 184,
     "y": 405,
-    "w": 156,
+    "w": 154,
     "h": 162
    },
    "sourceSize": {
@@ -1730,17 +1730,17 @@
   },
   "asteroid_golem_die_05": {
    "frame": {
-    "x": 1254,
-    "y": 494,
-    "w": 218,
+    "x": 2994,
+    "y": 444,
+    "w": 225,
     "h": 201
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 155,
+    "x": 148,
     "y": 369,
-    "w": 218,
+    "w": 225,
     "h": 201
    },
    "sourceSize": {
@@ -1754,17 +1754,17 @@
   },
   "asteroid_golem_die_05_team": {
    "frame": {
-    "x": 1884,
-    "y": 896,
-    "w": 169,
+    "x": 2,
+    "y": 526,
+    "w": 168,
     "h": 130
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 166,
+    "x": 167,
     "y": 432,
-    "w": 169,
+    "w": 168,
     "h": 130
    },
    "sourceSize": {
@@ -1778,17 +1778,17 @@
   },
   "asteroid_golem_die_06": {
    "frame": {
-    "x": 1660,
-    "y": 494,
-    "w": 216,
+    "x": 1759,
+    "y": 463,
+    "w": 223,
     "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
+    "x": 150,
     "y": 376,
-    "w": 216,
+    "w": 223,
     "h": 194
    },
    "sourceSize": {
@@ -1802,17 +1802,17 @@
   },
   "asteroid_golem_die_06_team": {
    "frame": {
-    "x": 2057,
-    "y": 896,
-    "w": 167,
+    "x": 3223,
+    "y": 534,
+    "w": 166,
     "h": 124
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 168,
+    "x": 169,
     "y": 436,
-    "w": 167,
+    "w": 166,
     "h": 124
    },
    "sourceSize": {
@@ -1826,17 +1826,17 @@
   },
   "asteroid_golem_die_07": {
    "frame": {
-    "x": 1880,
-    "y": 494,
-    "w": 198,
+    "x": 1986,
+    "y": 460,
+    "w": 205,
     "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 174,
+    "x": 167,
     "y": 379,
-    "w": 198,
+    "w": 205,
     "h": 189
    },
    "sourceSize": {
@@ -1850,17 +1850,17 @@
   },
   "asteroid_golem_die_07_team": {
    "frame": {
-    "x": 2228,
-    "y": 896,
-    "w": 153,
+    "x": 3393,
+    "y": 531,
+    "w": 152,
     "h": 123
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 184,
+    "x": 185,
     "y": 438,
-    "w": 153,
+    "w": 152,
     "h": 123
    },
    "sourceSize": {
@@ -1989,8 +1989,8 @@
   "image": "asteroid_golem.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2560,
-   "h": 1072
+   "w": 4096,
+   "h": 660
   },
   "scale": "3",
   "ageborn": {

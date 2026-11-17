@@ -26,17 +26,17 @@
   },
   "star_mortar_attack_b_01_team": {
    "frame": {
-    "x": 350,
+    "x": 349,
     "y": 183,
-    "w": 96,
+    "w": 95,
     "h": 150
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 195,
+    "x": 196,
     "y": 252,
-    "w": 96,
+    "w": 95,
     "h": 150
    },
    "sourceSize": {
@@ -50,7 +50,7 @@
   },
   "star_mortar_attack_b_02": {
    "frame": {
-    "x": 450,
+    "x": 448,
     "y": 183,
     "w": 113,
     "h": 147
@@ -74,7 +74,7 @@
   },
   "star_mortar_attack_b_02_team": {
    "frame": {
-    "x": 316,
+    "x": 315,
     "y": 343,
     "w": 102,
     "h": 134
@@ -122,7 +122,7 @@
   },
   "star_mortar_attack_b_03_team": {
    "frame": {
-    "x": 100,
+    "x": 99,
     "y": 343,
     "w": 104,
     "h": 134
@@ -170,7 +170,7 @@
   },
   "star_mortar_attack_b_04_team": {
    "frame": {
-    "x": 528,
+    "x": 527,
     "y": 343,
     "w": 104,
     "h": 133
@@ -218,7 +218,7 @@
   },
   "star_mortar_attack_b_05_team": {
    "frame": {
-    "x": 208,
+    "x": 207,
     "y": 343,
     "w": 104,
     "h": 134
@@ -266,7 +266,7 @@
   },
   "star_mortar_attack_b_06_team": {
    "frame": {
-    "x": 422,
+    "x": 421,
     "y": 343,
     "w": 102,
     "h": 134
@@ -316,7 +316,7 @@
    "frame": {
     "x": 2,
     "y": 343,
-    "w": 94,
+    "w": 93,
     "h": 139
    },
    "rotated": false,
@@ -324,7 +324,7 @@
    "spriteSourceSize": {
     "x": 181,
     "y": 268,
-    "w": 94,
+    "w": 93,
     "h": 139
    },
    "sourceSize": {
@@ -364,7 +364,7 @@
    "frame": {
     "x": 256,
     "y": 183,
-    "w": 90,
+    "w": 89,
     "h": 151
    },
    "rotated": false,
@@ -372,7 +372,7 @@
    "spriteSourceSize": {
     "x": 194,
     "y": 251,
-    "w": 90,
+    "w": 89,
     "h": 151
    },
    "sourceSize": {
@@ -427,7 +427,7 @@
    "visualId": "unit.star_mortar",
    "name": "Star Mortar",
    "heightLu": 70,
-   "widthLu": 44.3,
+   "widthLu": 45.9,
    "pxPerLu": 2.46,
    "feetPx": [
     244,

@@ -17,6 +17,10 @@ Animation (ANIM_SPEC G2 brisk glide at card 65 x 1.25 = 81.25 lu/s, appendix B s
             with a mint pulse ring
   hit       light: the head snaps back, the tendrils whip, eyes > <
   die       D3 dizzy sit: spins, sits down hard, spiral eyes, the tendrils droop
+
+W4 (the detail standard): the robe's pleats (violet and team-dark), the mantle's folds, the pads' ridges, the legs'
+creases and seams; soldier damage spots. No aimed clips: `aimdata` gives its attacks as an omni emitter (the
+tendril lash and the pulse ring), as W2's Mesmerist.
 """
 import math
 
@@ -30,6 +34,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "bio_weaver"
 GAIT_NAME = "biped"
@@ -39,6 +44,19 @@ CANVAS = (300, 270)
 FEET = (130, 232)
 ANCHORS = {"head": (2, 70), "hitCenter": (0, 30), "muzzle": (26, 30)}
 NO_RETIME = True
+
+# W4 detail standard (look.py): the alien's lilac head is skin
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+# (r37) a clearer light-to-shadow gradient on the big smooth forms (the lilac head is the largest field) and the team
+# robe as cloth (its folds' breakup; polymer's 0.03 left the robe top and the hips flat): r28 sat at micro 4.15 / 4.08
+LOOK_SHADE = dict(FW.SHADE_SOLDIER, gradient=2.7, cavity=0.78)
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+# (r37b) the star white a step greyer, as the Halberdier's (the hem band, the sash, the gloves and the circlet's star
+# points rang the extras' highlight share to 0.1005)
+STAR_W4 = "#D6D1E8"
+SKIN_PALETTE = FW.skin_palette({K.STAR: STAR_W4})
+MATERIAL_KINDS = FW.kinds_cosmic({CW.LILAC: "skin", CW.LILAC_DK: "skin", "team": "cloth", STAR_W4: "ceramic"})
 
 HR = (0.0, K.ARM_Y["r"], K.HAND_Z)
 HL = (0.0, K.ARM_Y["l"], K.HAND_Z)
@@ -57,6 +75,41 @@ def _tendril(rig, joint, pts, r0=1.6, r1=0.7):
 RIG = None
 
 
+def _detail(rig):
+    """W4: the robe's pleats (violet on the hem, team-dark on the hips and the robe top), the mantle's folds, the
+    near pad's ridge, the legs' creases, team shin rims and boot seams (char space; decals cast)."""
+    hem = FC.Face(rig, "hem", [Geo().blob((0.5, 0, 15.0), (12.4, 11.2, 6.2), p=2.6, taper=(1.25, 0.9))])
+    FW.panel_lines(rig, "hem", hem, [[FW.sc(hem, x, 19.0, -10.0), FW.sc(hem, x - 0.6, 14.6, -11.8),
+                                      FW.sc(hem, x - 1.2, 11.4, -12.6)] for x in (-6.0, -3.0, 0.0, 2.6, 5.0)],
+                   fill=FW.LINE_ON_VIOLET, w=0.8)     # (r37: five pleats, not three)
+    hips = FC.Face(rig, "hips", [Geo().blob((0, 0, 20.0), (11.0, 10.6, 7.4), p=2.6, taper=(1.12, 0.95))])
+    FW.folds(rig, "hips", hips, [[FW.sc(hips, x, 25.0, -9.0), FW.sc(hips, x - 0.4, 19.0, -10.6)] for x in (-5.0, 2.0)],
+             w=0.8, team=True)
+    top = FC.Face(rig, "torso", [Geo().blob((0, 0, 28), (9.6, 9.4, 11.0), p=2.4, taper=(0.95, 1.05))])
+    FW.folds(rig, "torso", top, [[FW.sc(top, -4.6, 31.0, -8.4), FW.sc(top, -5.4, 27.0, -9.0), FW.sc(top, -4.8, 24.2, -8.8)]],
+             w=0.8, team=True)
+    man = FC.Face(rig, "torso", [Geo().blob((-1.0, 0, 36.0), (11.0, 12.2, 5.4), p=2.4, taper=(1.2, 0.8))])
+    FW.panel_lines(rig, "torso", man, [[FW.sc(man, x, 39.4, -10.0), FW.sc(man, x + 1.0, 33.2, -12.2)] for x in (-6.0, 1.0)],
+                   fill=FW.LINE_ON_VIOLET, w=0.75)
+    y = K.ARM_Y["r"]
+    c = (0.4, y - 0.3 * K.SIDE_Y["r"], 37.4)
+    pf = FC.Face(rig, "arm_r", [Geo().blob(c, (6.6, 5.6, 5.2), p=2.6)])
+    FW.folds(rig, "arm_r", pf, [[FW.sc(pf, -4.0, 39.6, c[1] - 4.8), FW.sc(pf, 0.4, 41.2, c[1] - 5.2),
+                                 FW.sc(pf, 4.8, 39.6, c[1] - 4.8)]], w=0.75, team=True)
+    FW.cosmic_legs(rig, team_shin=True)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier: scorches and a torn robe): the robe's hem (a strip), the near
+    team pad, the team hips, the near team greave. (r37: no mantle mark: the near pad, the head and the near tendril
+    hide the mantle, seen 0% in every clip.)"""
+    rig.damage_spot("robe", "hem", (-2.0, -12.2, 13.6), 5.0, "cloth", kind="strip", normal=(0, -1, 0))
+    rig.damage_spot("pauldron", "arm_r", (0.4, K.ARM_Y["r"] + 0.3 - 5.4, 37.6), 5.0, "metal", team=True,
+                    normal=(0, -1, 0.2))
+    rig.damage_spot("hips", "hips", (-4.0, -10.2, 19.0), 5.0, "cloth", team=True, normal=(0, -1, 0))
+    rig.damage_spot("greave", "shin_r", (1.9, -K.LEG_Y - 4.2, 8.8), 5.0, "metal", team=True, normal=(0, -1, 0))
+
+
 def build(rig):
     global RIG
     RIG = rig
@@ -73,7 +126,7 @@ def build(rig):
     rig.part("torso", star, KC.STAR_PALE, highlight=False, outline=0)
     rig.part("torso", g, team=True)
     g = Geo().blob((0.4, 0, 22.2), (10.2, 10.0, 2.2), p=3.4)
-    rig.part("torso", g, CW.STAR, finish="gloss", outline_hex=CW.STAR_TRIM)
+    rig.part("torso", g, CW.STAR, outline_hex=CW.STAR_TRIM)     # (r37: satin, not gloss: the extras' highlight)
     g = Geo().blob((-1.0, 0, 36.0), (11.0, 12.2, 5.4), p=2.4, taper=(1.2, 0.8))
     rig.part("torso", g, CW.VIOLET, finish="matte")
     g = Geo().blob((8.0, -9.0, 21.6), (2.6, 2.0, 3.0), p=2.2)
@@ -105,6 +158,9 @@ def build(rig):
         g = Geo().blob((0.4, y - 0.3 * K.SIDE_Y[s], 37.4), (6.6, 5.6, 5.2), p=2.6)
         rig.part(f"arm_{s}", g, team=True)
     # the lash tendril from the near wrist (coils on the hold, cracks out on the impact)
+    _detail(rig)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
     rig.joint("lash", "hand_r", HR)
     _tendril(rig, "lash", [(HR[0] + 1.0, HR[1] - 1.0, HR[2] - 1.0), (HR[0] + 2.0, HR[1] - 1.0, HR[2] - 6.0),
                            (HR[0] + 0.0, HR[1] - 1.0, HR[2] - 11.0), LASH_TIP], r0=1.4, r1=0.6)
@@ -180,7 +236,8 @@ LASH_ARC = {"kind": "arc", "joint": "lash", "inner": (HR[0] + 1.0, HR[1] - 1.0, 
 
 
 def _attack_clip():
-    ov = {4: [dict(LASH_ARC, **{"from": 3})], 5: [dict(LASH_ARC, **{"from": 4})] +
+    # (W4: two-tone soft arcs: one flat crescent per swing frame)
+    ov = {4: FW.smear_soft(dict(LASH_ARC, **{"from": 3}), band=0.5), 5: FW.smear_soft(dict(LASH_ARC, **{"from": 4}), band=0.5) +
           CW.fire_fx("lash", LASH_TIP, CW.MINT_CORE, a0=-30.0)}
     return M.clip("attack", [_a_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
                   extra={"holdStep": 3})
@@ -204,7 +261,7 @@ def _b_pose(f):
 
 
 def _attack_b():
-    ov = {3: CW.rings_fx("torso", (8.0, -10.0, 31.0), (5.0, 7.5), CW.MINT_CORE, -180.0, 180.0),
+    ov = {3: CW.rings_fx("torso", (8.0, -10.0, 31.0), (5.0, 7.5), CW.MINT, -180.0, 180.0),     # (r37: mint, not its core)
           5: CW.fire_fx("hand_r", (HR[0] + 3.0, HR[1], HR[2]), CW.MINT_CORE, a0=-60.0) + CW.dust_fx(16.0, 421)}
     return M.clip("attack_b", [_b_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
                   reuse={0: ("attack", 0), 9: ("attack", 9)}, extra={"holdStep": 3})

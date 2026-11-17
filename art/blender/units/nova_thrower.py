@@ -18,6 +18,9 @@ Animation (ANIM_SPEC G1 jog at card 65 x 1.25 = 81.25 lu/s, appendix B throwers;
             extreme), a step and an overhand whip, the release in front of the face
   hit       light: the head snaps back, the orb flares, eyes > <
   die       D1 fling and spin, the orb pops in a puff, X eyes
+
+W4 (the detail standard): the Cosmic body's plates and seams, the dome's seam, the canister's bands and the
+bandolier's cups in plates, soldier damage spots.
 """
 import math
 
@@ -28,6 +31,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "nova_thrower"
 GAIT_NAME = "biped"
@@ -37,6 +41,14 @@ CANVAS = (300, 256)
 FEET = (130, 222)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 32), "muzzle": (14, 50)}
 NO_RETIME = True
+
+# W4 detail standard (look.py). The crest is team and the frames' top: no white team rim on the colour layer
+# (it raised every frame's top, the Attack Drone's lesson)
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42, team_white=0.0)
+MATERIAL_KINDS = FW.kinds_cosmic()
 
 HR = (0.0, K.ARM_Y["r"], K.HAND_Z)
 ORB = (HR[0] + 1.6, HR[1] - 2.4, HR[2] + 2.0)
@@ -95,6 +107,23 @@ def build(rig):
     for dx, dz, r in ((0, 0, 4.0), (4.0, 2.0, 3.0), (-3.0, 3.0, 2.8)):
         g.sphere((dx, -14.0, 30.0 + dz), r, cuts=3)
     rig.part("pop", g, glow=CW.MINT_CORE, outline=1.0, outline_hex=CW.MINT)
+    FW.cosmic_helmet(rig, "dome")
+    FW.cosmic_body(rig)
+    # the canister's bands and a seam down its side
+    FW.band(rig, "torso", (-11.4, 0, 30.0), (4.0, 6.6, 7.6), 3.4, 25.6, 26.3, fill=FW.LINE_ON_VIOLET)
+    FW.band(rig, "torso", (-11.4, 0, 30.0), (4.0, 6.6, 7.6), 3.4, 32.4, 33.1, fill=FW.LINE_ON_VIOLET)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier: dents, scorches and a torn tunic): the violet dome, the near
+    team pad, the violet hip skirt, the canister, the near team greave."""
+    rig.damage_spot_at("helmet", "head", -6.0, 48.0, 5.0, "metal", fill=CW.VIOLET)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("skirt", "hips", -4.0, 15.6, 5.0, "metal", fill=CW.VIOLET_DK)
+    rig.damage_spot_at("canister", "torso", -12.6, 29.0, 5.0, "metal", fill=CW.VIOLET_DK)
+    rig.damage_spot("greave", "shin_r", (1.9, -K.LEG_Y - 4.2, 8.8), 5.0, "metal", team=True, normal=(0, -1, 0))
 
 
 def arms(hand, far=(-4.0, 22.0)):

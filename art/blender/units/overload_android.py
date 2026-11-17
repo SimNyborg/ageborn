@@ -19,6 +19,7 @@ Animation (ANIM_SPEC G1 stomp jog at card 60 x 1.25 = 75 lu/s, appendix B mechs 
   hit       mech: a hard jolt with no squash, eyes > <
   die       D2 topple onto the back, the vents sputter, X eyes
 """
+from ageborn_art import face as FC
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_future_wave as W
 from ageborn_art import kit_industrial as KI
@@ -26,6 +27,7 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from units import futcos_w4 as FW
 
 SLUG = "overload_android"
 GAIT_NAME = "biped"
@@ -35,6 +37,14 @@ CANVAS = (320, 290)
 FEET = (140, 250)
 ANCHORS = {"head": (2, 72), "hitCenter": (0, 34)}
 NO_RETIME = True
+
+# the detail standard (art round W4): the white soldiers' lifts; the wave kit's plates in the troopers' off-white
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_WHITE
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42)
+SKIN_PALETTE = FW.KIT_TROOPER
+MATERIAL_KINDS = FW.kinds_future()
 
 ARM_K = 1.6          # long robot arms (rest scale about the shoulders), so the punches reach out
 L1, L2 = F.UPPER * ARM_K, F.LOWER * ARM_K
@@ -48,8 +58,19 @@ def _fist(rig, s, at):
     rig.part(f"hand_{s}", g, team=True)
     g = Geo().blob((x + 4.4, y - (1.0 if s == "r" else -1.0), z - 0.6), (1.8, 4.0, 3.6), p=2.6)
     rig.part(f"hand_{s}", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
-    g = Geo().lathe([(0, -0.8), (5.0, -0.7), (5.0, 0.7), (0, 0.8)], (x, y, z + 6.0), (x, y, z + 7.0), segs=16)
-    rig.part(f"hand_{s}", g, glow=W.MINT, outline=1.0, outline_hex=F.SUIT)
+    g = Geo().lathe([(0, -0.55), (5.0, -0.5), (5.0, 0.5), (0, 0.55)], (x, y, z + 6.0), (x, y, z + 7.0), segs=16)
+    rig.part(f"hand_{s}", g, glow=W.MINT, outline=1.0, outline_hex=F.SUIT)            # (W4: 0.8 lu thick)
+    # (W4) a team-dark seam across the knuckles and round the cuff; the knuckle plate scuffed
+    gf = FC.Face(rig, f"hand_{s}", [Geo().blob((x + 0.6, y, z - 0.4), (5.2, 4.8, 5.0), p=2.3)])
+    yy = y - 4.6
+    FW.folds(rig, f"hand_{s}", gf, [[FW.sc(gf, x + 2.6, z + 1.6, yy + 1.6), FW.sc(gf, x + 2.8, z - 0.4, yy + 0.9),
+                                     FW.sc(gf, x + 2.6, z - 2.6, yy + 1.6)]], w=0.8, team=True)   # (inside the fist's
+    # silhouette: a point past its top edge missed the surface and the seam ran off to the body's mid-plane)
+    FW.band(rig, f"hand_{s}", (x + 0.6, y, z - 0.4), (5.2, 4.8, 5.0), 2.3, z + 2.6, z + 3.3, team=True)
+    # the fingers: two team-dark grooves along the fist's side
+    FW.folds(rig, f"hand_{s}", gf, [[FW.sc(gf, x - 1.6, zz, yy + 1.4), FW.sc(gf, x + 1.2, zz, yy + 0.8),
+                                     FW.sc(gf, x + 3.4, zz, yy + 1.8)] for zz in (z + 0.4, z - 2.0)], w=0.7,
+             team=True)
 
 
 RIG = None
@@ -59,7 +80,8 @@ def build(rig):
     global RIG
     RIG = rig
     W.trooper(rig, helmet_kind="android", team_greave=True, team_sleeve=True, pack=False, bulk=1.15, antenna=True,
-              head=(1, 0, 40))
+              head=(1, 0, 40), strip=False)
+    FW.strip(rig)
     _fist(rig, "r", FIST_R)
     _fist(rig, "l", FIST_L)
     rig.rest_scale["arm_r"] = ARM_K
@@ -76,6 +98,34 @@ def build(rig):
     F.puff(rig, "torso", (-7.5, -8.0, 50.0), size=0.8, name="vent", spread=1.2)
     F.sparks(rig, "hand_r", FIST_R, name="spark_r", size=0.9, seed=9)
     rig.track("clubHead", "hand_r", FIST_R)
+    # (W4) seams round the chimney vents' tops
+    g = Geo()
+    for y in (-8.0, 7.0):
+        g.lathe([(0, -0.3), (2.45, -0.25), (2.45, 0.25), (0, 0.3)], (-6.8, y, 44.4), (-6.9, y, 45.4), segs=14)
+    rig.part("torso", g, FW.GUN_SEAM, outline=0, highlight=False)
+    FW.wave_trooper(rig, helmet_kind="android", bulk=1.15, team_greave=True, team_sleeve=True)
+    # (W4) a seam round the head's dome; a team-dark ridge over each big shoulder pad
+    FW.band(rig, "head", (2.0, 0, 50.5), (11.0, 10.4, 12.4), 2.3, 57.6, 58.3, fill=FW.LINE_ON_WHITE)
+    for s in ("r", "l"):
+        y = F.ARM_Y[s] - 0.3 * F.SIDE_Y[s]
+        pf = FC.Face(rig, f"arm_{s}", [Geo().blob((0.5, y, 37.6), (6.8, 5.8, 5.4), p=2.6)])
+        yy = y - 5.0                      # the camera's side of each pad (the far pad's far side sent a seam astray)
+        FW.folds(rig, f"arm_{s}", pf, [[FW.sc(pf, -4.6, 40.0, yy), FW.sc(pf, 0.5, 41.4, yy + 0.4),
+                                        FW.sc(pf, 5.4, 40.0, yy)]], w=0.75, team=True)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, mech: dents and scratches, sparks and steam; never on the visor): the
+    team crown stripe, the near shoulder pad (in 3D: the long arms are rest-scaled), the white faulds, the near team
+    greave (the guard fists hide the chest plate); sparks at the neck, steam from the near chimney."""
+    rig.damage_spot("crown", "head", (0.0, -2.6, 62.6), 5.0, "metal", team=True, normal=(0, -0.4, 0.9))
+    rig.damage_spot("pauldron", "arm_r", (0.5, -12.2 - 5.6, 38.6), 5.0, "metal", team=True, normal=(0, -1, 0.2))
+    rig.damage_spot_at("faulds", "hips", -5.0, 16.0, 5.0, "metal")
+    rig.damage_spot("greave", "shin_r", (1.9, -F.LEG_Y - 4.2, 8.6), 5.0, "metal", team=True, normal=(0, -1, 0))
+    rig.damage_spot("neck", "torso", (2.0, -6.4, 40.6), 3.5, "spark", kind="emit", normal=(0.3, -0.9, 0.3))
+    rig.damage_spot("vent", "torso", (-7.0, -8.0, 47.0), 4.0, "steam", kind="emit", normal=(0, 0, 1))
 
 
 def guard(near=(10.0, 34.0), far=(13.0, 38.0)):
@@ -194,9 +244,9 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        W.melee_clip("attack", _a_pose, CROSS, W.impact_fx("hand_r", FIST_R, 191, a0=-60.0, ground_x=20.0)),
-        W.melee_clip("attack_b", _b_pose, ARC, W.impact_fx("hand_r", FIST_R, 192, a0=-110.0, ground_x=18.0), rr),
-        W.melee_clip("attack_c", _c_pose, ARC, W.impact_fx("hand_r", FIST_R, 193, a0=-150.0, ground_x=22.0), rr),
+        FW.melee_clip("attack", _a_pose, CROSS, W.impact_fx("hand_r", FIST_R, 191, a0=-60.0, ground_x=20.0)),
+        FW.melee_clip("attack_b", _b_pose, ARC, W.impact_fx("hand_r", FIST_R, 192, a0=-110.0, ground_x=18.0), rr),
+        FW.melee_clip("attack_c", _c_pose, ARC, W.impact_fx("hand_r", FIST_R, 193, a0=-150.0, ground_x=22.0), rr),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),

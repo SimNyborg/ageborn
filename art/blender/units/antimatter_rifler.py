@@ -18,6 +18,10 @@ Animation (ANIM_SPEC G1 stomp jog at card 65 x 1.25 = 81.25 lu/s, appendix B gun
             kick rocks him back on his heel
   hit       light: the head snaps back, eyes > <
   die       D1 fling and spin, the cannon flung away, X eyes
+
+W4 (the detail standard): the Cosmic body's plates and seams, the dome's seam; the cannon in plates (the team
+shroud's team-dark seams, seams round the barrel, bolts on the stock), the back rack's frame seams; soldier damage
+spots.
 """
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_cosmic_wave as W
@@ -27,6 +31,8 @@ from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as F
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
+from ageborn_art import face as FC
+from units import futcos_w4 as FW
 
 SLUG = "antimatter_rifler"
 GAIT_NAME = "biped"
@@ -36,6 +42,13 @@ CANVAS = (300, 280)
 FEET = (120, 246)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 32), "muzzle": (30, 58)}
 NO_RETIME = True
+
+# W4 detail standard (look.py). The crest is team and the frames' top: no white team rim on the colour layer
+DETAIL_STANDARD = True
+LOOK_HIGHLIGHT = 0.5
+LOOK_SHADE = FW.SHADE_SOLDIER
+LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.42, team_white=0.0)
+MATERIAL_KINDS = FW.kinds_cosmic()
 
 G0 = (4.0, -15.0, 27.0)        # tube grip at rest (character space), the tube along +X above it
 TUBE_Z = 4.5                   # the tube axis sits this far above the grip
@@ -65,6 +78,16 @@ def _tube(rig, j):
     g.blob((gx + 0.5, gy + 1, gz - 1.0), (2.2, 2.0, 4.0), p=2.8, rot=(0, -12, 0))   # grip
     g.blob((gx + FORE, gy + 2, gz + 0.6), (2.0, 1.8, 3.2), p=2.8, rot=(0, -8, 0))   # fore grip
     rig.part(j, g, F.VOID_LT)
+    # (W4) the shroud's team-dark seams, seams round the barrel past the shroud, bolts on the stock
+    sf = FC.Face(rig, j, [Geo().blob((gx + 8.0, gy, tz + 0.4), (12.0, 4.2, 4.0), p=3.2)])
+    FW.folds(rig, j, sf, [[FW.sc(sf, x, tz + 3.6, gy - 3.6), FW.sc(sf, x, tz - 2.8, gy - 3.8)] for x in (gx + 1.0, gx + 9.0)],
+             w=0.8, team=True)
+    g = Geo()
+    for x in (gx + 22.0, gx + 25.0):
+        g.lathe([(0, -0.3), (2.66, -0.25), (2.66, 0.25), (0, 0.3)], (x, gy, tz), (x + 1, gy, tz), segs=14)
+    rig.part(j, g, FW.LINE_ON_VIOLET, outline=0, highlight=False)
+    KF.rivets(rig, j, [(gx - 6.0 + dx, gy - 3.3, tz - 0.6 + dz) for dx, dz in ((-1.6, 1.4), (1.6, 1.4), (0.0, -1.6))],
+              r=0.6, color=F.STAR_TRIM)
 
 
 RIG = None
@@ -101,6 +124,23 @@ def build(rig):
     rig.part("held_shell", g, glow=W.MINT, outline=0.8, outline_hex="#1C8A6A")
     rig.track("muzzle", "tube", MUZZLE)
     KI.loose(rig, "tube_loose", G0, lambda j: _tube(rig, j))
+    FW.cosmic_helmet(rig, "dome")
+    FW.cosmic_body(rig)
+    rf = FC.Face(rig, "torso", [Geo().blob((-13.5, 0, 31.0), (2.6, 8.6, 10.0), p=3.4)])
+    FW.panel_lines(rig, "torso", rf, [[FW.sc(rf, -13.6, z, -8.4), FW.sc(rf, -15.6, z, -7.4)] for z in (28.0, 34.0)],
+                   fill=FW.LINE_ON_STAR, w=0.7)
+    if getattr(rig, "skin", None) is None:
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, soldier): the violet dome, the near team pad, the violet hip skirt, the
+    back rack's frame, the near team greave."""
+    rig.damage_spot_at("helmet", "head", -6.0, 48.0, 5.0, "metal", fill=F.VIOLET)
+    rig.damage_spot_at("pauldron", "arm_r", 0.5, 39.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("skirt", "hips", -4.0, 15.6, 5.0, "metal", fill=F.VIOLET_DK)
+    rig.damage_spot("rack", "torso", (-14.0, -8.0, 30.0), 5.0, "metal", normal=(-0.3, -0.95, 0))
+    rig.damage_spot("greave", "shin_r", (1.9, -F.LEG_Y - 4.2, 8.8), 5.0, "metal", team=True, normal=(0, -1, 0))
 
 
 def hold(gx, gz, deg):

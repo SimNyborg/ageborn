@@ -2,9 +2,9 @@
  "frames": {
   "star_mortar_idle_00": {
    "frame": {
-    "x": 79,
-    "y": 202,
-    "w": 62,
+    "x": 721,
+    "y": 108,
+    "w": 65,
     "h": 85
    },
    "rotated": false,
@@ -12,7 +12,7 @@
    "spriteSourceSize": {
     "x": 92,
     "y": 125,
-    "w": 62,
+    "w": 65,
     "h": 85
    },
    "sourceSize": {
@@ -26,8 +26,8 @@
   },
   "star_mortar_idle_00_team": {
    "frame": {
-    "x": 220,
-    "y": 378,
+    "x": 611,
+    "y": 289,
     "w": 51,
     "h": 80
    },
@@ -50,9 +50,9 @@
   },
   "star_mortar_idle_01": {
    "frame": {
-    "x": 570,
+    "x": 462,
     "y": 108,
-    "w": 62,
+    "w": 64,
     "h": 87
    },
    "rotated": false,
@@ -60,7 +60,7 @@
    "spriteSourceSize": {
     "x": 93,
     "y": 124,
-    "w": 62,
+    "w": 64,
     "h": 87
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "star_mortar_idle_01_team": {
    "frame": {
-    "x": 54,
-    "y": 378,
+    "x": 445,
+    "y": 289,
     "w": 50,
     "h": 81
    },
@@ -98,9 +98,9 @@
   },
   "star_mortar_idle_02": {
    "frame": {
-    "x": 2,
-    "y": 108,
-    "w": 60,
+    "x": 832,
+    "y": 2,
+    "w": 62,
     "h": 90
    },
    "rotated": false,
@@ -108,7 +108,7 @@
    "spriteSourceSize": {
     "x": 94,
     "y": 121,
-    "w": 60,
+    "w": 62,
     "h": 90
    },
    "sourceSize": {
@@ -122,9 +122,9 @@
   },
   "star_mortar_idle_02_team": {
    "frame": {
-    "x": 108,
-    "y": 291,
-    "w": 48,
+    "x": 523,
+    "y": 201,
+    "w": 47,
     "h": 83
    },
    "rotated": false,
@@ -132,7 +132,7 @@
    "spriteSourceSize": {
     "x": 97,
     "y": 116,
-    "w": 48,
+    "w": 47,
     "h": 83
    },
    "sourceSize": {
@@ -146,9 +146,9 @@
   },
   "star_mortar_idle_03": {
    "frame": {
-    "x": 433,
+    "x": 434,
     "y": 2,
-    "w": 60,
+    "w": 62,
     "h": 92
    },
    "rotated": false,
@@ -156,7 +156,7 @@
    "spriteSourceSize": {
     "x": 94,
     "y": 119,
-    "w": 60,
+    "w": 62,
     "h": 92
    },
    "sourceSize": {
@@ -170,17 +170,17 @@
   },
   "star_mortar_idle_03_team": {
    "frame": {
-    "x": 145,
-    "y": 202,
-    "w": 47,
+    "x": 790,
+    "y": 108,
+    "w": 46,
     "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 98,
     "y": 114,
-    "w": 47,
+    "w": 46,
     "h": 85
    },
    "sourceSize": {
@@ -194,9 +194,9 @@
   },
   "star_mortar_idle_04": {
    "frame": {
-    "x": 560,
+    "x": 563,
     "y": 2,
-    "w": 61,
+    "w": 63,
     "h": 91
    },
    "rotated": false,
@@ -204,7 +204,7 @@
    "spriteSourceSize": {
     "x": 93,
     "y": 120,
-    "w": 61,
+    "w": 63,
     "h": 91
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "star_mortar_idle_04_team": {
    "frame": {
-    "x": 461,
-    "y": 202,
+    "x": 101,
+    "y": 201,
     "w": 47,
     "h": 84
    },
@@ -242,9 +242,9 @@
   },
   "star_mortar_idle_05": {
    "frame": {
-    "x": 248,
+    "x": 67,
     "y": 108,
-    "w": 62,
+    "w": 64,
     "h": 88
    },
    "rotated": false,
@@ -252,7 +252,7 @@
    "spriteSourceSize": {
     "x": 92,
     "y": 123,
-    "w": 62,
+    "w": 64,
     "h": 88
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "star_mortar_idle_05_team": {
    "frame": {
-    "x": 563,
-    "y": 291,
+    "x": 121,
+    "y": 289,
     "w": 49,
     "h": 82
    },
@@ -290,9 +290,9 @@
   },
   "star_mortar_walk_00": {
    "frame": {
-    "x": 330,
-    "y": 291,
-    "w": 58,
+    "x": 2,
+    "y": 289,
+    "w": 59,
     "h": 82
    },
    "rotated": false,
@@ -300,7 +300,7 @@
    "spriteSourceSize": {
     "x": 95,
     "y": 127,
-    "w": 58,
+    "w": 59,
     "h": 82
    },
    "sourceSize": {
@@ -314,17 +314,17 @@
   },
   "star_mortar_walk_00_team": {
    "frame": {
-    "x": 554,
-    "y": 378,
-    "w": 53,
+    "x": 2,
+    "y": 375,
+    "w": 52,
     "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
+    "x": 101,
     "y": 123,
-    "w": 53,
+    "w": 52,
     "h": 78
    },
    "sourceSize": {
@@ -338,18 +338,18 @@
   },
   "star_mortar_walk_01": {
    "frame": {
-    "x": 392,
-    "y": 291,
-    "w": 56,
-    "h": 82
+    "x": 383,
+    "y": 289,
+    "w": 58,
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 96,
-    "y": 129,
-    "w": 56,
-    "h": 82
+    "y": 130,
+    "w": 58,
+    "h": 81
    },
    "sourceSize": {
     "w": 257,
@@ -362,8 +362,8 @@
   },
   "star_mortar_walk_01_team": {
    "frame": {
-    "x": 282,
-    "y": 464,
+    "x": 536,
+    "y": 375,
     "w": 48,
     "h": 74
    },
@@ -386,18 +386,18 @@
   },
   "star_mortar_walk_02": {
    "frame": {
-    "x": 128,
+    "x": 135,
     "y": 108,
-    "w": 56,
-    "h": 89
+    "w": 59,
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 96,
-    "y": 122,
-    "w": 56,
-    "h": 89
+    "y": 123,
+    "w": 59,
+    "h": 88
    },
    "sourceSize": {
     "w": 257,
@@ -410,17 +410,17 @@
   },
   "star_mortar_walk_02_team": {
    "frame": {
-    "x": 616,
-    "y": 291,
-    "w": 49,
+    "x": 280,
+    "y": 289,
+    "w": 48,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
+    "x": 103,
     "y": 118,
-    "w": 49,
+    "w": 48,
     "h": 82
    },
    "sourceSize": {
@@ -434,9 +434,9 @@
   },
   "star_mortar_walk_03": {
    "frame": {
-    "x": 314,
+    "x": 198,
     "y": 108,
-    "w": 57,
+    "w": 59,
     "h": 88
    },
    "rotated": false,
@@ -444,7 +444,7 @@
    "spriteSourceSize": {
     "x": 96,
     "y": 119,
-    "w": 57,
+    "w": 59,
     "h": 88
    },
    "sourceSize": {
@@ -458,17 +458,17 @@
   },
   "star_mortar_walk_03_team": {
    "frame": {
-    "x": 509,
-    "y": 291,
-    "w": 50,
+    "x": 174,
+    "y": 289,
+    "w": 49,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
+    "x": 102,
     "y": 114,
-    "w": 50,
+    "w": 49,
     "h": 82
    },
    "sourceSize": {
@@ -482,9 +482,9 @@
   },
   "star_mortar_walk_04": {
    "frame": {
-    "x": 644,
-    "y": 202,
-    "w": 58,
+    "x": 400,
+    "y": 201,
+    "w": 59,
     "h": 83
    },
    "rotated": false,
@@ -492,7 +492,7 @@
    "spriteSourceSize": {
     "x": 95,
     "y": 127,
-    "w": 58,
+    "w": 59,
     "h": 83
    },
    "sourceSize": {
@@ -506,17 +506,17 @@
   },
   "star_mortar_walk_04_team": {
    "frame": {
-    "x": 452,
-    "y": 291,
-    "w": 53,
+    "x": 65,
+    "y": 289,
+    "w": 52,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
+    "x": 101,
     "y": 123,
-    "w": 53,
+    "w": 52,
     "h": 82
    },
    "sourceSize": {
@@ -530,8 +530,8 @@
   },
   "star_mortar_walk_05": {
    "frame": {
-    "x": 382,
-    "y": 378,
+    "x": 772,
+    "y": 289,
     "w": 57,
     "h": 79
    },
@@ -554,10 +554,10 @@
   },
   "star_mortar_walk_05_team": {
    "frame": {
-    "x": 443,
-    "y": 378,
+    "x": 58,
+    "y": 375,
     "w": 49,
-    "h": 79
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
@@ -565,7 +565,7 @@
     "x": 101,
     "y": 125,
     "w": 49,
-    "h": 79
+    "h": 78
    },
    "sourceSize": {
     "w": 257,
@@ -578,8 +578,8 @@
   },
   "star_mortar_walk_06": {
    "frame": {
-    "x": 706,
-    "y": 202,
+    "x": 463,
+    "y": 201,
     "w": 56,
     "h": 83
    },
@@ -602,8 +602,8 @@
   },
   "star_mortar_walk_06_team": {
    "frame": {
-    "x": 329,
-    "y": 378,
+    "x": 666,
+    "y": 289,
     "w": 49,
     "h": 80
    },
@@ -626,7 +626,7 @@
   },
   "star_mortar_walk_07": {
    "frame": {
-    "x": 636,
+    "x": 530,
     "y": 108,
     "w": 58,
     "h": 86
@@ -650,17 +650,17 @@
   },
   "star_mortar_walk_07_team": {
    "frame": {
-    "x": 275,
-    "y": 378,
-    "w": 50,
+    "x": 719,
+    "y": 289,
+    "w": 49,
     "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
+    "x": 102,
     "y": 114,
-    "w": 50,
+    "w": 49,
     "h": 80
    },
    "sourceSize": {
@@ -674,9 +674,9 @@
   },
   "star_mortar_attack_00": {
    "frame": {
-    "x": 691,
+    "x": 698,
     "y": 2,
-    "w": 61,
+    "w": 63,
     "h": 90
    },
    "rotated": false,
@@ -684,7 +684,7 @@
    "spriteSourceSize": {
     "x": 93,
     "y": 121,
-    "w": 61,
+    "w": 63,
     "h": 90
    },
    "sourceSize": {
@@ -698,17 +698,17 @@
   },
   "star_mortar_attack_00_team": {
    "frame": {
-    "x": 2,
-    "y": 291,
-    "w": 49,
+    "x": 574,
+    "y": 201,
+    "w": 47,
     "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 96,
+    "x": 97,
     "y": 116,
-    "w": 49,
+    "w": 47,
     "h": 83
    },
    "sourceSize": {
@@ -722,9 +722,9 @@
   },
   "star_mortar_attack_01": {
    "frame": {
-    "x": 436,
+    "x": 322,
     "y": 108,
-    "w": 63,
+    "w": 66,
     "h": 87
    },
    "rotated": false,
@@ -732,7 +732,7 @@
    "spriteSourceSize": {
     "x": 93,
     "y": 124,
-    "w": 63,
+    "w": 66,
     "h": 87
    },
    "sourceSize": {
@@ -746,8 +746,8 @@
   },
   "star_mortar_attack_01_team": {
    "frame": {
-    "x": 108,
-    "y": 378,
+    "x": 499,
+    "y": 289,
     "w": 52,
     "h": 80
    },
@@ -770,8 +770,8 @@
   },
   "star_mortar_attack_02": {
    "frame": {
-    "x": 2,
-    "y": 202,
+    "x": 644,
+    "y": 108,
     "w": 73,
     "h": 85
    },
@@ -794,8 +794,8 @@
   },
   "star_mortar_attack_02_team": {
    "frame": {
-    "x": 496,
-    "y": 378,
+    "x": 833,
+    "y": 289,
     "w": 54,
     "h": 78
    },
@@ -818,8 +818,8 @@
   },
   "star_mortar_attack_03": {
    "frame": {
-    "x": 247,
-    "y": 291,
+    "x": 763,
+    "y": 201,
     "w": 79,
     "h": 82
    },
@@ -842,9 +842,9 @@
   },
   "star_mortar_attack_03_team": {
    "frame": {
-    "x": 116,
-    "y": 464,
-    "w": 54,
+    "x": 372,
+    "y": 375,
+    "w": 52,
     "h": 75
    },
    "rotated": false,
@@ -852,7 +852,7 @@
    "spriteSourceSize": {
     "x": 100,
     "y": 124,
-    "w": 54,
+    "w": 52,
     "h": 75
    },
    "sourceSize": {
@@ -866,8 +866,8 @@
   },
   "star_mortar_attack_04": {
    "frame": {
-    "x": 560,
-    "y": 202,
+    "x": 250,
+    "y": 201,
     "w": 80,
     "h": 83
    },
@@ -890,17 +890,17 @@
   },
   "star_mortar_attack_04_team": {
    "frame": {
-    "x": 2,
-    "y": 464,
-    "w": 53,
+    "x": 316,
+    "y": 375,
+    "w": 52,
     "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
+    "x": 101,
     "y": 123,
-    "w": 53,
+    "w": 52,
     "h": 76
    },
    "sourceSize": {
@@ -914,8 +914,8 @@
   },
   "star_mortar_attack_05": {
    "frame": {
-    "x": 160,
-    "y": 291,
+    "x": 676,
+    "y": 201,
     "w": 83,
     "h": 82
    },
@@ -938,8 +938,8 @@
   },
   "star_mortar_attack_05_team": {
    "frame": {
-    "x": 59,
-    "y": 464,
+    "x": 259,
+    "y": 375,
     "w": 53,
     "h": 76
    },
@@ -962,7 +962,7 @@
   },
   "star_mortar_attack_06": {
    "frame": {
-    "x": 350,
+    "x": 351,
     "y": 2,
     "w": 79,
     "h": 93
@@ -986,9 +986,9 @@
   },
   "star_mortar_attack_06_team": {
    "frame": {
-    "x": 408,
-    "y": 202,
-    "w": 49,
+    "x": 152,
+    "y": 201,
+    "w": 46,
     "h": 84
    },
    "rotated": false,
@@ -996,7 +996,7 @@
    "spriteSourceSize": {
     "x": 101,
     "y": 116,
-    "w": 49,
+    "w": 46,
     "h": 84
    },
    "sourceSize": {
@@ -1010,7 +1010,7 @@
   },
   "star_mortar_attack_07": {
    "frame": {
-    "x": 289,
+    "x": 290,
     "y": 2,
     "w": 57,
     "h": 95
@@ -1034,8 +1034,8 @@
   },
   "star_mortar_attack_07_team": {
    "frame": {
-    "x": 174,
-    "y": 464,
+    "x": 428,
+    "y": 375,
     "w": 50,
     "h": 75
    },
@@ -1058,7 +1058,7 @@
   },
   "star_mortar_attack_08": {
    "frame": {
-    "x": 2,
+    "x": 100,
     "y": 2,
     "w": 53,
     "h": 102
@@ -1082,8 +1082,8 @@
   },
   "star_mortar_attack_08_team": {
    "frame": {
-    "x": 196,
-    "y": 202,
+    "x": 840,
+    "y": 108,
     "w": 45,
     "h": 85
    },
@@ -1106,9 +1106,9 @@
   },
   "star_mortar_attack_09": {
    "frame": {
-    "x": 188,
+    "x": 2,
     "y": 108,
-    "w": 56,
+    "w": 61,
     "h": 89
    },
    "rotated": false,
@@ -1116,7 +1116,7 @@
    "spriteSourceSize": {
     "x": 92,
     "y": 122,
-    "w": 56,
+    "w": 61,
     "h": 89
    },
    "sourceSize": {
@@ -1130,17 +1130,17 @@
   },
   "star_mortar_attack_09_team": {
    "frame": {
-    "x": 2,
-    "y": 378,
-    "w": 48,
+    "x": 332,
+    "y": 289,
+    "w": 47,
     "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
+    "x": 96,
     "y": 117,
-    "w": 48,
+    "w": 47,
     "h": 82
    },
    "sourceSize": {
@@ -1154,9 +1154,9 @@
   },
   "star_mortar_attack_10": {
    "frame": {
-    "x": 66,
-    "y": 108,
-    "w": 58,
+    "x": 765,
+    "y": 2,
+    "w": 63,
     "h": 90
    },
    "rotated": false,
@@ -1164,7 +1164,7 @@
    "spriteSourceSize": {
     "x": 93,
     "y": 121,
-    "w": 58,
+    "w": 63,
     "h": 90
    },
    "sourceSize": {
@@ -1178,17 +1178,17 @@
   },
   "star_mortar_attack_10_team": {
    "frame": {
-    "x": 55,
-    "y": 291,
-    "w": 49,
+    "x": 625,
+    "y": 201,
+    "w": 47,
     "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 96,
+    "x": 97,
     "y": 116,
-    "w": 49,
+    "w": 47,
     "h": 83
    },
    "sourceSize": {
@@ -1202,18 +1202,18 @@
   },
   "star_mortar_hit_00": {
    "frame": {
-    "x": 342,
-    "y": 202,
+    "x": 334,
+    "y": 201,
     "w": 62,
-    "h": 84
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 83,
-    "y": 126,
+    "y": 127,
     "w": 62,
-    "h": 84
+    "h": 83
    },
    "sourceSize": {
     "w": 257,
@@ -1226,8 +1226,8 @@
   },
   "star_mortar_hit_00_team": {
    "frame": {
-    "x": 228,
-    "y": 464,
+    "x": 482,
+    "y": 375,
     "w": 50,
     "h": 75
    },
@@ -1250,7 +1250,7 @@
   },
   "star_mortar_hit_01": {
    "frame": {
-    "x": 232,
+    "x": 233,
     "y": 2,
     "w": 53,
     "h": 96
@@ -1274,7 +1274,7 @@
   },
   "star_mortar_hit_01_team": {
    "frame": {
-    "x": 698,
+    "x": 592,
     "y": 108,
     "w": 48,
     "h": 86
@@ -1298,7 +1298,7 @@
   },
   "star_mortar_hit_02": {
    "frame": {
-    "x": 497,
+    "x": 500,
     "y": 2,
     "w": 59,
     "h": 92
@@ -1322,8 +1322,8 @@
   },
   "star_mortar_hit_02_team": {
    "frame": {
-    "x": 512,
-    "y": 202,
+    "x": 202,
+    "y": 201,
     "w": 44,
     "h": 84
    },
@@ -1346,9 +1346,9 @@
   },
   "star_mortar_hit_03": {
    "frame": {
-    "x": 503,
+    "x": 392,
     "y": 108,
-    "w": 63,
+    "w": 66,
     "h": 87
    },
    "rotated": false,
@@ -1356,7 +1356,7 @@
    "spriteSourceSize": {
     "x": 92,
     "y": 124,
-    "w": 63,
+    "w": 66,
     "h": 87
    },
    "sourceSize": {
@@ -1370,8 +1370,8 @@
   },
   "star_mortar_hit_03_team": {
    "frame": {
-    "x": 164,
-    "y": 378,
+    "x": 555,
+    "y": 289,
     "w": 52,
     "h": 80
    },
@@ -1394,9 +1394,9 @@
   },
   "star_mortar_hit_04": {
    "frame": {
-    "x": 625,
+    "x": 630,
     "y": 2,
-    "w": 62,
+    "w": 64,
     "h": 90
    },
    "rotated": false,
@@ -1404,7 +1404,7 @@
    "spriteSourceSize": {
     "x": 92,
     "y": 121,
-    "w": 62,
+    "w": 64,
     "h": 90
    },
    "sourceSize": {
@@ -1418,8 +1418,8 @@
   },
   "star_mortar_hit_04_team": {
    "frame": {
-    "x": 669,
-    "y": 291,
+    "x": 227,
+    "y": 289,
     "w": 49,
     "h": 82
    },
@@ -1442,18 +1442,18 @@
   },
   "star_mortar_die_00": {
    "frame": {
-    "x": 685,
-    "y": 378,
-    "w": 64,
-    "h": 77
+    "x": 185,
+    "y": 375,
+    "w": 70,
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 125,
-    "w": 64,
-    "h": 77
+    "y": 126,
+    "w": 70,
+    "h": 76
    },
    "sourceSize": {
     "w": 257,
@@ -1466,8 +1466,8 @@
   },
   "star_mortar_die_00_team": {
    "frame": {
-    "x": 334,
-    "y": 464,
+    "x": 588,
+    "y": 375,
     "w": 50,
     "h": 70
    },
@@ -1490,18 +1490,18 @@
   },
   "star_mortar_die_01": {
    "frame": {
-    "x": 2,
-    "y": 544,
+    "x": 136,
+    "y": 457,
     "w": 98,
-    "h": 60
+    "h": 64
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 62,
-    "y": 125,
+    "y": 121,
     "w": 98,
-    "h": 60
+    "h": 64
    },
    "sourceSize": {
     "w": 257,
@@ -1514,8 +1514,8 @@
   },
   "star_mortar_die_01_team": {
    "frame": {
-    "x": 565,
-    "y": 544,
+    "x": 699,
+    "y": 457,
     "w": 93,
     "h": 45
    },
@@ -1538,7 +1538,7 @@
   },
   "star_mortar_die_02": {
    "frame": {
-    "x": 59,
+    "x": 157,
     "y": 2,
     "w": 72,
     "h": 98
@@ -1562,7 +1562,7 @@
   },
   "star_mortar_die_02_team": {
    "frame": {
-    "x": 375,
+    "x": 261,
     "y": 108,
     "w": 57,
     "h": 88
@@ -1586,9 +1586,9 @@
   },
   "star_mortar_die_03": {
    "frame": {
-    "x": 245,
-    "y": 202,
-    "w": 93,
+    "x": 2,
+    "y": 201,
+    "w": 95,
     "h": 84
    },
    "rotated": false,
@@ -1596,7 +1596,7 @@
    "spriteSourceSize": {
     "x": 78,
     "y": 109,
-    "w": 93,
+    "w": 95,
     "h": 84
    },
    "sourceSize": {
@@ -1610,8 +1610,8 @@
   },
   "star_mortar_die_03_team": {
    "frame": {
-    "x": 611,
-    "y": 378,
+    "x": 111,
+    "y": 375,
     "w": 70,
     "h": 77
    },
@@ -1634,18 +1634,18 @@
   },
   "star_mortar_die_04": {
    "frame": {
-    "x": 135,
+    "x": 2,
     "y": 2,
-    "w": 93,
-    "h": 97
+    "w": 94,
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 68,
-    "y": 124,
-    "w": 93,
-    "h": 97
+    "y": 119,
+    "w": 94,
+    "h": 102
    },
    "sourceSize": {
     "w": 257,
@@ -1658,8 +1658,8 @@
   },
   "star_mortar_die_04_team": {
    "frame": {
-    "x": 388,
-    "y": 464,
+    "x": 642,
+    "y": 375,
     "w": 85,
     "h": 69
    },
@@ -1682,8 +1682,8 @@
   },
   "star_mortar_die_05": {
    "frame": {
-    "x": 220,
-    "y": 544,
+    "x": 354,
+    "y": 457,
     "w": 119,
     "h": 53
    },
@@ -1706,8 +1706,8 @@
   },
   "star_mortar_die_05_team": {
    "frame": {
-    "x": 454,
-    "y": 544,
+    "x": 588,
+    "y": 457,
     "w": 107,
     "h": 46
    },
@@ -1730,9 +1730,9 @@
   },
   "star_mortar_die_06": {
    "frame": {
-    "x": 477,
-    "y": 464,
-    "w": 126,
+    "x": 731,
+    "y": 375,
+    "w": 131,
     "h": 65
    },
    "rotated": false,
@@ -1740,7 +1740,7 @@
    "spriteSourceSize": {
     "x": 60,
     "y": 155,
-    "w": 126,
+    "w": 131,
     "h": 65
    },
    "sourceSize": {
@@ -1754,8 +1754,8 @@
   },
   "star_mortar_die_06_team": {
    "frame": {
-    "x": 104,
-    "y": 544,
+    "x": 238,
+    "y": 457,
     "w": 112,
     "h": 54
    },
@@ -1778,9 +1778,9 @@
   },
   "star_mortar_die_07": {
    "frame": {
-    "x": 607,
-    "y": 464,
-    "w": 124,
+    "x": 2,
+    "y": 457,
+    "w": 130,
     "h": 65
    },
    "rotated": false,
@@ -1788,7 +1788,7 @@
    "spriteSourceSize": {
     "x": 61,
     "y": 154,
-    "w": 124,
+    "w": 130,
     "h": 65
    },
    "sourceSize": {
@@ -1802,8 +1802,8 @@
   },
   "star_mortar_die_07_team": {
    "frame": {
-    "x": 343,
-    "y": 544,
+    "x": 477,
+    "y": 457,
     "w": 107,
     "h": 52
    },
@@ -1933,15 +1933,15 @@
   "image": "star_mortar.png",
   "format": "RGBA8888",
   "size": {
-   "w": 768,
-   "h": 608
+   "w": 896,
+   "h": 524
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.star_mortar",
    "name": "Star Mortar",
    "heightLu": 70,
-   "widthLu": 44.3,
+   "widthLu": 45.9,
    "pxPerLu": 1.23,
    "feetPx": [
     122.0,
@@ -2277,7 +2277,7 @@
         0,
         25.2
        ],
-       "scale": 0.554
+       "scale": 0.574
       },
       {
        "id": "fx.ko_stars",
@@ -2287,7 +2287,7 @@
         38.5
        ],
        "loops": 2,
-       "scale": 0.744
+       "scale": 0.757
       }
      ],
      "hideUnitAtMs": 695,

@@ -50,18 +50,18 @@
   },
   "nova_thrower_attack_b_02": {
    "frame": {
-    "x": 102,
+    "x": 217,
     "y": 2,
     "w": 104,
-    "h": 178
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 202,
+    "y": 203,
     "w": 104,
-    "h": 178
+    "h": 177
    },
    "sourceSize": {
     "w": 514,
@@ -98,7 +98,7 @@
   },
   "nova_thrower_attack_b_03": {
    "frame": {
-    "x": 210,
+    "x": 102,
     "y": 2,
     "w": 111,
     "h": 177
@@ -172,15 +172,15 @@
    "frame": {
     "x": 276,
     "y": 363,
-    "w": 90,
+    "w": 88,
     "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 209,
+    "x": 210,
     "y": 193,
-    "w": 90,
+    "w": 88,
     "h": 164
    },
    "sourceSize": {
@@ -220,15 +220,15 @@
    "frame": {
     "x": 100,
     "y": 533,
-    "w": 97,
+    "w": 96,
     "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 226,
+    "x": 227,
     "y": 199,
-    "w": 97,
+    "w": 96,
     "h": 160
    },
    "sourceSize": {
@@ -266,7 +266,7 @@
   },
   "nova_thrower_attack_b_06_team": {
    "frame": {
-    "x": 303,
+    "x": 302,
     "y": 533,
     "w": 97,
     "h": 154
@@ -314,7 +314,7 @@
   },
   "nova_thrower_attack_b_07_team": {
    "frame": {
-    "x": 201,
+    "x": 200,
     "y": 533,
     "w": 98,
     "h": 156
