@@ -9,9 +9,9 @@
 import { Texture, type Container, type Sprite } from 'pixi.js';
 import { describe, expect, it } from 'vitest';
 import type { UnitView, VisualDef } from '@/contracts/art';
-import { aimWantDeg, ARC_MIN_LOFT_DEG, MAX_LAUNCH_DEG, pickAimVariant } from '@/render/aim';
+import { aimWantDeg, ARC_MIN_LOFT_DEG, leanFor, MAX_LAUNCH_DEG, pickAimVariant } from '@/render/aim';
 import { AtlasAdapter, type AtlasData } from '../adapters/atlas';
-import { AIMED_SLACK_DEG, aimedBaseOf, aimedNamesOf, aimLevelOf, clipAimOf, pickAimedClip, releasePoint, type AimCandidate } from '../adapters/atlasAim';
+import { AIMED_SLACK_DEG, aimedBaseOf, aimedLean, aimedNamesOf, aimLevelOf, clipAimOf, pickAimedClip, releasePoint, type AimCandidate } from '../adapters/atlasAim';
 import { MANIFEST } from '../manifest';
 import { createArtProvider } from '../provider';
 
@@ -68,6 +68,26 @@ describe('choosing the aimed clip (atlasAim.ts)', () => {
     expect(pickAimedClip([C[0]!], 60)).toBe(0);
     expect(pickAimedClip([], 60)).toBe(0);
     expect(pickAimedClip(C, Number.NaN)).toBe(0);
+  });
+
+  it("an aimed clip's lean goes only its own way, and the clip is chosen with that reach (the W4 review's rifle dip)", () => {
+    // a lean held against an aimed clip outlives its aimed frames (its wind-up and recovery and the idle between shots
+    // draw the base clip's pose): never down for an up-aimed clip, never up for a down-aimed one
+    expect(aimedLean('up45', -14)).toBe(0);
+    expect(aimedLean('up70', 6)).toBe(6);
+    expect(aimedLean('down', 9)).toBe(0);
+    expect(aimedLean('down', -4)).toBe(-4);
+    expect(aimedLean('', -14)).toBe(-14);
+    // the Ion Ranger's levels and a biped's 14 degree lean: the base clip reaches -19.9..8.1, up45 45.1..59.1, up70 70..84
+    const ion: AimCandidate[] = [{ anim: 'attack', deg: -5.9 }, { anim: 'attack_up45', deg: 45.1 }, { anim: 'attack_up70', deg: 70 }];
+    const at = (want: number, lean = 14): string => ion[pickAimedClip(ion, want, null, lean)]!.anim;
+    expect(at(20)).toBe('attack');          // 11.9 short leaned up, against 25.1 over drawn up
+    expect(at(31)).toBe('attack_up45');     // 14.1 over against 22.9 short
+    expect(at(60)).toBe('attack_up45');     // up45 leaned 14.9 up, short by 0.9
+    expect(at(65)).toBe('attack_up70');     // 5 over against 5.9 short
+    expect(at(5)).toBe('attack');
+    // without a lean the drawn angle alone decides, as before
+    expect(at(20, 0)).toBe('attack_up45');
   });
 
   it('the launch angle a shot asks for: down the line, an arc with its least loft (render/aim.ts)', () => {
@@ -312,6 +332,26 @@ describe('the atlas view plays the aimed clip of its variant (contract C2)', () 
     plain.playAlt({ impactAtMs: 300 });
     plain.update(16);
     expect(onScreen(plain)).toBe('attack_alt:0');
+  });
+
+  it("an up-aimed shot drawn above its target never leans the weapon under the base pose, during the shot or after it (the W4 review's rifle dip)", () => {
+    const v = view(sheet());
+    const max = v.aimInfo()?.maxLeanDeg ?? 0;
+    expect(max).toBeGreaterThan(0);
+    // the target 31 degrees up: the base clip leaned up falls short, so the shot plays attack_up45 (drawn at 44.6)
+    v.play('attack', { impactAtMs: 300, aimAt: 31 } as never);
+    v.update(16);
+    expect(onScreen(v)).toBe('attack_up45:0');
+    // the battle view asks every frame for the lean from the drawn weapon to the target: about 14 down
+    let low = 0;
+    for (let t = 0; t < 1600; t += 16) {
+      const now = v.aimNow(0)!;
+      v.aimLean(leanFor('direct', 31, now.drawnDeg, max));
+      v.update(16);
+      low = Math.min(low, v.aimNow(0)!.leanDeg);
+    }
+    // the clip and the idle after it draw the base pose at its ends: a lean held down would dip it under level
+    expect(low).toBeGreaterThanOrEqual(-0.5);
   });
 
   it('the lean covers the residual: between shots the weapon counts as aimed as in the last (aimed) shot', () => {
