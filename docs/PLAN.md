@@ -234,3 +234,6 @@ what we believe, how sure we are, and what we post next because of it.
   one hit per name; Steve v4, no subtitles) posted 18:47 UTC. ElevenLabs credits are nearly used up (31 left after
   DV19's 362), so narration stops until the owner's quota renews or is raised. Browser paths and studio/assets/
   game.json refreshed for the updated container and game.
+- 2026-11-17 evening: DV19 110 reach in 2 h, 57 % skip, 72 % watch (17.6 s of 24.5 s), the highest watch share of
+  any devlog, and its first save. One post, so no belief changes; it supports the 11-12 direction (ages, art,
+  animation). Followers 158.
