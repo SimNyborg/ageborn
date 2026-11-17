@@ -1,0 +1,112 @@
+{
+  "fut_a_phone": {"query": "left=future&right=future&seed=61", "bars": false, "vp": "phone", "tags": ["before", "after"], "range": [60, 156], "every": 4, "spawns": [
+      [0, "photon_knight", 830, 0],
+      [0, "pulse_trooper", 760, 0],
+      [0, "rail_gunner", 740, 0],
+      [0, "walker_mech", 800, 20],
+      [1, "needle_gunner", 830, 0],
+      [1, "barrier_trooper", 815, 0],
+      [1, "crab_mech", 800, 10],
+      [1, "arc_lobber", 760, 0]
+    ]
+  },
+  "fut_b_phone": {"query": "left=future&right=future&seed=62", "bars": false, "vp": "phone", "tags": ["before", "after"], "range": [60, 156], "every": 4, "spawns": [
+      [0, "plasma_lancer", 830, 0],
+      [0, "overclock_engineer", 760, 0],
+      [0, "holo_projector", 750, 0],
+      [0, "particle_cannon", 700, 0],
+      [1, "emp_saboteur", 830, 0],
+      [1, "overload_android", 815, 0],
+      [1, "hover_bike", 800, 10],
+      [1, "android_pair", 790, 0]
+    ]
+  },
+  "fut_c_phone": {"query": "left=future&right=future&seed=63", "bars": false, "vp": "phone", "tags": ["before", "after"], "range": [60, 166], "every": 4, "spawns": [
+      [0, "chrono_titan", 830, 0],
+      [0, "holo_decoy", 800, 0],
+      [1, "drone_carrier", 830, 0],
+      [1, "repair_drone", 790, 0]
+    ]
+  },
+  "cos_a_phone": {"query": "left=cosmic&right=cosmic&seed=64", "bars": false, "vp": "phone", "tags": ["before", "after"], "range": [60, 156], "every": 4, "spawns": [
+      [0, "star_legionnaire", 830, 0],
+      [0, "ion_ranger", 760, 0],
+      [0, "hover_tank", 800, 10],
+      [0, "graviton_halberdier", 815, 0],
+      [1, "crystal_guard", 830, 0],
+      [1, "void_skimmer", 815, 10],
+      [1, "nova_thrower", 760, 0],
+      [1, "asteroid_golem", 800, 20]
+    ]
+  },
+  "cos_b_phone": {"query": "left=cosmic&right=cosmic&seed=65", "bars": false, "vp": "phone", "tags": ["before", "after"], "range": [60, 156], "every": 4, "spawns": [
+      [0, "warp_stalker", 830, 0],
+      [0, "starwarden", 760, 0],
+      [0, "star_mortar", 700, 0],
+      [0, "antimatter_rifler", 760, 0],
+      [1, "swarm_matron", 815, 0],
+      [1, "bio_weaver", 760, 0],
+      [1, "void_whisperer", 760, 0],
+      [1, "gravity_sage", 750, 0]
+    ]
+  },
+  "cos_c_phone": {"query": "left=cosmic&right=cosmic&seed=66", "bars": false, "vp": "phone", "tags": ["before", "after"], "range": [60, 166], "every": 4, "spawns": [
+      [0, "star_leviathan", 830, 0],
+      [0, "moonlings", 760, 0],
+      [1, "mothership", 830, 0],
+      [1, "star_fighter", 800, 0]
+    ]
+  },
+  "air_fut_phone": {"query": "left=future&right=cosmic&seed=67", "bars": false, "vp": "phone", "tags": ["before", "after"], "range": [60, 166], "every": 4, "spawns": [
+      [0, "pulse_trooper", 830, 0],
+      [0, "rail_gunner", 805, 0],
+      [0, "needle_gunner", 780, 0],
+      [0, "overclock_engineer", 760, 0],
+      [0, "holo_projector", 745, 0],
+      [0, "attack_drone", 800, 0],
+      [1, "star_fighter", 860, 0],
+      [1, "mothership", 840, 0]
+    ]
+  },
+  "air_cos_phone": {"query": "left=cosmic&right=future&seed=68", "bars": false, "vp": "phone", "tags": ["before", "after"], "range": [60, 166], "every": 4, "spawns": [
+      [0, "ion_ranger", 830, 0],
+      [0, "starwarden", 805, 0],
+      [0, "moonlings", 780, 0],
+      [0, "swarm_matron", 760, 0],
+      [0, "star_fighter", 800, 0],
+      [1, "jetpack_trooper", 860, 0],
+      [1, "attack_drone", 850, 0],
+      [1, "pulse_trooper", 830, 0]
+    ]
+  },
+  "fut_a_desktop_stills": {"query": "left=future&right=future&seed=61", "bars": false, "vp": "desktop", "tags": ["before", "after"], "range": [80, 110], "every": 30, "spawns": [
+      [0, "photon_knight", 830, 0],
+      [0, "pulse_trooper", 760, 0],
+      [0, "rail_gunner", 740, 0],
+      [0, "walker_mech", 800, 20],
+      [1, "needle_gunner", 830, 0],
+      [1, "barrier_trooper", 815, 0],
+      [1, "crab_mech", 800, 10],
+      [1, "arc_lobber", 760, 0]
+    ]
+  },
+  "cos_a_desktop_stills": {"query": "left=cosmic&right=cosmic&seed=64", "bars": false, "vp": "desktop", "tags": ["before", "after"], "range": [80, 110], "every": 30, "spawns": [
+      [0, "star_legionnaire", 830, 0],
+      [0, "ion_ranger", 760, 0],
+      [0, "hover_tank", 800, 10],
+      [0, "graviton_halberdier", 815, 0],
+      [1, "crystal_guard", 830, 0],
+      [1, "void_skimmer", 815, 10],
+      [1, "nova_thrower", 760, 0],
+      [1, "asteroid_golem", 800, 20]
+    ]
+  },
+  "dmg_titan_phone": {"query": "left=future&right=cosmic&seed=69", "bars": true, "vp": "phone", "tags": ["after"], "range": [50, 450], "every": 8, "track": 0, "trackWidth": 620, "spawns": [
+      [0, "chrono_titan", 830, 0],
+      [1, "asteroid_golem", 830, 0],
+      [1, "antimatter_rifler", 760, 0],
+      [1, "star_mortar", 700, 0],
+      [1, "crystal_guard", 815, 0]
+    ]
+  }
+}
