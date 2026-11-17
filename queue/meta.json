@@ -5,12 +5,5 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
-  },
-  "dv19-one-soldier-eight-ages": {
-    "length_s": 24.5,
-    "format": "devlog",
-    "hook_type": "evolution",
-    "experiment": "ages-art",
-    "arm": "devlog"
   }
 }

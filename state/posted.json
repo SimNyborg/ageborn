@@ -756,6 +756,21 @@
    "arm": "devlog",
    "voice": "elevenlabs-steve-v4",
    "subtitles": false
+  },
+  {
+   "id": "18356070367271248",
+   "permalink": "https://www.instagram.com/reel/Df2m4tHEUOm/",
+   "timestamp": "2026-11-17T18:47:08+0000",
+   "name": "dv19-one-soldier-eight-ages",
+   "kind": "reel",
+   "pillar": "devlog",
+   "hook": "One soldier, eight ages",
+   "trial": false,
+   "length_s": 24.5,
+   "format": "devlog",
+   "hook_type": "evolution",
+   "experiment": "ages-art",
+   "arm": "devlog"
   }
  ]
 }
