@@ -53,8 +53,11 @@ What drives traction, strongest evidence first. "Confirmed" needs n >= 3 per var
 
 - Narration credits (blocker): ElevenLabs has 31 credits left; one Reel needs about 300-400. Owner to choose: wait
   for the monthly renewal, or use the Kokoro fallback until then (asked 2026-11-17 and 11-18).
-- Next Reels when narration is back, in order: DV20 dilemma "screen shake or not" (script saved 11-18), then its
+- Next Reels when narration is back, in order: DV21 capsule dilemma (owner request 11-18, see below), DV20 dilemma "screen shake or not" (script saved 11-18), then its
   result follow-up (series test, T9), then an age showcase (heavies or bases across eight ages, T3).
+- DV21 capsule test (owner request 2026-11-18): a capsule reveal narrated by Steve, framed as a design dilemma
+  ("watch the rarity climb, or a surprise at the end?"), on fresh R9 footage (first Aeon capsule). The five earlier
+  capsule Reels were music-only, so T7 does not cover a narrated one; this tests that. Compare with DV18/DV19.
 - T9 check after 3 series posts: do followers per posting day rise above +2? If not, try a different reason to
   follow (a weekly "you decided" round-up).
 - T11 shares: still nothing works. Keep the 10-19 indie-ask learning (IA1 got 1 share): an honest personal line
