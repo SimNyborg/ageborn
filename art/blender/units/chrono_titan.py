@@ -138,6 +138,20 @@ def build(rig):
     rig.part("halo", g, glow=F.MAGENTA, outline=0.8, outline_hex=F.SUIT)
     g = Geo().capsule((-10.0, 8.0, 135.0), (hx + 2.0, hy, hz - 2.0), 3.6)
     rig.part("torso", g, F.GUNMETAL, finish="metal")
+    if getattr(rig, "skin", None) == GC:
+        # (the W4 review's nit 1) the Grandfather Clock's halo is a clock at a glance: an ivory dial fills its centre
+        # inside the team-dark chapter ring and the lamp ticks, with two iron hands and a brass boss (the walnut hub
+        # was plain; the skin's largest shape, and no outline changes)
+        g = Geo().lathe([(0, -0.4), (16.4, -0.3), (16.4, 0.3), (0, 0.4)], (hx, hy - 2.6, hz), (hx, hy - 1.6, hz), segs=40)
+        rig.part("halo", g, DIAL_HEX, finish="gloss", outline=0.6, outline_hex=F.TRIM)
+        g = Geo()
+        for ang, ln, w in ((125.0, 9.5, 1.6), (35.0, 13.6, 1.1)):
+            a = math.radians(ang)
+            g.capsule((hx, hy - 3.4, hz), (hx + ln * math.cos(a), hy - 3.4, hz + ln * math.sin(a)), w, w * 0.55,
+                      segs=8, rings=2)
+        rig.part("halo", g, SPINE_HEX, finish="metal", outline=0)
+        g = Geo().sphere((hx, hy - 3.8, hz), 1.9, cuts=2)
+        rig.part("halo", g, F.TRIM, finish="metal", outline=0.5, outline_hex=SPINE_HEX)
 
     # far arm (behind the body)
     _arm(rig, "l")

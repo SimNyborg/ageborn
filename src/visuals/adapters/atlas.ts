@@ -46,7 +46,7 @@ import { partSprite, PuffList, tintPartSprite } from './procedural/shared';
 import { aimedBulge, classicBulge } from '../effects/flight';
 import { leanPolicyOf, unitAimFor, type ClipAim, type LeanPolicy, type UnitAim } from '../unitAim';
 import { aimedBaseOf, aimedNamesOf, aimLevelOf, clipAimOf, pickAimedClip, type AimCandidate, type ClipRelease } from './atlasAim';
-import { aimLeanGoal, angleThroughBody, clampLean, LEAN_REDUCED_SHARE, stepLeanSpring, throughBody, type BodyXform, type LeanTiming, type SpringState } from './atlasAim';
+import { aimedLean, aimLeanGoal, angleThroughBody, clampLean, LEAN_REDUCED_SHARE, stepLeanSpring, throughBody, type BodyXform, type LeanTiming, type SpringState } from './atlasAim';
 import { damageSlug } from '../damage/families';
 import type { BlowKind, DamageEmitter, DamageStepEvent } from '../damage/types';
 import { UnitDamage } from '../damage/unitDamage';
@@ -1824,7 +1824,8 @@ class AtlasUnitView implements UnitView {
     const aimed = this.aimedOf(base);
     if (aimed.length === 0) return base;
     const candidates = [{ anim: base, deg: own.deg }, ...aimed];
-    return candidates[pickAimedClip(candidates, aimAt, prev === null ? null : aimLevelOf(prev))]?.anim ?? base;
+    const maxLean = this.leanPolicy.maxDeg * (this.reduceMotion ? LEAN_REDUCED_SHARE : 1);
+    return candidates[pickAimedClip(candidates, aimAt, prev === null ? null : aimLevelOf(prev), maxLean)]?.anim ?? base;
   }
 
   /** The body's transform as last placed: offset in the root's space, rotation, and scale per lu (x carries the facing). */
@@ -2564,7 +2565,10 @@ class AtlasUnitView implements UnitView {
       // held while the battle view aims; a stun stands the body up, a death keeps the lean in the fall
       if (this.dead) this.aimTilt.v = 0;
       else {
-        const aimWant = this.stunned ? 0 : clampLean(this.aimWant, this.leanPolicy.maxDeg, this.reduceMotion);
+        // an aimed clip's lean only goes its own way (`aimedLean`): the clip playing, else the last shot's, whose hold
+        // the gap between shots keeps (the W4 review's rifle dip)
+        const leanClip = this.action !== null && this.action.name === 'attack' ? this.action.anim : this.lastAttackAnim;
+        const aimWant = this.stunned ? 0 : aimedLean(leanClip ? aimLevelOf(leanClip) : '', clampLean(this.aimWant, this.leanPolicy.maxDeg, this.reduceMotion));
         stepLeanSpring(this.aimTilt, aimLeanGoal(aimWant, this.aimFromUpright, this.leanTiming(), this.reduceMotion), animDt, this.reduceMotion);
       }
       let rot = this.lean - (this.aimTilt.x * Math.PI) / 180;

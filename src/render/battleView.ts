@@ -43,7 +43,7 @@ import type {
 } from '@/contracts';
 import { mulberry32, xmur3, type CosmeticRng } from '@/core';
 import { reachAreaMax, type PowerReachRules } from '@/core/powerReach';
-import { ColorMatrixFilter, Graphics, Sprite, Texture, type Container } from 'pixi.js';
+import { ColorMatrixFilter, Container, Graphics, Sprite, Texture } from 'pixi.js';
 import { aimedPath, attackAt, firesVisual, leanFor, lineDeg, lineDegXY, pickAimVariant, shotKindOf, type ShotKind, type ShotPath } from './aim';
 import { aimWantDeg } from './aim';
 import { CAMERA, Camera, type CameraHold } from './camera';
@@ -237,6 +237,35 @@ interface BaseEntry {
   dressing?: BaseDressingView;
   /** The destroyed collapse: game ms since it started and its beats (A12). */
   collapse?: { t: number; beats: CollapseBeats; fired: Set<string> };
+  /**
+   * The base waits unseen for its opening age's sheet (`openingBases`, W4 review): `view` is an empty placeholder
+   * (`pendingBaseView`), no stand-in is made, and `swapBase` makes the base once the sheet is in or the battle runs.
+   */
+  pending?: true;
+  /** Real ms left of the fade-in of a base made in place of a pending one (`swapBase`). */
+  fadeInLeftMs?: number;
+}
+
+/**
+ * The view of a base still waiting for its opening sheet (`BattleView.openingBases`, W4 review): an empty container in
+ * the base's place in the structures layer, so the base made from the sheet takes its slot. It draws nothing and has
+ * no mounts yet (a fresh battle has no turret to seat, and the battle's clock waits for the sheet).
+ */
+function pendingBaseView(): BaseView {
+  const root = new Container();
+  const none = (): void => undefined;
+  return {
+    root,
+    mountPoints: () => [],
+    setCrumble: none,
+    setTreasury: none,
+    morphTo: none,
+    lastStandGlow: none,
+    hit: none,
+    collapse: none,
+    update: none,
+    destroy: () => root.destroy({ children: true }),
+  };
 }
 
 /** The beats of a destroyed base's collapse (game ms from its start) and its sound material. */
@@ -431,7 +460,8 @@ export class BattleView {
   /**
    * The opening bases' sheets still loading (review S2: a battle opening in a later age on a fresh page drew
    * code bases for the whole battle): the battle's clock waits for them (`artReady`), and each base is made
-   * again from its sheet once it is in (`swapBase`). `leavingBases` fade out over the new ones.
+   * from its sheet once it is in (`swapBase`): one waiting unseen fades in (`openingBases`), a stand-in fades out
+   * over it (`leavingBases`).
    */
   private baseWaits: Promise<void>[] = [];
   /** Item 40: the opening ages' damage bundles while they load (bounded), and every age asked for (W0 review S2). */
@@ -573,8 +603,7 @@ export class BattleView {
     this.backdrop.setSeam(this.seam);
     this.layers.backdrop.addChild(this.backdrop.root);
     this.layers.ground.addChild(this.shadows);
-    this.bases = [this.createBase(0), this.createBase(1)];
-    this.watchBaseArt();
+    this.bases = this.openingBases();
     this.layers.bars.addChild(this.bars.root);
     this.layers.telegraphs.addChild(this.zones.root, this.markers.root);
     this.layers.ground.addChild(this.zones.groundRoot);
@@ -672,28 +701,48 @@ export class BattleView {
   }
 
   /**
-   * A base the provider drew by its stand-in because the opening age's base sheet was not in yet (a battle
-   * opening in Gunpowder or later on a fresh page: the boot loads Stone and Bronze; review S2) is made again
-   * from its sheet once that has loaded, so the battle never keeps code-drawn bases. Duck-typed: a provider
-   * without `baseSheetReady` (fakes) draws as before.
+   * The opening bases (W4 review: a war opening in Medieval or later on a fresh page opened on four bases drawn by
+   * their stand-ins, until their sheets loaded). Each side's base sheet is asked for before its base is made, as the
+   * decks' unit sheets are (`syncHold`; VS asks for both earlier still, `prefetchMatch`, but Quick Battle, Play
+   * again, Restart, Training and the onboarding matches open without VS). A sheet that is in draws the base at once;
+   * one still loading is waited for unseen: the side's base is an empty placeholder (`pendingBaseView`), so no
+   * stand-in is made, and once the sheet is in `swapBase` makes the base from it and fades it in. The battle's clock
+   * waits for the sheets (`artReady`); a sheet that failed, or one still loading when the battle runs (the app's art
+   * wait gave up), leaves the base to its stand-in until the sheet lands (`syncBases`). Only at a fresh opening (tick
+   * 0, no turret built): a view made mid-match (a replay seek) needs its base's mounts at once, so it draws the
+   * stand-in and swaps it as before. Duck-typed: a provider without `baseSheetReady` (fakes) draws as before.
    */
-  private watchBaseArt(): void {
-    for (const side of [0, 1] as const) this.watchBase(side, false);
+  private openingBases(): [BaseEntry, BaseEntry] {
+    const st = this.sim.state;
+    const fresh = st.tick === 0 && st.sides.every((s) => s.turrets.every((t) => t === null));
+    const open = (side: Side): BaseEntry => {
+      const age = this.ageOf(side);
+      const loading = this.baseSheetLoad(age);
+      const entry = loading && fresh ? this.pendingBase(side) : this.createBase(side);
+      if (loading) this.awaitBase(side, age, loading);
+      return entry;
+    };
+    return [open(0), open(1)];
   }
 
-  /**
-   * Waits for the sheet of a side's base in its age now (`standIn`: the base is drawn by its stand-in already,
-   * so a sheet that is in swaps it at once; at the start a sheet that is in means the base drew from it).
-   */
-  private watchBase(side: Side, standIn: boolean): void {
+  /** The provider's load of an age's base sheet: null when it is in, or the provider has none to wait for. */
+  private baseSheetLoad(age: AgeId): Promise<void> | null {
     const art = this.art as ArtProvider & { baseSheetReady?: (age: AgeId) => Promise<void> | null };
-    if (typeof art.baseSheetReady !== 'function') return;
-    const age = this.bases[side].age;
-    const loading = art.baseSheetReady(age);
-    if (!loading) {
-      if (standIn) this.swapBase(side, age);
-      return;
-    }
+    return typeof art.baseSheetReady === 'function' ? art.baseSheetReady(age) : null;
+  }
+
+  /** A side's base while its opening sheet loads (`openingBases`): the placeholder in the base's place. */
+  private pendingBase(side: Side): BaseEntry {
+    const view = pendingBaseView();
+    view.root.position.set(gateX(side), 0);
+    this.layers.structures.addChild(view.root);
+    const s = this.sim.state.sides[side];
+    const glow = s.lastStand === 'armed' || s.lastStand === 'charging';
+    return { side, view, age: this.ageOf(side), crumble: crumbleStage(s.baseHp, s.baseMaxHp), treasury: s.treasury, glow, flashLeftMs: 0, mountsLocal: [], pending: true };
+  }
+
+  /** The battle's clock waits for a side's base sheet (`artReady`); once it has loaded or failed the base is made again. */
+  private awaitBase(side: Side, age: AgeId, loading: Promise<void>): void {
     const wait: Promise<void> = loading.then(() => {
       this.baseWaits = this.baseWaits.filter((w) => w !== wait);
       this.swapBase(side, age);
@@ -702,15 +751,28 @@ export class BattleView {
   }
 
   /**
-   * Makes a side's base again (its sheet has loaded: `watchBase`), the new view under the old one, which fades
-   * out over `BASE_SWAP_FADE_MS` (at once with Reduce motion). A stand-in that morphed into another age
-   * meanwhile waits for that age's sheet instead; a collapsing base keeps its view, as does an ended battle.
+   * Waits for the sheet of a side's base in its age now (the base is drawn by its stand-in, or still pending, in an
+   * age it has left: `swapBase`); a sheet that is in makes it at once.
+   */
+  private watchBase(side: Side): void {
+    const age = this.bases[side].age;
+    const loading = this.baseSheetLoad(age);
+    if (loading) this.awaitBase(side, age, loading);
+    else this.swapBase(side, age);
+  }
+
+  /**
+   * Makes a side's base again (its sheet has loaded or failed: `awaitBase`; or the battle runs while it is still
+   * pending: `syncBases`). A pending base gives way to the new one, which fades in over `BASE_SWAP_FADE_MS`; a
+   * stand-in stays over the new view and fades out (both at once with Reduce motion). A base that morphed into
+   * another age meanwhile waits for that age's sheet instead; a collapsing base keeps its view, as does an ended
+   * battle.
    */
   private swapBase(side: Side, age: AgeId): void {
     const old = this.bases[side];
     if (this.gone || this.ended || old.collapse) return;
     if (old.age !== age) {
-      this.watchBase(side, true);
+      this.watchBase(side);
       return;
     }
     const fresh = this.createBase(side);
@@ -718,6 +780,15 @@ export class BattleView {
     const at = layer.getChildIndex(old.view.root);
     if (at >= 0) layer.setChildIndex(fresh.view.root, at);
     this.bases[side] = fresh;
+    if (old.pending) {
+      // nothing was drawn in its place yet
+      old.view.destroy();
+      if (!this.settings.reduceMotion) {
+        fresh.fadeInLeftMs = BASE_SWAP_FADE_MS;
+        fresh.view.root.alpha = 0;
+      }
+      return;
+    }
     this.replacedStandIn(old.view);
     if (this.settings.reduceMotion) {
       old.dressing?.destroy();
@@ -772,8 +843,16 @@ export class BattleView {
     (this.art as ArtProvider & { replacedStandIn?: (v: TurretView | BaseView) => void }).replacedStandIn?.(view);
   }
 
-  /** The bases (and stand-in turrets) a swap replaced fade out (real time) and go. */
+  /**
+   * The bases (and stand-in turrets) a swap replaced fade out (real time) and go; a base made in place of a pending
+   * one fades in.
+   */
   private fadeLeavingBases(realDt: number, gameDt: number): void {
+    for (const b of this.bases) {
+      if (!b.fadeInLeftMs) continue;
+      b.fadeInLeftMs = Math.max(0, b.fadeInLeftMs - realDt);
+      b.view.root.alpha = 1 - b.fadeInLeftMs / BASE_SWAP_FADE_MS;
+    }
     if (this.fadingTurrets.length > 0) {
       for (const l of this.fadingTurrets) {
         l.leftMs -= realDt;
@@ -3558,6 +3637,11 @@ export class BattleView {
   }
 
   private syncBases(gameDt: number): void {
+    // a base still waiting for its opening sheet once the battle runs (the app's art wait gave up, or a host runs the
+    // sim at once) is drawn now, by its stand-in while the sheet loads, and made again from the sheet when it lands
+    if (this.started || this.sim.state.tick > 0) {
+      for (const side of [0, 1] as const) if (this.bases[side].pending) this.swapBase(side, this.bases[side].age);
+    }
     for (const b of this.bases) {
       const s = this.sim.state.sides[b.side];
       const crumble = crumbleStage(s.baseHp, s.baseMaxHp);

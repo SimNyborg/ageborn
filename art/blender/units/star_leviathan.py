@@ -57,8 +57,9 @@ NO_RETIME = True
 
 # W4 detail standard (look.py): the Legendary's big fields take the big shade
 DETAIL_STANDARD = True
-LOOK_HIGHLIGHT = 1.5            # (the shipped sheet: flat 0.60, highlight share 0.019; one huge smooth body; r40b 1.2 to 1.5)
-LOOK_SHADE = dict(FW.SHADE_BIG, gradient=3.0, cavity=0.85)
+LOOK_HIGHLIGHT = 1.5            # (the shipped sheet: flat 0.60, highlight share 0.019; one huge smooth body; r40b 1.2 to 1.5;
+                                # r42b's 2.2, with cavity 0.95, washed the team parts out of the death roll: team fill 10.6%)
+LOOK_SHADE = dict(FW.SHADE_BIG, gradient=3.6, cavity=0.85)     # (r42: 3.0 to 3.6, so the head and the flank shade)
 LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5)
 # (r40) the whale's violet back, its belly and its team fins and fluke in fur's fine clumps: the finest breakup that
 # reads at this size (look-dev S/w4/futcos/ld/lev_*, idle 0: polymer's speckle flat 0.35, hide's blotches 0.30, stone's
@@ -66,6 +67,11 @@ LOOK_RIM = dict(FW.RIM_SOLDIER, lift=0.5)
 MATERIAL_KINDS = FW.kinds_cosmic({CW.MOON: "stone", CW.MOON_DK: "stone", "#FAF6EE": "ceramic", "#2A2236": "glass",
                                   CW.VIOLET: "fur", CW.VIOLET_DK: "fur", CW.STAR: "fur", "team": "fur"})
 CONST_LINE = "#B7A0E6"      # (r40) the constellations' lines over the back, a pale lilac a step under the stars
+FOLD_LIP = "#B98AE6"        # (r42) a fold's lit lip: a light violet, a step over VIOLET_LT
+# (r42d) the violet hull, head and tail in matte: gloss washed the lit back and crown into one flat plateau (look-dev
+# S/w4/futcos/ld/lev42d_*, idle 0, attack 5, die 4: micro 3.43 to 3.63 with matte, 3.71 with the back's and the crown's
+# folds too; the highlight share 0.072 to 0.069)
+BODY_FINISH = "matte"
 
 HULL = (0.0, 0.0, 42.0)
 HEAD_C = (38.0, 0.0, 48.0)
@@ -135,18 +141,18 @@ def build(rig):
     # the tail, two segments and a team fluke
     rig.joint("tail1", "hull", (-26.0, 0, 42.0))
     g = Geo().blob((-40.0, 0, 42.0), (18.0, 13.0, 12.0), p=2.3, taper=(0.75, 1.0))
-    rig.part("tail1", g, CW.VIOLET, finish="gloss", outline_hex=CW.VIOLET_DK)
+    rig.part("tail1", g, CW.VIOLET, finish=BODY_FINISH, outline_hex=CW.VIOLET_DK)
     g = Geo().blob((-40.0, 0, 37.0), (15.0, 11.0, 6.0), p=2.4)
     g.clip((0, 0, 36.0), (0, 0, 1))
     rig.part("tail1", g, CW.STAR, outline_hex=CW.STAR_TRIM)
     rig.joint("tail2", "tail1", (-54.0, 0, 44.0))
     g = Geo().blob((-62.0, 0, 46.0), (12.0, 7.4, 7.0), p=2.3, taper=(0.7, 1.0))
-    rig.part("tail2", g, CW.VIOLET, finish="gloss", outline_hex=CW.VIOLET_DK)
+    rig.part("tail2", g, CW.VIOLET, finish=BODY_FINISH, outline_hex=CW.VIOLET_DK)
     g = Geo().slab([(-68.0, 48.0), (-80.0, 64.0), (-88.0, 66.0), (-82.0, 50.0), (-88.0, 34.0), (-80.0, 34.0)], 0.0, 3.0)
     rig.part("tail2", g, team=True)
     # the big body: a violet back with star specks, a star-white grooved belly
     g = Geo().blob(HULL, (36.0, 20.0, 20.0), p=2.3, taper=(1.05, 0.95))
-    rig.part("hull", g, CW.VIOLET, finish="gloss", outline_hex=CW.VIOLET_DK)
+    rig.part("hull", g, CW.VIOLET, finish=BODY_FINISH, outline_hex=CW.VIOLET_DK)
     g = Geo().blob((hx + 2.0, hy, hz - 6.0), (34.0, 19.0, 13.0), p=2.4)
     g.clip((0, 0, hz - 6.0), (0, 0, 1))
     rig.part("hull", g, CW.STAR, outline_hex=CW.STAR_TRIM)
@@ -177,7 +183,7 @@ def build(rig):
     head = Geo().blob(HEAD_C, (22.0, 18.0, 17.0), p=2.3, taper=(0.95, 1.05))
     KM.face2(rig, [head], CW.VIOLET, 52.0, 54.0, eye_dy=(-12.0, -1.0), eye_r=(5.0, 4.6, 6.0), pupil_r=(2.2, 3.2, 3.6),
              brow=CW.VIOLET_DK, brow_w=1.4, mouth_w=12.0, mouth_dz=-12.0, mouth_shape="smile")
-    rig.part("head", head, CW.VIOLET, finish="gloss", outline_hex=CW.VIOLET_DK)
+    rig.part("head", head, CW.VIOLET, finish=BODY_FINISH, outline_hex=CW.VIOLET_DK)
     g = Geo().blob((HEAD_C[0] + 2.0, 0, HEAD_C[2] - 9.0), (20.0, 16.0, 7.0), p=2.4)
     g.clip((0, 0, HEAD_C[2] - 9.0), (0, 0, 1))
     rig.part("head", g, CW.STAR, outline_hex=CW.STAR_TRIM)
@@ -200,218 +206,112 @@ def build(rig):
 
 
 def _detail(rig):
-    """W4 (in the model's 96 lu space; the body is scaled 1.8): creases over the back and round the head, the near
-    fin's team-dark ribs, the blanket's border seam (team-dark), the sails' ribs, creases on the tail."""
+    """W4 (in the model's 96 lu space; the body is scaled 1.8), after the W4 review's S1: r29-r40c covered the hide in
+    rows of short creases, tubercles and star dust, a fine speckle at 1x that took the head's and the flank's big forms
+    (MAT 3). r42 makes the breakup bigger and sparser: five broad folds (two along the lower flank, the neck's, one on
+    each tail segment), each a dark crease under a lit lip; the constellations kept to the dark back stripe, the
+    shipped stars joined by pale lines and two larger ones added; no dots on the head or the belly; a stronger in-band
+    gradient so the big forms shade. r42c makes each lip a ridge of the hide; r42d adds a fold across the lit back and one
+    across the crown, and takes the hull, head and tail to matte (BODY_FINISH). Kept: the eye's wrinkles, the belly's and the throat's pleats (and under the body,
+    the throat and the tail for the death roll), the fins', the fluke's and the sails' ribs, the blanket's border seam
+    and quilting, the riders' craters, belts and badges, the throat glow's white heart."""
     hx, hy, hz = HULL
-    body = FC.Face(rig, "hull", [Geo().blob(HULL, (36.0, 20.0, 20.0), p=2.3, taper=(1.05, 0.95))], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "hull", body, [[FW.sc(body, x, hz + 14.0, -12.0), FW.sc(body, x - 3.0, hz + 7.0, -17.4),
-                                        FW.sc(body, x - 4.0, hz + 2.0, -18.8)] for x in (-22.0, 2.0, 22.0)],
+    br, bt = (36.0, 20.0, 20.0), (1.05, 0.95)
+    body = FC.Face(rig, "hull", [Geo().blob(HULL, br, p=2.3, taper=bt)], yaw_deg=YAW_DEG)
+    hc, hr, ht = HEAD_C, (22.0, 18.0, 17.0), (0.95, 1.05)
+    head = FC.Face(rig, "head", [Geo().blob(hc, hr, p=2.3, taper=ht)], yaw_deg=YAW_DEG)
+    t1c, t1r, t1t = (-40.0, 0, 42.0), (18.0, 13.0, 12.0), (0.75, 1.0)
+    tf = FC.Face(rig, "tail1", [Geo().blob(t1c, t1r, p=2.3, taper=t1t)], yaw_deg=YAW_DEG)
+    t2c, t2r, t2t = (-62.0, 0, 46.0), (12.0, 7.4, 7.0), (0.7, 1.0)
+    t2 = FC.Face(rig, "tail2", [Geo().blob(t2c, t2r, p=2.3, taper=t2t)], yaw_deg=YAW_DEG)
+
+    def on(face, c, r, t, pts, dz=0.0, dx=0.0, lift=0.0):
+        """(x, z) side-view points laid on a tapered blob's camera side, shifted by dx, dz."""
+        return [FW.sc(face, x + dx, z + dz, KB.blob_y(c, r, x + dx, z + dz, p=2.3, taper=t) - lift) for x, z in pts]
+
+    def fold(joint, face, c, r, t, pts, up=(0.0, 1.15)):
+        """A broad fold: a dark crease along pts and its lit lip just above it (up: the lip's offset in x, z), the lip a
+        ridge of the hide standing proud (r42c: as a painted line it gave edges but no shading; a ridge rounds from its
+        lit top into its shadow, the soft gradient a fold has)."""
+        FW.panel_lines(rig, joint, face, [on(face, c, r, t, pts)], fill=FW.LINE_ON_VIOLET, w=1.25)
+        lip = [(x + up[0], z + up[1]) for x, z in pts]
+        g = KB.ridge(c, r, lip, 0.95, p=2.3, taper=t, bulge=0.55)
+        rig.part(joint, g, FOLD_LIP, finish="gloss", outline=0)
+    # the folds: three along the flank (one over the team stripe, the dark back stripe's lower edge; two under it) and a
+    # crease along the white belly's top edge, the neck's fold (behind the head), the brow's and the cheek's, one on
+    # each tail segment (r42 had five: micro 3.33, edge 0.407 against 3.6 and 0.45; r42c micro 3.43, edge 0.448)
+    fold("hull", body, HULL, br, bt, ((-28.0, 48.6), (-18.0, 48.0), (-8.0, 47.8), (2.0, 47.8), (12.0, 48.2),
+                                      (18.0, 48.8)))
+    fold("hull", body, HULL, br, bt, ((-27.0, 39.4), (-17.0, 38.8), (-7.0, 38.4), (3.0, 38.4), (13.0, 38.8),
+                                      (21.0, 39.6)))
+    fold("hull", body, HULL, br, bt, ((-25.0, 35.4), (-15.0, 34.8), (-5.0, 34.4), (5.0, 34.4), (15.0, 34.8),
+                                      (22.0, 35.6)))
+    belly = FC.Face(rig, "hull", [Geo().blob((hx + 2.0, hy, hz - 6.0), (34.0, 19.0, 13.0), p=2.4)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", belly, [[FW.sc(belly, x, z, KB.blob_y((hx + 2.0, hy, hz - 6.0), (34.0, 19.0, 13.0), x, z,
+                                                                   p=2.4)) for x, z in
+                                         ((-24.0, 33.6), (-14.0, 33.2), (-4.0, 33.0), (6.0, 33.0), (16.0, 33.4),
+                                          (24.0, 34.0))]], fill=FW.LINE_ON_VIOLET, w=1.1)
+    fold("head", head, hc, hr, ht, ((32.0, 59.4), (37.0, 60.6), (42.0, 61.0), (47.0, 60.4)))
+    fold("head", head, hc, hr, ht, ((30.0, 47.6), (35.0, 46.6), (40.0, 46.2), (45.0, 46.6)))
+    fold("head", head, hc, hr, ht, ((24.0, 60.0), (22.4, 56.0), (22.0, 52.0), (22.6, 48.0), (24.0, 44.0)), up=(-1.2, 0.0))
+    fold("tail1", tf, t1c, t1r, t1t, ((-29.0, 47.6), (-36.0, 47.0), (-43.0, 46.4), (-50.0, 45.6)))
+    fold("tail2", t2, t2c, t2r, t2t, ((-55.5, 48.4), (-61.0, 48.0), (-66.0, 47.4)))
+    # (r42d) across the lit back, between the blanket and the neck, and across the crown over the brow
+    fold("hull", body, HULL, br, bt, ((2.0, 56.4), (8.0, 57.2), (14.0, 57.4), (20.0, 57.0)))
+    fold("head", head, hc, hr, ht, ((30.0, 62.4), (35.0, 63.2), (40.0, 63.4), (45.0, 62.8)))
+    # the eye's wrinkles (two; r40's cheek and jaw creases and every tubercle are gone)
+    FW.panel_lines(rig, "head", head, [on(head, hc, hr, ht, pts) for pts in (
+        ((42.0, 60.0), (45.0, 62.0), (49.0, 62.4)), ((40.0, 56.0), (42.6, 52.4), (42.4, 48.6)))],
                    fill=FW.LINE_ON_VIOLET, w=0.9)
-    head = FC.Face(rig, "head", [Geo().blob(HEAD_C, (22.0, 18.0, 17.0), p=2.3, taper=(0.95, 1.05))], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "head", head, [[FW.sc(head, 24.0, 60.0, -11.0), FW.sc(head, 22.0, 52.0, -16.0),
-                                        FW.sc(head, 24.0, 44.0, -15.4)]], fill=FW.LINE_ON_VIOLET, w=0.9)
+    # the constellations on the dark back stripe: the shipped stars (y -19, build()) joined by pale lines, two larger
+    # stars added to them
+    def by(x, z):
+        return KB.blob_y(HULL, br, x, z, p=2.3, taper=bt) - 0.3
+    big = ((-12.0, 53.6, 1.6), (-24.0, 52.6, 1.4))
+    for x, z, r in big:
+        KC.specks(rig, "hull", [(x, z, r)], by(x, z) - 0.1)
+    shipped = lambda x, z: FW.sc(body, x, z, -19.0)      # noqa: E731
+    mine = lambda x, z: FW.sc(body, x, z, by(x, z) + 0.3)   # noqa: E731
+    FW.panel_lines(rig, "hull", body, [
+        [shipped(-28.0, 50.0), mine(-24.0, 52.6), shipped(-20.0, 56.0), mine(-12.0, 53.6), shipped(-4.0, 58.0)],
+        [shipped(4.0, 52.0), shipped(10.0, 56.0), shipped(18.0, 52.0)]], fill=CONST_LINE, w=0.5)
+    # the belly's long ventral pleats (six rows) and the throat's grooves
+    belly = FC.Face(rig, "hull", [Geo().blob((hx + 2.0, hy, hz - 6.0), (34.0, 19.0, 13.0), p=2.4)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "hull", belly, [[FW.sc(belly, x, z + 0.02 * x, -18.2) for x in (-26.0, -12.0, 2.0, 16.0, 28.0)]
+                                        for z in (hz - 7.2, hz - 8.6, hz - 10.0, hz - 11.4, hz - 12.7, hz - 14.0)],
+                   fill=CW.STAR_TRIM, w=0.7)
+    thc, thr = (HEAD_C[0] + 2.0, 0, HEAD_C[2] - 9.0), (20.0, 16.0, 7.0)
+    throat = FC.Face(rig, "head", [Geo().blob(thc, thr, p=2.4)], yaw_deg=YAW_DEG)
+    FW.panel_lines(rig, "head", throat, [[FW.on_blob(throat, thc, thr, x, z, p=2.4)
+                                          for x, z in ((x0, zz), (x0 + 8.0, zz - 0.4), (x0 + 16.0, zz))]
+                                         for x0, zz in ((28.0, HEAD_C[2] - 4.6), (30.0, HEAD_C[2] - 7.0),
+                                                        (32.0, HEAD_C[2] - 9.4))], fill=CW.STAR_TRIM, w=0.7)
+    # the near fin's ribs (team-dark), the fluke's, the sails'
     x, y, z = 12.0, -20.0, 34.0
     fin = FC.Face(rig, "fin_r", [Geo().slab([(x + 4.0, z + 2.0), (x - 6.0, z - 10.0), (x - 22.0, z - 22.0),
                                              (x - 26.0, z - 18.0), (x - 14.0, z - 4.0), (x - 6.0, z + 2.0)], y, 2.4)],
                   yaw_deg=YAW_DEG)
     FW.folds(rig, "fin_r", fin, [[FW.sc(fin, x - 2.0, z - 1.0, y - 1.4), FW.sc(fin, x - 16.0, z - 14.0, y - 1.4)],
-                                 [FW.sc(fin, x - 8.0, z - 1.0, y - 1.4), FW.sc(fin, x - 20.0, z - 13.0, y - 1.4)]],
-             w=0.9, team=True)
-    bl = FC.Face(rig, "hull", [Geo().blob((-15.0, 0, 59.5), (18.0, 16.0, 4.0), p=2.6)], yaw_deg=YAW_DEG)
-    FW.folds(rig, "hull", bl, [[FW.on_blob(bl, (-15.0, 0, 59.5), (18.0, 16.0, 4.0), xx, 58.2, p=2.6)     # (r40b: on its
-                                for xx in (-29.0, -23.0, -17.0, -10.0, -3.0)]], w=0.8, team=True)   # surface)
-    # stars strewn over the near flank and back (on the body's near surface; bright specks, a few mint)
-    def near_y(x, z, c=HULL, r=(36.0, 20.0, 20.0), p=2.3):
-        t = 1.0 - abs((x - c[0]) / r[0]) ** p - abs((z - c[2]) / r[2]) ** p
-        return c[1] - r[1] * max(t, 0.0) ** (1.0 / p) - 0.4
-    for x, z, r in ((-30.0, 50.0, 1.0), (-24.0, 54.0, 1.3), (-16.0, 48.0, 0.9), (-10.0, 54.0, 1.1), (-2.0, 50.0, 0.9),
-                    (6.0, 55.0, 1.2), (14.0, 49.0, 1.0), (20.0, 53.0, 0.9), (-26.0, 44.0, 0.8), (-6.0, 44.0, 0.9),
-                    (12.0, 44.0, 0.8)):
-        KC.specks(rig, "hull", [(x, z, r)], near_y(x, z))
-    g = Geo().star((0.0, near_y(0.0, 47.0), 47.0), 1.4, 0.55, 0.8, points=4)
-    rig.part("hull", g, glow=K.MINT, outline=0)
-    # wrinkle bands at the neck and behind the fin, the belly's long ventral pleats
-    FW.panel_lines(rig, "hull", body, [[FW.sc(body, x, hz + 12.0, -14.6), FW.sc(body, x + 1.6, hz + 4.0, -19.0),
-                                        FW.sc(body, x + 1.0, hz - 3.0, -19.4)] for x in (26.0, 29.0)],
-                   fill=FW.LINE_ON_VIOLET, w=0.8)
-    belly = FC.Face(rig, "hull", [Geo().blob((hx + 2.0, hy, hz - 6.0), (34.0, 19.0, 13.0), p=2.4)], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "hull", belly, [[FW.sc(belly, x, z + 0.02 * x, -18.2) for x in (-26.0, -12.0, 2.0, 16.0, 28.0)]
-                                        for z in (hz - 8.6, hz - 11.4, hz - 14.0)], fill=CW.STAR_TRIM, w=0.7)
-    # knobbly tubercles on the brow and the snout
-    g = Geo()
-    for x, y_, z, r in ((44.0, -13.0, 60.0, 1.5), (49.0, -12.0, 58.0, 1.3), (53.0, -11.0, 55.6, 1.2), (40.0, -14.6, 56.0, 1.2),
-                        (56.0, -9.4, 51.0, 1.1), (46.0, -14.4, 54.0, 1.0)):
-        g.blob((x, y_, z), (r, r * 0.8, r), p=2.2)
-    rig.part("head", g, CW.VIOLET_DK, finish="gloss", outline=0)
-    # the fluke's and the sails' ribs
-    fl = FC.Face(rig, "tail2", [Geo().slab([(-68.0, 48.0), (-80.0, 64.0), (-88.0, 66.0), (-82.0, 50.0), (-88.0, 34.0),
-                                            (-80.0, 34.0)], 0.0, 3.0)], yaw_deg=YAW_DEG)
-    FW.folds(rig, "tail2", fl, [[FW.sc(fl, -70.0, 48.0, -1.6), FW.sc(fl, -82.0, 61.0, -1.6)],
-                                [FW.sc(fl, -70.0, 46.0, -1.6), FW.sc(fl, -83.0, 38.0, -1.6)]], w=0.9, team=True)
-    for i, (x, h) in enumerate(((6.0, 16.0), (-14.0, 13.0))):
-        sf = FC.Face(rig, f"sail{i}", [Geo().slab([(x + 4.0, 57.0), (x - 4.0, 57.0 + h), (x - 10.0, 57.0 + h - 2.0),
-                                                    (x - 8.0, 57.0)], 0.0, 2.4)], yaw_deg=YAW_DEG)
-        FW.panel_lines(rig, f"sail{i}", sf, [[FW.sc(sf, x + 1.0, 58.0, -1.3), FW.sc(sf, x - 4.6, 57.0 + h - 2.0, -1.3)]],
-                       fill=CW.VIOLET, w=0.8)
-    tf = FC.Face(rig, "tail1", [Geo().blob((-40.0, 0, 42.0), (18.0, 13.0, 12.0), p=2.3, taper=(0.75, 1.0))],
-                 yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "tail1", tf, [[FW.sc(tf, xx, 51.0, -8.0), FW.sc(tf, xx - 2.0, 44.0, -12.4)]
-                                      for xx in (-30.0, -34.0, -40.0, -46.0, -51.0)],      # (r40: five, not two)
-                   fill=FW.LINE_ON_VIOLET, w=0.9)
-    _detail_r40(rig)
-    _detail_r40b(rig)
-    _detail_r40c(rig)
-
-
-def _detail_r40(rig):
-    """r40 (r29 sat at flat 0.340, micro 2.76, edge 0.340, highlight 0.041 on one huge smooth body): constellations
-    over the back (the stars joined by pale lines, more stars over the back, the tail and the crown), creases down the
-    whole near flank, wrinkles round the eye and down the throat, the belly's pleats twice as dense, more ribs on the
-    fins, the sails and the fluke, creases on the tail's second segment."""
-    hx, hy, hz = HULL
-    br = (36.0, 20.0, 20.0)
-    body = FC.Face(rig, "hull", [Geo().blob(HULL, br, p=2.3, taper=(1.05, 0.95))], yaw_deg=YAW_DEG)
-
-    def ob(face, c, r, pts, p=2.3):
-        return [FW.on_blob(face, c, r, x, z, p=p) for x, z in pts]
-    # the constellations: the stars (old and new) joined by pale lines
-    cons = (((-30.0, 50.0), (-24.0, 54.0), (-20.0, 56.0)), ((-26.0, 44.0), (-16.0, 48.0), (-10.0, 54.0), (-4.0, 57.0)),
-            ((-6.0, 44.0), (-2.0, 50.0), (6.0, 55.0), (10.0, 56.0)), ((12.0, 44.0), (14.0, 49.0), (20.0, 53.0)),
-            ((-31.0, 38.0), (-24.0, 36.6), (-18.0, 37.4)), ((22.0, 46.0), (27.0, 49.0), (30.0, 45.0)))
-    FW.panel_lines(rig, "hull", body, [ob(body, HULL, br, c) for c in cons], fill=CONST_LINE, w=0.38)
-
-    def near_y(x, z, c=HULL, r=br, p=2.3):
-        t = 1.0 - abs((x - c[0]) / r[0]) ** p - abs((z - c[2]) / r[2]) ** p
-        return c[1] - r[1] * max(t, 0.0) ** (1.0 / p) - 0.4
-    for x, z, r in ((-31.0, 38.0, 0.9), (-24.0, 36.6, 1.1), (-18.0, 37.4, 0.8), (22.0, 46.0, 0.9), (27.0, 49.0, 1.1),
-                    (30.0, 45.0, 0.8), (-12.0, 40.0, 0.7), (4.0, 39.4, 0.7), (-20.0, 52.0, 0.7), (16.0, 57.0, 0.8)):
-        KC.specks(rig, "hull", [(x, z, r)], near_y(x, z))
-    # creases down the whole near flank (r29 had three)
-    FW.panel_lines(rig, "hull", body, [ob(body, HULL, br, ((x, hz + 13.0), (x - 2.4, hz + 7.0), (x - 3.2, hz + 2.4)))
-                                       for x in (-28.0, -14.0, -6.0, 10.0, 16.0)], fill=FW.LINE_ON_VIOLET, w=0.9)
-    # the belly's pleats twice as dense
-    belly = FC.Face(rig, "hull", [Geo().blob((hx + 2.0, hy, hz - 6.0), (34.0, 19.0, 13.0), p=2.4)], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "hull", belly, [[FW.sc(belly, x, z + 0.02 * x, -18.2) for x in (-26.0, -12.0, 2.0, 16.0, 28.0)]
-                                        for z in (hz - 7.2, hz - 10.0, hz - 12.7)], fill=CW.STAR_TRIM, w=0.7)
-    # the head: wrinkles round the eye, the cheek's crease and the throat's grooves
-    hc, hr = HEAD_C, (22.0, 18.0, 17.0)
-    head = FC.Face(rig, "head", [Geo().blob(hc, hr, p=2.3, taper=(0.95, 1.05))], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "head", head, [ob(head, hc, hr, pts) for pts in (
-        ((42.0, 60.0), (45.0, 62.0), (49.0, 62.4)), ((40.0, 56.0), (42.6, 52.4), (42.4, 48.6)),
-        ((34.0, 62.0), (31.0, 56.0), (31.4, 50.0)), ((46.0, 46.4), (51.0, 45.4), (55.0, 46.4)))],
-                   fill=FW.LINE_ON_VIOLET, w=0.9)
-    thc, thr = (HEAD_C[0] + 2.0, 0, HEAD_C[2] - 9.0), (20.0, 16.0, 7.0)
-    throat = FC.Face(rig, "head", [Geo().blob(thc, thr, p=2.4)], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "head", throat, [ob(throat, thc, thr, ((x0, z), (x0 + 8.0, z - 0.4), (x0 + 16.0, z)), p=2.4)
-                                         for x0, z in ((28.0, HEAD_C[2] - 4.6), (30.0, HEAD_C[2] - 7.0),
-                                                       (32.0, HEAD_C[2] - 9.4))], fill=CW.STAR_TRIM, w=0.7)
-    # more ribs on the near fin (team-dark), on the sails, on the fluke
-    x, y, z = 12.0, -20.0, 34.0
-    fin = FC.Face(rig, "fin_r", [Geo().slab([(x + 4.0, z + 2.0), (x - 6.0, z - 10.0), (x - 22.0, z - 22.0),
-                                             (x - 26.0, z - 18.0), (x - 14.0, z - 4.0), (x - 6.0, z + 2.0)], y, 2.4)],
-                  yaw_deg=YAW_DEG)
-    FW.folds(rig, "fin_r", fin, [[FW.sc(fin, x + 1.0, z + 0.4, y - 1.4), FW.sc(fin, x - 12.0, z - 14.0, y - 1.4)],
+                                 [FW.sc(fin, x - 8.0, z - 1.0, y - 1.4), FW.sc(fin, x - 20.0, z - 13.0, y - 1.4)],
+                                 [FW.sc(fin, x + 1.0, z + 0.4, y - 1.4), FW.sc(fin, x - 12.0, z - 14.0, y - 1.4)],
                                  [FW.sc(fin, x - 11.0, z - 2.0, y - 1.4), FW.sc(fin, x - 22.0, z - 15.0, y - 1.4)]],
              w=0.9, team=True)
     fl = FC.Face(rig, "tail2", [Geo().slab([(-68.0, 48.0), (-80.0, 64.0), (-88.0, 66.0), (-82.0, 50.0), (-88.0, 34.0),
                                             (-80.0, 34.0)], 0.0, 3.0)], yaw_deg=YAW_DEG)
-    FW.folds(rig, "tail2", fl, [[FW.sc(fl, -72.0, 50.0, -1.6), FW.sc(fl, -84.0, 63.4, -1.6)],
-                                [FW.sc(fl, -72.0, 45.0, -1.6), FW.sc(fl, -85.0, 36.4, -1.6)],
+    FW.folds(rig, "tail2", fl, [[FW.sc(fl, -70.0, 48.0, -1.6), FW.sc(fl, -82.0, 61.0, -1.6)],
+                                [FW.sc(fl, -70.0, 46.0, -1.6), FW.sc(fl, -83.0, 38.0, -1.6)],
                                 [FW.sc(fl, -76.0, 48.0, -1.6), FW.sc(fl, -82.0, 48.6, -1.6)]], w=0.9, team=True)
     for i, (x, h) in enumerate(((6.0, 16.0), (-14.0, 13.0))):
         sf = FC.Face(rig, f"sail{i}", [Geo().slab([(x + 4.0, 57.0), (x - 4.0, 57.0 + h), (x - 10.0, 57.0 + h - 2.0),
                                                     (x - 8.0, 57.0)], 0.0, 2.4)], yaw_deg=YAW_DEG)
-        FW.panel_lines(rig, f"sail{i}", sf, [[FW.sc(sf, x - 3.0, 58.0, -1.3), FW.sc(sf, x - 7.4, 57.0 + h - 3.0, -1.3)]],
+        FW.panel_lines(rig, f"sail{i}", sf, [[FW.sc(sf, x + 1.0, 58.0, -1.3), FW.sc(sf, x - 4.6, 57.0 + h - 2.0, -1.3)],
+                                             [FW.sc(sf, x - 3.0, 58.0, -1.3), FW.sc(sf, x - 7.4, 57.0 + h - 3.0, -1.3)]],
                        fill=CW.VIOLET, w=0.8)
-    # (r40b: r40 sat at flat 0.252, micro 3.39, edge 0.400, highlight 0.048; the head's crown, the lit top of the back
-    # and the tail's first segment were the largest smooth fields left) knobbly tubercles over the crown and down the
-    # brow (gloss, a humpback's), a ridge along the back, wrinkles across the crown and behind the eye, the tail's
-    # first segment creased along and across and starred, a fifth row of the belly's pleats
-    g = Geo()
-    for x, z, r in ((30.0, 63.0, 1.3), (35.0, 64.0, 1.4), (40.0, 63.4, 1.2), (28.0, 59.0, 1.1), (33.0, 60.6, 1.2),
-                    (38.0, 61.0, 1.0), (44.0, 61.6, 1.1), (50.0, 61.4, 1.0), (31.0, 56.0, 1.0), (36.0, 57.0, 1.1),
-                    (54.0, 59.4, 0.9), (55.0, 55.0, 1.0)):
-        y_ = KB.blob_y(hc, hr, x, z, p=2.3, taper=(0.95, 1.05)) + 0.32 * r     # 60% proud of the crown
-        g.blob((x, y_, z), (r, r * 0.8, r), p=2.2)
-    rig.part("head", g, CW.VIOLET_DK, finish="gloss", outline=0)
-    FW.panel_lines(rig, "head", head, [ob(head, hc, hr, pts) for pts in (
-        ((22.0, 62.0), (26.0, 64.0), (31.0, 65.0)), ((24.0, 56.0), (27.0, 58.0), (30.0, 58.4)),
-        ((45.0, 58.0), (48.6, 56.4), (50.0, 53.4)), ((36.0, 52.0), (38.4, 49.0), (38.6, 45.6)))],
-                   fill=FW.LINE_ON_VIOLET, w=0.9)
-    FW.panel_lines(rig, "hull", body, [ob(body, HULL, br, ((x, hz + 15.0), (x + 6.0, hz + 15.6), (x + 12.0, hz + 15.2)))
-                                       for x in (-26.0, -10.0, 6.0)], fill=FW.LINE_ON_VIOLET, w=0.9)
-    FW.panel_lines(rig, "hull", belly, [[FW.sc(belly, x, z + 0.02 * x, -18.2) for x in (-26.0, -12.0, 2.0, 16.0, 28.0)]
-                                        for z in (hz - 5.8,)], fill=CW.STAR_TRIM, w=0.7)
-    t1c, t1r, t1t = (-40.0, 0, 42.0), (18.0, 13.0, 12.0), (0.75, 1.0)
-    tf = FC.Face(rig, "tail1", [Geo().blob(t1c, t1r, p=2.3, taper=t1t)], yaw_deg=YAW_DEG)
-
-    def tail_y(x, z):
-        return KB.blob_y(t1c, t1r, x, z, p=2.3, taper=t1t) - 0.4
-    FW.panel_lines(rig, "tail1", tf, [[FW.sc(tf, x, z, tail_y(x, z) + 0.4) for x, z in pts] for pts in (
-        ((-28.0, 49.0), (-36.0, 50.4), (-46.0, 49.6), (-54.0, 47.6)), ((-30.0, 45.0), (-38.0, 46.0), (-48.0, 45.2)))],
-                   fill=FW.LINE_ON_VIOLET, w=0.8)
-    for x, z, r in ((-32.0, 51.6, 0.9), (-40.0, 52.4, 1.1), (-47.0, 51.0, 0.8), (-36.0, 47.6, 0.7), (-44.0, 47.4, 0.8)):
-        KC.specks(rig, "tail1", [(x, z, r)], tail_y(x, z))
-    t2c, t2r = (-62.0, 0, 46.0), (12.0, 7.4, 7.0)
-    t2 = FC.Face(rig, "tail2", [Geo().blob(t2c, t2r, p=2.3, taper=(0.7, 1.0))], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "tail2", t2, [ob(t2, t2c, t2r, ((xx, 51.0), (xx - 1.0, 46.0), (xx - 0.6, 41.6)))
-                                      for xx in (-57.0, -63.0)], fill=FW.LINE_ON_VIOLET, w=0.8)
-
-
-def _detail_r40b(rig):
-    """r40b, more (the riders' moon heads and their team bodies, the lit top of the back and the lower flank were the flat
-    fields left): craters on each rider's head (moon-dark rings), a team-dark belt round each rider's body, a dust of
-    small stars over the back, the flank and the tail (the starry whale's skin; bright points), a second constellation
-    over the lit top of the back between the sail and the head."""
-    br, bt = (36.0, 20.0, 20.0), (1.05, 0.95)
-
-    def by(x, z):
-        return KB.blob_y(HULL, br, x, z, p=2.3, taper=bt) - 0.3
-    for i, (x, y, z) in enumerate(RIDERS):
-        j = f"rider{i}"
-        hc, hr = (x + 0.8, y, z + 13.4), (5.6, 5.4, 5.4)
-        face = FC.Face(rig, j, [Geo().blob(hc, hr, p=2.2)], yaw_deg=YAW_DEG)
-        rings = []
-        for cx, cz, rr in ((-2.4, 2.0, 1.2), (0.6, 3.8, 0.8), (-3.4, -1.6, 0.9), (-0.4, -2.6, 0.7)):
-            pts = [(hc[0] + cx + rr * math.cos(k * math.pi / 4), hc[2] + cz + rr * math.sin(k * math.pi / 4))
-                   for k in range(9)]
-            rings.append([FW.on_blob(face, hc, hr, px, pz, p=2.2) for px, pz in pts])
-        FW.panel_lines(rig, j, face, rings, fill=CW.MOON_DK, w=0.45)
-        bc, bR = (x, y, z + 5.0), (4.4, 4.4, 5.0)
-        bf = FC.Face(rig, j, [Geo().blob(bc, bR, p=2.3)], yaw_deg=YAW_DEG)
-        FW.folds(rig, j, bf, [[FW.on_blob(bf, bc, bR, x + dx, z + 4.0 - 0.1 * dx, p=2.3) for dx in (-3.6, -1.2, 1.2, 3.6)]],
-                 w=0.6, team=True)
-    # the star dust: (x, z, r) on the near flank and back, away from the blanket, the team stripe and the old stars
-    dust = ((-27.0, 37.6, 0.45), (-19.0, 38.2, 0.4), (-11.0, 37.4, 0.5), (-3.0, 38.0, 0.4), (5.0, 37.6, 0.45),
-            (13.0, 38.4, 0.4), (-23.0, 47.6, 0.4), (-9.0, 50.6, 0.45), (5.0, 47.8, 0.4), (19.0, 48.4, 0.5),
-            (-28.0, 53.0, 0.5), (-14.0, 52.2, 0.4), (0.0, 53.6, 0.45), (12.0, 52.6, 0.4), (24.0, 50.6, 0.4),
-            (9.0, 59.6, 0.4), (-34.0, 46.0, 0.4), (-32.0, 41.0, 0.45), (22.0, 41.6, 0.4), (27.0, 45.0, 0.45))
-    g = Geo()
-    for x, z, r in dust:
-        g.sphere((x, by(x, z), z), r, cuts=2)
-    rig.part("hull", g, glow=KC.STAR_PALE, outline=0)
-    # the second constellation, over the lit top of the back
-    top = ((10.0, 57.4, 0.8), (14.6, 58.8, 1.0), (19.0, 56.2, 0.7), (16.0, 53.6, 0.6))
-    for x, z, r in top:
-        KC.specks(rig, "hull", [(x, z, r)], by(x, z) - 0.1)
-    body = FC.Face(rig, "hull", [Geo().blob(HULL, br, p=2.3, taper=bt)], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "hull", body, [[FW.sc(body, x, z, by(x, z) + 0.3) for x, z, _ in top]], fill=CONST_LINE, w=0.38)
-    # dust on the tail's first segment
-    t1c, t1r, t1t = (-40.0, 0, 42.0), (18.0, 13.0, 12.0), (0.75, 1.0)
-    g = Geo()
-    for x, z, r in ((-30.0, 40.6, 0.4), (-38.0, 43.0, 0.45), (-46.0, 41.0, 0.4), (-50.0, 46.0, 0.4), (-34.0, 37.0, 0.4)):
-        g.sphere((x, KB.blob_y(t1c, t1r, x, z, p=2.3, taper=t1t) - 0.3, z), r, cuts=2)
-    rig.part("tail1", g, glow=KC.STAR_PALE, outline=0)
-
-
-def _detail_r40c(rig):
-    """r40c (r40b sat at micro 3.53, edge 0.439 over the core frames; the dying roll the weakest, micro 3.25, the rolled-up
-    underside one violet field; the saddle blanket's top, the lit top of the back and the crown still smooth): the
-    blanket's top quilted (a team-dark lattice), creases along the lit top of the back, more tubercles over the crown, a
-    star badge on each rider's chest, the throat glow's white heart, short creases over the tail's top, and the belly's
-    pleats carried under the body, the throat and the tail (seen when the beast rolls over in death)."""
+    # the blanket: its border seam and its quilted top (team-dark)
     bc, bR, bp = (-15.0, 0, 59.5), (18.0, 16.0, 4.0), 2.6
     bl = FC.Face(rig, "hull", [Geo().blob(bc, bR, p=bp)], yaw_deg=YAW_DEG)
+    FW.folds(rig, "hull", bl, [[FW.on_blob(bl, bc, bR, xx, 58.2, p=bp) for xx in (-29.0, -23.0, -17.0, -10.0, -3.0)]],
+             w=0.8, team=True)
 
     def btop(x, y):
         t = 1.0 - abs((x - bc[0]) / bR[0]) ** bp - abs(y / bR[1]) ** bp
@@ -421,38 +321,29 @@ def _detail_r40c(rig):
         quilt.append([(x0 + 2.0 * k, -13.0 + 3.0 * k) for k in range(5)])
         quilt.append([(x0 + 2.0 * k, -1.0 - 3.0 * k) for k in range(5)])
     FW.folds(rig, "hull", bl, [[FW.sc(bl, x, btop(x, y) + 0.1, y) for x, y in ln] for ln in quilt], w=0.6, team=True)
-    # creases along the lit top of the back, between the sail and the head
-    br, bt = (36.0, 20.0, 20.0), (1.05, 0.95)
-    body = FC.Face(rig, "hull", [Geo().blob(HULL, br, p=2.3, taper=bt)], yaw_deg=YAW_DEG)
-
-    def htop(x, y):
-        t = 1.0 - abs(x / (br[0] * bt[1])) ** 2.3 - abs(y / (br[1] * bt[1])) ** 2.3
-        return HULL[2] + br[2] * max(t, 0.0) ** (1.0 / 2.3)
-    FW.panel_lines(rig, "hull", body, [[FW.sc(body, x, htop(x, y) + 0.1, y) for x in (10.0, 14.6, 19.2, 23.6)]
-                                       for y in (-10.0, -5.0)], fill=FW.LINE_ON_VIOLET, w=0.8)
-    # more tubercles over the crown and behind the eye (gloss)
-    hc, hr = HEAD_C, (22.0, 18.0, 17.0)
-    g = Geo()
-    for x, z, r in ((24.6, 60.4, 0.9), (27.0, 55.0, 0.9), (29.6, 51.6, 0.8), (33.6, 53.4, 0.8), (42.6, 63.6, 1.0),
-                    (47.2, 63.0, 0.9), (26.6, 63.0, 0.8), (37.6, 65.0, 0.8)):
-        y_ = KB.blob_y(hc, hr, x, z, p=2.3, taper=(0.95, 1.05)) + 0.32 * r
-        g.blob((x, y_, z), (r, r * 0.8, r), p=2.2)
-    rig.part("head", g, CW.VIOLET_DK, finish="gloss", outline=0)
-    # a star badge on each rider's chest
+    # the riders: craters ringed in moon-dark on the heads, a team-dark belt and a pale star badge on the bodies
     for i, (x, y, z) in enumerate(RIDERS):
-        yy = KB.blob_y((x, y, z + 5.0), (4.4, 4.4, 5.0), x + 1.4, z + 6.4, p=2.3) - 0.2
-        KC.specks(rig, f"rider{i}", [(x + 1.4, z + 6.4, 0.8)], yy, color=KC.STAR_PALE)
+        j = f"rider{i}"
+        rc, rr = (x + 0.8, y, z + 13.4), (5.6, 5.4, 5.4)
+        face = FC.Face(rig, j, [Geo().blob(rc, rr, p=2.2)], yaw_deg=YAW_DEG)
+        rings = []
+        for cx, cz, ring in ((-2.4, 2.0, 1.2), (0.6, 3.8, 0.8), (-3.4, -1.6, 0.9), (-0.4, -2.6, 0.7)):
+            pts = [(rc[0] + cx + ring * math.cos(k * math.pi / 4), rc[2] + cz + ring * math.sin(k * math.pi / 4))
+                   for k in range(9)]
+            rings.append([FW.on_blob(face, rc, rr, px, pz, p=2.2) for px, pz in pts])
+        FW.panel_lines(rig, j, face, rings, fill=CW.MOON_DK, w=0.45)
+        bc_, bR_ = (x, y, z + 5.0), (4.4, 4.4, 5.0)
+        bf = FC.Face(rig, j, [Geo().blob(bc_, bR_, p=2.3)], yaw_deg=YAW_DEG)
+        FW.folds(rig, j, bf, [[FW.on_blob(bf, bc_, bR_, x + dx, z + 4.0 - 0.1 * dx, p=2.3) for dx in (-3.6, -1.2, 1.2, 3.6)]],
+                 w=0.6, team=True)
+        yy = KB.blob_y(bc_, bR_, x + 1.4, z + 6.4, p=2.3) - 0.2
+        KC.specks(rig, j, [(x + 1.4, z + 6.4, 0.8)], yy, color=KC.STAR_PALE)
     # the throat glow's white heart, proud of its core
     g = Geo().blob((HEAD_C[0] + 2.6, -17.6, HEAD_C[2] - 11.0), (2.4, 1.4, 1.6), p=2.3)
     rig.part("throat", g, glow=K.WHITE, outline=0)
-    # short creases over the tail's top
-    t1c, t1r, t1t = (-40.0, 0, 42.0), (18.0, 13.0, 12.0), (0.75, 1.0)
-    tf = FC.Face(rig, "tail1", [Geo().blob(t1c, t1r, p=2.3, taper=t1t)], yaw_deg=YAW_DEG)
-    FW.panel_lines(rig, "tail1", tf, [[FW.sc(tf, x, z, KB.blob_y(t1c, t1r, x, z, p=2.3, taper=t1t))
-                                       for x, z in ((xx, 52.6), (xx - 0.8, 50.0), (xx - 1.2, 47.4))]
-                                      for xx in (-33.0, -38.0, -43.4, -49.0)], fill=FW.LINE_ON_VIOLET, w=0.8)
 
-    # the pleats under the body, the throat and the tail: capsules on each blob's underside (no decal reaches it)
+    # the pleats under the body, the throat and the tail: capsules on each blob's underside (no decal reaches it; the
+    # death roll turns it to the camera)
     def under(c, r, p, x, y, k):
         t = 1.0 - abs((x - c[0]) / (r[0] * k)) ** p - abs((y - c[1]) / (r[1] * k)) ** p
         return c[2] - r[2] * max(t, 0.0) ** (1.0 / p)

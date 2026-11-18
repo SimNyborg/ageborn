@@ -30,6 +30,7 @@ import math
 
 from ageborn_art import aimed as AIMED
 from ageborn_art import face as FC
+from ageborn_art import kit_bronze_detail as KB
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_industrial as KI
@@ -192,10 +193,17 @@ def build(rig):
     g.blob((gx + 8, y1 - 3.0, gz + 5.0), (9.0, 0.3, 0.35), p=3.0)
     rig.part("gun", g, FW.LINE_ON_STAR, outline=0, highlight=False)
     FW.cosmic_body(rig, team_shin=True, pad_r=(7.0, 6.0, 5.6))
-    hf = FC.Face(rig, "head", [Geo().blob((-1.0, 0, 53.0), (12.6, 12.4, 13.0), p=2.3, taper=(1.0, 0.7),
-                                          shift=(-0.25, 0))])
-    FW.folds(rig, "head", hf, [[FW.sc(hf, -4.0, 61.0, -9.6), FW.sc(hf, -7.0, 53.0, -11.6), FW.sc(hf, -6.4, 45.0, -11.4)],
-                               [FW.sc(hf, -10.6, 57.0, -8.0), FW.sc(hf, -12.0, 49.0, -8.2)]], w=0.8, team=True)
+    hc, hrad, ht, hs = (-1.0, 0, 53.0), (12.6, 12.4, 13.0), (1.0, 0.7), (-0.25, 0)
+    hf = FC.Face(rig, "head", [Geo().blob(hc, hrad, p=2.3, taper=ht, shift=hs)])
+    # (the W4 review's nit 3) two broad cloth planes down the hood's side, each a ridge of the team cloth whose upper
+    # edge takes the light, with a team-dark crease along its lower edge (r6's two thin folds read as cracks at x3)
+    for pts, rs in ((((-0.6, 62.4), (-4.0, 57.0), (-6.0, 51.0), (-6.0, 45.4)), [1.5, 1.9, 1.9, 1.5]),
+                    (((-7.6, 60.0), (-10.2, 54.4), (-11.4, 48.4)), [1.4, 1.7, 1.4])):
+        g = KB.ridge(hc, hrad, pts, rs, p=2.3, taper=ht, shift=hs, bulge=0.55)
+        rig.part("head", g, team=True, outline=0)
+        crease = [(x + 1.9, z - 0.7) for x, z in pts]
+        FW.folds(rig, "head", hf, [[FW.sc(hf, x, z, KB.blob_y(hc, hrad, x, z, p=2.3, taper=ht, shift=hs))
+                                    for x, z in crease]], w=0.8, team=True)
     if getattr(rig, "skin", None) is None:
         _damage_spots(rig)
 

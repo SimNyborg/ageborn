@@ -154,17 +154,24 @@ def build(rig):
     rig.part("pole", g, K.VIOLET, outline=0)
     # (r30b) thin bands down the bare shaft, a step over its dark violet (the long shaft was one flat stroke)
     g = Geo()
-    for x in (gx - 12.0, gx - 8.0, gx + 5.0, gx + 9.0, gx + 13.0, gx + 29.0, gx + 35.0, gx + 41.0, gx + 47.0,
-              gx + 53.0, gx + 58.0):
+    for x in (gx - 12.0, gx - 8.0, gx + 5.0, gx + 9.0, gx + 29.0, gx + 35.0, gx + 47.0, gx + 53.0, gx + 58.0):
         g.lathe([(0, -0.35), (1.75, -0.3), (1.75, 0.3), (0, 0.35)], (x, gy, gz), (x + 1, gy, gz), segs=12)
     rig.part("pole", g, SHAFT_BAND, outline=0)
+    # (the W4 review's nit 3) two thick star-white bands on the shaft, one under each hand's reach: they read at 1x
+    # where the thin bands are a texture
+    g = Geo()
+    for x in (gx + 17.0, gx + 41.0):
+        g.lathe([(0, -1.3), (2.25, -1.2), (2.4, 0), (2.25, 1.2), (0, 1.3)], (x, gy, gz), (x + 1, gy, gz), segs=14)
+    rig.part("pole", g, K.STAR, finish="gloss", outline=0.6, outline_hex=K.STAR_TRIM)
     # crescent blade under the head (points down-forward), and a back spike on top
     blade = [(HEAD_X - 4, gz - 1.5), (HEAD_X + 8, gz - 1.5), (HEAD_X + 15, gz - 6), (HEAD_X + 16.5, gz - 14),
              (HEAD_X + 12, gz - 21), (HEAD_X + 7.5, gz - 14), (HEAD_X + 2, gz - 9.5), (HEAD_X - 4, gz - 6)]
     g = Geo().slab(blade, gy, 2.6)
     rig.part("pole", g, K.VIOLET, finish="metal", outline_hex=K.VIOLET_DK)
-    edge = [(HEAD_X + 14.2, gz - 6.4), (HEAD_X + 17.2, gz - 14.0), (HEAD_X + 12.4, gz - 22.0),
-            (HEAD_X + 13.6, gz - 14.2)]
+    # (the W4 review's nit 3) the crescent's lit edge runs the whole outer curve, from the socket to the tip (r30's
+    # covered its lower half: at 1x the blade was one dark violet shape)
+    edge = [(HEAD_X + 8.4, gz - 1.3), (HEAD_X + 15.4, gz - 5.8), (HEAD_X + 17.2, gz - 14.0), (HEAD_X + 12.4, gz - 22.0),
+            (HEAD_X + 13.6, gz - 14.2), (HEAD_X + 12.6, gz - 7.6), (HEAD_X + 8.0, gz - 3.6)]
     g = Geo().slab(edge, gy - 0.4, 3.0)
     rig.part("pole", g, glow=K.VIOLET_CORE, outline=0)
     g = Geo().slab([(HEAD_X - 2, gz + 1.5), (HEAD_X + 4, gz + 1.5), (HEAD_X + 1, gz + 12)], gy, 2.4)

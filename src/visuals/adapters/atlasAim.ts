@@ -66,31 +66,59 @@ export const AIMED_SLACK_DEG = 5;
 
 /**
  * The clip a shot plays within its attack variant (contract C2): of the base clip and its loaded aimed variants
- * (`candidates`, the base first), the one drawn closest to `wantDeg`, the launch angle `render/aim.ts` asks for
- * (`aimWantDeg`); the lean then covers the rest. A tie goes to the pose nearer the base clip's; the level the last shot
- * played (`prevLevel`; null: no shot yet) stays while it is within `AIMED_SLACK_DEG` of the best. Returns the
- * candidate's index (0: the base clip, also for no candidates or no angle). Angles are relative to the facing direction,
- * so facing left or right chooses alike.
+ * (`candidates`, the base first), the one that reaches `wantDeg`, the launch angle `render/aim.ts` asks for
+ * (`aimWantDeg`), most closely: drawn at its own angle and leaned at most `maxLean` (0: the drawn angle alone), an aimed
+ * variant only its own way (`aimedLean`); the lean then covers the rest. Of two that reach it alike, the one drawn
+ * nearer to it (the smaller lean), then the pose nearer the base clip's; the level the last shot played (`prevLevel`;
+ * null: no shot yet) stays while it is within `AIMED_SLACK_DEG` of the best. Returns the candidate's index (0: the base
+ * clip, also for no candidates or no angle). Angles are relative to the facing direction, so facing left or right
+ * chooses alike.
  */
-export function pickAimedClip(candidates: readonly AimCandidate[], wantDeg: number, prevLevel: AimLevel | null = null): number {
+export function pickAimedClip(candidates: readonly AimCandidate[], wantDeg: number, prevLevel: AimLevel | null = null, maxLean = 0): number {
   const base = candidates[0];
   if (!base || candidates.length < 2 || !Number.isFinite(wantDeg)) return 0;
+  const m = maxLean > 0 && Number.isFinite(maxLean) ? maxLean : 0;
   let best = 0;
-  let bestErr = Math.abs(wantDeg - base.deg);
+  let bestErr = reachErr(base, wantDeg, m);
   for (let i = 1; i < candidates.length; i++) {
     const c = candidates[i]!;
-    const err = Math.abs(wantDeg - c.deg);
+    const err = reachErr(c, wantDeg, m);
+    const b = candidates[best]!;
     const tie = Math.abs(err - bestErr) < 1e-9;
-    if (err < bestErr - 1e-9 || (tie && Math.abs(c.deg - base.deg) < Math.abs(candidates[best]!.deg - base.deg))) {
+    const nearer = Math.abs(wantDeg - c.deg) < Math.abs(wantDeg - b.deg) - 1e-9;
+    const same = Math.abs(Math.abs(wantDeg - c.deg) - Math.abs(wantDeg - b.deg)) < 1e-9;
+    if (err < bestErr - 1e-9 || (tie && (nearer || (same && Math.abs(c.deg - base.deg) < Math.abs(b.deg - base.deg))))) {
       best = i;
       bestErr = err;
     }
   }
   for (let i = 0; prevLevel !== null && i < candidates.length; i++) {
     if (i === best || aimLevelOf(candidates[i]!.anim) !== prevLevel) continue;
-    if (Math.abs(wantDeg - candidates[i]!.deg) <= bestErr + AIMED_SLACK_DEG) return i;
+    if (reachErr(candidates[i]!, wantDeg, m) <= bestErr + AIMED_SLACK_DEG) return i;
   }
   return best;
+}
+
+/** How far `wantDeg` lies outside what a candidate reaches: its drawn angle, leaned at most `m` (`aimedLean`'s way). */
+function reachErr(c: AimCandidate, wantDeg: number, m: number): number {
+  const lvl = aimLevelOf(c.anim);
+  const lo = c.deg - (lvl === 'up45' || lvl === 'up70' ? 0 : m);
+  const hi = c.deg + (lvl === 'down' ? 0 : m);
+  return wantDeg < lo ? lo - wantDeg : wantDeg > hi ? wantDeg - hi : 0;
+}
+
+/**
+ * The lean an aimed clip may take (the W4 review's rifle dip): an aimed variant is drawn up (or down) on its own frames
+ * only. Its wind-up and recovery start and end on the base clip's pose, and the idle between shots holds the weapon as
+ * the base clip does, so a lean held against the variant (down for an up-aimed clip drawn above the target, up for a
+ * down-aimed one drawn below it) outlived its aimed frames and pointed the weapon past level the other way (the Ion
+ * Ranger's rifle dipped about 35 degrees under level for some 170 ms after each up-aimed shot). A lean only ever goes
+ * the aimed clip's way; the clip is chosen with that (`pickAimedClip`'s `maxLean`). `level` is the clip's (`aimLevelOf`).
+ */
+export function aimedLean(level: AimLevel, leanDeg: number): number {
+  if (level === 'up45' || level === 'up70') return Math.max(0, leanDeg);
+  if (level === 'down') return Math.min(0, leanDeg);
+  return leanDeg;
 }
 
 /** A release as the point it names (lu from the feet, x forward, y up), or undefined. */
