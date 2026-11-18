@@ -15,55 +15,52 @@ what we believe, how sure we are, and what we post next because of it.
   them), shares and saves (would they send it on), comments. Followers per day from `GET /me`.
 - Owner direction overrides the numbers (see Owner notes).
 
-## Beliefs (as of 2026-10-30 morning, 36 posts; medians over Reels older than 24 h)
+## Beliefs (as of 2026-11-18, 41 Reels older than 12 h; medians)
+
+What drives traction, strongest evidence first. "Confirmed" needs n >= 3 per variant.
 
 | # | Belief | Evidence | Status |
 |---|---|---|---|
-| B1 | Capsule openings reach the most people | rarity reveals median 138 (n=3), R10 only 45 after repeats | rejected as "most"; fine when spaced out |
-| B2 | Shorter Reels are watched further | short duels 65 % watch (n=10) vs devlogs 23 % (n=10) and classic 28 % (n=7) | confirmed for watch share, not for reach |
-| B3 | A question to the viewer gets reactions but not reach on its own | R5: highest engagement, reach 44 | signal |
-| B4 | Shares are starting | 7 posts with 1 share each, none since 2026-10-22 | stalled |
-| B5 | Posting time matters | evening 141 (n=14) vs midday 136 (n=13); DV11 at 21:55 local only 39 in 24 h | no difference inside the windows; very late posts open |
-| B6 | Reach is capped at about 150 per post | DV3 303, DV5 194, DV1 188; devlog median 155 | weakened: a twist or visible problem breaks it |
-| B7 | Devlogs score best overall | devlog median reach 155 (n=10) vs short duels 144 (n=10) and classic 120 (n=7); lowest skip (66 %) | confirmed for reach and skip |
-| B8 | Followers grow on devlog days | 107 to 146 in 3 weeks, steps after DV1, DV3, DV5 | signal |
-| B9 | A plainly bad "before" holds the first seconds | DV9 (squares step 0) 61.7 % skip at 13 h, among the lowest of any post | signal (n=1) |
-| B10 | Narrated duels lose the hook unless the voice asks a question at once | R17 77 % skip; R18 (spoken question from frame 1) 60 % skip in 9.5 h, the lowest of any duel | signal (n=1): keep the spoken question on every duel |
+| T1 | A question in the first second wins: a dilemma, a test or "A or B?" | question/dilemma hooks reach 176, skip 58 %, watch 54 % (n=6) vs all devlogs 144 / 65 % / 30 % (n=21); DV18 dilemma 44 % skip, the best of all posts | confirmed: the default format |
+| T2 | Steve v4 (one expressive take) holds viewers better than the old voice | DV16-DV19 reach 180, skip 52 %, watch 48 % (n=4) vs earlier devlogs 144 / 65 % / 28 % (n=17); no-subtitles started at the same time, so the two are not separated | confirmed (voice + no subtitles together) |
+| T3 | Development across the ages (art, animation) works | DV19 one soldier, eight ages: 50 % skip, 61 % watch, the first save in a month | signal (n=1) |
+| T4 | A story with a twist can break out | DV3 plot twist 303 reach, still the best post | signal (n=1 at that level; other story devlogs 150) |
+| T5 | Explanations and "here is a problem" hooks underperform | problem hooks reach 122, skip 68 % (n=3); DV4 and DV10 held only 15 % | confirmed: always turn a problem into a question or a dilemma |
+| T6 | Before/after is middling | reach 132, skip 68 % (n=4) | confirmed weak: use only with a plainly bad before, inside a question |
+| T7 | Capsule reveals and votes reach least | reach 95 (n=5), R5 44, R10 66 | confirmed loser: dropped |
+| T8 | Music-only Reels lose people at once | classic 81 % skip (n=7), music duels 69 % (n=9) | confirmed loser: every Reel is narrated |
+| T9 | Reach is up, likes and follows are down | November reach 147 vs October 137, but likes 4 vs 13 per post; followers +13 a week in October, +4 a week in November | new: viewers now come from outside the followers and do not convert. Needs a reason to follow (a series) |
+| T10 | Gaps cost more than any format choice | 9 days without posts in two weeks (restarts, approvals, credits); followers flat in those weeks | signal: steady posting is the biggest lever |
+| T11 | Shares and saves have not started | 1 share or save on a few posts, none in November except DV19's save | stalled: no format has shown share pull yet |
+| T12 | Posting time inside the windows does not matter; a very late post does | evening vs midday within 5 %; DV11 at 21:55 local reached 43 | keep the windows |
 
-## Current mix (until the next update; owner note 2026-10-22 sets the direction)
+## Current mix (from 2026-11-18; owner notes 11-01, 11-10 and 11-12 set the direction)
 
-- Per day: 2 grid Reels + 1 Story. Owner note 2026-11-01: most Reels are developer videos. Default day is two
-  devlogs (a real development problem, story first, an open question) or one devlog plus one before/after piece.
-  Balance-test duels at most 3 a week, never on consecutive days, framed as development tests; they also feed
-  round-up devlogs (DV12). The bandit still scores the arms, but the owner's direction decides the mix.
-- Before/after series ("Ageborn is getting better"): film the same scene at an older capture pin and a newer one.
-  Material now: item 37 natural motion outside battle and item 34 live Ranked matches (both released on the game's
-  main branch after 63d5865), round 2's new base models and Home diorama (63d5865). Coming: item 38, more dramatic
-  combat animations; film "before" now, "after" when it ships.
-- Stories: behind-the-scenes stills and "what should I fix next?" questions.
+- **Exploit (about 60 %): the developer dilemma.** Steve v4 in one take, no subtitles, 20-33 s. The question is on
+  screen and in the voice from the first second; option A and option B shown honestly on the sim; end on "A or B?".
+  Topics come from development across the ages (feel, art, animation, design choices), rotating the age each time.
+- **Explore (about 40 %):**
+  1. Age showcases in the DV19 style (one thing across all eight ages: soldiers, heavies, bases, backdrops, deaths).
+     Need two more before T3 can be confirmed.
+  2. A series hook for follows (T9): close a dilemma with "result in the next devlog", then post a short follow-up
+     that shows which option won the vote and what changed in the game. Measure followers on those days.
+  3. A twist story (T4) once a week at most, only when the sim gives a real twist.
+- **Dropped:** capsule reveals, music-only Reels, pure explanations. Battle-led videos at most one every second day.
+- Per day: 2 grid Reels and 1 Story when narration is available. When it is not, post nothing rather than an
+  unnarrated Reel (owner notes 10-26 and 11-09), and say so in the evening status.
 
 ## Next decisions
 
-- Voice: the owner prefers the ElevenLabs voice "Steve"; the free tier is blocked from this cloud session and its
-  terms forbid commercial use without attribution, so it needs the Starter plan (owner's decision, asked 2026-10-19).
-  Kokoro bm_george until then. A connector "Social media studio" is half set up (owner told 2026-10-20).
-
-- Experiment queued (owner idea 2026-10-19): "indie dev asks for help". 15-20 s, narrated, first person
-  ("I'm one person making this game..."), cold open on a big battle moment, fast cuts across ages, ending on
-  a personal ask to send it to one friend who would play it. Avoid the explicit "like, comment, share" list
-  (engagement bait is demoted by Meta) and the "just tap share" trick (only sent shares count). Measure
-  share rate and skip rate against the other arms. Make on 2026-10-20, post by 2026-10-21.
-
-- Week 2 (from 2026-10-19, see docs/weekly-2026-10-19.md): test shareability; 3 devlogs; first shares or
-  saves and one post above 200 reach are the success signals.
-
-- No multi-variable regression before about 150 posts (too little data, high noise); the bandit
-  (tools/bandit.py, built 2026-10-18) picks the mix until then.
-
-- After 3 devlogs: do they get comments and shares? If yes, give them a fixed weekly slot.
+- Narration credits (blocker): ElevenLabs has 31 credits left; one Reel needs about 300-400. Owner to choose: wait
+  for the monthly renewal, or use the Kokoro fallback until then (asked 2026-11-17 and 11-18).
+- Next Reels when narration is back, in order: DV20 dilemma "screen shake or not" (script saved 11-18), then its
+  result follow-up (series test, T9), then an age showcase (heavies or bases across eight ages, T3).
+- T9 check after 3 series posts: do followers per posting day rise above +2? If not, try a different reason to
+  follow (a weekly "you decided" round-up).
+- T11 shares: still nothing works. Keep the 10-19 indie-ask learning (IA1 got 1 share): an honest personal line
+  works better than a call to action. Test one dilemma that ends "send this to the friend who always picks B".
+- No multi-variable regression before about 150 posts; the plan's beliefs decide the mix until then.
 - If reach per post falls more than 25 % for a week: tell the owner and change course.
-- Idea for B4 (shares): a "plot twist" duel. With 7 Riveters the Land Dreadnought falls, its crew bails out
-  as two Carbineers and wins anyway. Needs its own shot (follow the crew after the hero dies).
 
 ## Owner notes (direction that overrides the numbers)
 
@@ -243,3 +240,9 @@ what we believe, how sure we are, and what we post next because of it.
   script needs about 300), refused at no cost. Nothing posted. Next video ready to make once credits renew: DV20,
   dilemma "screen shake or not" (same Medieval fight with capture shake=0 vs shake=1; script in this log entry's
   commit message).
+- 2026-11-18: owner asked to update the model with what gets traction. Beliefs rebuilt from all 41 Reels (T1-T12):
+  dilemma and question hooks confirmed as the winner (reach 176, skip 58 %, n=6), Steve v4 devlogs confirmed
+  (skip 52 %, n=4), problem hooks, capsule reveals and music-only Reels confirmed as losers. New concern: reach is
+  up but likes and follows are down (likes 13 to 4 per post, followers +13 to +4 a week), so the explore slot now
+  tests a dilemma series with a follow-up result post. Mix rewritten to 60 % dilemmas, 40 % age showcases, series
+  follow-ups and an occasional twist.
