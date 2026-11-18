@@ -23,7 +23,7 @@ What drives traction, strongest evidence first. "Confirmed" needs n >= 3 per var
 |---|---|---|---|
 | T1 | A question in the first second wins: a dilemma, a test or "A or B?" | question/dilemma hooks reach 176, skip 58 %, watch 54 % (n=6) vs all devlogs 144 / 65 % / 30 % (n=21); DV18 dilemma 44 % skip, the best of all posts | confirmed: the default format |
 | T2 | Steve v4 (one expressive take) holds viewers better than the old voice | DV16-DV19 reach 180, skip 52 %, watch 48 % (n=4) vs earlier devlogs 144 / 65 % / 28 % (n=17); no-subtitles started at the same time, so the two are not separated | confirmed (voice + no subtitles together) |
-| T3 | Development across the ages (art, animation) works | DV19 one soldier, eight ages: 50 % skip, 61 % watch, the first save in a month | signal (n=1) |
+| T3 | Development across the ages (art, animation) works | DV19 one soldier, eight ages: 619 reach at 26 h (twice the old record, DV3 303), 40.5 % skip (the lowest ever), 48 % watch, 16 likes, 4 comments, 1 save | strong signal (n=1): make the next two age showcases soon |
 | T4 | A story with a twist can break out | DV3 plot twist 303 reach, still the best post | signal (n=1 at that level; other story devlogs 150) |
 | T5 | Explanations and "here is a problem" hooks underperform | problem hooks reach 122, skip 68 % (n=3); DV4 and DV10 held only 15 % | confirmed: always turn a problem into a question or a dilemma |
 | T6 | Before/after is middling | reach 132, skip 68 % (n=4) | confirmed weak: use only with a plainly bad before, inside a question |
@@ -53,7 +53,7 @@ What drives traction, strongest evidence first. "Confirmed" needs n >= 3 per var
 
 - Narration credits (blocker): ElevenLabs has 31 credits left; one Reel needs about 300-400. Owner to choose: wait
   for the monthly renewal, or use the Kokoro fallback until then (asked 2026-11-17 and 11-18).
-- Next Reels when narration is back, in order: DV21 capsule dilemma (owner request 11-18, see below), DV20 dilemma "screen shake or not" (script saved 11-18), then its
+- Next Reels when narration is back, in order: DV21 capsule dilemma (owner request 11-18, see below), DV22 age showcase (heavies across eight ages, T3), DV20 dilemma "screen shake or not" (script saved 11-18), then its
   result follow-up (series test, T9), then an age showcase (heavies or bases across eight ages, T3).
 - DV21 capsule test (owner request 2026-11-18): a capsule reveal narrated by Steve, framed as a design dilemma
   ("watch the rarity climb, or a surprise at the end?"), on fresh R9 footage (first Aeon capsule). The five earlier
@@ -249,3 +249,6 @@ What drives traction, strongest evidence first. "Confirmed" needs n >= 3 per var
   up but likes and follows are down (likes 13 to 4 per post, followers +13 to +4 a week), so the explore slot now
   tests a dilemma series with a follow-up result post. Mix rewritten to 60 % dilemmas, 40 % age showcases, series
   follow-ups and an occasional twist.
+- 2026-11-18 evening: DV19 broke out: 619 reach at 26 h (record; DV3 303), 40.5 % skip (record), 16 likes,
+  4 comments. T3 raised to a strong signal; the next age showcase moves up the queue right after DV21 (the
+  owner's capsule test). Followers 159 (no jump yet, which fits T9).
