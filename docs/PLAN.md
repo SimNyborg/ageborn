@@ -237,3 +237,5 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-11-17 evening: DV19 110 reach in 2 h, 57 % skip, 72 % watch (17.6 s of 24.5 s), the highest watch share of
   any devlog, and its first save. One post, so no belief changes; it supports the 11-12 direction (ages, art,
   animation). Followers 158.
+- 2026-11-18: no post, waiting on ElevenLabs credits (31 left) or the owner's choice of the Kokoro fallback. DV19
+  at 13 h: 154 reach, 50 % skip, 61 % watch, 1 save. Beliefs unchanged (n=1). Followers 159.
