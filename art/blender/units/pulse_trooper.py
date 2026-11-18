@@ -215,13 +215,17 @@ def build(rig):
 
 
 def _cadet(rig):
-    """Space Cadet: three silver fins round the ray gun's barrel and two rocket fins under the pack."""
+    """Space Cadet: three fins round the ray gun's barrel and two silver rocket fins under the pack. The W4 review's nit 2
+    (one sign that reads at 1x): the barrel's fins, now magenta like the muzzle ring and the antenna's ball, and half as
+    thick again, at their old radius. Bigger rocket fins did not fit: grown back they widened the frames (HD sheet pixels
+    1.052), grown down and up 1.041, in silver they took the team fill of attack_up70_05 under 18% (17.9), and in team
+    colour, like team fins on the barrel (1.175), they widened the team layer's frames."""
     gx, gy, gz = G0
     g = Geo()
     for x in (X(31), X(35), X(39)):
-        g.lathe([(0, -0.45), (4.9, -0.4), (5.2, 0.0), (4.9, 0.4), (0, 0.45)], (x, gy + 1, gz + 3.5),
+        g.lathe([(0, -0.7), (4.9, -0.65), (5.2, -0.25), (5.2, 0.25), (4.9, 0.65), (0, 0.7)], (x, gy + 1, gz + 3.5),
                 (x + 1, gy + 1, gz + 3.5), segs=20)
-    rig.part("gun", g, F.TRIM, finish="gloss", outline=0.6, outline_hex=F.SUIT)
+    rig.part("gun", g, F.MAGENTA, finish="gloss", outline=0.6, outline_hex=F.SUIT)
     g = Geo()
     for y in (-5.0, 3.0):
         g.slab([(-14.2, 24.8), (-18.8, 19.8), (-19.0, 22.8), (-15.6, 27.6)], y, 0.9)

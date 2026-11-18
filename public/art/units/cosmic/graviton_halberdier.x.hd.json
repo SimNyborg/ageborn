@@ -50,7 +50,7 @@
   },
   "graviton_halberdier_attack_b_01": {
    "frame": {
-    "x": 1039,
+    "x": 1038,
     "y": 680,
     "w": 280,
     "h": 177
@@ -172,15 +172,15 @@
    "frame": {
     "x": 678,
     "y": 680,
-    "w": 144,
+    "w": 143,
     "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 268,
+    "x": 269,
     "y": 235,
-    "w": 144,
+    "w": 143,
     "h": 182
    },
    "sourceSize": {
@@ -482,7 +482,7 @@
   },
   "graviton_halberdier_attack_c_02": {
    "frame": {
-    "x": 1323,
+    "x": 1322,
     "y": 680,
     "w": 291,
     "h": 176
@@ -746,7 +746,7 @@
   },
   "graviton_halberdier_attack_c_07_team": {
    "frame": {
-    "x": 826,
+    "x": 825,
     "y": 680,
     "w": 209,
     "h": 178
@@ -770,7 +770,7 @@
   },
   "graviton_halberdier_spear_set_00": {
    "frame": {
-    "x": 1618,
+    "x": 1617,
     "y": 680,
     "w": 255,
     "h": 174

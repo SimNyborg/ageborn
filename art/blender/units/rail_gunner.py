@@ -204,15 +204,29 @@ def build(rig):
         _damage_spots(rig)
 
 
+# (the W4 review's nit 2) the chrome's sky band: a mid grey reflected along the rails (a hard white glint over it, and a
+# band on the top shroud too, took the highlight share of the extras to 0.112 against the infantry's 0.10; #6A7382 alone
+# with the fins 6.8 lu tall, 0.1001)
+CR_SKY = "#8C95A3"
+
+
 def _heat_sink(rig):
-    """Chrome Rail: five chrome fins standing on the top rail (a heat sink comb along the cannon's back)."""
+    """Chrome Rail: five chrome fins standing on the top rail (a heat sink comb along the cannon's back), twice as tall
+    since the W4 review (6.2 lu; at 1x the 3.4 lu fins were a row of ticks); and the mirror read: a band of reflected sky
+    along both rails."""
     gx, gy, gz = G0
     top = gz + 7.4 + 2.4
     g = Geo()
     for x in (gx + 25.0, gx + 30.0, gx + 35.0, gx + 40.0, gx + 45.0):
-        g.slab([(x - 0.45, top - 0.8), (x + 0.45, top - 0.8), (x + 0.35, top + 2.6), (x - 0.55, top + 2.6)],
+        g.slab([(x - 0.5, top - 0.8), (x + 0.5, top - 0.8), (x + 0.3, top + 5.4), (x - 0.7, top + 5.4)],
                gy + 1.0, 4.6)
     rig.part("rail_top", g, FW.ARMOR, finish="gloss", outline=0.6, outline_hex=F.TRIM)
+    for name, dz, h in (("rail_top", 7.4, 2.4), ("rail_bot", -1.4, 2.2)):
+        c, r = (gx + (RAIL0 + RAIL1) / 2, gy + 1.0, gz + dz), ((RAIL1 - RAIL0) / 2 + 1, 2.9, h)
+        rf = FC.Face(rig, name, [Geo().blob(c, r, p=3.4)])
+        xs = [gx + RAIL0 + 1.5 + k * (RAIL1 - RAIL0 - 7.0) / 4 for k in range(5)]
+        FW.panel_lines(rig, name, rf, [[FW.on_blob(rf, c, r, x, gz + dz - 0.2 * h, p=3.4) for x in xs]], fill=CR_SKY,
+                       w=0.7)
 
 
 def _detail(rig):
