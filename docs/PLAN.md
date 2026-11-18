@@ -239,3 +239,7 @@ what we believe, how sure we are, and what we post next because of it.
   animation). Followers 158.
 - 2026-11-18: no post, waiting on ElevenLabs credits (31 left) or the owner's choice of the Kokoro fallback. DV19
   at 13 h: 154 reach, 50 % skip, 61 % watch, 1 save. Beliefs unchanged (n=1). Followers 159.
+- 2026-11-18: owner asked for a video if credits allow. Checked by trying the narration: still 31 credits (a short
+  script needs about 300), refused at no cost. Nothing posted. Next video ready to make once credits renew: DV20,
+  dilemma "screen shake or not" (same Medieval fight with capture shake=0 vs shake=1; script in this log entry's
+  commit message).
