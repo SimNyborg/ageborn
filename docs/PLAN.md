@@ -252,3 +252,6 @@ What drives traction, strongest evidence first. "Confirmed" needs n >= 3 per var
 - 2026-11-18 evening: DV19 broke out: 619 reach at 26 h (record; DV3 303), 40.5 % skip (record), 16 likes,
   4 comments. T3 raised to a strong signal; the next age showcase moves up the queue right after DV21 (the
   owner's capsule test). Followers 159 (no jump yet, which fits T9).
+- 2026-11-19: no post (narration credits). DV19 624 reach at 37 h. DV22 footage recorded and frame-checked (each
+  age's common heavy vs three basic infantry, shots/dv22.mjs); script in studio/work/dv22. DV21 and DV22 now only
+  wait for narration. Followers 159.
