@@ -256,3 +256,4 @@ What drives traction, strongest evidence first. "Confirmed" needs n >= 3 per var
   age's common heavy vs three basic infantry, shots/dv22.mjs); script in studio/work/dv22. DV21 and DV22 now only
   wait for narration. Followers 159.
 - 2026-11-20: no post (narration credits). DV19 settled at about 625 reach. Plan unchanged. Followers 159.
+- 2026-11-21: no post (narration credits), fourth day in a row. Plan unchanged.
