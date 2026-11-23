@@ -258,3 +258,5 @@ What drives traction, strongest evidence first. "Confirmed" needs n >= 3 per var
 - 2026-11-20: no post (narration credits). DV19 settled at about 625 reach. Plan unchanged. Followers 159.
 - 2026-11-21: no post (narration credits), fourth day in a row. Plan unchanged.
 - 2026-11-22: no post (narration credits), fifth day. Plan unchanged.
+- 2026-11-23: weekly review (docs/weekly-2026-11-23.md). DV19 final about 627 reach, 40 % skip, 76 % watch. No
+  plan change; still blocked on narration (sixth day without a post).
