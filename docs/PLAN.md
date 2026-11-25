@@ -261,3 +261,4 @@ What drives traction, strongest evidence first. "Confirmed" needs n >= 3 per var
 - 2026-11-23: weekly review (docs/weekly-2026-11-23.md). DV19 final about 627 reach, 40 % skip, 76 % watch. No
   plan change; still blocked on narration (sixth day without a post).
 - 2026-11-24: no post (narration credits), seventh day. Plan unchanged. Followers 159.
+- 2026-11-25: no post (narration credits), eighth day. Plan unchanged.
