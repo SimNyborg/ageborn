@@ -263,3 +263,4 @@ What drives traction, strongest evidence first. "Confirmed" needs n >= 3 per var
 - 2026-11-24: no post (narration credits), seventh day. Plan unchanged. Followers 159.
 - 2026-11-25: no post (narration credits), eighth day. Plan unchanged.
 - 2026-11-26: no post (narration credits), ninth day. Plan unchanged.
+- 2026-11-27: no post (narration credits), tenth day. Plan unchanged.
